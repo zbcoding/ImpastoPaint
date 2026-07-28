@@ -26,6 +26,7 @@ public sealed partial class ColorPickerSlider
 
 	private Component component;
 	private Color color;
+	private bool suppress_change_event; // ponytail: re-entrancy guard for programmatic SetText
 
 	private Gtk.Entry input_field;
 	private Gtk.Label slider_label;
@@ -160,6 +161,9 @@ public sealed partial class ColorPickerSlider
 
 	private void OnInputFieldChanged (Gtk.Editable inputField, EventArgs e)
 	{
+		if (suppress_change_event)
+			return;
+
 		string text = inputField.GetText ();
 
 		bool success = double.TryParse (
@@ -192,10 +196,15 @@ public sealed partial class ColorPickerSlider
 			double componentValue = ExtractValue (value, component);
 
 			if (!input_field.IsEditingText ()) {
-				// Ensure we don't get an infinite loop of "value changed" events
+				// Ensure we don't get an infinite loop of "value changed" events.
+				// SetText fires OnChanged synchronously; suppress it so the
+				// programmatic update doesn't re-enter UpdateView -> Color setter.
 				string newText = Convert.ToInt32 (componentValue).ToString ();
-				if (newText != input_field.GetText ())
+				if (newText != input_field.GetText ()) {
+					suppress_change_event = true;
 					input_field.SetText (newText);
+					suppress_change_event = false;
+				}
 			}
 
 			gradient_slider.QueueDraw ();

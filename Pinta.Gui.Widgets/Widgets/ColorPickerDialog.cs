@@ -93,7 +93,8 @@ public sealed partial class ColorPickerDialog
 	private static Color ExtractTargetedColor (ColorPick colors, bool primarySelected)
 	{
 		return colors switch {
-			SingleColor singleColor => primarySelected ? singleColor.Color : throw new InvalidOperationException (),
+			// A SingleColor has no secondary; primarySelected is irrelevant.
+			SingleColor singleColor => singleColor.Color,
 			PaletteColors paletteColors => primarySelected ? paletteColors.Primary : paletteColors.Secondary,
 			_ => throw new UnreachableException (),
 		};
@@ -102,10 +103,7 @@ public sealed partial class ColorPickerDialog
 	private void SetTargeted (Color color)
 	{
 		Colors = Colors switch {
-			SingleColor singleColor =>
-				primary_selected
-				? singleColor with { Color = color }
-				: throw new InvalidOperationException (),
+			SingleColor singleColor => singleColor with { Color = color },
 			PaletteColors paletteColors =>
 				primary_selected
 				? paletteColors with { Primary = color }

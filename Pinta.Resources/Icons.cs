@@ -207,7 +207,7 @@ public static class Icons
 	public const string LayerProperties = "document-properties-symbolic";
 	public const string LayerRotateZoom = "layers-rotate-zoom-symbolic";
 
-	public const string Pinta = "com.github.PintaProject.Pinta";
+	public const string Pinta = "com.github.zbcoding.Impasto";
 
 	public const string ResizeCanvasBase = "image-resize-canvas-base-symbolic";
 	public const string ResizeCanvasDown = "image-resize-canvas-down-symbolic";

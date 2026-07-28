@@ -44,6 +44,9 @@ public sealed class ViewActions
 	public ToggleCommand MenuBar { get; }
 	public ToggleCommand StatusBar { get; }
 	public ToggleCommand ToolBox { get; }
+	// Impasto: floating Colors window, matching Paint.NET's palette window.
+	public ToggleCommand Colors { get; }
+	public ToggleCommand ColorsFloating { get; }
 	public ToggleCommand Rulers { get; }
 	public Gio.SimpleAction RulerMetric { get; }
 	public Gio.SimpleAction ColorScheme { get; }
@@ -144,6 +147,18 @@ public sealed class ViewActions
 			null,
 			null);
 
+		Colors = new ToggleCommand (
+			"Colors",
+			Translations.GetString ("Colors"),
+			null,
+			null);
+
+		ColorsFloating = new ToggleCommand (
+			"ColorsFloating",
+			Translations.GetString ("Float Colors"),
+			null,
+			null);
+
 		Rulers = new ToggleCommand (
 			"Rulers",
 			Translations.GetString ("Rulers"),
@@ -176,6 +191,8 @@ public sealed class ViewActions
 		ToolWindows.Value = true;
 		StatusBar.Value = true;
 		ToolBox.Value = true;
+		Colors.Value = true;
+		ColorsFloating.Value = false; // Docked in the bottom left by default, like Pinta.
 
 		this.chrome = chrome;
 		this.workspace = workspace;
@@ -235,6 +252,8 @@ public sealed class ViewActions
 		show_hide_menu.AppendItem (MenuBar.CreateMenuItem ());
 		show_hide_menu.AppendItem (StatusBar.CreateMenuItem ());
 		show_hide_menu.AppendItem (ToolBox.CreateMenuItem ());
+		show_hide_menu.AppendItem (Colors.CreateMenuItem ());
+		show_hide_menu.AppendItem (ColorsFloating.CreateMenuItem ());
 		show_hide_menu.AppendItem (ImageTabs.CreateMenuItem ());
 		show_hide_menu.AppendItem (ToolWindows.CreateMenuItem ());
 		if (mainToolbarPresent) show_hide_menu.AppendItem (ToolBar.CreateMenuItem ());
@@ -270,6 +289,8 @@ public sealed class ViewActions
 			MenuBar,
 			StatusBar,
 			ToolBox,
+			Colors,
+			ColorsFloating,
 			ImageTabs,
 			ToolWindows,
 		]);

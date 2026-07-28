@@ -39,6 +39,8 @@ internal sealed class MainWindow
 	readonly Adw.Application app;
 	// NRT - Created in OnActivated
 	WindowShell window_shell = null!;
+	Gtk.Window colors_window = null!; // Impasto: floating Colors palette.
+	ToolBoxWidget toolbox = null!; // Impasto: needed to persist pinned tools.
 	Dock dock = null!;
 	Gio.Menu menu_bar = null!;
 	Gio.Menu image_menu = null!;
@@ -54,7 +56,7 @@ internal sealed class MainWindow
 		this.app = app;
 
 		// Set the human-readable application name, used by e.g. gtk_recent_manager_add_item().
-		GLib.Functions.SetApplicationName (Translations.GetString ("Pinta"));
+		GLib.Functions.SetApplicationName (Translations.GetString ("Impasto"));
 	}
 
 	/// <summary>
@@ -341,7 +343,7 @@ internal sealed class MainWindow
 		window_shell = new WindowShell (
 			app,
 			"Pinta.GenericWindow",
-			"Pinta",
+			"Impasto",
 			width,
 			height,
 			useMenuBar: IsUsingMenuBar (),
@@ -352,6 +354,7 @@ internal sealed class MainWindow
 
 		CreatePanels ();
 		CreateStatusBar ();
+		CreateColorsWindow ();
 
 		app.AddWindow (window_shell.Window);
 
@@ -361,8 +364,9 @@ internal sealed class MainWindow
 
 	private bool IsUsingMenuBar ()
 	{
-		// On macOS the global menubar should be used by default.
-		bool use_menubar_default = SystemManager.GetOperatingSystem () == OS.Mac;
+		// Impasto: a real menu bar is the default everywhere, matching Paint.NET.
+		// (Upstream Pinta defaults to the hamburger/header bar except on macOS.)
+		const bool use_menubar_default = true;
 
 		return PintaCore.Settings.GetSetting (SettingNames.MENUBAR_SHOWN, use_menubar_default);
 	}
@@ -478,15 +482,86 @@ internal sealed class MainWindow
 	{
 		Gtk.Box statusbar = window_shell.CreateStatusBar ("statusbar");
 
-		StatusBarColorPaletteWidget widget = StatusBarColorPaletteWidget.New (PintaCore.Chrome, PintaCore.Palette, PintaCore.System);
-		widget.Hexpand = true;
-		widget.Halign = Gtk.Align.Fill;
-
-		statusbar.Append (widget);
-
+		// Impasto: the palette lives in a floating Colors window (see CreateColorsWindow),
+		// not in the status bar, matching Paint.NET.
 		PintaCore.Actions.CreateStatusBar (statusbar, PintaCore.Workspace);
 
 		PintaCore.Chrome.InitializeStatusBar (statusbar);
+	}
+
+	/// <summary>
+	/// Impasto: a floating, always-on-top-of-the-main-window Colors palette, like Paint.NET's.
+	/// Closing it only hides it; View -> Colors brings it back.
+	/// </summary>
+	private void CreateColorsWindow ()
+	{
+		StatusBarColorPaletteWidget palette = StatusBarColorPaletteWidget.New (
+			PintaCore.Chrome,
+			PintaCore.Palette,
+			PintaCore.System);
+
+		palette.Hexpand = true;
+		palette.Halign = Gtk.Align.Fill;
+		palette.MarginTop = 6;
+		palette.MarginBottom = 6;
+		palette.MarginStart = 6;
+		palette.MarginEnd = 6;
+
+		// Paint.NET's "More >>": opens the full picker, which already has the colour wheel,
+		// HSV/RGB sliders and hex entry. Clicking a swatch above opens the same dialog.
+		Gtk.Button more = Gtk.Button.NewWithLabel (Translations.GetString ("More >>"));
+		more.Halign = Gtk.Align.End;
+		more.MarginEnd = 6;
+		more.MarginBottom = 6;
+		more.OnClicked += (_, _) => ShowColorPicker ();
+
+		Gtk.Box contents = Gtk.Box.New (Gtk.Orientation.Vertical, 0);
+		contents.Append (palette);
+		contents.Append (more);
+
+		colors_window = Gtk.Window.New ();
+		colors_window.Title = Translations.GetString ("Colors");
+		colors_window.TransientFor = window_shell.Window;
+		colors_window.DestroyWithParent = true;
+		colors_window.Resizable = true;
+		colors_window.DefaultWidth = 480;
+		colors_window.SetChild (contents);
+
+		// Hide instead of destroying, so the widget survives to be shown again.
+		colors_window.OnCloseRequest += (_, _) => {
+			PintaCore.Actions.View.Colors.Value = false;
+			return true;
+		};
+
+		PintaCore.Actions.View.Colors.Toggled += (value, _) => {
+			if (value)
+				colors_window.Present ();
+			else
+				colors_window.Hide ();
+		};
+
+		// Shown by default; LoadUserSettings () hides it again if that was the last state.
+		// Don't rely on the Toggled event for the initial show, since Colors.Value already
+		// defaults to true and re-setting it to true fires nothing.
+		colors_window.Present ();
+	}
+
+	private async void ShowColorPicker ()
+	{
+		using ColorPickerDialog dialog = ColorPickerDialog.New (
+			PintaCore.Chrome.MainWindow,
+			PintaCore.Palette,
+			new PaletteColors (PintaCore.Palette.PrimaryColor, PintaCore.Palette.SecondaryColor),
+			primarySelected: true,
+			true,
+			Translations.GetString ("Colors"));
+
+		if (await dialog.RunAsync () != Gtk.ResponseType.Ok)
+			return;
+
+		PaletteColors chosen = (PaletteColors) dialog.Colors;
+		PintaCore.Palette.PrimaryColor = chosen.Primary;
+		PintaCore.Palette.SecondaryColor = chosen.Secondary;
 	}
 
 	private void CreatePanels ()
@@ -498,6 +573,7 @@ internal sealed class MainWindow
 	private void CreateDockAndPads (Gtk.Box container)
 	{
 		ToolBoxWidget toolbox = ToolBoxWidget.New (PintaCore.Tools);
+		this.toolbox = toolbox;
 
 		Gtk.ScrolledWindow toolbox_scroll = Gtk.ScrolledWindow.New ();
 		toolbox_scroll.Child = toolbox;
@@ -544,6 +620,8 @@ internal sealed class MainWindow
 		PintaCore.Actions.View.MenuBar.Value = IsUsingMenuBar ();
 		PintaCore.Actions.View.StatusBar.Value = PintaCore.Settings.GetSetting (SettingNames.STATUSBAR_SHOWN, true);
 		PintaCore.Actions.View.ToolBox.Value = PintaCore.Settings.GetSetting (SettingNames.TOOLBOX_SHOWN, true);
+		PintaCore.Actions.View.Colors.Value = PintaCore.Settings.GetSetting (SettingNames.COLORS_SHOWN, true);
+		toolbox.PinnedTools = PintaCore.Settings.GetSetting (SettingNames.TOOLBOX_PINNED, "");
 		PintaCore.Actions.View.ImageTabs.Value = PintaCore.Settings.GetSetting (SettingNames.IMAGE_TABS_SHOWN, true);
 		PintaCore.Actions.View.ToolWindows.Value = PintaCore.Settings.GetSetting (SettingNames.TOOL_WINDOWS_SHOWN, true);
 
@@ -577,6 +655,8 @@ internal sealed class MainWindow
 		PintaCore.Settings.PutSetting (SettingNames.MENUBAR_SHOWN, PintaCore.Actions.View.MenuBar.Value);
 		PintaCore.Settings.PutSetting (SettingNames.STATUSBAR_SHOWN, PintaCore.Actions.View.StatusBar.Value);
 		PintaCore.Settings.PutSetting (SettingNames.TOOLBOX_SHOWN, PintaCore.Actions.View.ToolBox.Value);
+		PintaCore.Settings.PutSetting (SettingNames.COLORS_SHOWN, PintaCore.Actions.View.Colors.Value);
+		PintaCore.Settings.PutSetting (SettingNames.TOOLBOX_PINNED, toolbox.PinnedTools);
 		PintaCore.Settings.PutSetting (SettingNames.LAST_DIALOG_DIRECTORY, PintaCore.RecentFiles.LastDialogDirectory?.GetUri () ?? "");
 
 		if (PintaCore.Tools.CurrentTool is BaseTool tool)

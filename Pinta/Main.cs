@@ -68,7 +68,7 @@ internal sealed class MainClass
 		};
 
 		// Note the implicit '--version' argument uses the InformationalVersion from the assembly.
-		var root_command = new RootCommand (Translations.GetString ("Pinta"));
+		var root_command = new RootCommand (Translations.GetString ("Impasto"));
 		root_command.Options.Add (threads_option);
 		root_command.Arguments.Add (files_arg);
 		root_command.Options.Add (debug_option);

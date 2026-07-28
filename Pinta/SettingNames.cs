@@ -18,6 +18,9 @@ internal static class SettingNames
 	internal const string MENUBAR_SHOWN = "menubar-shown";
 	internal const string STATUSBAR_SHOWN = "statusbar-shown";
 	internal const string TOOLBOX_SHOWN = "toolbox-shown";
+	internal const string COLORS_SHOWN = "colors-shown";
+	internal const string TOOLBOX_PINNED = "toolbox-pinned";
+	internal const string COLORS_FLOATING = "colors-floating";
 	internal const string LAST_DIALOG_DIRECTORY = "last-dialog-directory";
 	internal const string LAST_SELECTED_TOOL = "last-selected-tool";
 

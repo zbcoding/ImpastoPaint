@@ -49,7 +49,7 @@ public static class PintaCore
 	/// Unique identifier for the application.
 	/// This is used for GApplication and also must match the .desktop file.
 	/// </summary>
-	public const string ApplicationId = "com.github.PintaProject.Pinta";
+	public const string ApplicationId = "com.github.zbcoding.Impasto";
 
 	/// <summary>
 	/// The current version number of Pinta.

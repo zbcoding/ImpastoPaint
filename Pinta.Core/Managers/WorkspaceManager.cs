@@ -368,9 +368,9 @@ public sealed class WorkspaceManager : IWorkspaceService
 	internal void ResetTitle ()
 	{
 		if (HasOpenDocuments)
-			chrome_manager.MainWindow.Title = $"{ActiveDocument.DisplayName}{(ActiveDocument.IsDirty ? "*" : "")} - Pinta";
+			chrome_manager.MainWindow.Title = $"{ActiveDocument.DisplayName}{(ActiveDocument.IsDirty ? "*" : "")} - Impasto";
 		else
-			chrome_manager.MainWindow.Title = "Pinta";
+			chrome_manager.MainWindow.Title = "Impasto";
 	}
 
 	public void SetActiveDocument (int index)
@@ -438,7 +438,7 @@ public sealed class WorkspaceManager : IWorkspaceService
 		StringBuilder body = new ();
 
 		body.AppendLine (Translations.GetString ("Could not open file: {0}", filename));
-		body.AppendLine (Translations.GetString ("Pinta supports the following file formats:"));
+		body.AppendLine (Translations.GetString ("Impasto supports the following file formats:"));
 
 		var extensions =
 			from format in image_formats.Formats

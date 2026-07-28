@@ -122,7 +122,7 @@ public sealed class SettingsManager : ISettingsService
 	public string GetUserSettingsDirectory ()
 	{
 		var appdata_folder = Environment.GetFolderPath (Environment.SpecialFolder.ApplicationData, Environment.SpecialFolderOption.Create);
-		var settings_directory = Path.Combine (appdata_folder, "Pinta");
+		var settings_directory = Path.Combine (appdata_folder, "Impasto");
 
 		// If someone is getting this, they probably are going to need
 		// the directory created, so just handle that here.

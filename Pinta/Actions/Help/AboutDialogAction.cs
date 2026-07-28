@@ -62,7 +62,7 @@ internal sealed class AboutDialogAction : IActionHandler
 		using Adw.AboutWindow dialog = Adw.AboutWindow.New ();
 		dialog.TransientFor = chrome.MainWindow;
 		dialog.Title = Translations.GetString ("About Pinta");
-		dialog.ApplicationName = Translations.GetString ("Pinta");
+		dialog.ApplicationName = Translations.GetString ("Impasto");
 		dialog.ApplicationIcon = Icons.Pinta;
 		dialog.Version = application_version;
 		dialog.Website = "https://www.pinta-project.com";

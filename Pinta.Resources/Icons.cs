@@ -55,6 +55,8 @@ public static class StandardIcons
 
 	public const string GoPrevious = "go-previous-symbolic";
 
+	public const string GoNext = "go-next-symbolic";
+
 	public const string Pin = "pin-symbolic";
 
 	public const string HelpAbout = "help-about-symbolic";
@@ -199,13 +201,13 @@ public static class Icons
 	public const string JoinRound = "join-round-symbolic";
 	public const string JoinBevel = "join-bevel-symbolic";
 
-	public const string LayerDelete = "layers-remove-layer-symbolic";
-	public const string LayerDuplicate = "layers-duplicate-layer-symbolic";
+	public const string LayerDelete = "layers-remove-layer";
+	public const string LayerDuplicate = "layers-duplicate-layer";
 	public const string LayerFlipHorizontal = ImageFlipHorizontal;
 	public const string LayerFlipVertical = ImageFlipVertical;
 	public const string LayerImport = "layer-import-symbolic";
-	public const string LayerMergeDown = "layers-merge-down-symbolic";
-	public const string LayerNew = "layers-add-layer-symbolic";
+	public const string LayerMergeDown = "layers-merge-down";
+	public const string LayerNew = "layers-add-layer";
 	public const string LayerProperties = "document-properties-symbolic";
 	public const string LayerRotateZoom = "layers-rotate-zoom-symbolic";
 
@@ -242,7 +244,10 @@ public static class Icons
 	public const string TextVariantTitleCaps = "text-variant-title-caps-symbolic";
 
 	public const string ToolCloneStamp = "tool-clonestamp-symbolic";
+	public const string ToolHealingBrush = "tool-healingbrush-symbolic";
+	public const string ToolSmartPatch = "tool-smartpatch-symbolic";
 	public const string ToolColorPicker = "tool-colorpicker-symbolic";
+	public const string ToolColorPickerAllLayers = "tool-colorpicker-all-layers-symbolic";
 	public const string ToolColorPickerPreviousTool = "go-previous-symbolic";
 	public const string ToolEllipse = "tool-ellipse-symbolic";
 	public const string ToolEraser = "tool-eraser-symbolic";

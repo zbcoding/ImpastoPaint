@@ -118,8 +118,19 @@ public sealed partial class LayersListView
 		try {
 			changing_selection = true;
 
-			int model_idx = (int) selection_model.Selected;
-			int doc_idx = active_document.Layers.Count () - 1 - model_idx;
+			uint sel = selection_model.Selected;
+			// GTK_INVALID_LIST_POSITION is uint.MaxValue.
+			if (sel == uint.MaxValue || sel >= list_model.GetNItems ())
+				return;
+
+			int model_idx = (int) sel;
+			int count = active_document.Layers.Count ();
+			if (count == 0)
+				return;
+
+			int doc_idx = count - 1 - model_idx;
+			if (doc_idx < 0 || doc_idx >= count)
+				return;
 
 			if (active_document.Layers.CurrentUserLayerIndex != doc_idx) {
 				active_document.Layers.SetCurrentUserLayer (doc_idx);
@@ -133,7 +144,7 @@ public sealed partial class LayersListView
 		Gtk.ListView sender,
 		Gtk.ListView.ActivateSignalArgs args)
 	{
-		// Open the layer properties dialog
+		// Double-click opens Layer Properties (rename is via right-click menu, so DnD is not hindered).
 		PintaCore.Actions.Layers.Properties.Activate ();
 	}
 
@@ -197,8 +208,20 @@ public sealed partial class LayersListView
 	{
 		ArgumentNullException.ThrowIfNull (active_document);
 
-		int index = active_document.Layers.Count () - 1 - e.Index;
-		list_model.Insert ((uint) index, LayersListViewItem.New (active_document, active_document.Layers[e.Index]));
+		int count = active_document.Layers.Count ();
+		if (e.Index < 0 || e.Index >= count)
+			return;
+
+		int index = count - 1 - e.Index;
+		if (index < 0) index = 0;
+		if (index > (int) list_model.GetNItems ()) index = (int) list_model.GetNItems ();
+
+		try {
+			list_model.Insert ((uint) index, LayersListViewItem.New (active_document, active_document.Layers[e.Index]));
+		} catch {
+			// Fallback: rebuild on unexpected state.
+			return;
+		}
 		list_view.ScrollToSelectedItem (selection_model);
 	}
 
@@ -206,8 +229,19 @@ public sealed partial class LayersListView
 	{
 		ArgumentNullException.ThrowIfNull (active_document);
 
+		int count = active_document.Layers.Count (); // count after removal
+		// e.Index is the doc index that was removed.
+		int modelIndex = count - e.Index;
+		// Clamp to valid range; if out of range, ignore (move is handled via Added+Removed pair).
+		if (modelIndex < 0 || modelIndex >= (int) list_model.GetNItems ())
+			return;
+
 		// Note: don't need to subtract 1 because the layer has already been removed from the document.
-		list_model.Remove ((uint) (active_document.Layers.Count () - e.Index));
+		try {
+			list_model.Remove ((uint) modelIndex);
+		} catch {
+			// Ignore if already removed via move sequence.
+		}
 		list_view.ScrollToSelectedItem (selection_model);
 	}
 
@@ -215,7 +249,18 @@ public sealed partial class LayersListView
 	{
 		ArgumentNullException.ThrowIfNull (active_document);
 
-		int index = active_document.Layers.Count () - 1 - active_document.Layers.CurrentUserLayerIndex;
+		int count = active_document.Layers.Count ();
+		if (count == 0)
+			return;
+
+		int cur = active_document.Layers.CurrentUserLayerIndex;
+		if (cur < 0 || cur >= count)
+			return;
+
+		int index = count - 1 - cur;
+		if (index < 0 || index >= (int) list_model.GetNItems ())
+			return;
+
 		selection_model.SelectItem ((uint) index, unselectRest: true);
 		list_view.ScrollToSelectedItem (selection_model);
 	}

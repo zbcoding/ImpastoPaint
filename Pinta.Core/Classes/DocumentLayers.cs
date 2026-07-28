@@ -356,7 +356,7 @@ public sealed class DocumentLayers
 	/// </summary>
 	public void MoveCurrentLayerUp ()
 	{
-		if (CurrentUserLayerIndex == user_layers.Count)
+		if (user_layers.Count == 0 || CurrentUserLayerIndex < 0 || CurrentUserLayerIndex >= user_layers.Count - 1)
 			throw new InvalidOperationException ("Cannot move layer up because current layer is the top layer.");
 
 		UserLayer layer = CurrentUserLayer;

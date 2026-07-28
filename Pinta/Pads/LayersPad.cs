@@ -67,14 +67,22 @@ internal sealed class LayersPad : IDockPad
 
 		hamburger_button.Direction = Gtk.ArrowType.Up;
 
+		// ponytail: symbolic icons render at 16px, so 24px = 1.5x bigger
+		Gtk.Button move_up = layer_actions.MoveLayerUp.CreateDockToolBarItem ();
+		Gtk.Button move_down = layer_actions.MoveLayerDown.CreateDockToolBarItem ();
+		move_up.Child = Gtk.Image.NewFromIconName (Resources.StandardIcons.LayerMoveUp);
+		((Gtk.Image) move_up.Child).PixelSize = 24;
+		move_down.Child = Gtk.Image.NewFromIconName (Resources.StandardIcons.LayerMoveDown);
+		((Gtk.Image) move_down.Child).PixelSize = 24;
+
 		Gtk.Box layers_tb = layers_item.AddToolBar ();
 		layers_tb.AppendMultiple ([
 			layer_actions.AddNewLayer.CreateDockToolBarItem (),
 			layer_actions.DeleteLayer.CreateDockToolBarItem (),
 			layer_actions.DuplicateLayer.CreateDockToolBarItem (),
 			layer_actions.MergeLayerDown.CreateDockToolBarItem (),
-			layer_actions.MoveLayerUp.CreateDockToolBarItem (),
-			layer_actions.MoveLayerDown.CreateDockToolBarItem (),
+			move_up,
+			move_down,
 			hamburger_button
 		]);
 

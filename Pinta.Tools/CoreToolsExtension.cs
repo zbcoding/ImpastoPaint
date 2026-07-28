@@ -64,6 +64,7 @@ public sealed class CoreToolsExtension : IExtension
 		PintaCore.Tools.AddTool (new PaintBucketTool (services));
 		PintaCore.Tools.AddTool (new GradientTool (services));
 		PintaCore.Tools.AddTool (new ColorPickerTool (services));
+		PintaCore.Tools.AddTool (new ColorPickerAllLayersTool (services));
 		PintaCore.Tools.AddTool (new TextTool (services));
 		PintaCore.Tools.AddTool (new LineCurveTool (services));
 		PintaCore.Tools.AddTool (new RectangleTool (services));
@@ -71,7 +72,9 @@ public sealed class CoreToolsExtension : IExtension
 		PintaCore.Tools.AddTool (new EllipseTool (services));
 		PintaCore.Tools.AddTool (new FreeformShapeTool (services));
 		PintaCore.Tools.AddTool (new CloneStampTool (services));
+		PintaCore.Tools.AddTool (new HealingBrushTool (services));
 		PintaCore.Tools.AddTool (new RecolorTool (services));
+		PintaCore.Tools.AddTool (new SmartPatchTool (services));
 	}
 
 	public void Uninitialize ()
@@ -96,6 +99,7 @@ public sealed class CoreToolsExtension : IExtension
 		PintaCore.Tools.RemoveInstanceOfTool<PaintBucketTool> ();
 		PintaCore.Tools.RemoveInstanceOfTool<GradientTool> ();
 		PintaCore.Tools.RemoveInstanceOfTool<ColorPickerTool> ();
+		PintaCore.Tools.RemoveInstanceOfTool<ColorPickerAllLayersTool> ();
 		PintaCore.Tools.RemoveInstanceOfTool<TextTool> ();
 		PintaCore.Tools.RemoveInstanceOfTool<LineCurveTool> ();
 		PintaCore.Tools.RemoveInstanceOfTool<RectangleTool> ();
@@ -103,7 +107,9 @@ public sealed class CoreToolsExtension : IExtension
 		PintaCore.Tools.RemoveInstanceOfTool<EllipseTool> ();
 		PintaCore.Tools.RemoveInstanceOfTool<FreeformShapeTool> ();
 		PintaCore.Tools.RemoveInstanceOfTool<CloneStampTool> ();
+		PintaCore.Tools.RemoveInstanceOfTool<HealingBrushTool> ();
 		PintaCore.Tools.RemoveInstanceOfTool<RecolorTool> ();
+		PintaCore.Tools.RemoveInstanceOfTool<SmartPatchTool> ();
 	}
 	#endregion
 }

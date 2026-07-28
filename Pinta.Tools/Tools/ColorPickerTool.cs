@@ -32,7 +32,7 @@ using Pinta.Core;
 
 namespace Pinta.Tools;
 
-public sealed class ColorPickerTool : BaseTool
+public class ColorPickerTool : BaseTool
 {
 	private readonly IPaletteService palette;
 	private readonly IToolService tools;
@@ -56,11 +56,14 @@ public sealed class ColorPickerTool : BaseTool
 
 	public override string Name => Translations.GetString ("Color Picker");
 	public override string Icon => Pinta.Resources.Icons.ToolColorPicker;
-	public override string StatusBarText => Translations.GetString ("Left click to set primary color.\nRight click to set secondary color.");
+	public override string StatusBarText => Translations.GetString ("Selects the color on the current layer and current selected area.") + "\n" + Translations.GetString ("Left click to set primary color.\nRight click to set secondary color.");
 	public override Gdk.Key ShortcutKey => new (Gdk.Constants.KEY_K);
 	public override int Priority => 33;
 	private int SampleSize => SampleSizeDropDown.SelectedItem.GetTagOrDefault (1);
-	private bool SampleLayerOnly => SampleTypeDropDown.SelectedItem.GetTagOrDefault (false);
+	// Overridden by the All Layers picker, which always samples the composited image.
+	protected virtual bool SampleLayerOnly => SampleTypeDropDown.SelectedItem.GetTagOrDefault (false);
+	// The All Layers picker hides the Layer/Image selector, since it's always Image.
+	protected virtual bool ShowSampleTypeSelector => true;
 
 	public override Gdk.Cursor DefaultCursor {
 		get {
@@ -84,7 +87,8 @@ public sealed class ColorPickerTool : BaseTool
 
 		tb.Append (SamplingLabel);
 		tb.Append (SampleSizeDropDown);
-		tb.Append (SampleTypeDropDown);
+		if (ShowSampleTypeSelector)
+			tb.Append (SampleTypeDropDown);
 
 		tb.Append (Separator);
 

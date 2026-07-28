@@ -38,6 +38,7 @@ public sealed partial class DockPanel
 		public Gtk.Paned Pane { get; }
 		public Gtk.ToggleButton ReopenButton { get; }
 		private readonly Gtk.Popover popover;
+		private Gtk.Window? float_window;
 		public DockPanelItem (DockItem item)
 		{
 			Gtk.Paned pane = Gtk.Paned.New (Gtk.Orientation.Vertical);
@@ -97,6 +98,65 @@ public sealed partial class DockPanel
 			dock_bar.Append (ReopenButton);
 			ReopenButton.Active = false;
 		}
+
+		public void Float (Gtk.Box dockBar)
+		{
+			redock_bar = dockBar;
+
+			Gtk.Window? parent = Item.GetRoot () as Gtk.Window;
+
+			// Detach from wherever the item currently lives (pane or popover).
+			dockBar.RemoveIfChild (ReopenButton);
+			popover.Popdown ();
+			if (popover.Child == Item)
+				popover.Child = null;
+			if (Pane.StartChild == Item)
+				Pane.StartChild = null;
+
+			Item.SetFloating (true);
+
+			if (float_window is null) {
+				float_window = Gtk.Window.New ();
+				float_window.Title = Item.Label;
+				float_window.DestroyWithParent = true;
+				float_window.SetDefaultSize (250, 350);
+
+				// Only a close button - closing re-docks the item maximized.
+				Gtk.HeaderBar header = Gtk.HeaderBar.New ();
+				header.DecorationLayout = ":close";
+				float_window.Titlebar = header;
+				// Closing the floating window re-docks the item.
+				float_window.OnCloseRequest += (_, _) => {
+					Redock ();
+					return true;
+				};
+			}
+
+			float_window.TransientFor = parent;
+			// Without an application, "app." actions (e.g. the layer toolbar
+			// buttons) can't resolve inside the floating window.
+			float_window.Application = parent?.Application;
+			float_window.SetChild (Item);
+			float_window.Present ();
+		}
+
+		private Gtk.Box? redock_bar;
+
+		public void Redock ()
+		{
+			if (float_window is null || redock_bar is null)
+				return;
+
+			if (float_window.Child == Item)
+				float_window.Child = null;
+			float_window.SetVisible (false);
+
+			Item.SetFloating (false);
+			// Flips the header back to the minimize button if the item was
+			// floated from the minimized state; no-op (and no event) otherwise.
+			Item.Maximize ();
+			UpdateOnMaximize (redock_bar);
+		}
 	}
 
 	/// <summary>
@@ -142,6 +202,20 @@ public sealed partial class DockPanel
 				items[index - 1].Pane.PositionSet = false;
 		};
 		item.MaximizeClicked += (_, _) => panelItem.UpdateOnMaximize (dock_bar);
+
+		// Defer to idle: floating reparents the item itself, which must not happen
+		// while GTK is still dispatching the click on a button inside that item.
+		item.FloatClicked += (_, _) => GLib.Functions.IdleAdd (
+			GLib.Constants.PRIORITY_DEFAULT_IDLE,
+			() => {
+				panelItem.Float (dock_bar);
+
+				int index = items.IndexOf (panelItem);
+				if (index > 0)
+					items[index - 1].Pane.PositionSet = false;
+
+				return false;
+			});
 	}
 
 	public void SaveSettings (ISettingsService settings)

@@ -76,6 +76,7 @@ public sealed class TextTool : BaseTool
 	//Store the most recent mouse position.
 	private PointI last_mouse_position = new (0, 0);
 
+	public override bool UsesPaintColors => true;
 	public override string Name
 		=> Translations.GetString ("Text");
 

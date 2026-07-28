@@ -55,6 +55,8 @@ public static class StandardIcons
 
 	public const string GoPrevious = "go-previous-symbolic";
 
+	public const string Pin = "pin-symbolic";
+
 	public const string HelpAbout = "help-about-symbolic";
 	public const string HelpBrowser = "help-browser-symbolic";
 

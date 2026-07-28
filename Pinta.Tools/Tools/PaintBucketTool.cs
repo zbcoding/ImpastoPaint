@@ -41,6 +41,7 @@ public sealed class PaintBucketTool : FloodTool
 		palette = services.GetService<IPaletteService> ();
 	}
 
+	public override bool UsesPaintColors => true;
 	public override string Name => Translations.GetString ("Paint Bucket");
 	public override string Icon => Pinta.Resources.Icons.ToolPaintBucket;
 	public override string StatusBarText => Translations.GetString (

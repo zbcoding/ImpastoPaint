@@ -40,6 +40,14 @@ internal sealed class MainWindow
 	// NRT - Created in OnActivated
 	WindowShell window_shell = null!;
 	Gtk.Window colors_window = null!; // Impasto: floating Colors palette.
+	Gtk.Box colors_dock = null!;      // Impasto: its home in the status bar when docked.
+	Gtk.Box colors_contents = null!;  // Impasto: palette + wheel + "More >>" when floating.
+	StatusBarColorPaletteWidget colors_palette = null!;
+	ColorWheelWidget colors_wheel = null!; // Impasto: floating or shown in the dock popover.
+	Gtk.Popover colors_wheel_popover = null!;
+	Gtk.Button colors_more_button = null!;
+	ColorSlidersWidget colors_sliders = null!; // Impasto: advanced section of the floating window.
+	Gtk.Button colors_back_button = null!;     // Impasto: advanced -> simple, lives in the titlebar.
 	ToolBoxWidget toolbox = null!; // Impasto: needed to persist pinned tools.
 	Dock dock = null!;
 	Gio.Menu menu_bar = null!;
@@ -482,42 +490,72 @@ internal sealed class MainWindow
 	{
 		Gtk.Box statusbar = window_shell.CreateStatusBar ("statusbar");
 
-		// Impasto: the palette lives in a floating Colors window (see CreateColorsWindow),
-		// not in the status bar, matching Paint.NET.
+		colors_dock = Gtk.Box.New (Gtk.Orientation.Horizontal, 0);
+		colors_dock.Hexpand = true;
+		colors_dock.Halign = Gtk.Align.Fill;
+		statusbar.Append (colors_dock);
+
 		PintaCore.Actions.CreateStatusBar (statusbar, PintaCore.Workspace);
 
 		PintaCore.Chrome.InitializeStatusBar (statusbar);
 	}
 
-	/// <summary>
-	/// Impasto: a floating, always-on-top-of-the-main-window Colors palette, like Paint.NET's.
-	/// Closing it only hides it; View -> Colors brings it back.
-	/// </summary>
 	private void CreateColorsWindow ()
 	{
-		StatusBarColorPaletteWidget palette = StatusBarColorPaletteWidget.New (
+		colors_palette = StatusBarColorPaletteWidget.New (
 			PintaCore.Chrome,
 			PintaCore.Palette,
 			PintaCore.System);
+		colors_palette.Hexpand = true;
+		colors_palette.Halign = Gtk.Align.Fill;
 
-		palette.Hexpand = true;
-		palette.Halign = Gtk.Align.Fill;
-		palette.MarginTop = 6;
-		palette.MarginBottom = 6;
-		palette.MarginStart = 6;
-		palette.MarginEnd = 6;
+		colors_wheel = ColorWheelWidget.New (PintaCore.Palette);
+		colors_wheel.MarginStart = 6;
+		colors_wheel.MarginEnd = 6;
 
-		// Paint.NET's "More >>": opens the full picker, which already has the colour wheel,
-		// HSV/RGB sliders and hex entry. Clicking a swatch above opens the same dialog.
-		Gtk.Button more = Gtk.Button.NewWithLabel (Translations.GetString ("More >>"));
-		more.Halign = Gtk.Align.End;
-		more.MarginEnd = 6;
-		more.MarginBottom = 6;
-		more.OnClicked += (_, _) => ShowColorPicker ();
+		// "More >>" expands the floating window in place instead of opening the modal
+		// picker - the advanced section is the same sliders, applied live.
+		colors_more_button = Gtk.Button.NewWithLabel (Translations.GetString ("More >>"));
+		colors_more_button.Halign = Gtk.Align.End;
+		colors_more_button.MarginEnd = 6;
+		colors_more_button.MarginBottom = 6;
+		colors_more_button.OnClicked += (_, _) => SetColorsAdvanced (true);
 
-		Gtk.Box contents = Gtk.Box.New (Gtk.Orientation.Vertical, 0);
-		contents.Append (palette);
-		contents.Append (more);
+		colors_sliders = ColorSlidersWidget.New (PintaCore.Palette);
+		colors_sliders.MarginStart = 6;
+		colors_sliders.MarginEnd = 6;
+		colors_sliders.MarginBottom = 6;
+		colors_sliders.Visible = false;
+
+		colors_contents = Gtk.Box.New (Gtk.Orientation.Vertical, 0);
+		colors_contents.Append (colors_sliders);
+		colors_contents.Append (colors_more_button);
+
+		colors_wheel_popover = Gtk.Popover.New ();
+		colors_wheel_popover.Autohide = true;
+		colors_wheel_popover.Position = Gtk.PositionType.Top;
+		colors_wheel_popover.SetParent (colors_palette);
+		colors_palette.ColorWheelClicked += (_, _) => {
+			RectangleD r = colors_palette.ColorWheelButtonRect;
+			colors_wheel_popover.PointingTo = new Gdk.Rectangle {
+				X = (int) r.X,
+				Y = (int) r.Y,
+				Width = (int) r.Width,
+				Height = (int) r.Height,
+			};
+			colors_wheel_popover.Popup ();
+		};
+		// Defer to idle: floating reparents colors_palette itself, which must not happen
+		// while GTK is still dispatching the click on that same widget.
+		colors_palette.FloatColorsClicked += (_, _) => GLib.Functions.IdleAdd (
+			GLib.Constants.PRIORITY_DEFAULT_IDLE,
+			() => {
+				// Call directly - the Toggled event only fires on value *changes*,
+				// so a stale value would otherwise leave the button dead.
+				PintaCore.Actions.View.ColorsFloating.Value = true;
+				SetColorsFloating (true);
+				return false;
+			});
 
 		colors_window = Gtk.Window.New ();
 		colors_window.Title = Translations.GetString ("Colors");
@@ -525,43 +563,102 @@ internal sealed class MainWindow
 		colors_window.DestroyWithParent = true;
 		colors_window.Resizable = true;
 		colors_window.DefaultWidth = 480;
-		colors_window.SetChild (contents);
+		// Set the child once, like the original working floating window; floating just
+		// moves the palette/wheel in and out of colors_contents.
+		colors_window.SetChild (colors_contents);
 
-		// Hide instead of destroying, so the widget survives to be shown again.
+		// Only a close button - closing the floating window re-docks the colors.
+		// In advanced mode a back arrow appears on the left to return to the
+		// simple wheel-only view.
+		Gtk.HeaderBar colors_header = Gtk.HeaderBar.New ();
+		colors_header.DecorationLayout = ":close";
+
+		colors_back_button = Gtk.Button.NewFromIconName (Resources.StandardIcons.GoPrevious);
+		colors_back_button.TooltipText = Translations.GetString ("Back to simple colors");
+		colors_back_button.Visible = false;
+		colors_back_button.OnClicked += (_, _) => SetColorsAdvanced (false);
+		colors_header.PackStart (colors_back_button);
+
+		colors_window.Titlebar = colors_header;
+
 		colors_window.OnCloseRequest += (_, _) => {
-			PintaCore.Actions.View.Colors.Value = false;
+			SetColorsAdvanced (false);
+			PintaCore.Actions.View.ColorsFloating.Value = false;
+			SetColorsFloating (false);
 			return true;
 		};
 
-		PintaCore.Actions.View.Colors.Toggled += (value, _) => {
-			if (value)
-				colors_window.Present ();
-			else
-				colors_window.Hide ();
-		};
+		PintaCore.Actions.View.Colors.Toggled += (_, _) => UpdateColorsVisibility ();
+		PintaCore.Actions.View.ColorsFloating.Toggled += (value, _) => SetColorsFloating (value);
 
-		// Shown by default; LoadUserSettings () hides it again if that was the last state.
-		// Don't rely on the Toggled event for the initial show, since Colors.Value already
-		// defaults to true and re-setting it to true fires nothing.
-		colors_window.Present ();
+		SetColorsFloating (PintaCore.Actions.View.ColorsFloating.Value);
 	}
 
-	private async void ShowColorPicker ()
+	private void SetColorsAdvanced (bool advanced)
 	{
-		using ColorPickerDialog dialog = ColorPickerDialog.New (
-			PintaCore.Chrome.MainWindow,
-			PintaCore.Palette,
-			new PaletteColors (PintaCore.Palette.PrimaryColor, PintaCore.Palette.SecondaryColor),
-			primarySelected: true,
-			true,
-			Translations.GetString ("Colors"));
+		colors_sliders.Visible = advanced;
+		colors_more_button.Visible = !advanced;
+		colors_back_button.Visible = advanced;
+		// Let the window shrink back down when the sliders are hidden.
+		if (!advanced)
+			colors_window.SetDefaultSize (480, -1);
+	}
 
-		if (await dialog.RunAsync () != Gtk.ResponseType.Ok)
-			return;
+	private void SetColorsFloating (bool floating)
+	{
+		// The wheel/float buttons are redundant inside the floating window.
+		colors_palette.ShowActionIcons = !floating;
 
-		PaletteColors chosen = (PaletteColors) dialog.Colors;
-		PintaCore.Palette.PrimaryColor = chosen.Primary;
-		PintaCore.Palette.SecondaryColor = chosen.Secondary;
+		if (floating) {
+			colors_wheel_popover.Popdown ();
+			if (colors_wheel_popover.Child == colors_wheel)
+				colors_wheel_popover.Child = null;
+
+			if (colors_palette.Parent == colors_dock)
+				colors_dock.Remove (colors_palette);
+
+			if (colors_wheel.Parent != colors_contents)
+				colors_contents.Prepend (colors_wheel);
+			if (colors_palette.Parent != colors_contents)
+				colors_contents.Prepend (colors_palette);
+			colors_palette.MarginTop = 6;
+			colors_palette.MarginBottom = 6;
+			colors_palette.MarginStart = 6;
+			colors_palette.MarginEnd = 6;
+		} else {
+			if (colors_palette.Parent == colors_contents)
+				colors_contents.Remove (colors_palette);
+			if (colors_wheel.Parent == colors_contents)
+				colors_contents.Remove (colors_wheel);
+
+			colors_palette.MarginTop = 0;
+			colors_palette.MarginBottom = 0;
+			colors_palette.MarginStart = 0;
+			colors_palette.MarginEnd = 0;
+			if (colors_palette.Parent != colors_dock)
+				colors_dock.Prepend (colors_palette);
+			if (colors_wheel_popover.Child != colors_wheel)
+				colors_wheel_popover.Child = colors_wheel;
+		}
+
+		UpdateColorsVisibility ();
+	}
+
+	private void UpdateColorsVisibility ()
+	{
+		bool shown = PintaCore.Actions.View.Colors.Value;
+		bool floating = PintaCore.Actions.View.ColorsFloating.Value;
+
+		if (!shown || floating)
+			colors_wheel_popover.Popdown ();
+
+		colors_dock.Visible = shown && !floating;
+		colors_contents.Visible = shown && floating;
+
+		if (shown && floating)
+			colors_window.Present ();
+		else
+			colors_window.Hide ();
 	}
 
 	private void CreatePanels ()
@@ -579,7 +676,13 @@ internal sealed class MainWindow
 		toolbox_scroll.Child = toolbox;
 		toolbox_scroll.HscrollbarPolicy = Gtk.PolicyType.Never;
 		toolbox_scroll.VscrollbarPolicy = Gtk.PolicyType.Never;
-		toolbox_scroll.HasFrame = false;
+		// Impasto: a border around the toolbox so its icons read as tools, not as loose
+		// icons next to the canvas.
+		toolbox_scroll.HasFrame = true;
+		toolbox_scroll.MarginTop = 3;
+		toolbox_scroll.MarginBottom = 3;
+		toolbox_scroll.MarginStart = 3;
+		toolbox_scroll.MarginEnd = 3;
 		toolbox_scroll.OverlayScrolling = true;
 		toolbox_scroll.WindowPlacement = Gtk.CornerType.BottomRight;
 
@@ -621,6 +724,7 @@ internal sealed class MainWindow
 		PintaCore.Actions.View.StatusBar.Value = PintaCore.Settings.GetSetting (SettingNames.STATUSBAR_SHOWN, true);
 		PintaCore.Actions.View.ToolBox.Value = PintaCore.Settings.GetSetting (SettingNames.TOOLBOX_SHOWN, true);
 		PintaCore.Actions.View.Colors.Value = PintaCore.Settings.GetSetting (SettingNames.COLORS_SHOWN, true);
+		// ponytail: floating state is intentionally not persisted - colors always start docked.
 		toolbox.PinnedTools = PintaCore.Settings.GetSetting (SettingNames.TOOLBOX_PINNED, "");
 		PintaCore.Actions.View.ImageTabs.Value = PintaCore.Settings.GetSetting (SettingNames.IMAGE_TABS_SHOWN, true);
 		PintaCore.Actions.View.ToolWindows.Value = PintaCore.Settings.GetSetting (SettingNames.TOOL_WINDOWS_SHOWN, true);

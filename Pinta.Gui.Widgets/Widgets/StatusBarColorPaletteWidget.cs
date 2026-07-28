@@ -44,12 +44,42 @@ public sealed partial class StatusBarColorPaletteWidget
 	private readonly RectangleD swap_rect = new (27, 2, 15, 15);
 	private readonly RectangleD reset_rect = new (2, 27, 15, 15);
 
+	private const int SECTION_GAP = 8;
+	private const int ICON_SIZE = 12;
+	private const int ACTION_ICON_SIZE = 28;
+
 	private IChromeService chrome = null!; // NRT - set by factory method
 	private IPaletteService palette = null!;
 	private ISystemService system = null!;
 
+	public event EventHandler? ColorWheelClicked;
+	public RectangleD ColorWheelButtonRect => color_wheel_icon_rect;
+	public event EventHandler? FloatColorsClicked;
+
+	// Impasto: the wheel / float buttons only make sense while docked - the floating
+	// window already shows the wheel, and clicking them there popped up an empty
+	// popover or did nothing.
+	private bool show_action_icons = true;
+	public bool ShowActionIcons {
+		get => show_action_icons;
+		set {
+			if (show_action_icons == value)
+				return;
+			show_action_icons = value;
+			if (GetWidth () > 0)
+				UpdateLayout (GetWidth ());
+			QueueDraw ();
+		}
+	}
+
 	private RectangleD palette_rect;
 	private RectangleD recent_palette_rect;
+	private double recent_separator_x;
+	private double palette_separator_x;
+	private RectangleD recent_icon_rect;
+	private RectangleD palette_icon_rect;
+	private RectangleD color_wheel_icon_rect;
+	private RectangleD float_colors_icon_rect;
 
 	partial void Initialize ()
 	{
@@ -69,7 +99,25 @@ public sealed partial class StatusBarColorPaletteWidget
 			click_gesture.SetState (Gtk.EventSequenceState.Claimed);
 		};
 		AddController (click_gesture);
+
+		// Track which action icon the pointer is over, to draw a hover highlight.
+		Gtk.EventControllerMotion motion = Gtk.EventControllerMotion.New ();
+		motion.OnMotion += (_, e) => {
+			WidgetElement previous = hovered_element;
+			hovered_element = GetElementAtPoint (new PointD (e.X, e.Y));
+			if (hovered_element != previous)
+				QueueDraw ();
+		};
+		motion.OnLeave += (_, _) => {
+			if (hovered_element != WidgetElement.Nothing) {
+				hovered_element = WidgetElement.Nothing;
+				QueueDraw ();
+			}
+		};
+		AddController (motion);
 	}
+
+	private WidgetElement hovered_element = WidgetElement.Nothing;
 
 	private void Configure (IChromeService chrome, IPaletteService palette, ISystemService system)
 	{
@@ -95,6 +143,16 @@ public sealed partial class StatusBarColorPaletteWidget
 		var element = GetElementAtPoint (point);
 
 		switch (element) {
+
+			case WidgetElement.ColorWheel:
+				if (button == GtkExtensions.MOUSE_LEFT_BUTTON)
+					ColorWheelClicked?.Invoke (this, EventArgs.Empty);
+				break;
+
+			case WidgetElement.FloatColors:
+				if (button == GtkExtensions.MOUSE_LEFT_BUTTON)
+					FloatColorsClicked?.Invoke (this, EventArgs.Empty);
+				break;
 
 			case WidgetElement.PrimaryColor:
 			case WidgetElement.SecondaryColor:
@@ -216,6 +274,7 @@ public sealed partial class StatusBarColorPaletteWidget
 		GetStyleContext ().GetColor (out Gdk.RGBA fg_color);
 		Cairo.Color cairo_fg_color = fg_color.ToCairoColor ();
 		DrawSwapIcon (g, cairo_fg_color);
+		DrawSectionDecorations (g);
 
 		// Draw the reset icon.
 		double square_size = 0.6 * reset_rect.Width;
@@ -297,19 +356,205 @@ public sealed partial class StatusBarColorPaletteWidget
 		g.Restore ();
 	}
 
-	private void HandleSizeAllocated (Gtk.DrawingArea.ResizeSignalArgs e)
+	private void DrawSectionDecorations (Context g)
 	{
-		int width = e.Width;
+		GetStyleContext ().GetColor (out Gdk.RGBA fg_rgba);
+		Color fg = fg_rgba.ToCairoColor ();
+		Color separator = new (fg.R, fg.G, fg.B, 0.25);
 
-		// Store the bounds allocated for our palette
+		double top = 3;
+		double bottom = 3 + PaletteWidget.SWATCH_SIZE * PaletteWidget.PALETTE_ROWS;
+
+		g.DrawLine (new PointD (recent_separator_x, top), new PointD (recent_separator_x, bottom), separator, 1);
+		g.DrawLine (new PointD (palette_separator_x, top), new PointD (palette_separator_x, bottom), separator, 1);
+
+		DrawClockIcon (g, recent_icon_rect, fg);
+		DrawPaletteIcon (g, palette_icon_rect, fg);
+
+		if (!show_action_icons)
+			return;
+
+		DrawButtonChrome (g, color_wheel_icon_rect, fg, hovered_element == WidgetElement.ColorWheel);
+		DrawColorWheelIcon (g, color_wheel_icon_rect);
+
+		DrawButtonChrome (g, float_colors_icon_rect, fg, hovered_element == WidgetElement.FloatColors);
+		DrawFloatIcon (g, float_colors_icon_rect, fg, palette.PrimaryColor);
+	}
+
+	// A rounded background + border behind an action icon, shown on hover so it reads
+	// as a clickable button (like the tool toolbar icons).
+	private static void DrawButtonChrome (Context g, RectangleD icon, Color fg, bool hovered)
+	{
+		if (!hovered)
+			return;
+
+		RectangleD box = new (icon.X - 4, icon.Y - 4, icon.Width + 8, icon.Height + 8);
+		g.FillRoundedRectangle (box, 5, new Color (fg.R, fg.G, fg.B, 0.14));
+
+		g.Save ();
+		RoundedRectanglePath (g, box, 5);
+		g.SetSourceColor (new Color (fg.R, fg.G, fg.B, 0.45));
+		g.LineWidth = 1;
+		g.Stroke ();
+		g.Restore ();
+	}
+
+	private static void RoundedRectanglePath (Context g, RectangleD r, double radius)
+	{
+		g.MoveTo (r.X + radius, r.Y);
+		g.Arc (r.X + r.Width - radius, r.Y + radius, radius, -Math.PI / 2, 0);
+		g.Arc (r.X + r.Width - radius, r.Y + r.Height - radius, radius, 0, Math.PI / 2);
+		g.Arc (r.X + radius, r.Y + r.Height - radius, radius, Math.PI / 2, Math.PI);
+		g.Arc (r.X + radius, r.Y + radius, radius, Math.PI, 3 * Math.PI / 2);
+		g.ClosePath ();
+	}
+
+	private static void DrawClockIcon (Context g, RectangleD r, Color color)
+	{
+		Color faded = new (color.R, color.G, color.B, 0.55);
+		g.DrawEllipse (r, faded, 1);
+
+		double cx = r.X + r.Width / 2;
+		double cy = r.Y + r.Height / 2;
+
+		g.Save ();
+		g.SetSourceColor (faded);
+		g.LineWidth = 1;
+		g.LineCap = LineCap.Round;
+		g.MoveTo (cx, cy);
+		g.LineTo (cx, cy - r.Height * 0.28);
+		g.MoveTo (cx, cy);
+		g.LineTo (cx + r.Width * 0.22, cy);
+		g.Stroke ();
+		g.Restore ();
+	}
+
+	private static void DrawPaletteIcon (Context g, RectangleD r, Color color)
+	{
+		Color faded = new (color.R, color.G, color.B, 0.55);
+		g.DrawEllipse (r, faded, 1);
+
+		double radius = r.Width * 0.12;
+		(double, double, Color)[] dots = [
+			(0.32, 0.32, new Color (0.85, 0.2, 0.2)),
+			(0.68, 0.30, new Color (0.9, 0.7, 0.1)),
+			(0.72, 0.62, new Color (0.2, 0.5, 0.85)),
+			(0.38, 0.68, new Color (0.2, 0.7, 0.35)),
+		];
+
+		foreach ((double fx, double fy, Color c) in dots) {
+			double dx = r.X + r.Width * fx;
+			double dy = r.Y + r.Height * fy;
+			g.FillEllipse (new RectangleD (dx - radius, dy - radius, radius * 2, radius * 2), c);
+		}
+	}
+
+	private static void DrawColorWheelIcon (Context g, RectangleD r)
+	{
+		double cx = r.X + r.Width / 2;
+		double cy = r.Y + r.Height / 2;
+		double radius = r.Width / 2;
+
+		g.Save ();
+		const int segments = 12;
+		for (int i = 0; i < segments; i++) {
+			double a0 = i * 2 * Math.PI / segments;
+			double a1 = (i + 1) * 2 * Math.PI / segments;
+			double hue = i * 360.0 / segments;
+
+			g.MoveTo (cx, cy);
+			g.Arc (cx, cy, radius, a0, a1);
+			g.ClosePath ();
+			g.SetSourceColor (Color.FromHsv (hue, 0.85, 0.95));
+			g.Fill ();
+		}
+
+		g.Arc (cx, cy, radius * 0.35, 0, 2 * Math.PI);
+		g.SetSourceColor (new Color (1, 1, 1));
+		g.Fill ();
+		g.Restore ();
+	}
+
+	private static void DrawFloatIcon (Context g, RectangleD r, Color color, Color swatch)
+	{
+		Color faded = new (color.R, color.G, color.B, 0.7);
+		g.DrawRectangle (r, faded, 1);
+		g.DrawLine (
+			new PointD (r.X, r.Y + 4),
+			new PointD (r.Right, r.Y + 4),
+			faded,
+			1);
+
+		// A color dot in the window body, so the button reads as "float the colors".
+		double radius = r.Width * 0.22;
+		double cx = r.X + r.Width / 2;
+		double cy = r.Y + 4 + (r.Height - 4) / 2;
+		g.FillEllipse (new RectangleD (cx - radius, cy - radius, radius * 2, radius * 2), swatch);
+		g.DrawEllipse (new RectangleD (cx - radius, cy - radius, radius * 2, radius * 2), faded, 1);
+	}
+
+	private void HandleSizeAllocated (Gtk.DrawingArea.ResizeSignalArgs e)
+		=> UpdateLayout (e.Width);
+
+	private void UpdateLayout (int width)
+	{
 		int recent_cols = palette.MaxRecentlyUsedColor / PaletteWidget.PALETTE_ROWS;
+		int swatch_height = PaletteWidget.SWATCH_SIZE * PaletteWidget.PALETTE_ROWS;
 
-		recent_palette_rect = new RectangleD (50, 2, PaletteWidget.SWATCH_SIZE * recent_cols, PaletteWidget.SWATCH_SIZE * PaletteWidget.PALETTE_ROWS);
-		palette_rect = new RectangleD (
-			recent_palette_rect.Right + PaletteWidget.PALETTE_MARGIN,
+		// Recent-colors section: a separator, then a small clock icon column, then the
+		// recent swatches.
+		recent_separator_x = 47;
+		recent_icon_rect = new RectangleD (
+			recent_separator_x + SECTION_GAP,
+			2 + (swatch_height - ICON_SIZE) / 2.0,
+			ICON_SIZE,
+			ICON_SIZE);
+		double recent_swatches_x = recent_icon_rect.Right + SECTION_GAP;
+
+		recent_palette_rect = new RectangleD (
+			recent_swatches_x,
 			2,
-			width - recent_palette_rect.Right - PaletteWidget.PALETTE_MARGIN,
-			PaletteWidget.SWATCH_SIZE * PaletteWidget.PALETTE_ROWS);
+			PaletteWidget.SWATCH_SIZE * recent_cols,
+			swatch_height);
+
+		// Palette section: a separator, then a small palette icon column, then the
+		// rainbow swatches, and finally the color-wheel and float-colors action icons
+		// on the right edge of the docked color picker.
+		palette_separator_x = recent_palette_rect.Right + SECTION_GAP;
+		palette_icon_rect = new RectangleD (
+			palette_separator_x + SECTION_GAP,
+			2 + (swatch_height - ICON_SIZE) / 2.0,
+			ICON_SIZE,
+			ICON_SIZE);
+		double palette_swatches_x = palette_icon_rect.Right + SECTION_GAP;
+
+		// The swatches are drawn for every palette color, so the clickable rect must
+		// cover them all - the action icons are hit-tested first, so they stay safe
+		// even if a long palette is drawn underneath them.
+		int palette_columns = (palette.CurrentPalette.Colors.Count + PaletteWidget.PALETTE_ROWS - 1) / PaletteWidget.PALETTE_ROWS;
+
+		palette_rect = new RectangleD (
+			palette_swatches_x,
+			2,
+			PaletteWidget.SWATCH_SIZE * palette_columns,
+			swatch_height);
+
+		// The action icons sit after the swatches, but never off the right edge.
+		double actions_width = 2 * ACTION_ICON_SIZE + SECTION_GAP;
+		double actions_x = Math.Min (
+			palette_rect.Right + SECTION_GAP,
+			Math.Max (0, width - actions_width - PaletteWidget.PALETTE_MARGIN));
+
+		color_wheel_icon_rect = new RectangleD (
+			actions_x,
+			2 + (swatch_height - ACTION_ICON_SIZE) / 2.0,
+			ACTION_ICON_SIZE,
+			ACTION_ICON_SIZE);
+		float_colors_icon_rect = new RectangleD (
+			color_wheel_icon_rect.Right + SECTION_GAP,
+			color_wheel_icon_rect.Y,
+			ACTION_ICON_SIZE,
+			ACTION_ICON_SIZE);
 	}
 
 	/// <summary>
@@ -323,6 +568,18 @@ public sealed partial class StatusBarColorPaletteWidget
 		static string BuildColorTooltip (Color color, string tooltip) => Translations.GetString ("Color") + $": #{color.ToHex ()}\n\n" + tooltip;
 
 		switch (GetElementAtPoint (point)) {
+			case WidgetElement.RecentColorsIcon:
+				text = Translations.GetString ("Recently picked colors");
+				break;
+			case WidgetElement.PaletteIcon:
+				text = Translations.GetString ("Quick colors");
+				break;
+			case WidgetElement.ColorWheel:
+				text = Translations.GetString ("Show color wheel");
+				break;
+			case WidgetElement.FloatColors:
+				text = Translations.GetString ("Float Colors");
+				break;
 			case WidgetElement.Palette:
 				int paletteIndex = PaletteWidget.GetSwatchAtLocation (palette, point, palette_rect);
 				if (paletteIndex >= 0) {
@@ -415,6 +672,18 @@ public sealed partial class StatusBarColorPaletteWidget
 
 	private WidgetElement GetElementAtPoint (PointD point)
 	{
+		if (show_action_icons && color_wheel_icon_rect.ContainsPoint (point))
+			return WidgetElement.ColorWheel;
+
+		if (show_action_icons && float_colors_icon_rect.ContainsPoint (point))
+			return WidgetElement.FloatColors;
+
+		if (recent_icon_rect.ContainsPoint (point))
+			return WidgetElement.RecentColorsIcon;
+
+		if (palette_icon_rect.ContainsPoint (point))
+			return WidgetElement.PaletteIcon;
+
 		if (palette_rect.ContainsPoint (point))
 			return WidgetElement.Palette;
 
@@ -440,7 +709,11 @@ public sealed partial class StatusBarColorPaletteWidget
 	{
 		Nothing,
 		Palette,
+		PaletteIcon,
 		RecentColorsPalette,
+		RecentColorsIcon,
+		ColorWheel,
+		FloatColors,
 		PrimaryColor,
 		SecondaryColor,
 		SwapColors,

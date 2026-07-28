@@ -40,6 +40,8 @@ public sealed partial class DockItem
 	private Gtk.Stack button_stack;
 	private Gtk.Button minimize_button;
 	private Gtk.Button maximize_button;
+	private Gtk.Button float_button;
+	private Gtk.Box? title_layout;
 
 	/// <summary>
 	/// Unique identifier for the dock item. Used e.g. when saving the dock layout to disk.
@@ -69,14 +71,21 @@ public sealed partial class DockItem
 	/// </summary>
 	public event EventHandler? MaximizeClicked;
 
+	/// <summary>
+	/// Triggered when the float-as-window button is pressed.
+	/// </summary>
+	public event EventHandler? FloatClicked;
+
 	[MemberNotNull (nameof (label_widget))]
 	[MemberNotNull (nameof (button_stack))]
 	[MemberNotNull (nameof (minimize_button))]
 	[MemberNotNull (nameof (maximize_button))]
+	[MemberNotNull (nameof (float_button))]
 	partial void Initialize ()
 	{
 		Gtk.Button minimizeButton = CreateMinimizeButton ();
 		Gtk.Button maximizeButton = CreateMaximizeButton ();
+		Gtk.Button floatButton = CreateFloatButton ();
 
 		Gtk.Stack buttonStack = Gtk.Stack.New ();
 		buttonStack.AddChild (minimizeButton);
@@ -94,6 +103,7 @@ public sealed partial class DockItem
 
 		minimize_button = minimizeButton;
 		maximize_button = maximizeButton;
+		float_button = floatButton;
 
 		button_stack = buttonStack;
 
@@ -114,6 +124,7 @@ public sealed partial class DockItem
 		if (!locked) {
 			item.minimize_button.OnClicked += (o, args) => item.Minimize ();
 			item.maximize_button.OnClicked += (o, args) => item.Maximize ();
+			item.float_button.OnClicked += (o, args) => item.FloatClicked?.Invoke (item, EventArgs.Empty);
 
 			const int padding = 8;
 			item.label_widget.MarginStart = item.label_widget.MarginEnd = padding;
@@ -122,7 +133,10 @@ public sealed partial class DockItem
 
 			Gtk.Box titleLayout = GtkExtensions.BoxHorizontal ([
 				item.label_widget,
+				item.float_button,
 				item.button_stack]);
+
+			item.title_layout = titleLayout;
 
 			item.Append (titleLayout);
 		}
@@ -138,6 +152,8 @@ public sealed partial class DockItem
 	{
 		Gtk.Button result = Gtk.Button.NewFromIconName (StandardIcons.WindowMinimize);
 		result.AddCssClass (AdwaitaStyles.Flat);
+		// Impasto: say where the pad goes, not just what the button is called.
+		result.TooltipText = Translations.GetString ("Minimize to icon");
 		return result;
 	}
 
@@ -145,7 +161,43 @@ public sealed partial class DockItem
 	{
 		Gtk.Button result = Gtk.Button.NewFromIconName (StandardIcons.WindowMaximize);
 		result.AddCssClass (AdwaitaStyles.Flat);
+		result.TooltipText = Translations.GetString ("Maximize to side menu");
 		return result;
+	}
+
+	private Gtk.Button CreateFloatButton ()
+	{
+		// Same window glyph as the status bar's float-colors button, minus the color dot.
+		Gtk.DrawingArea icon = Gtk.DrawingArea.New ();
+		icon.SetSizeRequest (32, 16);
+		icon.SetDrawFunc ((area, g, width, height) => {
+			area.GetStyleContext ().GetColor (out Gdk.RGBA rgba);
+			Cairo.Color fg = rgba.ToCairoColor ();
+			Cairo.Color faded = new (fg.R, fg.G, fg.B, 0.7);
+			RectangleD r = new (3.5, 3.5, width - 7, height - 7);
+			g.DrawRectangle (r, faded, 1);
+			g.DrawLine (
+				new PointD (r.X, r.Y + 4),
+				new PointD (r.Right, r.Y + 4),
+				faded,
+				1);
+		});
+
+		Gtk.Button result = Gtk.Button.New ();
+		result.SetChild (icon);
+		result.AddCssClass (AdwaitaStyles.Flat);
+		result.TooltipText = Translations.GetString ("Float as window");
+		return result;
+	}
+
+	/// <summary>
+	/// Hide or show the title bar while the item is floating - the floating
+	/// window's own titlebar takes over the label and close button.
+	/// </summary>
+	public void SetFloating (bool floating)
+	{
+		if (title_layout is not null)
+			title_layout.Visible = !floating;
 	}
 
 	private static Gtk.Label CreateLabelWidget ()

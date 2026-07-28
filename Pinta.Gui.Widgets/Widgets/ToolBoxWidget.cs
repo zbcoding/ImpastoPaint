@@ -36,6 +36,9 @@ public sealed partial class ToolBoxWidget
 		public required Gtk.Image Icon { get; init; }
 		public List<BaseTool> Members { get; } = [];
 		public BaseTool Current { get; set; } = null!;
+		public Gtk.Popover? OpenFlyout { get; set; }
+		public uint HoverTimeoutId { get; set; }
+		public uint CloseTimeoutId { get; set; }
 	}
 
 	private ToolManager tools = null!; // NRT - set in factory method
@@ -48,11 +51,16 @@ public sealed partial class ToolBoxWidget
 	private readonly Gtk.FlowBox[] sections = new Gtk.FlowBox[section_bounds.Length];
 	private readonly Gtk.Separator[] separators = new Gtk.Separator[section_bounds.Length - 1];
 
-	// Impasto: tools pinned out of a stack's flyout also get a slot at the top of the
-	// toolbox. They stay in their stack as well - pinning copies, it doesn't move.
+	// Impasto: pinned tools get a copy in a highlighted section at the top of the toolbox.
+	// They stay in their original spot as well - pinning copies, it doesn't move.
+	private Gtk.Box pinned_container = null!;
 	private Gtk.FlowBox pinned_section = null!;
 	private Gtk.Separator pinned_separator = null!;
 	private readonly Dictionary<BaseTool, Gtk.ToggleButton> pinned_buttons = new ();
+
+	// While a pin menu is up, hovering its anchor must not pop the flyout back open -
+	// the flyout's grab would dismiss the pin menu before it can be clicked.
+	private Gtk.Popover? open_pin_menu;
 
 	private static Gtk.FlowBox CreateSectionBox ()
 	{
@@ -75,7 +83,20 @@ public sealed partial class ToolBoxWidget
 		SetOrientation (Gtk.Orientation.Vertical);
 
 		pinned_section = CreateSectionBox ();
-		Append (pinned_section);
+		pinned_section.Visible = true; // Container visibility is managed instead.
+
+		Gtk.Image pinIcon = Gtk.Image.NewFromIconName (Resources.StandardIcons.Pin);
+		pinIcon.PixelSize = 30;
+		pinIcon.Halign = Gtk.Align.Start;
+		pinIcon.AddCssClass (AdwaitaStyles.DimLabel);
+		pinIcon.TooltipText = Translations.GetString ("Pinned items");
+
+		pinned_container = Gtk.Box.New (Gtk.Orientation.Vertical, 0);
+		pinned_container.AddCssClass (Resources.Styles.PinnedSection);
+		pinned_container.Visible = false; // Shown while any tool is pinned.
+		pinned_container.Append (pinIcon);
+		pinned_container.Append (pinned_section);
+		Append (pinned_container);
 
 		pinned_separator = Gtk.Separator.New (Gtk.Orientation.Horizontal);
 		pinned_separator.Visible = false;
@@ -168,6 +189,12 @@ public sealed partial class ToolBoxWidget
 		toolButton.OnClicked += (_, _) => HandleToolButtonClicked (tool);
 		tool_buttons[tool] = toolButton;
 
+		// Right click any standalone tool to pin/unpin it.
+		Gtk.GestureClick rightClick = Gtk.GestureClick.New ();
+		rightClick.SetButton (Gdk.Constants.BUTTON_SECONDARY);
+		rightClick.OnPressed += (_, _) => ShowPinMenu (toolButton, tool);
+		toolButton.AddController (rightClick);
+
 		InsertIntoSection (toolButton, tool);
 	}
 
@@ -219,8 +246,9 @@ public sealed partial class ToolBoxWidget
 	}
 
 	/// <summary>
-	/// Long press or right click opens the flyout, matching Photoshop. A plain click still
-	/// selects the current member, so the common case stays one click.
+	/// Hover, long press, or right click opens the flyout. A plain click still selects the
+	/// current member, so the common case stays one click. Hover uses a short delay so just
+	/// passing over the button doesn't pop it open.
 	/// </summary>
 	private void AttachFlyoutGestures (ToolStack stack)
 	{
@@ -232,10 +260,64 @@ public sealed partial class ToolBoxWidget
 		rightClick.SetButton (Gdk.Constants.BUTTON_SECONDARY);
 		rightClick.OnPressed += (_, _) => ShowFlyout (stack);
 		stack.Button.AddController (rightClick);
+
+		Gtk.EventControllerMotion motion = Gtk.EventControllerMotion.New ();
+		motion.OnEnter += (_, _) => {
+			CancelCloseTimeout (stack);
+			CancelHoverTimeout (stack);
+			stack.HoverTimeoutId = GLib.Functions.TimeoutAdd (0, 350, () => {
+				stack.HoverTimeoutId = 0;
+				ShowFlyout (stack);
+				return false;
+			});
+		};
+		motion.OnLeave += (_, _) => {
+			CancelHoverTimeout (stack);
+			ScheduleClose (stack);
+		};
+		stack.Button.AddController (motion);
+	}
+
+	private static void CancelHoverTimeout (ToolStack stack)
+	{
+		if (stack.HoverTimeoutId == 0)
+			return;
+
+		GLib.Source.Remove (stack.HoverTimeoutId);
+		stack.HoverTimeoutId = 0;
+	}
+
+	private static void CancelCloseTimeout (ToolStack stack)
+	{
+		if (stack.CloseTimeoutId == 0)
+			return;
+
+		GLib.Source.Remove (stack.CloseTimeoutId);
+		stack.CloseTimeoutId = 0;
+	}
+
+	/// <summary>
+	/// Close the flyout shortly after the cursor leaves both the button and the flyout. The
+	/// delay gives the cursor time to cross the gap between them.
+	/// </summary>
+	private static void ScheduleClose (ToolStack stack)
+	{
+		if (stack.OpenFlyout is null)
+			return;
+
+		CancelCloseTimeout (stack);
+		stack.CloseTimeoutId = GLib.Functions.TimeoutAdd (0, 400, () => {
+			stack.CloseTimeoutId = 0;
+			stack.OpenFlyout?.Popdown ();
+			return false;
+		});
 	}
 
 	private void ShowFlyout (ToolStack stack)
 	{
+		if (stack.OpenFlyout is not null || open_pin_menu is not null)
+			return;
+
 		Gtk.Box list = Gtk.Box.New (Gtk.Orientation.Vertical, 0);
 
 		Gtk.Popover popover = Gtk.Popover.New ();
@@ -272,9 +354,19 @@ public sealed partial class ToolBoxWidget
 			list.Append (entry);
 		}
 
-		// The popover is rebuilt per showing, so release it once it closes.
-		popover.OnClosed += (_, _) => popover.Unparent ();
+		Gtk.EventControllerMotion motion = Gtk.EventControllerMotion.New ();
+		motion.OnEnter += (_, _) => CancelCloseTimeout (stack);
+		motion.OnLeave += (_, _) => ScheduleClose (stack);
+		popover.AddController (motion);
 
+		// The popover is rebuilt per showing, so release it once it closes.
+		popover.OnClosed += (_, _) => {
+			CancelCloseTimeout (stack);
+			stack.OpenFlyout = null;
+			popover.Unparent ();
+		};
+
+		stack.OpenFlyout = popover;
 		popover.Popup ();
 	}
 
@@ -286,7 +378,7 @@ public sealed partial class ToolBoxWidget
 		action.SetCssClasses ([AdwaitaStyles.Flat]);
 
 		Gtk.Box row = Gtk.Box.New (Gtk.Orientation.Horizontal, 6);
-		row.Append (Gtk.Image.NewFromIconName ("view-pin-symbolic"));
+		row.Append (Gtk.Image.NewFromIconName (Resources.StandardIcons.Pin));
 		row.Append (Gtk.Label.New (pinned
 			? Translations.GetString ("Unpin this item")
 			: Translations.GetString ("Pin this item")));
@@ -296,13 +388,17 @@ public sealed partial class ToolBoxWidget
 		popover.SetChild (action);
 		popover.SetParent (anchor);
 		popover.Position = Gtk.PositionType.Right;
-		popover.OnClosed += (_, _) => popover.Unparent ();
+		popover.OnClosed += (_, _) => {
+			open_pin_menu = null;
+			popover.Unparent ();
+		};
 
 		action.OnClicked += (_, _) => {
 			popover.Popdown ();
 			SetPinned (tool, !pinned);
 		};
 
+		open_pin_menu = popover;
 		popover.Popup ();
 	}
 
@@ -359,10 +455,8 @@ public sealed partial class ToolBoxWidget
 
 	private void SetStackTooltip (ToolStack stack)
 	{
-		string members = string.Join (", ", stack.Members.Select (t => t.Name));
-		string hint = Translations.GetString ("Long press or right click for more");
-
-		stack.Button.TooltipText = $"{TooltipFor (stack.Current)}\n\n{members}\n{hint}";
+		// No tooltip on the group button - the flyout opens on hover, and each flyout entry
+		// carries its own hint.
 		stack.Button.Name = stack.Current.Name;
 	}
 
@@ -470,7 +564,7 @@ public sealed partial class ToolBoxWidget
 		for (int i = 0; i < sections.Length; i++)
 			sections[i].Visible = populated[i];
 
-		pinned_section.Visible = pinned_buttons.Count > 0;
+		pinned_container.Visible = pinned_buttons.Count > 0;
 		pinned_separator.Visible = pinned_buttons.Count > 0 && populated.Any (p => p);
 
 		bool anyAbove = populated[0];

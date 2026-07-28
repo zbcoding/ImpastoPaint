@@ -76,6 +76,7 @@ public sealed class PaintBrushTool : BaseBrushTool
 		};
 	}
 
+	public override bool UsesPaintColors => true;
 	public override string Name => Translations.GetString ("Paintbrush");
 	public override string Icon => Pinta.Resources.Icons.ToolPaintBrush;
 	public override string StatusBarText => Translations.GetString ("Left click to draw with primary color, right click to draw with secondary color.");

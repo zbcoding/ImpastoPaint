@@ -45,6 +45,7 @@ public sealed class FreeformShapeTool : BaseBrushTool
 
 	public FreeformShapeTool (IServiceProvider services) : base (services) { }
 
+	public override bool UsesPaintColors => true;
 	public override string Name => Translations.GetString ("Freeform Shape");
 	public override string Icon => Pinta.Resources.Icons.ToolFreeformShape;
 	public override string StatusBarText => Translations.GetString ("Left click to draw with primary color, right click to draw with secondary color.");

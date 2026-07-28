@@ -45,6 +45,7 @@ public sealed class PencilTool : BaseTool
 		palette = services.GetService<IPaletteService> ();
 	}
 
+	public override bool UsesPaintColors => true;
 	public override string Name => Translations.GetString ("Pencil");
 	public override string Icon => Pinta.Resources.Icons.ToolPencil;
 	public override string StatusBarText => Translations.GetString (

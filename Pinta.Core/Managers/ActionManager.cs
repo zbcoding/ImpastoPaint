@@ -92,6 +92,7 @@ public sealed class ActionManager
 		toolbar.Append (File.New.CreateToolBarItem ());
 		toolbar.Append (File.Open.CreateToolBarItem ());
 		toolbar.Append (File.Save.CreateToolBarItem ());
+		toolbar.Append (File.SaveAs.CreateToolBarItem ());
 		// Printing is disabled for now until it is fully functional.
 #if false
 		toolbar.AppendItem (File.Print.CreateToolBarItem ());
@@ -125,6 +126,7 @@ public sealed class ActionManager
 		header.PackStart (File.New.CreateToolBarItem ());
 		header.PackStart (File.Open.CreateToolBarItem ());
 		header.PackStart (File.Save.CreateToolBarItem ());
+		header.PackStart (File.SaveAs.CreateToolBarItem ());
 
 		header.PackStart (GtkExtensions.CreateToolBarSeparator ());
 		header.PackStart (Edit.Undo.CreateToolBarItem ());

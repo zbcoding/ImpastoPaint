@@ -38,6 +38,7 @@ public abstract class BaseTool
 {
 	private readonly IToolService tools;
 	private readonly IWorkspaceService workspace;
+	private readonly IPaletteService palette;
 
 	protected IResourceService Resources { get; }
 	protected ISettingsService Settings { get; }
@@ -51,6 +52,7 @@ public abstract class BaseTool
 
 		tools = services.GetService<IToolService> ();
 		workspace = services.GetService<IWorkspaceService> ();
+		palette = services.GetService<IPaletteService> ();
 
 		CurrentCursor = DefaultCursor;
 
@@ -99,6 +101,14 @@ public abstract class BaseTool
 	/// showing the selection outline.
 	/// </summary>
 	public virtual bool IsSelectionTool
+		=> false;
+
+	/// <summary>
+	/// Impasto: whether the tool paints with the palette colors. When true, starting a
+	/// stroke commits the color being used to the recently used list - this covers colors
+	/// chosen via sliders / hex entry, which never pass through an addToRecent call.
+	/// </summary>
+	public virtual bool UsesPaintColors
 		=> false;
 
 	/// <summary>
@@ -422,7 +432,18 @@ public abstract class BaseTool
 
 	internal bool DoKeyUp (Document document, ToolKeyEventArgs args) => OnKeyUp (document, args);
 
-	internal void DoMouseDown (Document document, ToolMouseEventArgs args) => OnMouseDown (document, args);
+	internal void DoMouseDown (Document document, ToolMouseEventArgs args)
+	{
+		if (UsesPaintColors) {
+			// SetColor with the current color is a no-op apart from the recent list,
+			// and the recent list itself is a no-op if the color is already newest.
+			bool primary = args.MouseButton != MouseButton.Right;
+			Cairo.Color used = primary ? palette.PrimaryColor : palette.SecondaryColor;
+			palette.SetColor (primary, used, addToRecent: true);
+		}
+
+		OnMouseDown (document, args);
+	}
 	internal void DoMouseMove (Document document, ToolMouseEventArgs args) => OnMouseMove (document, args);
 	internal void DoMouseUp (Document document, ToolMouseEventArgs args) => OnMouseUp (document, args);
 	#endregion

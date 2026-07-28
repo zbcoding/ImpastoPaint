@@ -37,37 +37,16 @@ git fetch upstream && git rebase upstream/main
 | Toolbox split into 6 sections with separators | `ToolBoxWidget.cs` | yes, on screen |
 | Toolbox fixed at 2 columns | `ToolBoxWidget.cs` | partially — see Known issues |
 | Shape tools collapsed into one stacked button with flyout | `ToolBoxWidget.cs` | button collapse yes; **flyout popover never clicked** |
-| Right-click to pin a stacked tool into a Pinned section | `ToolBoxWidget.cs` | rendering + persistence yes; **pin menu never clicked** |
-| Colors palette in a floating window | `MainWindow.cs` | yes, on screen |
+| Right-click to pin a stacked tool into a Pinned section | `ToolBoxWidget.cs` | rendering + persistence yes;  |
+| Colors palette docked in the status bar, View → Float Colors pops it out | `MainWindow.cs` | build only, **never run** |
+| Inline HSV colour wheel, shown when floating | `ColorWheelWidget.cs` (new) | build only, **never run** |
+| Dock tooltips: "Minimize to icon" / "Maximize to side menu" | `DockItem.cs` | build only, **never run** |
+| Border around the toolbox | `MainWindow.cs` `HasFrame` | build only, **never run** |
 | "More >>" opens the full colour picker | `MainWindow.cs` | **build only, never clicked** |
 
 App ID is `com.github.zbcoding.Impasto`. Settings live in `~/.config/Impasto/settings.xml`
 so Impasto installs alongside Pinta rather than replacing it — the metainfo deliberately
 drops upstream's `<replaces>pinta.desktop</replaces>`.
-
-### In progress — Colors docking
-
-Half-built. **The menu item exists but does nothing yet.**
-
-Done:
-- `ViewActions.ColorsFloating` toggle command, registered and in View → menu
-- `SettingNames.COLORS_FLOATING`
-
-To do:
-1. Add a `colors_dock` box to the status bar; dock the palette there **by default**
-2. `SetColorsFloating(bool)` reparents the palette between dock and window, flipping
-   orientation horizontal (docked) ↔ vertical (floating)
-3. Give the floating window a close-only header bar
-4. Persist `colors-floating`
-
-Step 3 is the actual bug fix. The floating window is currently a plain resizable
-top-level, so maximising it produces a huge empty window with tiny swatches in the
-corner, and minimising sends it somewhere unreachable. Removing the maximise and
-minimise buttons removes both states at the source.
-
-Open question: the ask was "minimise returns it to docked". Removing the minimise button
-reaches the same outcome without watching `Gdk.Toplevel` state. Literal minimise-to-dock
-is possible, just more code for the same result.
 
 ## Known issues
 
@@ -75,6 +54,11 @@ is possible, just more code for the same result.
   column with a stray pair at the top instead of the clean 2-column grid. May be the
   fixed `MinChildrenPerLine = 2` misbehaving under a different allocation, may be a
   screenshot artifact. Unconfirmed — reproduce before changing anything.
+- **Fixed: pin menu dismissed by hover flyout.** Right-clicking a flyout entry anchored
+  the pin menu on the group button, but the cursor hovering that button re-opened the
+  flyout after 350ms, whose grab dismissed the pin menu before it could be clicked.
+  `ShowFlyout` now bails while a pin menu is open (`open_pin_menu` field). The pin menu
+  still appears next to the group button by design — it pins the tool you right-clicked.
 - **Pinned tools and the toggle group.** Every toolbox button shares one toggle group, so
   exactly one can be lit. A pinned tool has two buttons and the pinned one wins, so
   picking that tool from inside its stack flyout won't light the stack button. Fixing it
@@ -89,21 +73,22 @@ is possible, just more code for the same result.
 
 Roughly in order of value per unit of pain:
 
-1. **Commit.** Six features, zero commits. Do this first.
-2. Finish Colors docking (above).
-3. Click through the three unverified paths — stack flyout, pin menu, More >>.
-4. Confirm or dismiss the toolbox column issue.
+
+TODO: pin buttons on flyout by hovering grouped icons needs fixing
+
+1. **Run it.** Colors docking and the toolbox border are build-verified only.
+2. Click through the unverified paths — More >>, Float Colors. (Stack flyout and pin
+   menu have now been exercised; the hover-dismissal bug found that way is fixed.)
+3. Confirm or dismiss the toolbox column issue.
 
 ## Deferred — the big rocks
 
 These are real projects, not tasks. Don't let them into scope casually.
 
-- **Inline colour wheel.** Paint.NET shows the wheel in the Colors window itself, with
-  More >> expanding numeric fields. `ColorPickerDialog` already has a wheel, HSV/RGB
-  sliders and hex entry — but it's a 1,013-line `Gtk.Dialog` and `DrawColorSurface` is a
-  private instance method reading instance state. Extracting it means refactoring the
-  worst possible rebase target; the alternative is a fresh Cairo wheel widget. Currently
-  the wheel is reachable only through the modal dialog.
+- **Numeric colour entry inline.** `ColorWheelWidget` covers hue/sat/value; alpha, RGB
+  fields and hex still live only in `ColorPickerDialog` behind "More >>". Extracting them
+  means refactoring a 1,013-line dialog — the worst rebase target in the tree. Not worth
+  it unless the round trip through the modal proves annoying in practice.
 - **Merging the shape tools.** Paint.NET has *one* Shapes tool with a picker in the
   options bar. Impasto has four tools sharing a button, which looks similar and is far
   cheaper. Real merging means refactoring `ShapeTool` subclasses in `Pinta.Tools` — the

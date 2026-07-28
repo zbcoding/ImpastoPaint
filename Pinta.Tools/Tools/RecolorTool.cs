@@ -52,6 +52,7 @@ public class RecolorTool : BaseBrushTool
 		workspace = services.GetService<IWorkspaceService> ();
 	}
 
+	public override bool UsesPaintColors => true;
 	public override string Name => Translations.GetString ("Recolor");
 	public override string Icon => Pinta.Resources.Icons.ToolRecolor;
 	public override string StatusBarText => Translations.GetString (

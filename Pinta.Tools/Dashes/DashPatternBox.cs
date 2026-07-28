@@ -36,7 +36,12 @@ public sealed class DashPatternBox
 	private Label? dash_pattern_label;
 	private Separator? dash_pattern_sep;
 
+	private Separator? dash_spacing_sep;
+	private Label? dash_spacing_label;
+
 	public ToolBarComboBox? ComboBox { get; private set; }
+
+	public ToolBarComboBox? SpacingComboBox { get; private set; }
 
 	/// <summary>
 	/// Sets up the DashPatternBox in the Toolbar.
@@ -62,10 +67,53 @@ public sealed class DashPatternBox
 
 		tb.Append (dash_pattern_label);
 
-		ComboBox ??= ToolBarComboBox.New (50, 0, true,
-				"-", " -", " --", " ---", "  -", "   -", " - --", " - - --------", " - - ---- - ----");
+		// Dash glyphs are very narrow - longest dash line is only half the old toolbar box.
+		// Width matches selected option (was 90, then 38, now dynamic ~50-100, slightly wider than before).
+		ComboBox ??= ToolBarComboBox.New (56, 0, true,
+				"- (Solid)", " -", " --", " ---", "  -", "   -", " - --", " - - --------", " - - ---- - ----");
+		ComboBox.ComboBox.AddCssClass (Resources.Styles.DashPatternCombo);
+		// Keep focusable so single click on arrow opens popup, but not editable to avoid text-input look.
+		ComboBox.ComboBox.CanFocus = true;
+		var dashEntry = ComboBox.ComboBox.GetEntry ();
+		dashEntry.SetEditable (false);
+		dashEntry.CanFocus = false;
+		dashEntry.SetWidthChars (6);
+		dashEntry.SetMaxWidthChars (9);
+
+		ComboBox.ComboBox.OnChanged += (o, _) => {
+			// Immediately collapse selection so it doesn't look like highlighted text input.
+			try { o.GetEntry ().SelectRegion (0, 0); } catch { }
+			// Defer layout-changing work to idle so it doesn't interfere with popup close
+			// and doesn't require an extra click to "wake up" the dropdown.
+			string? active = ComboBox.ComboBox.GetActiveText ();
+			GLib.Functions.IdleAdd (0, () => {
+				UpdateDashComboWidth (active);
+				UpdateSpacingSensitivity ();
+				try { ComboBox.ComboBox.GetEntry ().SelectRegion (0, 0); } catch { }
+				return false;
+			});
+		};
 
 		tb.Append (ComboBox);
+
+		dash_spacing_sep ??= GtkExtensions.CreateToolBarSeparator ();
+		tb.Append (dash_spacing_sep);
+
+		if (dash_spacing_label == null) {
+			var spacingString = Translations.GetString ("Spacing");
+			dash_spacing_label = Label.New ($" {spacingString}: ");
+		}
+
+		tb.Append (dash_spacing_label);
+
+		// Spacing is single-digit multiplier, extra narrow. Shows "-" when solid.
+		SpacingComboBox ??= ToolBarComboBox.New (36, 0, false,
+				"-", "1", "2", "3", "4", "5", "6", "8", "10");
+
+		tb.Append (SpacingComboBox);
+
+		UpdateDashComboWidth (ComboBox.ComboBox.GetActiveText ());
+		UpdateSpacingSensitivity ();
 
 		if (dash_change_setup) {
 			return null;
@@ -76,9 +124,69 @@ public sealed class DashPatternBox
 		}
 	}
 
+	private void UpdateDashComboWidth (string? activeText)
+	{
+		if (ComboBox == null) return;
+		// Match selection box width to currently selected dash option, slightly wider than minimal.
+		(int widthReq, int widthChars) = activeText switch {
+			"- (Solid)" => (76, 8),
+			" -" => (50, 3),
+			" --" => (58, 4),
+			" ---" => (64, 5),
+			"  -" => (54, 4),
+			"   -" => (58, 5),
+			" - --" => (68, 6),
+			" - - --------" => (92, 9),
+			" - - ---- - ----" => (100, 10),
+			_ => (58, 5),
+		};
+
+		try {
+			ComboBox.ComboBox.WidthRequest = widthReq;
+			var e = ComboBox.ComboBox.GetEntry ();
+			e.SetWidthChars (widthChars);
+			e.SetMaxWidthChars (widthChars + 1);
+		} catch { }
+	}
+
+	// Spacing multiplies the gaps between dashes, so it does nothing for a solid line.
+	// When solid, show "-" glyph in spacing combo to indicate disabled/no spacing.
+	private void UpdateSpacingSensitivity ()
+	{
+		if (ComboBox == null) return;
+		string? active = ComboBox.ComboBox.GetActiveText ();
+		bool hasDashes = Pinta.Core.CairoExtensions.IsValidDashPattern (active ?? "");
+
+		// Vary "(Solid)" size: smaller in toolbar selection, normal in popup options.
+		try {
+			var entry = ComboBox.ComboBox.GetEntry ();
+			if (hasDashes) {
+				entry.RemoveCssClass ("solid-selected");
+			} else {
+				entry.AddCssClass ("solid-selected");
+			}
+		} catch { }
+
+		if (dash_spacing_label != null) dash_spacing_label.Sensitive = hasDashes;
+		if (SpacingComboBox != null) {
+			SpacingComboBox.Sensitive = hasDashes;
+			// Show "-" when solid (disabled), otherwise ensure a numeric value is shown.
+			if (!hasDashes) {
+				if (SpacingComboBox.ComboBox.Active != 0)
+					SpacingComboBox.ComboBox.Active = 0;
+			} else {
+				if (SpacingComboBox.ComboBox.Active == 0)
+					SpacingComboBox.ComboBox.Active = 1;
+			}
+		}
+	}
+
 	public void SetVisible (bool visible)
 	{
 		if (dash_pattern_label == null || dash_pattern_sep == null || ComboBox == null) { return; }
 		dash_pattern_label.Visible = dash_pattern_sep.Visible = ComboBox.Visible = visible;
+		if (dash_spacing_sep != null) dash_spacing_sep.Visible = visible;
+		if (dash_spacing_label != null) dash_spacing_label.Visible = visible;
+		if (SpacingComboBox != null) SpacingComboBox.Visible = visible;
 	}
 }

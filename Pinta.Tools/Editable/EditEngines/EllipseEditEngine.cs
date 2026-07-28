@@ -64,7 +64,12 @@ public sealed class EllipseEditEngine : BaseEditEngine
 
 	protected override void MovePoint (List<ControlPoint> controlPoints)
 	{
-		MoveRectangularPoint (controlPoints);
+		// For pure 4-point rectangle ellipse, keep rectangular behavior.
+		// Partial ellipses (5+ points) move freely: segment order is fixed by list order,
+		// so a drag can't snap to or re-bucket other segments.
+		if (controlPoints.Count == 4)
+			MoveRectangularPoint (controlPoints);
+
 		base.MovePoint (controlPoints);
 	}
 }

@@ -83,8 +83,20 @@ public abstract class BaseEditEngine
 
 	protected DashPatternBox dash_pattern_box = new ();
 	private string prev_dash_pattern = "-";
+	private int prev_dash_spacing = 1;
+
+	protected ToolBarDropDownButton curved_segments_button = null!;
+	protected Gtk.Separator curved_segments_sep = null!;
+
+	// Shared across all shape tools and remembered while the app is open.
+	// When off, clicking a shape's line no longer inserts nodes for curved segments.
+	private static bool curved_segments_enabled = true;
 
 	private bool prev_antialiasing = true;
+
+	// Reads the current gap multiplier from the spacing dropdown (1 if unset).
+	private int DashSpacingSetting =>
+		int.TryParse (dash_pattern_box.SpacingComboBox?.ComboBox.GetActiveText (), out int s) && s > 0 ? s : 1;
 
 	public int BrushWidth {
 		get => outline_width?.GetValueAsInt () ?? BaseTool.DEFAULT_BRUSH_WIDTH;
@@ -172,9 +184,13 @@ public abstract class BaseEditEngine
 	private readonly MoveHandle hover_handle;
 
 	private readonly Gdk.Cursor grab_cursor = GdkExtensions.CursorFromName (Pinta.Resources.StandardCursors.Grab);
+	private readonly Gdk.Cursor move_cursor = GdkExtensions.CursorFromName (Pinta.Resources.StandardCursors.Move);
 
 	protected bool changing_tension = false;
 	protected PointD last_mouse_pos = new (0d, 0d);
+
+	private bool moving_whole_shape = false;
+	private PointD last_shape_move_point;
 
 	//Helps to keep track of the first modification on a shape after the mouse is clicked, to prevent unnecessary history items.
 	protected bool clicked_without_modifying = false;
@@ -257,6 +273,9 @@ public abstract class BaseEditEngine
 
 		if (dash_pattern_box?.ComboBox is not null)
 			settings.PutSetting (SettingNames.DashPattern (toolPrefix), dash_pattern_box.ComboBox.ComboBox.GetActiveText ()!);
+
+		if (dash_pattern_box?.SpacingComboBox is not null)
+			settings.PutSetting (SettingNames.DashSpacing (toolPrefix), DashSpacingSetting);
 	}
 
 	public void HandleBuildToolBar (Gtk.Box tb, ISettingsService settings, string toolPrefix)
@@ -315,6 +334,27 @@ public abstract class BaseEditEngine
 		tb.Append (shape_type_button);
 
 		BuildShapeToolBar (tb, settings, toolPrefix);
+
+		curved_segments_sep ??= GtkExtensions.CreateToolBarSeparator ();
+		tb.Append (curved_segments_sep);
+
+		if (curved_segments_button == null) {
+			curved_segments_button = ToolBarDropDownButton.New ();
+
+			curved_segments_button.AddItem (Translations.GetString ("Curved Segments On"), Resources.Icons.ToolLine, true);
+			curved_segments_button.AddItem (Translations.GetString ("Curved Segments Off"), Resources.Icons.ToolLine, false);
+
+			curved_segments_enabled = settings.GetSetting (SettingNames.SHAPE_CURVED_SEGMENTS, true);
+			curved_segments_button.SelectedIndex = curved_segments_enabled ? 0 : 1;
+
+			curved_segments_button.SelectedItemChanged += (o, e) => {
+				curved_segments_enabled = curved_segments_button.SelectedItem.GetTagOrDefault (true);
+				settings.PutSetting (SettingNames.SHAPE_CURVED_SEGMENTS, curved_segments_enabled);
+			};
+		}
+
+		curved_segments_button.SelectedIndex = curved_segments_enabled ? 0 : 1;
+		tb.Append (curved_segments_button);
 	}
 
 	protected virtual void BuildShapeToolBar (Gtk.Box tb, ISettingsService settings, string toolPrefix)
@@ -395,7 +435,7 @@ public abstract class BaseEditEngine
 		dpbBox.GetEntry ().SetText (
 			settings.GetSetting (
 				SettingNames.DashPattern (toolPrefix),
-				"-"
+				"- (Solid)"
 			)
 		);
 
@@ -406,7 +446,28 @@ public abstract class BaseEditEngine
 			StorePreviousSettings ();
 			DrawActiveShape (false, false, true, false, false);
 		};
+
+		if (dash_pattern_box.SpacingComboBox is not null) {
+			int spacing = settings.GetSetting (SettingNames.DashSpacing (toolPrefix), 1);
+			dash_pattern_box.SpacingComboBox.ComboBox.Active = SpacingToIndex (spacing);
+
+			dash_pattern_box.SpacingComboBox.ComboBox.OnChanged += (o, e) => {
+				ShapeEngine? selEngine = SelectedShapeEngine;
+				if (selEngine == null) return;
+				selEngine.DashSpacing = DashSpacingSetting;
+				StorePreviousSettings ();
+				DrawActiveShape (false, false, true, false, false);
+			};
+		}
 	}
+
+	// Maps a spacing multiplier back to its dropdown index (entries: "-,1-6,8,10").
+	private static int SpacingToIndex (int spacing) => spacing switch {
+		<= 1 => 1,
+		<= 6 => spacing,
+		<= 8 => 7,
+		_ => 8,
+	};
 
 	public virtual void HandleActivated ()
 	{
@@ -817,18 +878,47 @@ public abstract class BaseEditEngine
 
 			//The currently active tool matches the clicked on shape's corresponding tool.
 
-			//Only create a new shape if the user isn't holding the control key down.
-			if (!ctrlKey) {
+			//Only add a node if the user isn't holding the control key down and curved segments are enabled.
+			if (!ctrlKey && curved_segments_enabled) {
 				//Create a new ShapesModifyHistoryItem so that the adding of a control point can be undone.
 				doc.History.PushNewItem (new ShapesModifyHistoryItem (this, owner.Icon, ShapeName + " " + Translations.GetString ("Point Added")));
 
-				SEngines[closestShapeIndex].ControlPoints.Insert (closestPointIndex,
-					new ControlPoint (new PointD (current_point.X, current_point.Y), DefaultMidPointTension));
-			}
+				ShapeEngine targetEngine = SEngines[closestShapeIndex];
+				int insertedIdx = closestPointIndex;
 
-			//These should be set after creating the history item.
-			SelectedPointIndex = closestPointIndex;
-			SelectedShapeIndex = closestShapeIndex;
+				// Ellipse: keep elliptical shape when adding first extra node by converting
+				// 4-corner perfect-rect to segmented closed curve that visually stays same.
+				if (targetEngine is EllipseEngine ellipse && ellipse.ControlPoints.Count == 4) {
+					// Check perfect rectangle still holds
+					var cps = ellipse.ControlPoints;
+					if (EllipseEngine.IsPerfectRectangle (cps[0].Position, cps[1].Position, cps[2].Position, cps[3].Position)) {
+						insertedIdx = ellipse.ConvertToSegmentedEllipseAndInsert (
+							new PointD (current_point.X, current_point.Y), DefaultMidPointTension);
+						if (insertedIdx < 0)
+							insertedIdx = closestPointIndex;
+					} else {
+						targetEngine.ControlPoints.Insert (closestPointIndex,
+							new ControlPoint (new PointD (current_point.X, current_point.Y), DefaultMidPointTension));
+					}
+				} else {
+					targetEngine.ControlPoints.Insert (closestPointIndex,
+						new ControlPoint (new PointD (current_point.X, current_point.Y), DefaultMidPointTension));
+				}
+
+				//These should be set after creating the history item.
+				SelectedPointIndex = insertedIdx;
+				SelectedShapeIndex = closestShapeIndex;
+			} else if (!ctrlKey && !curved_segments_enabled) {
+				// Curved segments off: side click starts a whole-shape drag (no node add).
+				SelectedShapeIndex = closestShapeIndex;
+				SelectedPointIndex = 0;
+				moving_whole_shape = true;
+				last_shape_move_point = current_point;
+				clicked_without_modifying = true;
+			} else {
+				SelectedPointIndex = closestPointIndex;
+				SelectedShapeIndex = closestShapeIndex;
+			}
 
 			ShapeEngine? activeEngine = ActiveShapeEngine;
 
@@ -897,6 +987,7 @@ public abstract class BaseEditEngine
 		is_drawing = false;
 
 		changing_tension = false;
+		moving_whole_shape = false;
 
 		DrawActiveShape (true, false, true, e.IsShiftPressed, false, e.IsControlPressed);
 	}
@@ -919,6 +1010,28 @@ public abstract class BaseEditEngine
 
 		if (shiftKey)
 			CalculateModifiedCurrentPoint ();
+
+		if (moving_whole_shape && ActiveShapeEngine != null) {
+			if (clicked_without_modifying) {
+				doc.History.PushNewItem (
+					new ShapesModifyHistoryItem (this, owner.Icon, ShapeName + " " + Translations.GetString ("Modified")));
+				clicked_without_modifying = false;
+			}
+
+			double dx = current_point.X - last_shape_move_point.X;
+			double dy = current_point.Y - last_shape_move_point.Y;
+
+			if (dx != 0d || dy != 0d) {
+				foreach (ControlPoint cp in ActiveShapeEngine.ControlPoints)
+					cp.Position = new PointD (cp.Position.X + dx, cp.Position.Y + dy);
+
+				last_shape_move_point = current_point;
+			}
+
+			DrawActiveShape (false, false, true, shiftKey, false, e.IsControlPressed);
+			last_mouse_pos = current_point;
+			return;
+		}
 
 		ControlPoint? selPoint = SelectedPoint;
 
@@ -1193,7 +1306,11 @@ public abstract class BaseEditEngine
 
 		g.Antialias = activeEngine.AntiAliasing ? Antialias.Subpixel : Antialias.None;
 
-		bool isDashedLine = g.SetDashFromString (activeEngine.DashPattern, activeEngine.BrushWidth, LineCap.Square);
+		// Widen the gaps by the spacing multiplier by expanding each space in the pattern.
+		string dashPattern = activeEngine.DashSpacing > 1
+			? activeEngine.DashPattern.Replace (" ", new string (' ', activeEngine.DashSpacing))
+			: activeEngine.DashPattern;
+		bool isDashedLine = g.SetDashFromString (dashPattern, activeEngine.BrushWidth, LineCap.Square);
 
 		g.LineWidth = activeEngine.BrushWidth;
 
@@ -1280,6 +1397,8 @@ public abstract class BaseEditEngine
 
 		// Don't show the hover handle while the user is changing a control point's tension.
 		hover_handle.Active = hover_handle.Selected = false;
+		bool hovering_control_point = false;
+		bool hovering_segment = false;
 
 		if (!changing_tension && draw_selection) {
 
@@ -1295,11 +1414,15 @@ public abstract class BaseEditEngine
 			// Check if the user is directly hovering over a control point.
 			if (closestControlPoint != null) {
 				hover_handle.CanvasPosition = closestControlPoint.Position;
-				hover_handle.Active = hover_handle.Selected = hover_handle.ContainsPoint (current_window_point);
+				hovering_control_point = hover_handle.ContainsPoint (current_window_point);
+				if (hovering_control_point) {
+					hover_handle.Active = hover_handle.Selected = true;
+				}
 			}
 
-			// Otherwise, the user may be hovering over a generated point.
-			if (!hover_handle.Active) {
+			// Otherwise, the user may be hovering over a generated point (segment).
+			// Only show the node-add preview when curved segments are on.
+			if (!hovering_control_point) {
 
 				OrganizedPointCollection.FindClosestPoint (
 					SEngines,
@@ -1311,7 +1434,9 @@ public abstract class BaseEditEngine
 
 				if (closestPoint.HasValue) {
 					hover_handle.CanvasPosition = closestPoint.Value;
-					hover_handle.Active = hover_handle.ContainsPoint (current_window_point);
+					hovering_segment = hover_handle.ContainsPoint (current_window_point);
+					if (hovering_segment && curved_segments_enabled)
+						hover_handle.Active = true;
 				}
 			}
 
@@ -1324,10 +1449,15 @@ public abstract class BaseEditEngine
 		// Otherwise, the normal cursor is shown to indicate that a shape can be drawn.
 		var tool = tools.CurrentTool!;
 
-		if (hover_handle.Active && !is_drawing && !ctrl_key)
-			tool.SetCursor (grab_cursor);
-		else
+		if (!is_drawing && !ctrl_key && (hovering_control_point || hovering_segment)) {
+			// Grab on control points / for node-add; move when sides drag the whole shape.
+			if (hovering_segment && !curved_segments_enabled)
+				tool.SetCursor (move_cursor);
+			else
+				tool.SetCursor (grab_cursor);
+		} else {
 			tool.SetCursor (tool.DefaultCursor);
+		}
 
 		workspace.InvalidateWindowRect (dirty);
 	}
@@ -1596,6 +1726,8 @@ public abstract class BaseEditEngine
 
 		//Update the DashPatternBox to represent the current shape's DashPattern.
 		dash_pattern_box.ComboBox!.ComboBox.GetEntry ().SetText (engine.DashPattern); // NRT - Code assumes this is not-null
+		if (dash_pattern_box.SpacingComboBox is not null)
+			dash_pattern_box.SpacingComboBox.ComboBox.Active = SpacingToIndex (engine.DashSpacing);
 
 		OutlineColor = engine.OutlineColor;
 		FillColor = engine.FillColor;
@@ -1611,6 +1743,8 @@ public abstract class BaseEditEngine
 	protected virtual void RecallPreviousSettings ()
 	{
 		dash_pattern_box.ComboBox?.ComboBox.GetEntry ().SetText (prev_dash_pattern);
+		if (dash_pattern_box.SpacingComboBox is not null)
+			dash_pattern_box.SpacingComboBox.ComboBox.Active = SpacingToIndex (prev_dash_spacing);
 
 		owner.UseAntialiasing = prev_antialiasing;
 		BrushWidth = prev_outline_width;
@@ -1623,6 +1757,9 @@ public abstract class BaseEditEngine
 	{
 		if (dash_pattern_box.ComboBox != null)
 			prev_dash_pattern = dash_pattern_box.ComboBox.ComboBox.GetEntry ().GetText ();
+
+		if (dash_pattern_box.SpacingComboBox != null)
+			prev_dash_spacing = DashSpacingSetting;
 
 		prev_antialiasing = owner.UseAntialiasing;
 		prev_outline_width = BrushWidth;

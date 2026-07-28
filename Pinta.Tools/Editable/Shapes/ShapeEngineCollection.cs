@@ -107,6 +107,7 @@ public abstract class ShapeEngine
 
 	public bool AntiAliasing { get; internal set; }
 	public string DashPattern { get; internal set; } = "-";
+	public int DashSpacing { get; internal set; } = 1;
 	public bool Closed { get; }
 
 	public Color OutlineColor { get; internal set; }
@@ -164,6 +165,7 @@ public abstract class ShapeEngine
 		// Don't clone the GeneratedPoints or OrganizedPoints, as they will be calculated.
 		ControlPoints = src.ControlPoints.Select (i => i.Clone ()).ToList ();
 		DashPattern = src.DashPattern;
+		DashSpacing = src.DashSpacing;
 		parent_layer = null!; // NRT - This constructor needs to set parent_layer somehow as code expects it to be not-null
 	}
 
@@ -234,6 +236,7 @@ public abstract class ShapeEngine
 		// Don't clone the GeneratedPoints or OrganizedPoints, as they will be calculated.
 		clone.ControlPoints = ControlPoints.Select (i => i.Clone ()).ToList ();
 		clone.DashPattern = DashPattern;
+		clone.DashSpacing = DashSpacing;
 
 		// Add the new ShapeEngine instance at the specified index to
 		// ensure as transparent of a cloning as possible.

@@ -12,6 +12,20 @@
     margin-bottom: -5px;
 }
 
+/* Dash pattern glyphs (- , -- , ----) are tiny; enlarge them so the options are legible.
+   When solid is selected, show "(Solid)" smaller in the toolbar entry but keep normal size in the popup list. */
+.dash-pattern-combo entry {
+    font-size: 1.4rem;
+}
+
+.dash-pattern-combo entry.solid-selected {
+    font-size: 0.85rem;
+}
+
+.dash-pattern-combo cell {
+    font-size: 1.4rem;
+}
+
 #canvas {
     box-shadow: 0px 0px 2px 2px #7F7F7F;
 }

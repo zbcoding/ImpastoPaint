@@ -30,6 +30,8 @@ internal static class SettingNames
 
 	internal const string LASSO_MODE = "lasso-mode";
 
+	internal const string SHAPE_CURVED_SEGMENTS = "shape-curved-segments";
+
 	internal static string Arrow1 (string prefix)
 		=> $"{prefix}-arrow1";
 
@@ -65,6 +67,9 @@ internal static class SettingNames
 
 	internal static string DashPattern (string prefix)
 		=> $"{prefix}-dash-pattern";
+
+	internal static string DashSpacing (string prefix)
+		=> $"{prefix}-dash-spacing";
 
 	internal static string Radius (string prefix)
 		=> $"{prefix}-radius";

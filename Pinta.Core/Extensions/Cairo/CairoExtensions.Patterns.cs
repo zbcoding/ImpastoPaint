@@ -182,6 +182,10 @@ partial class CairoExtensions
 	/// <returns>Returns false if dash pattern invalid or would draw a normal line, returns true if draws a dash pattern.</returns>
 	public static bool IsValidDashPattern (string dash_pattern)
 	{
+		// The "- (Solid)" preset is a normal line, not a dash pattern - its label would otherwise parse as gaps.
+		if (dash_pattern.Contains ("Solid", StringComparison.OrdinalIgnoreCase))
+			return false;
+
 		// dashpattern "-" and "" produce different results at high brush size (see #733), so we default "-" to "" (a normal line.)
 		return dash_pattern.Contains ('-') && dash_pattern != "-";
 	}

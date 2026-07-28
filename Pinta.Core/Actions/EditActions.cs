@@ -47,6 +47,9 @@ public sealed class EditActions
 	public Command OffsetSelection { get; }
 	public Command SelectAll { get; }
 	public Command Deselect { get; }
+	// Escape-to-deselect. Credit: Sam-Gledhill, PR #2205
+	// (https://github.com/PintaProject/Pinta/pull/2205).
+	public Command DeselectSelection { get; }
 	public Command LoadPalette { get; }
 	public Command SavePalette { get; }
 	public Command ResetPalette { get; }
@@ -54,6 +57,10 @@ public sealed class EditActions
 
 	private Gio.File? last_palette_dir = null;
 	private Document? active_document = null;
+
+	// Only fire Escape-deselect while a selection tool is active, so Escape
+	// stays free for other tools. Credit: Sam-Gledhill, PR #2205.
+	private static readonly string[] selection_tools = ["Pinta.Tools.EllipseSelectTool", "Pinta.Tools.RectangleSelectTool", "Pinta.Tools.LassoSelectTool"];
 
 	private readonly ChromeManager chrome;
 	private readonly PaletteFormatManager palette_formats;
@@ -166,6 +173,13 @@ public sealed class EditActions
 			Resources.Icons.EditSelectionNone,
 			shortcuts: ["<Primary><Shift>A", "<Ctrl>D"]);
 
+		DeselectSelection = new Command (
+			"deselect-on-escape",
+			Translations.GetString ("Deselect All"),
+			null,
+			Resources.Icons.EditSelectionNone,
+			shortcuts: ["Escape"]);
+
 		LoadPalette = new Command (
 			"loadpalette",
 			Translations.GetString ("Open..."),
@@ -250,6 +264,7 @@ public sealed class EditActions
 
 			SelectAll,
 			Deselect,
+			DeselectSelection,
 
 			EraseSelection,
 			FillSelection,
@@ -270,6 +285,7 @@ public sealed class EditActions
 	public void RegisterHandlers ()
 	{
 		Deselect.Activated += HandlePintaCoreActionsEditDeselectActivated;
+		DeselectSelection.Activated += HandlePintaCoreActionsEditDeselectSelectionActivated;
 		EraseSelection.Activated += HandlePintaCoreActionsEditEraseSelectionActivated;
 		SelectAll.Activated += HandlePintaCoreActionsEditSelectAllActivated;
 		FillSelection.Activated += HandlePintaCoreActionsEditFillSelectionActivated;
@@ -389,6 +405,15 @@ public sealed class EditActions
 
 		doc.History.PushNewItem (hist);
 		doc.Workspace.Invalidate ();
+	}
+
+	// Escape only deselects while a selection tool is active. Credit: Sam-Gledhill, PR #2205.
+	private void HandlePintaCoreActionsEditDeselectSelectionActivated (object sender, EventArgs e)
+	{
+		if (!selection_tools.Contains (tools.CurrentTool?.ToString ()))
+			return;
+
+		HandlePintaCoreActionsEditDeselectActivated (sender, e);
 	}
 
 	private void HandlerPintaCoreActionsEditCopyActivated (object sender, EventArgs e)

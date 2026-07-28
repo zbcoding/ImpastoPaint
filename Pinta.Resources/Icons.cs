@@ -210,6 +210,8 @@ public static class Icons
 	public const string LayerNew = "layers-add-layer";
 	public const string LayerProperties = "document-properties-symbolic";
 	public const string LayerRotateZoom = "layers-rotate-zoom-symbolic";
+	// Bidirectional rotate cursor for the transform tools' Alt-drag rotation.
+	public const string RotateHandle = "rotate-handle-symbolic";
 
 	public const string Pinta = "com.github.zbcoding.Impasto";
 

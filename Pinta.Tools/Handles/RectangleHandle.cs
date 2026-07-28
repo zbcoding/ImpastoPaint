@@ -77,6 +77,13 @@ public class RectangleHandle : IToolHandle
 	public bool IsDragging => drag_start_pos is not null;
 
 	/// <summary>
+	/// Which handle is currently being dragged, if any. Lets the transform
+	/// tools apply their own aspect-ratio / center-anchored scaling.
+	/// </summary>
+	internal HandlePoint? ActiveHandlePoint
+		=> active_handle is null ? null : handles.First (kvp => kvp.Value == active_handle).Key;
+
+	/// <summary>
 	/// The rectangle selected by the user.
 	/// </summary>
 	public RectangleD Rectangle {

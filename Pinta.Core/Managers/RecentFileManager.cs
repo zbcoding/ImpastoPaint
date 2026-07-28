@@ -25,16 +25,27 @@
 // THE SOFTWARE.
 
 using System;
+using System.Collections.Generic;
+using System.Collections.Immutable;
+using System.Linq;
 using Gtk;
 
 namespace Pinta.Core;
 
 public sealed class RecentFileManager
 {
+	private const int MaxRecentFiles = 10;
+	private const string RecentFilesSetting = "recent-files";
+
+	private readonly ISettingsService settings;
 	private Gio.File? last_dialog_directory;
 
-	public RecentFileManager ()
+	/// <summary>Raised when the list of recently-opened files changes.</summary>
+	public event EventHandler? RecentFilesChanged;
+
+	public RecentFileManager (ISettingsService settings)
 	{
+		this.settings = settings;
 		last_dialog_directory = DefaultDialogDirectory;
 	}
 
@@ -70,5 +81,33 @@ public sealed class RecentFileManager
 	public void AddFile (Gio.File file)
 	{
 		RecentManager.GetDefault ().AddItem (file.GetUri ());
+
+		string uri = file.GetUri ();
+
+		// Move to the front, drop any earlier occurrence, and cap the list.
+		ImmutableArray<string> updated =
+			GetRecentUris ()
+			.Where (u => u != uri)
+			.Prepend (uri)
+			.Take (MaxRecentFiles)
+			.ToImmutableArray ();
+
+		settings.PutSetting (RecentFilesSetting, string.Join ('\n', updated));
+		RecentFilesChanged?.Invoke (this, EventArgs.Empty);
 	}
+
+	private ImmutableArray<string> GetRecentUris ()
+	{
+		string stored = settings.GetSetting (RecentFilesSetting, string.Empty);
+		return stored.Split ('\n', StringSplitOptions.RemoveEmptyEntries).ToImmutableArray ();
+	}
+
+	/// <summary>
+	/// The most recently opened files, newest first, skipping any that no longer exist.
+	/// </summary>
+	public IReadOnlyList<Gio.File> GetRecentFiles ()
+		=> GetRecentUris ()
+			.Select (Gio.FileHelper.NewForUri)
+			.Where (f => f.QueryExists (null))
+			.ToImmutableArray ();
 }

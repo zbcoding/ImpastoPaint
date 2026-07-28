@@ -50,14 +50,52 @@ internal sealed class OpenDocumentAction : IActionHandler
 		image_formats = imageFormats;
 	}
 
+	private Gio.SimpleAction? open_recent_action;
+
 	void IActionHandler.Initialize ()
 	{
 		file.Open.Activated += Activated;
+
+		// Parameterized action so each recent-file menu item can pass its own URI.
+		open_recent_action = Gio.SimpleAction.New ("open-recent", GLib.VariantType.String);
+		open_recent_action.OnActivate += OnOpenRecentActivated;
+		chrome.Application.AddAction (open_recent_action);
+
+		recent_files.RecentFilesChanged += (_, _) => RefreshRecentMenu ();
+		RefreshRecentMenu ();
 	}
 
 	void IActionHandler.Uninitialize ()
 	{
 		file.Open.Activated -= Activated;
+	}
+
+	private void RefreshRecentMenu ()
+	{
+		file.OpenRecentMenu.RemoveAll ();
+
+		foreach (var recent in recent_files.GetRecentFiles ()) {
+			var item = Gio.MenuItem.New (recent.GetDisplayName (), null);
+			item.SetActionAndTargetValue ("app.open-recent", GLib.Variant.NewString (recent.GetUri ()));
+			file.OpenRecentMenu.AppendItem (item);
+		}
+	}
+
+	private void OnOpenRecentActivated (Gio.SimpleAction sender, Gio.SimpleAction.ActivateSignalArgs args)
+	{
+		string? uri = args.Parameter?.GetString (out _);
+		if (string.IsNullOrEmpty (uri))
+			return;
+
+		Gio.File recent = Gio.FileHelper.NewForUri (uri);
+
+		if (!workspace.OpenFile (recent))
+			return;
+
+		recent_files.AddFile (recent);
+
+		if (recent.GetParent () is Gio.File directory)
+			recent_files.LastDialogDirectory = directory;
 	}
 
 	private async void Activated (object sender, EventArgs e)

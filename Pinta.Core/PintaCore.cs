@@ -73,7 +73,7 @@ public static class PintaCore
 		ChromeManager chrome = new ();
 		PaintBrushManager paintBrushes = new ();
 		PaletteFormatManager paletteFormats = new ();
-		RecentFileManager recentFiles = new ();
+		RecentFileManager recentFiles = new (settings);
 
 		// --- Services that depend on other services
 

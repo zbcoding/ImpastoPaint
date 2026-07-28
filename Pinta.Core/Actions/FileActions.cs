@@ -40,6 +40,9 @@ public sealed class FileActions
 	public Command SaveAs { get; }
 	public Command Print { get; }
 
+	/// <summary>Submenu populated with recently-opened files by the GUI layer.</summary>
+	public Gio.Menu OpenRecentMenu { get; } = Gio.Menu.New ();
+
 	public event EventHandler<ModifyCompressionEventArgs>? ModifyCompression;
 
 	/// <remarks>
@@ -122,6 +125,7 @@ public sealed class FileActions
 		menu.AppendItem (New.CreateMenuItem ());
 		menu.AppendItem (NewScreenshot.CreateMenuItem ());
 		menu.AppendItem (Open.CreateMenuItem ());
+		menu.AppendSubmenu (Translations.GetString ("Open Recent"), OpenRecentMenu);
 		menu.AppendSection (null, save_section);
 		menu.AppendSection (null, close_section);
 #if false

@@ -52,6 +52,19 @@ public sealed partial class LayersListViewItem
 	public string Label => UserLayer?.Name ?? string.Empty;
 	public bool Visible => !UserLayer?.Hidden ?? false;
 
+	public string TooltipText {
+		get {
+			if (UserLayer is null)
+				return string.Empty;
+			string blend = UserBlendOps.GetBlendModeName (UserLayer.BlendMode);
+			int opacity = (int) Math.Round (UserLayer.Opacity * 100);
+			return Translations.GetString ("Blend Mode: {0}", blend) + "\n"
+				+ Translations.GetString ("Opacity: {0}%", opacity) + "\n\n"
+				+ Translations.GetString ("Double-click for Layer Properties") + "\n"
+				+ Translations.GetString ("Drag and drop to reorder");
+		}
+	}
+
 	public ImageSurface BuildThumbnail (
 		int widthRequest,
 		int heightRequest)
@@ -157,6 +170,20 @@ public sealed partial class LayersListViewItemWidget
 		menuGesture.SetButton (Gdk.Constants.BUTTON_SECONDARY);
 		menuGesture.OnPressed += MenuGesture_OnPressed;
 
+		// Drag and drop to reorder layers. The dragged LayersListViewItem (a GObject)
+		// is carried directly as the content, so the drop handler gets it back typed.
+		Gtk.DragSource dragSource = Gtk.DragSource.New ();
+		dragSource.SetActions (Gdk.DragAction.Move);
+		dragSource.OnPrepare += DragSource_OnPrepare;
+		this.AddController (dragSource);
+
+		// Accept the base object GType: the transferred GObject.Value reports G_TYPE_OBJECT,
+		// so requiring the specific subclass here would make the formats never intersect and
+		// the drop would be silently rejected. We re-check the concrete type in the handler.
+		Gtk.DropTarget dropTarget = Gtk.DropTarget.New (GObject.Type.Object, Gdk.DragAction.Move);
+		dropTarget.OnDrop += DropTarget_OnDrop;
+		this.AddController (dropTarget);
+
 		// --- Initialization (Gtk.Widget)
 
 		this.SetAllMargins (2);
@@ -207,6 +234,8 @@ public sealed partial class LayersListViewItemWidget
 		flipSection.AppendItem (actions.RotateZoom.CreateMenuItem ());
 
 		Gio.Menu propertiesSection = Gio.Menu.New ();
+		// Rename reuses the Layer Properties dialog (which contains the name field).
+		propertiesSection.AppendItem (Gio.MenuItem.New (Translations.GetString ("Rename Layer..."), actions.Properties.FullName));
 		propertiesSection.AppendItem (actions.Properties.CreateMenuItem ());
 
 		Gio.Menu menu = Gio.Menu.New ();
@@ -217,6 +246,52 @@ public sealed partial class LayersListViewItemWidget
 		Gtk.PopoverMenu popover = Gtk.PopoverMenu.NewFromModel (menu);
 		popover.SetParent (this);
 		popover.Popup ();
+	}
+
+	private Gdk.ContentProvider? DragSource_OnPrepare (
+		Gtk.DragSource _,
+		Gtk.DragSource.PrepareSignalArgs args)
+	{
+		if (item is null || item.UserLayer is null)
+			return null;
+
+		return Gdk.ContentProvider.NewForValue (new GObject.Value ((GObject.Object) item));
+	}
+
+	private bool DropTarget_OnDrop (
+		Gtk.DropTarget _,
+		Gtk.DropTarget.DropSignalArgs args)
+	{
+		if (item is null || item.UserLayer is null || !PintaCore.Workspace.HasOpenDocuments)
+			return false;
+
+		if (args.Value.GetObject () is not LayersListViewItem source || source.UserLayer is null)
+			return false;
+
+		Document doc = PintaCore.Workspace.ActiveDocument;
+		int from = doc.Layers.IndexOf (source.UserLayer);
+		int target = doc.Layers.IndexOf (item.UserLayer);
+		if (from < 0 || target < 0 || from == target)
+			return false;
+
+		// Rows are drawn top-first (higher doc index = higher up). Dropping on the
+		// upper half of the target lands above it (higher doc index), lower half below.
+		bool dropAbove = args.Y < GetHeight () / 2.0;
+		int insert = dropAbove ? target + 1 : target;
+		if (from < insert)
+			insert--; // removing the source first shifts everything above it down.
+
+		if (insert == from)
+			return false;
+
+		MoveLayerHistoryItem hist = new (
+			Resources.StandardIcons.LayerMoveUp,
+			Translations.GetString ("Move Layer"),
+			from,
+			insert);
+		hist.Redo ();
+		doc.History.PushNewItem (hist);
+		return true;
 	}
 
 	/// <summary>
@@ -250,6 +325,7 @@ public sealed partial class LayersListViewItemWidget
 
 		item_label.SetText (item.Label);
 		visible_button.SetActive (item.Visible);
+		SetTooltipText (item.TooltipText);
 
 		thumbnail_surface = null;
 		item_thumbnail.QueueDraw ();

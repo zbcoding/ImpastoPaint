@@ -515,7 +515,13 @@ internal sealed class MainWindow
 
 		// "More >>" expands the floating window in place instead of opening the modal
 		// picker - the advanced section is the same sliders, applied live.
-		colors_more_button = Gtk.Button.NewWithLabel (Translations.GetString ("More >>"));
+		// "More" with the forward arrow icon, mirroring the back arrow that appears in the
+		// window titlebar once the advanced section is shown.
+		Gtk.Box colors_more_box = Gtk.Box.New (Gtk.Orientation.Horizontal, 6);
+		colors_more_box.Append (Gtk.Label.New (Translations.GetString ("More")));
+		colors_more_box.Append (Gtk.Image.NewFromIconName (Resources.StandardIcons.GoNext));
+		colors_more_button = Gtk.Button.New ();
+		colors_more_button.SetChild (colors_more_box);
 		colors_more_button.Halign = Gtk.Align.End;
 		colors_more_button.MarginEnd = 6;
 		colors_more_button.MarginBottom = 6;
@@ -557,6 +563,44 @@ internal sealed class MainWindow
 				return false;
 			});
 
+		BuildColorsWindow ();
+
+		// Right-click the float button for a "Reset window" popover, which re-centers the
+		// floating window on the app at its default size.
+		Gtk.Popover reset_popover = Gtk.Popover.New ();
+		reset_popover.Autohide = true;
+		reset_popover.Position = Gtk.PositionType.Top;
+		reset_popover.SetParent (colors_palette);
+		Gtk.Button reset_button = Gtk.Button.NewWithLabel (Translations.GetString ("Reset window"));
+		reset_button.OnClicked += (_, _) => {
+			reset_popover.Popdown ();
+			ResetColorsWindow ();
+		};
+		reset_popover.SetChild (reset_button);
+		colors_palette.ResetColorWindowClicked += (_, _) => {
+			RectangleD r = colors_palette.FloatColorsButtonRect;
+			reset_popover.PointingTo = new Gdk.Rectangle {
+				X = (int) r.X,
+				Y = (int) r.Y,
+				Width = (int) r.Width,
+				Height = (int) r.Height,
+			};
+			reset_popover.Popup ();
+		};
+
+		PintaCore.Actions.View.Colors.Toggled += (_, _) => UpdateColorsVisibility ();
+		PintaCore.Actions.View.ColorsFloating.Toggled += (value, _) => SetColorsFloating (value);
+
+		SetColorsFloating (PintaCore.Actions.View.ColorsFloating.Value);
+	}
+
+	// GTK4/Wayland forbids an app from reading or setting its own window position, so we can't
+	// restore the exact spot the user dragged the floating window to (even onto another
+	// monitor). The best we can do is give the window manager a fresh transient window each
+	// time it opens, which the WM places centered on Impasto - a "best guess" back inside the
+	// app. That is what BuildColorsWindow + RebuildColorsWindow provide.
+	private void BuildColorsWindow ()
+	{
 		colors_window = Gtk.Window.New ();
 		colors_window.Title = Translations.GetString ("Colors");
 		colors_window.TransientFor = window_shell.Window;
@@ -575,23 +619,41 @@ internal sealed class MainWindow
 
 		colors_back_button = Gtk.Button.NewFromIconName (Resources.StandardIcons.GoPrevious);
 		colors_back_button.TooltipText = Translations.GetString ("Back to simple colors");
-		colors_back_button.Visible = false;
+		colors_back_button.Visible = colors_sliders.Visible;
 		colors_back_button.OnClicked += (_, _) => SetColorsAdvanced (false);
 		colors_header.PackStart (colors_back_button);
 
 		colors_window.Titlebar = colors_header;
 
+		// Closing docks the colors but keeps the advanced/simple choice, so reopening the
+		// floating window shows whatever the user last had expanded.
 		colors_window.OnCloseRequest += (_, _) => {
-			SetColorsAdvanced (false);
 			PintaCore.Actions.View.ColorsFloating.Value = false;
 			SetColorsFloating (false);
 			return true;
 		};
+	}
 
-		PintaCore.Actions.View.Colors.Toggled += (_, _) => UpdateColorsVisibility ();
-		PintaCore.Actions.View.ColorsFloating.Toggled += (value, _) => SetColorsFloating (value);
+	// Destroy and recreate the window so the WM re-places the fresh transient centered on
+	// Impasto. Callers re-present it afterwards.
+	private void RebuildColorsWindow ()
+	{
+		bool advanced = colors_sliders.Visible;
 
-		SetColorsFloating (PintaCore.Actions.View.ColorsFloating.Value);
+		// Detach the shared contents first so destroying the window doesn't take them with it.
+		if (colors_window.Child == colors_contents)
+			colors_window.Child = null;
+		colors_window.Destroy ();
+
+		BuildColorsWindow ();
+		SetColorsAdvanced (advanced); // Restore the expanded/simple choice on the new window.
+	}
+
+	private void ResetColorsWindow ()
+	{
+		RebuildColorsWindow ();
+		PintaCore.Actions.View.ColorsFloating.Value = true;
+		SetColorsFloating (true);
 	}
 
 	private void SetColorsAdvanced (bool advanced)
@@ -655,10 +717,16 @@ internal sealed class MainWindow
 		colors_dock.Visible = shown && !floating;
 		colors_contents.Visible = shown && floating;
 
-		if (shown && floating)
-			colors_window.Present ();
-		else
+		if (shown && floating) {
+			// Only rebuild when actually (re)opening - a fresh transient window is what makes
+			// the WM place it back inside Impasto, since we can't restore its last position.
+			if (!colors_window.Visible) {
+				RebuildColorsWindow ();
+				colors_window.Present ();
+			}
+		} else {
 			colors_window.Hide ();
+		}
 	}
 
 	private void CreatePanels ()

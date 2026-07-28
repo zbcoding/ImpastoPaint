@@ -26,6 +26,7 @@ public sealed partial class ToolBoxWidget
 	/// icon of whichever member is currently selected.
 	/// </summary>
 	private static readonly int[][] stack_definitions = [
+		[33, 34], // Color Picker, Color Picker (All Layers)
 		[39, 41, 43, 45], // Rectangle, Rounded Rectangle, Ellipse, Freeform
 	];
 
@@ -86,10 +87,16 @@ public sealed partial class ToolBoxWidget
 		pinned_section.Visible = true; // Container visibility is managed instead.
 
 		Gtk.Image pinIcon = Gtk.Image.NewFromIconName (Resources.StandardIcons.Pin);
-		pinIcon.PixelSize = 30;
+		pinIcon.PixelSize = 15;
 		pinIcon.Halign = Gtk.Align.Start;
 		pinIcon.AddCssClass (AdwaitaStyles.DimLabel);
 		pinIcon.TooltipText = Translations.GetString ("Pinned items");
+
+		// Right click the pin icon to clear all pinned tools at once.
+		Gtk.GestureClick pinIconRightClick = Gtk.GestureClick.New ();
+		pinIconRightClick.SetButton (Gdk.Constants.BUTTON_SECONDARY);
+		pinIconRightClick.OnPressed += (_, _) => ShowClearPinnedMenu (pinIcon);
+		pinIcon.AddController (pinIconRightClick);
 
 		pinned_container = Gtk.Box.New (Gtk.Orientation.Vertical, 0);
 		pinned_container.AddCssClass (Resources.Styles.PinnedSection);
@@ -300,7 +307,7 @@ public sealed partial class ToolBoxWidget
 	/// Close the flyout shortly after the cursor leaves both the button and the flyout. The
 	/// delay gives the cursor time to cross the gap between them.
 	/// </summary>
-	private static void ScheduleClose (ToolStack stack)
+	private void ScheduleClose (ToolStack stack)
 	{
 		if (stack.OpenFlyout is null)
 			return;
@@ -308,7 +315,9 @@ public sealed partial class ToolBoxWidget
 		CancelCloseTimeout (stack);
 		stack.CloseTimeoutId = GLib.Functions.TimeoutAdd (0, 400, () => {
 			stack.CloseTimeoutId = 0;
-			stack.OpenFlyout?.Popdown ();
+			// Don't close while a pin menu is anchored to the flyout - it would take the menu with it.
+			if (open_pin_menu is null)
+				stack.OpenFlyout?.Popdown ();
 			return false;
 		});
 	}
@@ -341,13 +350,13 @@ public sealed partial class ToolBoxWidget
 				HandleToolButtonClicked (member);
 			};
 
-			// Right click a flyout entry to pin/unpin it. The pin menu is shown after this
-			// popover closes rather than nested inside it, which GTK handles far more reliably.
+			// Right click a flyout entry to pin/unpin it. The pin menu is nested off the entry
+			// itself and the flyout stays open, so it reads as belonging to that tool.
 			Gtk.GestureClick entryRightClick = Gtk.GestureClick.New ();
 			entryRightClick.SetButton (Gdk.Constants.BUTTON_SECONDARY);
 			entryRightClick.OnPressed += (_, _) => {
-				popover.Popdown ();
-				ShowPinMenu (stack.Button, member);
+				CancelCloseTimeout (stack); // Keep the flyout up while the pin menu is anchored to it.
+				ShowPinMenu (entry, member);
 			};
 			entry.AddController (entryRightClick);
 
@@ -396,6 +405,35 @@ public sealed partial class ToolBoxWidget
 		action.OnClicked += (_, _) => {
 			popover.Popdown ();
 			SetPinned (tool, !pinned);
+		};
+
+		open_pin_menu = popover;
+		popover.Popup ();
+	}
+
+	private void ShowClearPinnedMenu (Gtk.Widget anchor)
+	{
+		Gtk.Button action = Gtk.Button.New ();
+		action.SetCssClasses ([AdwaitaStyles.Flat]);
+
+		Gtk.Box row = Gtk.Box.New (Gtk.Orientation.Horizontal, 6);
+		row.Append (Gtk.Image.NewFromIconName (Resources.StandardIcons.Pin));
+		row.Append (Gtk.Label.New (Translations.GetString ("Clear pinned tools")));
+		action.SetChild (row);
+
+		Gtk.Popover popover = Gtk.Popover.New ();
+		popover.SetChild (action);
+		popover.SetParent (anchor);
+		popover.Position = Gtk.PositionType.Right;
+		popover.OnClosed += (_, _) => {
+			open_pin_menu = null;
+			popover.Unparent ();
+		};
+
+		action.OnClicked += (_, _) => {
+			popover.Popdown ();
+			foreach (BaseTool tool in pinned_buttons.Keys.ToList ())
+				SetPinned (tool, false);
 		};
 
 		open_pin_menu = popover;

@@ -55,6 +55,9 @@ public sealed partial class StatusBarColorPaletteWidget
 	public event EventHandler? ColorWheelClicked;
 	public RectangleD ColorWheelButtonRect => color_wheel_icon_rect;
 	public event EventHandler? FloatColorsClicked;
+	// Right-clicking the float button asks for the "Reset window" popover.
+	public event EventHandler? ResetColorWindowClicked;
+	public RectangleD FloatColorsButtonRect => float_colors_icon_rect;
 
 	// Impasto: the wheel / float buttons only make sense while docked - the floating
 	// window already shows the wheel, and clicking them there popped up an empty
@@ -152,6 +155,8 @@ public sealed partial class StatusBarColorPaletteWidget
 			case WidgetElement.FloatColors:
 				if (button == GtkExtensions.MOUSE_LEFT_BUTTON)
 					FloatColorsClicked?.Invoke (this, EventArgs.Empty);
+				else if (button == GtkExtensions.MOUSE_RIGHT_BUTTON)
+					ResetColorWindowClicked?.Invoke (this, EventArgs.Empty);
 				break;
 
 			case WidgetElement.PrimaryColor:

@@ -102,6 +102,9 @@ public sealed partial class DockPanel
 		public void Float (Gtk.Box dockBar)
 		{
 			redock_bar = dockBar;
+			// Remember whether we floated from the icon popover, so closing the
+			// window returns to the icon rather than always re-docking.
+			floated_from_minimized = IsMinimized;
 
 			Gtk.Window? parent = Item.GetRoot () as Gtk.Window;
 
@@ -141,6 +144,7 @@ public sealed partial class DockPanel
 		}
 
 		private Gtk.Box? redock_bar;
+		private bool floated_from_minimized;
 
 		public void Redock ()
 		{
@@ -152,10 +156,15 @@ public sealed partial class DockPanel
 			float_window.SetVisible (false);
 
 			Item.SetFloating (false);
-			// Flips the header back to the minimize button if the item was
-			// floated from the minimized state; no-op (and no event) otherwise.
-			Item.Maximize ();
-			UpdateOnMaximize (redock_bar);
+
+			if (floated_from_minimized) {
+				// Return to the icon popover it was opened from.
+				UpdateOnMinimize (redock_bar);
+			} else {
+				// Flips the header back to the minimize button if needed.
+				Item.Maximize ();
+				UpdateOnMaximize (redock_bar);
+			}
 		}
 	}
 

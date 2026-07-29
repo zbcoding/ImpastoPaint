@@ -32,6 +32,10 @@ public class RectangleHandle : IToolHandle
 	private MoveHandle? active_handle;
 	private PointD? drag_start_pos;
 
+	// Resize cursors ordered by screen-space octant [E, SE, S, SW, W, NW, N, NE],
+	// so a direction vector can pick the glyph that matches an oriented grip (issue #4).
+	private readonly Gdk.Cursor[] direction_cursors;
+
 	public RectangleHandle (IWorkspaceService workspace)
 	{
 		this.workspace = workspace;
@@ -50,6 +54,34 @@ public class RectangleHandle : IToolHandle
 
 		foreach (var handle in handles.Values)
 			handle.Active = true;
+
+		direction_cursors = [
+			GdkExtensions.CursorFromName (Resources.StandardCursors.ResizeE),
+			GdkExtensions.CursorFromName (Resources.StandardCursors.ResizeSE),
+			GdkExtensions.CursorFromName (Resources.StandardCursors.ResizeS),
+			GdkExtensions.CursorFromName (Resources.StandardCursors.ResizeSW),
+			GdkExtensions.CursorFromName (Resources.StandardCursors.ResizeW),
+			GdkExtensions.CursorFromName (Resources.StandardCursors.ResizeNW),
+			GdkExtensions.CursorFromName (Resources.StandardCursors.ResizeN),
+			GdkExtensions.CursorFromName (Resources.StandardCursors.ResizeNE),
+		];
+	}
+
+	/// <summary>
+	/// Picks the resize cursor whose arrow points along <paramref name="dir"/>
+	/// (a screen-space vector from the grip to the rectangle's center). Snaps to
+	/// the nearest 45° octant. Glyphs are 180°-symmetric, so flips resolve too.
+	/// </summary>
+	private Gdk.Cursor DirectionCursor (PointD dir)
+	{
+		if (dir is { X: 0, Y: 0 })
+			return direction_cursors[0];
+
+		double deg = Math.Atan2 (dir.Y, dir.X) * 180.0 / Math.PI;
+		if (deg < 0)
+			deg += 360;
+		int oct = (int) Math.Round (deg / 45.0) & 7;
+		return direction_cursors[oct];
 	}
 
 	#region IToolHandle Implementation
@@ -211,8 +243,11 @@ public class RectangleHandle : IToolHandle
 		handles[HandlePoint.Down].CanvasPosition = new PointD (center.X, end_pt.Y);
 
 		if (Orientation is not null) {
-			foreach (MoveHandle handle in handles.Values)
+			PointD orientedCenter = Orientation.TransformPoint (center);
+			foreach (MoveHandle handle in handles.Values) {
 				handle.CanvasPosition = Orientation.TransformPoint (handle.CanvasPosition);
+				handle.Cursor = DirectionCursor (handle.CanvasPosition - orientedCenter);
+			}
 		}
 	}
 

@@ -222,7 +222,9 @@ public abstract class BaseTransformTool : BaseTool
 
 		double dx = 0.0;
 		double dy = 0.0;
-		double coeff = e.IsControlPressed ? 10.0 : 1.0;
+		// Issue #1559: Shift+arrow should move by 10px (Paint.NET parity).
+		// Keep Ctrl as 10px as well for existing Pinta users.
+		double coeff = (e.IsControlPressed || e.IsShiftPressed) ? 10.0 : 1.0;
 
 		switch (e.Key.Value) {
 			case Gdk.Constants.KEY_Left:

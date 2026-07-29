@@ -178,6 +178,7 @@ public static class Icons
 
 	public const string LassoFreeform = "tool-select-lasso-freeform-symbolic";
 	public const string LassoPolygon = "tool-select-lasso-polygon-symbolic";
+	public const string LassoScissors = "tool-select-lasso-scissors-symbolic";
 
 	public const string HelpBug = "help-bug";
 	public const string HelpTranslate = "help-translate";

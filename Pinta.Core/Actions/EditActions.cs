@@ -62,7 +62,7 @@ public sealed class EditActions
 
 	// Only fire Escape-deselect while a selection tool is active, so Escape
 	// stays free for other tools. Credit: Sam-Gledhill, PR #2205.
-	private static readonly string[] selection_tools = ["Pinta.Tools.EllipseSelectTool", "Pinta.Tools.RectangleSelectTool", "Pinta.Tools.LassoSelectTool"];
+	private static readonly string[] selection_tools = ["Pinta.Tools.EllipseSelectTool", "Pinta.Tools.RectangleSelectTool", "Pinta.Tools.LassoSelectTool", "Pinta.Tools.ScissorsSelectTool"];
 
 	private readonly ChromeManager chrome;
 	private readonly PaletteFormatManager palette_formats;

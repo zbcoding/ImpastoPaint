@@ -48,7 +48,7 @@ public sealed partial class PreferencesDialog
 		grid.ColumnSpacing = SPACING;
 		grid.ColumnHomogeneous = false;
 
-		grid.Attach (CreateLabel (Translations.GetString ("Default canvas size (new window):"), Gtk.Align.Start), 0, 0, 3, 1);
+		grid.Attach (CreateLabel (Translations.GetString ("Default canvas size (on application open):"), Gtk.Align.Start), 0, 0, 3, 1);
 
 		grid.Attach (CreateLabel (Translations.GetString ("Width:"), Gtk.Align.End), 0, 1, 1, 1);
 		grid.Attach (widthSpinner, 1, 1, 1, 1);

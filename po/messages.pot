@@ -2932,7 +2932,7 @@ msgid "{0}%"
 msgstr ""
 
 #: ../Pinta/Dialogs/PreferencesDialog.cs:51
-msgid "Default canvas size (new window):"
+msgid "Default canvas size (on application open):"
 msgstr ""
 
 #: ../Pinta/Dialogs/PreferencesDialog.cs:65

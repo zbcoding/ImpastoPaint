@@ -57,6 +57,8 @@ public abstract class BaseTransformTool : BaseTool
 	private uint nudge_hint_timeout_id = 0;
 	private bool nudge_hint_visible = false;
 	private string? last_nudge_hint;
+	private Gtk.Popover? nudge_popover;
+	private Gtk.Label? nudge_label;
 
 	/// <summary>
 	/// Initializes a new instance of the <see cref="BaseTransformTool"/> class.
@@ -311,6 +313,14 @@ public abstract class BaseTransformTool : BaseTool
 		transform.Translate (dx, dy);
 		OnUpdateTransform (document, transform);
 
+		// Keep handles glued to the nudged content in realtime (issue #1).
+		UpdateHandlesFromDocument (document);
+
+		// If hint is already visible, refresh its position/content (e.g., ctrl px changes).
+		if (nudge_hint_visible) {
+			ShowNudgeHint (document);
+		}
+
 		return true;
 	}
 
@@ -372,6 +382,15 @@ public abstract class BaseTransformTool : BaseTool
 		handle.Active = false;
 		UpdateHandleHint (false);
 		ClearNudgeState ();
+
+		if (nudge_popover is not null) {
+			try {
+				nudge_popover.Popdown ();
+				nudge_popover.Unparent ();
+			} catch { }
+			nudge_popover = null;
+			nudge_label = null;
+		}
 	}
 
 	/// <summary>
@@ -420,18 +439,15 @@ public abstract class BaseTransformTool : BaseTool
 
 	/// <summary>
 	/// Show a hint about arrow-key nudging after holding for 2 seconds.
-	/// Similar UI to the resize-handle hint (canvas tooltip / popover style).
-	/// Ctrl amount is 10% of canvas size (20% with Ctrl+Shift), so pixel
-	/// equivalent changes with canvas — hint text reflects that.
+	/// Similar UI to the tool menu button's hint popovers (issue #1559).
+	/// Anchored to the lower-right of the nudged area so it appears near the
+	/// content even when the mouse is elsewhere (keyboard-only use).
 	/// </summary>
 	private void ShowNudgeHint (Document document)
 	{
 		if (!workspace.HasOpenDocuments)
 			return;
 
-		// Updated per user feedback: hint should say Ctrl nudges 10% of canvas,
-		// not a fixed pixel count, but we still include example px in parentheses
-		// for discoverability and update it if canvas size changes.
 		int w = document.ImageSize.Width;
 		int h = document.ImageSize.Height;
 		int ctrl10X = Math.Max (10, (int) Math.Round (w * 0.10));
@@ -439,9 +455,7 @@ public abstract class BaseTransformTool : BaseTool
 		int ctrl20X = Math.Max (20, (int) Math.Round (w * 0.20));
 		int ctrl20Y = Math.Max (20, (int) Math.Round (h * 0.20));
 
-		// Generic percentage-based hint (doesn't need updating), plus example px.
-		// Translators: nudge hint shown after holding arrow key 2s.
-		// Example: "Arrow: 1px · Shift+Arrow: 10px · Ctrl+Arrow: 10% of canvas (e.g. 80×60px) · Ctrl+Shift+Arrow: 20% of canvas (e.g. 160×120px)"
+		// Hint says "Ctrl+Arrow: 10% of canvas size" per user feedback, with example px.
 		string template = Translations.GetString (
 			"Arrow: 1px · Shift+Arrow: 10px · Ctrl+Arrow: 10% of canvas ({0}×{1}px) · Ctrl+Shift+Arrow: 20% of canvas ({2}×{3}px)");
 
@@ -449,31 +463,83 @@ public abstract class BaseTransformTool : BaseTool
 		try {
 			hint = string.Format (template, ctrl10X, ctrl10Y, ctrl20X, ctrl20Y);
 		} catch {
-			// Fallback if translation has mismatched placeholders — show generic % without px.
 			string fallback = Translations.GetString (
 				"Arrow: 1px · Shift+Arrow: 10px · Ctrl+Arrow: 10% of canvas · Ctrl+Shift+Arrow: 20% of canvas");
 			hint = fallback;
 		}
 
-		Gtk.Widget canvas = workspace.ActiveWorkspace.Canvas;
+		var activeWs = workspace.ActiveWorkspace;
+		Gtk.Widget canvas = activeWs.Canvas;
+
+		// Lower-right of the nudged area in canvas coords.
+		RectangleD rect;
+		if (handle.Active) {
+			rect = handle.Rectangle;
+		} else {
+			try {
+				rect = GetSourceRectangle (document);
+			} catch {
+				rect = document.Selection.GetBounds ();
+			}
+		}
+
+		PointD lowerRightCanvas = new (rect.X + rect.Width, rect.Y + rect.Height);
+		PointD lowerRightView = activeWs.CanvasPointToView (lowerRightCanvas);
+
+		if (nudge_popover is null) {
+			nudge_popover = Gtk.Popover.New ();
+			nudge_popover.Autohide = false;
+			nudge_popover.Position = Gtk.PositionType.Bottom;
+			nudge_popover.SetParent (canvas);
+			nudge_label = Gtk.Label.New (hint);
+			nudge_label.Wrap = true;
+			nudge_label.MaxWidthChars = 60;
+			nudge_popover.SetChild (nudge_label);
+		} else {
+			if (nudge_label is not null)
+				nudge_label.SetText (hint);
+			if (nudge_popover.GetParent () != canvas) {
+				nudge_popover.Unparent ();
+				nudge_popover.SetParent (canvas);
+			}
+		}
+
+		Gdk.Rectangle pointing = new () {
+			X = (int) Math.Clamp (lowerRightView.X, 0, 10000),
+			Y = (int) Math.Clamp (lowerRightView.Y, 0, 10000),
+			Width = 1,
+			Height = 1
+		};
+		nudge_popover.PointingTo = pointing;
+
 		canvas.SetTooltipText (hint);
+
+		nudge_popover.Popup ();
 		last_nudge_hint = hint;
 		nudge_hint_visible = true;
 	}
 
 	private void HideNudgeHint ()
 	{
-		if (!nudge_hint_visible)
+		if (!nudge_hint_visible && nudge_popover is null)
 			return;
 
 		if (workspace.HasOpenDocuments) {
-			Gtk.Widget canvas = workspace.ActiveWorkspace.Canvas;
-			if (last_nudge_hint is not null && canvas.TooltipText == last_nudge_hint) {
-				canvas.SetTooltipText (null);
-			} else if (canvas.TooltipText is not null && nudge_hint_visible) {
-				if (canvas.TooltipText.Contains ("Arrow:") || canvas.TooltipText.Contains ("Shift+Arrow"))
+			try {
+				Gtk.Widget canvas = workspace.ActiveWorkspace.Canvas;
+				if (last_nudge_hint is not null && canvas.TooltipText == last_nudge_hint) {
 					canvas.SetTooltipText (null);
-			}
+				} else if (canvas.TooltipText is not null && nudge_hint_visible) {
+					if (canvas.TooltipText.Contains ("Arrow:") || canvas.TooltipText.Contains ("Shift+Arrow"))
+						canvas.SetTooltipText (null);
+				}
+			} catch { }
+		}
+
+		if (nudge_popover is not null) {
+			try {
+				nudge_popover.Popdown ();
+			} catch { }
 		}
 
 		nudge_hint_visible = false;

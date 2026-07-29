@@ -42,6 +42,12 @@ public sealed class CloneStampTool : BaseBrushTool
 	private readonly IWorkspaceService workspace;
 	private readonly BrushHandle handle;
 	private bool move_origin_handle = true;
+
+	// Transient popover shown below the brush circle when the user tries to paint
+	// without an origin set. Parented to the canvas, like the healing-brush hint.
+	private Gtk.Popover? hint_popover;
+	private uint hint_timeout_id;
+
 	public CloneStampTool (IServiceProvider services) : base (services)
 	{
 		system_manager = services.GetService<SystemManager> ();
@@ -84,8 +90,10 @@ public sealed class CloneStampTool : BaseBrushTool
 
 		// Ctrl click is set origin, regular click is begin drawing
 		if (!e.IsControlPressed) {
-			if (!origin.HasValue)
+			if (!origin.HasValue) {
+				ShowOriginHint (e.Point);
 				return;
+			}
 
 			painting = true;
 
@@ -100,6 +108,7 @@ public sealed class CloneStampTool : BaseBrushTool
 		} else {
 			origin = e.Point;
 			offset = null;
+			HideOriginHint ();
 			UpdateOriginHandle (document, origin.Value.X, origin.Value.Y, false);
 		}
 	}
@@ -188,6 +197,7 @@ public sealed class CloneStampTool : BaseBrushTool
 	{
 		origin = null;
 		handle.Active = false;
+		DisposeHint ();
 	}
 
 	private void UpdateOriginHandle (Document document, int x, int y, bool move_event)
@@ -196,5 +206,70 @@ public sealed class CloneStampTool : BaseBrushTool
 			handle.CanvasPosition = new (x, y);
 		handle.BrushWidth = BrushWidth;
 		document.Workspace.Invalidate (handle.InvalidateRect);
+	}
+
+	// Popover reminder shown just below the brush circle when the user clicks to paint
+	// with no origin set. Names the modifier (Ctrl) used to set the origin. Auto-dismisses.
+	private void ShowOriginHint (PointI canvasPoint)
+	{
+		if (!workspace.HasOpenDocuments)
+			return;
+
+		var ws = workspace.ActiveWorkspace;
+		Gtk.Widget canvas = ws.Canvas;
+
+		double radius = Math.Max (1, BrushWidth / 2.0);
+		PointD belowCircle = ws.CanvasPointToView (new PointD (canvasPoint.X, canvasPoint.Y + radius));
+
+		if (hint_popover is null) {
+			hint_popover = Gtk.Popover.New ();
+			hint_popover.Autohide = false;
+			hint_popover.Position = Gtk.PositionType.Bottom;
+			hint_popover.SetParent (canvas);
+			var label = Gtk.Label.New (Translations.GetString (
+				"Hold {0} and click to set an origin point first.", system_manager.CtrlLabel ()));
+			label.Wrap = true;
+			label.MaxWidthChars = 40;
+			label.MarginTop = label.MarginBottom = 4;
+			label.MarginStart = label.MarginEnd = 8;
+			hint_popover.SetChild (label);
+		} else if (hint_popover.GetParent () != canvas) {
+			hint_popover.Unparent ();
+			hint_popover.SetParent (canvas);
+		}
+
+		hint_popover.PointingTo = new Gdk.Rectangle {
+			X = (int) Math.Clamp (belowCircle.X, 0, 100000),
+			Y = (int) Math.Clamp (belowCircle.Y, 0, 100000),
+			Width = 1,
+			Height = 1,
+		};
+		hint_popover.Popup ();
+
+		if (hint_timeout_id != 0)
+			GLib.Functions.SourceRemove (hint_timeout_id);
+		hint_timeout_id = GLib.Functions.TimeoutAdd (0, 2500, () => {
+			hint_timeout_id = 0;
+			hint_popover?.Popdown ();
+			return false;
+		});
+	}
+
+	private void HideOriginHint ()
+	{
+		if (hint_timeout_id != 0) {
+			GLib.Functions.SourceRemove (hint_timeout_id);
+			hint_timeout_id = 0;
+		}
+		hint_popover?.Popdown ();
+	}
+
+	private void DisposeHint ()
+	{
+		HideOriginHint ();
+		if (hint_popover is not null) {
+			hint_popover.Unparent ();
+			hint_popover = null;
+		}
 	}
 }

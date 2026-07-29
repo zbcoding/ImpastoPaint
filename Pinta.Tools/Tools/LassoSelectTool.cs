@@ -85,6 +85,7 @@ public class LassoSelectTool : BaseTool
 	protected virtual bool IsFreeformMode => CurrentMode == LassoMode.Freeform;
 	protected virtual bool IsPolygonMode => CurrentMode == LassoMode.Polygon;
 	protected virtual bool IsScissorsMode => false;
+	protected virtual int ScissorsEdgeTolerance => 50;
 	private LassoMode CurrentMode => LassoModeButtom.SelectedItem.GetTagOrDefault (LassoMode.Freeform);
 
 	protected override void OnBuildToolBar (Gtk.Box tb)
@@ -113,7 +114,7 @@ public class LassoSelectTool : BaseTool
 
 		if (hist is null) {
 			ScissorsEngine? newScissorsEngine = IsScissorsMode
-				? new ScissorsEngine (document.Layers.CurrentUserLayer.Surface, new ScissorsOptions (Settings.GetSetting (SettingNames.SCISSORS_EDGE_TOLERANCE, 50)))
+				? new ScissorsEngine (document.Layers.CurrentUserLayer.Surface, new ScissorsOptions (ScissorsEdgeTolerance))
 				: null;
 
 			hist = new SelectionHistoryItem (workspace, Icon, Name);
@@ -145,8 +146,11 @@ public class LassoSelectTool : BaseTool
 		if (scissors_anchors.Count > 0 && PointsEqual (scissors_anchors[^1], anchor))
 			return;
 
-		if (scissors_anchors.Count > 0)
-			scissors_segments.Add (FindScissorsPath (scissors_anchors[^1], anchor));
+		if (scissors_anchors.Count > 0) {
+			List<IntPoint> segment = FindScissorsPath (scissors_anchors[^1], anchor);
+			scissors_segments.Add (segment);
+			scissors_engine!.LearnFromPath (segment);
+		}
 
 		scissors_anchors.Add (anchor);
 		scissors_preview = null;
@@ -441,6 +445,7 @@ public class LassoSelectTool : BaseTool
 		is_dragging = false;
 		lasso_polygon.Clear ();
 		scissors_engine = null;
+		scissors_tree_anchor = null;
 		scissors_anchors.Clear ();
 		scissors_segments.Clear ();
 		scissors_preview = null;

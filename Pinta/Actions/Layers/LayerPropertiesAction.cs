@@ -34,6 +34,7 @@ internal sealed class LayerPropertiesAction : IActionHandler
 	private readonly ChromeManager chrome;
 	private readonly LayerActions layers;
 	private readonly WorkspaceManager workspace;
+	private LayerPropertiesDialog? active_dialog;
 	internal LayerPropertiesAction (
 		ChromeManager chrome,
 		LayerActions layers,
@@ -56,8 +57,14 @@ internal sealed class LayerPropertiesAction : IActionHandler
 
 	private async void Activated (object sender, EventArgs e)
 	{
+		if (active_dialog is not null) {
+			active_dialog.Response ((int) Gtk.ResponseType.Ok);
+			return;
+		}
+
 		Document active = workspace.ActiveDocument;
 		using LayerPropertiesDialog dialog = LayerPropertiesDialog.New (chrome, workspace);
+		active_dialog = dialog;
 		try {
 			Gtk.ResponseType response = await dialog.RunAsync ();
 
@@ -83,6 +90,7 @@ internal sealed class LayerPropertiesAction : IActionHandler
 					workspace.ActiveWorkspace.Invalidate ();
 			}
 		} finally {
+			active_dialog = null;
 			dialog.Destroy ();
 		}
 	}

@@ -148,6 +148,7 @@ internal sealed class OpenDocumentAction : IActionHandler
 
 		result.Name = Translations.GetString ("Image files");
 
+		// ponytail: KDE's portal combines patterns and MIME types, so keep this aggregate filter extension-only.
 		foreach (var format in image_formats.Formats) {
 
 			if (!format.IsImportAvailable ())
@@ -155,15 +156,6 @@ internal sealed class OpenDocumentAction : IActionHandler
 
 			foreach (var ext in format.Extensions)
 				result.AddPattern ($"*.{ext}");
-
-			// On Unix-like systems, file extensions are often considered optional.
-			// Files can often also be identified by their MIME types.
-			// Windows does not understand MIME types natively.
-			// Adding a MIME filter on Windows would break the native file picker and force a GTK file picker instead.
-			if (SystemManager.GetOperatingSystem () != OS.Windows) {
-				foreach (var mime in format.Mimes)
-					result.AddMimeType (mime);
-			}
 		}
 
 		return result;

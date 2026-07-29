@@ -85,7 +85,7 @@ public sealed class PdnFormat : IImageImporter
 		Array.Copy (fullArray, nrbfStartPos, remBytes, 0, remLen);
 
 		using (MemoryStream nrbfSlice = new (remBytes, writable: false)) {
-			rootRecord = NrbfDecoder.Decode (nrbfSlice);
+			rootRecord = NrbfDecoder.Decode (nrbfSlice, leaveOpen: true);
 			afterNrbfPos = nrbfStartPos + nrbfSlice.Position;
 		}
 

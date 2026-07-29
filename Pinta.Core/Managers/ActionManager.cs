@@ -157,21 +157,78 @@ public sealed class ActionManager
 			cursor.SetText ($"{pt.X}, {pt.Y}");
 		};
 
-		// Selection size widget - left aligned with enough space to display coordinates up to tens of thousands (e.g. 10000, 10000).
-		statusbar.Append (Gtk.Image.NewFromIconName (Resources.Icons.ToolSelectRectangle));
-		var selection_size = Gtk.Label.New ("0, 0");
+		// Selection widget - top-left coords + size (issue #2116). Hidden until a
+		// selection is actually visible; upstream's full-canvas reset selection
+		// otherwise made it look like a selection existed when it didn't (PR #2013).
+		var selection_icon = Gtk.Image.NewFromIconName (Resources.Icons.ToolSelectRectangle);
+		statusbar.Append (selection_icon);
+		var selection_size = Gtk.Label.New ("");
 		selection_size.Xalign = 0.0f;
 		selection_size.Halign = Gtk.Align.Start;
-		selection_size.WidthChars = 11;
+		selection_size.WidthChars = 20;
 		statusbar.Append (selection_size);
 
+		selection_icon.SetVisible (false);
+		selection_size.SetVisible (false);
+
 		workspaceManager.SelectionChanged += delegate {
-			var bounds = workspaceManager.HasOpenDocuments ? workspaceManager.ActiveDocument.Selection.GetBounds () : new RectangleD ();
-			selection_size.SetText ($"{bounds.Width}, {bounds.Height}");
+			if (!workspaceManager.HasOpenDocuments || !workspaceManager.ActiveDocument.Selection.Visible) {
+				selection_icon.SetVisible (false);
+				selection_size.SetVisible (false);
+				return;
+			}
+			var bounds = workspaceManager.ActiveDocument.Selection.GetBounds ();
+			selection_size.SetText ($"{(int) bounds.X}, {(int) bounds.Y} · {(int) bounds.Width} × {(int) bounds.Height}");
+			selection_icon.SetVisible (true);
+			selection_size.SetVisible (true);
+		};
+
+		// Image dimensions widget - "800 × 600 · 4:3" (PR #2013).
+		statusbar.Append (Gtk.Image.NewFromIconName (Resources.Icons.ImageResize));
+		var image_size = Gtk.Label.New ("");
+		image_size.Xalign = 0.0f;
+		image_size.Halign = Gtk.Align.Start;
+		image_size.WidthChars = 16;
+		statusbar.Append (image_size);
+
+		void UpdateImageSizeLabel ()
+		{
+			if (!workspaceManager.HasOpenDocuments) {
+				image_size.SetText ("");
+				return;
+			}
+			var size = workspaceManager.ActiveDocument.ImageSize;
+			string text = $"{size.Width} × {size.Height} · {GetAspectRatio (size.Width, size.Height)}";
+			if (text.Length > image_size.WidthChars)
+				image_size.WidthChars = text.Length;
+			image_size.SetText (text);
+		}
+
+		workspaceManager.ActiveDocumentChanged += delegate { UpdateImageSizeLabel (); };
+		workspaceManager.DocumentActivated += (_, args) => {
+			args.Document.ImageSizeChanged += delegate { UpdateImageSizeLabel (); };
 		};
 
 		// Document zoom widget
 		View.CreateStatusBar (statusbar);
+	}
+
+	// Simplified aspect ratio, e.g. 800×600 -> "4:3".
+	private static string GetAspectRatio (int w, int h)
+	{
+		if (w == 0 || h == 0) return "";
+		int gcd = GCD (w, h);
+		return $"{w / gcd}:{h / gcd}";
+	}
+
+	private static int GCD (int a, int b)
+	{
+		while (b != 0) {
+			int temp = b;
+			b = a % b;
+			a = temp;
+		}
+		return a;
 	}
 
 	public void RegisterHandlers ()

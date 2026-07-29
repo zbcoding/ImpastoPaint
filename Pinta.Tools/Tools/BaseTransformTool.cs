@@ -695,26 +695,23 @@ public abstract class BaseTransformTool : BaseTool
 			return;
 		}
 
-		// Reconstruct the live orientation from the selection layer's transform,
-		// which history saves/restores (MovePixelsHistoryItem). This keeps the grips
-		// glued to rotated/scaled content after undo/redo and tool reactivation,
-		// instead of snapping to the axis-aligned bounding box (issue #4). For a
-		// fresh paste the transform is identity, so this reduces to axis-aligned.
-		Matrix t = document!.Layers.SelectionLayer.Transform.Clone ();
-		try {
-			Matrix tInv = t.Clone ();
-			tInv.Invert (); // throws / degenerates only for zero-area content
-			// ref_rect is the content's bounds with the orientation undone, so
-			// live · ref-corners lands back on the current on-screen quad.
-			ref_rect = document.Selection.Clone ().Transform (tInv).GetBounds ();
-			live.InitMatrix (t);
-		} catch {
+		// Derive the grips from the selection's own polygon. It is part of
+		// document.Selection, so history saves/restores it, and it outlines the
+		// transformed content exactly (a rotate maps the polygon corners the same
+		// way it maps the pixels). A rotated rectangular selection is a 4-corner
+		// quad; map an axis-aligned reference rect onto it so the existing
+		// draw/hit-test/scale code (which works in ref space) keeps functioning.
+		// Non-rectangular selections fall back to the axis-aligned bounding box.
+		if (TryGetOrientedQuad (document!, out RectangleD refRect, out Matrix orientation)) {
+			ref_rect = refRect;
+			live.InitMatrix (orientation);
+		} else {
+			ref_rect = GetSourceRectangle (document!);
 			live.InitIdentity ();
-			ref_rect = GetSourceRectangle (document);
 		}
 		handle.Active = true;
 		handle.SetOriented (ref_rect, live.Clone ());
-		document.Workspace.Invalidate ();
+		document!.Workspace.Invalidate ();
 	}
 
 	/// <summary>
@@ -925,6 +922,62 @@ public abstract class BaseTransformTool : BaseTool
 		transform.Scale (sx, sy);
 		transform.Translate (-from.X, -from.Y);
 		return transform;
+	}
+
+	/// <summary>
+	/// If the selection is a rotated rectangle (a 4-corner quad), returns the
+	/// axis-aligned reference rect <c>(0,0,w,h)</c> and the <paramref name="orientation"/>
+	/// matrix that maps it onto that quad. The quad comes straight from the
+	/// selection polygon, so it matches the on-screen content at any history step.
+	/// Returns false for non-rectangular selections (caller uses the bbox).
+	/// </summary>
+	private static bool TryGetOrientedQuad (Document document, out RectangleD refRect, out Matrix orientation)
+	{
+		refRect = default;
+		orientation = CairoExtensions.CreateIdentityMatrix ();
+
+		var polys = document.Selection.SelectionPolygons;
+		// A rectangle is 4 corners (some paths repeat the first point to close).
+		if (polys.Count != 1 || (polys[0].Count != 4 && polys[0].Count != 5))
+			return false;
+
+		// p0 and its two adjacent corners p1 (width edge) and p3 (height edge).
+		PointD p0 = new (polys[0][0].X, polys[0][0].Y);
+		PointD p1 = new (polys[0][1].X, polys[0][1].Y);
+		PointD p3 = new (polys[0][3].X, polys[0][3].Y);
+
+		PointD widthVec = p1 - p0;
+		PointD heightVec = p3 - p0;
+		double w = Math.Sqrt (widthVec.X * widthVec.X + widthVec.Y * widthVec.Y);
+		double h = Math.Sqrt (heightVec.X * heightVec.X + heightVec.Y * heightVec.Y);
+		if (w < 1e-6 || h < 1e-6)
+			return false;
+
+		PointD ex = new (widthVec.X / w, widthVec.Y / w);
+		PointD ey = new (heightVec.X / h, heightVec.Y / h);
+
+		// Reject non-orthogonal quads (sheared/arbitrary polygons); we only model
+		// rotated + flipped rectangles. SelectionPolygons stores integer points
+		// (DocumentSelection.Transform truncates to IntPoint), so a genuinely
+		// rotated rectangle carries up to ~1px error per corner — scale the
+		// tolerance with edge length instead of demanding exact orthogonality.
+		double dot = ex.X * ey.X + ex.Y * ey.Y;
+		double tol = Math.Min (0.1, 4.0 * (1.0 / w + 1.0 / h));
+		if (Math.Abs (dot) > tol)
+			return false;
+
+		double theta = Math.Atan2 (ex.Y, ex.X);
+		double det = ex.X * ey.Y - ex.Y * ey.X; // ex × ey; <0 = mirrored
+
+		Matrix m = CairoExtensions.CreateIdentityMatrix ();
+		m.Translate (p0.X, p0.Y);
+		m.Rotate (theta);
+		if (det < 0)
+			m.Scale (1, -1); // height edge is mirrored relative to a pure rotation
+
+		refRect = new RectangleD (0, 0, w, h);
+		orientation = m;
+		return true;
 	}
 
 	private static bool IsCorner (HandlePoint? p)

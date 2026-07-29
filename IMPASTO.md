@@ -47,6 +47,7 @@ git fetch upstream && git rebase upstream/main
 | Dock tooltips: "Minimize to icon" / "Maximize to side menu" | `DockItem.cs` | build only, **never run** |
 | Border around the toolbox | `MainWindow.cs` `HasFrame` | build only, **never run** |
 | "More >>" opens the full colour picker | `MainWindow.cs` | **build only, never clicked** |
+| Canvas surround colour preference in Edit → Settings | `PreferencesDialog.cs`, `CanvasWindow.cs` | build only, **never run** |
 
 App ID is `com.github.zbcoding.Impasto`. Settings live in `~/.config/Impasto/settings.xml`
 so Impasto installs alongside Pinta rather than replacing it — the metainfo deliberately

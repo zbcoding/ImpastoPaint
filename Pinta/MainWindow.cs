@@ -180,6 +180,11 @@ internal sealed class MainWindow
 		((CanvasWindow) view.Widget).Canvas.Cursor = PintaCore.Tools.CurrentTool?.CurrentCursor;
 	}
 
+	private static Cairo.Color GetCanvasSurroundColor ()
+		=> Cairo.Color.FromHex (
+			PintaCore.Settings.GetSetting (SettingNames.CANVAS_SURROUND_COLOR, SettingNames.DEFAULT_CANVAS_SURROUND_COLOR))
+			?? Cairo.Color.FromHex (SettingNames.DEFAULT_CANVAS_SURROUND_COLOR)!.Value;
+
 	private void Workspace_DocumentCreated (object? sender, DocumentEventArgs e)
 	{
 		var doc = e.Document;
@@ -190,7 +195,9 @@ internal sealed class MainWindow
 		CanvasWindow canvas = CanvasWindow.New (
 			PintaCore.Chrome,
 			PintaCore.Tools,
-			doc, PintaCore.CanvasGrid);
+			doc,
+			PintaCore.CanvasGrid,
+			GetCanvasSurroundColor ());
 		canvas.RulersVisible = PintaCore.Actions.View.Rulers.Value;
 		canvas.RulerMetric = GetCurrentRulerMetric ();
 		doc.Workspace.CanvasWindow = canvas;

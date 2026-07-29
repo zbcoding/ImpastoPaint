@@ -43,6 +43,7 @@ public sealed partial class CanvasWindow
 	private Ruler horizontal_ruler;
 	private Ruler vertical_ruler;
 	private Gtk.ScrolledWindow scrolled_window;
+	private Gtk.CssProvider viewport_css_provider;
 	private Gtk.Widget? horizontal_scrollbar;
 	private Gtk.Widget? vertical_scrollbar;
 	private Gtk.EventControllerMotion motion_controller;
@@ -58,7 +59,12 @@ public sealed partial class CanvasWindow
 
 	public Gtk.Widget Canvas { get { return canvas; } }
 
+	public Cairo.Color CanvasSurroundColor {
+		set => viewport_css_provider.LoadFromString ($".canvas-surround {{ background-color: #{value.ToHex (addAlpha: false)}; }}");
+	}
+
 	[MemberNotNull (nameof (canvas))]
+	[MemberNotNull (nameof (viewport_css_provider))]
 	[MemberNotNull (nameof (horizontal_ruler), nameof (vertical_ruler))]
 	[MemberNotNull (nameof (scrolled_window), nameof (horizontal_scrollbar), nameof (vertical_scrollbar))]
 	[MemberNotNull (nameof (motion_controller), nameof (drag_controller), nameof (gesture_zoom))]
@@ -80,6 +86,7 @@ public sealed partial class CanvasWindow
 		canvas.Name = "canvas";
 
 		Gtk.Viewport viewPort = Gtk.Viewport.New (null, null);
+		viewPort.AddCssClass ("canvas-surround");
 		viewPort.AddController (scrollController);
 		viewPort.Child = canvas;
 
@@ -131,6 +138,9 @@ public sealed partial class CanvasWindow
 
 		this.canvas = canvas;
 
+		viewport_css_provider = Gtk.CssProvider.New ();
+		viewPort.GetStyleContext ().AddProvider (viewport_css_provider, Gtk.Constants.STYLE_PROVIDER_PRIORITY_APPLICATION);
+
 		scrolled_window = scrolledWindow;
 		gesture_zoom = gestureZoom;
 		horizontal_ruler = horizontalRuler;
@@ -157,9 +167,11 @@ public sealed partial class CanvasWindow
 		ChromeManager chrome,
 		ToolManager tools,
 		Document document,
-		ICanvasGridService canvasGrid)
+		ICanvasGridService canvasGrid,
+		Cairo.Color canvasSurroundColor)
 	{
 		canvas.Configure (tools, document, canvasGrid);
+		CanvasSurroundColor = canvasSurroundColor;
 
 		// Also update if the view size changed without affecting the size of
 		// the canvas widget (e.g. when zoomed out and no scrollbars are required)
@@ -175,10 +187,11 @@ public sealed partial class CanvasWindow
 		ChromeManager chrome,
 		ToolManager tools,
 		Document document,
-		ICanvasGridService canvasGrid)
+		ICanvasGridService canvasGrid,
+		Cairo.Color canvasSurroundColor)
 	{
 		CanvasWindow window = NewWithProperties ([]);
-		window.Configure (chrome, tools, document, canvasGrid);
+		window.Configure (chrome, tools, document, canvasGrid, canvasSurroundColor);
 		return window;
 	}
 

@@ -318,6 +318,7 @@ msgid "Cancel"
 msgstr ""
 
 #: ../Pinta/Pads/CanvasPad.cs:41
+#: ../Pinta/Dialogs/PreferencesDialog.cs:90
 msgid "Canvas"
 msgstr ""
 
@@ -394,6 +395,7 @@ msgstr ""
 
 #: ../Pinta.Effects/Dialogs/Effects.LevelsDialog.cs:639
 #: ../Pinta.Gui.Widgets/Dialogs/SimpleEffectDialog.cs:356
+#: ../Pinta/Dialogs/PreferencesDialog.cs:107
 msgid "Choose Color"
 msgstr ""
 
@@ -2931,10 +2933,21 @@ msgstr ""
 msgid "{0}%"
 msgstr ""
 
+#: ../Pinta/Dialogs/PreferencesDialog.cs:53
+msgid "Choose color..."
+msgstr ""
+
+#: ../Pinta/Dialogs/PreferencesDialog.cs:71
+msgid "Canvas surround color:"
+msgstr ""
+
 #: ../Pinta/Dialogs/PreferencesDialog.cs:51
 msgid "Default canvas size (on application open):"
 msgstr ""
 
+#: ../Pinta/Dialogs/PreferencesDialog.cs:80
+msgid "Reset to Defaults"
+msgstr ""
+
 #: ../Pinta/Dialogs/PreferencesDialog.cs:65
 msgid "Settings"
-msgstr ""

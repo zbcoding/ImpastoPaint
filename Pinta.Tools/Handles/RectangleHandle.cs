@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Cairo;
 using Pinta.Core;
 
 namespace Pinta.Tools;
@@ -70,6 +71,24 @@ public class RectangleHandle : IToolHandle
 	/// clamping to an empty rectangle.
 	/// </summary>
 	public bool InvertIfNegative { get; init; }
+
+	/// <summary>
+	/// Optional transform applied to the handle positions so the grips can
+	/// follow rotated / oriented content instead of an axis-aligned box
+	/// (issue #4). Null = axis-aligned. Draw and hit-testing both use the
+	/// resulting oriented <see cref="MoveHandle.CanvasPosition"/>s.
+	/// </summary>
+	public Matrix? Orientation { get; set; }
+
+	/// <summary>
+	/// Set the reference rectangle and its orientation in one step, so the
+	/// handle positions are recomputed once with the orientation applied.
+	/// </summary>
+	public void SetOriented (RectangleD rect, Matrix? orientation)
+	{
+		Orientation = orientation;
+		Rectangle = rect; // triggers UpdateHandlePositions with the orientation applied
+	}
 
 	/// <summary>
 	/// Whether the user is currently dragging a corner of the rectangle.
@@ -190,6 +209,11 @@ public class RectangleHandle : IToolHandle
 		handles[HandlePoint.Up].CanvasPosition = new PointD (center.X, start_pt.Y);
 		handles[HandlePoint.Right].CanvasPosition = new PointD (end_pt.X, center.Y);
 		handles[HandlePoint.Down].CanvasPosition = new PointD (center.X, end_pt.Y);
+
+		if (Orientation is not null) {
+			foreach (MoveHandle handle in handles.Values)
+				handle.CanvasPosition = Orientation.TransformPoint (handle.CanvasPosition);
+		}
 	}
 
 	private void UpdateHandleUnderPoint (PointD viewPos)

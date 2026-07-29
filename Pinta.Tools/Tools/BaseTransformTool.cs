@@ -53,6 +53,14 @@ public abstract class BaseTransformTool : BaseTool
 	private bool is_handle_scaling = false;
 	public override IEnumerable<IToolHandle> Handles => [handle];
 
+	// Live orientation of the moved content (issue #4): maps the axis-aligned
+	// reference rect (ref_rect, captured when the selection first attaches) onto
+	// the current on-screen quad, so the resize grips stay glued to rotated
+	// content. Only ever a rotation + ref-space axis scale + translation, so it
+	// always maps ref_rect to a proper (non-sheared) oriented rectangle.
+	private readonly Matrix live = CairoExtensions.CreateIdentityMatrix ();
+	private RectangleD ref_rect;
+
 	// Nudge hint when holding arrow key for >2s (Issue #1559 extension)
 	private DateTime? nudge_start_time;
 	private uint nudge_hint_timeout_id = 0;
@@ -106,6 +114,8 @@ public abstract class BaseTransformTool : BaseTool
 			is_handle_scaling = true;
 			using_mouse = true;
 			OnStartTransform (document);
+			// Grip scaling is computed in the reference frame (see ApplyRefScale).
+			source_rect = ref_rect;
 			return;
 		}
 
@@ -135,15 +145,15 @@ public abstract class BaseTransformTool : BaseTool
 			if (active is null)
 				return;
 
-			// Let RectangleHandle track the drag (updates its state + edge handles),
-			// but never use its Shift=square constraint — we constrain to the
-			// *pasted content's* aspect ratio ourselves below.
-			// Note: we keep the internal handle state updated, but our own
-			// corner logic allows negative scaling (flipping) by using the raw
-			// mouse position, not the clamped rect.
-			handle.UpdateDrag (e.PointDouble, false);
-
-			PointD mouse = e.PointDouble;
+			// Work in the reference frame: un-rotate the mouse through the live
+			// orientation so a (possibly rotated) grip drag reduces to an
+			// axis-aligned resize of ref_rect. The resize matrices built below
+			// are then re-applied through `live` in ApplyRefScale, and the grips
+			// are re-positioned in the oriented frame (never via handle.UpdateDrag,
+			// which would corrupt the reference rectangle).
+			Matrix liveInv = live.Clone ();
+			liveInv.Invert ();
+			PointD mouse = liveInv.TransformPoint (e.PointDouble);
 			PointD srcCenter = source_rect.GetCenter ();
 			bool keepAspect = e.IsShiftPressed;
 			bool fromCenter = e.IsControlPressed;
@@ -215,9 +225,8 @@ public abstract class BaseTransformTool : BaseTool
 					flipTransform.Translate (-opp.X, -opp.Y);
 				}
 
-				handle.Rectangle = newRect;
-				transform.InitMatrix (flipTransform);
-				OnUpdateTransform (document, transform);
+				_ = newRect; // grips are placed via the oriented frame, not this rect
+				ApplyRefScale (document, flipTransform);
 			} else {
 				// Edge handles: allow flipping (mirroring) as well, so user can
 				// mirror horizontally by dragging left/right past opposite edge,
@@ -387,17 +396,15 @@ public abstract class BaseTransformTool : BaseTool
 						break;
 					}
 					default: {
-						// Fallback to old behavior
-						RectangleD to = ComputeEdgeRect (source_rect, handle.Rectangle, active.Value, keepAspect, fromCenter);
-						handle.Rectangle = to;
-						OnUpdateTransform (document, ComputeScaleTransform (source_rect, to));
+						// Unreachable (all 8 HandlePoints handled above); kept as a guard.
+						RectangleD to = ComputeEdgeRect (source_rect, ref_rect, active.Value, keepAspect, fromCenter);
+						ApplyRefScale (document, ComputeScaleTransform (source_rect, to));
 						return;
 					}
 				}
 
-				handle.Rectangle = edgeRect;
-				transform.InitMatrix (edgeTransform);
-				OnUpdateTransform (document, transform);
+				_ = edgeRect; // grips are placed via the oriented frame, not this rect
+				ApplyRefScale (document, edgeTransform);
 			}
 			return;
 		}
@@ -467,8 +474,8 @@ public abstract class BaseTransformTool : BaseTool
 
 		OnUpdateTransform (document, transform);
 
-		// Keep the grips on the (bounding box of the) moved content.
-		UpdateHandlesFromDocument (document);
+		// Keep the grips glued to the moved/rotated content in the oriented frame.
+		RefreshOrientedHandles (document);
 	}
 
 	protected override void OnMouseUp (
@@ -582,7 +589,7 @@ public abstract class BaseTransformTool : BaseTool
 		OnUpdateTransform (document, transform);
 
 		// Keep handles glued to the nudged content in realtime (issue #1).
-		UpdateHandlesFromDocument (document);
+		RefreshOrientedHandles (document);
 
 		// If hint is already visible, refresh its position/content (e.g., ctrl px changes).
 		if (nudge_hint_visible) {
@@ -634,8 +641,15 @@ public abstract class BaseTransformTool : BaseTool
 		// Clear any nudge hint when transform finishes.
 		ClearNudgeState ();
 
-		// Snap the grips onto the committed content.
-		UpdateHandlesFromDocument (document);
+		// Commit this gesture into the live orientation and snap the grips onto
+		// it, so the next gesture (and the drawn handles) stay in the oriented
+		// frame instead of resetting to an axis-aligned box (issue #4).
+		live.Multiply (transform);
+		if (document.Selection.Visible)
+			handle.SetOriented (ref_rect, live.Clone ());
+		else
+			handle.Active = false;
+		document.Workspace.Invalidate ();
 
 		// Restore cursor after a rotate/scale gesture
 		SetCursor (DefaultCursor);
@@ -681,9 +695,51 @@ public abstract class BaseTransformTool : BaseTool
 			return;
 		}
 
+		// A fresh/external selection (e.g. a paste, or reactivating the tool):
+		// reset the orientation to axis-aligned and re-anchor the reference rect.
+		live.InitIdentity ();
+		ref_rect = GetSourceRectangle (document!);
 		handle.Active = true;
-		handle.Rectangle = GetSourceRectangle (document!);
+		handle.SetOriented (ref_rect, null);
 		document!.Workspace.Invalidate ();
+	}
+
+	/// <summary>
+	/// Re-position the grips on the moved/rotated content during a non-grip
+	/// gesture (body drag, rotate, nudge). The content transform for the whole
+	/// gesture is <c>transform</c>; the grips follow at <c>live · transform</c>.
+	/// </summary>
+	private void RefreshOrientedHandles (Document document)
+	{
+		Matrix disp = live.Clone ();
+		disp.Multiply (transform);
+		handle.SetOriented (ref_rect, disp);
+		document.Workspace.Invalidate ();
+	}
+
+	/// <summary>
+	/// Apply a resize computed in the reference frame (<paramref name="s"/> maps
+	/// ref_rect onto the resized rect) to the actual content, mapped through the
+	/// live orientation so rotated content scales along its own axes:
+	/// <c>g = live · s · live⁻¹</c>. The grips are drawn at the candidate
+	/// post-drag orientation (committed on mouse-up in OnFinishTransform).
+	/// </summary>
+	private void ApplyRefScale (Document document, Matrix s)
+	{
+		Matrix liveInv = live.Clone ();
+		liveInv.Invert ();
+
+		Matrix g = liveInv;   // apply live⁻¹ first,
+		g.Multiply (s);       // then the ref-space resize,
+		g.Multiply (live);    // then re-apply live.
+
+		transform.InitMatrix (g);
+		OnUpdateTransform (document, transform);
+
+		Matrix disp = live.Clone ();
+		disp.Multiply (g);
+		handle.SetOriented (ref_rect, disp);
+		document.Workspace.Invalidate ();
 	}
 
 	/// <summary>
@@ -756,6 +812,9 @@ public abstract class BaseTransformTool : BaseTool
 		}
 
 		PointD lowerRightCanvas = new (rect.X + rect.Width, rect.Y + rect.Height);
+		// Anchor to the oriented lower-right when the content is rotated (issue #4).
+		if (handle.Orientation is not null)
+			lowerRightCanvas = handle.Orientation.TransformPoint (lowerRightCanvas);
 		PointD lowerRightView = activeWs.CanvasPointToView (lowerRightCanvas);
 
 		// Create or reuse popover + label.

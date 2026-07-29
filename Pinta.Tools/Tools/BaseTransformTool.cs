@@ -428,8 +428,8 @@ public abstract class BaseTransformTool : BaseTool
 			return;
 
 		string? hint = overGrip
-			// Translators: hint shown when hovering a selection resize handle.
-			? Translations.GetString ("Drag to resize · Shift: keep aspect ratio · Ctrl+drag: scale from center · Alt-drag: rotate")
+			// Translators: hint shown when hovering a selection resize handle. Now lists shortcuts vertically.
+			? Translations.GetString ("Drag to resize\nShift: keep aspect ratio\nCtrl+drag: scale from center\nAlt-drag: rotate")
 			: null;
 
 		Gtk.Widget canvas = workspace.ActiveWorkspace.Canvas;
@@ -455,16 +455,16 @@ public abstract class BaseTransformTool : BaseTool
 		int ctrl20X = Math.Max (20, (int) Math.Round (w * 0.20));
 		int ctrl20Y = Math.Max (20, (int) Math.Round (h * 0.20));
 
-		// Hint says "Ctrl+Arrow: 10% of canvas size" per user feedback, with example px.
+		// List shortcuts vertically per user request (instead of dot-separated).
 		string template = Translations.GetString (
-			"Arrow: 1px · Shift+Arrow: 10px · Ctrl+Arrow: 10% of canvas ({0}×{1}px) · Ctrl+Shift+Arrow: 20% of canvas ({2}×{3}px)");
+			"Arrow: 1px\nShift+Arrow: 10px\nCtrl+Arrow: 10% of canvas ({0}×{1}px)\nCtrl+Shift+Arrow: 20% of canvas ({2}×{3}px)");
 
 		string hint;
 		try {
 			hint = string.Format (template, ctrl10X, ctrl10Y, ctrl20X, ctrl20Y);
 		} catch {
 			string fallback = Translations.GetString (
-				"Arrow: 1px · Shift+Arrow: 10px · Ctrl+Arrow: 10% of canvas · Ctrl+Shift+Arrow: 20% of canvas");
+				"Arrow: 1px\nShift+Arrow: 10px\nCtrl+Arrow: 10% of canvas\nCtrl+Shift+Arrow: 20% of canvas");
 			hint = fallback;
 		}
 

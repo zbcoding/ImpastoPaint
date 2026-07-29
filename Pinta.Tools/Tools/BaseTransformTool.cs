@@ -695,13 +695,26 @@ public abstract class BaseTransformTool : BaseTool
 			return;
 		}
 
-		// A fresh/external selection (e.g. a paste, or reactivating the tool):
-		// reset the orientation to axis-aligned and re-anchor the reference rect.
-		live.InitIdentity ();
-		ref_rect = GetSourceRectangle (document!);
+		// Reconstruct the live orientation from the selection layer's transform,
+		// which history saves/restores (MovePixelsHistoryItem). This keeps the grips
+		// glued to rotated/scaled content after undo/redo and tool reactivation,
+		// instead of snapping to the axis-aligned bounding box (issue #4). For a
+		// fresh paste the transform is identity, so this reduces to axis-aligned.
+		Matrix t = document!.Layers.SelectionLayer.Transform.Clone ();
+		try {
+			Matrix tInv = t.Clone ();
+			tInv.Invert (); // throws / degenerates only for zero-area content
+			// ref_rect is the content's bounds with the orientation undone, so
+			// live · ref-corners lands back on the current on-screen quad.
+			ref_rect = document.Selection.Clone ().Transform (tInv).GetBounds ();
+			live.InitMatrix (t);
+		} catch {
+			live.InitIdentity ();
+			ref_rect = GetSourceRectangle (document);
+		}
 		handle.Active = true;
-		handle.SetOriented (ref_rect, null);
-		document!.Workspace.Invalidate ();
+		handle.SetOriented (ref_rect, live.Clone ());
+		document.Workspace.Invalidate ();
 	}
 
 	/// <summary>

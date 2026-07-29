@@ -67,20 +67,33 @@ public class RectangleHandle : IToolHandle
 		];
 	}
 
-	/// <summary>
-	/// Picks the resize cursor whose arrow points along <paramref name="dir"/>
-	/// (a screen-space vector from the grip to the rectangle's center). Snaps to
-	/// the nearest 45° octant. Glyphs are 180°-symmetric, so flips resolve too.
-	/// </summary>
-	private Gdk.Cursor DirectionCursor (PointD dir)
-	{
-		if (dir is { X: 0, Y: 0 })
-			return direction_cursors[0];
+	// Each grip's cursor octant when axis-aligned, in the [E,SE,S,SW,W,NW,N,NE]
+	// order of direction_cursors. Corners sit on odd (diagonal) octants, edges on
+	// even (straight) ones — a grip keeps its family as the content rotates.
+	private static readonly Dictionary<HandlePoint, int> base_octant = new () {
+		{ HandlePoint.Right, 0 },
+		{ HandlePoint.LowerRight, 1 },
+		{ HandlePoint.Down, 2 },
+		{ HandlePoint.LowerLeft, 3 },
+		{ HandlePoint.Left, 4 },
+		{ HandlePoint.UpperLeft, 5 },
+		{ HandlePoint.Up, 6 },
+		{ HandlePoint.UpperRight, 7 },
+	};
 
-		double deg = Math.Atan2 (dir.Y, dir.X) * 180.0 / Math.PI;
-		if (deg < 0)
-			deg += 360;
-		int oct = (int) Math.Round (deg / 45.0) & 7;
+	/// <summary>
+	/// Picks the resize cursor for a grip rotated by <paramref name="thetaDeg"/>
+	/// from its axis-aligned <paramref name="baseOct"/>. Snaps within the grip's
+	/// own family (90° apart) so a corner always shows a diagonal glyph and an
+	/// edge a straight one, each pointing along the rotated content. Glyphs are
+	/// 180°-symmetric, so flips resolve too.
+	/// </summary>
+	private Gdk.Cursor DirectionCursor (int baseOct, double thetaDeg)
+	{
+		int parity = baseOct & 1; // 0 = straight/edge, 1 = diagonal/corner
+		double rotatedDeg = baseOct * 45.0 + thetaDeg;
+		int k = (int) Math.Round ((rotatedDeg - parity * 45.0) / 90.0);
+		int oct = ((parity + 2 * k) % 8 + 8) % 8;
 		return direction_cursors[oct];
 	}
 
@@ -243,10 +256,13 @@ public class RectangleHandle : IToolHandle
 		handles[HandlePoint.Down].CanvasPosition = new PointD (center.X, end_pt.Y);
 
 		if (Orientation is not null) {
-			PointD orientedCenter = Orientation.TransformPoint (center);
-			foreach (MoveHandle handle in handles.Values) {
+			// Screen-space rotation of the content = angle of the transformed X axis.
+			PointD o0 = Orientation.TransformPoint (new PointD (0, 0));
+			PointD o1 = Orientation.TransformPoint (new PointD (1, 0));
+			double thetaDeg = Math.Atan2 (o1.Y - o0.Y, o1.X - o0.X) * 180.0 / Math.PI;
+			foreach ((HandlePoint point, MoveHandle handle) in handles) {
 				handle.CanvasPosition = Orientation.TransformPoint (handle.CanvasPosition);
-				handle.Cursor = DirectionCursor (handle.CanvasPosition - orientedCenter);
+				handle.Cursor = DirectionCursor (base_octant[point], thetaDeg);
 			}
 		}
 	}

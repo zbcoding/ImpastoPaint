@@ -52,6 +52,12 @@ public abstract class BaseTransformTool : BaseTool
 	private bool is_handle_scaling = false;
 	public override IEnumerable<IToolHandle> Handles => [handle];
 
+	// Nudge hint when holding arrow key for >2s (Issue #1559 extension)
+	private DateTime? nudge_start_time;
+	private uint nudge_hint_timeout_id = 0;
+	private bool nudge_hint_visible = false;
+	private string? last_nudge_hint;
+
 	/// <summary>
 	/// Initializes a new instance of the <see cref="BaseTransformTool"/> class.
 	/// </summary>
@@ -220,28 +226,81 @@ public abstract class BaseTransformTool : BaseTool
 		if (using_mouse) // Don't handle the arrow keys while already interacting via the mouse.
 			return base.OnKeyDown (document, e);
 
+		// Determine if this is an arrow key for nudging.
+		bool isArrow = e.Key.Value is Gdk.Constants.KEY_Left or Gdk.Constants.KEY_Right
+			or Gdk.Constants.KEY_Up or Gdk.Constants.KEY_Down;
+
+		if (!isArrow)
+			return base.OnKeyDown (document, e);
+
+		// Track nudge hold duration for hint (2 seconds).
+		if (nudge_start_time is null) {
+			nudge_start_time = DateTime.UtcNow;
+			// Schedule a one-shot timeout to show hint after 2s even if no key repeat.
+			if (nudge_hint_timeout_id == 0) {
+				Document docForHint = document;
+				nudge_hint_timeout_id = GLib.Functions.TimeoutAdd (0, 2000, () => {
+					nudge_hint_timeout_id = 0;
+					if (nudge_start_time is not null && IsActive && !using_mouse) {
+						ShowNudgeHint (docForHint);
+					}
+					return false;
+				});
+			}
+		} else {
+			// If we've been holding for >2s, ensure hint is visible and updated.
+			if ((DateTime.UtcNow - nudge_start_time.Value).TotalSeconds >= 2.0) {
+				ShowNudgeHint (document);
+			}
+		}
+
+		// Compute step amounts:
+		// - 1px base
+		// - Shift: 10px (Paint.NET parity, Issue #1559)
+		// - Ctrl: 10% of canvas size (user request: based on canvas size)
+		// - Ctrl+Shift: 20% of canvas size
 		double dx = 0.0;
 		double dy = 0.0;
-		// Issue #1559: Shift+arrow should move by 10px (Paint.NET parity).
-		// Keep Ctrl as 10px as well for existing Pinta users.
-		double coeff = (e.IsControlPressed || e.IsShiftPressed) ? 10.0 : 1.0;
+
+		bool isCtrl = e.IsControlPressed;
+		bool isShift = e.IsShiftPressed;
+
+		int canvasW = document.ImageSize.Width;
+		int canvasH = document.ImageSize.Height;
+
+		// 10% and 20% of canvas, with sensible minimums so Ctrl is distinguishable.
+		int ctrl10X = Math.Max (10, (int) Math.Round (canvasW * 0.10));
+		int ctrl10Y = Math.Max (10, (int) Math.Round (canvasH * 0.10));
+		int ctrl20X = Math.Max (20, (int) Math.Round (canvasW * 0.20));
+		int ctrl20Y = Math.Max (20, (int) Math.Round (canvasH * 0.20));
+
+		double stepX, stepY;
+
+		if (isCtrl && isShift) {
+			stepX = ctrl20X;
+			stepY = ctrl20Y;
+		} else if (isCtrl) {
+			stepX = ctrl10X;
+			stepY = ctrl10Y;
+		} else if (isShift) {
+			stepX = stepY = 10.0;
+		} else {
+			stepX = stepY = 1.0;
+		}
 
 		switch (e.Key.Value) {
 			case Gdk.Constants.KEY_Left:
-				dx = -coeff;
+				dx = -stepX;
 				break;
 			case Gdk.Constants.KEY_Right:
-				dx = coeff;
+				dx = stepX;
 				break;
 			case Gdk.Constants.KEY_Up:
-				dy = -coeff;
+				dy = -stepY;
 				break;
 			case Gdk.Constants.KEY_Down:
-				dy = coeff;
+				dy = stepY;
 				break;
-			default:
-				// Otherwise, let the key be handled elsewhere.
-				return base.OnKeyDown (document, e);
 		}
 
 		if (!IsActive) {
@@ -259,6 +318,12 @@ public abstract class BaseTransformTool : BaseTool
 		Document document,
 		ToolKeyEventArgs e)
 	{
+		// Clear nudge hint state when arrow key is released.
+		if (e.Key.Value is Gdk.Constants.KEY_Left or Gdk.Constants.KEY_Right
+			or Gdk.Constants.KEY_Up or Gdk.Constants.KEY_Down) {
+			ClearNudgeState ();
+		}
+
 		if (IsActive && !using_mouse)
 			OnFinishTransform (document, transform);
 
@@ -288,6 +353,9 @@ public abstract class BaseTransformTool : BaseTool
 		is_handle_scaling = false;
 		using_mouse = false;
 
+		// Clear any nudge hint when transform finishes.
+		ClearNudgeState ();
+
 		// Snap the grips onto the committed content.
 		UpdateHandlesFromDocument (document);
 	}
@@ -303,6 +371,7 @@ public abstract class BaseTransformTool : BaseTool
 		base.OnDeactivated (document, newTool);
 		handle.Active = false;
 		UpdateHandleHint (false);
+		ClearNudgeState ();
 	}
 
 	/// <summary>
@@ -335,6 +404,10 @@ public abstract class BaseTransformTool : BaseTool
 		if (!workspace.HasOpenDocuments)
 			return;
 
+		// Don't override the nudge hint while it's visible.
+		if (nudge_hint_visible)
+			return;
+
 		string? hint = overGrip
 			// Translators: hint shown when hovering a selection resize handle.
 			? Translations.GetString ("Drag to resize · Shift: keep aspect ratio · Ctrl+drag: scale from center · Alt-drag: rotate")
@@ -343,6 +416,79 @@ public abstract class BaseTransformTool : BaseTool
 		Gtk.Widget canvas = workspace.ActiveWorkspace.Canvas;
 		if (canvas.TooltipText != hint)
 			canvas.SetTooltipText (hint);
+	}
+
+	/// <summary>
+	/// Show a hint about arrow-key nudging after holding for 2 seconds.
+	/// Similar UI to the resize-handle hint (canvas tooltip / popover style).
+	/// Ctrl amount is 10% of canvas size (20% with Ctrl+Shift), so pixel
+	/// equivalent changes with canvas — hint text reflects that.
+	/// </summary>
+	private void ShowNudgeHint (Document document)
+	{
+		if (!workspace.HasOpenDocuments)
+			return;
+
+		// Updated per user feedback: hint should say Ctrl nudges 10% of canvas,
+		// not a fixed pixel count, but we still include example px in parentheses
+		// for discoverability and update it if canvas size changes.
+		int w = document.ImageSize.Width;
+		int h = document.ImageSize.Height;
+		int ctrl10X = Math.Max (10, (int) Math.Round (w * 0.10));
+		int ctrl10Y = Math.Max (10, (int) Math.Round (h * 0.10));
+		int ctrl20X = Math.Max (20, (int) Math.Round (w * 0.20));
+		int ctrl20Y = Math.Max (20, (int) Math.Round (h * 0.20));
+
+		// Generic percentage-based hint (doesn't need updating), plus example px.
+		// Translators: nudge hint shown after holding arrow key 2s.
+		// Example: "Arrow: 1px · Shift+Arrow: 10px · Ctrl+Arrow: 10% of canvas (e.g. 80×60px) · Ctrl+Shift+Arrow: 20% of canvas (e.g. 160×120px)"
+		string template = Translations.GetString (
+			"Arrow: 1px · Shift+Arrow: 10px · Ctrl+Arrow: 10% of canvas ({0}×{1}px) · Ctrl+Shift+Arrow: 20% of canvas ({2}×{3}px)");
+
+		string hint;
+		try {
+			hint = string.Format (template, ctrl10X, ctrl10Y, ctrl20X, ctrl20Y);
+		} catch {
+			// Fallback if translation has mismatched placeholders — show generic % without px.
+			string fallback = Translations.GetString (
+				"Arrow: 1px · Shift+Arrow: 10px · Ctrl+Arrow: 10% of canvas · Ctrl+Shift+Arrow: 20% of canvas");
+			hint = fallback;
+		}
+
+		Gtk.Widget canvas = workspace.ActiveWorkspace.Canvas;
+		canvas.SetTooltipText (hint);
+		last_nudge_hint = hint;
+		nudge_hint_visible = true;
+	}
+
+	private void HideNudgeHint ()
+	{
+		if (!nudge_hint_visible)
+			return;
+
+		if (workspace.HasOpenDocuments) {
+			Gtk.Widget canvas = workspace.ActiveWorkspace.Canvas;
+			if (last_nudge_hint is not null && canvas.TooltipText == last_nudge_hint) {
+				canvas.SetTooltipText (null);
+			} else if (canvas.TooltipText is not null && nudge_hint_visible) {
+				if (canvas.TooltipText.Contains ("Arrow:") || canvas.TooltipText.Contains ("Shift+Arrow"))
+					canvas.SetTooltipText (null);
+			}
+		}
+
+		nudge_hint_visible = false;
+		last_nudge_hint = null;
+	}
+
+	private void ClearNudgeState ()
+	{
+		if (nudge_hint_timeout_id != 0) {
+			GLib.Functions.SourceRemove (nudge_hint_timeout_id);
+			nudge_hint_timeout_id = 0;
+		}
+
+		nudge_start_time = null;
+		HideNudgeHint ();
 	}
 
 	/// <summary>

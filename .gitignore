@@ -1,3 +1,6 @@
+/docs-private
+.env*
+
 *.pidb
 *.suo
 *.swp

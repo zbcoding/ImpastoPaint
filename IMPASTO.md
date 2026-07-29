@@ -25,6 +25,10 @@ git fetch upstream && git rebase upstream/main
 - Mark deliberate simplifications with a `ponytail:` comment naming the ceiling.
 - Prefer flipping an existing upstream setting over writing a feature. The menu bar was
   already fully built for macOS — it needed a one-line default change, not a rewrite.
+- **Avoid mentioning the trademarked reference editor by name in commit messages.**
+  The name is a registered trademark of dotPDN LLC. Use generic phrasing like
+  "reference implementation", "major raster editors", or "Impasto" / "Pinta" instead.
+  Descriptive text in `IMPASTO.md` can mention it for context, but commit logs should not.
 
 ## Status
 

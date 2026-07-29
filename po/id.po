@@ -543,6 +543,10 @@ msgstr "Mode Warna"
 msgid "Color Picker"
 msgstr "Pemilih Warna"
 
+#: ../Pinta.Tools/Tools/ColorPickerAllLayersTool.cs:19
+msgid "Color Picker (All Layers)"
+msgstr ""
+
 #: ../Pinta.Effects/Effects/PencilSketchEffect.cs:89
 msgid "Color Range"
 msgstr "Kisaran Warna"
@@ -1395,6 +1399,7 @@ msgstr ""
 "Klik kiri untuk mengganti warna sekunder dengan warna primer.\n"
 "Klik kanan untuk mundur kembali."
 
+#: ../Pinta.Tools/Tools/ColorPickerAllLayersTool.cs:21
 #: ../Pinta.Tools/Tools/ColorPickerTool.cs:59
 msgid ""
 "Left click to set primary color.\n"
@@ -2368,6 +2373,14 @@ msgstr "Pilih Semua"
 #: ../Pinta.Effects/Utilities/GradientHelper.cs:13
 msgid "Selected Colors"
 msgstr "Warna yang Dipilih"
+
+#: ../Pinta.Tools/Tools/ColorPickerAllLayersTool.cs:21
+msgid "Selects the color in view."
+msgstr ""
+
+#: ../Pinta.Tools/Tools/ColorPickerTool.cs:59
+msgid "Selects the color on the current layer and current selected area."
+msgstr ""
 
 #. Translators: 'Semibold' (600) refers to the font-weight text property
 #: ../Pinta.Tools/Tools/TextTool.cs:302

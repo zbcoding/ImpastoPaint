@@ -537,6 +537,10 @@ msgstr "색상 모드"
 msgid "Color Picker"
 msgstr "색상 선택기"
 
+#: ../Pinta.Tools/Tools/ColorPickerAllLayersTool.cs:19
+msgid "Color Picker (All Layers)"
+msgstr ""
+
 #: ../Pinta.Effects/Effects/PencilSketchEffect.cs:89
 msgid "Color Range"
 msgstr "색상 범위"
@@ -1378,6 +1382,7 @@ msgstr ""
 "왼쪽을 클릭하면 보조 색상이 기본 색상으로 바뀝니다.\n"
 "오른쪽을 클릭하면 반대로 바뀝니다."
 
+#: ../Pinta.Tools/Tools/ColorPickerAllLayersTool.cs:21
 #: ../Pinta.Tools/Tools/ColorPickerTool.cs:59
 msgid ""
 "Left click to set primary color.\n"
@@ -2349,6 +2354,14 @@ msgstr "전체 선택"
 #: ../Pinta.Effects/Utilities/GradientHelper.cs:13
 msgid "Selected Colors"
 msgstr "선택된 색상"
+
+#: ../Pinta.Tools/Tools/ColorPickerAllLayersTool.cs:21
+msgid "Selects the color in view."
+msgstr ""
+
+#: ../Pinta.Tools/Tools/ColorPickerTool.cs:59
+msgid "Selects the color on the current layer and current selected area."
+msgstr ""
 
 #. Translators: 'Semibold' (600) refers to the font-weight text property
 #: ../Pinta.Tools/Tools/TextTool.cs:302

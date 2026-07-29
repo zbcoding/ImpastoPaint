@@ -26,6 +26,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using Cairo;
 using Pinta.Core;
 
@@ -68,9 +69,15 @@ public abstract class BaseTransformTool : BaseTool
 		workspace = services.GetService<IWorkspaceService> ();
 		tool_service = services.GetService<IToolService> ();
 		handle = new (workspace) { InvertIfNegative = true };
-		// A larger, high-contrast bidirectional rotate cursor (28px, hotspot centered),
-		// sized to match the resize grips' cursors.
-		rotate_cursor = Gdk.Cursor.NewFromTexture (Resources.GetIcon (Pinta.Resources.Icons.RotateHandle, 28), 14, 14, null);
+		// A larger, high-contrast bidirectional rotate cursor, sized to match the
+		// resize grips' cursors. Resource SVGs load at their natural size (not the
+		// requested one), so center the hotspot on the actual texture — a fixed
+		// hotspot past the edge trips a GDK assertion.
+		// Use a non-symbolic icon (rotate-handle.svg) so GTK preserves the white
+		// halo + dark stroke. Symbolic icons get recolored to a single color and
+		// lose contrast, making the cursor invisible against some backgrounds.
+		Gdk.Texture rotate_texture = LoadRotateTexture ();
+		rotate_cursor = Gdk.Cursor.NewFromTexture (rotate_texture, rotate_texture.Width / 2, rotate_texture.Height / 2, null);
 
 		// The pasted/moved selection is often created *after* this tool is
 		// activated (see PasteAction), so OnActivated is too early to show the
@@ -105,9 +112,10 @@ public abstract class BaseTransformTool : BaseTool
 		if (!document.Workspace.PointInCanvas (e.PointDouble))
 			return;
 
-		if (rotate_requested)
+		if (rotate_requested) {
 			is_rotating = true;
-		else if (e.IsControlPressed)
+			SetCursor (rotate_cursor);
+		} else if (e.IsControlPressed)
 			is_scaling = true;
 		else
 			is_dragging = true;
@@ -124,18 +132,273 @@ public abstract class BaseTransformTool : BaseTool
 		// While a grip is being dragged, scale the content to match the handle.
 		if (is_handle_scaling) {
 			HandlePoint? active = handle.ActiveHandlePoint;
+			if (active is null)
+				return;
 
 			// Let RectangleHandle track the drag (updates its state + edge handles),
 			// but never use its Shift=square constraint — we constrain to the
 			// *pasted content's* aspect ratio ourselves below.
+			// Note: we keep the internal handle state updated, but our own
+			// corner logic allows negative scaling (flipping) by using the raw
+			// mouse position, not the clamped rect.
 			handle.UpdateDrag (e.PointDouble, false);
 
-			RectangleD to = IsCorner (active)
-				? ComputeCornerRect (source_rect, ClampToImage (e.PointDouble, document), active!.Value, e.IsShiftPressed, e.IsControlPressed)
-				: (e.IsControlPressed ? CenterAnchored (source_rect, handle.Rectangle) : handle.Rectangle);
+			PointD mouse = e.PointDouble;
+			PointD srcCenter = source_rect.GetCenter ();
+			bool keepAspect = e.IsShiftPressed;
+			bool fromCenter = e.IsControlPressed;
 
-			handle.Rectangle = to; // reflect the constrained rect back on the grips
-			OnUpdateTransform (document, ComputeScaleTransform (source_rect, to));
+			if (IsCorner (active)) {
+				// --- Corner handles: allow flipping (mirroring) ---
+				PointD opp = OppositeCorner (source_rect, active.Value);
+				PointD srcCorner = GetCornerPoint (source_rect, active.Value);
+
+				Matrix flipTransform = CairoExtensions.CreateIdentityMatrix ();
+				RectangleD newRect;
+
+				if (fromCenter) {
+					// Scale about center; flip occurs when mouse crosses center.
+					double cdx0 = srcCorner.X - srcCenter.X;
+					double cdy0 = srcCorner.Y - srcCenter.Y;
+					double cdx1 = mouse.X - srcCenter.X;
+					double cdy1 = mouse.Y - srcCenter.Y;
+
+					if (keepAspect && source_rect.Width > 0 && source_rect.Height > 0) {
+						double halfW = source_rect.Width / 2.0;
+						double halfH = source_rect.Height / 2.0;
+						if (halfW > 0 && halfH > 0) {
+							double s = Math.Max (Math.Abs (cdx1) / halfW, Math.Abs (cdy1) / halfH);
+							double signX = cdx1 < 0 ? -1 : 1;
+							double signY = cdy1 < 0 ? -1 : 1;
+							// When exactly zero, keep positive to avoid NaN.
+							cdx1 = signX * halfW * s;
+							cdy1 = signY * halfH * s;
+						}
+					}
+
+					double sx = cdx0 != 0 ? cdx1 / cdx0 : 1;
+					double sy = cdy0 != 0 ? cdy1 / cdy0 : 1;
+
+					double w = Math.Abs (cdx1) * 2;
+					double h = Math.Abs (cdy1) * 2;
+					newRect = new RectangleD (srcCenter.X - w / 2, srcCenter.Y - h / 2, w, h);
+
+					flipTransform.Translate (srcCenter.X, srcCenter.Y);
+					flipTransform.Scale (sx, sy);
+					flipTransform.Translate (-srcCenter.X, -srcCenter.Y);
+				} else {
+					// Scale about opposite corner; flip occurs when mouse crosses that corner.
+					double dx0 = srcCorner.X - opp.X;
+					double dy0 = srcCorner.Y - opp.Y;
+					double dx1 = mouse.X - opp.X;
+					double dy1 = mouse.Y - opp.Y;
+
+					if (keepAspect && source_rect.Width > 0 && source_rect.Height > 0) {
+						double s = Math.Max (Math.Abs (dx1) / source_rect.Width, Math.Abs (dy1) / source_rect.Height);
+						double signX = dx1 < 0 ? -1 : 1;
+						double signY = dy1 < 0 ? -1 : 1;
+						dx1 = signX * source_rect.Width * s;
+						dy1 = signY * source_rect.Height * s;
+					}
+
+					double sx = dx0 != 0 ? dx1 / dx0 : 1;
+					double sy = dy0 != 0 ? dy1 / dy0 : 1;
+
+					double w = Math.Abs (dx1);
+					double h = Math.Abs (dy1);
+					double rx = Math.Min (opp.X, opp.X + dx1);
+					double ry = Math.Min (opp.Y, opp.Y + dy1);
+					newRect = new RectangleD (rx, ry, w, h);
+
+					flipTransform.Translate (opp.X, opp.Y);
+					flipTransform.Scale (sx, sy);
+					flipTransform.Translate (-opp.X, -opp.Y);
+				}
+
+				handle.Rectangle = newRect;
+				transform.InitMatrix (flipTransform);
+				OnUpdateTransform (document, transform);
+			} else {
+				// Edge handles: allow flipping (mirroring) as well, so user can
+				// mirror horizontally by dragging left/right past opposite edge,
+				// and vertically by dragging up/down past opposite edge.
+				Matrix edgeTransform = CairoExtensions.CreateIdentityMatrix ();
+				RectangleD edgeRect;
+				PointD edgeAnchor;
+
+				double srcW = source_rect.Width;
+				double srcH = source_rect.Height;
+
+				switch (active.Value) {
+					case HandlePoint.Left: {
+						double oppX = source_rect.X + srcW;
+						if (fromCenter) {
+							double cdx0 = source_rect.X - srcCenter.X;
+							double cdx1 = mouse.X - srcCenter.X;
+							double sx = cdx0 != 0 ? cdx1 / cdx0 : 1;
+							double w = Math.Abs (cdx1) * 2;
+							double h = srcH;
+							double sy = 1;
+							if (keepAspect && srcW > 0) {
+								h = w * srcH / srcW;
+								sy = Math.Abs (sx);
+							}
+							edgeRect = new RectangleD (srcCenter.X - w / 2, srcCenter.Y - h / 2, w, h);
+							edgeAnchor = srcCenter;
+							edgeTransform.Translate (edgeAnchor.X, edgeAnchor.Y);
+							edgeTransform.Scale (sx, sy);
+							edgeTransform.Translate (-edgeAnchor.X, -edgeAnchor.Y);
+						} else {
+							double dx0 = source_rect.X - oppX;
+							double dx1 = mouse.X - oppX;
+							double sx = dx0 != 0 ? dx1 / dx0 : 1;
+							double w = Math.Abs (dx1);
+							double h = srcH;
+							double sy = 1;
+							if (keepAspect && srcW > 0) {
+								h = w * srcH / srcW;
+								sy = Math.Abs (sx);
+							}
+							double rx = Math.Min (oppX, mouse.X);
+							double ry = keepAspect ? srcCenter.Y - h / 2 : source_rect.Y;
+							edgeRect = new RectangleD (rx, ry, w, h);
+							edgeAnchor = new PointD (oppX, srcCenter.Y);
+							edgeTransform.Translate (edgeAnchor.X, edgeAnchor.Y);
+							edgeTransform.Scale (sx, sy);
+							edgeTransform.Translate (-edgeAnchor.X, -edgeAnchor.Y);
+						}
+						break;
+					}
+					case HandlePoint.Right: {
+						double oppX = source_rect.X;
+						if (fromCenter) {
+							double cdx0 = source_rect.X + srcW - srcCenter.X;
+							double cdx1 = mouse.X - srcCenter.X;
+							double sx = cdx0 != 0 ? cdx1 / cdx0 : 1;
+							double w = Math.Abs (cdx1) * 2;
+							double h = srcH;
+							double sy = 1;
+							if (keepAspect && srcW > 0) {
+								h = w * srcH / srcW;
+								sy = Math.Abs (sx);
+							}
+							edgeRect = new RectangleD (srcCenter.X - w / 2, srcCenter.Y - h / 2, w, h);
+							edgeAnchor = srcCenter;
+							edgeTransform.Translate (edgeAnchor.X, edgeAnchor.Y);
+							edgeTransform.Scale (sx, sy);
+							edgeTransform.Translate (-edgeAnchor.X, -edgeAnchor.Y);
+						} else {
+							double dx0 = srcW;
+							double dx1 = mouse.X - oppX;
+							double sx = dx0 != 0 ? dx1 / dx0 : 1;
+							double w = Math.Abs (dx1);
+							double h = srcH;
+							double sy = 1;
+							if (keepAspect && srcW > 0) {
+								h = w * srcH / srcW;
+								sy = Math.Abs (sx);
+							}
+							double rx = Math.Min (oppX, mouse.X);
+							double ry = keepAspect ? srcCenter.Y - h / 2 : source_rect.Y;
+							edgeRect = new RectangleD (rx, ry, w, h);
+							edgeAnchor = new PointD (oppX, srcCenter.Y);
+							edgeTransform.Translate (edgeAnchor.X, edgeAnchor.Y);
+							edgeTransform.Scale (sx, sy);
+							edgeTransform.Translate (-edgeAnchor.X, -edgeAnchor.Y);
+						}
+						break;
+					}
+					case HandlePoint.Up: {
+						double oppY = source_rect.Y + srcH;
+						if (fromCenter) {
+							double cdy0 = source_rect.Y - srcCenter.Y;
+							double cdy1 = mouse.Y - srcCenter.Y;
+							double sy = cdy0 != 0 ? cdy1 / cdy0 : 1;
+							double h = Math.Abs (cdy1) * 2;
+							double w = srcW;
+							double sx = 1;
+							if (keepAspect && srcH > 0) {
+								w = h * srcW / srcH;
+								sx = Math.Abs (sy);
+							}
+							edgeRect = new RectangleD (srcCenter.X - w / 2, srcCenter.Y - h / 2, w, h);
+							edgeAnchor = srcCenter;
+							edgeTransform.Translate (edgeAnchor.X, edgeAnchor.Y);
+							edgeTransform.Scale (sx, sy);
+							edgeTransform.Translate (-edgeAnchor.X, -edgeAnchor.Y);
+						} else {
+							double dy0 = source_rect.Y - oppY;
+							double dy1 = mouse.Y - oppY;
+							double sy = dy0 != 0 ? dy1 / dy0 : 1;
+							double h = Math.Abs (dy1);
+							double w = srcW;
+							double sx = 1;
+							if (keepAspect && srcH > 0) {
+								w = h * srcW / srcH;
+								sx = Math.Abs (sy);
+							}
+							double ry = Math.Min (oppY, mouse.Y);
+							double rx = keepAspect ? srcCenter.X - w / 2 : source_rect.X;
+							edgeRect = new RectangleD (rx, ry, w, h);
+							edgeAnchor = new PointD (srcCenter.X, oppY);
+							edgeTransform.Translate (edgeAnchor.X, edgeAnchor.Y);
+							edgeTransform.Scale (sx, sy);
+							edgeTransform.Translate (-edgeAnchor.X, -edgeAnchor.Y);
+						}
+						break;
+					}
+					case HandlePoint.Down: {
+						double oppY = source_rect.Y;
+						if (fromCenter) {
+							double cdy0 = source_rect.Y + srcH - srcCenter.Y;
+							double cdy1 = mouse.Y - srcCenter.Y;
+							double sy = cdy0 != 0 ? cdy1 / cdy0 : 1;
+							double h = Math.Abs (cdy1) * 2;
+							double w = srcW;
+							double sx = 1;
+							if (keepAspect && srcH > 0) {
+								w = h * srcW / srcH;
+								sx = Math.Abs (sy);
+							}
+							edgeRect = new RectangleD (srcCenter.X - w / 2, srcCenter.Y - h / 2, w, h);
+							edgeAnchor = srcCenter;
+							edgeTransform.Translate (edgeAnchor.X, edgeAnchor.Y);
+							edgeTransform.Scale (sx, sy);
+							edgeTransform.Translate (-edgeAnchor.X, -edgeAnchor.Y);
+						} else {
+							double dy0 = srcH;
+							double dy1 = mouse.Y - oppY;
+							double sy = dy0 != 0 ? dy1 / dy0 : 1;
+							double h = Math.Abs (dy1);
+							double w = srcW;
+							double sx = 1;
+							if (keepAspect && srcH > 0) {
+								w = h * srcW / srcH;
+								sx = Math.Abs (sy);
+							}
+							double ry = Math.Min (oppY, mouse.Y);
+							double rx = keepAspect ? srcCenter.X - w / 2 : source_rect.X;
+							edgeRect = new RectangleD (rx, ry, w, h);
+							edgeAnchor = new PointD (srcCenter.X, oppY);
+							edgeTransform.Translate (edgeAnchor.X, edgeAnchor.Y);
+							edgeTransform.Scale (sx, sy);
+							edgeTransform.Translate (-edgeAnchor.X, -edgeAnchor.Y);
+						}
+						break;
+					}
+					default: {
+						// Fallback to old behavior
+						RectangleD to = ComputeEdgeRect (source_rect, handle.Rectangle, active.Value, keepAspect, fromCenter);
+						handle.Rectangle = to;
+						OnUpdateTransform (document, ComputeScaleTransform (source_rect, to));
+						return;
+					}
+				}
+
+				handle.Rectangle = edgeRect;
+				transform.InitMatrix (edgeTransform);
+				OnUpdateTransform (document, transform);
+			}
 			return;
 		}
 
@@ -150,6 +413,10 @@ public abstract class BaseTransformTool : BaseTool
 			}
 			return;
 		}
+
+		// Keep rotate cursor visible while actively rotating.
+		if (is_rotating)
+			SetCursor (rotate_cursor);
 
 		bool constrain = e.IsShiftPressed;
 
@@ -214,9 +481,10 @@ public abstract class BaseTransformTool : BaseTool
 		if (is_handle_scaling)
 			handle.EndDrag ();
 
-		Matrix final = is_handle_scaling
-			? ComputeScaleTransform (source_rect, handle.Rectangle)
-			: transform;
+		// For handle scaling we already computed the (possibly flipped) transform
+		// in OnMouseMove and stored it in `transform`. Using ComputeScaleTransform
+		// from the positive bounding rect would lose the sign and thus the flip.
+		Matrix final = transform;
 
 		OnFinishTransform (document, final);
 	}
@@ -368,6 +636,9 @@ public abstract class BaseTransformTool : BaseTool
 
 		// Snap the grips onto the committed content.
 		UpdateHandlesFromDocument (document);
+
+		// Restore cursor after a rotate/scale gesture
+		SetCursor (DefaultCursor);
 	}
 
 	protected override void OnActivated (Document? document)
@@ -383,6 +654,7 @@ public abstract class BaseTransformTool : BaseTool
 		UpdateHandleHint (false);
 		ClearNudgeState ();
 
+		// Fully detach popover to avoid holding parent reference.
 		if (nudge_popover is not null) {
 			try {
 				nudge_popover.Popdown ();
@@ -395,14 +667,14 @@ public abstract class BaseTransformTool : BaseTool
 
 	/// <summary>
 	/// Position the resize grips on the current selection's bounding box, and
-	/// only show them when there is a selection to transform. Gated on the
-	/// selection's polygons (not <c>Visible</c>) because a freshly pasted
-	/// selection isn't marked visible until after it is created.
+	/// only show them when there is a <em>visible</em> selection to transform.
+	/// A fresh document carries an invisible full-canvas select-all
+	/// (<c>ResetSelectionPaths</c>), so gating on <c>SelectionPolygons.Count</c>
+	/// would wrongly show grips on the default layer; paste sets <c>Visible</c>.
 	/// </summary>
 	private void UpdateHandlesFromDocument (Document? document)
 	{
-		bool hasSelection = document is not null
-			&& (document.Selection.Visible || document.Selection.SelectionPolygons.Count > 0);
+		bool hasSelection = document is not null && document.Selection.Visible;
 
 		if (!hasSelection) {
 			handle.Active = false;
@@ -423,7 +695,6 @@ public abstract class BaseTransformTool : BaseTool
 		if (!workspace.HasOpenDocuments)
 			return;
 
-		// Don't override the nudge hint while it's visible.
 		if (nudge_hint_visible)
 			return;
 
@@ -471,11 +742,12 @@ public abstract class BaseTransformTool : BaseTool
 		var activeWs = workspace.ActiveWorkspace;
 		Gtk.Widget canvas = activeWs.Canvas;
 
-		// Lower-right of the nudged area in canvas coords.
+		// Determine lower-right of the nudged area in canvas coordinates.
 		RectangleD rect;
 		if (handle.Active) {
 			rect = handle.Rectangle;
 		} else {
+			// Fallback to current selection bounds.
 			try {
 				rect = GetSourceRectangle (document);
 			} catch {
@@ -486,6 +758,7 @@ public abstract class BaseTransformTool : BaseTool
 		PointD lowerRightCanvas = new (rect.X + rect.Width, rect.Y + rect.Height);
 		PointD lowerRightView = activeWs.CanvasPointToView (lowerRightCanvas);
 
+		// Create or reuse popover + label.
 		if (nudge_popover is null) {
 			nudge_popover = Gtk.Popover.New ();
 			nudge_popover.Autohide = false;
@@ -498,12 +771,15 @@ public abstract class BaseTransformTool : BaseTool
 		} else {
 			if (nudge_label is not null)
 				nudge_label.SetText (hint);
+			// Re-parent if canvas changed.
 			if (nudge_popover.GetParent () != canvas) {
 				nudge_popover.Unparent ();
 				nudge_popover.SetParent (canvas);
 			}
 		}
 
+		// Anchor popover to lower-right of the nudge area.
+		// If mouse is elsewhere, popover still appears near content (fixes issue #2).
 		Gdk.Rectangle pointing = new () {
 			X = (int) Math.Clamp (lowerRightView.X, 0, 10000),
 			Y = (int) Math.Clamp (lowerRightView.Y, 0, 10000),
@@ -512,6 +788,7 @@ public abstract class BaseTransformTool : BaseTool
 		};
 		nudge_popover.PointingTo = pointing;
 
+		// Also set tooltip as fallback for accessibility / hover.
 		canvas.SetTooltipText (hint);
 
 		nudge_popover.Popup ();
@@ -533,13 +810,17 @@ public abstract class BaseTransformTool : BaseTool
 					if (canvas.TooltipText.Contains ("Arrow:") || canvas.TooltipText.Contains ("Shift+Arrow"))
 						canvas.SetTooltipText (null);
 				}
-			} catch { }
+			} catch {
+				// Workspace may be disposed.
+			}
 		}
 
 		if (nudge_popover is not null) {
 			try {
 				nudge_popover.Popdown ();
-			} catch { }
+			} catch {
+				// Ignore if already closed.
+			}
 		}
 
 		nudge_hint_visible = false;
@@ -595,6 +876,18 @@ public abstract class BaseTransformTool : BaseTool
 		_ => s.GetCenter (),
 	};
 
+	private static PointD GetCornerPoint (RectangleD s, HandlePoint dragged) => dragged switch {
+		HandlePoint.UpperLeft => new (s.X, s.Y),
+		HandlePoint.UpperRight => new (s.X + s.Width, s.Y),
+		HandlePoint.LowerLeft => new (s.X, s.Y + s.Height),
+		HandlePoint.LowerRight => new (s.X + s.Width, s.Y + s.Height),
+		HandlePoint.Left => new (s.X, s.GetCenter ().Y),
+		HandlePoint.Right => new (s.X + s.Width, s.GetCenter ().Y),
+		HandlePoint.Up => new (s.GetCenter ().X, s.Y),
+		HandlePoint.Down => new (s.GetCenter ().X, s.Y + s.Height),
+		_ => s.GetCenter (),
+	};
+
 	/// <summary>
 	/// Target rectangle for a corner drag. Shift keeps the pasted content's
 	/// original width:height ratio (not a square); Ctrl anchors the scale to
@@ -618,6 +911,32 @@ public abstract class BaseTransformTool : BaseTool
 	}
 
 	/// <summary>
+	/// Target rectangle for an edge drag. The dragged edge changes one dimension;
+	/// Shift derives the other dimension from the pasted content's aspect ratio
+	/// (expanding/contracting symmetrically about the perpendicular centerline),
+	/// and Ctrl anchors the whole scale to the center.
+	/// </summary>
+	private static RectangleD ComputeEdgeRect (RectangleD source, RectangleD dragged, HandlePoint edge, bool keepAspect, bool fromCenter)
+	{
+		RectangleD rect = dragged;
+
+		if (keepAspect && source.Width > 0 && source.Height > 0) {
+			PointD c = source.GetCenter ();
+			if (edge is HandlePoint.Left or HandlePoint.Right) {
+				// Width was dragged; derive height, centered vertically.
+				double height = dragged.Width * source.Height / source.Width;
+				rect = new RectangleD (new PointD (dragged.X, c.Y - height / 2), dragged.Width, height);
+			} else {
+				// Up/Down: height was dragged; derive width, centered horizontally.
+				double width = dragged.Height * source.Width / source.Height;
+				rect = new RectangleD (new PointD (c.X - width / 2, dragged.Y), width, dragged.Height);
+			}
+		}
+
+		return fromCenter ? CenterAnchored (source, rect) : rect;
+	}
+
+	/// <summary>
 	/// Re-centers <paramref name="rect"/> on the source's center, keeping its size,
 	/// so scaling grows symmetrically about the center (Ctrl behavior).
 	/// </summary>
@@ -625,6 +944,115 @@ public abstract class BaseTransformTool : BaseTool
 	{
 		PointD c = source.GetCenter ();
 		return new RectangleD (new PointD (c.X - rect.Width / 2, c.Y - rect.Height / 2), rect.Width, rect.Height);
+	}
+
+	/// <summary>
+	/// Load the rotate cursor texture with white halo + black outline preserved.
+	/// Tries direct file load first (bypasses Gtk IconTheme recoloring), then
+	/// Resources.GetIcon, then a manual Cairo fallback.
+	/// </summary>
+	private static Gdk.Texture LoadRotateTexture ()
+	{
+		// Try direct file load from the installed icons directory — this preserves
+		// the white halo + black stroke, unlike the symbolic IconTheme path.
+		string data_dir = Pinta.Core.SystemManager.GetDataRootDirectory ();
+		string[] candidates = [
+			System.IO.Path.Combine (data_dir, "icons", "hicolor", "scalable", "actions", "rotate-handle.svg"),
+			System.IO.Path.Combine (data_dir, "icons", "hicolor", "scalable", "actions", "rotate-handle-symbolic.svg"),
+		];
+
+		foreach (string path in candidates) {
+			try {
+				if (!File.Exists (path))
+					continue;
+				byte[] data = File.ReadAllBytes (path);
+				GLib.Bytes bytes = GLib.Bytes.New (data);
+				Gdk.Texture tex = Gdk.Texture.NewFromBytes (bytes);
+				if (tex.Width > 0 && tex.Height > 0)
+					return tex;
+			} catch {
+				// fall through
+			}
+		}
+
+		// Fallback to themed icon (may be recolored but better than nothing).
+		try {
+			Gdk.Texture themed = Pinta.Resources.ResourceLoader.GetIcon (Pinta.Resources.Icons.RotateHandle, 28);
+			if (themed.Width > 0)
+				return themed;
+		} catch {
+		}
+
+		// Final fallback: draw a high-contrast rotate icon via Cairo (white halo + black arc).
+		return CreateFallbackRotateTexture (32);
+	}
+
+	private static Gdk.Texture CreateFallbackRotateTexture (int size)
+	{
+		using ImageSurface surf = new (Format.Argb32, size, size);
+		using Context g = new (surf);
+		g.Antialias = Antialias.Subpixel;
+		g.LineCap = LineCap.Round;
+		g.LineJoin = LineJoin.Round;
+
+		// Clear transparent.
+		g.Operator = Operator.Source;
+		g.SetSourceRgba (0, 0, 0, 0);
+		g.Paint ();
+		g.Operator = Operator.Over;
+
+		double cx = size / 2.0;
+		double cy = size / 2.0;
+		double radius = size * 0.35; // ~11 at 32px, similar to 8 at 24px
+		double gap_deg = 35.0;
+		double start_rad = gap_deg * Math.PI / 180.0;
+		double end_rad = (360.0 - gap_deg) * Math.PI / 180.0;
+
+		// Helper to stroke arc + arrowheads.
+		void StrokeArc (double r, double width, double[] color)
+		{
+			g.LineWidth = width;
+			g.SetSourceRgb (color[0], color[1], color[2]);
+			// Arc (Cairo angles: 0 = +X, positive clockwise because Y down, but we use math)
+			g.Arc (cx, cy, r, start_rad, end_rad);
+			g.Stroke ();
+
+			// Arrowheads — small V at each end, tangent to circle.
+			// Compute end points
+			double sx = cx + r * Math.Cos (start_rad);
+			double sy = cy + r * Math.Sin (start_rad);
+			double ex = cx + r * Math.Cos (end_rad);
+			double ey = cy + r * Math.Sin (end_rad);
+
+			// Tangent directions (perpendicular to radius). For a clockwise arc,
+			// tangent at start is roughly upwards-ish, at end downwards-ish.
+			// Approximate arrowhead by drawing two short lines.
+			double arrow_len = size * 0.18;
+			double arrow_angle = 25.0 * Math.PI / 180.0;
+
+			// Start arrow — tangent roughly -90deg from radius
+			double t1 = start_rad - Math.PI / 2;
+			g.MoveTo (sx, sy);
+			g.LineTo (sx + arrow_len * Math.Cos (t1 + arrow_angle), sy + arrow_len * Math.Sin (t1 + arrow_angle));
+			g.MoveTo (sx, sy);
+			g.LineTo (sx + arrow_len * Math.Cos (t1 - arrow_angle), sy + arrow_len * Math.Sin (t1 - arrow_angle));
+			g.Stroke ();
+
+			// End arrow — tangent +90deg
+			double t2 = end_rad + Math.PI / 2;
+			g.MoveTo (ex, ey);
+			g.LineTo (ex + arrow_len * Math.Cos (t2 + arrow_angle), ey + arrow_len * Math.Sin (t2 + arrow_angle));
+			g.MoveTo (ex, ey);
+			g.LineTo (ex + arrow_len * Math.Cos (t2 - arrow_angle), ey + arrow_len * Math.Sin (t2 - arrow_angle));
+			g.Stroke ();
+		}
+
+		// White halo
+		StrokeArc (radius, size * 0.16, [1, 1, 1]);
+		// Black arc
+		StrokeArc (radius, size * 0.09, [0.1, 0.1, 0.1]);
+
+		return Gdk.Texture.NewForPixbuf (Gdk.Functions.PixbufGetFromSurface (surf, 0, 0, surf.Width, surf.Height)!);
 	}
 
 	private bool IsActive

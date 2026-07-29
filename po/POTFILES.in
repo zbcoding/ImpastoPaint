@@ -344,6 +344,7 @@ Pinta.Tools/SettingNames.cs
 Pinta.Tools/Tools/BaseBrushTool.cs
 Pinta.Tools/Tools/BaseTransformTool.cs
 Pinta.Tools/Tools/CloneStampTool.cs
+Pinta.Tools/Tools/ColorPickerAllLayersTool.cs
 Pinta.Tools/Tools/ColorPickerTool.cs
 Pinta.Tools/Tools/EllipseSelectTool.cs
 Pinta.Tools/Tools/EllipseTool.cs

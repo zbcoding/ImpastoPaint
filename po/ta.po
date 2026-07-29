@@ -533,6 +533,10 @@ msgstr "வண்ண பயன்முறை"
 msgid "Color Picker"
 msgstr "வண்ண தேர்வாளர்"
 
+#: ../Pinta.Tools/Tools/ColorPickerAllLayersTool.cs:19
+msgid "Color Picker (All Layers)"
+msgstr ""
+
 #: ../Pinta.Effects/Effects/PencilSketchEffect.cs:89
 msgid "Color Range"
 msgstr "வண்ண வரம்பு"
@@ -1369,6 +1373,7 @@ msgstr ""
 "இரண்டாம் நிலை நிறத்தை முதன்மை வண்ணத்துடன் மாற்ற இடது சொடுக்கு செய்யவும்.\n"
 " தலைகீழாக வலது சொடுக்கு செய்யவும்."
 
+#: ../Pinta.Tools/Tools/ColorPickerAllLayersTool.cs:21
 #: ../Pinta.Tools/Tools/ColorPickerTool.cs:59
 msgid ""
 "Left click to set primary color.\n"
@@ -2339,6 +2344,14 @@ msgstr "அனைத்தையும் தெரிவுசெய்"
 #: ../Pinta.Effects/Utilities/GradientHelper.cs:13
 msgid "Selected Colors"
 msgstr "தேர்ந்தெடுக்கப்பட்ட வண்ணங்கள்"
+
+#: ../Pinta.Tools/Tools/ColorPickerAllLayersTool.cs:21
+msgid "Selects the color in view."
+msgstr ""
+
+#: ../Pinta.Tools/Tools/ColorPickerTool.cs:59
+msgid "Selects the color on the current layer and current selected area."
+msgstr ""
 
 #. Translators: 'Semibold' (600) refers to the font-weight text property
 #: ../Pinta.Tools/Tools/TextTool.cs:302

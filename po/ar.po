@@ -540,6 +540,10 @@ msgstr "وضع اللون"
 msgid "Color Picker"
 msgstr "لاقط الألوان"
 
+#: ../Pinta.Tools/Tools/ColorPickerAllLayersTool.cs:19
+msgid "Color Picker (All Layers)"
+msgstr ""
+
 #: ../Pinta.Effects/Effects/PencilSketchEffect.cs:89
 msgid "Color Range"
 msgstr "مدى اللون"
@@ -1382,6 +1386,7 @@ msgstr ""
 "انقر بزر الفأرة الأيسر لاستبدال اللون الثانوي باللون الأساسي.\n"
 "انقر بزر الفأرة الأيمن لعكس العملية."
 
+#: ../Pinta.Tools/Tools/ColorPickerAllLayersTool.cs:21
 #: ../Pinta.Tools/Tools/ColorPickerTool.cs:59
 msgid ""
 "Left click to set primary color.\n"
@@ -1403,8 +1408,8 @@ msgid ""
 "click or press {0} and left click to choose palette color."
 msgstr ""
 "انقر بزر الفأرة الأيسر لتعيين اللون الأساسي. انقر بزر الفأرة الأيمن لتعيين "
-"اللون الثانوي. انقر بالزر الأوسط أو اضغط على{0} مع النقر بالزر الأيسر لاختيار "
-"لون من لوحة الألوان."
+"اللون الثانوي. انقر بالزر الأوسط أو اضغط على{0} مع النقر بالزر الأيسر "
+"لاختيار لون من لوحة الألوان."
 
 #: ../Pinta.Tools/Tools/ZoomTool.cs:59
 msgid ""
@@ -2354,6 +2359,14 @@ msgstr "حدّد الكلّ"
 #: ../Pinta.Effects/Utilities/GradientHelper.cs:13
 msgid "Selected Colors"
 msgstr "الألوان المختارة"
+
+#: ../Pinta.Tools/Tools/ColorPickerAllLayersTool.cs:21
+msgid "Selects the color in view."
+msgstr ""
+
+#: ../Pinta.Tools/Tools/ColorPickerTool.cs:59
+msgid "Selects the color on the current layer and current selected area."
+msgstr ""
 
 #. Translators: 'Semibold' (600) refers to the font-weight text property
 #: ../Pinta.Tools/Tools/TextTool.cs:302

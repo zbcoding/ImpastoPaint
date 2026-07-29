@@ -538,6 +538,10 @@ msgstr "色彩模式"
 msgid "Color Picker"
 msgstr "顏色拾取器"
 
+#: ../Pinta.Tools/Tools/ColorPickerAllLayersTool.cs:19
+msgid "Color Picker (All Layers)"
+msgstr ""
+
 #: ../Pinta.Effects/Effects/PencilSketchEffect.cs:89
 msgid "Color Range"
 msgstr "顏色範圍"
@@ -1371,6 +1375,7 @@ msgstr ""
 "左鍵按一下可將次要顏色換成主要顏色。\n"
 "按一下滑鼠右鍵可反色。"
 
+#: ../Pinta.Tools/Tools/ColorPickerAllLayersTool.cs:21
 #: ../Pinta.Tools/Tools/ColorPickerTool.cs:59
 msgid ""
 "Left click to set primary color.\n"
@@ -2337,6 +2342,14 @@ msgstr "全選"
 #: ../Pinta.Effects/Utilities/GradientHelper.cs:13
 msgid "Selected Colors"
 msgstr "選定的顏色"
+
+#: ../Pinta.Tools/Tools/ColorPickerAllLayersTool.cs:21
+msgid "Selects the color in view."
+msgstr ""
+
+#: ../Pinta.Tools/Tools/ColorPickerTool.cs:59
+msgid "Selects the color on the current layer and current selected area."
+msgstr ""
 
 #. Translators: 'Semibold' (600) refers to the font-weight text property
 #: ../Pinta.Tools/Tools/TextTool.cs:302

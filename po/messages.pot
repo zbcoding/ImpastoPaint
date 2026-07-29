@@ -314,6 +314,7 @@ msgstr ""
 #: ../Pinta.Gui.Addins/InstallDialog.cs:118
 #: ../Pinta.Gui.Widgets/Widgets/ColorPickerDialog.cs:392
 #: ../Pinta/Actions/File/SaveDocumentImplementationAction.cs:96
+#: ../Pinta/Dialogs/PreferencesDialog.cs:111
 msgid "Cancel"
 msgstr ""
 
@@ -2111,6 +2112,7 @@ msgstr ""
 #: ../Pinta.Effects/Dialogs/Effects.CurvesDialog.cs:211
 #: ../Pinta.Effects/Dialogs/Effects.LevelsDialog.cs:263
 #: ../Pinta.Gui.Widgets/Widgets/ColorPickerDialog.cs:375
+#: ../Pinta/Dialogs/PreferencesDialog.cs:111
 msgid "Reset"
 msgstr ""
 
@@ -2943,6 +2945,14 @@ msgstr ""
 
 #: ../Pinta/Dialogs/PreferencesDialog.cs:51
 msgid "Default canvas size (on application open):"
+msgstr ""
+
+#: ../Pinta/Dialogs/PreferencesDialog.cs:109
+msgid "Reset Canvas Settings?"
+msgstr ""
+
+#: ../Pinta/Dialogs/PreferencesDialog.cs:110
+msgid "This resets the canvas size and surround color to their defaults."
 msgstr ""
 
 #: ../Pinta/Dialogs/PreferencesDialog.cs:80

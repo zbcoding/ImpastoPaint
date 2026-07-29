@@ -10,7 +10,7 @@ internal static class SettingNames
 	internal const string DEFAULT_CANVAS_WIDTH = "default-canvas-width";
 	internal const string DEFAULT_CANVAS_HEIGHT = "default-canvas-height";
 	internal const string CANVAS_SURROUND_COLOR = "canvas-surround-color";
-	internal const string DEFAULT_CANVAS_SURROUND_COLOR = "333333";
+	internal const string DEFAULT_CANVAS_SURROUND_COLOR = "";
 
 	internal const string RULER_METRIC = "ruler-metric";
 	internal const string COLOR_SCHEME = "color-scheme";

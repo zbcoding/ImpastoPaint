@@ -28,15 +28,20 @@ internal sealed class PreferencesAction : IActionHandler
 
 	private async void Activated (object sender, EventArgs e)
 	{
-		Cairo.Color canvasSurroundColor = Cairo.Color.FromHex (
-			settings.GetSetting (SettingNames.CANVAS_SURROUND_COLOR, SettingNames.DEFAULT_CANVAS_SURROUND_COLOR))
-			?? Cairo.Color.FromHex (SettingNames.DEFAULT_CANVAS_SURROUND_COLOR)!.Value;
+		string storedCanvasSurroundColor = settings.GetSetting (SettingNames.CANVAS_SURROUND_COLOR, SettingNames.DEFAULT_CANVAS_SURROUND_COLOR);
+		bool canvasSurroundColorIsDefault = Cairo.Color.FromHex (storedCanvasSurroundColor) is null;
+		Cairo.Color defaultCanvasSurroundColor = canvasSurroundColorIsDefault && PintaCore.Workspace.HasOpenDocuments
+			? ((CanvasWindow) PintaCore.Workspace.ActiveWorkspace.CanvasWindow).DefaultCanvasSurroundColor
+			: new Cairo.Color (0.2, 0.2, 0.2);
+		Cairo.Color canvasSurroundColor = Cairo.Color.FromHex (storedCanvasSurroundColor) ?? defaultCanvasSurroundColor;
 
 		using PreferencesDialog dialog = PreferencesDialog.New (
 			chrome,
 			settings.GetSetting (SettingNames.DEFAULT_CANVAS_WIDTH, 800),
 			settings.GetSetting (SettingNames.DEFAULT_CANVAS_HEIGHT, 600),
-			canvasSurroundColor);
+			canvasSurroundColor,
+			canvasSurroundColorIsDefault,
+			defaultCanvasSurroundColor);
 
 		try {
 			if (await dialog.RunAsync () != Gtk.ResponseType.Ok)
@@ -44,10 +49,11 @@ internal sealed class PreferencesAction : IActionHandler
 
 			settings.PutSetting (SettingNames.DEFAULT_CANVAS_WIDTH, dialog.DefaultCanvasWidth);
 			settings.PutSetting (SettingNames.DEFAULT_CANVAS_HEIGHT, dialog.DefaultCanvasHeight);
-			settings.PutSetting (SettingNames.CANVAS_SURROUND_COLOR, dialog.CanvasSurroundColor.ToHex (addAlpha: false));
+			Cairo.Color? selectedCanvasSurroundColor = dialog.CanvasSurroundColor;
+			settings.PutSetting (SettingNames.CANVAS_SURROUND_COLOR, selectedCanvasSurroundColor?.ToHex (addAlpha: false) ?? SettingNames.DEFAULT_CANVAS_SURROUND_COLOR);
 
 			foreach (Document document in PintaCore.Workspace.OpenDocuments)
-				((CanvasWindow) document.Workspace.CanvasWindow).CanvasSurroundColor = dialog.CanvasSurroundColor;
+				((CanvasWindow) document.Workspace.CanvasWindow).CanvasSurroundColor = selectedCanvasSurroundColor;
 		} finally {
 			dialog.Destroy ();
 		}

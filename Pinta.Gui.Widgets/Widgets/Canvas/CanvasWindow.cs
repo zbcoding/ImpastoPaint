@@ -44,6 +44,8 @@ public sealed partial class CanvasWindow
 	private Ruler vertical_ruler;
 	private Gtk.ScrolledWindow scrolled_window;
 	private Gtk.CssProvider viewport_css_provider;
+	private Gtk.StyleContext viewport_style_context;
+	private Cairo.Color default_canvas_surround_color;
 	private Gtk.Widget? horizontal_scrollbar;
 	private Gtk.Widget? vertical_scrollbar;
 	private Gtk.EventControllerMotion motion_controller;
@@ -59,12 +61,24 @@ public sealed partial class CanvasWindow
 
 	public Gtk.Widget Canvas { get { return canvas; } }
 
-	public Cairo.Color CanvasSurroundColor {
-		set => viewport_css_provider.LoadFromString ($".canvas-surround {{ background-color: #{value.ToHex (addAlpha: false)}; }}");
+	public Cairo.Color? CanvasSurroundColor {
+		set {
+			if (value is null) {
+				viewport_style_context.RemoveProvider (viewport_css_provider);
+				return;
+			}
+
+			viewport_css_provider.LoadFromString ($".canvas-surround {{ background-color: #{value.Value.ToHex (addAlpha: false)}; }}");
+			viewport_style_context.RemoveProvider (viewport_css_provider);
+			viewport_style_context.AddProvider (viewport_css_provider, Gtk.Constants.STYLE_PROVIDER_PRIORITY_APPLICATION);
+		}
 	}
+
+	public Cairo.Color DefaultCanvasSurroundColor => default_canvas_surround_color;
 
 	[MemberNotNull (nameof (canvas))]
 	[MemberNotNull (nameof (viewport_css_provider))]
+	[MemberNotNull (nameof (viewport_style_context))]
 	[MemberNotNull (nameof (horizontal_ruler), nameof (vertical_ruler))]
 	[MemberNotNull (nameof (scrolled_window), nameof (horizontal_scrollbar), nameof (vertical_scrollbar))]
 	[MemberNotNull (nameof (motion_controller), nameof (drag_controller), nameof (gesture_zoom))]
@@ -139,7 +153,11 @@ public sealed partial class CanvasWindow
 		this.canvas = canvas;
 
 		viewport_css_provider = Gtk.CssProvider.New ();
-		viewPort.GetStyleContext ().AddProvider (viewport_css_provider, Gtk.Constants.STYLE_PROVIDER_PRIORITY_APPLICATION);
+		viewport_style_context = viewPort.GetStyleContext ();
+		if (viewport_style_context.LookupColor ("view_bg_color", out Gdk.RGBA defaultColor))
+			default_canvas_surround_color = defaultColor.ToCairoColor ();
+		else
+			default_canvas_surround_color = new Cairo.Color (0.2, 0.2, 0.2);
 
 		scrolled_window = scrolledWindow;
 		gesture_zoom = gestureZoom;
@@ -168,7 +186,7 @@ public sealed partial class CanvasWindow
 		ToolManager tools,
 		Document document,
 		ICanvasGridService canvasGrid,
-		Cairo.Color canvasSurroundColor)
+		Cairo.Color? canvasSurroundColor)
 	{
 		canvas.Configure (tools, document, canvasGrid);
 		CanvasSurroundColor = canvasSurroundColor;
@@ -188,7 +206,7 @@ public sealed partial class CanvasWindow
 		ToolManager tools,
 		Document document,
 		ICanvasGridService canvasGrid,
-		Cairo.Color canvasSurroundColor)
+		Cairo.Color? canvasSurroundColor)
 	{
 		CanvasWindow window = NewWithProperties ([]);
 		window.Configure (chrome, tools, document, canvasGrid, canvasSurroundColor);

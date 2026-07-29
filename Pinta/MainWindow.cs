@@ -180,10 +180,9 @@ internal sealed class MainWindow
 		((CanvasWindow) view.Widget).Canvas.Cursor = PintaCore.Tools.CurrentTool?.CurrentCursor;
 	}
 
-	private static Cairo.Color GetCanvasSurroundColor ()
+	private static Cairo.Color? GetCanvasSurroundColor ()
 		=> Cairo.Color.FromHex (
-			PintaCore.Settings.GetSetting (SettingNames.CANVAS_SURROUND_COLOR, SettingNames.DEFAULT_CANVAS_SURROUND_COLOR))
-			?? Cairo.Color.FromHex (SettingNames.DEFAULT_CANVAS_SURROUND_COLOR)!.Value;
+			PintaCore.Settings.GetSetting (SettingNames.CANVAS_SURROUND_COLOR, SettingNames.DEFAULT_CANVAS_SURROUND_COLOR));
 
 	private void Workspace_DocumentCreated (object? sender, DocumentEventArgs e)
 	{

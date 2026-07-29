@@ -13,6 +13,8 @@ public sealed partial class PreferencesDialog
 	private Gtk.SpinButton canvas_width_spinner;
 	private Gtk.SpinButton canvas_height_spinner;
 	private PintaColorButton canvas_surround_color_button;
+	private bool canvas_surround_color_is_default;
+	private Cairo.Color default_canvas_surround_color;
 
 	private const int SPACING = 6;
 	internal const int MAX_CANVAS_DIMENSION = 10000;
@@ -26,14 +28,16 @@ public sealed partial class PreferencesDialog
 
 	public int DefaultCanvasWidth => canvas_width_spinner.GetValueAsInt ();
 	public int DefaultCanvasHeight => canvas_height_spinner.GetValueAsInt ();
-	public Cairo.Color CanvasSurroundColor => canvas_surround_color_button.DisplayColor;
+	public Cairo.Color? CanvasSurroundColor => canvas_surround_color_is_default ? null : canvas_surround_color_button.DisplayColor;
 
-	internal static PreferencesDialog New (ChromeManager chrome, int defaultCanvasWidth, int defaultCanvasHeight, Cairo.Color canvasSurroundColor)
+	internal static PreferencesDialog New (ChromeManager chrome, int defaultCanvasWidth, int defaultCanvasHeight, Cairo.Color canvasSurroundColor, bool canvasSurroundColorIsDefault, Cairo.Color defaultCanvasSurroundColor)
 	{
 		PreferencesDialog dialog = NewWithProperties ([]);
 		dialog.canvas_width_spinner.Value = defaultCanvasWidth;
 		dialog.canvas_height_spinner.Value = defaultCanvasHeight;
 		dialog.canvas_surround_color_button.DisplayColor = canvasSurroundColor;
+		dialog.canvas_surround_color_is_default = canvasSurroundColorIsDefault;
+		dialog.default_canvas_surround_color = defaultCanvasSurroundColor;
 		dialog.TransientFor = chrome.MainWindow;
 		return dialog;
 	}
@@ -75,15 +79,12 @@ public sealed partial class PreferencesDialog
 		contentArea.SetAllMargins (12);
 
 		Gtk.Box canvasPage = Gtk.Box.New (Gtk.Orientation.Vertical, SPACING);
+		canvasPage.SetAllMargins (12);
 		canvasPage.Append (grid);
 
 		Gtk.Button resetButton = Gtk.Button.NewWithLabel (Translations.GetString ("Reset to Defaults"));
-		resetButton.Halign = Gtk.Align.Start;
-		resetButton.OnClicked += (_, _) => {
-			widthSpinner.Value = 800;
-			heightSpinner.Value = 600;
-			canvasSurroundColorButton.DisplayColor = Cairo.Color.FromHex (SettingNames.DEFAULT_CANVAS_SURROUND_COLOR)!.Value;
-		};
+		resetButton.Halign = Gtk.Align.Center;
+		resetButton.OnClicked += ConfirmCanvasReset;
 		canvasPage.Append (resetButton);
 
 		Gtk.Notebook notebook = Gtk.Notebook.New ();
@@ -102,6 +103,24 @@ public sealed partial class PreferencesDialog
 		canvas_surround_color_button = canvasSurroundColorButton;
 	}
 
+	private async void ConfirmCanvasReset (Gtk.Button sender, EventArgs e)
+	{
+		Gtk.AlertDialog confirmation = Gtk.AlertDialog.NewWithProperties ([]);
+		confirmation.Message = Translations.GetString ("Reset Canvas Settings?");
+		confirmation.Detail = Translations.GetString ("This resets the canvas size and surround color to their defaults.");
+		confirmation.Buttons = [Translations.GetString ("Reset"), Translations.GetString ("Cancel")];
+		confirmation.DefaultButton = 1;
+		confirmation.CancelButton = 1;
+
+		if (await confirmation.ChooseAsync (this) != 0)
+			return;
+
+		canvas_width_spinner.Value = 800;
+		canvas_height_spinner.Value = 600;
+		canvas_surround_color_button.DisplayColor = default_canvas_surround_color;
+		canvas_surround_color_is_default = true;
+	}
+
 	private async void ChooseCanvasSurroundColor (Gtk.Button sender, EventArgs e)
 	{
 		using ColorPickerDialog dialog = ColorPickerDialog.New (
@@ -116,6 +135,7 @@ public sealed partial class PreferencesDialog
 			if (await dialog.RunAsync () == Gtk.ResponseType.Ok) {
 				Cairo.Color color = ((SingleColor) dialog.Colors).Color;
 				canvas_surround_color_button.DisplayColor = new Cairo.Color (color.R, color.G, color.B, 1);
+				canvas_surround_color_is_default = false;
 			}
 		} finally {
 			dialog.Destroy ();

@@ -52,7 +52,7 @@ public class LassoSelectTool : BaseTool
 	private readonly List<IntPoint> lasso_polygon = [];
 	private ScissorsEngine? scissors_engine;
 	private readonly List<IntPoint> scissors_anchors = [];
-	private readonly List<List<IntPoint>> scissors_segments = [];
+	private readonly List<IReadOnlyList<IntPoint>> scissors_segments = [];
 	private List<IntPoint>? scissors_preview;
 	private IntPoint? scissors_cursor;
 	private IntPoint? scissors_tree_anchor;
@@ -122,6 +122,7 @@ public class LassoSelectTool : BaseTool
 				dragged_scissors_anchor = i;
 				dragged_scissors_button = e.MouseButton;
 				scissors_handles[i].Selected = true;
+				document.Workspace.InvalidateWindowRect (scissors_handles[i].InvalidateRect);
 				is_dragging = true;
 				return;
 			}
@@ -165,12 +166,13 @@ public class LassoSelectTool : BaseTool
 
 		if (scissors_anchors.Count > 0) {
 			List<IntPoint> segment = FindScissorsPath (scissors_anchors[^1], anchor);
-			scissors_segments.Add (segment);
+			scissors_segments.Add ([.. segment]);
 			scissors_engine!.LearnFromPath (segment);
 		}
 
 		scissors_anchors.Add (anchor);
 		scissors_handles.Add (CreateScissorsHandle (anchor));
+		document.Workspace.InvalidateWindowRect (scissors_handles[^1].InvalidateRect);
 		scissors_preview = null;
 		scissors_cursor = anchor;
 
@@ -233,6 +235,16 @@ public class LassoSelectTool : BaseTool
 
 	protected override void OnMouseUp (Document document, ToolMouseEventArgs e)
 	{
+		if (dragged_scissors_anchor >= 0) {
+			if (e.MouseButton == dragged_scissors_button) {
+				scissors_handles[dragged_scissors_anchor].Selected = false;
+				document.Workspace.InvalidateWindowRect (scissors_handles[dragged_scissors_anchor].InvalidateRect);
+				dragged_scissors_anchor = -1;
+				is_dragging = false;
+			}
+			return;
+		}
+
 		is_dragging = false;
 
 		if (!IsFreeformMode)
@@ -277,7 +289,7 @@ public class LassoSelectTool : BaseTool
 		}
 
 		List<IntPoint> finalPolygon = [];
-		foreach (List<IntPoint> segment in scissors_segments)
+		foreach (IReadOnlyList<IntPoint> segment in scissors_segments)
 			AppendSegment (finalPolygon, segment);
 
 		IntPoint first = scissors_anchors[0];
@@ -346,6 +358,11 @@ public class LassoSelectTool : BaseTool
 
 		if (scissors_anchors.Count > 0) {
 			scissors_anchors.RemoveAt (scissors_anchors.Count - 1);
+			MoveHandle removedHandle = scissors_handles[^1];
+			RectangleI removedRect = removedHandle.InvalidateRect;
+			removedHandle.Active = false;
+			document.Workspace.InvalidateWindowRect (removedRect);
+			scissors_handles.RemoveAt (scissors_handles.Count - 1);
 			if (scissors_segments.Count > 0)
 				scissors_segments.RemoveAt (scissors_segments.Count - 1);
 
@@ -422,18 +439,61 @@ public class LassoSelectTool : BaseTool
 		return scissors_engine.GetPathTo (end);
 	}
 
+	private MoveHandle CreateScissorsHandle (IntPoint point)
+		=> new (workspace) {
+			Active = true,
+			CanvasPosition = new PointD (point.X, point.Y)
+		};
+
+	private void UpdateDraggedScissorsAnchor (Document document, ToolMouseEventArgs e)
+	{
+		if (scissors_engine is null || dragged_scissors_anchor < 0 || dragged_scissors_anchor >= scissors_anchors.Count)
+			return;
+
+		PointD p = document.ClampToImageSize (e.PointDouble);
+		IntPoint raw = new ((long) p.X, (long) p.Y);
+		IntPoint point = e.IsShiftPressed ? ClampToScissorsSurface (raw) : scissors_engine.FindMaxGradient (raw);
+		if (PointsEqual (scissors_anchors[dragged_scissors_anchor], point))
+			return;
+
+		RectangleI oldRect = scissors_handles[dragged_scissors_anchor].InvalidateRect;
+		scissors_anchors[dragged_scissors_anchor] = point;
+		scissors_handles[dragged_scissors_anchor].CanvasPosition = new PointD (point.X, point.Y);
+		if (dragged_scissors_anchor > 0)
+			scissors_segments[dragged_scissors_anchor - 1] = FindScissorsPath (scissors_anchors[dragged_scissors_anchor - 1], point);
+		if (dragged_scissors_anchor < scissors_segments.Count)
+			scissors_segments[dragged_scissors_anchor] = FindScissorsPath (point, scissors_anchors[dragged_scissors_anchor + 1]);
+		if (dragged_scissors_anchor == scissors_anchors.Count - 1)
+			scissors_preview = null;
+
+		RebuildScissorsPolygon ();
+		ApplySelection (document);
+		document.Workspace.InvalidateWindowRect (oldRect.Union (scissors_handles[dragged_scissors_anchor].InvalidateRect));
+	}
+
+	protected void SetScissorsEdgeTolerance (int tolerance)
+	{
+		if (scissors_engine is null)
+			return;
+		scissors_engine.SetEdgeTolerance (tolerance);
+		if (!scissors_cursor.HasValue || scissors_anchors.Count == 0 || !workspace.HasOpenDocuments)
+			return;
+		scissors_preview = FindScissorsPath (scissors_anchors[^1], scissors_cursor.Value);
+		RebuildScissorsPolygon ();
+		ApplySelection (workspace.ActiveDocument);
+	}
 	private void RebuildScissorsPolygon ()
 	{
 		lasso_polygon.Clear ();
 
-		foreach (List<IntPoint> segment in scissors_segments)
+		foreach (IReadOnlyList<IntPoint> segment in scissors_segments)
 			AppendSegment (lasso_polygon, segment);
 
 		if (scissors_preview is not null)
 			AppendSegment (lasso_polygon, scissors_preview);
 	}
 
-	private static void AppendSegment (List<IntPoint> destination, List<IntPoint> segment)
+	private static void AppendSegment (List<IntPoint> destination, IReadOnlyList<IntPoint> segment)
 	{
 		if (segment.Count == 0)
 			return;
@@ -469,6 +529,13 @@ public class LassoSelectTool : BaseTool
 		lasso_polygon.Clear ();
 		scissors_engine = null;
 		scissors_tree_anchor = null;
+		if (workspace.HasOpenDocuments)
+			foreach (MoveHandle handle in scissors_handles)
+				workspace.ActiveDocument.Workspace.InvalidateWindowRect (handle.InvalidateRect);
+		foreach (MoveHandle handle in scissors_handles)
+			handle.Active = false;
+		dragged_scissors_anchor = -1;
+		scissors_handles.Clear ();
 		scissors_anchors.Clear ();
 		scissors_segments.Clear ();
 		scissors_preview = null;

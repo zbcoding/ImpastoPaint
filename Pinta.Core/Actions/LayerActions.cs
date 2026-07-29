@@ -125,7 +125,7 @@ public sealed class LayerActions
 			Translations.GetString ("Layer Properties..."),
 			null,
 			Resources.Icons.LayerProperties,
-			shortcuts: ["F4"]);
+			shortcuts: ["F2"]);
 
 		this.chrome = chrome;
 		image_formats = imageFormats;

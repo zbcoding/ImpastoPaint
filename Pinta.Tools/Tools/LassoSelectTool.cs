@@ -56,6 +56,9 @@ public class LassoSelectTool : BaseTool
 	private List<IntPoint>? scissors_preview;
 	private IntPoint? scissors_cursor;
 	private IntPoint? scissors_tree_anchor;
+	private readonly List<MoveHandle> scissors_handles = [];
+	private int dragged_scissors_anchor = -1;
+	private MouseButton dragged_scissors_button;
 
 	private Separator? mode_sep;
 	private Label? lasso_mode_label;
@@ -80,6 +83,7 @@ public class LassoSelectTool : BaseTool
 	public override Gdk.Cursor DefaultCursor => Gdk.Cursor.NewFromTexture (Resources.GetIcon ("Cursor.LassoSelect.png"), 9, 18, null);
 	public override int Priority => 17;
 	public override bool IsSelectionTool => true;
+	public override IEnumerable<IToolHandle> Handles => IsScissorsMode ? scissors_handles : [];
 
 	protected virtual bool HasModeSelector => true;
 	protected virtual bool IsFreeformMode => CurrentMode == LassoMode.Freeform;
@@ -109,6 +113,19 @@ public class LassoSelectTool : BaseTool
 	{
 		if (is_dragging)
 			return;
+
+		if (IsScissorsMode && hist is not null) {
+			PointD viewPoint = workspace.CanvasPointToView (e.PointDouble);
+			for (int i = 0; i < scissors_handles.Count; i++) {
+				if (!scissors_handles[i].ContainsPoint (viewPoint))
+					continue;
+				dragged_scissors_anchor = i;
+				dragged_scissors_button = e.MouseButton;
+				scissors_handles[i].Selected = true;
+				is_dragging = true;
+				return;
+			}
+		}
 
 		is_dragging = true;
 
@@ -153,6 +170,7 @@ public class LassoSelectTool : BaseTool
 		}
 
 		scissors_anchors.Add (anchor);
+		scissors_handles.Add (CreateScissorsHandle (anchor));
 		scissors_preview = null;
 		scissors_cursor = anchor;
 
@@ -174,6 +192,11 @@ public class LassoSelectTool : BaseTool
 
 	protected override void OnMouseMove (Document document, ToolMouseEventArgs e)
 	{
+		if (dragged_scissors_anchor >= 0) {
+			UpdateDraggedScissorsAnchor (document, e);
+			return;
+		}
+
 		PointD p = document.ClampToImageSize (e.PointDouble);
 		IntPoint point = new ((long) p.X, (long) p.Y);
 

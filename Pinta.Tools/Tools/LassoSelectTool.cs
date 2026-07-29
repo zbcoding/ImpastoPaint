@@ -90,6 +90,7 @@ public class LassoSelectTool : BaseTool
 	protected virtual bool IsPolygonMode => CurrentMode == LassoMode.Polygon;
 	protected virtual bool IsScissorsMode => false;
 	protected virtual int ScissorsEdgeTolerance => 50;
+	protected virtual bool ShowActionButtons => IsPolygonMode;
 	private LassoMode CurrentMode => LassoModeButtom.SelectedItem.GetTagOrDefault (LassoMode.Freeform);
 
 	protected override void OnBuildToolBar (Gtk.Box tb)
@@ -584,12 +585,8 @@ public class LassoSelectTool : BaseTool
 
 	private void UpdateActionButtons ()
 	{
-		bool showForMode = !HasModeSelector ||
-			(lasso_mode_buttom is not null &&
-			 lasso_mode_buttom.Items.Count > 0 &&
-			 CurrentMode == LassoMode.Polygon);
 		bool hasPoints = lasso_polygon.Count > 0 || scissors_anchors.Count > 0;
-		bool visible = showForMode && hasPoints;
+		bool visible = ShowActionButtons && hasPoints;
 
 		if (back_button is not null) {
 			back_button.Visible = visible;

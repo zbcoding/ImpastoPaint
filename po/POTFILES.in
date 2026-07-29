@@ -413,6 +413,7 @@ Pinta/Dialogs/LayerPropertiesDialog.cs
 Pinta/Dialogs/NewImageDialog.cs
 Pinta/Dialogs/OffsetSelectionDialog.cs
 Pinta/Dialogs/ProgressDialog.cs
+Pinta/Dialogs/PreferencesDialog.cs
 Pinta/Dialogs/ResizeCanvasDialog.cs
 Pinta/Dialogs/ResizeImageDialog.cs
 Pinta/Dialogs/SpinButtonEntryDialog.cs

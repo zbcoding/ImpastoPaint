@@ -2926,9 +2926,15 @@ msgstr ""
 msgid "{0} palette ({1})"
 msgstr ""
 
-#. Translators: This specifies the format of the zoom percentage choices
-#. in the toolbar.
 #: ../Pinta.Core/Actions/ViewActions.cs:377
 #, csharp-format
 msgid "{0}%"
+msgstr ""
+
+#: ../Pinta/Dialogs/PreferencesDialog.cs:51
+msgid "Default canvas size (new window):"
+msgstr ""
+
+#: ../Pinta/Dialogs/PreferencesDialog.cs:65
+msgid "Settings"
 msgstr ""

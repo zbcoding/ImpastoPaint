@@ -6,6 +6,10 @@ internal static class SettingNames
 	internal const string NEW_IMAGE_HEIGHT = "new-image-height";
 	internal const string NEW_IMAGE_BACKGROUND = "new-image-bg";
 
+	// Impasto: default size of the blank canvas created on startup (Settings dialog).
+	internal const string DEFAULT_CANVAS_WIDTH = "default-canvas-width";
+	internal const string DEFAULT_CANVAS_HEIGHT = "default-canvas-height";
+
 	internal const string RULER_METRIC = "ruler-metric";
 	internal const string COLOR_SCHEME = "color-scheme";
 	internal const string WINDOW_MAXIMIZED = "window-maximized";

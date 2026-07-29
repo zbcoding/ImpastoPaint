@@ -54,6 +54,8 @@ public sealed class EditActions
 	public Command SavePalette { get; }
 	public Command ResetPalette { get; }
 	public Command ResizePalette { get; }
+	// Impasto: application preferences (default canvas size, etc.).
+	public Command Preferences { get; }
 
 	private Gio.File? last_palette_dir = null;
 	private Document? active_document = null;
@@ -204,6 +206,12 @@ public sealed class EditActions
 			null,
 			Resources.Icons.ImageResize);
 
+		Preferences = new Command (
+			"preferences",
+			Translations.GetString ("Settings..."),
+			null,
+			Resources.StandardIcons.KeyboardShortcuts);
+
 		Undo.Sensitive = false;
 		Redo.Sensitive = false;
 
@@ -250,6 +258,10 @@ public sealed class EditActions
 		menu.AppendSection (null, palette_section);
 		menu.AppendSubmenu (Translations.GetString ("Palette"), palette_menu);
 
+		Gio.Menu prefs_section = Gio.Menu.New ();
+		prefs_section.AppendItem (Preferences.CreateMenuItem ());
+		menu.AppendSection (null, prefs_section);
+
 		app.AddCommands ([
 
 			Undo,
@@ -273,7 +285,8 @@ public sealed class EditActions
 			LoadPalette,
 			SavePalette,
 			ResetPalette,
-			ResizePalette]);
+			ResizePalette,
+			Preferences]);
 	}
 
 	public void CreateHistoryWindowToolBar (Gtk.Box toolbar)

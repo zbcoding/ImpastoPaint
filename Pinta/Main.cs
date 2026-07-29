@@ -148,8 +148,15 @@ internal sealed class MainClass
 			}
 		} else {
 			// Create a blank document
+			int width = PintaCore.Settings.GetSetting (SettingNames.DEFAULT_CANVAS_WIDTH, 800);
+			int height = PintaCore.Settings.GetSetting (SettingNames.DEFAULT_CANVAS_HEIGHT, 600);
+			if (!PreferencesDialog.IsValidCanvasSize (width, height)) {
+				width = 800;
+				height = 600;
+			}
+
 			PintaCore.Workspace.NewDocument (
-				new Core.Size (800, 600),
+				new Core.Size (width, height),
 				new Cairo.Color (1, 1, 1));
 		}
 	}

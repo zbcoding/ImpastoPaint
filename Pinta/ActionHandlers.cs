@@ -63,6 +63,7 @@ public sealed class ActionHandlers
 
 			// Edit
 			new OffsetSelectionAction (actions.Edit, chrome, workspace, tools),
+			new PreferencesAction (actions.Edit, chrome, settings),
 			new PasteAction (chrome, actions, workspace, tools),
 			new PasteIntoNewLayerAction (actions, chrome, workspace, tools),
 			new PasteIntoNewImageAction (actions, chrome, workspace),

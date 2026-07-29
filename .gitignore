@@ -40,4 +40,4 @@ xdg/pinta.desktop
 xdg/pinta.appdata.xml
 .vs
 .vscode
-.claude
+.claude/settings.local.json

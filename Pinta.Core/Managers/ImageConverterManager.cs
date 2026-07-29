@@ -50,6 +50,16 @@ public sealed class ImageConverterManager
 
 		// Create all the formats we have our own importers/exporters for
 
+		PdnFormat pdnHandler = new ();
+		FormatDescriptor pdnFormatDescriptor = new (
+			displayPrefix: "PDN",
+			extensions: ["pdn", "PDN"],
+			mimes: ["image/x-pdn", "image/x-paintnet"],
+			importer: pdnHandler,
+			exporter: null,
+			supportsLayers: true);
+		yield return pdnFormatDescriptor;
+
 		OraFormat oraHandler = new ();
 		FormatDescriptor oraFormatDescriptor = new (
 			displayPrefix: "OpenRaster",

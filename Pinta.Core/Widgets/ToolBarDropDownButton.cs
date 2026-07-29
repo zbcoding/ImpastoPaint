@@ -82,12 +82,18 @@ public sealed partial class ToolBarDropDownButton
 
 	public ToolBarItem AddItem (string text, string imageId)
 	{
-		return AddItem (text, imageId, null);
+		return AddItem (text, imageId, null, null);
 	}
 
 	public ToolBarItem AddItem (string text, string imageId, object? tag)
 	{
+		return AddItem (text, imageId, tag, null);
+	}
+
+	public ToolBarItem AddItem (string text, string imageId, object? tag, string? tooltip)
+	{
 		ToolBarItemWidget widget = ToolBarItemWidget.New (text, imageId);
+		widget.TooltipText = string.IsNullOrEmpty (tooltip) ? text : $"{text}\n{tooltip}";
 		toolbar_item_widgets.Add (widget);
 		// We append an empty string because we only need the list's index.
 		// Otherwise, we'd need to make ToolBarItem inherit from GObject, which is undesired.
@@ -95,7 +101,7 @@ public sealed partial class ToolBarDropDownButton
 		// storing anything else is not required.
 		string_list.Append ("");
 
-		ToolBarItem item = new (text, imageId, tag);
+		ToolBarItem item = new (text, imageId, tag, tooltip);
 		// This is done to ensure the first item has a checkmark if it was selected.
 		if (items.Count == 0) { widget.SetCheckmarkVisible (true); }
 		items.Add (item);
@@ -117,17 +123,21 @@ public sealed partial class ToolBarDropDownButton
 
 	private void SetSelectedIndex (int index)
 	{
-		if (index < 0 || index >= items.Count || index == previous_index) {
+		if (index < 0 || index >= items.Count) {
 			return;
 		}
 
-		toolbar_item_widgets[previous_index].SetCheckmarkVisible (false);
-		toolbar_item_widgets[index].SetCheckmarkVisible (true);
+		if (index != previous_index) {
+			toolbar_item_widgets[previous_index].SetCheckmarkVisible (false);
+			toolbar_item_widgets[index].SetCheckmarkVisible (true);
 
-		TooltipText = items[index].Text;
-		Selected = (uint) index;
-		previous_index = index;
-		OnSelectedItemChanged ();
+			Selected = (uint) index;
+			previous_index = index;
+			OnSelectedItemChanged ();
+		}
+
+		ToolBarItem item = items[index];
+		TooltipText = string.IsNullOrEmpty (item.Tooltip) ? item.Text : $"{item.Text}\n{item.Tooltip}";
 	}
 
 	private void OnSelectedItemChanged ()
@@ -140,18 +150,22 @@ public sealed partial class ToolBarDropDownButton
 
 public sealed class ToolBarItem
 {
-	public ToolBarItem (string text, string imageId) : this (text, imageId, null) { }
+	public ToolBarItem (string text, string imageId) : this (text, imageId, null, null) { }
 
-	public ToolBarItem (string text, string imageId, object? tag)
+	public ToolBarItem (string text, string imageId, object? tag) : this (text, imageId, tag, null) { }
+
+	public ToolBarItem (string text, string imageId, object? tag, string? tooltip)
 	{
 		Text = text;
 		ImageId = imageId;
 		Tag = tag;
+		Tooltip = tooltip;
 	}
 
 	public string ImageId { get; }
 	public object? Tag { get; }
 	public string Text { get; }
+	public string? Tooltip { get; }
 
 	public T GetTagOrDefault<T> (T defaultValue)
 		=> Tag is T value ? value : defaultValue;

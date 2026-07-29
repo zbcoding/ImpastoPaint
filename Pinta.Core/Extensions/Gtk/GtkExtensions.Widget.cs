@@ -147,6 +147,37 @@ partial class GtkExtensions
 		return sep;
 	}
 
+	public static Gtk.Button CreateToolBarButton (string iconName, string tooltip)
+	{
+		Gtk.Button button = Gtk.Button.NewFromIconName (iconName);
+		button.TooltipText = tooltip;
+		return button;
+	}
+
+	/// <summary>
+	/// Reusable confirm (checkmark) button for polygon/lasso/shape tools.
+	/// Finish the current operation, equivalent to pressing Enter.
+	/// </summary>
+	public static Gtk.Button CreateConfirmToolBarButton (string? tooltip = null)
+	{
+		string tip = tooltip ?? Translations.GetString ("Finish selection (Enter)");
+		Gtk.Button button = CreateToolBarButton (Pinta.Resources.StandardIcons.ObjectSelect, tip);
+		button.AddCssClass (AdwaitaStyles.Flat);
+		return button;
+	}
+
+	/// <summary>
+	/// Reusable undo/back button for polygon/lasso tools.
+	/// Removes the last point, equivalent to Backspace.
+	/// </summary>
+	public static Gtk.Button CreateBackToolBarButton (string? tooltip = null)
+	{
+		string tip = tooltip ?? Translations.GetString ("Remove last point (Backspace)");
+		Gtk.Button button = CreateToolBarButton (Pinta.Resources.StandardIcons.EditUndo, tip);
+		button.AddCssClass (AdwaitaStyles.Flat);
+		return button;
+	}
+
 	public static Gtk.SpinButton CreateToolBarSpinButton (
 		double min,
 		double max,

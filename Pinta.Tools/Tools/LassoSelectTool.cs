@@ -46,6 +46,9 @@ public sealed class LassoSelectTool : BaseTool
 	private Separator? mode_sep;
 	private Label? lasso_mode_label;
 	private ToolBarDropDownButton? lasso_mode_buttom;
+	private Gtk.Button? back_button;
+	private Gtk.Button? confirm_button;
+	private Separator? action_sep;
 
 	public LassoSelectTool (IServiceProvider services) : base (services)
 	{
@@ -74,6 +77,11 @@ public sealed class LassoSelectTool : BaseTool
 		tb.Append (Separator);
 		tb.Append (LassoModeLabel);
 		tb.Append (LassoModeButtom);
+		tb.Append (ActionSeparator);
+		tb.Append (BackButton);
+		tb.Append (ConfirmButton);
+
+		UpdateActionButtons ();
 	}
 
 	protected override void OnMouseDown (Document document, ToolMouseEventArgs e)
@@ -98,6 +106,7 @@ public sealed class LassoSelectTool : BaseTool
 			lasso_polygon.Add (new IntPoint ((long) p.X, (long) p.Y));
 
 			ApplySelection (document);
+			UpdateActionButtons ();
 		}
 
 	}
@@ -153,12 +162,15 @@ public sealed class LassoSelectTool : BaseTool
 			hist = null;
 		}
 		lasso_polygon.Clear ();
+		UpdateActionButtons ();
 	}
 
 	protected override void OnDeactivated (Document? document, BaseTool? newTool)
 	{
 		if (document != null)
 			FinalizeShape (document);
+		else
+			UpdateActionButtons ();
 	}
 
 	protected override bool OnKeyDown (Document document, ToolKeyEventArgs e)
@@ -189,16 +201,20 @@ public sealed class LassoSelectTool : BaseTool
 
 		if (lasso_polygon.Count == 0) {
 			hist.Undo ();
+			UpdateActionButtons ();
 			return;
 		}
 
 		ApplySelection (document);
+		UpdateActionButtons ();
 	}
 
 	protected override void OnCommit (Document? document)
 	{
 		if (document != null)
 			FinalizeShape (document);
+		else
+			UpdateActionButtons ();
 	}
 
 	protected override void OnSaveSettings (ISettingsService settings)
@@ -210,17 +226,114 @@ public sealed class LassoSelectTool : BaseTool
 	}
 
 	private Separator Separator => mode_sep ??= GtkExtensions.CreateToolBarSeparator ();
+	private Separator ActionSeparator => action_sep ??= GtkExtensions.CreateToolBarSeparator ();
 	private Label LassoModeLabel => lasso_mode_label ??= Label.New (string.Format (" {0}: ", Translations.GetString ("Lasso Mode")));
+
+	private Gtk.Button BackButton {
+		get {
+			if (back_button is null) {
+				back_button = GtkExtensions.CreateBackToolBarButton (
+					Translations.GetString ("Remove last point (Backspace)"));
+
+				back_button.OnClicked += (_, _) => {
+					if (!workspace.HasOpenDocuments)
+						return;
+
+					// Reuse Backspace behavior
+					Backtrack (workspace.ActiveDocument);
+				};
+
+				back_button.Visible = false;
+			}
+
+			return back_button;
+		}
+	}
+
+	private Gtk.Button ConfirmButton {
+		get {
+			if (confirm_button is null) {
+				confirm_button = GtkExtensions.CreateConfirmToolBarButton (
+					Translations.GetString ("Finish selection (Enter)"));
+
+				confirm_button.OnClicked += (_, _) => {
+					if (!workspace.HasOpenDocuments)
+						return;
+
+					// Reuse Enter behavior
+					FinalizeShape (workspace.ActiveDocument);
+				};
+
+				confirm_button.Visible = false;
+			}
+
+			return confirm_button;
+		}
+	}
+
+	private void UpdateActionButtons ()
+	{
+		bool isPolygon = false;
+		try {
+			// LassoModeButtom may not be created yet, or may have no items
+			if (lasso_mode_buttom is not null && lasso_mode_buttom.Items.Count > 0)
+				isPolygon = lasso_mode_buttom.SelectedItem.GetTagOrDefault (false);
+		} catch {
+			isPolygon = false;
+		}
+
+		bool hasPoints = lasso_polygon.Count > 0;
+		bool visible = isPolygon && hasPoints;
+
+		if (back_button is not null) {
+			back_button.Visible = visible;
+			back_button.Sensitive = hasPoints;
+		}
+
+		if (confirm_button is not null) {
+			confirm_button.Visible = visible;
+			confirm_button.Sensitive = hasPoints;
+		}
+
+		if (action_sep is not null) {
+			action_sep.Visible = visible;
+		}
+	}
 
 	private ToolBarDropDownButton LassoModeButtom {
 		get {
 			if (lasso_mode_buttom is null) {
-				lasso_mode_buttom = ToolBarDropDownButton.New ();
+				lasso_mode_buttom = ToolBarDropDownButton.New (true);
 
-				lasso_mode_buttom.AddItem (Translations.GetString ("Freeform"), Pinta.Resources.Icons.LassoFreeform, false);
-				lasso_mode_buttom.AddItem (Translations.GetString ("Polygon"), Pinta.Resources.Icons.LassoPolygon, true);
+				lasso_mode_buttom.AddItem (
+					Translations.GetString ("Freeform"),
+					Pinta.Resources.Icons.LassoFreeform,
+					false,
+					Translations.GetString ("In Freeform mode, click and drag to draw the outline for a selection area."));
+
+				lasso_mode_buttom.AddItem (
+					Translations.GetString ("Polygon"),
+					Pinta.Resources.Icons.LassoPolygon,
+					true,
+					Translations.GetString ("In Polygon mode, click and drag to add a new point to the selection.\nPress Enter to finish the selection.\nPress Backspace to delete the last point."));
 
 				lasso_mode_buttom.SelectedIndex = Settings.GetSetting (SettingNames.LASSO_MODE, 0);
+
+				lasso_mode_buttom.SelectedItemChanged += (_, _) => {
+					// If switching away from polygon while drawing, finalize/clear
+					if (lasso_polygon.Count > 0) {
+						if (workspace.HasOpenDocuments) {
+							// If leaving polygon mode, commit current polygon
+							if (!lasso_mode_buttom.SelectedItem.GetTagOrDefault (false)) {
+								FinalizeShape (workspace.ActiveDocument);
+							}
+						} else {
+							lasso_polygon.Clear ();
+						}
+					}
+
+					UpdateActionButtons ();
+				};
 			}
 
 			return lasso_mode_buttom;

@@ -144,7 +144,7 @@ public sealed class DocumentLayers
 	[MemberNotNull (nameof (selection_layer))]
 	public void CreateSelectionLayer ()
 	{
-		selection_layer = CreateLayer ();
+		selection_layer = CreateLayer ("Selection Layer");
 	}
 
 	/// <summary>
@@ -153,7 +153,7 @@ public sealed class DocumentLayers
 	[MemberNotNull (nameof (selection_layer))]
 	public void CreateSelectionLayer (int width, int height)
 	{
-		selection_layer = CreateLayer (null, width, height);
+		selection_layer = CreateLayer ("Selection Layer", width, height);
 	}
 
 	/// <summary>
@@ -200,9 +200,7 @@ public sealed class DocumentLayers
 	public UserLayer DuplicateCurrentLayer ()
 	{
 		UserLayer source = CurrentUserLayer;
-		// Translators: this is the auto-generated name for a duplicated layer.
-		// {0} is the name of the source layer. Example: "Layer 3 copy".
-		UserLayer layer = CreateLayer (Translations.GetString ("{0} copy", source.Name));
+		UserLayer layer = CreateLayer (GenerateDuplicateName (source.Name));
 
 		using Context g = new (layer.Surface);
 		g.SetSourceSurface (source.Surface, 0, 0);
@@ -219,6 +217,38 @@ public sealed class DocumentLayers
 		SelectedLayerChanged?.Invoke (this, EventArgs.Empty);
 
 		return layer;
+	}
+
+	/// <summary>
+	/// Generate a unique duplicate layer name using "copy (N)" format.
+	/// </summary>
+	private string GenerateDuplicateName (string sourceName)
+	{
+		// Check existing layers for "copy (N)" pattern to find highest number
+		int maxCopy = 0;
+		bool hasBaseCopy = false;
+
+		foreach (UserLayer layer in user_layers) {
+			string name = layer.Name;
+
+			// Check for "name copy (N)" pattern
+			if (name.StartsWith (sourceName + " copy (")) {
+				string numPart = name[(sourceName.Length + 6)..].TrimEnd (')');
+				if (int.TryParse (numPart, out int n) && n > maxCopy)
+					maxCopy = n;
+			}
+			// Check for plain "name copy"
+			else if (name == sourceName + " copy") {
+				hasBaseCopy = true;
+			}
+		}
+
+		// Translators: {0} is the source layer name. Example: "Layer 2 copy" or "Layer 2 copy (1)".
+		if (maxCopy == 0 && !hasBaseCopy)
+			return Translations.GetString ("{0} copy", sourceName);
+		if (maxCopy == 0 && hasBaseCopy)
+			return Translations.GetString ("{0} copy (1)", sourceName);
+		return Translations.GetString ("{0} copy ({1})", sourceName, maxCopy + 1);
 	}
 
 	/// <summary>

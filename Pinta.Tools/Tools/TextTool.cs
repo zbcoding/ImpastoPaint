@@ -141,6 +141,8 @@ public sealed class TextTool : BaseTool
 	private Gtk.Label outline_width_label = null!;
 	private Gtk.Separator join_sep = null!;
 	private ToolBarDropDownButton join_btn = null!;
+	private Gtk.Separator confirm_sep = null!;
+	private Gtk.Button confirm_btn = null!;
 
 	protected override void OnBuildToolBar (Gtk.Box tb)
 	{
@@ -472,6 +474,34 @@ public sealed class TextTool : BaseTool
 		UpdateFont ();
 	}
 
+	protected override void OnBuildToolBarEnd (Gtk.Box tb)
+	{
+		base.OnBuildToolBarEnd (tb);
+
+		confirm_sep ??= GtkExtensions.CreateToolBarSeparator ();
+		tb.Append (confirm_sep);
+
+		if (confirm_btn == null) {
+			confirm_btn = GtkExtensions.CreateConfirmToolBarButton (
+				Translations.GetString ("Finish typing (Esc)"));
+
+			confirm_btn.OnClicked += (_, _) => StopEditing (false);
+		}
+
+		tb.Append (confirm_btn);
+
+		UpdateConfirmButtonVisibility ();
+	}
+
+	// The checkmark only makes sense while text is actively being typed/edited.
+	private void UpdateConfirmButtonVisibility ()
+	{
+		if (confirm_btn is null || confirm_sep is null)
+			return;
+
+		confirm_btn.Visible = confirm_sep.Visible = is_editing;
+	}
+
 	private void HandleFontSizeChanged (object? sender, EventArgs e)
 	{
 		var font = font_button.FontDesc!.Copy ()!;
@@ -673,6 +703,7 @@ public sealed class TextTool : BaseTool
 
 		// We always start off not in edit mode
 		is_editing = false;
+		UpdateConfirmButtonVisibility ();
 	}
 
 	protected override void OnCommit (Document? document)
@@ -763,6 +794,7 @@ public sealed class TextTool : BaseTool
 
 				//The user is editing text now.
 				is_editing = true;
+				UpdateConfirmButtonVisibility ();
 
 				//Set the cursor in the editable text where the mouse was clicked.
 				TextPosition p = CurrentTextLayout.PointToTextPosition (pt);
@@ -1088,6 +1120,7 @@ public sealed class TextTool : BaseTool
 		workspace.ActiveDocument.LayerCloned += FinalizeText;
 
 		is_editing = true;
+		UpdateConfirmButtonVisibility ();
 
 		im_context.SetClientWidget (workspace.ActiveWorkspace.Canvas);
 
@@ -1121,6 +1154,7 @@ public sealed class TextTool : BaseTool
 			return;
 
 		is_editing = false;
+		UpdateConfirmButtonVisibility ();
 
 		//Make sure that neither undo surface is null, the user is editing, and there are uncommitted changes.
 		if (text_undo_surface != null && user_undo_surface != null && CurrentTextEngine.State == TextMode.Uncommitted) {

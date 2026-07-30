@@ -210,6 +210,14 @@ public abstract class BaseTool
 	}
 
 	/// <summary>
+	/// Called after the antialiasing/alpha-blending dropdowns have been added to the toolbar,
+	/// for tools that need to append items after those (e.g. a rightmost confirm button).
+	/// </summary>
+	protected virtual void OnBuildToolBarEnd (Box toolbar)
+	{
+	}
+
+	/// <summary>
 	/// Called whenever another component is activated and this tool should
 	/// commit any work that was in a temporary state.
 	/// </summary>
@@ -408,6 +416,8 @@ public abstract class BaseTool
 			toolbar.Append (AntialiasingDropDown);
 		if (ShowAlphaBlendingButton)
 			toolbar.Append (AlphaBlendingDropDown);
+
+		OnBuildToolBarEnd (toolbar);
 	}
 
 	internal void DoCommit (Document? document) => OnCommit (document);

@@ -450,6 +450,12 @@ internal sealed class MainWindow
 
 	private void CreateMainToolBar ()
 	{
+		// Impasto: paste toolbar button also documents the secondary paste shortcut,
+		// whose destination flips with the "paste external images to new layer" setting.
+		string pasteAlternateDescription = PintaCore.Settings.GetSetting (SettingNames.PASTE_EXTERNAL_IMAGES_TO_NEW_LAYER, false)
+			? Translations.GetString ("Paste to Active Layer")
+			: Translations.GetString ("Paste to New Layer");
+
 		if (window_shell.HeaderBar is not null) {
 			var headerBar = window_shell.HeaderBar;
 			headerBar.PackEnd (GtkExtensions.CreateMenuButton (
@@ -477,10 +483,10 @@ internal sealed class MainWindow
 				Resources.StandardIcons.ViewReveal,
 				Translations.GetString ("View")));
 
-			PintaCore.Actions.CreateHeaderToolBar (headerBar);
+			PintaCore.Actions.CreateHeaderToolBar (headerBar, pasteAlternateDescription);
 		} else {
 			var main_toolbar = window_shell.CreateToolBar ("main_toolbar");
-			PintaCore.Actions.CreateToolBar (main_toolbar);
+			PintaCore.Actions.CreateToolBar (main_toolbar, pasteAlternateDescription);
 		}
 	}
 

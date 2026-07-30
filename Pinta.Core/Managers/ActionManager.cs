@@ -87,7 +87,7 @@ public sealed class ActionManager
 		this.chrome = chrome;
 	}
 
-	public void CreateToolBar (Gtk.Box toolbar)
+	public void CreateToolBar (Gtk.Box toolbar, string? pasteAlternateDescription = null)
 	{
 		toolbar.Append (File.New.CreateToolBarItem ());
 		toolbar.Append (File.Open.CreateToolBarItem ());
@@ -103,7 +103,7 @@ public sealed class ActionManager
 		if (system.OperatingSystem == OS.Windows) {
 			toolbar.Append (Edit.Cut.CreateToolBarItem ());
 			toolbar.Append (Edit.Copy.CreateToolBarItem ());
-			toolbar.Append (Edit.Paste.CreateToolBarItem ());
+			toolbar.Append (Edit.Paste.CreateToolBarItem (alternate: Edit.PasteAlternate, alternate_description: pasteAlternateDescription));
 			toolbar.Append (GtkExtensions.CreateToolBarSeparator ());
 			toolbar.Append (Edit.Undo.CreateToolBarItem ());
 			toolbar.Append (Edit.Redo.CreateToolBarItem ());
@@ -113,7 +113,7 @@ public sealed class ActionManager
 			toolbar.Append (GtkExtensions.CreateToolBarSeparator ());
 			toolbar.Append (Edit.Cut.CreateToolBarItem ());
 			toolbar.Append (Edit.Copy.CreateToolBarItem ());
-			toolbar.Append (Edit.Paste.CreateToolBarItem ());
+			toolbar.Append (Edit.Paste.CreateToolBarItem (alternate: Edit.PasteAlternate, alternate_description: pasteAlternateDescription));
 		}
 
 		toolbar.Append (GtkExtensions.CreateToolBarSeparator ());
@@ -121,7 +121,7 @@ public sealed class ActionManager
 		toolbar.Append (Edit.Deselect.CreateToolBarItem ());
 	}
 
-	public void CreateHeaderToolBar (Adw.HeaderBar header)
+	public void CreateHeaderToolBar (Adw.HeaderBar header, string? pasteAlternateDescription = null)
 	{
 		header.PackStart (File.New.CreateToolBarItem ());
 		header.PackStart (File.Open.CreateToolBarItem ());
@@ -135,7 +135,7 @@ public sealed class ActionManager
 		header.PackStart (GtkExtensions.CreateToolBarSeparator ());
 		header.PackStart (Edit.Cut.CreateToolBarItem ());
 		header.PackStart (Edit.Copy.CreateToolBarItem ());
-		header.PackStart (Edit.Paste.CreateToolBarItem ());
+		header.PackStart (Edit.Paste.CreateToolBarItem (alternate: Edit.PasteAlternate, alternate_description: pasteAlternateDescription));
 
 		header.PackStart (GtkExtensions.CreateToolBarSeparator ());
 		header.PackStart (Image.CropToSelection.CreateToolBarItem ());

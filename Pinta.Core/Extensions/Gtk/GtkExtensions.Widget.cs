@@ -106,7 +106,9 @@ partial class GtkExtensions
 	private static readonly string shortcut_label = Translations.GetString ("Shortcut key");
 	private static readonly string shortcuts_label = Translations.GetString ("Shortcut keys");
 
-	public static Gtk.Button CreateToolBarItem (this Command action, bool force_icon_only = false)
+	// Impasto: lets a toolbar button's tooltip mention a related command's shortcut,
+	// e.g. Paste mentioning the Paste Alternate shortcut and its (setting-dependent) destination.
+	public static Gtk.Button CreateToolBarItem (this Command action, bool force_icon_only = false, Command? alternate = null, string? alternate_description = null)
 	{
 		string label = action.ShortLabel ?? action.Label;
 
@@ -117,6 +119,9 @@ partial class GtkExtensions
 			1 => $"{baseTooltip}\n{shortcut_label}: {ReadableAcceleratorLabel (action.Shortcuts[0])}",
 			_ => $"{baseTooltip}\n{shortcuts_label}:\n" + string.Join ('\n', action.Shortcuts.Select (s => $"- {ReadableAcceleratorLabel (s)}")),
 		};
+
+		if (alternate_description is not null && alternate?.Shortcuts.Length > 0)
+			fullTooltip += $"\n{alternate_description}: {ReadableAcceleratorLabel (alternate.Shortcuts[0])}";
 
 		Gtk.Button button = Gtk.Button.New ();
 		button.ActionName = action.FullName;

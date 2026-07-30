@@ -41,6 +41,7 @@ public sealed class ViewActions
 	public ToggleCommand ImageTabs { get; }
 	public ToggleCommand ToolWindows { get; }
 	public Command EditCanvasGrid { get; }
+	public ToggleCommand ShowGrid { get; }
 	public ToggleCommand MenuBar { get; }
 	public ToggleCommand StatusBar { get; }
 	public ToggleCommand ToolBox { get; }
@@ -128,6 +129,13 @@ public sealed class ViewActions
 			Translations.GetString ("Canvas Grid..."),
 			null,
 			Resources.Icons.ViewGrid);
+
+		ShowGrid = new ToggleCommand (
+			"ShowGrid",
+			Translations.GetString ("Show Grid"),
+			null,
+			Resources.Icons.ViewGrid,
+			shortcuts: ["<Primary><Shift>G"]);
 
 		MenuBar = new ToggleCommand (
 			"MenuBar",
@@ -237,6 +245,7 @@ public sealed class ViewActions
 		zoom_section.AppendItem (Fullscreen.CreateMenuItem ());
 
 		Gio.Menu grid_section = Gio.Menu.New ();
+		grid_section.AppendItem (ShowGrid.CreateMenuItem ());
 		grid_section.AppendItem (EditCanvasGrid.CreateMenuItem ());
 
 		Gio.Menu metric_menu = Gio.Menu.New ();
@@ -285,6 +294,7 @@ public sealed class ViewActions
 			ZoomToWindow,
 			Fullscreen,
 			EditCanvasGrid,
+			ShowGrid,
 			Rulers,
 			MenuBar,
 			StatusBar,

@@ -54,7 +54,20 @@ public class Command
 		get => Action.Enabled;
 		set => Action.Enabled = value;
 	}
-	public ImmutableArray<string> Shortcuts { get; }
+	public ImmutableArray<string> Shortcuts { get; private set; }
+
+	/// <summary>
+	/// The shortcuts this command was constructed with, used to restore them
+	/// when the user resets a customized shortcut back to default.
+	/// </summary>
+	public ImmutableArray<string> DefaultShortcuts { get; }
+
+	/// <summary>
+	/// Impasto: lets KeyboardShortcutManager apply a user override at runtime and keep
+	/// the GTK accelerator, menus, tooltips, and shortcuts dialog in sync.
+	/// </summary>
+	public void SetShortcuts (IReadOnlyList<string> shortcuts)
+		=> Shortcuts = [.. shortcuts];
 
 	public Command (
 		string name,
@@ -79,6 +92,8 @@ public class Command
 			shortcuts is null
 			? []
 			: [.. shortcuts];
+
+		DefaultShortcuts = Shortcuts;
 	}
 
 	public Gio.MenuItem CreateMenuItem ()

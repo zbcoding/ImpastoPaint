@@ -327,17 +327,19 @@ public class LassoSelectTool : BaseTool
 		if (hist is null)
 			return base.OnKeyDown (document, e);
 
-		switch (e.Key.Value) {
-			case Gdk.Constants.KEY_Return:
-			case Gdk.Constants.KEY_KP_Enter:
-				FinalizeShape (document);
-				return true;
-			case Gdk.Constants.KEY_BackSpace:
-				Backtrack (document);
-				return true;
-			case Gdk.Constants.KEY_Escape:
-				CancelShape ();
-				return true;
+		// Impasto: Enter/Backspace/Escape are user-configurable (Keyboard Shortcuts dialog).
+		if (e.Key.Value == Gdk.Constants.KEY_KP_Enter ||
+			e.Key == PintaCore.Shortcuts.GetToolBinding (KeyboardShortcutManager.LassoFinalize)) {
+			FinalizeShape (document);
+			return true;
+		}
+		if (e.Key == PintaCore.Shortcuts.GetToolBinding (KeyboardShortcutManager.LassoBacktrack)) {
+			Backtrack (document);
+			return true;
+		}
+		if (e.Key == PintaCore.Shortcuts.GetToolBinding (KeyboardShortcutManager.LassoCancel)) {
+			CancelShape ();
+			return true;
 		}
 
 		return base.OnKeyDown (document, e);

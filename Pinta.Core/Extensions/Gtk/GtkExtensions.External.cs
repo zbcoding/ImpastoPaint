@@ -13,6 +13,16 @@ partial class GtkExtensions
 		out uint accelerator_key,
 		out Gdk.ModifierType accelerator_mods);
 
+	/// <summary>
+	/// Public entry point for gtk_accelerator_parse, since GirCore's generated binding
+	/// doesn't support the 'out' enum parameter (see TODO above).
+	/// </summary>
+	public static bool TryParseAccelerator (
+		string accelerator,
+		out uint accelerator_key,
+		out Gdk.ModifierType accelerator_mods)
+		=> AcceleratorParse (accelerator, out accelerator_key, out accelerator_mods);
+
 	// Manual binding for GetPreeditString
 	// TODO-GTK4 (bindings) - missing from gir.core: "opaque record parameter 'attrs' with direction != in not yet supported"
 	[DllImport (GTK_LIBRARY_NAME, EntryPoint = "gtk_im_context_get_preedit_string")]

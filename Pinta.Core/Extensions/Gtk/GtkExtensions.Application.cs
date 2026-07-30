@@ -42,6 +42,18 @@ partial class GtkExtensions
 		Command action)
 	{
 		app.AddAction (action.Action);
+		app.ApplyAccels (action);
+	}
+
+	/// <summary>
+	/// Pushes a command's current Shortcuts to GTK as its accelerators, without
+	/// re-registering the underlying Gio.SimpleAction. Used by KeyboardShortcutManager to
+	/// live-update accelerators when the user customizes a shortcut.
+	/// </summary>
+	public static void ApplyAccels (
+		this Gtk.Application app,
+		Command action)
+	{
 		app.SetAccelsForAction (
 			action.FullName,
 			[.. action.Shortcuts.Select (PintaCore.System.ConvertPrimaryKey)]);

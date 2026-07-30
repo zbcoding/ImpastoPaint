@@ -40,6 +40,7 @@ public static class PintaCore
 	public static RecentFileManager RecentFiles { get; }
 	public static ResourceManager Resources { get; }
 	public static SettingsManager Settings { get; }
+	public static KeyboardShortcutManager Shortcuts { get; }
 	public static SystemManager System { get; }
 	public static ToolManager Tools { get; }
 	public static WorkspaceManager Workspace { get; }
@@ -85,6 +86,7 @@ public static class PintaCore
 		LivePreviewManager livePreview = new (workspace, tools, system, chrome);
 		EffectsManager effects = new (actions, chrome, livePreview);
 		CanvasGridManager canvasGrid = new (workspace, settings);
+		KeyboardShortcutManager shortcuts = new (actions, tools, chrome, settings);
 
 		// --- Service manager
 
@@ -123,6 +125,7 @@ public static class PintaCore
 		Chrome = chrome;
 		Effects = effects;
 		CanvasGrid = canvasGrid;
+		Shortcuts = shortcuts;
 
 		Services = services;
 	}
@@ -130,5 +133,6 @@ public static class PintaCore
 	public static void Initialize ()
 	{
 		Actions.RegisterHandlers ();
+		Shortcuts.LoadAndApply ();
 	}
 }

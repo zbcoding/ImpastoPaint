@@ -86,6 +86,11 @@ public sealed class ToolManager : IEnumerable<BaseTool>, IToolService
 {
 	private readonly SortedSet<BaseTool> tools = new (new ToolSorter ());
 
+	// Impasto: user overrides for the toolbox activation key, keyed by tool type name
+	// (e.g. "PaintBrushTool") since BaseTool.ShortcutKey is a hardcoded virtual property
+	// on each Pinta.Tools subclass and those files should not be edited per-tool.
+	private readonly Dictionary<string, Gdk.Key> shortcut_key_overrides = [];
+
 	private readonly WorkspaceManager workspace_manager;
 	private readonly ChromeManager chrome_manager;
 	public ToolManager (WorkspaceManager workspaceManager, ChromeManager chromeManager)
@@ -96,6 +101,18 @@ public sealed class ToolManager : IEnumerable<BaseTool>, IToolService
 		// Before the active document has changed, the current tool should commit unfinished changes.
 		workspace_manager.PreActiveDocumentChanged += (_, _) => Commit ();
 	}
+
+	/// <summary>
+	/// The activation key for the toolbox, honoring any user override.
+	/// </summary>
+	public Gdk.Key GetEffectiveShortcutKey (BaseTool tool)
+		=> shortcut_key_overrides.TryGetValue (tool.GetType ().Name, out var key) ? key : tool.ShortcutKey;
+
+	public void SetShortcutKeyOverride (BaseTool tool, Gdk.Key key)
+		=> shortcut_key_overrides[tool.GetType ().Name] = key;
+
+	public void ResetShortcutKeyOverride (BaseTool tool)
+		=> shortcut_key_overrides.Remove (tool.GetType ().Name);
 
 	private bool is_panning;
 	private Gdk.Cursor? stored_cursor;
@@ -214,7 +231,7 @@ public sealed class ToolManager : IEnumerable<BaseTool>, IToolService
 		// Find all tools with this shortcut
 		var shortcut_tools =
 			tools
-			.Where (t => t.ShortcutKey.ToUpper () == shortcut.ToUpper ())
+			.Where (t => GetEffectiveShortcutKey (t).ToUpper () == shortcut.ToUpper ())
 			.ToImmutableArray ();
 
 		// No tools with this shortcut, bail

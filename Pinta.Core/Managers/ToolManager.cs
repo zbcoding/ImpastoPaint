@@ -79,7 +79,7 @@ public interface IToolService
 	/// <summary>
 	/// Sets the current tool to the next tool with the specified shortcut.
 	/// </summary>
-	bool SetCurrentTool (Gdk.Key shortcut);
+	bool SetCurrentTool (KeyGesture shortcut);
 }
 
 public sealed class ToolManager : IEnumerable<BaseTool>, IToolService
@@ -89,7 +89,7 @@ public sealed class ToolManager : IEnumerable<BaseTool>, IToolService
 	// Impasto: user overrides for the toolbox activation key, keyed by tool type name
 	// (e.g. "PaintBrushTool") since BaseTool.ShortcutKey is a hardcoded virtual property
 	// on each Pinta.Tools subclass and those files should not be edited per-tool.
-	private readonly Dictionary<string, Gdk.Key> shortcut_key_overrides = [];
+	private readonly Dictionary<string, KeyGesture> shortcut_key_overrides = [];
 
 	private readonly WorkspaceManager workspace_manager;
 	private readonly ChromeManager chrome_manager;
@@ -105,11 +105,11 @@ public sealed class ToolManager : IEnumerable<BaseTool>, IToolService
 	/// <summary>
 	/// The activation key for the toolbox, honoring any user override.
 	/// </summary>
-	public Gdk.Key GetEffectiveShortcutKey (BaseTool tool)
-		=> shortcut_key_overrides.TryGetValue (tool.GetType ().Name, out var key) ? key : tool.ShortcutKey;
+	public KeyGesture GetEffectiveShortcutKey (BaseTool tool)
+		=> shortcut_key_overrides.TryGetValue (tool.GetType ().Name, out var gesture) ? gesture : new KeyGesture (tool.ShortcutKey);
 
-	public void SetShortcutKeyOverride (BaseTool tool, Gdk.Key key)
-		=> shortcut_key_overrides[tool.GetType ().Name] = key;
+	public void SetShortcutKeyOverride (BaseTool tool, KeyGesture gesture)
+		=> shortcut_key_overrides[tool.GetType ().Name] = gesture;
 
 	public void ResetShortcutKeyOverride (BaseTool tool)
 		=> shortcut_key_overrides.Remove (tool.GetType ().Name);
@@ -217,7 +217,7 @@ public sealed class ToolManager : IEnumerable<BaseTool>, IToolService
 		return true;
 	}
 
-	public bool SetCurrentTool (Gdk.Key shortcut)
+	public bool SetCurrentTool (KeyGesture shortcut)
 	{
 		if (FindNextTool (shortcut) is not BaseTool tool)
 			return false;
@@ -226,12 +226,11 @@ public sealed class ToolManager : IEnumerable<BaseTool>, IToolService
 		return true;
 	}
 
-	private BaseTool? FindNextTool (Gdk.Key shortcut)
+	private BaseTool? FindNextTool (KeyGesture shortcut)
 	{
-		// Find all tools with this shortcut
 		var shortcut_tools =
 			tools
-			.Where (t => GetEffectiveShortcutKey (t).ToUpper () == shortcut.ToUpper ())
+			.Where (t => GetEffectiveShortcutKey (t) == shortcut)
 			.ToImmutableArray ();
 
 		// No tools with this shortcut, bail

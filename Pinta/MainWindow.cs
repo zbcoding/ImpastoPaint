@@ -269,7 +269,7 @@ internal sealed class MainWindow
 		}
 
 		// If the canvas/tool didn't consume it, see if its a toolbox shortcut
-		if (!args.State.HasModifierKey () && PintaCore.Tools.SetCurrentTool (args.GetKey ()))
+		if (PintaCore.Tools.SetCurrentTool (new KeyGesture (args.GetKey (), args.State)))
 			return true;
 
 		// Finally, see if the palette widget wants it.

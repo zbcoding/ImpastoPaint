@@ -63,5 +63,7 @@ public sealed class ToolKeyEventArgs : EventArgs
 
 	public ModifierType State { get; init; }
 
+	public KeyGesture Gesture => new (Key, State);
+
 	public Event? Event { get; init; }
 }

@@ -19,7 +19,7 @@ public sealed record ToolBindingDescriptor (
 	string Id,
 	string TabName,
 	string Label,
-	Gdk.Key DefaultKey);
+	KeyGesture DefaultGesture);
 
 /// <summary>
 /// Stores user overrides for command shortcuts, toolbox activation keys, and
@@ -50,24 +50,357 @@ public sealed class KeyboardShortcutManager
 		"LassoSelect.Finalize",
 		Translations.GetString ("Lasso / Scissors Select"),
 		Translations.GetString ("Finish selection"),
-		new Gdk.Key (Gdk.Constants.KEY_Return));
+		new KeyGesture (new Gdk.Key (Gdk.Constants.KEY_Return)));
 
 	public static readonly ToolBindingDescriptor LassoBacktrack = new (
 		"LassoSelect.Backtrack",
 		Translations.GetString ("Lasso / Scissors Select"),
 		Translations.GetString ("Undo last point"),
-		new Gdk.Key (Gdk.Constants.KEY_BackSpace));
+		new KeyGesture (new Gdk.Key (Gdk.Constants.KEY_BackSpace)));
 
 	public static readonly ToolBindingDescriptor LassoCancel = new (
 		"LassoSelect.Cancel",
 		Translations.GetString ("Lasso / Scissors Select"),
 		Translations.GetString ("Cancel selection"),
-		new Gdk.Key (Gdk.Constants.KEY_Escape));
+		new KeyGesture (new Gdk.Key (Gdk.Constants.KEY_Escape)));
+
+	// Text Tool
+	public static readonly ToolBindingDescriptor TextStopEditing = new (
+		"TextTool.StopEditing",
+		Translations.GetString ("Text Tool"),
+		Translations.GetString ("Stop editing / Finalize text"),
+		new KeyGesture (new Gdk.Key (Gdk.Constants.KEY_Escape)));
+
+	public static readonly ToolBindingDescriptor TextNewLine = new (
+		"TextTool.NewLine",
+		Translations.GetString ("Text Tool"),
+		Translations.GetString ("Insert new line"),
+		new KeyGesture (new Gdk.Key (Gdk.Constants.KEY_Return)));
+
+	public static readonly ToolBindingDescriptor TextBackspace = new (
+		"TextTool.Backspace",
+		Translations.GetString ("Text Tool"),
+		Translations.GetString ("Delete character left of cursor"),
+		new KeyGesture (new Gdk.Key (Gdk.Constants.KEY_BackSpace)));
+
+	public static readonly ToolBindingDescriptor TextDelete = new (
+		"TextTool.Delete",
+		Translations.GetString ("Text Tool"),
+		Translations.GetString ("Delete character right of cursor"),
+		new KeyGesture (new Gdk.Key (Gdk.Constants.KEY_Delete)));
+
+	public static readonly ToolBindingDescriptor TextMoveLeft = new (
+		"TextTool.MoveLeft",
+		Translations.GetString ("Text Tool"),
+		Translations.GetString ("Move cursor left"),
+		new KeyGesture (new Gdk.Key (Gdk.Constants.KEY_Left)));
+
+	public static readonly ToolBindingDescriptor TextMoveRight = new (
+		"TextTool.MoveRight",
+		Translations.GetString ("Text Tool"),
+		Translations.GetString ("Move cursor right"),
+		new KeyGesture (new Gdk.Key (Gdk.Constants.KEY_Right)));
+
+	public static readonly ToolBindingDescriptor TextMoveUp = new (
+		"TextTool.MoveUp",
+		Translations.GetString ("Text Tool"),
+		Translations.GetString ("Move cursor up"),
+		new KeyGesture (new Gdk.Key (Gdk.Constants.KEY_Up)));
+
+	public static readonly ToolBindingDescriptor TextMoveDown = new (
+		"TextTool.MoveDown",
+		Translations.GetString ("Text Tool"),
+		Translations.GetString ("Move cursor down"),
+		new KeyGesture (new Gdk.Key (Gdk.Constants.KEY_Down)));
+
+	public static readonly ToolBindingDescriptor TextMoveHome = new (
+		"TextTool.MoveHome",
+		Translations.GetString ("Text Tool"),
+		Translations.GetString ("Move cursor to line start"),
+		new KeyGesture (new Gdk.Key (Gdk.Constants.KEY_Home)));
+
+	public static readonly ToolBindingDescriptor TextMoveEnd = new (
+		"TextTool.MoveEnd",
+		Translations.GetString ("Text Tool"),
+		Translations.GetString ("Move cursor to line end"),
+		new KeyGesture (new Gdk.Key (Gdk.Constants.KEY_End)));
+
+	public static readonly ToolBindingDescriptor TextUndo = new (
+		"TextTool.Undo",
+		Translations.GetString ("Text Tool"),
+		Translations.GetString ("Undo last text edit"),
+		new KeyGesture (new Gdk.Key (Gdk.Constants.KEY_Z), Gdk.ModifierType.ControlMask));
+
+	public static readonly ToolBindingDescriptor TextItalic = new (
+		"TextTool.Italic",
+		Translations.GetString ("Text Tool"),
+		Translations.GetString ("Toggle italic"),
+		new KeyGesture (new Gdk.Key (Gdk.Constants.KEY_I), Gdk.ModifierType.ControlMask));
+
+	public static readonly ToolBindingDescriptor TextBold = new (
+		"TextTool.Bold",
+		Translations.GetString ("Text Tool"),
+		Translations.GetString ("Toggle bold"),
+		new KeyGesture (new Gdk.Key (Gdk.Constants.KEY_B), Gdk.ModifierType.ControlMask));
+
+	public static readonly ToolBindingDescriptor TextUnderline = new (
+		"TextTool.Underline",
+		Translations.GetString ("Text Tool"),
+		Translations.GetString ("Toggle underline"),
+		new KeyGesture (new Gdk.Key (Gdk.Constants.KEY_U), Gdk.ModifierType.ControlMask));
+
+	public static readonly ToolBindingDescriptor TextSelectAll = new (
+		"TextTool.SelectAll",
+		Translations.GetString ("Text Tool"),
+		Translations.GetString ("Select all text"),
+		new KeyGesture (new Gdk.Key (Gdk.Constants.KEY_A), Gdk.ModifierType.ControlMask));
+
+	public static readonly ToolBindingDescriptor TextPaste = new (
+		"TextTool.Paste",
+		Translations.GetString ("Text Tool"),
+		Translations.GetString ("Paste text"),
+		new KeyGesture (new Gdk.Key (Gdk.Constants.KEY_Insert), Gdk.ModifierType.ShiftMask));
+
+	public static readonly ToolBindingDescriptor TextCopy = new (
+		"TextTool.Copy",
+		Translations.GetString ("Text Tool"),
+		Translations.GetString ("Copy text"),
+		new KeyGesture (new Gdk.Key (Gdk.Constants.KEY_Insert), Gdk.ModifierType.ControlMask));
+
+	public static readonly ToolBindingDescriptor TextDecreaseFontSize = new (
+		"TextTool.DecreaseFontSize",
+		Translations.GetString ("Text Tool"),
+		Translations.GetString ("Decrease font size"),
+		new KeyGesture (new Gdk.Key (Gdk.Constants.KEY_bracketleft)));
+
+	public static readonly ToolBindingDescriptor TextIncreaseFontSize = new (
+		"TextTool.IncreaseFontSize",
+		Translations.GetString ("Text Tool"),
+		Translations.GetString ("Increase font size"),
+		new KeyGesture (new Gdk.Key (Gdk.Constants.KEY_bracketright)));
+
+	// Gradient Tool
+	public static readonly ToolBindingDescriptor GradientFinalize = new (
+		"GradientTool.Finalize",
+		Translations.GetString ("Gradient Tool"),
+		Translations.GetString ("Finalize gradient"),
+		new KeyGesture (new Gdk.Key (Gdk.Constants.KEY_Return)));
+
+	// Shape Tools (Line/Curve, Rectangle, Ellipse, etc.)
+	public static readonly ToolBindingDescriptor ShapeFinalize = new (
+		"ShapeTool.Finalize",
+		Translations.GetString ("Shape Tools"),
+		Translations.GetString ("Finalize shape"),
+		new KeyGesture (new Gdk.Key (Gdk.Constants.KEY_Return)));
+
+	public static readonly ToolBindingDescriptor ShapeDeletePoint = new (
+		"ShapeTool.DeletePoint",
+		Translations.GetString ("Shape Tools"),
+		Translations.GetString ("Delete selected control point"),
+		new KeyGesture (new Gdk.Key (Gdk.Constants.KEY_Delete)));
+
+	public static readonly ToolBindingDescriptor ShapeAddPoint = new (
+		"ShapeTool.AddPoint",
+		Translations.GetString ("Shape Tools"),
+		Translations.GetString ("Add control point at mouse position"),
+		new KeyGesture (new Gdk.Key (Gdk.Constants.KEY_space)));
+
+	public static readonly ToolBindingDescriptor ShapeAddPointExact = new (
+		"ShapeTool.AddPointExact",
+		Translations.GetString ("Shape Tools"),
+		Translations.GetString ("Add control point at exact same position"),
+		new KeyGesture (new Gdk.Key (Gdk.Constants.KEY_space), Gdk.ModifierType.ControlMask));
+
+	public static readonly ToolBindingDescriptor ShapeMovePointLeft = new (
+		"ShapeTool.MovePointLeft",
+		Translations.GetString ("Shape Tools"),
+		Translations.GetString ("Move selected control point left"),
+		new KeyGesture (new Gdk.Key (Gdk.Constants.KEY_Left)));
+
+	public static readonly ToolBindingDescriptor ShapeMovePointRight = new (
+		"ShapeTool.MovePointRight",
+		Translations.GetString ("Shape Tools"),
+		Translations.GetString ("Move selected control point right"),
+		new KeyGesture (new Gdk.Key (Gdk.Constants.KEY_Right)));
+
+	public static readonly ToolBindingDescriptor ShapeMovePointUp = new (
+		"ShapeTool.MovePointUp",
+		Translations.GetString ("Shape Tools"),
+		Translations.GetString ("Move selected control point up"),
+		new KeyGesture (new Gdk.Key (Gdk.Constants.KEY_Up)));
+
+	public static readonly ToolBindingDescriptor ShapeMovePointDown = new (
+		"ShapeTool.MovePointDown",
+		Translations.GetString ("Shape Tools"),
+		Translations.GetString ("Move selected control point down"),
+		new KeyGesture (new Gdk.Key (Gdk.Constants.KEY_Down)));
+
+	public static readonly ToolBindingDescriptor ShapeSelectPrevPoint = new (
+		"ShapeTool.SelectPrevPoint",
+		Translations.GetString ("Shape Tools"),
+		Translations.GetString ("Select previous control point"),
+		new KeyGesture (new Gdk.Key (Gdk.Constants.KEY_Left), Gdk.ModifierType.ControlMask | Gdk.ModifierType.ShiftMask));
+
+	public static readonly ToolBindingDescriptor ShapeSelectNextPoint = new (
+		"ShapeTool.SelectNextPoint",
+		Translations.GetString ("Shape Tools"),
+		Translations.GetString ("Select next control point"),
+		new KeyGesture (new Gdk.Key (Gdk.Constants.KEY_Right), Gdk.ModifierType.ControlMask | Gdk.ModifierType.ShiftMask));
+
+	public static readonly ToolBindingDescriptor ShapeCreateNewAtPoint = new (
+		"ShapeTool.CreateNewAtPoint",
+		Translations.GetString ("Shape Tools"),
+		Translations.GetString ("Create new shape at selected control point"),
+		new KeyGesture (new Gdk.Key (Gdk.Constants.KEY_Left), Gdk.ModifierType.ControlMask)); // or Right
+
+	// Transform Tools (Move Selection, Move Layer, etc.)
+	public static readonly ToolBindingDescriptor TransformNudgeLeft = new (
+		"TransformTool.NudgeLeft",
+		Translations.GetString ("Transform Tools"),
+		Translations.GetString ("Nudge selection left (1px)"),
+		new KeyGesture (new Gdk.Key (Gdk.Constants.KEY_Left)));
+
+	public static readonly ToolBindingDescriptor TransformNudgeRight = new (
+		"TransformTool.NudgeRight",
+		Translations.GetString ("Transform Tools"),
+		Translations.GetString ("Nudge selection right (1px)"),
+		new KeyGesture (new Gdk.Key (Gdk.Constants.KEY_Right)));
+
+	public static readonly ToolBindingDescriptor TransformNudgeUp = new (
+		"TransformTool.NudgeUp",
+		Translations.GetString ("Transform Tools"),
+		Translations.GetString ("Nudge selection up (1px)"),
+		new KeyGesture (new Gdk.Key (Gdk.Constants.KEY_Up)));
+
+	public static readonly ToolBindingDescriptor TransformNudgeDown = new (
+		"TransformTool.NudgeDown",
+		Translations.GetString ("Transform Tools"),
+		Translations.GetString ("Nudge selection down (1px)"),
+		new KeyGesture (new Gdk.Key (Gdk.Constants.KEY_Down)));
+
+	public static readonly ToolBindingDescriptor TransformNudgeLeftLarge = new (
+		"TransformTool.NudgeLeftLarge",
+		Translations.GetString ("Transform Tools"),
+		Translations.GetString ("Nudge selection left (10px)"),
+		new KeyGesture (new Gdk.Key (Gdk.Constants.KEY_Left), Gdk.ModifierType.ShiftMask));
+
+	public static readonly ToolBindingDescriptor TransformNudgeRightLarge = new (
+		"TransformTool.NudgeRightLarge",
+		Translations.GetString ("Transform Tools"),
+		Translations.GetString ("Nudge selection right (10px)"),
+		new KeyGesture (new Gdk.Key (Gdk.Constants.KEY_Right), Gdk.ModifierType.ShiftMask));
+
+	public static readonly ToolBindingDescriptor TransformNudgeUpLarge = new (
+		"TransformTool.NudgeUpLarge",
+		Translations.GetString ("Transform Tools"),
+		Translations.GetString ("Nudge selection up (10px)"),
+		new KeyGesture (new Gdk.Key (Gdk.Constants.KEY_Up), Gdk.ModifierType.ShiftMask));
+
+	public static readonly ToolBindingDescriptor TransformNudgeDownLarge = new (
+		"TransformTool.NudgeDownLarge",
+		Translations.GetString ("Transform Tools"),
+		Translations.GetString ("Nudge selection down (10px)"),
+		new KeyGesture (new Gdk.Key (Gdk.Constants.KEY_Down), Gdk.ModifierType.ShiftMask));
+
+	public static readonly ToolBindingDescriptor TransformNudgeLeftPct = new (
+		"TransformTool.NudgeLeftPct",
+		Translations.GetString ("Transform Tools"),
+		Translations.GetString ("Nudge selection left (5% canvas)"),
+		new KeyGesture (new Gdk.Key (Gdk.Constants.KEY_Left), Gdk.ModifierType.ControlMask));
+
+	public static readonly ToolBindingDescriptor TransformNudgeRightPct = new (
+		"TransformTool.NudgeRightPct",
+		Translations.GetString ("Transform Tools"),
+		Translations.GetString ("Nudge selection right (5% canvas)"),
+		new KeyGesture (new Gdk.Key (Gdk.Constants.KEY_Right), Gdk.ModifierType.ControlMask));
+
+	public static readonly ToolBindingDescriptor TransformNudgeUpPct = new (
+		"TransformTool.NudgeUpPct",
+		Translations.GetString ("Transform Tools"),
+		Translations.GetString ("Nudge selection up (5% canvas)"),
+		new KeyGesture (new Gdk.Key (Gdk.Constants.KEY_Up), Gdk.ModifierType.ControlMask));
+
+	public static readonly ToolBindingDescriptor TransformNudgeDownPct = new (
+		"TransformTool.NudgeDownPct",
+		Translations.GetString ("Transform Tools"),
+		Translations.GetString ("Nudge selection down (5% canvas)"),
+		new KeyGesture (new Gdk.Key (Gdk.Constants.KEY_Down), Gdk.ModifierType.ControlMask));
+
+	public static readonly ToolBindingDescriptor TransformNudgeLeftPctLarge = new (
+		"TransformTool.NudgeLeftPctLarge",
+		Translations.GetString ("Transform Tools"),
+		Translations.GetString ("Nudge selection left (20% canvas)"),
+		new KeyGesture (new Gdk.Key (Gdk.Constants.KEY_Left), Gdk.ModifierType.ControlMask | Gdk.ModifierType.ShiftMask));
+
+	public static readonly ToolBindingDescriptor TransformNudgeRightPctLarge = new (
+		"TransformTool.NudgeRightPctLarge",
+		Translations.GetString ("Transform Tools"),
+		Translations.GetString ("Nudge selection right (20% canvas)"),
+		new KeyGesture (new Gdk.Key (Gdk.Constants.KEY_Right), Gdk.ModifierType.ControlMask | Gdk.ModifierType.ShiftMask));
+
+	public static readonly ToolBindingDescriptor TransformNudgeUpPctLarge = new (
+		"TransformTool.NudgeUpPctLarge",
+		Translations.GetString ("Transform Tools"),
+		Translations.GetString ("Nudge selection up (20% canvas)"),
+		new KeyGesture (new Gdk.Key (Gdk.Constants.KEY_Up), Gdk.ModifierType.ControlMask | Gdk.ModifierType.ShiftMask));
+
+	public static readonly ToolBindingDescriptor TransformNudgeDownPctLarge = new (
+		"TransformTool.NudgeDownPctLarge",
+		Translations.GetString ("Transform Tools"),
+		Translations.GetString ("Nudge selection down (20% canvas)"),
+		new KeyGesture (new Gdk.Key (Gdk.Constants.KEY_Down), Gdk.ModifierType.ControlMask | Gdk.ModifierType.ShiftMask));
 
 	public static readonly IReadOnlyList<ToolBindingDescriptor> ToolBindings = [
 		LassoFinalize,
 		LassoBacktrack,
 		LassoCancel,
+		TextStopEditing,
+		TextNewLine,
+		TextBackspace,
+		TextDelete,
+		TextMoveLeft,
+		TextMoveRight,
+		TextMoveUp,
+		TextMoveDown,
+		TextMoveHome,
+		TextMoveEnd,
+		TextUndo,
+		TextItalic,
+		TextBold,
+		TextUnderline,
+		TextSelectAll,
+		TextPaste,
+		TextCopy,
+		TextDecreaseFontSize,
+		TextIncreaseFontSize,
+		GradientFinalize,
+		ShapeFinalize,
+		ShapeDeletePoint,
+		ShapeAddPoint,
+		ShapeAddPointExact,
+		ShapeMovePointLeft,
+		ShapeMovePointRight,
+		ShapeMovePointUp,
+		ShapeMovePointDown,
+		ShapeSelectPrevPoint,
+		ShapeSelectNextPoint,
+		ShapeCreateNewAtPoint,
+		TransformNudgeLeft,
+		TransformNudgeRight,
+		TransformNudgeUp,
+		TransformNudgeDown,
+		TransformNudgeLeftLarge,
+		TransformNudgeRightLarge,
+		TransformNudgeUpLarge,
+		TransformNudgeDownLarge,
+		TransformNudgeLeftPct,
+		TransformNudgeRightPct,
+		TransformNudgeUpPct,
+		TransformNudgeDownPct,
+		TransformNudgeLeftPctLarge,
+		TransformNudgeRightPctLarge,
+		TransformNudgeUpPctLarge,
+		TransformNudgeDownPctLarge,
 	];
 
 	public event EventHandler? ShortcutsChanged;
@@ -97,8 +430,8 @@ public sealed class KeyboardShortcutManager
 				ApplyCommandShortcut (command, accel.Length == 0 ? [] : [accel]);
 
 		foreach (var tool in tools)
-			if (tool_overrides.TryGetValue (tool.GetType ().Name, out var keyName) && ParseKey (keyName) is Gdk.Key key)
-				this.tools.SetShortcutKeyOverride (tool, key);
+			if (tool_overrides.TryGetValue (tool.GetType ().Name, out var keyName) && KeyGesture.TryParse (keyName) is KeyGesture gesture)
+				this.tools.SetShortcutKeyOverride (tool, gesture);
 	}
 
 	private void Load ()
@@ -156,20 +489,16 @@ public sealed class KeyboardShortcutManager
 
 	public void SetCommandShortcut (Command command, string accel)
 	{
-		ClearConflicts (accel, except: command);
-
 		command_overrides[command.Name] = accel;
-		ApplyCommandShortcut (command, [accel]);
-		Save ();
-		ShortcutsChanged?.Invoke (this, EventArgs.Empty);
+		ApplyCommandShortcut (command, accel.Length == 0 ? [] : [accel]);
+		SaveAndNotify ();
 	}
 
 	public void ResetCommandShortcut (Command command)
 	{
 		command_overrides.Remove (command.Name);
 		ApplyCommandShortcut (command, command.DefaultShortcuts);
-		Save ();
-		ShortcutsChanged?.Invoke (this, EventArgs.Empty);
+		SaveAndNotify ();
 	}
 
 	private void ApplyCommandShortcut (Command command, IReadOnlyList<string> shortcuts)
@@ -180,41 +509,62 @@ public sealed class KeyboardShortcutManager
 
 	// --- Toolbox activation keys ---
 
-	public void SetToolShortcut (BaseTool tool, Gdk.Key key)
+	public void SetToolShortcut (BaseTool tool, KeyGesture gesture)
 	{
-		ClearToolConflicts (key, except: tool);
-
-		tool_overrides[tool.GetType ().Name] = NameKey (key);
-		tools.SetShortcutKeyOverride (tool, key);
-		Save ();
-		ShortcutsChanged?.Invoke (this, EventArgs.Empty);
+		tool_overrides[tool.GetType ().Name] = gesture.ToAcceleratorName ();
+		tools.SetShortcutKeyOverride (tool, gesture);
+		SaveAndNotify ();
 	}
 
 	public void ResetToolShortcut (BaseTool tool)
 	{
 		tool_overrides.Remove (tool.GetType ().Name);
 		tools.ResetShortcutKeyOverride (tool);
-		Save ();
-		ShortcutsChanged?.Invoke (this, EventArgs.Empty);
+		SaveAndNotify ();
 	}
 
 	// --- Tool-specific in-canvas bindings ---
 
-	public Gdk.Key GetToolBinding (ToolBindingDescriptor descriptor)
-		=> binding_overrides.TryGetValue (descriptor.Id, out var keyName) && ParseKey (keyName) is Gdk.Key key
-			? key
-			: descriptor.DefaultKey;
+	public KeyGesture GetToolBinding (ToolBindingDescriptor descriptor)
+		=> binding_overrides.TryGetValue (descriptor.Id, out var keyName) && KeyGesture.TryParse (keyName) is KeyGesture gesture
+			? gesture
+			: descriptor.DefaultGesture;
 
-	public void SetToolBinding (ToolBindingDescriptor descriptor, Gdk.Key key)
+	public void SetToolBinding (ToolBindingDescriptor descriptor, KeyGesture gesture)
 	{
-		binding_overrides[descriptor.Id] = NameKey (key);
-		Save ();
-		ShortcutsChanged?.Invoke (this, EventArgs.Empty);
+		binding_overrides[descriptor.Id] = gesture.ToAcceleratorName ();
+		SaveAndNotify ();
 	}
 
 	public void ResetToolBinding (ToolBindingDescriptor descriptor)
 	{
 		binding_overrides.Remove (descriptor.Id);
+		SaveAndNotify ();
+	}
+
+	// --- Batching ---
+
+	private int batch_depth;
+
+	public void BeginBatch ()
+		=> batch_depth++;
+
+	public void EndBatch ()
+	{
+		if (batch_depth == 0)
+			return;
+
+		if (--batch_depth == 0) {
+			Save ();
+			ShortcutsChanged?.Invoke (this, EventArgs.Empty);
+		}
+	}
+
+	private void SaveAndNotify ()
+	{
+		if (batch_depth > 0)
+			return;
+
 		Save ();
 		ShortcutsChanged?.Invoke (this, EventArgs.Empty);
 	}
@@ -232,25 +582,10 @@ public sealed class KeyboardShortcutManager
 		command_overrides.Clear ();
 		tool_overrides.Clear ();
 		binding_overrides.Clear ();
-		Save ();
-		ShortcutsChanged?.Invoke (this, EventArgs.Empty);
+		SaveAndNotify ();
 	}
 
 	// --- Helpers ---
-
-	private void ClearConflicts (string accel, Command except)
-	{
-		foreach (var command in AllCommands ())
-			if (command != except && command.Shortcuts.Contains (accel))
-				ApplyCommandShortcut (command, []);
-	}
-
-	private void ClearToolConflicts (Gdk.Key key, BaseTool except)
-	{
-		foreach (var tool in tools)
-			if (tool != except && tools.GetEffectiveShortcutKey (tool).ToUpper () == key.ToUpper ())
-				tools.ResetShortcutKeyOverride (tool);
-	}
 
 	public IEnumerable<Command> AllCommands ()
 		=> new object[] {
@@ -264,17 +599,6 @@ public sealed class KeyboardShortcutManager
 			.Where (p => p.PropertyType == typeof (Command))
 			.Select (p => (Command) p.GetValue (actionCollection)!)
 			.Where (c => c != null);
-
-	private static Gdk.Key? ParseKey (string accel)
-	{
-		if (!GtkExtensions.TryParseAccelerator (accel, out uint keyval, out _))
-			return null;
-
-		return new Gdk.Key (keyval);
-	}
-
-	private static string NameKey (Gdk.Key key)
-		=> Gtk.Functions.AcceleratorName (key.Value, default);
 
 	private sealed class ShortcutFile
 	{

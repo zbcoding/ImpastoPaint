@@ -329,15 +329,15 @@ public class LassoSelectTool : BaseTool
 
 		// Impasto: Enter/Backspace/Escape are user-configurable (Keyboard Shortcuts dialog).
 		if (e.Key.Value == Gdk.Constants.KEY_KP_Enter ||
-			e.Key == PintaCore.Shortcuts.GetToolBinding (KeyboardShortcutManager.LassoFinalize)) {
+			e.Gesture == PintaCore.Shortcuts.GetToolBinding (KeyboardShortcutManager.LassoFinalize)) {
 			FinalizeShape (document);
 			return true;
 		}
-		if (e.Key == PintaCore.Shortcuts.GetToolBinding (KeyboardShortcutManager.LassoBacktrack)) {
+		if (e.Gesture == PintaCore.Shortcuts.GetToolBinding (KeyboardShortcutManager.LassoBacktrack)) {
 			Backtrack (document);
 			return true;
 		}
-		if (e.Key == PintaCore.Shortcuts.GetToolBinding (KeyboardShortcutManager.LassoCancel)) {
+		if (e.Gesture == PintaCore.Shortcuts.GetToolBinding (KeyboardShortcutManager.LassoCancel)) {
 			CancelShape ();
 			return true;
 		}

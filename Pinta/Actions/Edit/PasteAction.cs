@@ -31,22 +31,31 @@ using Pinta.Core;
 
 namespace Pinta.Actions;
 
+internal enum PasteDestination
+{
+	ActiveLayer,
+	NewLayer
+}
+
 internal sealed class PasteAction : IActionHandler
 {
 	private readonly ChromeManager chrome;
 	private readonly ActionManager actions;
 	private readonly WorkspaceManager workspace;
 	private readonly ToolManager tools;
+	private readonly SettingsManager settings;
 	internal PasteAction (
 		ChromeManager chrome,
 		ActionManager actions,
 		WorkspaceManager workspace,
-		ToolManager tools)
+		ToolManager tools,
+		SettingsManager settings)
 	{
 		this.chrome = chrome;
 		this.actions = actions;
 		this.workspace = workspace;
 		this.tools = tools;
+		this.settings = settings;
 	}
 
 	void IActionHandler.Initialize ()
@@ -88,7 +97,7 @@ internal sealed class PasteAction : IActionHandler
 			workspace: workspace,
 			tools: tools,
 			doc: doc,
-			toNewLayer: false,
+			destination: settings.GetSetting (SettingNames.PASTE_EXTERNAL_IMAGES_TO_NEW_LAYER, false) ? PasteDestination.NewLayer : PasteDestination.ActiveLayer,
 			pastePosition: canvasPos.ToInt ()
 		);
 	}
@@ -96,33 +105,26 @@ internal sealed class PasteAction : IActionHandler
 	/// <summary>
 	/// Pastes an image from the clipboard.
 	/// </summary>
-	/// <param name="toNewLayer">Set to TRUE to paste into a
-	/// new layer.  Otherwise, will paste to the current layer.</param>
-	/// <param name="x">Optional. Location within image to paste to.
-	/// Position will be adjusted if pasted image would hang
-	/// over right or bottom edges of canvas.</param>
-	/// <param name="y">Optional. Location within image to paste to.
-	/// Position will be adjusted if pasted image would hang
-	/// over right or bottom edges of canvas.</param>
+	/// <param name="destination">The layer destination for the pasted image.</param>
 	public static async void Paste (
 		ActionManager actions,
 		ChromeManager chrome,
 		WorkspaceManager workspace,
 		ToolManager tools,
 		Document doc,
-		bool toNewLayer,
+		PasteDestination destination,
 		PointI pastePosition = new ())
 	{
 		// Create a compound history item for recording several
 		// operations so that they can all be undone/redone together.
-		var history_text = toNewLayer ? Translations.GetString ("Paste Into New Layer") : Translations.GetString ("Paste");
+		var history_text = destination == PasteDestination.NewLayer ? Translations.GetString ("Paste Into New Layer") : Translations.GetString ("Paste");
 		CompoundHistoryItem paste_action = new (Resources.StandardIcons.EditPaste, history_text);
 
 		var cb = GdkExtensions.GetDefaultClipboard ();
 
 		// See if the current tool wants to handle the paste
 		// operation (e.g., the text tool could paste text)
-		if (!toNewLayer) {
+		if (destination == PasteDestination.ActiveLayer) {
 			if (await tools.DoHandlePaste (doc, cb))
 				return;
 		}
@@ -168,7 +170,7 @@ internal sealed class PasteAction : IActionHandler
 
 		// If requested, create a new layer, make it the current
 		// layer and record it's creation in the history
-		if (toNewLayer) {
+		if (destination == PasteDestination.NewLayer) {
 			var l = doc.Layers.AddNewLayer (string.Empty);
 			paste_action.Push (new AddLayerHistoryItem (Resources.Icons.LayerNew, Translations.GetString ("Add New Layer"), doc.Layers.IndexOf (l)));
 		}

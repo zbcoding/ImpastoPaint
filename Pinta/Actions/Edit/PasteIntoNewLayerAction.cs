@@ -35,26 +35,29 @@ internal sealed class PasteIntoNewLayerAction : IActionHandler
 	private readonly ChromeManager chrome;
 	private readonly WorkspaceManager workspace;
 	private readonly ToolManager tools;
+	private readonly SettingsManager settings;
 	internal PasteIntoNewLayerAction (
 		ActionManager actions,
 		ChromeManager chrome,
 		WorkspaceManager workspace,
-		ToolManager tools)
+		ToolManager tools,
+		SettingsManager settings)
 	{
 		this.actions = actions;
 		this.chrome = chrome;
 		this.workspace = workspace;
 		this.tools = tools;
+		this.settings = settings;
 	}
 
 	void IActionHandler.Initialize ()
 	{
-		actions.Edit.PasteIntoNewLayer.Activated += Activated;
+		actions.Edit.PasteAlternate.Activated += Activated;
 	}
 
 	void IActionHandler.Uninitialize ()
 	{
-		actions.Edit.PasteIntoNewLayer.Activated -= Activated;
+		actions.Edit.PasteAlternate.Activated -= Activated;
 	}
 
 	private void Activated (object sender, EventArgs e)
@@ -87,7 +90,7 @@ internal sealed class PasteIntoNewLayerAction : IActionHandler
 			workspace: workspace,
 			tools: tools,
 			doc: doc,
-			toNewLayer: true,
+			destination: settings.GetSetting (SettingNames.PASTE_EXTERNAL_IMAGES_TO_NEW_LAYER, false) ? PasteDestination.ActiveLayer : PasteDestination.NewLayer,
 			pastePosition: canvasPos.ToInt ()
 		);
 	}

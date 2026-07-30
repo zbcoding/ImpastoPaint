@@ -13,6 +13,7 @@ public sealed partial class PreferencesDialog
 	private Gtk.SpinButton canvas_width_spinner;
 	private Gtk.SpinButton canvas_height_spinner;
 	private PintaColorButton canvas_surround_color_button;
+	private Gtk.CheckButton paste_external_images_to_new_layer_check_button;
 	private bool canvas_surround_color_is_default;
 	private Cairo.Color default_canvas_surround_color;
 
@@ -29,8 +30,9 @@ public sealed partial class PreferencesDialog
 	public int DefaultCanvasWidth => canvas_width_spinner.GetValueAsInt ();
 	public int DefaultCanvasHeight => canvas_height_spinner.GetValueAsInt ();
 	public Cairo.Color? CanvasSurroundColor => canvas_surround_color_is_default ? null : canvas_surround_color_button.DisplayColor;
+	public bool PasteExternalImagesToNewLayer => paste_external_images_to_new_layer_check_button.Active;
 
-	internal static PreferencesDialog New (ChromeManager chrome, int defaultCanvasWidth, int defaultCanvasHeight, Cairo.Color canvasSurroundColor, bool canvasSurroundColorIsDefault, Cairo.Color defaultCanvasSurroundColor)
+	internal static PreferencesDialog New (ChromeManager chrome, int defaultCanvasWidth, int defaultCanvasHeight, Cairo.Color canvasSurroundColor, bool canvasSurroundColorIsDefault, Cairo.Color defaultCanvasSurroundColor, bool pasteExternalImagesToNewLayer)
 	{
 		PreferencesDialog dialog = NewWithProperties ([]);
 		dialog.canvas_width_spinner.Value = defaultCanvasWidth;
@@ -38,6 +40,7 @@ public sealed partial class PreferencesDialog
 		dialog.canvas_surround_color_button.DisplayColor = canvasSurroundColor;
 		dialog.canvas_surround_color_is_default = canvasSurroundColorIsDefault;
 		dialog.default_canvas_surround_color = defaultCanvasSurroundColor;
+		dialog.paste_external_images_to_new_layer_check_button.Active = pasteExternalImagesToNewLayer;
 		dialog.TransientFor = chrome.MainWindow;
 		return dialog;
 	}
@@ -45,6 +48,7 @@ public sealed partial class PreferencesDialog
 	[MemberNotNull (nameof (canvas_width_spinner))]
 	[MemberNotNull (nameof (canvas_height_spinner))]
 	[MemberNotNull (nameof (canvas_surround_color_button))]
+	[MemberNotNull (nameof (paste_external_images_to_new_layer_check_button))]
 	partial void Initialize ()
 	{
 		Gtk.SpinButton widthSpinner = Gtk.SpinButton.NewWithRange (1, MAX_CANVAS_DIMENSION, 1);
@@ -87,8 +91,19 @@ public sealed partial class PreferencesDialog
 		resetButton.OnClicked += ConfirmCanvasReset;
 		canvasPage.Append (resetButton);
 
+		Gtk.CheckButton pasteExternalImagesCheckButton = Gtk.CheckButton.NewWithLabel (Translations.GetString ("Paste external images onto a new layer by default"));
+		Gtk.Box clipboardPage = Gtk.Box.New (Gtk.Orientation.Vertical, SPACING);
+		clipboardPage.SetAllMargins (12);
+		clipboardPage.Append (pasteExternalImagesCheckButton);
+
+		Gtk.Button resetClipboardButton = Gtk.Button.NewWithLabel (Translations.GetString ("Reset to Defaults"));
+		resetClipboardButton.Halign = Gtk.Align.Center;
+		resetClipboardButton.OnClicked += ConfirmClipboardReset;
+		clipboardPage.Append (resetClipboardButton);
+
 		Gtk.Notebook notebook = Gtk.Notebook.New ();
 		notebook.AppendPage (canvasPage, Gtk.Label.New (Translations.GetString ("Canvas")));
+		notebook.AppendPage (clipboardPage, Gtk.Label.New (Translations.GetString ("Clipboard")));
 		contentArea.Append (notebook);
 
 		Title = Translations.GetString ("Settings");
@@ -101,6 +116,7 @@ public sealed partial class PreferencesDialog
 		canvas_width_spinner = widthSpinner;
 		canvas_height_spinner = heightSpinner;
 		canvas_surround_color_button = canvasSurroundColorButton;
+		paste_external_images_to_new_layer_check_button = pasteExternalImagesCheckButton;
 	}
 
 	private async void ConfirmCanvasReset (Gtk.Button sender, EventArgs e)
@@ -119,6 +135,19 @@ public sealed partial class PreferencesDialog
 		canvas_height_spinner.Value = 600;
 		canvas_surround_color_button.DisplayColor = default_canvas_surround_color;
 		canvas_surround_color_is_default = true;
+	}
+
+	private async void ConfirmClipboardReset (Gtk.Button sender, EventArgs e)
+	{
+		Gtk.AlertDialog confirmation = Gtk.AlertDialog.NewWithProperties ([]);
+		confirmation.Message = Translations.GetString ("Reset Clipboard Settings?");
+		confirmation.Detail = Translations.GetString ("This resets the clipboard settings to their defaults.");
+		confirmation.Buttons = [Translations.GetString ("Reset"), Translations.GetString ("Cancel")];
+		confirmation.DefaultButton = 1;
+		confirmation.CancelButton = 1;
+
+		if (await confirmation.ChooseAsync (this) == 0)
+			paste_external_images_to_new_layer_check_button.Active = false;
 	}
 
 	private async void ChooseCanvasSurroundColor (Gtk.Button sender, EventArgs e)

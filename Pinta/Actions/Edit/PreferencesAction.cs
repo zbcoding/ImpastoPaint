@@ -41,7 +41,8 @@ internal sealed class PreferencesAction : IActionHandler
 			settings.GetSetting (SettingNames.DEFAULT_CANVAS_HEIGHT, 600),
 			canvasSurroundColor,
 			canvasSurroundColorIsDefault,
-			defaultCanvasSurroundColor);
+			defaultCanvasSurroundColor,
+			settings.GetSetting (SettingNames.PASTE_EXTERNAL_IMAGES_TO_NEW_LAYER, false));
 
 		try {
 			if (await dialog.RunAsync () != Gtk.ResponseType.Ok)
@@ -51,6 +52,7 @@ internal sealed class PreferencesAction : IActionHandler
 			settings.PutSetting (SettingNames.DEFAULT_CANVAS_HEIGHT, dialog.DefaultCanvasHeight);
 			Cairo.Color? selectedCanvasSurroundColor = dialog.CanvasSurroundColor;
 			settings.PutSetting (SettingNames.CANVAS_SURROUND_COLOR, selectedCanvasSurroundColor?.ToHex (addAlpha: false) ?? SettingNames.DEFAULT_CANVAS_SURROUND_COLOR);
+			settings.PutSetting (SettingNames.PASTE_EXTERNAL_IMAGES_TO_NEW_LAYER, dialog.PasteExternalImagesToNewLayer);
 
 			foreach (Document document in PintaCore.Workspace.OpenDocuments)
 				((CanvasWindow) document.Workspace.CanvasWindow).CanvasSurroundColor = selectedCanvasSurroundColor;

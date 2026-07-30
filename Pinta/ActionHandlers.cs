@@ -64,8 +64,8 @@ public sealed class ActionHandlers
 			// Edit
 			new OffsetSelectionAction (actions.Edit, chrome, workspace, tools),
 			new PreferencesAction (actions.Edit, chrome, settings),
-			new PasteAction (chrome, actions, workspace, tools),
-			new PasteIntoNewLayerAction (actions, chrome, workspace, tools),
+			new PasteAction (chrome, actions, workspace, tools, settings),
+			new PasteIntoNewLayerAction (actions, chrome, workspace, tools, settings),
 			new PasteIntoNewImageAction (actions, chrome, workspace),
 			new ResizePaletteAction (actions.Edit, chrome, palette),
 			new AddinManagerAction (actions.Addins, chrome, system),
@@ -130,7 +130,7 @@ public sealed class ActionHandlers
 		PintaCore.Actions.Edit.Copy.Sensitive = enable;
 		PintaCore.Actions.Edit.CopyMerged.Sensitive = enable;
 		PintaCore.Actions.Edit.Cut.Sensitive = enable;
-		PintaCore.Actions.Edit.PasteIntoNewLayer.Sensitive = enable;
+		PintaCore.Actions.Edit.PasteAlternate.Sensitive = enable;
 		PintaCore.Actions.Edit.EraseSelection.Sensitive = enable;
 		PintaCore.Actions.Edit.FillSelection.Sensitive = enable;
 		PintaCore.Actions.Edit.InvertSelection.Sensitive = enable;

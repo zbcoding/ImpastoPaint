@@ -145,3 +145,5 @@ These are real projects, not quick tasks. Don't add them to scope casually:
 - GTK debug output can be verbose; set `G_MESSAGES_DEBUG=all` to see all GTK messages
 - Use Visual Studio debugger or `lldb` on macOS for line-level debugging
 - History/undo state is in `IHistoryManager`; check it if operations don't persist correctly
+
+Unless noted, focus more on feature addition, less on time consuming verification and checking, because I'm checking the software as features are added by running dotnet run --project Pinta 

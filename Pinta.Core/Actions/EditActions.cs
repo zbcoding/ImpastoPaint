@@ -39,7 +39,7 @@ public sealed class EditActions
 	public Command Copy { get; }
 	public Command CopyMerged { get; }
 	public Command Paste { get; }
-	public Command PasteIntoNewLayer { get; }
+	public Command PasteAlternate { get; }
 	public Command PasteIntoNewImage { get; }
 	public Command EraseSelection { get; }
 	public Command FillSelection { get; }
@@ -118,9 +118,9 @@ public sealed class EditActions
 			Resources.StandardIcons.EditPaste,
 			shortcuts: ["<Primary>V"]);
 
-		PasteIntoNewLayer = new Command (
-			"pasteintonewlayer",
-			Translations.GetString ("Paste Into New Layer"),
+		PasteAlternate = new Command (
+			"pastealternate",
+			Translations.GetString ("Paste Alternate"),
 			null,
 			Resources.StandardIcons.EditPaste,
 			shortcuts: ["<Primary><Shift>V"]);
@@ -229,7 +229,7 @@ public sealed class EditActions
 		paste_section.AppendItem (Copy.CreateMenuItem ());
 		paste_section.AppendItem (CopyMerged.CreateMenuItem ());
 		paste_section.AppendItem (Paste.CreateMenuItem ());
-		paste_section.AppendItem (PasteIntoNewLayer.CreateMenuItem ());
+		paste_section.AppendItem (PasteAlternate.CreateMenuItem ());
 		paste_section.AppendItem (PasteIntoNewImage.CreateMenuItem ());
 
 		Gio.Menu sel_section = Gio.Menu.New ();
@@ -271,7 +271,7 @@ public sealed class EditActions
 			Copy,
 			CopyMerged,
 			Paste,
-			PasteIntoNewLayer,
+			PasteAlternate,
 			PasteIntoNewImage,
 
 			SelectAll,

@@ -1,22 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <svg width="24" height="24" viewBox="0 0 24 24" version="1.1"
      xmlns="http://www.w3.org/2000/svg">
-  <!-- Scissors Select - magnetic scissors cutting along the selection edge -->
-  <g fill="none" stroke="#ffffff" stroke-linecap="round" stroke-linejoin="round">
-    <!-- Magnetic dashed selection edge -->
-    <path d="M 2,4 Q 7,2.6 12,4 Q 17,5.4 22,4.3"
-          stroke-width="1.15" stroke-dasharray="2,2" opacity="0.95"/>
-    <!-- Crossing blades meeting at the edge and opening down into handles -->
-    <path d="M 16.5,5 L 8.2,15.5" stroke-width="2.2"/>
-    <path d="M 7.5,5 L 15.8,15.5" stroke-width="2.2"/>
-    <!-- Open handle loops -->
-    <circle cx="7.3" cy="17.6" r="2.7" stroke-width="1.8"/>
-    <circle cx="16.7" cy="17.6" r="2.7" stroke-width="1.8"/>
-  </g>
-  <!-- Control node anchors on the selection edge -->
-  <g fill="#ffffff">
-    <rect x="1.1" y="3.1" width="1.8" height="1.8" rx="0.4"/>
-    <rect x="11.1" y="3.1" width="1.8" height="1.8" rx="0.4"/>
-    <rect x="21.1" y="3.4" width="1.8" height="1.8" rx="0.4"/>
-  </g>
+  <!-- Scissors above a three-node selection edge. -->
+  <path fill="#bebebe" transform="translate(2,1) scale(0.6)"
+        d="M9.64,7.64C9.87,7.14 10,6.59 10,6c0,-2.21 -1.79,-4 -4,-4C3.79,2 2,3.79 2,6s1.79,4 4,4c0.59,0 1.14,-0.13 1.64,-0.36L10,12l-2.36,2.36C7.14,14.13 6.59,14 6,14c-2.21,0 -4,1.79 -4,4s1.79,4 4,4s4,-1.79 4,-4c0,-0.59 -0.13,-1.14 -0.36,-1.64L12,14l7,7h3v-1L9.64,7.64zM6,8C4.9,8 4,7.1 4,6s0.9,-2 2,-2s2,0.9 2,2S7.1,8 6,8zM6,20c-1.1,0 -2,-0.9 -2,-2s0.9,-2 2,-2s2,0.9 2,2S7.1,20 6,20zM19,3l-6,6l2,2l7,-7V3H19z"/>
+  <path fill="#bebebe" d="M2,21.6 L11,18.9 L11.5,20.5 L2,23.2 Z M12.5,20.5 L13,18.9 L22,21.6 L22,23.2 Z"/>
+  <circle cx="2" cy="22.4" r="1.7" fill="#bebebe"/>
+  <circle cx="12" cy="19.7" r="1.7" fill="#bebebe"/>
+  <circle cx="22" cy="22.4" r="1.7" fill="#bebebe"/>
 </svg>

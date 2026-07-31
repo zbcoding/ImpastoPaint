@@ -95,13 +95,14 @@ public abstract class BaseBrushTool : BaseTool
 
 	protected override bool OnKeyDown (Document document, ToolKeyEventArgs e)
 	{
-		switch (e.Key.Value) {
-			case Gdk.Constants.KEY_bracketleft:
-				BrushWidth--;
-				return true;
-			case Gdk.Constants.KEY_bracketright:
-				BrushWidth++;
-				return true;
+		if (PintaCore.Shortcuts.GetToolBinding (KeyboardShortcutManager.BrushDecreaseWidth) == e.Gesture) {
+			BrushWidth--;
+			return true;
+		}
+
+		if (PintaCore.Shortcuts.GetToolBinding (KeyboardShortcutManager.BrushIncreaseWidth) == e.Gesture) {
+			BrushWidth++;
+			return true;
 		}
 
 		return base.OnKeyDown (document, e);

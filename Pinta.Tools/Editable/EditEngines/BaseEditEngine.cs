@@ -538,34 +538,123 @@ public abstract class BaseEditEngine
 
 	public virtual bool HandleKeyDown (Document document, ToolKeyEventArgs e)
 	{
+		bool IsBinding (ToolBindingDescriptor binding)
+			=> PintaCore.Shortcuts.GetToolBinding (binding) == e.Gesture;
+		bool IsDefault (ToolBindingDescriptor binding)
+			=> PintaCore.Shortcuts.GetToolBinding (binding) == binding.DefaultGesture;
+
+		if (IsBinding (KeyboardShortcutManager.ShapeDeletePoint)) {
+			HandleDelete ();
+			return true;
+		}
+
+		if (IsBinding (KeyboardShortcutManager.ShapeFinalize)) {
+			FinalizeAllShapes ();
+			return true;
+		}
+
+		if (IsBinding (KeyboardShortcutManager.ShapeAddPointExact)) {
+			HandleSpace (e, exact: true);
+			return true;
+		}
+
+		if (IsBinding (KeyboardShortcutManager.ShapeAddPoint)) {
+			HandleSpace (e);
+			return true;
+		}
+
+		if (IsBinding (KeyboardShortcutManager.ShapeSelectPrevPoint)) {
+			HandleLeft (e, selectPoint: true);
+			return true;
+		}
+
+		if (IsBinding (KeyboardShortcutManager.ShapeSelectNextPoint)) {
+			HandleRight (e, selectPoint: true);
+			return true;
+		}
+
+		if (IsBinding (KeyboardShortcutManager.ShapeCreateNewAtPoint)) {
+			HandleSpace (e, exact: true);
+			return true;
+		}
+
+		if (IsBinding (KeyboardShortcutManager.ShapeMovePointLeft)) {
+			HandleLeft (e);
+			return true;
+		}
+
+		if (IsBinding (KeyboardShortcutManager.ShapeMovePointRight)) {
+			HandleRight (e);
+			return true;
+		}
+
+		if (IsBinding (KeyboardShortcutManager.ShapeMovePointUp)) {
+			HandleUp ();
+			return true;
+		}
+
+		if (IsBinding (KeyboardShortcutManager.ShapeMovePointDown)) {
+			HandleDown ();
+			return true;
+		}
+
+		if (IsBinding (KeyboardShortcutManager.BrushDecreaseWidth)) {
+			BrushWidth--;
+			return true;
+		}
+
+		if (IsBinding (KeyboardShortcutManager.BrushIncreaseWidth)) {
+			BrushWidth++;
+			return true;
+		}
+
 		Gdk.Key keyPressed = e.Key;
 		switch (keyPressed.Value) {
 			case Gdk.Constants.KEY_Delete:
+				if (!IsDefault (KeyboardShortcutManager.ShapeDeletePoint))
+					return false;
 				HandleDelete ();
 				return true;
 			case Gdk.Constants.KEY_Return:
 			case Gdk.Constants.KEY_KP_Enter:
+				if (!IsDefault (KeyboardShortcutManager.ShapeFinalize))
+					return false;
 				FinalizeAllShapes ();
 				return true;
 			case Gdk.Constants.KEY_space:
+				if (!IsDefault (KeyboardShortcutManager.ShapeAddPoint) ||
+					(e.IsControlPressed && !IsDefault (KeyboardShortcutManager.ShapeAddPointExact)))
+					return false;
 				HandleSpace (e);
 				return true;
 			case Gdk.Constants.KEY_Up:
+				if (!IsDefault (KeyboardShortcutManager.ShapeMovePointUp))
+					return false;
 				HandleUp ();
 				return true;
 			case Gdk.Constants.KEY_Down:
+				if (!IsDefault (KeyboardShortcutManager.ShapeMovePointDown))
+					return false;
 				HandleDown ();
 				return true;
 			case Gdk.Constants.KEY_Left:
+				if (!IsDefault (KeyboardShortcutManager.ShapeMovePointLeft))
+					return false;
 				HandleLeft (e);
 				return true;
 			case Gdk.Constants.KEY_Right:
+				if (!IsDefault (KeyboardShortcutManager.ShapeMovePointRight))
+					return false;
 				HandleRight (e);
 				return true;
 			case Gdk.Constants.KEY_bracketleft:
+				if (!IsDefault (KeyboardShortcutManager.BrushDecreaseWidth))
+					return false;
 				BrushWidth--;
 				return true;
 			case Gdk.Constants.KEY_bracketright:
+				if (!IsDefault (KeyboardShortcutManager.BrushIncreaseWidth))
+					return false;
 				BrushWidth++;
 				return true;
 			default:
@@ -579,14 +668,14 @@ public abstract class BaseEditEngine
 		}
 	}
 
-	private void HandleRight (ToolKeyEventArgs e)
+	private void HandleRight (ToolKeyEventArgs e, bool selectPoint = false)
 	{
 		//Make sure a control point is selected.
 
 		if (SelectedPointIndex < 0)
 			return;
 
-		if (e.IsControlPressed) {
+		if (selectPoint || e.IsControlPressed) {
 			//Change the selected control point to be the following one.
 
 			ShapeEngine? activeEngine = ActiveShapeEngine;
@@ -607,14 +696,14 @@ public abstract class BaseEditEngine
 		DrawActiveShape (true, false, true, false, false);
 	}
 
-	private void HandleLeft (ToolKeyEventArgs e)
+	private void HandleLeft (ToolKeyEventArgs e, bool selectPoint = false)
 	{
 		//Make sure a control point is selected.
 
 		if (SelectedPointIndex < 0)
 			return;
 
-		if (e.IsControlPressed) {
+		if (selectPoint || e.IsControlPressed) {
 			//Change the selected control point to be the previous one.
 
 			--SelectedPointIndex;
@@ -663,7 +752,7 @@ public abstract class BaseEditEngine
 		DrawActiveShape (true, false, true, false, false);
 	}
 
-	private void HandleSpace (ToolKeyEventArgs e)
+	private void HandleSpace (ToolKeyEventArgs e, bool exact = false)
 	{
 		ControlPoint? selPoint = SelectedPoint;
 
@@ -683,7 +772,7 @@ public abstract class BaseEditEngine
 		);
 
 		bool shiftKey = e.IsShiftPressed;
-		bool ctrlKey = e.IsControlPressed;
+		bool ctrlKey = exact || e.IsControlPressed;
 
 		PointD newPointPos;
 

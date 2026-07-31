@@ -27,6 +27,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using Cairo;
 using Pinta.Core;
 
@@ -503,11 +504,7 @@ public abstract class BaseTransformTool : BaseTool
 		if (using_mouse) // Don't handle the arrow keys while already interacting via the mouse.
 			return base.OnKeyDown (document, e);
 
-		// Determine if this is an arrow key for nudging.
-		bool isArrow = e.Key.Value is Gdk.Constants.KEY_Left or Gdk.Constants.KEY_Right
-			or Gdk.Constants.KEY_Up or Gdk.Constants.KEY_Down;
-
-		if (!isArrow)
+		if (GetNudgeBinding (e.Gesture) is not ToolBindingDescriptor nudgeBinding)
 			return base.OnKeyDown (document, e);
 
 		// Track nudge hold duration for hint (2 seconds).
@@ -531,54 +528,14 @@ public abstract class BaseTransformTool : BaseTool
 			}
 		}
 
-		// Compute step amounts:
-		// - 1px base
-		// - Shift: 10px (Paint.NET parity, Issue #1559)
-		// - Ctrl: 10% of canvas size (user request: based on canvas size)
-		// - Ctrl+Shift: 20% of canvas size
-		double dx = 0.0;
-		double dy = 0.0;
-
-		bool isCtrl = e.IsControlPressed;
-		bool isShift = e.IsShiftPressed;
-
 		int canvasW = document.ImageSize.Width;
 		int canvasH = document.ImageSize.Height;
-
-		// 10% and 20% of canvas, with sensible minimums so Ctrl is distinguishable.
 		int ctrl10X = Math.Max (10, (int) Math.Round (canvasW * 0.10));
 		int ctrl10Y = Math.Max (10, (int) Math.Round (canvasH * 0.10));
 		int ctrl20X = Math.Max (20, (int) Math.Round (canvasW * 0.20));
 		int ctrl20Y = Math.Max (20, (int) Math.Round (canvasH * 0.20));
 
-		double stepX, stepY;
-
-		if (isCtrl && isShift) {
-			stepX = ctrl20X;
-			stepY = ctrl20Y;
-		} else if (isCtrl) {
-			stepX = ctrl10X;
-			stepY = ctrl10Y;
-		} else if (isShift) {
-			stepX = stepY = 10.0;
-		} else {
-			stepX = stepY = 1.0;
-		}
-
-		switch (e.Key.Value) {
-			case Gdk.Constants.KEY_Left:
-				dx = -stepX;
-				break;
-			case Gdk.Constants.KEY_Right:
-				dx = stepX;
-				break;
-			case Gdk.Constants.KEY_Up:
-				dy = -stepY;
-				break;
-			case Gdk.Constants.KEY_Down:
-				dy = stepY;
-				break;
-		}
+		(double dx, double dy) = GetNudgeDelta (nudgeBinding, ctrl10X, ctrl10Y, ctrl20X, ctrl20Y);
 
 		if (!IsActive) {
 			is_dragging = true;
@@ -604,8 +561,7 @@ public abstract class BaseTransformTool : BaseTool
 		ToolKeyEventArgs e)
 	{
 		// Clear nudge hint state when arrow key is released.
-		if (e.Key.Value is Gdk.Constants.KEY_Left or Gdk.Constants.KEY_Right
-			or Gdk.Constants.KEY_Up or Gdk.Constants.KEY_Down) {
+		if (GetNudgeBinding (e.Gesture) is not null) {
 			ClearNudgeState ();
 		}
 
@@ -613,6 +569,64 @@ public abstract class BaseTransformTool : BaseTool
 			OnFinishTransform (document, transform);
 
 		return base.OnKeyUp (document, e);
+	}
+
+	private static ToolBindingDescriptor? GetNudgeBinding (KeyGesture gesture)
+	{
+		foreach (var binding in KeyboardShortcutManager.ToolBindings) {
+			if (binding.Id.StartsWith ("TransformTool.Nudge", StringComparison.Ordinal) &&
+				PintaCore.Shortcuts.GetToolBinding (binding) == gesture)
+				return binding;
+		}
+
+		return null;
+	}
+
+	private static (double dx, double dy) GetNudgeDelta (
+		ToolBindingDescriptor binding,
+		int ctrl10X,
+		int ctrl10Y,
+		int ctrl20X,
+		int ctrl20Y)
+	{
+		bool large = binding.Id.EndsWith ("Large", StringComparison.Ordinal);
+		bool percent = binding.Id.Contains ("Pct", StringComparison.Ordinal);
+		double stepX = percent ? (large ? ctrl20X : ctrl10X) : large ? 10 : 1;
+		double stepY = percent ? (large ? ctrl20Y : ctrl10Y) : large ? 10 : 1;
+
+		return binding.Id switch {
+			"TransformTool.NudgeLeft" or "TransformTool.NudgeLeftLarge" or "TransformTool.NudgeLeftPct" or "TransformTool.NudgeLeftPctLarge" => (-stepX, 0),
+			"TransformTool.NudgeRight" or "TransformTool.NudgeRightLarge" or "TransformTool.NudgeRightPct" or "TransformTool.NudgeRightPctLarge" => (stepX, 0),
+			"TransformTool.NudgeUp" or "TransformTool.NudgeUpLarge" or "TransformTool.NudgeUpPct" or "TransformTool.NudgeUpPctLarge" => (0, -stepY),
+			_ => (0, stepY),
+		};
+	}
+
+	private static string FormatNudgeBinding (ToolBindingDescriptor binding)
+	{
+		string shortcut = PintaCore.Shortcuts.GetToolBinding (binding).ToAcceleratorName ();
+		string label = GtkExtensions.TryParseAccelerator (shortcut, out uint key, out var mods)
+			? Gtk.Functions.AcceleratorGetLabel (key, mods)
+			: shortcut;
+		string direction = binding.Id.Contains ("Left", StringComparison.Ordinal) ? "Left" :
+			binding.Id.Contains ("Right", StringComparison.Ordinal) ? "Right" :
+			binding.Id.Contains ("Up", StringComparison.Ordinal) ? "Up" : "Down";
+		return $"{direction}: {label}";
+	}
+
+	private static string FormatCustomNudgeBinding (ToolBindingDescriptor binding)
+	{
+		string direction = binding.Id.Contains ("Left", StringComparison.Ordinal) ? "left" :
+			binding.Id.Contains ("Right", StringComparison.Ordinal) ? "right" :
+			binding.Id.Contains ("Up", StringComparison.Ordinal) ? "up" : "down";
+		string label = FormatNudgeBinding (binding).Split (": ", 2)[1];
+		string amount = binding.Id.Contains ("PctLarge", StringComparison.Ordinal) ? "20% of canvas" :
+			binding.Id.Contains ("Pct", StringComparison.Ordinal) ? "10% of canvas" :
+			binding.Id.EndsWith ("Large", StringComparison.Ordinal) ? "10px" : "1px";
+
+		return amount == "1px"
+			? Translations.GetString ("Nudge {0}: {1}", direction, label)
+			: Translations.GetString ("Nudge {0} ({1}): {2}", amount, direction, label);
 	}
 
 	protected abstract RectangleD GetSourceRectangle (Document document);
@@ -785,25 +799,35 @@ public abstract class BaseTransformTool : BaseTool
 		if (!workspace.HasOpenDocuments)
 			return;
 
-		int w = document.ImageSize.Width;
-		int h = document.ImageSize.Height;
-		int ctrl10X = Math.Max (10, (int) Math.Round (w * 0.10));
-		int ctrl10Y = Math.Max (10, (int) Math.Round (h * 0.10));
-		int ctrl20X = Math.Max (20, (int) Math.Round (w * 0.20));
-		int ctrl20Y = Math.Max (20, (int) Math.Round (h * 0.20));
+		ToolBindingDescriptor[] nudgeBindings = [
+			KeyboardShortcutManager.TransformNudgeLeft,
+			KeyboardShortcutManager.TransformNudgeRight,
+			KeyboardShortcutManager.TransformNudgeUp,
+			KeyboardShortcutManager.TransformNudgeDown,
+			KeyboardShortcutManager.TransformNudgeLeftLarge,
+			KeyboardShortcutManager.TransformNudgeRightLarge,
+			KeyboardShortcutManager.TransformNudgeUpLarge,
+			KeyboardShortcutManager.TransformNudgeDownLarge,
+			KeyboardShortcutManager.TransformNudgeLeftPct,
+			KeyboardShortcutManager.TransformNudgeRightPct,
+			KeyboardShortcutManager.TransformNudgeUpPct,
+			KeyboardShortcutManager.TransformNudgeDownPct,
+			KeyboardShortcutManager.TransformNudgeLeftPctLarge,
+			KeyboardShortcutManager.TransformNudgeRightPctLarge,
+			KeyboardShortcutManager.TransformNudgeUpPctLarge,
+			KeyboardShortcutManager.TransformNudgeDownPctLarge,
+		];
 
-		// List shortcuts vertically per user request (instead of dot-separated).
-		string template = Translations.GetString (
-			"Arrow: 1px\nShift+Arrow: 10px\nCtrl+Arrow: 10% of canvas ({0}×{1}px)\nCtrl+Shift+Arrow: 20% of canvas ({2}×{3}px)");
-
-		string hint;
-		try {
-			hint = string.Format (template, ctrl10X, ctrl10Y, ctrl20X, ctrl20Y);
-		} catch {
-			string fallback = Translations.GetString (
-				"Arrow: 1px\nShift+Arrow: 10px\nCtrl+Arrow: 10% of canvas\nCtrl+Shift+Arrow: 20% of canvas");
-			hint = fallback;
-		}
+		List<string> hintLines = [
+			Translations.GetString ("Nudge: Arrow keys"),
+			Translations.GetString ("Nudge 10px: Shift+Arrow keys"),
+			Translations.GetString ("Nudge 10% of canvas: Ctrl+Arrow keys"),
+			Translations.GetString ("Nudge 20% of canvas: Ctrl+Shift+Arrow keys"),
+		];
+		hintLines.AddRange (nudgeBindings
+			.Where (binding => PintaCore.Shortcuts.GetToolBinding (binding) != binding.DefaultGesture)
+			.Select (FormatCustomNudgeBinding));
+		string hint = string.Join ("\n", hintLines);
 
 		var activeWs = workspace.ActiveWorkspace;
 		Gtk.Widget canvas = activeWs.Canvas;
@@ -1183,4 +1207,3 @@ public abstract class BaseTransformTool : BaseTool
 	private bool IsActive
 		=> is_dragging || is_rotating || is_scaling || is_handle_scaling;
 }
-

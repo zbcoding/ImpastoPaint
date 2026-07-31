@@ -179,6 +179,43 @@ public sealed class KeyboardShortcutManager
 		Translations.GetString ("Increase font size"),
 		new KeyGesture (new Gdk.Key (Gdk.Constants.KEY_bracketright)));
 
+	// Shared brush and shape width controls
+	public static readonly ToolBindingDescriptor BrushDecreaseWidth = new (
+		"BrushTools.DecreaseWidth",
+		Translations.GetString ("Brush Tools"),
+		Translations.GetString ("Decrease brush width"),
+		new KeyGesture (new Gdk.Key (Gdk.Constants.KEY_bracketleft)));
+
+	public static readonly ToolBindingDescriptor BrushIncreaseWidth = new (
+		"BrushTools.IncreaseWidth",
+		Translations.GetString ("Brush Tools"),
+		Translations.GetString ("Increase brush width"),
+		new KeyGesture (new Gdk.Key (Gdk.Constants.KEY_bracketright)));
+
+	// Global shortcuts that are not represented by an AppAction.
+	public static readonly ToolBindingDescriptor SwapColors = new (
+		"Palette.SwapColors",
+		Translations.GetString ("General"),
+		Translations.GetString ("Swap primary and secondary colors"),
+		new KeyGesture (new Gdk.Key (Gdk.Constants.KEY_X)));
+
+	public static readonly ToolBindingDescriptor SwitchDocument1 = CreateDocumentBinding (1);
+	public static readonly ToolBindingDescriptor SwitchDocument2 = CreateDocumentBinding (2);
+	public static readonly ToolBindingDescriptor SwitchDocument3 = CreateDocumentBinding (3);
+	public static readonly ToolBindingDescriptor SwitchDocument4 = CreateDocumentBinding (4);
+	public static readonly ToolBindingDescriptor SwitchDocument5 = CreateDocumentBinding (5);
+	public static readonly ToolBindingDescriptor SwitchDocument6 = CreateDocumentBinding (6);
+	public static readonly ToolBindingDescriptor SwitchDocument7 = CreateDocumentBinding (7);
+	public static readonly ToolBindingDescriptor SwitchDocument8 = CreateDocumentBinding (8);
+	public static readonly ToolBindingDescriptor SwitchDocument9 = CreateDocumentBinding (9);
+
+	private static ToolBindingDescriptor CreateDocumentBinding (int index)
+		=> new (
+			$"Window.SwitchDocument{index}",
+			Translations.GetString ("Window"),
+			Translations.GetString ("Switch to document {0}", index),
+			new KeyGesture (new Gdk.Key ((uint) (Gdk.Constants.KEY_0 + index)), Gdk.ModifierType.AltMask));
+
 	// Gradient Tool
 	public static readonly ToolBindingDescriptor GradientFinalize = new (
 		"GradientTool.Finalize",
@@ -373,6 +410,18 @@ public sealed class KeyboardShortcutManager
 		TextCopy,
 		TextDecreaseFontSize,
 		TextIncreaseFontSize,
+		BrushDecreaseWidth,
+		BrushIncreaseWidth,
+		SwapColors,
+		SwitchDocument1,
+		SwitchDocument2,
+		SwitchDocument3,
+		SwitchDocument4,
+		SwitchDocument5,
+		SwitchDocument6,
+		SwitchDocument7,
+		SwitchDocument8,
+		SwitchDocument9,
 		GradientFinalize,
 		ShapeFinalize,
 		ShapeDeletePoint,

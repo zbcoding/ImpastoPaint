@@ -273,7 +273,8 @@ internal sealed class MainWindow
 			return true;
 
 		// Finally, see if the palette widget wants it.
-		bool shouldSwapColors = !args.State.HasModifierKey () && args.GetKey ().ToUpper ().Value == Gdk.Constants.KEY_X;
+		bool shouldSwapColors = new KeyGesture (args.GetKey (), args.State) ==
+			PintaCore.Shortcuts.GetToolBinding (KeyboardShortcutManager.SwapColors);
 
 		if (shouldSwapColors) {
 			PintaCore.Palette.SwapColors ();

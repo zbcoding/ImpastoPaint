@@ -57,6 +57,31 @@ internal sealed class KeyboardShortcutsDialogAction : IActionHandler
 	private static KeyGesture? ParseGesture (string shortcut)
 		=> KeyGesture.TryParse (NormalizeAccelForPlatform (shortcut));
 
+	private static bool MatchesShortcut (string? shortcut, string query)
+	{
+		if (string.IsNullOrWhiteSpace (shortcut))
+			return false;
+
+		static string[] Tokens (string value)
+		{
+			value = value.Trim ().Trim ('"').Replace ('"', ' ').Replace ('<', ' ').Replace ('>', ' ')
+				.Replace ('+', ' ').Replace ('-', ' ');
+
+			return value.Split (' ', StringSplitOptions.RemoveEmptyEntries)
+				.Select (token => token.ToLowerInvariant () switch {
+					"control" or "ctrl" or "primary" => "ctrl",
+					"command" or "cmd" or "meta" or "super" => "meta",
+					"option" or "opt" => "alt",
+					_ => token.ToLowerInvariant ()
+				})
+				.OrderBy (token => token, StringComparer.Ordinal)
+				.ToArray ();
+		}
+
+		string[] expected = Tokens (query);
+		return expected.Length > 0 && Tokens (shortcut).SequenceEqual (expected);
+	}
+
 	private void Activated (object sender, EventArgs e)
 	{
 		List<ShortcutRowState> states = [];
@@ -111,7 +136,7 @@ internal sealed class KeyboardShortcutsDialogAction : IActionHandler
 		};
 
 		Gtk.SearchEntry searchEntry = Gtk.SearchEntry.New ();
-		searchEntry.PlaceholderText = Translations.GetString ("Search commands…");
+		searchEntry.PlaceholderText = Translations.GetString ("Search by name or key with quotes like \"ctrl-A\"");
 		searchEntry.SetAllMargins (6);
 
 		Gtk.HeaderBar headerBar = Gtk.HeaderBar.New ();
@@ -128,24 +153,28 @@ internal sealed class KeyboardShortcutsDialogAction : IActionHandler
 		};
 
 		Gtk.Notebook notebook = Gtk.Notebook.New ();
+		Gtk.ListBox searchResults = MakeSearchableList (Query, searchByKey: true);
+		searchResults.Visible = false;
+		searchResults.Vexpand = true;
+		searchResults.Hexpand = true;
 
 		notebook.AppendPage (
-			BuildToolsPage (states, refreshers, searchableLists, Query),
+			BuildToolsPage (states, refreshers, searchableLists, Query, searchResults),
 			Gtk.Label.New (Translations.GetString ("Tools")));
 
 		notebook.AppendPage (
-			BuildToolBindingsPage (states, refreshers, searchableLists, Query),
+			BuildToolBindingsPage (states, refreshers, searchableLists, Query, searchResults),
 			Gtk.Label.New (Translations.GetString ("Tool Specific")));
 
-		notebook.AppendPage (BuildCommandsPage (GetCommands (actions.Layers), states, refreshers, searchableLists, Query), Gtk.Label.New (Translations.GetString ("Layers")));
-		notebook.AppendPage (BuildCommandsPage (GetCommands (actions.File), states, refreshers, searchableLists, Query), Gtk.Label.New (Translations.GetString ("File")));
-		notebook.AppendPage (BuildCommandsPage (GetCommands (actions.Edit), states, refreshers, searchableLists, Query), Gtk.Label.New (Translations.GetString ("Edit")));
-		notebook.AppendPage (BuildCommandsPage (GetCommands (actions.View), states, refreshers, searchableLists, Query), Gtk.Label.New (Translations.GetString ("View")));
-		notebook.AppendPage (BuildCommandsPage (GetCommands (actions.Image), states, refreshers, searchableLists, Query), Gtk.Label.New (Translations.GetString ("Image")));
-		notebook.AppendPage (BuildCommandsPage (actions.Adjustments.Actions, states, refreshers, searchableLists, Query), Gtk.Label.New (Translations.GetString ("Adjustments")));
-		notebook.AppendPage (BuildCommandsPage (actions.Effects.Actions, states, refreshers, searchableLists, Query), Gtk.Label.New (Translations.GetString ("Effects")));
-		notebook.AppendPage (BuildCommandsPage (GetCommands (actions.Window), states, refreshers, searchableLists, Query), Gtk.Label.New (Translations.GetString ("Window")));
-		notebook.AppendPage (BuildCommandsPage (GetCommands (actions.Help), states, refreshers, searchableLists, Query), Gtk.Label.New (Translations.GetString ("Help")));
+		notebook.AppendPage (BuildCommandsPage (GetCommands (actions.Layers), states, refreshers, searchableLists, Query, searchResults), Gtk.Label.New (Translations.GetString ("Layers")));
+		notebook.AppendPage (BuildCommandsPage (GetCommands (actions.File), states, refreshers, searchableLists, Query, searchResults), Gtk.Label.New (Translations.GetString ("File")));
+		notebook.AppendPage (BuildCommandsPage (GetCommands (actions.Edit), states, refreshers, searchableLists, Query, searchResults), Gtk.Label.New (Translations.GetString ("Edit")));
+		notebook.AppendPage (BuildCommandsPage (GetCommands (actions.View), states, refreshers, searchableLists, Query, searchResults), Gtk.Label.New (Translations.GetString ("View")));
+		notebook.AppendPage (BuildCommandsPage (GetCommands (actions.Image), states, refreshers, searchableLists, Query, searchResults), Gtk.Label.New (Translations.GetString ("Image")));
+		notebook.AppendPage (BuildCommandsPage (actions.Adjustments.Actions, states, refreshers, searchableLists, Query, searchResults), Gtk.Label.New (Translations.GetString ("Adjustments")));
+		notebook.AppendPage (BuildCommandsPage (actions.Effects.Actions, states, refreshers, searchableLists, Query, searchResults), Gtk.Label.New (Translations.GetString ("Effects")));
+		notebook.AppendPage (BuildCommandsPage (GetCommands (actions.Window), states, refreshers, searchableLists, Query, searchResults), Gtk.Label.New (Translations.GetString ("Window")));
+		notebook.AppendPage (BuildCommandsPage (GetCommands (actions.Help), states, refreshers, searchableLists, Query, searchResults), Gtk.Label.New (Translations.GetString ("Help")));
 
 		notebook.Vexpand = true;
 		notebook.Hexpand = true;
@@ -153,6 +182,14 @@ internal sealed class KeyboardShortcutsDialogAction : IActionHandler
 		Gtk.Box content = Gtk.Box.New (Gtk.Orientation.Vertical, 0);
 		content.Append (searchEntry);
 		content.Append (notebook);
+		content.Append (searchResults);
+		searchEntry.OnSearchChanged += (_, _) => {
+			bool searching = !string.IsNullOrWhiteSpace (Query ());
+			notebook.Visible = !searching;
+			searchResults.Visible = searching;
+			if (searching)
+				searchResults.InvalidateFilter ();
+		};
 		window.SetChild (content);
 
 		RefreshDuplicates (states);
@@ -168,7 +205,7 @@ internal sealed class KeyboardShortcutsDialogAction : IActionHandler
 			.Where (c => c != null && !string.IsNullOrEmpty (c.Label));
 	}
 
-	private Gtk.Widget BuildCommandsPage (IEnumerable<Command> commands, List<ShortcutRowState> states, List<Action> refreshers, List<Gtk.ListBox> searchableLists, Func<string> query)
+	private Gtk.Widget BuildCommandsPage (IEnumerable<Command> commands, List<ShortcutRowState> states, List<Action> refreshers, List<Gtk.ListBox> searchableLists, Func<string> query, Gtk.ListBox searchResults)
 	{
 		Gtk.ListBox list = MakeSearchableList (query);
 
@@ -188,13 +225,14 @@ internal sealed class KeyboardShortcutsDialogAction : IActionHandler
 				ShortcutCategory.Command);
 			states.Add (state);
 			list.Append (BuildRow (state, () => RefreshDuplicates (states), refreshers));
+			searchResults.Append (BuildRow (state, () => RefreshDuplicates (states), refreshers));
 		}
 
 		searchableLists.Add (list);
 		return Wrap (list);
 	}
 
-	private Gtk.Widget BuildToolsPage (List<ShortcutRowState> states, List<Action> refreshers, List<Gtk.ListBox> searchableLists, Func<string> query)
+	private Gtk.Widget BuildToolsPage (List<ShortcutRowState> states, List<Action> refreshers, List<Gtk.ListBox> searchableLists, Func<string> query, Gtk.ListBox searchResults)
 	{
 		Gtk.ListBox list = MakeSearchableList (query);
 
@@ -213,13 +251,14 @@ internal sealed class KeyboardShortcutsDialogAction : IActionHandler
 				ShortcutCategory.Tool);
 			states.Add (state);
 			list.Append (BuildRow (state, () => RefreshDuplicates (states), refreshers));
+			searchResults.Append (BuildRow (state, () => RefreshDuplicates (states), refreshers));
 		}
 
 		searchableLists.Add (list);
 		return Wrap (list);
 	}
 
-	private Gtk.Widget BuildToolBindingsPage (List<ShortcutRowState> states, List<Action> refreshers, List<Gtk.ListBox> searchableLists, Func<string> query)
+	private Gtk.Widget BuildToolBindingsPage (List<ShortcutRowState> states, List<Action> refreshers, List<Gtk.ListBox> searchableLists, Func<string> query, Gtk.ListBox searchResults)
 	{
 		Gtk.ListBox list = MakeSearchableList (query);
 
@@ -237,19 +276,21 @@ internal sealed class KeyboardShortcutsDialogAction : IActionHandler
 				ShortcutCategory.ToolBinding);
 			states.Add (state);
 			list.Append (BuildRow (state, () => RefreshDuplicates (states), refreshers));
+			searchResults.Append (BuildRow (state, () => RefreshDuplicates (states), refreshers));
 		}
 
 		searchableLists.Add (list);
 		return Wrap (list);
 	}
 
-	private static Gtk.ListBox MakeSearchableList (Func<string> query)
+	private static Gtk.ListBox MakeSearchableList (Func<string> query, bool searchByKey = false)
 	{
 		Gtk.ListBox list = Gtk.ListBox.New ();
 		list.SelectionMode = Gtk.SelectionMode.None;
 		list.SetFilterFunc (row =>
 			string.IsNullOrWhiteSpace (query ()) ||
-			(row.Name?.Contains (query (), StringComparison.OrdinalIgnoreCase) == true));
+			(row.Name?.Contains (query (), StringComparison.OrdinalIgnoreCase) == true ||
+				(searchByKey && MatchesShortcut (row.TooltipText, query ()))));
 		return list;
 	}
 
@@ -291,13 +332,12 @@ internal sealed class KeyboardShortcutsDialogAction : IActionHandler
 
 		Gtk.Button shortcutButton = Gtk.Button.New ();
 		shortcutButton.WidthRequest = 180;
+		Gtk.ListBoxRow listRow = Gtk.ListBoxRow.New ();
 
-		state.ShortcutButton = shortcutButton;
-		state.DuplicateMarker = duplicateMarker;
-		state.DuplicatePopover = duplicatePopover;
+		state.AddRow (shortcutButton, duplicateMarker, duplicatePopover);
 
-		AttachDuplicatePopover (duplicateMarker, state);
-		AttachDuplicatePopover (shortcutButton, state);
+		AttachDuplicatePopover (duplicateMarker, state, duplicatePopover);
+		AttachDuplicatePopover (shortcutButton, state, duplicatePopover);
 
 		bool listening = false;
 
@@ -305,9 +345,12 @@ internal sealed class KeyboardShortcutsDialogAction : IActionHandler
 		{
 			listening = false;
 			shortcutButton.Label = FormatAccel (state.Value);
+			listRow.Name = $"{state.Label} {state.Value} {FormatAccel (state.Value)}";
+			listRow.TooltipText = state.Value;
 			state.RefreshDuplicateState ();
 		}
 		Refresh ();
+		state.AddRefresher (Refresh);
 		refreshers.Add (Refresh);
 
 		Gtk.EventControllerKey capture = Gtk.EventControllerKey.New ();
@@ -316,7 +359,7 @@ internal sealed class KeyboardShortcutsDialogAction : IActionHandler
 				return false;
 
 			if (args.GetKey ().Value == Gdk.Constants.KEY_Escape) {
-				Refresh ();
+				state.RefreshRows ();
 				return true;
 			}
 
@@ -326,7 +369,7 @@ internal sealed class KeyboardShortcutsDialogAction : IActionHandler
 				return true;
 
 			state.Value = Gtk.Functions.AcceleratorName (args.Keyval, mods);
-			Refresh ();
+			state.RefreshRows ();
 			refreshDuplicates ();
 			return true;
 		};
@@ -343,27 +386,26 @@ internal sealed class KeyboardShortcutsDialogAction : IActionHandler
 		resetButton.TooltipText = Translations.GetString ("Reset to default");
 		resetButton.OnClicked += (_, _) => {
 			state.Value = state.DefaultValue;
-			Refresh ();
+			state.RefreshRows ();
 			refreshDuplicates ();
 		};
 
 		row.Append (shortcutButton);
 		row.Append (resetButton);
 
-		Gtk.ListBoxRow listRow = Gtk.ListBoxRow.New ();
 		listRow.Child = row;
-		listRow.Name = state.Label;
+		listRow.TooltipText = state.Value;
 		return listRow;
 	}
 
-	private static void AttachDuplicatePopover (Gtk.Widget widget, ShortcutRowState state)
+	private static void AttachDuplicatePopover (Gtk.Widget widget, ShortcutRowState state, Gtk.Popover popover)
 	{
 		Gtk.EventControllerMotion motion = Gtk.EventControllerMotion.New ();
 		motion.OnEnter += (_, _) => {
 			if (state.IsDuplicate)
-				state.DuplicatePopover?.Popup ();
+				popover.Popup ();
 		};
-		motion.OnLeave += (_, _) => state.DuplicatePopover?.Popdown ();
+		motion.OnLeave += (_, _) => popover.Popdown ();
 		widget.AddController (motion);
 	}
 
@@ -406,6 +448,8 @@ internal sealed class KeyboardShortcutsDialogAction : IActionHandler
 	{
 		private readonly IReadOnlyList<string> defaultValues;
 		private readonly Action<string, bool> apply;
+		private readonly List<(Gtk.Button button, Gtk.Label marker, Gtk.Popover popover)> rows = [];
+		private readonly List<Action> rowRefreshers = [];
 
 		public ShortcutRowState (string label, string value, IReadOnlyList<string> defaultValues, Action<string, bool> apply, ShortcutCategory category)
 		{
@@ -419,9 +463,6 @@ internal sealed class KeyboardShortcutsDialogAction : IActionHandler
 		public string Label { get; }
 		public string Value { get; set; }
 		public bool IsDuplicate { get; set; }
-		public Gtk.Button? ShortcutButton { get; set; }
-		public Gtk.Label? DuplicateMarker { get; set; }
-		public Gtk.Popover? DuplicatePopover { get; set; }
 		public ShortcutCategory Category { get; }
 
 		public string DefaultValue => defaultValues.Count > 0 ? defaultValues[0] : string.Empty;
@@ -432,18 +473,27 @@ internal sealed class KeyboardShortcutsDialogAction : IActionHandler
 		public void Apply (string value, bool isDefault)
 			=> apply (value, isDefault);
 
+		public void AddRow (Gtk.Button button, Gtk.Label marker, Gtk.Popover popover)
+			=> rows.Add ((button, marker, popover));
+
+		public void AddRefresher (Action refresh)
+			=> rowRefreshers.Add (refresh);
+
+		public void RefreshRows ()
+		{
+			foreach (var refresh in rowRefreshers)
+				refresh ();
+		}
+
 		public void RefreshDuplicateState ()
 		{
-			if (DuplicateMarker is not null)
-				DuplicateMarker.Visible = IsDuplicate;
-
-			if (ShortcutButton is null)
-				return;
-
-			if (IsDuplicate)
-				ShortcutButton.AddCssClass (AdwaitaStyles.Error);
-			else
-				ShortcutButton.RemoveCssClass (AdwaitaStyles.Error);
+			foreach (var row in rows) {
+				row.marker.Visible = IsDuplicate;
+				if (IsDuplicate)
+					row.button.AddCssClass (AdwaitaStyles.Error);
+				else
+					row.button.RemoveCssClass (AdwaitaStyles.Error);
+			}
 		}
 
 		private static bool AccelsEqual (string first, string second)

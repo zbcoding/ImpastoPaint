@@ -2352,6 +2352,58 @@ msgstr ""
 msgid "Shortcut keys:"
 msgstr ""
 
+#: ../Pinta.Core/Managers/KeyboardShortcutManager.cs:191
+msgid "Brush Tools"
+msgstr ""
+
+#: ../Pinta.Core/Managers/KeyboardShortcutManager.cs:194
+msgid "Decrease brush width"
+msgstr ""
+
+#: ../Pinta.Core/Managers/KeyboardShortcutManager.cs:200
+msgid "Increase brush width"
+msgstr ""
+
+#: ../Pinta/Actions/Help/KeyboardShortcutsDialogAction.cs:114
+msgid "Search by name or key with quotes like \"ctrl-A\""
+msgstr ""
+
+#: ../Pinta.Tools/Tools/BaseTransformTool.cs:832
+msgid "Nudge: Arrow keys"
+msgstr ""
+
+#: ../Pinta.Tools/Tools/BaseTransformTool.cs:833
+msgid "Nudge 10px: Shift+Arrow keys"
+msgstr ""
+
+#: ../Pinta.Tools/Tools/BaseTransformTool.cs:834
+msgid "Nudge 10% of canvas: Ctrl+Arrow keys"
+msgstr ""
+
+#: ../Pinta.Tools/Tools/BaseTransformTool.cs:835
+msgid "Nudge 20% of canvas: Ctrl+Shift+Arrow keys"
+msgstr ""
+
+#: ../Pinta.Tools/Tools/BaseTransformTool.cs:619
+msgid "Nudge {0}: {1}"
+msgstr ""
+
+#: ../Pinta.Tools/Tools/BaseTransformTool.cs:620
+msgid "Nudge {0} ({1}): {2}"
+msgstr ""
+
+#: ../Pinta.Core/Managers/KeyboardShortcutManager.cs:205
+msgid "General"
+msgstr ""
+
+#: ../Pinta.Core/Managers/KeyboardShortcutManager.cs:208
+msgid "Swap primary and secondary colors"
+msgstr ""
+
+#: ../Pinta.Core/Managers/KeyboardShortcutManager.cs:216
+msgid "Switch to document {0}"
+msgstr ""
+
 #: ../Pinta/Dialogs/CanvasGridSettingsDialog.cs:56
 msgid "Show Axonometric Grid"
 msgstr ""

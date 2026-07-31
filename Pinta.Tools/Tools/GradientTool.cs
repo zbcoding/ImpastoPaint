@@ -149,9 +149,11 @@ public sealed class GradientTool : BaseTool
 
 	protected override bool OnKeyDown (Document document, ToolKeyEventArgs e)
 	{
-		if (e.Key.Value == Gdk.Constants.KEY_Return) {
+		if (PintaCore.Shortcuts.GetToolBinding (KeyboardShortcutManager.GradientFinalize) == e.Gesture) {
 			Finalize (document);
+			return true;
 		}
+
 		return base.OnKeyDown (document, e);
 	}
 

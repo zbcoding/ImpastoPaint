@@ -924,6 +924,18 @@ public sealed class TextTool : BaseTool
 		ctrl_key = e.Key.IsControlKey ();
 		UpdateMouseCursor (document);
 
+		if (!is_editing) {
+			if (IsBinding (KeyboardShortcutManager.TextDecreaseFontSize, e)) {
+				font_size.Adjustment!.Value--;
+				return true;
+			}
+
+			if (IsBinding (KeyboardShortcutManager.TextIncreaseFontSize, e)) {
+				font_size.Adjustment!.Value++;
+				return true;
+			}
+		}
+
 		bool keyHandled = false;
 		if (is_editing) {
 			if (preedit_string is not null && e.Event is not null) {
@@ -936,41 +948,62 @@ public sealed class TextTool : BaseTool
 				// Assume that we are going to handle the key
 				keyHandled = true;
 
-				switch (e.Key.Value) {
+				if (TryHandleConfiguredBinding (document, e)) {
+					// The configured binding has already been handled.
+				} else {
+					switch (e.Key.Value) {
 					case Gdk.Constants.KEY_BackSpace:
+						if (!IsDefaultBinding (KeyboardShortcutManager.TextBackspace))
+							return false;
 						CurrentTextEngine.PerformBackspace (e.IsControlPressed);
 						break;
 
 					case Gdk.Constants.KEY_Delete:
+						if (!IsDefaultBinding (KeyboardShortcutManager.TextDelete))
+							return false;
 						CurrentTextEngine.PerformDelete ();
 						break;
 
 					case Gdk.Constants.KEY_KP_Enter:
 					case Gdk.Constants.KEY_Return:
+						if (!IsDefaultBinding (KeyboardShortcutManager.TextNewLine))
+							return false;
 						CurrentTextEngine.PerformEnter ();
 						break;
 
 					case Gdk.Constants.KEY_Left:
+						if (!IsDefaultBinding (KeyboardShortcutManager.TextMoveLeft))
+							return false;
 						CurrentTextEngine.PerformLeft (e.IsControlPressed, e.IsShiftPressed);
 						break;
 
 					case Gdk.Constants.KEY_Right:
+						if (!IsDefaultBinding (KeyboardShortcutManager.TextMoveRight))
+							return false;
 						CurrentTextEngine.PerformRight (e.IsControlPressed, e.IsShiftPressed);
 						break;
 
 					case Gdk.Constants.KEY_Up:
+						if (!IsDefaultBinding (KeyboardShortcutManager.TextMoveUp))
+							return false;
 						CurrentTextEngine.PerformUp (e.IsShiftPressed);
 						break;
 
 					case Gdk.Constants.KEY_Down:
+						if (!IsDefaultBinding (KeyboardShortcutManager.TextMoveDown))
+							return false;
 						CurrentTextEngine.PerformDown (e.IsShiftPressed);
 						break;
 
 					case Gdk.Constants.KEY_Home:
+						if (!IsDefaultBinding (KeyboardShortcutManager.TextMoveHome))
+							return false;
 						CurrentTextEngine.PerformHome (e.IsControlPressed, e.IsShiftPressed);
 						break;
 
 					case Gdk.Constants.KEY_End:
+						if (!IsDefaultBinding (KeyboardShortcutManager.TextMoveEnd))
+							return false;
 						CurrentTextEngine.PerformEnd (e.IsControlPressed, e.IsShiftPressed);
 						break;
 
@@ -979,9 +1012,14 @@ public sealed class TextTool : BaseTool
 						break;
 
 					case Gdk.Constants.KEY_Escape:
+						if (!IsDefaultBinding (KeyboardShortcutManager.TextStopEditing))
+							return false;
 						StopEditing (false);
 						return true;
 					case Gdk.Constants.KEY_Insert:
+						if ((e.IsShiftPressed && !IsDefaultBinding (KeyboardShortcutManager.TextPaste)) ||
+							(e.IsControlPressed && !IsDefaultBinding (KeyboardShortcutManager.TextCopy)))
+							return false;
 						if (e.IsShiftPressed) {
 							CurrentTextEngine.PerformPaste (GdkExtensions.GetDefaultClipboard ()).Wait ();
 						} else if (e.IsControlPressed) {
@@ -991,6 +1029,8 @@ public sealed class TextTool : BaseTool
 					default:
 						if (e.IsControlPressed) {
 							if (e.Key.Value == Gdk.Constants.KEY_z) {
+								if (!IsDefaultBinding (KeyboardShortcutManager.TextUndo))
+									return false;
 								//Ctrl + Z for undo while editing.
 								OnHandleUndo (document);
 
@@ -999,16 +1039,24 @@ public sealed class TextTool : BaseTool
 
 								return true;
 							} else if (e.Key.Value == Gdk.Constants.KEY_i) {
+								if (!IsDefaultBinding (KeyboardShortcutManager.TextItalic))
+									return false;
 								italic_btn.Toggle ();
 								UpdateFont ();
 							} else if (e.Key.Value == Gdk.Constants.KEY_b) {
+								if (!IsDefaultBinding (KeyboardShortcutManager.TextBold))
+									return false;
 								// If current font-weight is Bold (8) or bolder, set to Normal (5). Otherwise, set to Bold (8).
 								weight_btn.SelectedIndex = weight_btn.SelectedIndex > 7 ? 5 : 8;
 								UpdateFont ();
 							} else if (e.Key.Value == Gdk.Constants.KEY_u) {
+								if (!IsDefaultBinding (KeyboardShortcutManager.TextUnderline))
+									return false;
 								underscore_btn.Toggle ();
 								UpdateFont ();
 							} else if (e.Key.Value == Gdk.Constants.KEY_a) {
+								if (!IsDefaultBinding (KeyboardShortcutManager.TextSelectAll))
+									return false;
 								// Select all of the text.
 								CurrentTextEngine.PerformHome (true, false);
 								CurrentTextEngine.PerformEnd (true, true);
@@ -1022,6 +1070,7 @@ public sealed class TextTool : BaseTool
 						}
 
 						break;
+					}
 				}
 			}
 
@@ -1030,15 +1079,121 @@ public sealed class TextTool : BaseTool
 		} else {
 			switch (e.Key.Value) {
 				case Gdk.Constants.KEY_bracketleft:
+					if (!IsDefaultBinding (KeyboardShortcutManager.TextDecreaseFontSize))
+						return false;
 					font_size.Adjustment!.Value--;
 					return true;
 				case Gdk.Constants.KEY_bracketright:
+					if (!IsDefaultBinding (KeyboardShortcutManager.TextIncreaseFontSize))
+						return false;
 					font_size.Adjustment!.Value++;
 					return true;
 			}
 		}
 
 		return keyHandled;
+	}
+
+	private static bool IsBinding (ToolBindingDescriptor binding, ToolKeyEventArgs e)
+		=> PintaCore.Shortcuts.GetToolBinding (binding) == e.Gesture;
+
+	private static bool IsDefaultBinding (ToolBindingDescriptor binding)
+		=> PintaCore.Shortcuts.GetToolBinding (binding) == binding.DefaultGesture;
+
+	private bool TryHandleConfiguredBinding (Document document, ToolKeyEventArgs e)
+	{
+		if (IsBinding (KeyboardShortcutManager.TextStopEditing, e)) {
+			StopEditing (false);
+			return true;
+		}
+
+		if (IsBinding (KeyboardShortcutManager.TextNewLine, e)) {
+			CurrentTextEngine.PerformEnter ();
+			return true;
+		}
+
+		if (IsBinding (KeyboardShortcutManager.TextBackspace, e)) {
+			CurrentTextEngine.PerformBackspace (false);
+			return true;
+		}
+
+		if (IsBinding (KeyboardShortcutManager.TextDelete, e)) {
+			CurrentTextEngine.PerformDelete ();
+			return true;
+		}
+
+		if (IsBinding (KeyboardShortcutManager.TextMoveLeft, e)) {
+			CurrentTextEngine.PerformLeft (false, false);
+			return true;
+		}
+
+		if (IsBinding (KeyboardShortcutManager.TextMoveRight, e)) {
+			CurrentTextEngine.PerformRight (false, false);
+			return true;
+		}
+
+		if (IsBinding (KeyboardShortcutManager.TextMoveUp, e)) {
+			CurrentTextEngine.PerformUp (false);
+			return true;
+		}
+
+		if (IsBinding (KeyboardShortcutManager.TextMoveDown, e)) {
+			CurrentTextEngine.PerformDown (false);
+			return true;
+		}
+
+		if (IsBinding (KeyboardShortcutManager.TextMoveHome, e)) {
+			CurrentTextEngine.PerformHome (false, false);
+			return true;
+		}
+
+		if (IsBinding (KeyboardShortcutManager.TextMoveEnd, e)) {
+			CurrentTextEngine.PerformEnd (false, false);
+			return true;
+		}
+
+		if (IsBinding (KeyboardShortcutManager.TextUndo, e)) {
+			OnHandleUndo (document);
+			if (workspace.ActiveDocument.History.CanUndo)
+				workspace.ActiveDocument.History.Undo ();
+			return true;
+		}
+
+		if (IsBinding (KeyboardShortcutManager.TextItalic, e)) {
+			italic_btn.Toggle ();
+			UpdateFont ();
+			return true;
+		}
+
+		if (IsBinding (KeyboardShortcutManager.TextBold, e)) {
+			weight_btn.SelectedIndex = weight_btn.SelectedIndex > 7 ? 5 : 8;
+			UpdateFont ();
+			return true;
+		}
+
+		if (IsBinding (KeyboardShortcutManager.TextUnderline, e)) {
+			underscore_btn.Toggle ();
+			UpdateFont ();
+			return true;
+		}
+
+		if (IsBinding (KeyboardShortcutManager.TextSelectAll, e)) {
+			CurrentTextEngine.PerformHome (true, false);
+			CurrentTextEngine.PerformEnd (true, true);
+			return true;
+		}
+
+		if (IsBinding (KeyboardShortcutManager.TextPaste, e)) {
+			CurrentTextEngine.PerformPaste (GdkExtensions.GetDefaultClipboard ()).Wait ();
+			return true;
+		}
+
+		if (IsBinding (KeyboardShortcutManager.TextCopy, e)) {
+			CurrentTextEngine.PerformCopy (GdkExtensions.GetDefaultClipboard ());
+			return true;
+		}
+
+		return false;
 	}
 
 	protected override bool OnKeyUp (Document document, ToolKeyEventArgs e)

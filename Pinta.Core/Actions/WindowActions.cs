@@ -37,6 +37,7 @@ public sealed class WindowActions
 	public Command CloseAll { get; }
 
 	private readonly WorkspaceManager workspace;
+	private Gtk.Application? application;
 	public WindowActions (WorkspaceManager workspace)
 	{
 		SaveAll = new Command (
@@ -81,6 +82,8 @@ public sealed class WindowActions
 		Gtk.Application app,
 		Gio.Menu menu)
 	{
+		application = app;
+		PintaCore.Shortcuts.ShortcutsChanged += (_, _) => UpdateDocumentAccelerators ();
 		menu.AppendItem (SaveAll.CreateMenuItem ());
 		menu.AppendItem (CloseAll.CreateMenuItem ());
 
@@ -93,9 +96,28 @@ public sealed class WindowActions
 
 		app.AddAction (active_doc_action);
 
-		// Assign accelerators up to Alt-9 for the active documents.
-		for (int i = 0; i < 9; ++i)
-			app.SetAccelsForAction (BuildActionId (i), [$"<Alt>{i + 1}"]);
+		UpdateDocumentAccelerators ();
+	}
+
+	private void UpdateDocumentAccelerators ()
+	{
+		if (application is null)
+			return;
+
+		ToolBindingDescriptor[] bindings = [
+			KeyboardShortcutManager.SwitchDocument1,
+			KeyboardShortcutManager.SwitchDocument2,
+			KeyboardShortcutManager.SwitchDocument3,
+			KeyboardShortcutManager.SwitchDocument4,
+			KeyboardShortcutManager.SwitchDocument5,
+			KeyboardShortcutManager.SwitchDocument6,
+			KeyboardShortcutManager.SwitchDocument7,
+			KeyboardShortcutManager.SwitchDocument8,
+			KeyboardShortcutManager.SwitchDocument9,
+		];
+
+		for (int i = 0; i < bindings.Length; ++i)
+			application.SetAccelsForAction (BuildActionId (i), [PintaCore.Shortcuts.GetToolBinding (bindings[i]).ToAcceleratorName ()]);
 	}
 
 	private void AddDocumentMenuItem (int idx)

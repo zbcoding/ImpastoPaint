@@ -1,5 +1,5 @@
 //
-// JpegCompressionDialog.cs
+// QualityDialog.cs
 //
 // Author:
 //       Maia Kozheva <sikon@ubuntu.com>
@@ -30,7 +30,7 @@ using Pinta.Core;
 namespace Pinta;
 
 [GObject.Subclass<Gtk.Dialog>]
-public sealed partial class JpegCompressionDialog
+public sealed partial class QualityDialog
 {
 	private Gtk.Scale compression_level;
 
@@ -45,7 +45,7 @@ public sealed partial class JpegCompressionDialog
 
 		// --- Initialization (Gtk.Window)
 
-		Title = Translations.GetString ("JPEG Quality");
+		Title = Translations.GetString ("Image Quality");
 		Modal = true;
 
 		// --- Initialization (Gtk.Dialog)
@@ -65,9 +65,9 @@ public sealed partial class JpegCompressionDialog
 		compression_level = levelScale;
 	}
 
-	public static JpegCompressionDialog New (int defaultQuality, Gtk.Window parent)
+	public static QualityDialog New (int defaultQuality, Gtk.Window parent)
 	{
-		JpegCompressionDialog dialog = NewWithProperties ([]);
+		QualityDialog dialog = NewWithProperties ([]);
 		dialog.compression_level.SetValue (defaultQuality);
 		dialog.TransientFor = parent;
 		return dialog;

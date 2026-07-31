@@ -5,6 +5,14 @@
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
 #, fuzzy
+# PO translation metadata:
+# Translations must include a descriptive translator note.
+# AI-generated translations are tagged.
+# Required entry order:
+#   #. Translators: Describe what this string does for translators.
+#   #. AI-generated translation; human review requested.
+#   msgid "..."
+#   msgstr "..."
 msgid ""
 msgstr ""
 "Project-Id-Version: pinta\n"
@@ -3062,24 +3070,38 @@ msgstr "Palette {0} ({1})"
 msgid "{0}%"
 msgstr "{0} %"
 
+#. Translators: This mode shows every contextual popover hint in the UI.
+#. AI-generated translation; human review requested.
 msgid "All"
 msgstr "Toutes"
 
+#. Translators: This mode shows only contextual hints tied to a specific tool.
+#. AI-generated translation; human review requested.
 msgid "Essential"
 msgstr "Essentielles"
 
+#. Translators: This mode disables contextual popover hints in the UI.
+#. AI-generated translation; human review requested.
 msgid "None"
 msgstr "Aucune"
 
+#. Translators: Tooltip explaining the All popover-hint mode.
+#. AI-generated translation; human review requested.
 msgid "Show all UI popover hints."
 msgstr "Afficher toutes les infobulles de l’interface."
 
+#. Translators: Tooltip explaining the Essential popover-hint mode.
+#. AI-generated translation; human review requested.
 msgid "Show only essential tool hints."
 msgstr "Afficher uniquement les infobulles essentielles des outils."
 
+#. Translators: Tooltip explaining the None popover-hint mode.
+#. AI-generated translation; human review requested.
 msgid "Hide all UI popover hints."
 msgstr "Masquer toutes les infobulles de l’interface."
 
+#. Translators: Describes the three available popover-hint display modes.
+#. AI-generated translation; human review requested.
 msgid ""
 "All: show all UI hints. Essential: show only specific tool hints. None: turn "
 "off UI popover hints."
@@ -3088,15 +3110,23 @@ msgstr ""
 "afficher uniquement les infobulles de certains outils. Aucune : désactiver "
 "les infobulles de l’interface."
 
+#. Translators: Label for the popover-hint mode setting.
+#. AI-generated translation; human review requested.
 msgid "Popover hints:"
 msgstr "Infobulles :"
 
+#. Translators: Preferences tab containing user-interface settings.
+#. AI-generated translation; human review requested.
 msgid "UI"
 msgstr "Interface"
 
+#. Translators: Confirmation title shown before resetting UI preferences.
+#. AI-generated translation; human review requested.
 msgid "Reset UI Settings?"
 msgstr "Réinitialiser les paramètres de l’interface ?"
 
+#. Translators: Explains that resetting UI preferences restores all popover hints.
+#. AI-generated translation; human review requested.
 msgid "This resets popover hints to show all UI hints."
 msgstr ""
 "Cela réinitialise les infobulles afin d’afficher toutes les infobulles de "

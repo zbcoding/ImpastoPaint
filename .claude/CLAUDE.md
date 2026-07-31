@@ -228,6 +228,8 @@ Impasto must stay rebasable against upstream Pinta: `git fetch upstream && git r
 - Translation files are in `po/` (gettext format)
 - New strings must be added to `po/POTFILES.in` via `make updatepotfiles`
 - Run `make updatepot` to regenerate the translation template
+- AI-generated translations must be marked in each PO entry with `#. AI-generated translation; human review requested.`
+- Add a descriptive `#. Translators: ...` note immediately above the AI-generated marker, so the entry reads `Translators` note, then AI-generated marker, then `msgid`/`msgstr`
 
 ## Completed Features (This Fork)
 

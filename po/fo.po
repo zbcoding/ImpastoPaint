@@ -5,6 +5,14 @@
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2010.
 # Gunleif Joensen <gunleif@gmail.com>, 2010.
 #, fuzzy
+# PO translation metadata:
+# Translations must include a descriptive translator note.
+# AI-generated translations are tagged.
+# Required entry order:
+#   #. Translators: Describe what this string does for translators.
+#   #. AI-generated translation; human review requested.
+#   msgid "..."
+#   msgstr "..."
 msgid ""
 msgstr ""
 "Project-Id-Version: pinta\n"
@@ -2948,24 +2956,38 @@ msgstr ""
 msgid "{0}%"
 msgstr ""
 
+#. Translators: This mode shows every contextual popover hint in the UI.
+#. AI-generated translation; human review requested.
 msgid "All"
 msgstr "Øll"
 
+#. Translators: This mode shows only contextual hints tied to a specific tool.
+#. AI-generated translation; human review requested.
 msgid "Essential"
 msgstr "Týðandi"
 
+#. Translators: This mode disables contextual popover hints in the UI.
+#. AI-generated translation; human review requested.
 msgid "None"
 msgstr "Einki"
 
+#. Translators: Tooltip explaining the All popover-hint mode.
+#. AI-generated translation; human review requested.
 msgid "Show all UI popover hints."
 msgstr "Vís øll sprettihjálpini í brúkaramótinum."
 
+#. Translators: Tooltip explaining the Essential popover-hint mode.
+#. AI-generated translation; human review requested.
 msgid "Show only essential tool hints."
 msgstr "Vís bara týðandi amboðshjálp."
 
+#. Translators: Tooltip explaining the None popover-hint mode.
+#. AI-generated translation; human review requested.
 msgid "Hide all UI popover hints."
 msgstr "Fjal allar sprettihjálpir í brúkaramótinum."
 
+#. Translators: Describes the three available popover-hint display modes.
+#. AI-generated translation; human review requested.
 msgid ""
 "All: show all UI hints. Essential: show only specific tool hints. None: turn "
 "off UI popover hints."
@@ -2973,15 +2995,23 @@ msgstr ""
 "Øll: vís allar hjálpir í brúkaramótinum. Týðandi: vís bara hjálpir til ávís "
 "amboð. Einki: sløkk sprettihjálpina í brúkaramótinum."
 
+#. Translators: Label for the popover-hint mode setting.
+#. AI-generated translation; human review requested.
 msgid "Popover hints:"
 msgstr "Sprettihjálp:"
 
+#. Translators: Preferences tab containing user-interface settings.
+#. AI-generated translation; human review requested.
 msgid "UI"
 msgstr "Brúkaramót"
 
+#. Translators: Confirmation title shown before resetting UI preferences.
+#. AI-generated translation; human review requested.
 msgid "Reset UI Settings?"
 msgstr "Endurstovna stillingarnar í brúkaramótinum?"
 
+#. Translators: Explains that resetting UI preferences restores all popover hints.
+#. AI-generated translation; human review requested.
 msgid "This resets popover hints to show all UI hints."
 msgstr ""
 "Hetta endursetur sprettihjálpina, so allar hjálpir í brúkaramótinum verða "

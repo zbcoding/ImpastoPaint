@@ -5,6 +5,14 @@
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2010.
 #
 #, fuzzy
+# PO translation metadata:
+# Translations must include a descriptive translator note.
+# AI-generated translations are tagged.
+# Required entry order:
+#   #. Translators: Describe what this string does for translators.
+#   #. AI-generated translation; human review requested.
+#   msgid "..."
+#   msgstr "..."
 msgid ""
 msgstr ""
 "Project-Id-Version: pinta\n"
@@ -2960,24 +2968,38 @@ msgstr "{0} パレット ({1})"
 msgid "{0}%"
 msgstr "{0}%"
 
+#. Translators: This mode shows every contextual popover hint in the UI.
+#. AI-generated translation; human review requested.
 msgid "All"
 msgstr "すべて"
 
+#. Translators: This mode shows only contextual hints tied to a specific tool.
+#. AI-generated translation; human review requested.
 msgid "Essential"
 msgstr "必須"
 
+#. Translators: This mode disables contextual popover hints in the UI.
+#. AI-generated translation; human review requested.
 msgid "None"
 msgstr "なし"
 
+#. Translators: Tooltip explaining the All popover-hint mode.
+#. AI-generated translation; human review requested.
 msgid "Show all UI popover hints."
 msgstr "UI のポップオーバーヒントをすべて表示します。"
 
+#. Translators: Tooltip explaining the Essential popover-hint mode.
+#. AI-generated translation; human review requested.
 msgid "Show only essential tool hints."
 msgstr "必須のツールヒントのみ表示します。"
 
+#. Translators: Tooltip explaining the None popover-hint mode.
+#. AI-generated translation; human review requested.
 msgid "Hide all UI popover hints."
 msgstr "UI のポップオーバーヒントをすべて非表示にします。"
 
+#. Translators: Describes the three available popover-hint display modes.
+#. AI-generated translation; human review requested.
 msgid ""
 "All: show all UI hints. Essential: show only specific tool hints. None: turn "
 "off UI popover hints."
@@ -2985,15 +3007,23 @@ msgstr ""
 "すべて: すべての UI ヒントを表示。必須: 特定のツールヒントのみ表示。なし: UI "
 "ポップオーバーヒントを無効化。"
 
+#. Translators: Label for the popover-hint mode setting.
+#. AI-generated translation; human review requested.
 msgid "Popover hints:"
 msgstr "ポップオーバーヒント:"
 
+#. Translators: Preferences tab containing user-interface settings.
+#. AI-generated translation; human review requested.
 msgid "UI"
 msgstr "UI"
 
+#. Translators: Confirmation title shown before resetting UI preferences.
+#. AI-generated translation; human review requested.
 msgid "Reset UI Settings?"
 msgstr "UI 設定をリセットしますか？"
 
+#. Translators: Explains that resetting UI preferences restores all popover hints.
+#. AI-generated translation; human review requested.
 msgid "This resets popover hints to show all UI hints."
 msgstr "ポップオーバーヒントをリセットし、すべての UI ヒントを表示します。"
 

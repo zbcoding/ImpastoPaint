@@ -185,43 +185,50 @@ public sealed class TextTool : BaseTool
 				// Translators: 'Normal' refers to the font-variant text property
 				Translations.GetString ("Normal"),
 				Pinta.Resources.Icons.TextVariantNormal,
-				Pango.Variant.Normal
+				Pango.Variant.Normal,
+				Translations.GetString ("Regular upper and lower case letters.")
 			);
 			variant_btn.AddItem (
 				// Translators: 'Small Caps' refers to the font-variant text property
 				Translations.GetString ("Small Caps"),
 				Pinta.Resources.Icons.TextVariantSmallCaps,
-				Pango.Variant.SmallCaps
+				Pango.Variant.SmallCaps,
+				Translations.GetString ("Lower case letters are replaced with smaller capital letters.")
 			);
 			variant_btn.AddItem (
 				// Translators: 'All Small Caps' refers to the font-variant text property
 				Translations.GetString ("All Small Caps"),
 				Pinta.Resources.Icons.TextVariantAllSmallCaps,
-				Pango.Variant.AllSmallCaps
+				Pango.Variant.AllSmallCaps,
+				Translations.GetString ("Both upper and lower case letters are replaced with smaller capital letters.")
 			);
 			variant_btn.AddItem (
 				// Translators: 'Petite Caps' refers to the font-variant text property
 				Translations.GetString ("Petite Caps"),
 				Pinta.Resources.Icons.TextVariantPetiteCaps,
-				Pango.Variant.PetiteCaps
+				Pango.Variant.PetiteCaps,
+				Translations.GetString ("Like Small Caps, but the substituted capitals are slightly smaller.")
 			);
 			variant_btn.AddItem (
 				// Translators: 'All Petite Caps' refers to the font-variant text property
 				Translations.GetString ("All Petite Caps"),
 				Pinta.Resources.Icons.TextVariantAllPetiteCaps,
-				Pango.Variant.AllPetiteCaps
+				Pango.Variant.AllPetiteCaps,
+				Translations.GetString ("Like All Small Caps, but the substituted capitals are slightly smaller.")
 			);
 			variant_btn.AddItem (
 				// Translators: 'Unicase' refers to the font-variant text property
 				Translations.GetString ("Unicase"),
 				Pinta.Resources.Icons.TextVariantUnicase,
-				Pango.Variant.Unicase
+				Pango.Variant.Unicase,
+				Translations.GetString ("Mixes small capital letters for upper case with normal lower case letters.")
 			);
 			variant_btn.AddItem (
 				// Translators: 'Title Caps' refers to the font-variant text property
 				Translations.GetString ("Title Caps"),
 				Pinta.Resources.Icons.TextVariantTitleCaps,
-				Pango.Variant.Normal
+				Pango.Variant.Normal,
+				Translations.GetString ("Uses title-specific capital letter forms where available.")
 			);
 
 			variant_btn.SelectedIndex = Settings.GetSetting (SettingNames.TEXT_VARIANT, 0);
@@ -238,11 +245,8 @@ public sealed class TextTool : BaseTool
 				lower: 1, upper: 2000, stepIncrement: 1, pageIncrement: 0, pageSize: 0);
 
 			font_size = Gtk.SpinButton.New (fontSizeAdjustment, climbRate: 0.0, digits: 0);
-			font_size.TooltipText = Translations.GetString ("Change font size. Shortcut keys: [ ]");
-			font_size.TooltipText = Translations.GetString ("Change font size.") + "\n"
-				   + "\n" + Translations.GetString ("Shortcut keys:")
-				   + "\n" + Translations.GetString ("Press {0} to decrease font size", "\"[\"")
-				   + "\n" + Translations.GetString ("Press {0} to increase font size", "\"]\"");
+			UpdateFontSizeTooltip ();
+			PintaCore.Shortcuts.ShortcutsChanged += (_, _) => UpdateFontSizeTooltip ();
 			font_size.OnValueChanged += HandleFontSizeChanged;
 		}
 
@@ -405,10 +409,10 @@ public sealed class TextTool : BaseTool
 		if (fill_button == null) {
 			fill_button = ToolBarDropDownButton.New ();
 
-			fill_button.AddItem (Translations.GetString ("Normal"), Pinta.Resources.Icons.FillStyleFill, 0);
-			fill_button.AddItem (Translations.GetString ("Normal and Outline"), Pinta.Resources.Icons.FillStyleOutlineFill, 1);
-			fill_button.AddItem (Translations.GetString ("Outline"), Pinta.Resources.Icons.FillStyleOutline, 2);
-			fill_button.AddItem (Translations.GetString ("Fill Background"), Pinta.Resources.Icons.FillStyleBackground, 3);
+			fill_button.AddItem (Translations.GetString ("Normal"), Pinta.Resources.Icons.FillStyleFill, 0, Translations.GetString ("Fill the text with the primary color."));
+			fill_button.AddItem (Translations.GetString ("Normal and Outline"), Pinta.Resources.Icons.FillStyleOutlineFill, 1, Translations.GetString ("Fill the text with the primary color and outline it with the secondary color."));
+			fill_button.AddItem (Translations.GetString ("Outline"), Pinta.Resources.Icons.FillStyleOutline, 2, Translations.GetString ("Draw only the outline of the text, using the secondary color."));
+			fill_button.AddItem (Translations.GetString ("Fill Background"), Pinta.Resources.Icons.FillStyleBackground, 3, Translations.GetString ("Fill the text's bounding box with the secondary color, behind the text."));
 
 			fill_button.SelectedIndex = Settings.GetSetting (SettingNames.TEXT_STYLE, 0);
 			fill_button.SelectedItemChanged += HandleFillButtonToggled;
@@ -433,6 +437,7 @@ public sealed class TextTool : BaseTool
 				1e5,
 				1,
 				Settings.GetSetting (SettingNames.TEXT_OUTLINE_WIDTH, 2));
+			outline_width.TooltipText = Translations.GetString ("Thickness of the text outline, in pixels.");
 			outline_width.OnValueChanged += (_, __) => HandleFontChanged ();
 		}
 
@@ -449,19 +454,22 @@ public sealed class TextTool : BaseTool
 				// Translators: 'Miter Join' refers to the Cairo.LineJoin property
 				Translations.GetString ("Miter Join"),
 				Pinta.Resources.Icons.JoinMiter,
-				Cairo.LineJoin.Miter
+				Cairo.LineJoin.Miter,
+				Translations.GetString ("Sharp, pointed corners on the outline.")
 			);
 			join_btn.AddItem (
 				// Translators: 'Round Join' refers to the Cairo.LineJoin property
 				Translations.GetString ("Round Join"),
 				Pinta.Resources.Icons.JoinRound,
-				Cairo.LineJoin.Round
+				Cairo.LineJoin.Round,
+				Translations.GetString ("Rounded corners on the outline.")
 			);
 			join_btn.AddItem (
 				// Translators: 'Bevel Join' refers to the Cairo.LineJoin property
 				Translations.GetString ("Bevel Join"),
 				Pinta.Resources.Icons.JoinBevel,
-				Cairo.LineJoin.Bevel
+				Cairo.LineJoin.Bevel,
+				Translations.GetString ("Flattened, squared-off corners on the outline.")
 			);
 
 			join_btn.SelectedIndex = Settings.GetSetting (SettingNames.TEXT_JOIN, 0);
@@ -483,10 +491,15 @@ public sealed class TextTool : BaseTool
 		tb.Append (confirm_sep);
 
 		if (confirm_btn == null) {
+			KeyGesture stopEditing = PintaCore.Shortcuts.GetToolBinding (KeyboardShortcutManager.TextStopEditing);
 			confirm_btn = GtkExtensions.CreateConfirmToolBarButton (
-				Translations.GetString ("Finish typing (Esc)"));
+				Translations.GetString ("Finish typing ({0})", stopEditing.ToLabel ()));
 
 			confirm_btn.OnClicked += (_, _) => CommitCurrentText ();
+			PintaCore.Shortcuts.ShortcutsChanged += (_, _) => {
+				confirm_btn.TooltipText = Translations.GetString ("Finish typing ({0})",
+					PintaCore.Shortcuts.GetToolBinding (KeyboardShortcutManager.TextStopEditing).ToLabel ());
+			};
 		}
 
 		tb.Append (confirm_btn);
@@ -501,6 +514,17 @@ public sealed class TextTool : BaseTool
 			return;
 
 		confirm_btn.Visible = confirm_sep.Visible = is_editing;
+	}
+
+	private void UpdateFontSizeTooltip ()
+	{
+		KeyGesture decrease = PintaCore.Shortcuts.GetToolBinding (KeyboardShortcutManager.TextDecreaseFontSize);
+		KeyGesture increase = PintaCore.Shortcuts.GetToolBinding (KeyboardShortcutManager.TextIncreaseFontSize);
+
+		font_size.TooltipText = Translations.GetString ("Change font size.") + "\n"
+			   + "\n" + Translations.GetString ("Shortcut keys:")
+			   + "\n" + Translations.GetString ("Press {0} to decrease font size", decrease.ToLabel ())
+			   + "\n" + Translations.GetString ("Press {0} to increase font size", increase.ToLabel ());
 	}
 
 	private void HandleFontSizeChanged (object? sender, EventArgs e)
@@ -1314,6 +1338,52 @@ public sealed class TextTool : BaseTool
 
 		//Update Text Engine to use current colors of color palette
 		UpdateTextEngineColor ();
+
+		//Show this object's own font/style in the toolbar, rather than whatever the
+		//toolbar last showed for a different object (or its defaults, for a brand new
+		//one). UpdateFont() feeds any of these controls back onto `obj` as it applies
+		//them, so this is a no-op for a freshly created object (whose font/style were
+		//already set from the toolbar just before StartEditing was called).
+		SyncToolbarFromObject (obj);
+	}
+
+	/// <summary>
+	/// Sets the toolbar's font and style controls from the given object's own stored
+	/// font, alignment, underline, fill style, outline width, and line join.
+	/// </summary>
+	private void SyncToolbarFromObject (TextObject obj)
+	{
+		TextEngine engine = obj.Engine;
+		Pango.FontDescription font = engine.Font;
+
+		font_button.FontDesc = font.Copy ()!;
+		font_size.Adjustment!.Value = PangoExtensions.UnitsToPixels (font.GetSize ());
+		variant_btn.SelectedIndex = IndexOfTag (variant_btn, font.GetVariant ());
+		weight_btn.SelectedIndex = IndexOfTag (weight_btn, font.GetWeight ());
+		italic_btn.Active = font.GetStyle () == Pango.Style.Italic;
+		underscore_btn.Active = engine.Underline;
+
+		left_alignment_btn.Active = engine.Alignment == TextAlignment.Left;
+		center_alignment_btn.Active = engine.Alignment == TextAlignment.Center;
+		right_alignment_btn.Active = engine.Alignment == TextAlignment.Right;
+
+		fill_button.SelectedIndex = obj.FillStyle;
+		outline_width.Adjustment!.Value = obj.OutlineWidth;
+		join_btn.SelectedIndex = IndexOfTag (join_btn, obj.LineJoin);
+
+		outline_width.Visible = outline_width_label.Visible = outline_sep.Visible = join_btn.Visible = join_sep.Visible = StrokeText;
+	}
+
+	/// <summary>
+	/// Finds the index of the item in a ToolBarDropDownButton whose tag equals the
+	/// given value, or 0 if none match.
+	/// </summary>
+	private static int IndexOfTag<T> (ToolBarDropDownButton button, T value)
+	{
+		for (int i = 0; i < button.Items.Count; i++)
+			if (Equals (button.Items[i].Tag, value))
+				return i;
+		return 0;
 	}
 
 	/// <summary>

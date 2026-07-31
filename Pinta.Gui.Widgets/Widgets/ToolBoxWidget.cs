@@ -133,11 +133,12 @@ public sealed partial class ToolBoxWidget
 
 	private void Configure (ToolManager tools)
 	{
+		this.tools = tools;
+
 		tools.ToolAdded += (_, e) => HandleToolAdded (e.Tool);
 		tools.ToolRemoved += (_, e) => HandleToolRemoved (e.Tool);
 		tools.ToolActivated += (_, e) => HandleToolActivated (e.Tool);
-
-		this.tools = tools;
+		PintaCore.Shortcuts.ShortcutsChanged += (_, _) => RefreshTooltips ();
 	}
 
 	internal static int SectionIndex (int priority)
@@ -152,18 +153,19 @@ public sealed partial class ToolBoxWidget
 	internal static int[]? StackDefinition (int priority)
 		=> stack_definitions.FirstOrDefault (s => s.Contains (priority));
 
-	private static string TooltipFor (BaseTool tool)
+	private string TooltipFor (BaseTool tool)
 	{
 		string shortcutText = "";
-		if (tool.ShortcutKey != Gdk.Key.Invalid) {
+		KeyGesture shortcut = tools.GetEffectiveShortcutKey (tool);
+		if (shortcut.IsValid) {
 			string shortcutLabel = Translations.GetString ("Shortcut key");
-			shortcutText = $"{shortcutLabel}: {tool.ShortcutKey.ToUpper ().Name ()}\n";
+			shortcutText = $"{shortcutLabel}: {shortcut.ToLabel ()}\n";
 		}
 
 		return $"{tool.Name}\n{shortcutText}\n{tool.StatusBarText}";
 	}
 
-	private static Gtk.ToggleButton CreateToolButton (BaseTool tool)
+	private Gtk.ToggleButton CreateToolButton (BaseTool tool)
 	{
 		Gtk.ToggleButton button = Gtk.ToggleButton.New ();
 		button.IconName = tool.Icon;
@@ -175,6 +177,17 @@ public sealed partial class ToolBoxWidget
 		button.TooltipText = TooltipFor (tool);
 
 		return button;
+	}
+
+	private void RefreshTooltips ()
+	{
+		// Stacked buttons have no tooltip; their flyout entries are rebuilt on demand.
+		foreach (var (tool, button) in tool_buttons)
+			if (StackDefinition (tool.Priority) is null)
+				button.TooltipText = TooltipFor (tool);
+
+		foreach (var (tool, button) in pinned_buttons)
+			button.TooltipText = TooltipFor (tool);
 	}
 
 	private void HandleToolAdded (BaseTool tool)

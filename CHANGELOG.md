@@ -68,6 +68,7 @@ Thanks to the following contributors who worked on this release:
 - Fixed errors when dragging and dropping files on macOS (#2170, #2124)
 - Fixed issues with overlay scrollbars intercepting clicks on selection handles (#2200, #2201)
 - Fixed occasional errors after reordering layers and later undoing (#2214, #2139)
+- The desktop file now includes the WebP MIME type, so WebP files can be opened from the file manager's right-click menu (#2185, reported by @Qronikarz, suggested fix by @cameronwhite)
 
 ## [3.1.2](https://github.com/PintaProject/Pinta/release/tag/3.1.2) - 2026/03/29
 

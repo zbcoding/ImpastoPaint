@@ -50,6 +50,7 @@ git fetch upstream && git rebase upstream/main
 | "More >>" opens the full colour picker | `MainWindow.cs` | **build only, never clicked** |
 | Canvas surround colour preference in Edit → Settings | `PreferencesDialog.cs`, `CanvasWindow.cs` | build only, **never run** |
 | Optional darker third row in the palette (48 colors), Edit → Settings → UI | `PaletteHelper.cs`, `PreferencesDialog.cs`, `PaletteWidget.cs` | build only, **never run** |
+| **Text as re-editable objects** — multiple per layer, ctrl-click to re-edit, right-drag to move, hover tooltip "Ctrl+Click to edit", saved in `.ora` sidecar | `TextTool.cs`, `TextObject.cs`, `TextHistoryItem.cs`, `OraFormat.cs`, `UserLayer.cs` | build + unit tests, app starts; **interactive text editing not hand-verified** |
 
 App ID is `com.github.zbcoding.Impasto`. Settings live in `~/.config/Impasto/settings.xml`
 so Impasto installs alongside Pinta rather than replacing it — the metainfo deliberately
@@ -64,6 +65,11 @@ full 4×3 grid.
 
 ## Known issues
 
+- **`.ora` per-layer previews drop text.** Editable text objects are kept in a
+  `data/impasto-text.xml` sidecar and rendered on the overlay layer, so Impasto
+  round-trips them, and `mergedimage.png` shows them, but third-party ORA viewers
+  that render per-layer PNGs won't see text in individual layers. Baking text into
+  per-layer PNGs would double-render on re-import.
 - **Toolbox column count under wide/maximised windows.** One capture showed a single
   column with a stray pair at the top instead of the clean 2-column grid. May be the
   fixed `MinChildrenPerLine = 2` misbehaving under a different allocation, may be a

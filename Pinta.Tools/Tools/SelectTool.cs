@@ -28,6 +28,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
+using ClipperLib;
 using Pinta.Core;
 
 namespace Pinta.Tools;
@@ -177,6 +178,8 @@ public abstract class SelectTool : BaseTool
 
 		RectangleD rect = handle.Rectangle;
 		DrawShape (document, rect, document.Layers.SelectionLayer);
+
+		applied_selection_polygons = new List<List<IntPoint>> (document.Selection.SelectionPolygons);
 	}
 
 	private void ShowHandles (bool visible)
@@ -213,6 +216,10 @@ public abstract class SelectTool : BaseTool
 		// TODO: Try to remove this ActiveDocument call
 		LoadFromDocument (workspace.ActiveDocument);
 	}
+
+	private List<List<IntPoint>>? applied_selection_polygons = null;
+	public override List<List<IntPoint>>? AppliedSelectionPolygons =>
+		handle.IsDragging && combine_mode != CombineMode.Replace ? applied_selection_polygons : null;
 
 	/// <summary>
 	/// Initialize from the document's selection.

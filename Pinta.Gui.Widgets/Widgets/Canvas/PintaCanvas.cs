@@ -28,6 +28,8 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
+using Cairo;
+using ClipperLib;
 using Pinta.Core;
 
 namespace Pinta.Gui.Widgets;
@@ -240,6 +242,20 @@ internal sealed partial class PintaCanvas
 			selection_path = pathBuilder.ToPath ();
 		}
 
+		Gsk.Path strokePath = selection_path;
+		IReadOnlyList<IReadOnlyList<IntPoint>>? appliedPolygons = tools.CurrentTool?.AppliedSelectionPolygons;
+		// appliedPolygons not null means the tool wants to show a preview.
+		if (appliedPolygons is not null) {
+			// The preview is composed of the outlines of the previous selection and the applied selection.
+			var previewPolygons = appliedPolygons.Concat (document.PreviousSelection.SelectionPolygons).ToList ();
+			using Context g = CairoExtensions.CreatePathContext ();
+			Path outlinePath = g.CreatePolygonPath (DocumentSelection.ConvertToPolygonSet (previewPolygons));
+
+			Gsk.PathBuilder strokePathBuilder = Gsk.PathBuilder.New ();
+			strokePathBuilder.AddCairoPath (outlinePath);
+			strokePath = strokePathBuilder.ToPath ();
+		}
+
 		snapshot.Save ();
 		snapshot.PushClip (canvasViewBounds);
 
@@ -256,14 +272,14 @@ internal sealed partial class PintaCanvas
 		// Draw a white line first so it shows up on dark backgrounds
 		Gsk.Stroke stroke = Gsk.Stroke.New (lineWidth: 1.0f / scale);
 		Gdk.RGBA white = new () { Red = 1, Green = 1, Blue = 1, Alpha = 1 };
-		snapshot.AppendStroke (selection_path, stroke, white);
+		snapshot.AppendStroke (strokePath, stroke, white);
 
 		// Draw a black dashed line over the white line
 		float dashOffset = selection_animation_dash_offset / scale;
 		stroke.SetDash ([2.0f / scale, 4.0f / scale]);
 		stroke.SetDashOffset (dashOffset);
 		Gdk.RGBA black = new () { Red = 0, Green = 0, Blue = 0, Alpha = 1 };
-		snapshot.AppendStroke (selection_path, stroke, black);
+		snapshot.AppendStroke (strokePath, stroke, black);
 
 		snapshot.Pop ();
 		snapshot.Restore ();

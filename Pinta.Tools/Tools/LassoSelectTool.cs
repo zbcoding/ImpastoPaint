@@ -278,6 +278,9 @@ public class LassoSelectTool : BaseTool
 			ClearShapeState ();
 			UpdateActionButtons ();
 		}
+
+		// To make sure the preview doesn't show anymore.
+		document.Workspace.Invalidate ();
 	}
 
 	private void FinalizeScissorsShape (Document document)
@@ -412,6 +415,9 @@ public class LassoSelectTool : BaseTool
 			UpdateActionButtons ();
 		}
 	}
+
+	public override List<List<IntPoint>>? AppliedSelectionPolygons =>
+		lasso_polygon.Count > 0 && combine_mode != CombineMode.Replace ? [lasso_polygon] : null;
 
 	protected override void OnSaveSettings (ISettingsService settings)
 	{

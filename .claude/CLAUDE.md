@@ -269,4 +269,19 @@ These are real projects, not quick tasks. Don't add them to scope casually:
 - Use Visual Studio debugger or `lldb` on macOS for line-level debugging
 - History/undo state is in `IHistoryManager`; check it if operations don't persist correctly
 
+## Pinta's PR and issue integration
+
+Use jj commits, jj workspaces. When merging back to jj main, it's here at Impasto not on the workspace.
+Use claude.md for rules. Credit/link the issue author, pr code author.
+Update the CHANGELOG.md too
+Only add a pull request if it's needed. Old pull requests may not be needed.
+
+In a commit message based on Pinta PR or issue, add trailers if possible
+e.g.
+Based on PR #1234 by: Jane Doe <jane@example.com>
+Refs:   https://github.com/original/project/pull/123
+        https://github.com/Project/project/issues/12
+
+
+
 Unless noted, focus more on feature addition, less on time consuming verification and checking, because I'm checking the software as features are added by running dotnet run --project Pinta 

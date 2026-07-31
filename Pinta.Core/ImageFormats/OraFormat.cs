@@ -287,9 +287,9 @@ public sealed class OraFormat : IImageImporter, IImageExporter
 		writer.WriteAttributeString ("color2", engine.SecondaryColor.ToHex (addAlpha: true));
 		writer.WriteAttributeString ("align", engine.Alignment.ToString ());
 		writer.WriteAttributeString ("underline", engine.Underline ? "1" : "0");
-		writer.WriteAttributeString ("fill", "0");
-		writer.WriteAttributeString ("outline", "2");
-		writer.WriteAttributeString ("join", "0");
+		writer.WriteAttributeString ("fill", obj.FillStyle.ToString ());
+		writer.WriteAttributeString ("outline", obj.OutlineWidth.ToString ());
+		writer.WriteAttributeString ("join", ((int) obj.LineJoin).ToString ());
 
 		foreach (string line in engine.Lines)
 			writer.WriteElementString ("line", line);
@@ -312,40 +312,27 @@ public sealed class OraFormat : IImageImporter, IImageExporter
 
 			UserLayer layer = document.Layers.UserLayers[index];
 
-			int fillStyle = 0;
-			int outlineWidth = 2;
-			Cairo.LineJoin lineJoin = Cairo.LineJoin.Miter;
-
 			foreach (XmlElement textElement in layerElement.GetElementsByTagName ("text")) {
-				(TextObject? obj, int fill, int outline, Cairo.LineJoin join) = ReadTextObject (textElement);
+				TextObject? obj = ReadTextObject (textElement);
 				if (obj is null)
 					continue;
 
 				layer.TextObjects.Add (obj);
-
-				//Use the style of the first restored object to re-render the layer.
-				if (layer.TextObjects.Count == 1) {
-					fillStyle = fill;
-					outlineWidth = outline;
-					lineJoin = join;
-				}
 			}
 
 			//Render the restored objects so they are visible before the text tool ever activates.
+			//Each object carries its own fill style, outline width, and line join.
 			if (layer.TextObjects.Count > 0) {
 				TextObjectRenderer.RenderAll (
 					layer.TextLayer.Layer.Surface,
 					layer.TextObjects,
 					PintaCore.Chrome,
-					antialias: true,
-					fillStyle: fillStyle,
-					outlineWidth: outlineWidth,
-					lineJoin: lineJoin);
+					antialias: true);
 			}
 		}
 	}
 
-	private static (TextObject? obj, int fill, int outline, Cairo.LineJoin join) ReadTextObject (XmlElement element)
+	private static TextObject? ReadTextObject (XmlElement element)
 	{
 		try {
 			List<string> lines = [];
@@ -383,17 +370,16 @@ public sealed class OraFormat : IImageImporter, IImageExporter
 
 			TextObject obj = new (engine) {
 				TextBounds = bounds,
-				PreviousTextBounds = bounds
+				PreviousTextBounds = bounds,
+				FillStyle = int.Parse (GetAttribute (element, "fill", "0")),
+				OutlineWidth = int.Parse (GetAttribute (element, "outline", "2")),
+				LineJoin = (Cairo.LineJoin) int.Parse (GetAttribute (element, "join", "0")),
 			};
 
-			int fill = int.Parse (GetAttribute (element, "fill", "0"));
-			int outline = int.Parse (GetAttribute (element, "outline", "2"));
-			Cairo.LineJoin join = (Cairo.LineJoin) int.Parse (GetAttribute (element, "join", "0"));
-
-			return (obj, fill, outline, join);
+			return obj;
 		} catch {
 			// A malformed text entry shouldn't prevent the layer from loading.
-			return (null, 0, 2, Cairo.LineJoin.Miter);
+			return null;
 		}
 	}
 

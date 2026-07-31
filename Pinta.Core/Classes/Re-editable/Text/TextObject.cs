@@ -20,6 +20,14 @@ public sealed class TextObject
 	public RectangleI TextBounds { get; set; } = RectangleI.Zero;
 	public RectangleI PreviousTextBounds { get; set; } = RectangleI.Zero;
 
+	//The text tool's style dropdown index this object was drawn with: 0 Normal,
+	//1 Normal and Outline, 2 Outline, 3 Fill Background. Stored per object (rather
+	//than read live from the toolbar) so objects on the same layer can each keep
+	//their own style.
+	public int FillStyle { get; set; } = 0;
+	public int OutlineWidth { get; set; } = 2;
+	public LineJoin LineJoin { get; set; } = LineJoin.Miter;
+
 	public TextObject (TextEngine engine)
 	{
 		Engine = engine;
@@ -32,6 +40,9 @@ public sealed class TextObject
 		=> new (Engine.Clone ()) {
 			TextBounds = TextBounds,
 			PreviousTextBounds = PreviousTextBounds,
+			FillStyle = FillStyle,
+			OutlineWidth = OutlineWidth,
+			LineJoin = LineJoin,
 		};
 
 	public static List<TextObject> CloneAll (IReadOnlyList<TextObject> objects)

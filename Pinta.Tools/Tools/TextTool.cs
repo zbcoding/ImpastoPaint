@@ -30,6 +30,11 @@ public sealed class TextTool : BaseTool
 
 	//The text object currently being edited or moved, or null.
 	private TextObject? current_text_object;
+	//The layer current_text_object actually lives on. Tracked separately from
+	//CurrentUserLayer because a layer-change event (add/remove/select) can
+	//repoint CurrentUserLayer at a different layer before the in-progress edit
+	//is committed.
+	private UserLayer? editing_layer;
 
 	//This is used to temporarily store the UserLayer's and TextLayer's previous ImageSurface states.
 	private ImageSurface? text_undo_surface;
@@ -639,10 +644,14 @@ public sealed class TextTool : BaseTool
 
 	private void HandleSelectedLayerChanged (object? sender, EventArgs e)
 	{
-		//The current text object may live on a layer that was just removed.
+		//CurrentUserLayer may already point at the newly (de)selected layer by now, so
+		//commit against editing_layer, the object's actual layer, which may since have
+		//been removed from the document (still safe to commit to: the layer object and
+		//its history item stay valid even if detached, e.g. an undo can bring it back).
 		if (is_editing)
-			EndEditingSession ();
+			CommitCurrentText (editing_layer);
 		current_text_object = null;
+		editing_layer = null;
 		UpdateFont ();
 		RedrawText (false);
 	}
@@ -662,6 +671,12 @@ public sealed class TextTool : BaseTool
 			font.SetStyle (italic_btn.Active ? Pango.Style.Italic : Pango.Style.Normal);
 
 			current_text_object.Engine.SetFont (font, Alignment, underscore_btn.Active);
+
+			// Style is stored per object (not read live from the toolbar at draw time),
+			// so the object being created/edited picks up whatever the toolbar shows now.
+			current_text_object.FillStyle = fill_button.SelectedItem.GetTagOrDefault (0);
+			current_text_object.OutlineWidth = OutlineWidth;
+			current_text_object.LineJoin = (Cairo.LineJoin) join_btn.SelectedIndex;
 		}
 
 		if (is_editing || current_text_object is not null)
@@ -844,6 +859,7 @@ public sealed class TextTool : BaseTool
 			document.Layers.SetCurrentUserLayer (layer!); // NRT - Non-null when hit is non-null.
 
 		current_text_object = hit;
+		editing_layer = layer;
 
 		//Remember the position of the mouse and the text before the text is dragged.
 		tracking = true;
@@ -1286,6 +1302,7 @@ public sealed class TextTool : BaseTool
 		workspace.ActiveDocument.LayerCloned += HandleLayerCloned;
 
 		current_text_object = obj;
+		editing_layer = CurrentUserLayer;
 		is_editing = true;
 		UpdateConfirmButtonVisibility ();
 
@@ -1299,21 +1316,37 @@ public sealed class TextTool : BaseTool
 		UpdateTextEngineColor ();
 	}
 
-	private void CommitCurrentText ()
+	/// <summary>
+	/// Commits the current edit to the layer it actually belongs to. Normally that's
+	/// CurrentUserLayer, but a layer-change event can repoint CurrentUserLayer at a
+	/// different layer before the edit is committed, so callers reacting to such an
+	/// event must pass the object's real layer explicitly (see HandleSelectedLayerChanged).
+	/// </summary>
+	private void CommitCurrentText (UserLayer? targetLayer = null)
 	{
 		if (!workspace.HasOpenDocuments || current_text_object is null)
 			return;
+
+		UserLayer layer = targetLayer ?? CurrentUserLayer;
 
 		im_context.SetClientWidget (null);
 
 		// A fresh object that never received text is simply dropped.
 		if (current_text_object.IsEmpty)
-			CurrentUserLayer.TextObjects.Remove (current_text_object);
+			layer.TextObjects.Remove (current_text_object);
 
-		//Re-render the TextLayer so the history item captures the committed state.
-		RedrawText (false);
+		//Re-render the layer's TextLayer so the history item captures the committed state.
+		//CurrentUserLayer already equals `layer` in the common case, where the usual
+		//full redraw (invalidation, tool-layer overlay, cursor bounds) applies. Only the
+		//layer-change-event path (HandleSelectedLayerChanged) commits a layer other than
+		//the now-active one, where that full redraw would otherwise render onto the wrong
+		//(new current) layer instead of finalizing the old one.
+		if (layer == CurrentUserLayer)
+			RedrawText (false);
+		else
+			RedrawTextLayerSurface (layer);
 
-		PushTextHistoryItem ();
+		PushTextHistoryItem (layer);
 
 		EndEditingSession ();
 	}
@@ -1341,13 +1374,15 @@ public sealed class TextTool : BaseTool
 		undo_text_objects = TextObject.CloneAll (CurrentUserLayer.TextObjects);
 	}
 
-	private void PushTextHistoryItem ()
+	private void PushTextHistoryItem (UserLayer? targetLayer = null)
 	{
 		if (!workspace.HasOpenDocuments || text_undo_surface is null || user_undo_surface is null || undo_text_objects is null)
 			return;
 
+		UserLayer layer = targetLayer ?? CurrentUserLayer;
+
 		// Nothing actually changed (e.g. the user clicked an object without editing it).
-		if (SurfaceDiff.Create (text_undo_surface, CurrentUserLayer.TextLayer.Layer.Surface, force: true) == null)
+		if (SurfaceDiff.Create (text_undo_surface, layer.TextLayer.Layer.Surface, force: true) == null)
 			return;
 
 		Document doc = workspace.ActiveDocument;
@@ -1364,7 +1399,7 @@ public sealed class TextTool : BaseTool
 				text_undo_surface.Clone (),
 				user_undo_surface.Clone (),
 				undo_text_objects,
-				CurrentUserLayer
+				layer
 			)
 		);
 
@@ -1376,6 +1411,7 @@ public sealed class TextTool : BaseTool
 	{
 		is_editing = false;
 		current_text_object = null;
+		editing_layer = null;
 		UpdateConfirmButtonVisibility ();
 
 		undo_text_objects = null;
@@ -1418,7 +1454,7 @@ public sealed class TextTool : BaseTool
 			obj.TextBounds = r;
 			allBounds = allBounds.Union (r);
 
-			DrawTextObject (obj, showCursor && obj == current_text_object);
+			DrawTextObject (userLayer, obj, showCursor && obj == current_text_object);
 		}
 
 		if (is_editing && current_text_object is not null) {
@@ -1437,6 +1473,29 @@ public sealed class TextTool : BaseTool
 	}
 
 	/// <summary>
+	/// Clears and redraws every text object on the given layer's TextLayer surface,
+	/// without a cursor. Used instead of <see cref="RedrawText"/> when finalizing a
+	/// layer other than CurrentUserLayer (see CommitCurrentText), since RedrawText
+	/// always operates on CurrentUserLayer and would otherwise render onto the wrong
+	/// layer's surface and overlay the wrong layer's re-edit rectangles.
+	/// </summary>
+	private void RedrawTextLayerSurface (UserLayer layer)
+	{
+		layer.TextLayer.Layer.Surface.Clear ();
+
+		foreach (TextObject obj in layer.TextObjects) {
+			if (obj.IsEmpty)
+				continue;
+
+			RectangleI r = GetTextObjectBounds (obj);
+			obj.PreviousTextBounds = obj.TextBounds;
+			obj.TextBounds = r;
+
+			DrawTextObject (layer, obj, isActive: false);
+		}
+	}
+
+	/// <summary>
 	/// Computes the on-canvas bounds of a text object.
 	/// </summary>
 	private RectangleI GetTextObjectBounds (TextObject obj)
@@ -1444,19 +1503,26 @@ public sealed class TextTool : BaseTool
 		layout.Engine = obj.Engine;
 		return layout
 			.GetLayoutBounds ()
-			.Inflated (10 + OutlineWidth, 10 + OutlineWidth);
+			.Inflated (10 + obj.OutlineWidth, 10 + obj.OutlineWidth);
 	}
 
 	/// <summary>
-	/// Draws a single text object (using its own font and colors) onto the TextLayer.
+	/// Draws a single text object (using its own font, colors, and style) onto the given layer's TextLayer.
 	/// </summary>
+	/// <param name="layer">The layer to draw onto.</param>
 	/// <param name="obj">The text object to draw.</param>
 	/// <param name="isActive">Whether this is the object being actively edited (draws cursor and selection).</param>
-	private void DrawTextObject (TextObject obj, bool isActive)
+	private void DrawTextObject (UserLayer layer, TextObject obj, bool isActive)
 	{
 		TextEngine engine = obj.Engine;
 		layout.Engine = engine;
-		ImageSurface surf = CurrentUserLayer.TextLayer.Layer.Surface;
+		ImageSurface surf = layer.TextLayer.Layer.Surface;
+
+		//Fill style index matches the text tool's style dropdown:
+		//0 Normal, 1 Normal and Outline, 2 Outline, 3 Fill Background.
+		bool strokeText = obj.FillStyle >= 1 && obj.FillStyle != 3;
+		bool fillText = obj.FillStyle <= 1 || obj.FillStyle == 3;
+		bool backgroundFill = obj.FillStyle == 3;
 
 		using Context g = new (surf);
 
@@ -1494,7 +1560,7 @@ public sealed class TextTool : BaseTool
 		g.SetSourceColor (engine.PrimaryColor);
 
 		//Fill in background
-		if (BackgroundFill) {
+		if (backgroundFill) {
 			using Context g2 = new (surf);
 			if (isActive)
 				selection?.Clip (g2);
@@ -1502,23 +1568,23 @@ public sealed class TextTool : BaseTool
 		}
 
 		// Draws the text stroke
-		if (StrokeText) {
-			g.SetSourceColor (FillText ? engine.SecondaryColor : engine.PrimaryColor);
-			g.LineWidth = OutlineWidth;
-			g.LineJoin = (Cairo.LineJoin) join_btn.SelectedIndex;
+		if (strokeText) {
+			g.SetSourceColor (fillText ? engine.SecondaryColor : engine.PrimaryColor);
+			g.LineWidth = obj.OutlineWidth;
+			g.LineJoin = obj.LineJoin;
 
 			PangoCairo.Functions.LayoutPath (g, layout.Layout);
 			g.Stroke ();
 
 			// Position resets after g.Stroke ();
-			if (FillText) {
+			if (fillText) {
 				g.MoveTo (engine.Origin.X, engine.Origin.Y);
 				g.SetSourceColor (engine.PrimaryColor);
 			}
 		}
 
 		// Draws the text fill
-		if (FillText) {
+		if (fillText) {
 			PangoCairo.Functions.ShowLayout (g, layout.Layout);
 		}
 

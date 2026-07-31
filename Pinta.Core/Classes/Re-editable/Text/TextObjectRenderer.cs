@@ -13,22 +13,20 @@ namespace Pinta.Core;
 public static class TextObjectRenderer
 {
 	/// <summary>
-	/// Renders every non-empty text object onto the given surface.
+	/// Renders every non-empty text object onto the given surface, using each
+	/// object's own fill style, outline width, and line join.
 	/// </summary>
 	public static void RenderAll (
 		ImageSurface surface,
 		IReadOnlyList<TextObject> objects,
 		IChromeService chrome,
-		bool antialias,
-		int fillStyle,
-		int outlineWidth,
-		LineJoin lineJoin)
+		bool antialias)
 	{
 		foreach (TextObject obj in objects) {
 			if (obj.IsEmpty)
 				continue;
 
-			RenderObject (surface, obj, chrome, antialias, fillStyle, outlineWidth, lineJoin);
+			RenderObject (surface, obj, chrome, antialias);
 		}
 	}
 
@@ -36,10 +34,7 @@ public static class TextObjectRenderer
 		ImageSurface surface,
 		TextObject obj,
 		IChromeService chrome,
-		bool antialias,
-		int fillStyle,
-		int outlineWidth,
-		LineJoin lineJoin)
+		bool antialias)
 	{
 		TextEngine engine = obj.Engine;
 		TextLayout layout = new (chrome) {
@@ -48,6 +43,7 @@ public static class TextObjectRenderer
 
 		//Fill style index matches the text tool's style dropdown:
 		//0 Normal, 1 Normal and Outline, 2 Outline, 3 Fill Background.
+		int fillStyle = obj.FillStyle;
 		bool strokeText = fillStyle >= 1 && fillStyle != 3;
 		bool fillText = fillStyle <= 1 || fillStyle == 3;
 		bool backgroundFill = fillStyle == 3;
@@ -79,8 +75,8 @@ public static class TextObjectRenderer
 		// Draws the text stroke
 		if (strokeText) {
 			g.SetSourceColor (fillText ? engine.SecondaryColor : engine.PrimaryColor);
-			g.LineWidth = outlineWidth;
-			g.LineJoin = lineJoin;
+			g.LineWidth = obj.OutlineWidth;
+			g.LineJoin = obj.LineJoin;
 
 			PangoCairo.Functions.LayoutPath (g, layout.Layout);
 			g.Stroke ();

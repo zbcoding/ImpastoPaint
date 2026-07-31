@@ -54,16 +54,11 @@ public sealed class UserLayer : Layer
 	)
 		: base (surface, hidden, opacity, name)
 	{
-		TextEngine = new TextEngine ();
 		TextLayer = new ReEditableLayer (this);
 	}
 
-	//Stores most of the editable text's data, including the text itself.
-	public TextEngine TextEngine { get; internal set; }
-
-	//Rectangular boundary surrounding the editable text.
-	public RectangleI TextBounds { get; set; } = RectangleI.Zero;
-	public RectangleI PreviousTextBounds { get; set; } = RectangleI.Zero;
+	//The re-editable text objects on this layer.
+	public List<TextObject> TextObjects { get; } = [];
 
 	public override void ApplyTransform (
 		Matrix xform,

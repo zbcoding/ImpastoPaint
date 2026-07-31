@@ -24,6 +24,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+using System.Collections.Generic;
 using Cairo;
 
 namespace Pinta.Core;
@@ -38,19 +39,18 @@ public sealed class TextHistoryItem : BaseHistoryItem
 	readonly SurfaceDiff? user_surface_diff;
 	ImageSurface? user_surface;
 
-	TextEngine text_engine;
-	RectangleI text_bounds;
+	List<TextObject> text_objects;
 
 	private readonly IWorkspaceService workspace;
 
 	/// <summary>
-	/// A history item for when text is created, edited, and/or finalized.
+	/// A history item for when a text object is created, edited, moved, or deleted.
 	/// </summary>
 	/// <param name="icon">The history item's icon.</param>
 	/// <param name="text">The history item's title.</param>
 	/// <param name="passedTextSurface">The stored TextLayer surface.</param>
 	/// <param name="passedUserSurface">The stored UserLayer surface.</param>
-	/// <param name="passedTextEngine">The text engine being used.</param>
+	/// <param name="passedTextObjects">A snapshot of the text objects before the change.</param>
 	/// <param name="passedUserLayer">The UserLayer being modified.</param>
 	public TextHistoryItem (
 		IWorkspaceService workspace,
@@ -58,7 +58,7 @@ public sealed class TextHistoryItem : BaseHistoryItem
 		string text,
 		ImageSurface passedTextSurface,
 		ImageSurface passedUserSurface,
-		TextEngine passedTextEngine,
+		IReadOnlyList<TextObject> passedTextObjects,
 		UserLayer passedUserLayer
 	)
 		: base (icon, text)
@@ -83,13 +83,7 @@ public sealed class TextHistoryItem : BaseHistoryItem
 			user_surface = passedUserSurface;
 		}
 
-		text_engine = passedTextEngine;
-
-		text_bounds = new RectangleI (
-			user_layer.TextBounds.X,
-			user_layer.TextBounds.Y,
-			user_layer.TextBounds.Width,
-			user_layer.TextBounds.Height);
+		text_objects = TextObject.CloneAll (passedTextObjects);
 
 		this.workspace = workspace;
 	}
@@ -137,16 +131,11 @@ public sealed class TextHistoryItem : BaseHistoryItem
 		//Redraw everything since surfaces were swapped.
 		workspace.Invalidate ();
 
-		//Store the old text data temporarily.
-		TextEngine oldTextEngine = text_engine;
-		RectangleI oldTextBounds = text_bounds;
+		//Store the old text data temporarily, then swap in the stored snapshot.
+		List<TextObject> oldTextObjects = text_objects;
+		text_objects = TextObject.CloneAll (user_layer.TextObjects);
 
-		//Swap half of the data.
-		text_engine = user_layer.TextEngine;
-		text_bounds = user_layer.TextBounds;
-
-		//Swap the other half.
-		user_layer.TextEngine = oldTextEngine;
-		user_layer.TextBounds = oldTextBounds;
+		user_layer.TextObjects.Clear ();
+		user_layer.TextObjects.AddRange (oldTextObjects);
 	}
 }

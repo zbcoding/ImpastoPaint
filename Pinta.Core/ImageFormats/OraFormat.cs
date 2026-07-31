@@ -29,6 +29,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.IO.Compression;
+using System.Linq;
 using System.Xml;
 using Cairo;
 using GdkPixbuf;
@@ -38,6 +39,9 @@ namespace Pinta.Core;
 public sealed class OraFormat : IImageImporter, IImageExporter
 {
 	private const int THUMB_MAX_SIZE = 256;
+	// Sidecar entry that keeps text objects editable when round-tripping .ora files.
+	// Standard OpenRaster readers ignore it; Impasto uses it to restore text layers.
+	private const string TEXT_ENTRY_PATH = "data/impasto-text.xml";
 
 	public Document Import (Gio.File file)
 	{
@@ -127,6 +131,9 @@ public sealed class OraFormat : IImageImporter, IImageExporter
 			}
 		}
 
+		// Restore any editable text objects saved in the sidecar entry.
+		LoadTextEntry (zipfile, newDocument);
+
 		return newDocument;
 	}
 
@@ -194,6 +201,7 @@ public sealed class OraFormat : IImageImporter, IImageExporter
 		AddMimeEntry (archive);
 		AddLayerEntries (archive, document);
 		AddStackEntry (archive, document);
+		AddTextEntry (archive, document);
 		AddMergedImage (archive, flattened);
 		AddThumbnail (archive, flattened);
 	}
@@ -223,6 +231,170 @@ public sealed class OraFormat : IImageImporter, IImageExporter
 		ZipArchiveEntry stackEntry = archive.CreateEntry ("stack.xml");
 		using Stream stackStream = stackEntry.Open ();
 		stackStream.Write (userLayerBytes, 0, userLayerBytes.Length);
+	}
+
+	private static void AddTextEntry (ZipArchive archive, Document document)
+	{
+		IReadOnlyList<UserLayer> layers = document.Layers.UserLayers;
+		if (!layers.Any (layer => layer.TextObjects.Count > 0))
+			return;
+
+		using MemoryStream ms = new ();
+		using (XmlTextWriter writer = new (ms, System.Text.Encoding.UTF8) {
+			Formatting = Formatting.Indented,
+		}) {
+			writer.WriteStartElement ("impasto-text");
+			writer.WriteAttributeString ("version", "1");
+
+			for (int i = 0; i < layers.Count; i++) {
+				UserLayer layer = layers[i];
+				if (layer.TextObjects.Count == 0)
+					continue;
+
+				writer.WriteStartElement ("layer");
+				writer.WriteAttributeString ("index", i.ToString ());
+
+				foreach (TextObject obj in layer.TextObjects) {
+					writer.WriteStartElement ("text");
+					WriteTextObject (writer, obj);
+					writer.WriteEndElement ();
+				}
+
+				writer.WriteEndElement (); // layer
+			}
+
+			writer.WriteEndElement (); // impasto-text
+		}
+
+		ms.Position = 0;
+		ZipArchiveEntry textEntry = archive.CreateEntry (TEXT_ENTRY_PATH);
+		using Stream textStream = textEntry.Open ();
+		ms.CopyTo (textStream);
+	}
+
+	private static void WriteTextObject (XmlTextWriter writer, TextObject obj)
+	{
+		TextEngine engine = obj.Engine;
+
+		writer.WriteAttributeString ("origin-x", engine.Origin.X.ToString ());
+		writer.WriteAttributeString ("origin-y", engine.Origin.Y.ToString ());
+		writer.WriteAttributeString ("bounds-x", obj.TextBounds.X.ToString ());
+		writer.WriteAttributeString ("bounds-y", obj.TextBounds.Y.ToString ());
+		writer.WriteAttributeString ("bounds-w", obj.TextBounds.Width.ToString ());
+		writer.WriteAttributeString ("bounds-h", obj.TextBounds.Height.ToString ());
+		writer.WriteAttributeString ("font", engine.Font.ToString ());
+		writer.WriteAttributeString ("color", engine.PrimaryColor.ToHex (addAlpha: true));
+		writer.WriteAttributeString ("color2", engine.SecondaryColor.ToHex (addAlpha: true));
+		writer.WriteAttributeString ("align", engine.Alignment.ToString ());
+		writer.WriteAttributeString ("underline", engine.Underline ? "1" : "0");
+		writer.WriteAttributeString ("fill", "0");
+		writer.WriteAttributeString ("outline", "2");
+		writer.WriteAttributeString ("join", "0");
+
+		foreach (string line in engine.Lines)
+			writer.WriteElementString ("line", line);
+	}
+	private static void LoadTextEntry (ZipArchive zipfile, Document document)
+	{
+		ZipArchiveEntry? entry = zipfile.GetEntry (TEXT_ENTRY_PATH);
+		if (entry is null)
+			return;
+
+		XmlDocument xml = new ();
+		xml.Load (entry.Open ());
+
+		XmlElement root = xml.DocumentElement!;
+
+		foreach (XmlElement layerElement in root.GetElementsByTagName ("layer")) {
+			if (!int.TryParse (GetAttribute (layerElement, "index", "-1"), out int index) ||
+				index < 0 || index >= document.Layers.UserLayers.Count)
+				continue;
+
+			UserLayer layer = document.Layers.UserLayers[index];
+
+			int fillStyle = 0;
+			int outlineWidth = 2;
+			Cairo.LineJoin lineJoin = Cairo.LineJoin.Miter;
+
+			foreach (XmlElement textElement in layerElement.GetElementsByTagName ("text")) {
+				(TextObject? obj, int fill, int outline, Cairo.LineJoin join) = ReadTextObject (textElement);
+				if (obj is null)
+					continue;
+
+				layer.TextObjects.Add (obj);
+
+				//Use the style of the first restored object to re-render the layer.
+				if (layer.TextObjects.Count == 1) {
+					fillStyle = fill;
+					outlineWidth = outline;
+					lineJoin = join;
+				}
+			}
+
+			//Render the restored objects so they are visible before the text tool ever activates.
+			if (layer.TextObjects.Count > 0) {
+				TextObjectRenderer.RenderAll (
+					layer.TextLayer.Layer.Surface,
+					layer.TextObjects,
+					PintaCore.Chrome,
+					antialias: true,
+					fillStyle: fillStyle,
+					outlineWidth: outlineWidth,
+					lineJoin: lineJoin);
+			}
+		}
+	}
+
+	private static (TextObject? obj, int fill, int outline, Cairo.LineJoin join) ReadTextObject (XmlElement element)
+	{
+		try {
+			List<string> lines = [];
+			foreach (XmlElement lineElement in element.GetElementsByTagName ("line"))
+				lines.Add (lineElement.InnerText);
+			if (lines.Count == 0)
+				lines.Add (string.Empty);
+
+			string alignName = GetAttribute (element, "align", "Left");
+			TextAlignment alignment = Enum.TryParse (alignName, out TextAlignment parsed)
+				? parsed
+				: TextAlignment.Left;
+
+			bool underline = GetAttribute (element, "underline", "0") == "1";
+
+			string fontName = GetAttribute (element, "font", "");
+			if (string.IsNullOrEmpty (fontName))
+				fontName = "Sans 12";
+
+			TextEngine engine = new (lines) {
+				Origin = new PointI (
+					int.Parse (GetAttribute (element, "origin-x", "0")),
+					int.Parse (GetAttribute (element, "origin-y", "0"))),
+				PrimaryColor = Color.FromHex (GetAttribute (element, "color", "#000000ff")) ?? Color.Black,
+				SecondaryColor = Color.FromHex (GetAttribute (element, "color2", "#ffffffff")) ?? Color.White,
+			};
+
+			engine.SetFont (Pango.FontDescription.FromString (fontName), alignment, underline);
+
+			RectangleI bounds = new (
+				int.Parse (GetAttribute (element, "bounds-x", "0")),
+				int.Parse (GetAttribute (element, "bounds-y", "0")),
+				int.Parse (GetAttribute (element, "bounds-w", "0")),
+				int.Parse (GetAttribute (element, "bounds-h", "0")));
+
+			TextObject obj = new (engine) {
+				TextBounds = bounds,
+				PreviousTextBounds = bounds
+			};
+
+			int fill = int.Parse (GetAttribute (element, "fill", "0"));
+			int outline = int.Parse (GetAttribute (element, "outline", "2"));
+			Cairo.LineJoin join = (Cairo.LineJoin) int.Parse (GetAttribute (element, "join", "0"));
+
+			return (obj, fill, outline, join);
+		} catch {
+			// A malformed text entry shouldn't prevent the layer from loading.
+			return (null, 0, 2, Cairo.LineJoin.Miter);
+		}
 	}
 
 	private static void AddMergedImage (ZipArchive archive, Pixbuf flattened)

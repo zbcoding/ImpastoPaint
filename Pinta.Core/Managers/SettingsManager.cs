@@ -26,6 +26,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -93,30 +94,63 @@ public sealed class SettingsManager : ISettingsService
 			if (node.Attribute ("name")?.Value is not string name)
 				continue;
 
-			// Kinda cheating because we know there are only a few types stored in here
-			string? value = node.Attribute ("type")?.Value;
-			switch (value) {
-				case "System.Int32":
-					if (int.TryParse (node.Value, out var i))
-						PutSetting (name, i);
-					break;
-				case "System.Double":
-					if (double.TryParse (node.Value, out double d))
-						PutSetting (name, d);
-					break;
-				case "System.Boolean":
-					if (bool.TryParse (node.Value, out var b))
-						PutSetting (name, b);
-					break;
-				case "System.String":
-					if (node.Value is string s)
-						PutSetting (name, s);
-					break;
-				default:
-					System.Console.WriteLine ($"Unknown setting type {value} for {name}");
-					break;
-			}
+			ImportSetting (name, node.Attribute ("type")?.Value, node.Value);
 		}
+	}
+
+	/// <summary>
+	/// All currently loaded settings, keyed by name. Used to build a full export
+	/// of the user's settings (see <see cref="ImportSetting"/> for the reverse).
+	/// </summary>
+	public IReadOnlyDictionary<string, object> AllSettings => settings;
+
+	/// <summary>
+	/// Stores a setting from an external source (e.g. an imported settings file),
+	/// using the same type name / string value shape as settings.xml. Unrecognized
+	/// types or unparsable values are skipped rather than throwing, so a settings
+	/// file from a newer or older version of the app can be imported without one
+	/// bad entry losing the rest.
+	/// </summary>
+	public bool ImportSetting (string name, string? typeName, string rawValue)
+	{
+		if (TryParseSettingValue (typeName, rawValue, out object? value)) {
+			PutSetting (name, value);
+			return true;
+		}
+
+		Console.Error.WriteLine ($"Skipping unrecognized setting '{name}' (type: {typeName ?? "<none>"})");
+		return false;
+	}
+
+	// Kinda cheating because we know there are only a few types stored in here
+	private static bool TryParseSettingValue (string? typeName, string rawValue, [NotNullWhen (true)] out object? value)
+	{
+		switch (typeName) {
+			case "System.Int32":
+				if (int.TryParse (rawValue, out var i)) {
+					value = i;
+					return true;
+				}
+				break;
+			case "System.Double":
+				if (double.TryParse (rawValue, out double d)) {
+					value = d;
+					return true;
+				}
+				break;
+			case "System.Boolean":
+				if (bool.TryParse (rawValue, out var b)) {
+					value = b;
+					return true;
+				}
+				break;
+			case "System.String":
+				value = rawValue;
+				return true;
+		}
+
+		value = null;
+		return false;
 	}
 
 	public string GetUserSettingsDirectory ()

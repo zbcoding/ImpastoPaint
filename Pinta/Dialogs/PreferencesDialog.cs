@@ -1,5 +1,10 @@
 using System;
+using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.IO;
+using System.Linq;
+using System.Text.Json;
+using System.Threading.Tasks;
 using Pinta.Core;
 using Pinta.Gui.Widgets;
 
@@ -146,10 +151,24 @@ public sealed partial class PreferencesDialog
 		extendedPaletteRow.Append (CreateResetButton (ResetExtendedPaletteRows));
 		popoverHintPage.Append (extendedPaletteRow);
 
+		Gtk.Button exportSettingsButton = Gtk.Button.NewWithLabel (Translations.GetString ("Export Settings..."));
+		exportSettingsButton.OnClicked += ExportSettings;
+		Gtk.Button importSettingsButton = Gtk.Button.NewWithLabel (Translations.GetString ("Import Settings..."));
+		importSettingsButton.OnClicked += ImportSettings;
+
+		Gtk.Box backupPage = Gtk.Box.New (Gtk.Orientation.Vertical, SPACING);
+		backupPage.SetAllMargins (12);
+		backupPage.Append (Gtk.Label.New (Translations.GetString ("Save your settings and preferences to a file, or load them from a previously exported file.")));
+		Gtk.Box backupRow = Gtk.Box.New (Gtk.Orientation.Horizontal, SPACING);
+		backupRow.Append (exportSettingsButton);
+		backupRow.Append (importSettingsButton);
+		backupPage.Append (backupRow);
+
 		Gtk.Notebook notebook = Gtk.Notebook.New ();
 		notebook.AppendPage (canvasPage, Gtk.Label.New (Translations.GetString ("Canvas")));
 		notebook.AppendPage (clipboardPage, Gtk.Label.New (Translations.GetString ("Clipboard")));
 		notebook.AppendPage (popoverHintPage, Gtk.Label.New (Translations.GetString ("UI")));
+		notebook.AppendPage (backupPage, Gtk.Label.New (Translations.GetString ("Backup")));
 		contentArea.Append (notebook);
 
 		Title = Translations.GetString ("Settings");
@@ -218,6 +237,118 @@ public sealed partial class PreferencesDialog
 		}
 	}
 
+	private async void ExportSettings (Gtk.Button sender, EventArgs e)
+	{
+		using Gtk.FileChooserNative fcd = Gtk.FileChooserNative.New (
+			Translations.GetString ("Export Settings"),
+			this,
+			Gtk.FileChooserAction.Save,
+			Translations.GetString ("Export"),
+			Translations.GetString ("Cancel"));
+		fcd.SetCurrentName ("impasto-settings.json");
+
+		if (await fcd.RunAsync () != Gtk.ResponseType.Accept)
+			return;
+
+		string? path = fcd.GetFile ()?.GetPath ();
+		if (path is null)
+			return;
+
+		try {
+			SettingsExportFile export = new () {
+				Settings = [
+					.. PintaCore.Settings.AllSettings.Select (kv => new SettingsExportEntry {
+						Name = kv.Key,
+						Type = kv.Value.GetType ().ToString (),
+						Value = kv.Value.ToString () ?? string.Empty,
+					})
+				],
+			};
+			File.WriteAllText (path, JsonSerializer.Serialize (export, new JsonSerializerOptions { WriteIndented = true }));
+		} catch (Exception ex) {
+			await ShowMessage (Translations.GetString ("Failed to export settings: {0}", ex.Message));
+		}
+	}
+
+	private async void ImportSettings (Gtk.Button sender, EventArgs e)
+	{
+		using Gtk.FileFilter jsonFilter = Gtk.FileFilter.New ();
+		jsonFilter.Name = Translations.GetString ("Settings files");
+		jsonFilter.AddPattern ("*.json");
+
+		using Gio.ListStore filters = Gio.ListStore.New (Gtk.FileFilter.GetGType ());
+		filters.Append (jsonFilter);
+
+		using Gtk.FileDialog fileDialog = Gtk.FileDialog.New ();
+		fileDialog.SetTitle (Translations.GetString ("Import Settings"));
+		fileDialog.SetFilters (filters);
+		fileDialog.Modal = true;
+
+		Gio.File? choice = await fileDialog.OpenFileAsync (this);
+		string? path = choice?.GetPath ();
+		if (path is null)
+			return;
+
+		SettingsExportFile? import;
+		try {
+			import = JsonSerializer.Deserialize<SettingsExportFile> (File.ReadAllText (path));
+		} catch (Exception ex) {
+			await ShowMessage (Translations.GetString ("Failed to read settings file: {0}", ex.Message));
+			return;
+		}
+
+		if (import?.Settings is null) {
+			await ShowMessage (Translations.GetString ("This does not look like a valid settings file."));
+			return;
+		}
+
+		int applied = 0;
+		int skipped = 0;
+		foreach (SettingsExportEntry entry in import.Settings) {
+			if (string.IsNullOrEmpty (entry.Name)) {
+				skipped++;
+				continue;
+			}
+
+			if (PintaCore.Settings.ImportSetting (entry.Name, entry.Type, entry.Value ?? string.Empty))
+				applied++;
+			else
+				skipped++;
+		}
+
+		RefreshFromSettings ();
+
+		await ShowMessage (Translations.GetString (
+			"Imported {0} setting(s); {1} entry(ies) were skipped (unrecognized or invalid). Restart Impasto for all changes to fully take effect.",
+			applied, skipped));
+	}
+
+	private void RefreshFromSettings ()
+	{
+		SettingsManager settings = PintaCore.Settings;
+
+		canvas_width_spinner.Value = settings.GetSetting (SettingNames.DEFAULT_CANVAS_WIDTH, DefaultCanvasWidth);
+		canvas_height_spinner.Value = settings.GetSetting (SettingNames.DEFAULT_CANVAS_HEIGHT, DefaultCanvasHeight);
+		paste_external_images_to_new_layer_check_button.Active = settings.GetSetting (SettingNames.PASTE_EXTERNAL_IMAGES_TO_NEW_LAYER, PasteExternalImagesToNewLayer);
+		extended_palette_rows_check_button.Active = settings.GetSetting (SettingNames.EXTENDED_PALETTE_ROWS, ExtendedPaletteRows);
+		SetPopoverHintMode ((PopoverHintMode) settings.GetSetting (SettingNames.POPOVER_HINT_MODE, (int) PopoverHintMode));
+
+		string storedColor = settings.GetSetting (SettingNames.CANVAS_SURROUND_COLOR, SettingNames.DEFAULT_CANVAS_SURROUND_COLOR);
+		if (Cairo.Color.FromHex (storedColor) is Cairo.Color color) {
+			canvas_surround_color_button.DisplayColor = color;
+			canvas_surround_color_is_default = false;
+		} else {
+			canvas_surround_color_is_default = true;
+		}
+	}
+
+	private async Task ShowMessage (string message)
+	{
+		using Adw.MessageDialog dialog = Adw.MessageDialog.New (this, Translations.GetString ("Settings"), message);
+		dialog.AddResponse ("ok", Translations.GetString ("OK"));
+		await dialog.RunAsync ();
+	}
+
 	private static Gtk.Label CreateLabel (string text, Gtk.Align horizontalAlign)
 	{
 		Gtk.Label result = Gtk.Label.New (text);
@@ -239,5 +370,20 @@ public sealed partial class PreferencesDialog
 		result.TooltipText = Translations.GetString ("Reset to default");
 		result.OnClicked += handler;
 		return result;
+	}
+
+	// On-disk shape for exported settings. A list rather than a dictionary so that
+	// individual entries added, renamed, or removed by a future version of the app
+	// don't break parsing of the entries around them.
+	private sealed class SettingsExportFile
+	{
+		public List<SettingsExportEntry>? Settings { get; set; }
+	}
+
+	private sealed class SettingsExportEntry
+	{
+		public string? Name { get; set; }
+		public string? Type { get; set; }
+		public string? Value { get; set; }
 	}
 }

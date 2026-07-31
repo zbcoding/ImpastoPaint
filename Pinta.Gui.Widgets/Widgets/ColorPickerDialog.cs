@@ -532,12 +532,21 @@ public sealed partial class ColorPickerDialog
 		TransientFor = parentWindow;
 		Title = windowTitle;
 
+		if (showSwatches) {
+			// The swatch areas show the current palette and recent colors; reloading
+			// the default palette (e.g. toggling the extra darker row in Settings)
+			// changes PALETTE_ROWS, so the rows must be re-laid out live.
+			palette.CurrentPalette.PaletteChanged += SwatchPaletteChangedHandler;
+			palette.RecentColorsChanged += SwatchPaletteChangedHandler;
+		}
+
 		if (livePalette) {
 			palette.PrimaryColorChanged += PrimaryChangeHandler;
 			palette.SecondaryColorChanged += SecondaryChangeHandler;
 			IsActivePropertyDefinition.Notify (this, ActiveWindowChangeHandler);
-			OnCloseRequest += HandleCloseRequest;
 		}
+
+		OnCloseRequest += HandleCloseRequest;
 
 		Color initialColor = ExtractTargetedColor (adjustable, primarySelected);
 
@@ -612,7 +621,7 @@ public sealed partial class ColorPickerDialog
 	void SwatchRecentDraw (Gtk.DrawingArea area, Context g, int width, int height)
 	{
 		var recent = palette.RecentlyUsedColors;
-		int recent_cols = palette.MaxRecentlyUsedColor / PaletteWidget.PALETTE_ROWS;
+		int recent_cols = PaletteWidget.GetRecentColorColumns (palette.MaxRecentlyUsedColor);
 
 		RectangleD recent_palette_rect = new (
 			0,
@@ -620,7 +629,11 @@ public sealed partial class ColorPickerDialog
 			PaletteWidget.SWATCH_SIZE * recent_cols,
 			PaletteWidget.SWATCH_SIZE * PaletteWidget.PALETTE_ROWS);
 
-		for (int i = 0; i < recent.Count; i++)
+		// Only draw up to MaxRecentlyUsedColor, which is what the grid fits. The list
+		// can transiently hold more if the extended-palette setting was just toggled.
+		int recent_count = Math.Min (recent.Count, palette.MaxRecentlyUsedColor);
+
+		for (int i = 0; i < recent_count; i++)
 			g.FillRectangle (PaletteWidget.GetSwatchBounds (palette, i, recent_palette_rect, true), recent.ElementAt (i));
 	}
 
@@ -644,10 +657,25 @@ public sealed partial class ColorPickerDialog
 		// 'is-active' property changing as the dialog is being closed (bug #1390)).
 		palette.PrimaryColorChanged -= PrimaryChangeHandler;
 		palette.SecondaryColorChanged -= SecondaryChangeHandler;
+		palette.CurrentPalette.PaletteChanged -= SwatchPaletteChangedHandler;
+		palette.RecentColorsChanged -= SwatchPaletteChangedHandler;
 		IsActivePropertyDefinition.Unnotify (this, ActiveWindowChangeHandler);
 
 		// Return false to allow the dialog to continue closing.
 		return false;
+	}
+
+	void SwatchPaletteChangedHandler (object? sender, EventArgs e)
+	{
+		// Toggling the extended-palette setting changes PALETTE_ROWS, so the palette
+		// and recent-color swatch areas need a taller row layout and a redraw.
+		if (!show_swatches)
+			return;
+
+		swatch_recent.HeightRequest = PaletteWidget.SWATCH_SIZE * PaletteWidget.PALETTE_ROWS;
+		swatch_palette.HeightRequest = PaletteWidget.SWATCH_SIZE * PaletteWidget.PALETTE_ROWS;
+		swatch_recent.QueueDraw ();
+		swatch_palette.QueueDraw ();
 	}
 
 	void ActiveWindowChangeHandler (object? _, NotifySignalArgs __)

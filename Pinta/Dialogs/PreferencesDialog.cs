@@ -14,6 +14,7 @@ public sealed partial class PreferencesDialog
 	private Gtk.SpinButton canvas_height_spinner;
 	private PintaColorButton canvas_surround_color_button;
 	private Gtk.CheckButton paste_external_images_to_new_layer_check_button;
+	private Gtk.CheckButton extended_palette_rows_check_button;
 	private Gtk.ToggleButton popover_hint_mode_all_button;
 	private Gtk.ToggleButton popover_hint_mode_essential_button;
 	private Gtk.ToggleButton popover_hint_mode_none_button;
@@ -34,12 +35,13 @@ public sealed partial class PreferencesDialog
 	public int DefaultCanvasHeight => canvas_height_spinner.GetValueAsInt ();
 	public Cairo.Color? CanvasSurroundColor => canvas_surround_color_is_default ? null : canvas_surround_color_button.DisplayColor;
 	public bool PasteExternalImagesToNewLayer => paste_external_images_to_new_layer_check_button.Active;
+	public bool ExtendedPaletteRows => extended_palette_rows_check_button.Active;
 	public PopoverHintMode PopoverHintMode
 		=> popover_hint_mode_all_button.Active ? PopoverHintMode.All
 			: popover_hint_mode_essential_button.Active ? PopoverHintMode.Essential
 			: PopoverHintMode.None;
 
-	internal static PreferencesDialog New (ChromeManager chrome, int defaultCanvasWidth, int defaultCanvasHeight, Cairo.Color canvasSurroundColor, bool canvasSurroundColorIsDefault, Cairo.Color defaultCanvasSurroundColor, bool pasteExternalImagesToNewLayer, PopoverHintMode popoverHintMode)
+	internal static PreferencesDialog New (ChromeManager chrome, int defaultCanvasWidth, int defaultCanvasHeight, Cairo.Color canvasSurroundColor, bool canvasSurroundColorIsDefault, Cairo.Color defaultCanvasSurroundColor, bool pasteExternalImagesToNewLayer, bool extendedPaletteRows, PopoverHintMode popoverHintMode)
 	{
 		PreferencesDialog dialog = NewWithProperties ([]);
 		dialog.canvas_width_spinner.Value = defaultCanvasWidth;
@@ -48,6 +50,7 @@ public sealed partial class PreferencesDialog
 		dialog.canvas_surround_color_is_default = canvasSurroundColorIsDefault;
 		dialog.default_canvas_surround_color = defaultCanvasSurroundColor;
 		dialog.paste_external_images_to_new_layer_check_button.Active = pasteExternalImagesToNewLayer;
+		dialog.extended_palette_rows_check_button.Active = extendedPaletteRows;
 		dialog.SetPopoverHintMode (popoverHintMode);
 		dialog.TransientFor = chrome.MainWindow;
 		return dialog;
@@ -57,6 +60,7 @@ public sealed partial class PreferencesDialog
 	[MemberNotNull (nameof (canvas_height_spinner))]
 	[MemberNotNull (nameof (canvas_surround_color_button))]
 	[MemberNotNull (nameof (paste_external_images_to_new_layer_check_button))]
+	[MemberNotNull (nameof (extended_palette_rows_check_button))]
 	[MemberNotNull (nameof (popover_hint_mode_all_button))]
 	[MemberNotNull (nameof (popover_hint_mode_essential_button))]
 	[MemberNotNull (nameof (popover_hint_mode_none_button))]
@@ -134,6 +138,14 @@ public sealed partial class PreferencesDialog
 		popoverHintRow.Append (CreateResetButton (ResetPopoverHintMode));
 		popoverHintPage.Append (popoverHintRow);
 
+		Gtk.CheckButton extendedPaletteRowsCheckButton = Gtk.CheckButton.NewWithLabel (Translations.GetString ("Show a third row of darker colors in the palette"));
+		extendedPaletteRowsCheckButton.TooltipText = Translations.GetString ("Adds a darker shade of each color beneath the standard palette. The status bar grows taller to fit the extra row.");
+		Gtk.Box extendedPaletteRow = Gtk.Box.New (Gtk.Orientation.Horizontal, SPACING);
+		extendedPaletteRowsCheckButton.Hexpand = true;
+		extendedPaletteRow.Append (extendedPaletteRowsCheckButton);
+		extendedPaletteRow.Append (CreateResetButton (ResetExtendedPaletteRows));
+		popoverHintPage.Append (extendedPaletteRow);
+
 		Gtk.Notebook notebook = Gtk.Notebook.New ();
 		notebook.AppendPage (canvasPage, Gtk.Label.New (Translations.GetString ("Canvas")));
 		notebook.AppendPage (clipboardPage, Gtk.Label.New (Translations.GetString ("Clipboard")));
@@ -151,6 +163,7 @@ public sealed partial class PreferencesDialog
 		canvas_height_spinner = heightSpinner;
 		canvas_surround_color_button = canvasSurroundColorButton;
 		paste_external_images_to_new_layer_check_button = pasteExternalImagesCheckButton;
+		extended_palette_rows_check_button = extendedPaletteRowsCheckButton;
 		popover_hint_mode_all_button = popoverHintModeAllButton;
 		popover_hint_mode_essential_button = popoverHintModeEssentialButton;
 		popover_hint_mode_none_button = popoverHintModeNoneButton;
@@ -170,6 +183,9 @@ public sealed partial class PreferencesDialog
 
 	private void ResetClipboard (Gtk.Button sender, EventArgs e)
 		=> paste_external_images_to_new_layer_check_button.Active = false;
+
+	private void ResetExtendedPaletteRows (Gtk.Button sender, EventArgs e)
+		=> extended_palette_rows_check_button.Active = false;
 
 	private void ResetPopoverHintMode (Gtk.Button sender, EventArgs e)
 		=> SetPopoverHintMode (PopoverHintMode.All);

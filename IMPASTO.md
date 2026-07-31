@@ -21,7 +21,8 @@ git fetch upstream && git rebase upstream/main
   user-visible branding changes. Renaming them touches every file and makes every rebase
   a conflict.
 - **Avoid `Pinta.Core` and `Pinta.Tools`.** Changes there are the expensive ones. So far
-  `Pinta.Tools` is untouched; `Pinta.Core` has three one-line edits.
+  `Pinta.Tools` is untouched; `Pinta.Core` carries the extended-palette helper plus a few
+  one-line edits.
 - Mark deliberate simplifications with a `ponytail:` comment naming the ceiling.
 - Prefer flipping an existing upstream setting over writing a feature. The menu bar was
   already fully built for macOS — it needed a one-line default change, not a rewrite.
@@ -48,10 +49,18 @@ git fetch upstream && git rebase upstream/main
 | Border around the toolbox | `MainWindow.cs` `HasFrame` | build only, **never run** |
 | "More >>" opens the full colour picker | `MainWindow.cs` | **build only, never clicked** |
 | Canvas surround colour preference in Edit → Settings | `PreferencesDialog.cs`, `CanvasWindow.cs` | build only, **never run** |
+| Optional darker third row in the palette (48 colors), Edit → Settings → UI | `PaletteHelper.cs`, `PreferencesDialog.cs`, `PaletteWidget.cs` | build only, **never run** |
 
 App ID is `com.github.zbcoding.Impasto`. Settings live in `~/.config/Impasto/settings.xml`
 so Impasto installs alongside Pinta rather than replacing it — the metainfo deliberately
 drops upstream's `<replaces>pinta.desktop</replaces>`.
+
+The extra palette row restores the 14 dark "127,x" hues that upstream's status-bar
+palette had (Pinta PR #154, issue #812) as a user setting, off by default. When enabled
+the default palette grows from 34 to 48 colors, the palette/recent-color widgets (status
+bar, floating colours, colour-picker dialog) lay out in three rows, and the status bar
+grows taller. The recent-colors list holds 12 instead of 10 so the third row reads as a
+full 4×3 grid.
 
 ## Known issues
 

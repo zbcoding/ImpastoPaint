@@ -34,6 +34,7 @@ internal sealed class PreferencesAction : IActionHandler
 			? ((CanvasWindow) PintaCore.Workspace.ActiveWorkspace.CanvasWindow).DefaultCanvasSurroundColor
 			: new Cairo.Color (0.2, 0.2, 0.2);
 		Cairo.Color canvasSurroundColor = Cairo.Color.FromHex (storedCanvasSurroundColor) ?? defaultCanvasSurroundColor;
+		bool extendedPaletteRows = settings.GetSetting (SettingNames.EXTENDED_PALETTE_ROWS, false);
 
 		using PreferencesDialog dialog = PreferencesDialog.New (
 			chrome,
@@ -43,6 +44,7 @@ internal sealed class PreferencesAction : IActionHandler
 			canvasSurroundColorIsDefault,
 			defaultCanvasSurroundColor,
 			settings.GetSetting (SettingNames.PASTE_EXTERNAL_IMAGES_TO_NEW_LAYER, false),
+			extendedPaletteRows,
 			(PopoverHintMode) settings.GetSetting (SettingNames.POPOVER_HINT_MODE, (int) PopoverHintMode.All));
 
 		try {
@@ -55,6 +57,13 @@ internal sealed class PreferencesAction : IActionHandler
 			settings.PutSetting (SettingNames.CANVAS_SURROUND_COLOR, selectedCanvasSurroundColor?.ToHex (addAlpha: false) ?? SettingNames.DEFAULT_CANVAS_SURROUND_COLOR);
 			settings.PutSetting (SettingNames.PASTE_EXTERNAL_IMAGES_TO_NEW_LAYER, dialog.PasteExternalImagesToNewLayer);
 			settings.PutSetting (SettingNames.POPOVER_HINT_MODE, (int) dialog.PopoverHintMode);
+
+			// Reloading the default palette is the visible effect of the extra-row
+			// toggle; doing it only when the value changed keeps custom palettes intact.
+			if (dialog.ExtendedPaletteRows != extendedPaletteRows) {
+				settings.PutSetting (SettingNames.EXTENDED_PALETTE_ROWS, dialog.ExtendedPaletteRows);
+				PintaCore.Palette.CurrentPalette.LoadDefault (dialog.ExtendedPaletteRows);
+			}
 
 			foreach (Document document in PintaCore.Workspace.OpenDocuments)
 				((CanvasWindow) document.Workspace.CanvasWindow).CanvasSurroundColor = selectedCanvasSurroundColor;

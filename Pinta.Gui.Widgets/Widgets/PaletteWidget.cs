@@ -1,13 +1,21 @@
+using System;
 using Pinta.Core;
 
 namespace Pinta.Gui.Widgets;
 
 internal static class PaletteWidget
 {
-	internal const int PALETTE_ROWS = 2;
+	// Two rows for the standard palette, three once the user opts into the extra
+	// darker row (see PaletteHelper.GetPaletteRowCount ()).
+	internal static int PALETTE_ROWS => PaletteHelper.GetPaletteRowCount ();
 	internal const int SWATCH_SIZE = 19;
-	internal const int WIDGET_HEIGHT = 42;
+	internal static int WIDGET_HEIGHT => 4 + SWATCH_SIZE * PALETTE_ROWS;
 	internal const int PALETTE_MARGIN = 10;
+
+	// The recently-used palette has a fixed color count that may not divide evenly
+	// into PALETTE_ROWS, so round up the column count.
+	internal static int GetRecentColorColumns (int maxRecentlyUsedColor)
+		=> (maxRecentlyUsedColor + PALETTE_ROWS - 1) / PALETTE_ROWS;
 
 	public static int GetSwatchAtLocation (
 		IPaletteService palette,
@@ -17,7 +25,7 @@ internal static class PaletteWidget
 	{
 		int max =
 			recentColorPalette
-			? palette.RecentlyUsedColors.Count
+			? Math.Min (palette.RecentlyUsedColors.Count, palette.MaxRecentlyUsedColor)
 			: palette.CurrentPalette.Colors.Count;
 
 		// This could be more efficient, but is good enough for now
@@ -42,7 +50,7 @@ internal static class PaletteWidget
 		// 4 | 5 | 6 | 7
 
 		// First we need to figure out what row and column the color is
-		int recent_cols = palette.MaxRecentlyUsedColor / PALETTE_ROWS;
+		int recent_cols = GetRecentColorColumns (palette.MaxRecentlyUsedColor);
 		int row = recentColorPalette ? index / recent_cols : index % PALETTE_ROWS;
 		int col = recentColorPalette ? index % recent_cols : index / PALETTE_ROWS;
 

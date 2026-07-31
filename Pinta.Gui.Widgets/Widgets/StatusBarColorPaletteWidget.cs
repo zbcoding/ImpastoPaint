@@ -289,7 +289,11 @@ public sealed partial class StatusBarColorPaletteWidget
 		// Draw recently used color swatches
 		var recent = palette.RecentlyUsedColors;
 
-		for (int i = 0; i < recent.Count; i++) {
+		// Only draw up to MaxRecentlyUsedColor, which is what the grid fits. The list
+		// can transiently hold more if the extended-palette setting was just toggled.
+		int recent_count = Math.Min (recent.Count, palette.MaxRecentlyUsedColor);
+
+		for (int i = 0; i < recent_count; i++) {
 
 			RectangleD swatchBounds = PaletteWidget.GetSwatchBounds (palette, i, recent_palette_rect, true);
 			Color recentColor = recent.ElementAt (i);
@@ -503,7 +507,7 @@ public sealed partial class StatusBarColorPaletteWidget
 
 	private void UpdateLayout (int width)
 	{
-		int recent_cols = palette.MaxRecentlyUsedColor / PaletteWidget.PALETTE_ROWS;
+		int recent_cols = PaletteWidget.GetRecentColorColumns (palette.MaxRecentlyUsedColor);
 		int swatch_height = PaletteWidget.SWATCH_SIZE * PaletteWidget.PALETTE_ROWS;
 
 		// Recent-colors section: a separator, then a small clock icon column, then the
@@ -627,8 +631,15 @@ public sealed partial class StatusBarColorPaletteWidget
 	{
 		// Color change events may be received while the widget is minimized,
 		// so we only call Invalidate() if the widget is shown.
-		if (GetRealized ())
+		if (GetRealized ()) {
+			// Toggling the extended-palette setting reloads the default palette; the
+			// extra row changes PALETTE_ROWS and the widget height, so re-layout.
+			if (HeightRequest != PaletteWidget.WIDGET_HEIGHT) {
+				HeightRequest = PaletteWidget.WIDGET_HEIGHT;
+				UpdateLayout (GetWidth ());
+			}
 			QueueDraw ();
+		}
 	}
 
 	private async Task<PaletteColors?> RunColorPicker (bool primarySelected)

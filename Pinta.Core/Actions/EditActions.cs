@@ -628,7 +628,7 @@ public sealed class EditActions
 
 	private void HandlerPintaCoreActionsEditResetPaletteActivated (object sender, EventArgs e)
 	{
-		palette.CurrentPalette.LoadDefault ();
+		palette.CurrentPalette.LoadDefault (PintaCore.Settings.GetSetting (SettingNames.EXTENDED_PALETTE_ROWS, false));
 	}
 
 	void HandleInvertSelectionActivated (object sender, EventArgs e)

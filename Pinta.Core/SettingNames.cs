@@ -22,6 +22,9 @@ internal static class SettingNames
 	internal const string SECONDARY_COLOR = "secondary-color";
 	internal const string RECENT_COLORS = "recently-used-colors";
 
+	// Impasto: add a third row of darker colors to the default palette.
+	internal const string EXTENDED_PALETTE_ROWS = "extended-palette-rows";
+
 	internal static string ToolAntialias (BaseTool tool)
 		=> $"{tool.GetType ().Name.ToLowerInvariant ()}-antialias";
 

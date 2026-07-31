@@ -1,8 +1,10 @@
+# #-#-#-#-#  fi.po (pinta)  #-#-#-#-#
 # Finnish translation for pinta
 # Copyright (c) 2010 Rosetta Contributors and Canonical Ltd 2010
 # This file is distributed under the same license as the pinta package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2010.
 #
+#, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: pinta\n"
@@ -19,6 +21,7 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
 "X-Generator: Weblate 5.13-dev\n"
 "X-Launchpad-Export-Date: 2023-12-18 03:00+0000\n"
+"Content-Type: text/plain; charset=UTF-8\n"
 
 #: ../Pinta.Gui.Addins/InstallDialog.cs:268
 msgid " (in user directory)"
@@ -2977,6 +2980,45 @@ msgstr "{0}-paletti ({1})"
 #, csharp-format
 msgid "{0}%"
 msgstr "{0} %"
+
+msgid "All"
+msgstr "Kaikki"
+
+msgid "Essential"
+msgstr "Välttämättömät"
+
+msgid "None"
+msgstr "Ei mitään"
+
+msgid "Show all UI popover hints."
+msgstr "Näytä kaikki käyttöliittymän ponnahdusvihjeet."
+
+msgid "Show only essential tool hints."
+msgstr "Näytä vain tärkeät työkaluvihjeet."
+
+msgid "Hide all UI popover hints."
+msgstr "Piilota kaikki käyttöliittymän ponnahdusvihjeet."
+
+msgid ""
+"All: show all UI hints. Essential: show only specific tool hints. None: turn "
+"off UI popover hints."
+msgstr ""
+"Kaikki: näytä kaikki käyttöliittymän vihjeet. Välttämättömät: näytä vain "
+"tiettyjen työkalujen vihjeet. Ei mitään: poista käyttöliittymän "
+"ponnahdusvihjeet käytöstä."
+
+msgid "Popover hints:"
+msgstr "Ponnahdusvihjeet:"
+
+msgid "UI"
+msgstr "Käyttöliittymä"
+
+msgid "Reset UI Settings?"
+msgstr "Palautetaanko käyttöliittymän asetukset?"
+
+msgid "This resets popover hints to show all UI hints."
+msgstr ""
+"Tämä palauttaa ponnahdusvihjeet näyttämään kaikki käyttöliittymän vihjeet."
 
 #~ msgid "Change brush width. Shortcut keys: [ ]"
 #~ msgstr "Muuta siveltimen leveyttä. Pikanäppäimet: [ ]"

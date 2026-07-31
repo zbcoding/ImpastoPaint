@@ -1,8 +1,10 @@
+# #-#-#-#-#  ms.po (pinta)  #-#-#-#-#
 # Malay translation for pinta
 # Copyright (c) 2011 Rosetta Contributors and Canonical Ltd 2011
 # This file is distributed under the same license as the pinta package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2011.
 #
+#, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: pinta\n"
@@ -18,6 +20,7 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
 "X-Launchpad-Export-Date: 2023-12-18 03:00+0000\n"
 "X-Generator: Launchpad (build e1eeab5b20e19239bd7d5f36676f7a52988db88b)\n"
+"Content-Type: text/plain; charset=UTF-8\n"
 
 #: ../Pinta.Gui.Addins/InstallDialog.cs:268
 msgid " (in user directory)"
@@ -2957,6 +2960,43 @@ msgstr "Palet {0} ({1})"
 #, csharp-format
 msgid "{0}%"
 msgstr "{0}%"
+
+msgid "All"
+msgstr "Semua"
+
+msgid "Essential"
+msgstr "Penting"
+
+msgid "None"
+msgstr "Tiada"
+
+msgid "Show all UI popover hints."
+msgstr "Tunjukkan semua petua popover UI."
+
+msgid "Show only essential tool hints."
+msgstr "Tunjukkan petua alat penting sahaja."
+
+msgid "Hide all UI popover hints."
+msgstr "Sembunyikan semua petua popover UI."
+
+msgid ""
+"All: show all UI hints. Essential: show only specific tool hints. None: turn "
+"off UI popover hints."
+msgstr ""
+"Semua: tunjukkan semua petua UI. Penting: tunjukkan petua alat tertentu "
+"sahaja. Tiada: matikan petua popover UI."
+
+msgid "Popover hints:"
+msgstr "Petua popover:"
+
+msgid "UI"
+msgstr "UI"
+
+msgid "Reset UI Settings?"
+msgstr "Tetapkan semula tetapan UI?"
+
+msgid "This resets popover hints to show all UI hints."
+msgstr "Ini menetapkan semula petua popover untuk menunjukkan semua petua UI."
 
 #~ msgid "Layer Hidden"
 #~ msgstr "Lapisan Disembunyikan"

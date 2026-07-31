@@ -1,8 +1,10 @@
+# #-#-#-#-#  hu.po (pinta)  #-#-#-#-#
 # Hungarian translation for pinta
 # Copyright (c) 2011 Rosetta Contributors and Canonical Ltd 2011
 # This file is distributed under the same license as the pinta package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2011.
 #
+#, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: pinta\n"
@@ -19,6 +21,7 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
 "X-Generator: Weblate 5.11.1-dev\n"
 "X-Launchpad-Export-Date: 2023-12-18 03:00+0000\n"
+"Content-Type: text/plain; charset=UTF-8\n"
 
 #: ../Pinta.Gui.Addins/InstallDialog.cs:268
 msgid " (in user directory)"
@@ -3030,6 +3033,44 @@ msgstr "{0} paletta ({1})"
 #, csharp-format
 msgid "{0}%"
 msgstr "{0}%"
+
+msgid "All"
+msgstr "Összes"
+
+msgid "Essential"
+msgstr "Alapvető"
+
+msgid "None"
+msgstr "Nincs"
+
+msgid "Show all UI popover hints."
+msgstr "Az összes felületi felugró súgó megjelenítése."
+
+msgid "Show only essential tool hints."
+msgstr "Csak az alapvető eszközsúgók megjelenítése."
+
+msgid "Hide all UI popover hints."
+msgstr "Az összes felületi felugró súgó elrejtése."
+
+msgid ""
+"All: show all UI hints. Essential: show only specific tool hints. None: turn "
+"off UI popover hints."
+msgstr ""
+"Összes: minden felületi súgó megjelenítése. Alapvető: csak bizonyos eszközök "
+"súgóinak megjelenítése. Nincs: a felületi felugró súgók kikapcsolása."
+
+msgid "Popover hints:"
+msgstr "Felugró súgók:"
+
+msgid "UI"
+msgstr "Felhasználói felület"
+
+msgid "Reset UI Settings?"
+msgstr "Visszaállítja a felület beállításait?"
+
+msgid "This resets popover hints to show all UI hints."
+msgstr ""
+"Ez visszaállítja a felugró súgókat az összes felületi súgó megjelenítésére."
 
 #~ msgid "Change brush width. Shortcut keys: [ ]"
 #~ msgstr "Ecsetvastagság megváltoztatása. Gyorsbillentyű: [ ]"

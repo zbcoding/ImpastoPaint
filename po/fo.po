@@ -1,8 +1,10 @@
+# #-#-#-#-#  fo.po (pinta)  #-#-#-#-#
 # Faroese translation for pinta
 # Copyright (c) 2010 Rosetta Contributors and Canonical Ltd 2010
 # This file is distributed under the same license as the pinta package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2010.
 # Gunleif Joensen <gunleif@gmail.com>, 2010.
+#, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: pinta\n"
@@ -18,6 +20,7 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
 "X-Launchpad-Export-Date: 2023-12-18 03:00+0000\n"
 "X-Generator: Launchpad (build e1eeab5b20e19239bd7d5f36676f7a52988db88b)\n"
+"Content-Type: text/plain; charset=UTF-8\n"
 
 #: ../Pinta.Gui.Addins/InstallDialog.cs:268
 msgid " (in user directory)"
@@ -2944,6 +2947,45 @@ msgstr ""
 #, csharp-format
 msgid "{0}%"
 msgstr ""
+
+msgid "All"
+msgstr "Øll"
+
+msgid "Essential"
+msgstr "Týðandi"
+
+msgid "None"
+msgstr "Einki"
+
+msgid "Show all UI popover hints."
+msgstr "Vís øll sprettihjálpini í brúkaramótinum."
+
+msgid "Show only essential tool hints."
+msgstr "Vís bara týðandi amboðshjálp."
+
+msgid "Hide all UI popover hints."
+msgstr "Fjal allar sprettihjálpir í brúkaramótinum."
+
+msgid ""
+"All: show all UI hints. Essential: show only specific tool hints. None: turn "
+"off UI popover hints."
+msgstr ""
+"Øll: vís allar hjálpir í brúkaramótinum. Týðandi: vís bara hjálpir til ávís "
+"amboð. Einki: sløkk sprettihjálpina í brúkaramótinum."
+
+msgid "Popover hints:"
+msgstr "Sprettihjálp:"
+
+msgid "UI"
+msgstr "Brúkaramót"
+
+msgid "Reset UI Settings?"
+msgstr "Endurstovna stillingarnar í brúkaramótinum?"
+
+msgid "This resets popover hints to show all UI hints."
+msgstr ""
+"Hetta endursetur sprettihjálpina, so allar hjálpir í brúkaramótinum verða "
+"vístar."
 
 #~ msgid "Click to select region of similar color."
 #~ msgstr "Trýst fyri at velja øki við tílíkum liti."

@@ -1,8 +1,10 @@
+# #-#-#-#-#  ru.po (PACKAGE VERSION)  #-#-#-#-#
 # Pinta Translatable Strings
 # Copyright (C) 2010 Pinta Contributors
 # This file is distributed under the same license as the Pinta package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
+#, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
@@ -20,6 +22,7 @@ msgstr ""
 "n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
 "X-Generator: Weblate 2026.6.dev0\n"
 "X-Launchpad-Export-Date: 2023-12-18 03:00+0000\n"
+"Content-Type: text/plain; charset=UTF-8\n"
 
 #: ../Pinta.Gui.Addins/InstallDialog.cs:268
 msgid " (in user directory)"
@@ -3071,6 +3074,45 @@ msgstr "{0} палитра ({1})"
 #, csharp-format
 msgid "{0}%"
 msgstr "{0}%"
+
+msgid "All"
+msgstr "Все"
+
+msgid "Essential"
+msgstr "Основные"
+
+msgid "None"
+msgstr "Нет"
+
+msgid "Show all UI popover hints."
+msgstr "Показывать все всплывающие подсказки интерфейса."
+
+msgid "Show only essential tool hints."
+msgstr "Показывать только основные подсказки инструментов."
+
+msgid "Hide all UI popover hints."
+msgstr "Скрывать все всплывающие подсказки интерфейса."
+
+msgid ""
+"All: show all UI hints. Essential: show only specific tool hints. None: turn "
+"off UI popover hints."
+msgstr ""
+"Все: показывать все подсказки интерфейса. Основные: показывать только "
+"подсказки определённых инструментов. Нет: отключить всплывающие подсказки "
+"интерфейса."
+
+msgid "Popover hints:"
+msgstr "Всплывающие подсказки:"
+
+msgid "UI"
+msgstr "Интерфейс"
+
+msgid "Reset UI Settings?"
+msgstr "Сбросить настройки интерфейса?"
+
+msgid "This resets popover hints to show all UI hints."
+msgstr ""
+"Это сбросит всплывающие подсказки, чтобы показывать все подсказки интерфейса."
 
 #, csharp-format
 #~ msgid "Press {0} to decrease brush size"

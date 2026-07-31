@@ -1,8 +1,10 @@
+# #-#-#-#-#  th.po (pinta)  #-#-#-#-#
 # Thai translation for pinta
 # Copyright (c) 2010 Rosetta Contributors and Canonical Ltd 2010
 # This file is distributed under the same license as the pinta package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2010.
 #
+#, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: pinta\n"
@@ -18,6 +20,7 @@ msgstr ""
 "Plural-Forms: nplurals=1; plural=0;\n"
 "X-Launchpad-Export-Date: 2023-12-18 03:00+0000\n"
 "X-Generator: Launchpad (build e1eeab5b20e19239bd7d5f36676f7a52988db88b)\n"
+"Content-Type: text/plain; charset=UTF-8\n"
 
 #: ../Pinta.Gui.Addins/InstallDialog.cs:268
 msgid " (in user directory)"
@@ -2941,6 +2944,43 @@ msgstr ""
 #, csharp-format
 msgid "{0}%"
 msgstr "{0}%"
+
+msgid "All"
+msgstr "ทั้งหมด"
+
+msgid "Essential"
+msgstr "จำเป็น"
+
+msgid "None"
+msgstr "ไม่มี"
+
+msgid "Show all UI popover hints."
+msgstr "แสดงคำแนะนำแบบป๊อปโอเวอร์ของ UI ทั้งหมด"
+
+msgid "Show only essential tool hints."
+msgstr "แสดงเฉพาะคำแนะนำเครื่องมือที่จำเป็น"
+
+msgid "Hide all UI popover hints."
+msgstr "ซ่อนคำแนะนำแบบป๊อปโอเวอร์ของ UI ทั้งหมด"
+
+msgid ""
+"All: show all UI hints. Essential: show only specific tool hints. None: turn "
+"off UI popover hints."
+msgstr ""
+"ทั้งหมด: แสดงคำแนะนำ UI ทั้งหมด จำเป็น: แสดงเฉพาะคำแนะนำของเครื่องมือที่ระบุ ไม่มี: "
+"ปิดคำแนะนำแบบป๊อปโอเวอร์ของ UI"
+
+msgid "Popover hints:"
+msgstr "คำแนะนำแบบป๊อปโอเวอร์:"
+
+msgid "UI"
+msgstr "UI"
+
+msgid "Reset UI Settings?"
+msgstr "รีเซ็ตการตั้งค่า UI หรือไม่"
+
+msgid "This resets popover hints to show all UI hints."
+msgstr "การดำเนินการนี้จะรีเซ็ตคำแนะนำแบบป๊อปโอเวอร์ให้แสดงคำแนะนำ UI ทั้งหมด"
 
 #~ msgid "_Layers"
 #~ msgstr "_ชั้นงาน"

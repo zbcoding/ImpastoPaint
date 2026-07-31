@@ -1,8 +1,10 @@
+# #-#-#-#-#  es.po (pinta)  #-#-#-#-#
 # Spanish translation for pinta
 # Copyright (c) 2010 Rosetta Contributors and Canonical Ltd 2010
 # This file is distributed under the same license as the pinta package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2010.
 #
+#, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: pinta\n"
@@ -19,6 +21,7 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
 "X-Generator: Weblate 2026.7.dev0\n"
 "X-Launchpad-Export-Date: 2023-12-18 03:00+0000\n"
+"Content-Type: text/plain; charset=UTF-8\n"
 
 #: ../Pinta.Gui.Addins/InstallDialog.cs:268
 msgid " (in user directory)"
@@ -3033,6 +3036,46 @@ msgstr "Paleta {0} ({1})"
 #, csharp-format
 msgid "{0}%"
 msgstr "{0} %"
+
+msgid "All"
+msgstr "Todos"
+
+msgid "Essential"
+msgstr "Esenciales"
+
+msgid "None"
+msgstr "Ninguno"
+
+msgid "Show all UI popover hints."
+msgstr "Mostrar todas las sugerencias emergentes de la interfaz."
+
+msgid "Show only essential tool hints."
+msgstr "Mostrar solo las sugerencias esenciales de las herramientas."
+
+msgid "Hide all UI popover hints."
+msgstr "Ocultar todas las sugerencias emergentes de la interfaz."
+
+msgid ""
+"All: show all UI hints. Essential: show only specific tool hints. None: turn "
+"off UI popover hints."
+msgstr ""
+"Todos: mostrar todas las sugerencias de la interfaz. Esenciales: mostrar "
+"solo sugerencias de herramientas concretas. Ninguno: desactivar las "
+"sugerencias emergentes de la interfaz."
+
+msgid "Popover hints:"
+msgstr "Sugerencias emergentes:"
+
+msgid "UI"
+msgstr "Interfaz"
+
+msgid "Reset UI Settings?"
+msgstr "¿Restablecer los ajustes de la interfaz?"
+
+msgid "This resets popover hints to show all UI hints."
+msgstr ""
+"Esto restablece las sugerencias emergentes para mostrar todas las "
+"sugerencias de la interfaz."
 
 #~ msgid "Change brush width. Shortcut keys: [ ]"
 #~ msgstr "Cambiar la anchura del pincel. Atajos de teclado: [ ]"

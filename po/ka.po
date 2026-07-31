@@ -1,8 +1,10 @@
+# #-#-#-#-#  ka.po (pinta)  #-#-#-#-#
 # Georgian translation for pinta
 # Copyright (c) 2012 Rosetta Contributors and Canonical Ltd 2012
 # This file is distributed under the same license as the pinta package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2012.
 #
+#, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: pinta\n"
@@ -19,6 +21,7 @@ msgstr ""
 "Plural-Forms: nplurals=1; plural=0;\n"
 "X-Generator: Weblate 5.11-dev\n"
 "X-Launchpad-Export-Date: 2023-12-18 03:00+0000\n"
+"Content-Type: text/plain; charset=UTF-8\n"
 
 #: ../Pinta.Gui.Addins/InstallDialog.cs:268
 msgid " (in user directory)"
@@ -2936,6 +2939,45 @@ msgstr ""
 #, csharp-format
 msgid "{0}%"
 msgstr ""
+
+msgid "All"
+msgstr "ყველა"
+
+msgid "Essential"
+msgstr "ძირითადი"
+
+msgid "None"
+msgstr "არცერთი"
+
+msgid "Show all UI popover hints."
+msgstr "მომხმარებლის ინტერფეისის ყველა ამომხტარი მინიშნების ჩვენება."
+
+msgid "Show only essential tool hints."
+msgstr "მხოლოდ ძირითადი ხელსაწყოების მინიშნებების ჩვენება."
+
+msgid "Hide all UI popover hints."
+msgstr "მომხმარებლის ინტერფეისის ყველა ამომხტარი მინიშნების დამალვა."
+
+msgid ""
+"All: show all UI hints. Essential: show only specific tool hints. None: turn "
+"off UI popover hints."
+msgstr ""
+"ყველა: ინტერფეისის ყველა მინიშნების ჩვენება. ძირითადი: მხოლოდ კონკრეტული "
+"ხელსაწყოების მინიშნებების ჩვენება. არცერთი: ინტერფეისის ამომხტარი "
+"მინიშნებების გამორთვა."
+
+msgid "Popover hints:"
+msgstr "ამომხტარი მინიშნებები:"
+
+msgid "UI"
+msgstr "მომხმარებლის ინტერფეისი"
+
+msgid "Reset UI Settings?"
+msgstr "გსურთ ინტერფეისის პარამეტრების აღდგენა?"
+
+msgid "This resets popover hints to show all UI hints."
+msgstr ""
+"ეს აღადგენს ამომხტარ მინიშნებებს ინტერფეისის ყველა მინიშნების საჩვენებლად."
 
 #~ msgid "_Layers"
 #~ msgstr "_ფენები"

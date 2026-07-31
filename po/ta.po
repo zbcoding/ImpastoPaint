@@ -1,8 +1,10 @@
+# #-#-#-#-#  ta.po (PACKAGE VERSION)  #-#-#-#-#
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
+#, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
@@ -17,6 +19,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
 "X-Generator: Weblate 5.12.1\n"
+"Content-Type: text/plain; charset=UTF-8\n"
 
 #: ../Pinta.Gui.Addins/InstallDialog.cs:268
 msgid " (in user directory)"
@@ -2991,6 +2994,44 @@ msgstr "{0} தட்டு ({1})"
 #, csharp-format
 msgid "{0}%"
 msgstr "{0}%"
+
+msgid "All"
+msgstr "அனைத்தும்"
+
+msgid "Essential"
+msgstr "அத்தியாவசியம்"
+
+msgid "None"
+msgstr "எதுவுமில்லை"
+
+msgid "Show all UI popover hints."
+msgstr "அனைத்து UI பாப்ஓவர் குறிப்புகளையும் காட்டு."
+
+msgid "Show only essential tool hints."
+msgstr "அத்தியாவசிய கருவிக் குறிப்புகளை மட்டும் காட்டு."
+
+msgid "Hide all UI popover hints."
+msgstr "அனைத்து UI பாப்ஓவர் குறிப்புகளையும் மறை."
+
+msgid ""
+"All: show all UI hints. Essential: show only specific tool hints. None: turn "
+"off UI popover hints."
+msgstr ""
+"அனைத்தும்: அனைத்து UI குறிப்புகளையும் காட்டு. அத்தியாவசியம்: குறிப்பிட்ட கருவிகளின் "
+"குறிப்புகளை மட்டும் காட்டு. எதுவுமில்லை: UI பாப்ஓவர் குறிப்புகளை முடக்கு."
+
+msgid "Popover hints:"
+msgstr "பாப்ஓவர் குறிப்புகள்:"
+
+msgid "UI"
+msgstr "UI"
+
+msgid "Reset UI Settings?"
+msgstr "UI அமைப்புகளை மீட்டமைக்கவா?"
+
+msgid "This resets popover hints to show all UI hints."
+msgstr ""
+"இது அனைத்து UI குறிப்புகளையும் காட்டும் வகையில் பாப்ஓவர் குறிப்புகளை மீட்டமைக்கிறது."
 
 #~ msgid "Change brush width. Shortcut keys: [ ]"
 #~ msgstr "தூரிகை அகலத்தை மாற்றவும். குறுக்குவழி விசைகள்: []"

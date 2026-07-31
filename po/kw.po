@@ -1,8 +1,10 @@
+# #-#-#-#-#  kw.po (PACKAGE VERSION)  #-#-#-#-#
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
+#, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
@@ -24,6 +26,7 @@ msgstr ""
 "n % 100 == 63 || n % 100 == 83) ? 3 : ((n != 1 && (n % 100 == 1 || n % 100 "
 "== 21 || n % 100 == 41 || n % 100 == 61 || n % 100 == 81)) ? 4 : 5))));\n"
 "X-Generator: Weblate 5.16-dev\n"
+"Content-Type: text/plain; charset=UTF-8\n"
 
 #: ../Pinta.Gui.Addins/InstallDialog.cs:268
 msgid " (in user directory)"
@@ -2948,6 +2951,43 @@ msgstr ""
 #, csharp-format
 msgid "{0}%"
 msgstr ""
+
+msgid "All"
+msgstr "All"
+
+msgid "Essential"
+msgstr "Essential"
+
+msgid "None"
+msgstr "None"
+
+msgid "Show all UI popover hints."
+msgstr "Show all UI popover hints."
+
+msgid "Show only essential tool hints."
+msgstr "Show only essential tool hints."
+
+msgid "Hide all UI popover hints."
+msgstr "Hide all UI popover hints."
+
+msgid ""
+"All: show all UI hints. Essential: show only specific tool hints. None: turn "
+"off UI popover hints."
+msgstr ""
+"All: show all UI hints. Essential: show only specific tool hints. None: turn "
+"off UI popover hints."
+
+msgid "Popover hints:"
+msgstr "Popover hints:"
+
+msgid "UI"
+msgstr "UI"
+
+msgid "Reset UI Settings?"
+msgstr "Reset UI Settings?"
+
+msgid "This resets popover hints to show all UI hints."
+msgstr "This resets popover hints to show all UI hints."
 
 #~ msgid "Change brush width. Shortcut keys: [ ]"
 #~ msgstr "Chanjya lester pyncel. Kesunyans bysowek: [ ]"

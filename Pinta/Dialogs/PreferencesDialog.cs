@@ -14,6 +14,7 @@ public sealed partial class PreferencesDialog
 	private Gtk.SpinButton canvas_height_spinner;
 	private PintaColorButton canvas_surround_color_button;
 	private Gtk.CheckButton paste_external_images_to_new_layer_check_button;
+	private Gtk.DropDown popover_hint_mode_dropdown;
 	private bool canvas_surround_color_is_default;
 	private Cairo.Color default_canvas_surround_color;
 
@@ -31,8 +32,9 @@ public sealed partial class PreferencesDialog
 	public int DefaultCanvasHeight => canvas_height_spinner.GetValueAsInt ();
 	public Cairo.Color? CanvasSurroundColor => canvas_surround_color_is_default ? null : canvas_surround_color_button.DisplayColor;
 	public bool PasteExternalImagesToNewLayer => paste_external_images_to_new_layer_check_button.Active;
+	public PopoverHintMode PopoverHintMode => (PopoverHintMode) popover_hint_mode_dropdown.Selected;
 
-	internal static PreferencesDialog New (ChromeManager chrome, int defaultCanvasWidth, int defaultCanvasHeight, Cairo.Color canvasSurroundColor, bool canvasSurroundColorIsDefault, Cairo.Color defaultCanvasSurroundColor, bool pasteExternalImagesToNewLayer)
+	internal static PreferencesDialog New (ChromeManager chrome, int defaultCanvasWidth, int defaultCanvasHeight, Cairo.Color canvasSurroundColor, bool canvasSurroundColorIsDefault, Cairo.Color defaultCanvasSurroundColor, bool pasteExternalImagesToNewLayer, PopoverHintMode popoverHintMode)
 	{
 		PreferencesDialog dialog = NewWithProperties ([]);
 		dialog.canvas_width_spinner.Value = defaultCanvasWidth;
@@ -41,6 +43,7 @@ public sealed partial class PreferencesDialog
 		dialog.canvas_surround_color_is_default = canvasSurroundColorIsDefault;
 		dialog.default_canvas_surround_color = defaultCanvasSurroundColor;
 		dialog.paste_external_images_to_new_layer_check_button.Active = pasteExternalImagesToNewLayer;
+		dialog.popover_hint_mode_dropdown.Selected = (uint) popoverHintMode;
 		dialog.TransientFor = chrome.MainWindow;
 		return dialog;
 	}
@@ -49,6 +52,7 @@ public sealed partial class PreferencesDialog
 	[MemberNotNull (nameof (canvas_height_spinner))]
 	[MemberNotNull (nameof (canvas_surround_color_button))]
 	[MemberNotNull (nameof (paste_external_images_to_new_layer_check_button))]
+	[MemberNotNull (nameof (popover_hint_mode_dropdown))]
 	partial void Initialize ()
 	{
 		Gtk.SpinButton widthSpinner = Gtk.SpinButton.NewWithRange (1, MAX_CANVAS_DIMENSION, 1);
@@ -101,9 +105,53 @@ public sealed partial class PreferencesDialog
 		resetClipboardButton.OnClicked += ConfirmClipboardReset;
 		clipboardPage.Append (resetClipboardButton);
 
+		Gtk.StringList popoverHintModeModel = Gtk.StringList.New ([
+			Translations.GetString ("All"),
+			Translations.GetString ("Essential"),
+			Translations.GetString ("None")
+		]);
+		string[] popoverHintModeTooltips = [
+			Translations.GetString ("Show all UI popover hints."),
+			Translations.GetString ("Show only essential tool hints."),
+			Translations.GetString ("Hide all UI popover hints.")
+		];
+		Gtk.DropDown popoverHintModeDropdown = Gtk.DropDown.New (popoverHintModeModel, expression: null);
+		Gtk.SignalListItemFactory popoverHintModeFactory = Gtk.SignalListItemFactory.New ();
+		popoverHintModeFactory.OnSetup += (_, args) => ((Gtk.ListItem) args.Object).SetChild (Gtk.Label.New (null));
+		popoverHintModeFactory.OnBind += (_, args) => {
+			Gtk.ListItem item = (Gtk.ListItem) args.Object;
+			Gtk.Label label = (Gtk.Label) item.GetChild ()!;
+			int position = (int) item.Position;
+			label.SetText (popoverHintModeModel.GetString (item.Position) ?? string.Empty);
+			label.TooltipText = popoverHintModeTooltips[position];
+		};
+		popoverHintModeDropdown.SetFactory (popoverHintModeFactory);
+		popoverHintModeDropdown.SetListFactory (popoverHintModeFactory);
+		void UpdatePopoverHintModeTooltip ()
+			=> popoverHintModeDropdown.TooltipText = popoverHintModeTooltips[(int) popoverHintModeDropdown.Selected];
+		Gtk.DropDown.SelectedPropertyDefinition.Notify (popoverHintModeDropdown, (_, _) => UpdatePopoverHintModeTooltip ());
+		UpdatePopoverHintModeTooltip ();
+
+		Gtk.Label popoverHintDescription = Gtk.Label.New (Translations.GetString (
+			"All: show all UI hints. Essential: show only specific tool hints. None: turn off UI popover hints."));
+		popoverHintDescription.Wrap = true;
+		popoverHintDescription.Xalign = 0;
+
+		Gtk.Box popoverHintPage = Gtk.Box.New (Gtk.Orientation.Vertical, SPACING);
+		popoverHintPage.SetAllMargins (12);
+		popoverHintPage.Append (Gtk.Label.New (Translations.GetString ("Popover hints:")));
+		popoverHintPage.Append (popoverHintModeDropdown);
+		popoverHintPage.Append (popoverHintDescription);
+
+		Gtk.Button resetPopoverHintButton = Gtk.Button.NewWithLabel (Translations.GetString ("Reset to Defaults"));
+		resetPopoverHintButton.Halign = Gtk.Align.Center;
+		resetPopoverHintButton.OnClicked += ConfirmPopoverHintReset;
+		popoverHintPage.Append (resetPopoverHintButton);
+
 		Gtk.Notebook notebook = Gtk.Notebook.New ();
 		notebook.AppendPage (canvasPage, Gtk.Label.New (Translations.GetString ("Canvas")));
 		notebook.AppendPage (clipboardPage, Gtk.Label.New (Translations.GetString ("Clipboard")));
+		notebook.AppendPage (popoverHintPage, Gtk.Label.New (Translations.GetString ("UI")));
 		contentArea.Append (notebook);
 
 		Title = Translations.GetString ("Settings");
@@ -117,6 +165,7 @@ public sealed partial class PreferencesDialog
 		canvas_height_spinner = heightSpinner;
 		canvas_surround_color_button = canvasSurroundColorButton;
 		paste_external_images_to_new_layer_check_button = pasteExternalImagesCheckButton;
+		popover_hint_mode_dropdown = popoverHintModeDropdown;
 	}
 
 	private async void ConfirmCanvasReset (Gtk.Button sender, EventArgs e)
@@ -148,6 +197,19 @@ public sealed partial class PreferencesDialog
 
 		if (await confirmation.ChooseAsync (this) == 0)
 			paste_external_images_to_new_layer_check_button.Active = false;
+	}
+
+	private async void ConfirmPopoverHintReset (Gtk.Button sender, EventArgs e)
+	{
+		Gtk.AlertDialog confirmation = Gtk.AlertDialog.NewWithProperties ([]);
+		confirmation.Message = Translations.GetString ("Reset UI Settings?");
+		confirmation.Detail = Translations.GetString ("This resets popover hints to show all UI hints.");
+		confirmation.Buttons = [Translations.GetString ("Reset"), Translations.GetString ("Cancel")];
+		confirmation.DefaultButton = 1;
+		confirmation.CancelButton = 1;
+
+		if (await confirmation.ChooseAsync (this) == 0)
+			popover_hint_mode_dropdown.Selected = (uint) PopoverHintMode.All;
 	}
 
 	private async void ChooseCanvasSurroundColor (Gtk.Button sender, EventArgs e)

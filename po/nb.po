@@ -1,8 +1,10 @@
+# #-#-#-#-#  nb.po (pinta)  #-#-#-#-#
 # Norwegian Bokmal translation for pinta
 # Copyright (c) 2010 Rosetta Contributors and Canonical Ltd 2010
 # This file is distributed under the same license as the pinta package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2010.
 #
+#, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: pinta\n"
@@ -19,6 +21,7 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
 "X-Generator: Weblate 5.16-dev\n"
 "X-Launchpad-Export-Date: 2023-12-18 03:00+0000\n"
+"Content-Type: text/plain; charset=UTF-8\n"
 
 #: ../Pinta.Gui.Addins/InstallDialog.cs:268
 msgid " (in user directory)"
@@ -2958,6 +2961,45 @@ msgstr ""
 #, csharp-format
 msgid "{0}%"
 msgstr ""
+
+msgid "All"
+msgstr "Alle"
+
+msgid "Essential"
+msgstr "Viktige"
+
+msgid "None"
+msgstr "Ingen"
+
+msgid "Show all UI popover hints."
+msgstr "Vis alle popup-tips for brukergrensesnittet."
+
+msgid "Show only essential tool hints."
+msgstr "Vis bare viktige verktøytips."
+
+msgid "Hide all UI popover hints."
+msgstr "Skjul alle popup-tips for brukergrensesnittet."
+
+msgid ""
+"All: show all UI hints. Essential: show only specific tool hints. None: turn "
+"off UI popover hints."
+msgstr ""
+"Alle: vis alle tips for brukergrensesnittet. Viktige: vis bare tips for "
+"bestemte verktøy. Ingen: slå av popup-tips for brukergrensesnittet."
+
+msgid "Popover hints:"
+msgstr "Popup-tips:"
+
+msgid "UI"
+msgstr "Brukergrensesnitt"
+
+msgid "Reset UI Settings?"
+msgstr "Tilbakestille innstillingene for brukergrensesnittet?"
+
+msgid "This resets popover hints to show all UI hints."
+msgstr ""
+"Dette tilbakestiller popup-tipsene slik at alle tips for brukergrensesnittet "
+"vises."
 
 #, fuzzy
 #~ msgid "Change brush width. Shortcut keys: [ ]"

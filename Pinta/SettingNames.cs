@@ -12,6 +12,7 @@ internal static class SettingNames
 	internal const string CANVAS_SURROUND_COLOR = "canvas-surround-color";
 	internal const string DEFAULT_CANVAS_SURROUND_COLOR = "";
 	internal const string PASTE_EXTERNAL_IMAGES_TO_NEW_LAYER = "paste-external-images-to-new-layer";
+	internal const string POPOVER_HINT_MODE = "popover-hint-mode";
 
 	internal const string RULER_METRIC = "ruler-metric";
 	internal const string COLOR_SCHEME = "color-scheme";

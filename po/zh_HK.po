@@ -1,8 +1,10 @@
+# #-#-#-#-#  zh_HK.po (pinta)  #-#-#-#-#
 # Chinese (Hong Kong) translation for pinta
 # Copyright (c) 2015 Rosetta Contributors and Canonical Ltd 2015
 # This file is distributed under the same license as the pinta package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2015.
 #
+#, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: pinta\n"
@@ -19,6 +21,7 @@ msgstr ""
 "Plural-Forms: nplurals=1; plural=0;\n"
 "X-Generator: Weblate 5.7-dev\n"
 "X-Launchpad-Export-Date: 2023-12-18 03:00+0000\n"
+"Content-Type: text/plain; charset=UTF-8\n"
 
 #: ../Pinta.Gui.Addins/InstallDialog.cs:268
 msgid " (in user directory)"
@@ -2939,6 +2942,43 @@ msgstr ""
 #, csharp-format
 msgid "{0}%"
 msgstr ""
+
+msgid "All"
+msgstr "全部"
+
+msgid "Essential"
+msgstr "必要"
+
+msgid "None"
+msgstr "沒有"
+
+msgid "Show all UI popover hints."
+msgstr "顯示所有使用者介面彈出提示。"
+
+msgid "Show only essential tool hints."
+msgstr "只顯示必要的工具提示。"
+
+msgid "Hide all UI popover hints."
+msgstr "隱藏所有使用者介面彈出提示。"
+
+msgid ""
+"All: show all UI hints. Essential: show only specific tool hints. None: turn "
+"off UI popover hints."
+msgstr ""
+"全部：顯示所有使用者介面提示。必要：只顯示特定工具提示。沒有：關閉使用者介面"
+"彈出提示。"
+
+msgid "Popover hints:"
+msgstr "彈出提示："
+
+msgid "UI"
+msgstr "使用者介面"
+
+msgid "Reset UI Settings?"
+msgstr "重設使用者介面設定？"
+
+msgid "This resets popover hints to show all UI hints."
+msgstr "這會重設彈出提示，以顯示所有使用者介面提示。"
 
 #~ msgid "Add-in Manager"
 #~ msgstr "Add-in Manager"

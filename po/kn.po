@@ -1,8 +1,10 @@
+# #-#-#-#-#  kn.po (PACKAGE VERSION)  #-#-#-#-#
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
+#, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
@@ -16,6 +18,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
+"Content-Type: text/plain; charset=UTF-8\n"
 
 #: ../Pinta.Gui.Addins/InstallDialog.cs:268
 msgid " (in user directory)"
@@ -2932,3 +2935,40 @@ msgstr ""
 #, csharp-format
 msgid "{0}%"
 msgstr ""
+
+msgid "All"
+msgstr "ಎಲ್ಲಾ"
+
+msgid "Essential"
+msgstr "ಅಗತ್ಯ"
+
+msgid "None"
+msgstr "ಯಾವುದೂ ಇಲ್ಲ"
+
+msgid "Show all UI popover hints."
+msgstr "ಎಲ್ಲಾ UI ಪಾಪ್‌ಓವರ್ ಸುಳಿವುಗಳನ್ನು ತೋರಿಸಿ."
+
+msgid "Show only essential tool hints."
+msgstr "ಅಗತ್ಯವಿರುವ ಉಪಕರಣಗಳ ಸುಳಿವುಗಳನ್ನು ಮಾತ್ರ ತೋರಿಸಿ."
+
+msgid "Hide all UI popover hints."
+msgstr "ಎಲ್ಲಾ UI ಪಾಪ್‌ಓವರ್ ಸುಳಿವುಗಳನ್ನು ಮರೆಮಾಡಿ."
+
+msgid ""
+"All: show all UI hints. Essential: show only specific tool hints. None: turn "
+"off UI popover hints."
+msgstr ""
+"ಎಲ್ಲಾ: ಎಲ್ಲಾ UI ಸುಳಿವುಗಳನ್ನು ತೋರಿಸಿ. ಅಗತ್ಯ: ನಿರ್ದಿಷ್ಟ ಉಪಕರಣಗಳ ಸುಳಿವುಗಳನ್ನು ಮಾತ್ರ "
+"ತೋರಿಸಿ. ಯಾವುದೂ ಇಲ್ಲ: UI ಪಾಪ್‌ಓವರ್ ಸುಳಿವುಗಳನ್ನು ಆಫ್ ಮಾಡಿ."
+
+msgid "Popover hints:"
+msgstr "ಪಾಪ್‌ಓವರ್ ಸುಳಿವುಗಳು:"
+
+msgid "UI"
+msgstr "UI"
+
+msgid "Reset UI Settings?"
+msgstr "UI ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ಮರುಹೊಂದಿಸಬೇಕೆ?"
+
+msgid "This resets popover hints to show all UI hints."
+msgstr "ಇದು ಎಲ್ಲಾ UI ಸುಳಿವುಗಳನ್ನು ತೋರಿಸುವಂತೆ ಪಾಪ್‌ಓವರ್ ಸುಳಿವುಗಳನ್ನು ಮರುಹೊಂದಿಸುತ್ತದೆ."

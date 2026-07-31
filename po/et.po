@@ -1,8 +1,10 @@
+# #-#-#-#-#  et.po (pinta)  #-#-#-#-#
 # Estonian translation for pinta
 # Copyright (c) 2011 Rosetta Contributors and Canonical Ltd 2011
 # This file is distributed under the same license as the pinta package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2011.
 #
+#, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: pinta\n"
@@ -19,6 +21,7 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
 "X-Generator: Weblate 5.14-dev\n"
 "X-Launchpad-Export-Date: 2023-12-18 03:00+0000\n"
+"Content-Type: text/plain; charset=UTF-8\n"
 
 #: ../Pinta.Gui.Addins/InstallDialog.cs:268
 msgid " (in user directory)"
@@ -2939,6 +2942,43 @@ msgstr "{0} palett ({1})"
 #, csharp-format
 msgid "{0}%"
 msgstr "{0}%"
+
+msgid "All"
+msgstr "Kõik"
+
+msgid "Essential"
+msgstr "Olulised"
+
+msgid "None"
+msgstr "Mitte ükski"
+
+msgid "Show all UI popover hints."
+msgstr "Kuva kõik kasutajaliidese hüpikvihjed."
+
+msgid "Show only essential tool hints."
+msgstr "Kuva ainult olulised tööriistavihjed."
+
+msgid "Hide all UI popover hints."
+msgstr "Peida kõik kasutajaliidese hüpikvihjed."
+
+msgid ""
+"All: show all UI hints. Essential: show only specific tool hints. None: turn "
+"off UI popover hints."
+msgstr ""
+"Kõik: kuva kõik kasutajaliidese vihjed. Olulised: kuva ainult kindlate "
+"tööriistade vihjed. Mitte ükski: lülita kasutajaliidese hüpikvihjed välja."
+
+msgid "Popover hints:"
+msgstr "Hüpikvihjed:"
+
+msgid "UI"
+msgstr "Kasutajaliides"
+
+msgid "Reset UI Settings?"
+msgstr "Kas lähtestada kasutajaliidese seaded?"
+
+msgid "This resets popover hints to show all UI hints."
+msgstr "See lähtestab hüpikvihjed, et kuvada kõik kasutajaliidese vihjed."
 
 #~ msgid "Change brush width. Shortcut keys: [ ]"
 #~ msgstr "Muuda pintsli suurust. Klaviatuuri otseteed: [ ]"

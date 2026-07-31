@@ -778,12 +778,18 @@ public abstract class BaseTransformTool : BaseTool
 		if (nudge_hint_visible)
 			return;
 
+		Gtk.Widget canvas = workspace.ActiveWorkspace.Canvas;
+		if (!ShouldShowPopoverHint ()) {
+			if (canvas.TooltipText is not null)
+				canvas.SetTooltipText (null);
+			return;
+		}
+
 		string? hint = overGrip
 			// Translators: hint shown when hovering a selection resize handle. Now lists shortcuts vertically.
 			? Translations.GetString ("Drag to resize\nShift: keep aspect ratio\nCtrl+drag: scale from center\nAlt-drag: rotate")
 			: null;
 
-		Gtk.Widget canvas = workspace.ActiveWorkspace.Canvas;
 		if (canvas.TooltipText != hint)
 			canvas.SetTooltipText (hint);
 	}
@@ -796,7 +802,7 @@ public abstract class BaseTransformTool : BaseTool
 	/// </summary>
 	private void ShowNudgeHint (Document document)
 	{
-		if (!workspace.HasOpenDocuments)
+		if (!workspace.HasOpenDocuments || !ShouldShowPopoverHint ())
 			return;
 
 		ToolBindingDescriptor[] nudgeBindings = [
@@ -888,6 +894,9 @@ public abstract class BaseTransformTool : BaseTool
 		last_nudge_hint = hint;
 		nudge_hint_visible = true;
 	}
+
+	private static bool ShouldShowPopoverHint ()
+		=> PintaCore.Settings.GetSetting (SettingNames.POPOVER_HINT_MODE, (int) PopoverHintMode.All) != (int) PopoverHintMode.None;
 
 	private void HideNudgeHint ()
 	{

@@ -1,8 +1,10 @@
+# #-#-#-#-#  ur.po (PACKAGE VERSION)  #-#-#-#-#
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
+#, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
@@ -16,6 +18,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
+"Content-Type: text/plain; charset=UTF-8\n"
 
 #: ../Pinta.Gui.Addins/InstallDialog.cs:268
 msgid " (in user directory)"
@@ -2932,3 +2935,40 @@ msgstr ""
 #, csharp-format
 msgid "{0}%"
 msgstr ""
+
+msgid "All"
+msgstr "سب"
+
+msgid "Essential"
+msgstr "ضروری"
+
+msgid "None"
+msgstr "کوئی نہیں"
+
+msgid "Show all UI popover hints."
+msgstr "UI کے تمام پاپ اوور اشارے دکھائیں۔"
+
+msgid "Show only essential tool hints."
+msgstr "صرف ضروری ٹول اشارے دکھائیں۔"
+
+msgid "Hide all UI popover hints."
+msgstr "UI کے تمام پاپ اوور اشارے چھپائیں۔"
+
+msgid ""
+"All: show all UI hints. Essential: show only specific tool hints. None: turn "
+"off UI popover hints."
+msgstr ""
+"سب: تمام UI اشارے دکھائیں۔ ضروری: صرف مخصوص ٹول اشارے دکھائیں۔ کوئی نہیں: UI "
+"پاپ اوور اشارے بند کریں۔"
+
+msgid "Popover hints:"
+msgstr "پاپ اوور اشارے:"
+
+msgid "UI"
+msgstr "UI"
+
+msgid "Reset UI Settings?"
+msgstr "UI ترتیبات ری سیٹ کریں؟"
+
+msgid "This resets popover hints to show all UI hints."
+msgstr "یہ پاپ اوور اشاروں کو ری سیٹ کرکے تمام UI اشارے دکھاتا ہے۔"

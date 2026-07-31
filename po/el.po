@@ -1,8 +1,10 @@
+# #-#-#-#-#  el.po (pinta)  #-#-#-#-#
 # Greek translation for pinta
 # Copyright (c) 2010 Rosetta Contributors and Canonical Ltd 2010
 # This file is distributed under the same license as the pinta package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2010.
 #
+#, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: pinta\n"
@@ -19,6 +21,7 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
 "X-Generator: Weblate 5.16-dev\n"
 "X-Launchpad-Export-Date: 2023-12-18 03:00+0000\n"
+"Content-Type: text/plain; charset=UTF-8\n"
 
 #: ../Pinta.Gui.Addins/InstallDialog.cs:268
 msgid " (in user directory)"
@@ -3030,6 +3033,46 @@ msgstr "{0} παλέτα ({1})"
 #, csharp-format
 msgid "{0}%"
 msgstr "{0}%"
+
+msgid "All"
+msgstr "Όλα"
+
+msgid "Essential"
+msgstr "Βασικά"
+
+msgid "None"
+msgstr "Κανένα"
+
+msgid "Show all UI popover hints."
+msgstr "Εμφάνιση όλων των αναδυόμενων υποδείξεων του περιβάλλοντος εργασίας."
+
+msgid "Show only essential tool hints."
+msgstr "Εμφάνιση μόνο των βασικών υποδείξεων εργαλείων."
+
+msgid "Hide all UI popover hints."
+msgstr "Απόκρυψη όλων των αναδυόμενων υποδείξεων του περιβάλλοντος εργασίας."
+
+msgid ""
+"All: show all UI hints. Essential: show only specific tool hints. None: turn "
+"off UI popover hints."
+msgstr ""
+"Όλα: εμφάνιση όλων των υποδείξεων του περιβάλλοντος εργασίας. Βασικά: "
+"εμφάνιση μόνο υποδείξεων συγκεκριμένων εργαλείων. Κανένα: απενεργοποίηση των "
+"αναδυόμενων υποδείξεων του περιβάλλοντος εργασίας."
+
+msgid "Popover hints:"
+msgstr "Αναδυόμενες υποδείξεις:"
+
+msgid "UI"
+msgstr "Περιβάλλον εργασίας"
+
+msgid "Reset UI Settings?"
+msgstr "Επαναφορά ρυθμίσεων περιβάλλοντος εργασίας;"
+
+msgid "This resets popover hints to show all UI hints."
+msgstr ""
+"Αυτό επαναφέρει τις αναδυόμενες υποδείξεις ώστε να εμφανίζονται όλες οι "
+"υποδείξεις του περιβάλλοντος εργασίας."
 
 #~ msgid "Change brush width. Shortcut keys: [ ]"
 #~ msgstr "Αλλαγή πλάτους βούρτσας. Πλήκτρα συντόμευσης: []"

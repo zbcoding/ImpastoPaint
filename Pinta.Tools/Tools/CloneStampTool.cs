@@ -212,7 +212,7 @@ public sealed class CloneStampTool : BaseBrushTool
 	// with no origin set. Names the modifier (Ctrl) used to set the origin. Auto-dismisses.
 	private void ShowOriginHint (PointI canvasPoint)
 	{
-		if (!workspace.HasOpenDocuments)
+		if (!workspace.HasOpenDocuments || !ShouldShowPopoverHint ())
 			return;
 
 		var ws = workspace.ActiveWorkspace;
@@ -254,6 +254,9 @@ public sealed class CloneStampTool : BaseBrushTool
 			return false;
 		});
 	}
+
+	private static bool ShouldShowPopoverHint ()
+		=> PintaCore.Settings.GetSetting (SettingNames.POPOVER_HINT_MODE, (int) PopoverHintMode.All) != (int) PopoverHintMode.None;
 
 	private void HideOriginHint ()
 	{

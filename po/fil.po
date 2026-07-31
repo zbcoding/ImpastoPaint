@@ -1,8 +1,10 @@
+# #-#-#-#-#  fil.po (pinta)  #-#-#-#-#
 # Filipino translation for pinta
 # Copyright (c) 2011 Rosetta Contributors and Canonical Ltd 2011
 # This file is distributed under the same license as the pinta package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2011.
 #
+#, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: pinta\n"
@@ -19,6 +21,7 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 "X-Generator: Weblate 5.15-dev\n"
 "X-Launchpad-Export-Date: 2023-12-18 03:00+0000\n"
+"Content-Type: text/plain; charset=UTF-8\n"
 
 #: ../Pinta.Gui.Addins/InstallDialog.cs:268
 msgid " (in user directory)"
@@ -2943,6 +2946,44 @@ msgstr ""
 #, csharp-format
 msgid "{0}%"
 msgstr ""
+
+msgid "All"
+msgstr "Lahat"
+
+msgid "Essential"
+msgstr "Mahalaga"
+
+msgid "None"
+msgstr "Wala"
+
+msgid "Show all UI popover hints."
+msgstr "Ipakita ang lahat ng popover hint ng UI."
+
+msgid "Show only essential tool hints."
+msgstr "Ipakita lamang ang mahahalagang hint ng tool."
+
+msgid "Hide all UI popover hints."
+msgstr "Itago ang lahat ng popover hint ng UI."
+
+msgid ""
+"All: show all UI hints. Essential: show only specific tool hints. None: turn "
+"off UI popover hints."
+msgstr ""
+"Lahat: ipakita ang lahat ng hint ng UI. Mahalaga: ipakita lamang ang mga "
+"hint ng partikular na tool. Wala: patayin ang mga popover hint ng UI."
+
+msgid "Popover hints:"
+msgstr "Mga popover hint:"
+
+msgid "UI"
+msgstr "UI"
+
+msgid "Reset UI Settings?"
+msgstr "I-reset ang mga setting ng UI?"
+
+msgid "This resets popover hints to show all UI hints."
+msgstr ""
+"Nire-reset nito ang mga popover hint upang ipakita ang lahat ng hint ng UI."
 
 #~ msgid "Change brush width. Shortcut keys: [ ]"
 #~ msgstr "Palitan ang lapad ng brush. Shortcut key: [ ]"

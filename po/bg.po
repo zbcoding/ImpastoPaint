@@ -1,8 +1,10 @@
+# #-#-#-#-#  bg.po (pinta)  #-#-#-#-#
 # Bulgarian translation for pinta
 # Copyright (c) 2011 Rosetta Contributors and Canonical Ltd 2011
 # This file is distributed under the same license as the pinta package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2011.
 #
+#, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: pinta\n"
@@ -19,6 +21,7 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
 "X-Generator: Weblate 5.14-dev\n"
 "X-Launchpad-Export-Date: 2023-12-18 03:00+0000\n"
+"Content-Type: text/plain; charset=UTF-8\n"
 
 #: ../Pinta.Gui.Addins/InstallDialog.cs:268
 msgid " (in user directory)"
@@ -2947,6 +2950,46 @@ msgstr ""
 #, csharp-format
 msgid "{0}%"
 msgstr ""
+
+msgid "All"
+msgstr "Всички"
+
+msgid "Essential"
+msgstr "Основни"
+
+msgid "None"
+msgstr "Няма"
+
+msgid "Show all UI popover hints."
+msgstr "Показване на всички изскачащи подсказки за интерфейса."
+
+msgid "Show only essential tool hints."
+msgstr "Показване само на основните подсказки за инструментите."
+
+msgid "Hide all UI popover hints."
+msgstr "Скриване на всички изскачащи подсказки за интерфейса."
+
+msgid ""
+"All: show all UI hints. Essential: show only specific tool hints. None: turn "
+"off UI popover hints."
+msgstr ""
+"Всички: показване на всички подсказки за интерфейса. Основни: показване само "
+"на подсказки за определени инструменти. Няма: изключване на изскачащите "
+"подсказки за интерфейса."
+
+msgid "Popover hints:"
+msgstr "Изскачащи подсказки:"
+
+msgid "UI"
+msgstr "Интерфейс"
+
+msgid "Reset UI Settings?"
+msgstr "Нулиране на настройките на интерфейса?"
+
+msgid "This resets popover hints to show all UI hints."
+msgstr ""
+"Това нулира изскачащите подсказки, така че да се показват всички подсказки "
+"за интерфейса."
 
 #~ msgid "Click to select region of similar color."
 #~ msgstr "Кликнете за да изберете регион със подобни цветове."

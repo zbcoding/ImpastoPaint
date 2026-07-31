@@ -1,8 +1,10 @@
+# #-#-#-#-#  be.po (pinta)  #-#-#-#-#
 # Belarusian translation for pinta
 # Copyright (c) 2015 Rosetta Contributors and Canonical Ltd 2015
 # This file is distributed under the same license as the pinta package.
 # Mikalai Udodau <crom-a@tut.by>, 2015.
 #
+#, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: pinta\n"
@@ -19,6 +21,7 @@ msgstr ""
 "n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
 "X-Launchpad-Export-Date: 2023-12-18 03:00+0000\n"
 "X-Generator: Launchpad (build e1eeab5b20e19239bd7d5f36676f7a52988db88b)\n"
+"Content-Type: text/plain; charset=UTF-8\n"
 
 #: ../Pinta.Gui.Addins/InstallDialog.cs:268
 msgid " (in user directory)"
@@ -2958,6 +2961,44 @@ msgstr "Палітра {0} ({1})"
 #, csharp-format
 msgid "{0}%"
 msgstr "{0}%"
+
+msgid "All"
+msgstr "Усе"
+
+msgid "Essential"
+msgstr "Асноўныя"
+
+msgid "None"
+msgstr "Няма"
+
+msgid "Show all UI popover hints."
+msgstr "Паказваць усе ўсплывальныя падказкі інтэрфейсу."
+
+msgid "Show only essential tool hints."
+msgstr "Паказваць толькі асноўныя падказкі інструментаў."
+
+msgid "Hide all UI popover hints."
+msgstr "Хаваць усе ўсплывальныя падказкі інтэрфейсу."
+
+msgid ""
+"All: show all UI hints. Essential: show only specific tool hints. None: turn "
+"off UI popover hints."
+msgstr ""
+"Усе: паказваць усе падказкі інтэрфейсу. Асноўныя: паказваць толькі падказкі "
+"пэўных інструментаў. Няма: выключыць усплывальныя падказкі інтэрфейсу."
+
+msgid "Popover hints:"
+msgstr "Усплывальныя падказкі:"
+
+msgid "UI"
+msgstr "Інтэрфейс"
+
+msgid "Reset UI Settings?"
+msgstr "Скінуць налады інтэрфейсу?"
+
+msgid "This resets popover hints to show all UI hints."
+msgstr ""
+"Гэта скіне ўсплывальныя падказкі, каб паказваць усе падказкі інтэрфейсу."
 
 #~ msgid "Layer Hidden"
 #~ msgstr "Пласт схаваны"

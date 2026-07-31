@@ -1,6 +1,9 @@
 /docs-private
 .env*
 
+/.claude
+.claude/settings.local.json
+
 *.pidb
 *.suo
 *.swp
@@ -40,4 +43,3 @@ xdg/pinta.desktop
 xdg/pinta.appdata.xml
 .vs
 .vscode
-.claude/settings.local.json

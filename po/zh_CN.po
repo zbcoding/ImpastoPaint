@@ -1,8 +1,10 @@
+# #-#-#-#-#  zh_CN.po (pinta)  #-#-#-#-#
 # Chinese (Simplified) translation for pinta
 # Copyright (c) 2010 Rosetta Contributors and Canonical Ltd 2010
 # This file is distributed under the same license as the pinta package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2010.
 #
+#, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: pinta\n"
@@ -19,6 +21,7 @@ msgstr ""
 "Plural-Forms: nplurals=1; plural=0;\n"
 "X-Generator: Weblate 2026.5-dev\n"
 "X-Launchpad-Export-Date: 2023-12-18 03:00+0000\n"
+"Content-Type: text/plain; charset=UTF-8\n"
 
 #: ../Pinta.Gui.Addins/InstallDialog.cs:268
 msgid " (in user directory)"
@@ -3004,6 +3007,42 @@ msgstr "{0} 调色板 ({1})"
 #, csharp-format
 msgid "{0}%"
 msgstr "{0}%"
+
+msgid "All"
+msgstr "全部"
+
+msgid "Essential"
+msgstr "基本"
+
+msgid "None"
+msgstr "无"
+
+msgid "Show all UI popover hints."
+msgstr "显示所有界面弹出提示。"
+
+msgid "Show only essential tool hints."
+msgstr "仅显示必要的工具提示。"
+
+msgid "Hide all UI popover hints."
+msgstr "隐藏所有界面弹出提示。"
+
+msgid ""
+"All: show all UI hints. Essential: show only specific tool hints. None: turn "
+"off UI popover hints."
+msgstr ""
+"全部：显示所有界面提示。基本：仅显示特定工具的提示。无：关闭界面弹出提示。"
+
+msgid "Popover hints:"
+msgstr "弹出提示："
+
+msgid "UI"
+msgstr "界面"
+
+msgid "Reset UI Settings?"
+msgstr "重置界面设置？"
+
+msgid "This resets popover hints to show all UI hints."
+msgstr "这会重置弹出提示，以显示所有界面提示。"
 
 #, csharp-format
 #~ msgid "Press {0} to decrease brush size"

@@ -1,8 +1,10 @@
+# #-#-#-#-#  ja.po (pinta)  #-#-#-#-#
 # Japanese translation for pinta
 # Copyright (c) 2010 Rosetta Contributors and Canonical Ltd 2010
 # This file is distributed under the same license as the pinta package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2010.
 #
+#, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: pinta\n"
@@ -19,6 +21,7 @@ msgstr ""
 "Plural-Forms: nplurals=1; plural=0;\n"
 "X-Generator: Weblate 5.13-dev\n"
 "X-Launchpad-Export-Date: 2023-12-18 03:00+0000\n"
+"Content-Type: text/plain; charset=UTF-8\n"
 
 #: ../Pinta.Gui.Addins/InstallDialog.cs:268
 msgid " (in user directory)"
@@ -2956,6 +2959,43 @@ msgstr "{0} パレット ({1})"
 #, csharp-format
 msgid "{0}%"
 msgstr "{0}%"
+
+msgid "All"
+msgstr "すべて"
+
+msgid "Essential"
+msgstr "必須"
+
+msgid "None"
+msgstr "なし"
+
+msgid "Show all UI popover hints."
+msgstr "UI のポップオーバーヒントをすべて表示します。"
+
+msgid "Show only essential tool hints."
+msgstr "必須のツールヒントのみ表示します。"
+
+msgid "Hide all UI popover hints."
+msgstr "UI のポップオーバーヒントをすべて非表示にします。"
+
+msgid ""
+"All: show all UI hints. Essential: show only specific tool hints. None: turn "
+"off UI popover hints."
+msgstr ""
+"すべて: すべての UI ヒントを表示。必須: 特定のツールヒントのみ表示。なし: UI "
+"ポップオーバーヒントを無効化。"
+
+msgid "Popover hints:"
+msgstr "ポップオーバーヒント:"
+
+msgid "UI"
+msgstr "UI"
+
+msgid "Reset UI Settings?"
+msgstr "UI 設定をリセットしますか？"
+
+msgid "This resets popover hints to show all UI hints."
+msgstr "ポップオーバーヒントをリセットし、すべての UI ヒントを表示します。"
 
 #~ msgid "Layer Hidden"
 #~ msgstr "レイヤー非表示"

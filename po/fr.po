@@ -1,8 +1,10 @@
+# #-#-#-#-#  fr.po (pinta)  #-#-#-#-#
 # Pinta Translatable Strings
 # Copyright (C) 2010 Pinta Contributors
 # This file is distributed under the same license as the Pinta package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
+#, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: pinta\n"
@@ -19,6 +21,7 @@ msgstr ""
 "X-Generator: Weblate 2026.5-dev\n"
 "X-Launchpad-Export-Date: 2023-12-18 03:00+0000\n"
 "X-Poedit-SourceCharset: utf-8\n"
+"Content-Type: text/plain; charset=UTF-8\n"
 
 #: ../Pinta.Gui.Addins/InstallDialog.cs:268
 msgid " (in user directory)"
@@ -3058,6 +3061,46 @@ msgstr "Palette {0} ({1})"
 #, csharp-format
 msgid "{0}%"
 msgstr "{0} %"
+
+msgid "All"
+msgstr "Toutes"
+
+msgid "Essential"
+msgstr "Essentielles"
+
+msgid "None"
+msgstr "Aucune"
+
+msgid "Show all UI popover hints."
+msgstr "Afficher toutes les infobulles de l’interface."
+
+msgid "Show only essential tool hints."
+msgstr "Afficher uniquement les infobulles essentielles des outils."
+
+msgid "Hide all UI popover hints."
+msgstr "Masquer toutes les infobulles de l’interface."
+
+msgid ""
+"All: show all UI hints. Essential: show only specific tool hints. None: turn "
+"off UI popover hints."
+msgstr ""
+"Toutes : afficher toutes les infobulles de l’interface. Essentielles : "
+"afficher uniquement les infobulles de certains outils. Aucune : désactiver "
+"les infobulles de l’interface."
+
+msgid "Popover hints:"
+msgstr "Infobulles :"
+
+msgid "UI"
+msgstr "Interface"
+
+msgid "Reset UI Settings?"
+msgstr "Réinitialiser les paramètres de l’interface ?"
+
+msgid "This resets popover hints to show all UI hints."
+msgstr ""
+"Cela réinitialise les infobulles afin d’afficher toutes les infobulles de "
+"l’interface."
 
 #~ msgid "Change brush width. Shortcut keys: [ ]"
 #~ msgstr "Changer la largeur de la brosse. Clés de raccourcis : [ ]"

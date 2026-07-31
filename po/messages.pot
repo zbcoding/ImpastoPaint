@@ -3013,3 +3013,48 @@ msgstr ""
 
 #: ../Pinta/Dialogs/PreferencesDialog.cs:65
 msgid "Settings"
+msgstr ""
+
+#: ../Pinta/Dialogs/PreferencesDialog.cs:109
+msgid "All"
+msgstr ""
+
+#: ../Pinta/Dialogs/PreferencesDialog.cs:110
+msgid "Essential"
+msgstr ""
+
+#: ../Pinta/Dialogs/PreferencesDialog.cs:111
+msgid "None"
+msgstr ""
+
+#: ../Pinta/Dialogs/PreferencesDialog.cs:114
+msgid "Show all UI popover hints."
+msgstr ""
+
+#: ../Pinta/Dialogs/PreferencesDialog.cs:115
+msgid "Show only essential tool hints."
+msgstr ""
+
+#: ../Pinta/Dialogs/PreferencesDialog.cs:116
+msgid "Hide all UI popover hints."
+msgstr ""
+
+#: ../Pinta/Dialogs/PreferencesDialog.cs:136
+msgid "All: show all UI hints. Essential: show only specific tool hints. None: turn off UI popover hints."
+msgstr ""
+
+#: ../Pinta/Dialogs/PreferencesDialog.cs:142
+msgid "Popover hints:"
+msgstr ""
+
+#: ../Pinta/Dialogs/PreferencesDialog.cs:154
+msgid "UI"
+msgstr ""
+
+#: ../Pinta/Dialogs/PreferencesDialog.cs:205
+msgid "Reset UI Settings?"
+msgstr ""
+
+#: ../Pinta/Dialogs/PreferencesDialog.cs:206
+msgid "This resets popover hints to show all UI hints."
+msgstr ""

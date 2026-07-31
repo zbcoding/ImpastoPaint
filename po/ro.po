@@ -1,8 +1,10 @@
+# #-#-#-#-#  ro.po (pinta)  #-#-#-#-#
 # Romanian translation for pinta
 # Copyright (c) 2010 Rosetta Contributors and Canonical Ltd 2010
 # This file is distributed under the same license as the pinta package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2010.
 #
+#, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: pinta\n"
@@ -19,6 +21,7 @@ msgstr ""
 "== 0) && (n != 0))) ? 2: 1));\n"
 "X-Launchpad-Export-Date: 2023-12-18 03:00+0000\n"
 "X-Generator: Launchpad (build e1eeab5b20e19239bd7d5f36676f7a52988db88b)\n"
+"Content-Type: text/plain; charset=UTF-8\n"
 
 #: ../Pinta.Gui.Addins/InstallDialog.cs:268
 msgid " (in user directory)"
@@ -2978,6 +2981,46 @@ msgstr "{0} paleta ({1})"
 #, csharp-format
 msgid "{0}%"
 msgstr "{0}%"
+
+msgid "All"
+msgstr "Toate"
+
+msgid "Essential"
+msgstr "Esențiale"
+
+msgid "None"
+msgstr "Niciuna"
+
+msgid "Show all UI popover hints."
+msgstr "Afișează toate sugestiile popover ale interfeței."
+
+msgid "Show only essential tool hints."
+msgstr "Afișează doar sugestiile esențiale pentru instrumente."
+
+msgid "Hide all UI popover hints."
+msgstr "Ascunde toate sugestiile popover ale interfeței."
+
+msgid ""
+"All: show all UI hints. Essential: show only specific tool hints. None: turn "
+"off UI popover hints."
+msgstr ""
+"Toate: afișează toate sugestiile interfeței. Esențiale: afișează doar "
+"sugestiile pentru anumite instrumente. Niciuna: dezactivează sugestiile "
+"popover ale interfeței."
+
+msgid "Popover hints:"
+msgstr "Sugestii popover:"
+
+msgid "UI"
+msgstr "Interfață"
+
+msgid "Reset UI Settings?"
+msgstr "Resetezi setările interfeței?"
+
+msgid "This resets popover hints to show all UI hints."
+msgstr ""
+"Aceasta resetează sugestiile popover pentru a afișa toate sugestiile "
+"interfeței."
 
 #~ msgid "Layer Hidden"
 #~ msgstr "Ascundere strat"

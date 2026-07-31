@@ -1,8 +1,10 @@
+# #-#-#-#-#  ast.po (pinta)  #-#-#-#-#
 # Asturian translation for pinta
 # Copyright (c) 2015 Rosetta Contributors and Canonical Ltd 2015
 # This file is distributed under the same license as the pinta package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2015.
 #
+#, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: pinta\n"
@@ -19,6 +21,7 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
 "X-Generator: Weblate 5.13-dev\n"
 "X-Launchpad-Export-Date: 2023-12-18 03:00+0000\n"
+"Content-Type: text/plain; charset=UTF-8\n"
 
 #: ../Pinta.Gui.Addins/InstallDialog.cs:268
 msgid " (in user directory)"
@@ -2938,6 +2941,45 @@ msgstr ""
 #, csharp-format
 msgid "{0}%"
 msgstr ""
+
+msgid "All"
+msgstr "Too"
+
+msgid "Essential"
+msgstr "Esencial"
+
+msgid "None"
+msgstr "Nengún"
+
+msgid "Show all UI popover hints."
+msgstr "Amosar tolos avisos emerxentes de la interfaz."
+
+msgid "Show only essential tool hints."
+msgstr "Amosar namás les indicaciones esenciales de les ferramientes."
+
+msgid "Hide all UI popover hints."
+msgstr "Anubrir tolos avisos emerxentes de la interfaz."
+
+msgid ""
+"All: show all UI hints. Essential: show only specific tool hints. None: turn "
+"off UI popover hints."
+msgstr ""
+"Too: amosar tolos avisos de la interfaz. Esencial: amosar namás indicaciones "
+"de ferramientes específiques. Nengún: desactivar los avisos emerxentes de la "
+"interfaz."
+
+msgid "Popover hints:"
+msgstr "Avisos emerxentes:"
+
+msgid "UI"
+msgstr "IU"
+
+msgid "Reset UI Settings?"
+msgstr "¿Restablecer los axustes de la interfaz?"
+
+msgid "This resets popover hints to show all UI hints."
+msgstr ""
+"Esto restablez los avisos emerxentes pa amosar tolos avisos de la interfaz."
 
 #~ msgid "Layer Hidden"
 #~ msgstr "Capa anubrida"

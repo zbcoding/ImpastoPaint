@@ -1,8 +1,10 @@
+# #-#-#-#-#  kk.po (PACKAGE VERSION)  #-#-#-#-#
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
+#, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
@@ -17,6 +19,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
 "X-Generator: Weblate 5.17-dev\n"
+"Content-Type: text/plain; charset=UTF-8\n"
 
 #: ../Pinta.Gui.Addins/InstallDialog.cs:268
 msgid " (in user directory)"
@@ -3011,6 +3014,46 @@ msgstr "{0} палитрасы ({1})"
 #, csharp-format
 msgid "{0}%"
 msgstr "{0}%"
+
+msgid "All"
+msgstr "Барлығы"
+
+msgid "Essential"
+msgstr "Маңызды"
+
+msgid "None"
+msgstr "Ешқайсысы"
+
+msgid "Show all UI popover hints."
+msgstr "Пайдаланушы интерфейсінің барлық қалқымалы кеңестерін көрсету."
+
+msgid "Show only essential tool hints."
+msgstr "Тек маңызды құрал кеңестерін көрсету."
+
+msgid "Hide all UI popover hints."
+msgstr "Пайдаланушы интерфейсінің барлық қалқымалы кеңестерін жасыру."
+
+msgid ""
+"All: show all UI hints. Essential: show only specific tool hints. None: turn "
+"off UI popover hints."
+msgstr ""
+"Барлығы: интерфейстің барлық кеңестерін көрсету. Маңызды: тек белгілі "
+"құралдардың кеңестерін көрсету. Ешқайсысы: интерфейстің қалқымалы кеңестерін "
+"өшіру."
+
+msgid "Popover hints:"
+msgstr "Қалқымалы кеңестер:"
+
+msgid "UI"
+msgstr "Интерфейс"
+
+msgid "Reset UI Settings?"
+msgstr "Интерфейс параметрлері қалпына келтірілсін бе?"
+
+msgid "This resets popover hints to show all UI hints."
+msgstr ""
+"Бұл қалқымалы кеңестерді интерфейстің барлық кеңестерін көрсететіндей етіп "
+"қалпына келтіреді."
 
 #~ msgid "Change brush width. Shortcut keys: [ ]"
 #~ msgstr "Қылқалам енін өзгерту. Жарлық пернелері: [ ]"

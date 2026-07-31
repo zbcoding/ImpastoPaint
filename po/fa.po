@@ -1,8 +1,10 @@
+# #-#-#-#-#  fa.po (pinta)  #-#-#-#-#
 # Persian translation for pinta
 # Copyright (c) 2016 Rosetta Contributors and Canonical Ltd 2016
 # This file is distributed under the same license as the pinta package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2016.
 #
+#, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: pinta\n"
@@ -18,6 +20,7 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
 "X-Launchpad-Export-Date: 2023-12-18 03:00+0000\n"
 "X-Generator: Launchpad (build e1eeab5b20e19239bd7d5f36676f7a52988db88b)\n"
+"Content-Type: text/plain; charset=UTF-8\n"
 
 #: ../Pinta.Gui.Addins/InstallDialog.cs:268
 msgid " (in user directory)"
@@ -2944,6 +2947,45 @@ msgstr ""
 #, csharp-format
 msgid "{0}%"
 msgstr "{0}%"
+
+msgid "All"
+msgstr "همه"
+
+msgid "Essential"
+msgstr "ضروری"
+
+msgid "None"
+msgstr "هیچ‌کدام"
+
+msgid "Show all UI popover hints."
+msgstr "نمایش همه راهنمایی‌های بازشوندهٔ رابط کاربری."
+
+msgid "Show only essential tool hints."
+msgstr "فقط راهنمایی‌های ضروری ابزارها را نمایش بده."
+
+msgid "Hide all UI popover hints."
+msgstr "همه راهنمایی‌های بازشوندهٔ رابط کاربری را پنهان کن."
+
+msgid ""
+"All: show all UI hints. Essential: show only specific tool hints. None: turn "
+"off UI popover hints."
+msgstr ""
+"همه: همه راهنمایی‌های رابط کاربری را نمایش بده. ضروری: فقط راهنمایی ابزارهای "
+"خاص را نمایش بده. هیچ‌کدام: راهنمایی‌های بازشوندهٔ رابط کاربری را خاموش کن."
+
+msgid "Popover hints:"
+msgstr "راهنمایی‌های بازشونده:"
+
+msgid "UI"
+msgstr "رابط کاربری"
+
+msgid "Reset UI Settings?"
+msgstr "تنظیمات رابط کاربری بازنشانی شود؟"
+
+msgid "This resets popover hints to show all UI hints."
+msgstr ""
+"این کار راهنمایی‌های بازشونده را بازنشانی می‌کند تا همه راهنمایی‌های رابط "
+"کاربری نمایش داده شوند."
 
 #~ msgid "Layer Hidden"
 #~ msgstr "مخفی شدن لایه"

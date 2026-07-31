@@ -1,3 +1,4 @@
+# #-#-#-#-#  gl.po (pinta)  #-#-#-#-#
 # Galician translation for pinta
 # Copyright (c) 2010 Rosetta Contributors and Canonical Ltd 2010
 # This file is distributed under the same license as the pinta package.
@@ -6,6 +7,7 @@
 # María Suárez Cabo <marivicabo@msn.com>, 2011.
 # Miguel Anxo Bouzada <mbouzada@gmail.com>, 2011.
 #
+#, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: pinta\n"
@@ -22,6 +24,7 @@ msgstr ""
 "X-Launchpad-Export-Date: 2023-12-18 03:00+0000\n"
 "X-Generator: Launchpad (build e1eeab5b20e19239bd7d5f36676f7a52988db88b)\n"
 "X-Poedit-Language: Galician\n"
+"Content-Type: text/plain; charset=UTF-8\n"
 
 #: ../Pinta.Gui.Addins/InstallDialog.cs:268
 msgid " (in user directory)"
@@ -2967,6 +2970,46 @@ msgstr "Paleta do {0} ({1})"
 #, csharp-format
 msgid "{0}%"
 msgstr "{0}%"
+
+msgid "All"
+msgstr "Todas"
+
+msgid "Essential"
+msgstr "Esenciais"
+
+msgid "None"
+msgstr "Ningunha"
+
+msgid "Show all UI popover hints."
+msgstr "Amosar todas as indicacións emerxentes da interface."
+
+msgid "Show only essential tool hints."
+msgstr "Amosar só as indicacións esenciais das ferramentas."
+
+msgid "Hide all UI popover hints."
+msgstr "Agochar todas as indicacións emerxentes da interface."
+
+msgid ""
+"All: show all UI hints. Essential: show only specific tool hints. None: turn "
+"off UI popover hints."
+msgstr ""
+"Todas: amosar todas as indicacións da interface. Esenciais: amosar só as "
+"indicacións de ferramentas específicas. Ningunha: desactivar as indicacións "
+"emerxentes da interface."
+
+msgid "Popover hints:"
+msgstr "Indicacións emerxentes:"
+
+msgid "UI"
+msgstr "Interface"
+
+msgid "Reset UI Settings?"
+msgstr "Restablecer a configuración da interface?"
+
+msgid "This resets popover hints to show all UI hints."
+msgstr ""
+"Isto restablece as indicacións emerxentes para amosar todas as indicacións "
+"da interface."
 
 #~ msgid "Layer Hidden"
 #~ msgstr "Capa oculta"

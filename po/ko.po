@@ -1,8 +1,10 @@
+# #-#-#-#-#  ko.po (pinta)  #-#-#-#-#
 # Korean translation for pinta
 # Copyright (c) 2010 Rosetta Contributors and Canonical Ltd 2010
 # This file is distributed under the same license as the pinta package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2010.
 #
+#, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: pinta\n"
@@ -18,6 +20,7 @@ msgstr ""
 "Plural-Forms: nplurals=1; plural=0;\n"
 "X-Generator: Weblate 5.17-dev\n"
 "X-Launchpad-Export-Date: 2023-12-18 03:00+0000\n"
+"Content-Type: text/plain; charset=UTF-8\n"
 
 #: ../Pinta.Gui.Addins/InstallDialog.cs:268
 msgid " (in user directory)"
@@ -2999,6 +3002,43 @@ msgstr "{0} 팔레트 ({1})"
 #, csharp-format
 msgid "{0}%"
 msgstr "{0}%"
+
+msgid "All"
+msgstr "모두"
+
+msgid "Essential"
+msgstr "필수"
+
+msgid "None"
+msgstr "없음"
+
+msgid "Show all UI popover hints."
+msgstr "모든 UI 팝오버 힌트 표시"
+
+msgid "Show only essential tool hints."
+msgstr "필수 도구 힌트만 표시"
+
+msgid "Hide all UI popover hints."
+msgstr "모든 UI 팝오버 힌트 숨기기"
+
+msgid ""
+"All: show all UI hints. Essential: show only specific tool hints. None: turn "
+"off UI popover hints."
+msgstr ""
+"모두: 모든 UI 힌트 표시. 필수: 특정 도구 힌트만 표시. 없음: UI 팝오버 힌트 끄"
+"기."
+
+msgid "Popover hints:"
+msgstr "팝오버 힌트:"
+
+msgid "UI"
+msgstr "UI"
+
+msgid "Reset UI Settings?"
+msgstr "UI 설정을 재설정하시겠습니까?"
+
+msgid "This resets popover hints to show all UI hints."
+msgstr "팝오버 힌트를 재설정하여 모든 UI 힌트를 표시합니다."
 
 #~ msgid "Change brush width. Shortcut keys: [ ]"
 #~ msgstr "브러시 너비를 변경합니다. 단축키: [ ]"

@@ -1,8 +1,10 @@
+# #-#-#-#-#  lv.po (pinta)  #-#-#-#-#
 # Latvian translation for pinta
 # Copyright (c) 2011 Rosetta Contributors and Canonical Ltd 2011
 # This file is distributed under the same license as the pinta package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2011.
 #
+#, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: pinta\n"
@@ -19,6 +21,7 @@ msgstr ""
 "Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n != 0 ? 1 : 2;\n"
 "X-Generator: Weblate 5.12-dev\n"
 "X-Launchpad-Export-Date: 2023-12-18 03:00+0000\n"
+"Content-Type: text/plain; charset=UTF-8\n"
 
 #: ../Pinta.Gui.Addins/InstallDialog.cs:268
 msgid " (in user directory)"
@@ -2990,6 +2993,45 @@ msgstr "{0} palete ({1})"
 #, csharp-format
 msgid "{0}%"
 msgstr "{0}%"
+
+msgid "All"
+msgstr "Visi"
+
+msgid "Essential"
+msgstr "Būtiskie"
+
+msgid "None"
+msgstr "Neviens"
+
+msgid "Show all UI popover hints."
+msgstr "Rādīt visus lietotāja saskarnes uznirstošos padomus."
+
+msgid "Show only essential tool hints."
+msgstr "Rādīt tikai būtiskos rīku padomus."
+
+msgid "Hide all UI popover hints."
+msgstr "Paslēpt visus lietotāja saskarnes uznirstošos padomus."
+
+msgid ""
+"All: show all UI hints. Essential: show only specific tool hints. None: turn "
+"off UI popover hints."
+msgstr ""
+"Visi: rādīt visus saskarnes padomus. Būtiskie: rādīt tikai konkrētu rīku "
+"padomus. Neviens: izslēgt saskarnes uznirstošos padomus."
+
+msgid "Popover hints:"
+msgstr "Uznirstošie padomi:"
+
+msgid "UI"
+msgstr "Lietotāja saskarne"
+
+msgid "Reset UI Settings?"
+msgstr "Atiestatīt lietotāja saskarnes iestatījumus?"
+
+msgid "This resets popover hints to show all UI hints."
+msgstr ""
+"Tādējādi uznirstošie padomi tiek atiestatīti, lai rādītu visus saskarnes "
+"padomus."
 
 #~ msgid "Change brush width. Shortcut keys: [ ]"
 #~ msgstr "Nomainīt otas platumu. Saīsne :[]"

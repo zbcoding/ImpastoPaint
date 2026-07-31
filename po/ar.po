@@ -1,8 +1,10 @@
+# #-#-#-#-#  ar.po (pinta)  #-#-#-#-#
 # Arabic translation for pinta
 # Copyright (c) 2010 Rosetta Contributors and Canonical Ltd 2010
 # This file is distributed under the same license as the pinta package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2010.
 #
+#, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: pinta\n"
@@ -19,6 +21,7 @@ msgstr ""
 "&& n%100<=10 ? 3 : n%100>=11 ? 4 : 5;\n"
 "X-Generator: Weblate 2026.6\n"
 "X-Launchpad-Export-Date: 2023-12-18 03:00+0000\n"
+"Content-Type: text/plain; charset=UTF-8\n"
 
 #: ../Pinta.Gui.Addins/InstallDialog.cs:268
 msgid " (in user directory)"
@@ -3015,6 +3018,43 @@ msgstr "لوحة الألوان {0} ({1})"
 #, csharp-format
 msgid "{0}%"
 msgstr "{0}%"
+
+msgid "All"
+msgstr "الكل"
+
+msgid "Essential"
+msgstr "الأساسي"
+
+msgid "None"
+msgstr "لا شيء"
+
+msgid "Show all UI popover hints."
+msgstr "إظهار جميع تلميحات واجهة المستخدم المنبثقة."
+
+msgid "Show only essential tool hints."
+msgstr "إظهار تلميحات الأدوات الأساسية فقط."
+
+msgid "Hide all UI popover hints."
+msgstr "إخفاء جميع تلميحات واجهة المستخدم المنبثقة."
+
+msgid ""
+"All: show all UI hints. Essential: show only specific tool hints. None: turn "
+"off UI popover hints."
+msgstr ""
+"الكل: إظهار جميع تلميحات واجهة المستخدم. الأساسي: إظهار تلميحات أدوات محددة "
+"فقط. لا شيء: إيقاف تلميحات واجهة المستخدم المنبثقة."
+
+msgid "Popover hints:"
+msgstr "تلميحات منبثقة:"
+
+msgid "UI"
+msgstr "واجهة المستخدم"
+
+msgid "Reset UI Settings?"
+msgstr "هل تريد إعادة ضبط إعدادات واجهة المستخدم؟"
+
+msgid "This resets popover hints to show all UI hints."
+msgstr "يعيد هذا ضبط التلميحات المنبثقة لإظهار جميع تلميحات واجهة المستخدم."
 
 #~ msgid "Change brush width. Shortcut keys: [ ]"
 #~ msgstr "غيّر حجم الفرشاة بالاختصار: [ ]"

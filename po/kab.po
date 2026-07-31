@@ -1,8 +1,10 @@
+# #-#-#-#-#  kab.po (pinta)  #-#-#-#-#
 # Kabyle translation for pinta
 # Copyright (c) 2016 Rosetta Contributors and Canonical Ltd 2016
 # This file is distributed under the same license as the pinta package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2016.
 #
+#, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: pinta\n"
@@ -19,6 +21,7 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
 "X-Generator: Weblate 5.10-dev\n"
 "X-Launchpad-Export-Date: 2023-12-18 03:00+0000\n"
+"Content-Type: text/plain; charset=UTF-8\n"
 
 #: ../Pinta.Gui.Addins/InstallDialog.cs:268
 msgid " (in user directory)"
@@ -2949,6 +2952,43 @@ msgstr ""
 #, csharp-format
 msgid "{0}%"
 msgstr "{0} %"
+
+msgid "All"
+msgstr "All"
+
+msgid "Essential"
+msgstr "Essential"
+
+msgid "None"
+msgstr "None"
+
+msgid "Show all UI popover hints."
+msgstr "Show all UI popover hints."
+
+msgid "Show only essential tool hints."
+msgstr "Show only essential tool hints."
+
+msgid "Hide all UI popover hints."
+msgstr "Hide all UI popover hints."
+
+msgid ""
+"All: show all UI hints. Essential: show only specific tool hints. None: turn "
+"off UI popover hints."
+msgstr ""
+"All: show all UI hints. Essential: show only specific tool hints. None: turn "
+"off UI popover hints."
+
+msgid "Popover hints:"
+msgstr "Popover hints:"
+
+msgid "UI"
+msgstr "UI"
+
+msgid "Reset UI Settings?"
+msgstr "Reset UI Settings?"
+
+msgid "This resets popover hints to show all UI hints."
+msgstr "This resets popover hints to show all UI hints."
 
 #~ msgid "Layer Hidden"
 #~ msgstr "Akalku iffren"

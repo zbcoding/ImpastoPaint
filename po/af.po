@@ -3535,3 +3535,223 @@ msgstr "Dit stel opspringwenke terug om alle UI-wenke te wys."
 #~ "om skaal in plaas van beweeg. Regs kliek en sleep die seleksie om roteer "
 #~ "seleksie buitelyn. Hou Shift om roteer seleksie in stappe. Gebruik "
 #~ "pyltjie sleutels om beweeg seleksie buitelyn deur 'n enkel pixel."
+
+#. Translators: Tooltip for the checkbox showing/hiding the arrowhead at the start of a line or curve.
+#. AI-generated translation; human review requested.
+msgid "Show an arrowhead at the start point."
+msgstr "Wys 'n pylkop by die beginpunt."
+
+#. Translators: Tooltip for the checkbox showing/hiding the arrowhead at the end of a line or curve.
+#. AI-generated translation; human review requested.
+msgid "Show an arrowhead at the end point."
+msgstr "Wys 'n pylkop by die eindpunt."
+
+#. Translators: Tooltip for the arrowhead size spin button.
+#. AI-generated translation; human review requested.
+msgid "Length of the arrowhead, in pixels."
+msgstr "Lengte van die pylkop, in pixels."
+
+#. Translators: Tooltip for the arrowhead angle spin button.
+#. AI-generated translation; human review requested.
+msgid "Angle, in degrees, between the arrowhead's wings and the line."
+msgstr "Hoek, in grade, tussen die pylkop se vlerke en die lyn."
+
+#. Translators: Tooltip for the arrowhead wing-length spin button.
+#. AI-generated translation; human review requested.
+msgid "Length of the arrowhead's wings; does not change the line's length."
+msgstr "Lengte van die pylkop se vlerke; verander nie die lyn se lengte nie."
+
+#. Translators: Item hint for the Open Line/Curve Series shape type.
+#. AI-generated translation; human review requested.
+msgid "Draws a line or curve with a start and an end point."
+msgstr "Trek 'n lyn of kurwe met 'n beginpunt en 'n eindpunt."
+
+#. Translators: Item hint for the Ellipse shape type.
+#. AI-generated translation; human review requested.
+msgid "Draws an ellipse or circle."
+msgstr "Trek 'n ellips of sirkel."
+
+#. Translators: Item hint for the Rounded Line Series shape type.
+#. AI-generated translation; human review requested.
+msgid "Like Closed Line/Curve Series, but with rounded corners at each point."
+msgstr "Soos Geslote Lyn-/Kurwereeks, maar met afgeronde hoeke by elke punt."
+
+#. Translators: Item hint explaining the Curved Segments On option for shape tools.
+#. AI-generated translation; human review requested.
+msgid "Curved Segments On"
+msgstr "Geboë Segmente Aan"
+
+#. Translators: Item hint explaining the Curved Segments Off option for shape tools.
+#. AI-generated translation; human review requested.
+msgid "Curved Segments Off"
+msgstr "Geboë Segmente Af"
+
+#. Translators: Item hint for the Outline Shape fill style.
+#. AI-generated translation; human review requested.
+msgid "Draw only the shape's outline, using the primary color."
+msgstr "Trek slegs die vorm se buitelyn, met die primêre kleur."
+
+#. Translators: Item hint for the Fill Shape fill style.
+#. AI-generated translation; human review requested.
+msgid "Fill the shape's interior with the secondary color, no outline."
+msgstr "Vul die vorm se binnekant met die sekondêre kleur, sonder buitelyn."
+
+#. Translators: Tooltip for the corner radius spin button on rounded shapes.
+#. AI-generated translation; human review requested.
+msgid "Corner-rounding radius, in pixels, applied at each point of the shape."
+msgstr "Hoek-afrondingsradius, in pixels, toegepas by elke punt van die vorm."
+
+#. Translators: Item hint for the Color Picker's "Do not switch tool" option.
+#. AI-generated translation; human review requested.
+msgid "Keep using the Color Picker after a color is chosen."
+msgstr "Bly die Kleurkieser gebruik nadat 'n kleur gekies is."
+
+#. Translators: Item hint for the Color Picker's "Switch to previous tool" option.
+#. AI-generated translation; human review requested.
+msgid "Return to the tool that was active before the Color Picker."
+msgstr "Keer terug na die gereedskap wat aktief was voor die Kleurkieser."
+
+#. Translators: Item hint for the Color Picker's "Switch to Pencil tool" option.
+#. AI-generated translation; human review requested.
+msgid "Switch to the Pencil tool, ready to draw with the picked color."
+msgstr "Wissel na die Potlood-gereedskap, gereed om met die gekose kleur te teken."
+
+#. Translators: Item hint for the Color Picker's Single Pixel sample size.
+#. AI-generated translation; human review requested.
+msgid "Sample the exact color of the pixel under the pointer."
+msgstr "Monster die presiese kleur van die pixel onder die wyser."
+
+#. Translators: Item hint for the Color Picker's 3 x 3 Region sample size.
+#. AI-generated translation; human review requested.
+msgid "Average the colors in a 3 x 3 area around the pointer."
+msgstr "Bereken die gemiddelde kleure in 'n 3 x 3-area rondom die wyser."
+
+#. Translators: Item hint for the Color Picker's 5 x 5 Region sample size.
+#. AI-generated translation; human review requested.
+msgid "Average the colors in a 5 x 5 area around the pointer."
+msgstr "Bereken die gemiddelde kleure in 'n 5 x 5-area rondom die wyser."
+
+#. Translators: Item hint for the Color Picker's 7 x 7 Region sample size.
+#. AI-generated translation; human review requested.
+msgid "Average the colors in a 7 x 7 area around the pointer."
+msgstr "Bereken die gemiddelde kleure in 'n 7 x 7-area rondom die wyser."
+
+#. Translators: Item hint for the Color Picker's 9 x 9 Region sample size.
+#. AI-generated translation; human review requested.
+msgid "Average the colors in a 9 x 9 area around the pointer."
+msgstr "Bereken die gemiddelde kleure in 'n 9 x 9-area rondom die wyser."
+
+#. Translators: Item hint for the Color Picker's Layer sample scope.
+#. AI-generated translation; human review requested.
+msgid "Sample from the current layer only."
+msgstr "Monster slegs van die huidige laag."
+
+#. Translators: Item hint for the Color Picker's Image sample scope.
+#. AI-generated translation; human review requested.
+msgid "Sample from the composited image, including all visible layers."
+msgstr "Monster van die saamgestelde beeld, insluitend alle sigbare lae."
+
+#. Translators: Item hint for the Linear Gradient type.
+#. AI-generated translation; human review requested.
+msgid "Transitions colors in a straight line between the two endpoints."
+msgstr "Verander kleure in 'n reguit lyn tussen die twee eindpunte."
+
+#. Translators: Item hint for the Linear Reflected Gradient type.
+#. AI-generated translation; human review requested.
+msgid "Mirrors the linear transition on both sides of the start point."
+msgstr "Weerkaats die lineêre oorgang aan albei kante van die beginpunt."
+
+#. Translators: Item hint for the Linear Diamond Gradient type.
+#. AI-generated translation; human review requested.
+msgid "Transitions colors outward from the start point in a diamond shape."
+msgstr "Verander kleure na buite vanaf die beginpunt in 'n ruitvorm."
+
+#. Translators: Item hint for the Radial Gradient type.
+#. AI-generated translation; human review requested.
+msgid "Transitions colors outward from the start point in a circle."
+msgstr "Verander kleure na buite vanaf die beginpunt in 'n sirkel."
+
+#. Translators: Item hint for the Conical Gradient type.
+#. AI-generated translation; human review requested.
+msgid "Transitions colors in a sweep around the start point."
+msgstr "Verander kleure in 'n sweep rondom die beginpunt."
+
+#. Translators: Item hint for the Gradient tool's Color Mode.
+#. AI-generated translation; human review requested.
+msgid "Transition between the primary and secondary colors."
+msgstr "Oorgang tussen die primêre en sekondêre kleure."
+
+#. Translators: Item hint for the Gradient tool's Transparency Mode.
+#. AI-generated translation; human review requested.
+msgid "Transition the primary color from opaque to transparent."
+msgstr "Verander die primêre kleur van ondeurskynend na deursigtig."
+
+#. Translators: Item hint for the Normal font-variant option.
+#. AI-generated translation; human review requested.
+msgid "Regular upper and lower case letters."
+msgstr "Gewone hoof- en kleinletters."
+
+#. Translators: Item hint for the Small Caps font-variant option.
+#. AI-generated translation; human review requested.
+msgid "Lower case letters are replaced with smaller capital letters."
+msgstr "Kleinletters word met kleiner hoofletters vervang."
+
+#. Translators: Item hint for the Petite Caps font-variant option.
+#. AI-generated translation; human review requested.
+msgid "Like Small Caps, but the substituted capitals are slightly smaller."
+msgstr "Soos Klein Kapitale, maar die vervangde hoofletters is effens kleiner."
+
+#. Translators: Item hint for the All Petite Caps font-variant option.
+#. AI-generated translation; human review requested.
+msgid "Like All Small Caps, but the substituted capitals are slightly smaller."
+msgstr "Soos Alle Klein Kapitale, maar die vervangde hoofletters is effens kleiner."
+
+#. Translators: Item hint for the Title Caps font-variant option.
+#. AI-generated translation; human review requested.
+msgid "Uses title-specific capital letter forms where available."
+msgstr "Gebruik titel-spesifieke hoofletter-vorms waar beskikbaar."
+
+#. Translators: Item hint for the Normal text style.
+#. AI-generated translation; human review requested.
+msgid "Fill the text with the primary color."
+msgstr "Vul die teks met die primêre kleur."
+
+#. Translators: Item hint for the Outline text style.
+#. AI-generated translation; human review requested.
+msgid "Draw only the outline of the text, using the secondary color."
+msgstr "Trek slegs die buitelyn van die teks, met die sekondêre kleur."
+
+#. Translators: Item hint for the Fill Background text style.
+#. AI-generated translation; human review requested.
+msgid "Fill the text's bounding box with the secondary color, behind the text."
+msgstr "Vul die teks se omraming met die sekondêre kleur, agter die teks."
+
+#. Translators: Tooltip for the text outline width spin button.
+#. AI-generated translation; human review requested.
+msgid "Thickness of the text outline, in pixels."
+msgstr "Dikte van die teks se buitelyn, in pixels."
+
+#. Translators: Item hint for the Miter Join line join option.
+#. AI-generated translation; human review requested.
+msgid "Sharp, pointed corners on the outline."
+msgstr "Skerp, spits hoeke op die buitelyn."
+
+#. Translators: Item hint for the Round Join line join option.
+#. AI-generated translation; human review requested.
+msgid "Rounded corners on the outline."
+msgstr "Afgeronde hoeke op die buitelyn."
+
+#. Translators: Item hint for the Bevel Join line join option.
+#. AI-generated translation; human review requested.
+msgid "Flattened, squared-off corners on the outline."
+msgstr "Plat, vierkantige hoeke op die buitelyn."
+
+#. Translators: Tooltip shown while editing re-editable text, hints at the key to finish.
+#. AI-generated translation; human review requested.
+msgid "Finish typing (Esc)"
+msgstr "Voltooi tik (Esc)"
+
+#. Translators: Tooltip shown over a re-editable text object, hints at the gesture to edit it.
+#. AI-generated translation; human review requested.
+msgid "Ctrl+Click to edit"
+msgstr "Ctrl+Klik om te wysig"

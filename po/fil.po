@@ -3035,3 +3035,223 @@ msgstr ""
 
 #~ msgid "Version"
 #~ msgstr "Bersyon"
+
+#. Translators: Tooltip for the checkbox showing/hiding the arrowhead at the start of a line or curve.
+#. AI-generated translation; human review requested.
+msgid "Show an arrowhead at the start point."
+msgstr "Ipakita ang ulo ng palaso sa panimulang punto."
+
+#. Translators: Tooltip for the checkbox showing/hiding the arrowhead at the end of a line or curve.
+#. AI-generated translation; human review requested.
+msgid "Show an arrowhead at the end point."
+msgstr "Ipakita ang ulo ng palaso sa pantapos na punto."
+
+#. Translators: Tooltip for the arrowhead size spin button.
+#. AI-generated translation; human review requested.
+msgid "Length of the arrowhead, in pixels."
+msgstr "Haba ng ulo ng palaso, sa pixel."
+
+#. Translators: Tooltip for the arrowhead angle spin button.
+#. AI-generated translation; human review requested.
+msgid "Angle, in degrees, between the arrowhead's wings and the line."
+msgstr "Anggulo, sa degree, sa pagitan ng mga pakpak ng ulo ng palaso at ng linya."
+
+#. Translators: Tooltip for the arrowhead wing-length spin button.
+#. AI-generated translation; human review requested.
+msgid "Length of the arrowhead's wings; does not change the line's length."
+msgstr "Haba ng mga pakpak ng ulo ng palaso; hindi nito binabago ang haba ng linya."
+
+#. Translators: Item hint for the Open Line/Curve Series shape type.
+#. AI-generated translation; human review requested.
+msgid "Draws a line or curve with a start and an end point."
+msgstr "Gumuguhit ng linya o kurba na may panimulang at pantapos na punto."
+
+#. Translators: Item hint for the Ellipse shape type.
+#. AI-generated translation; human review requested.
+msgid "Draws an ellipse or circle."
+msgstr "Gumuguhit ng elipse o bilog."
+
+#. Translators: Item hint for the Rounded Line Series shape type.
+#. AI-generated translation; human review requested.
+msgid "Like Closed Line/Curve Series, but with rounded corners at each point."
+msgstr "Katulad ng Saradong Serye ng Linya/Kurba, ngunit may bilog na sulok sa bawat punto."
+
+#. Translators: Item hint explaining the Curved Segments On option for shape tools.
+#. AI-generated translation; human review requested.
+msgid "Curved Segments On"
+msgstr "Nakabukas ang Kurbadong Segmento"
+
+#. Translators: Item hint explaining the Curved Segments Off option for shape tools.
+#. AI-generated translation; human review requested.
+msgid "Curved Segments Off"
+msgstr "Nakasara ang Kurbadong Segmento"
+
+#. Translators: Item hint for the Outline Shape fill style.
+#. AI-generated translation; human review requested.
+msgid "Draw only the shape's outline, using the primary color."
+msgstr "Iguhit lamang ang balangkas ng hugis, gamit ang pangunahing kulay."
+
+#. Translators: Item hint for the Fill Shape fill style.
+#. AI-generated translation; human review requested.
+msgid "Fill the shape's interior with the secondary color, no outline."
+msgstr "Punuin ang loob ng hugis ng pangalawang kulay, walang balangkas."
+
+#. Translators: Tooltip for the corner radius spin button on rounded shapes.
+#. AI-generated translation; human review requested.
+msgid "Corner-rounding radius, in pixels, applied at each point of the shape."
+msgstr "Radius ng pagpapabilog ng sulok, sa pixel, na ginagamit sa bawat punto ng hugis."
+
+#. Translators: Item hint for the Color Picker's "Do not switch tool" option.
+#. AI-generated translation; human review requested.
+msgid "Keep using the Color Picker after a color is chosen."
+msgstr "Ipagpatuloy ang paggamit ng Color Picker matapos mapili ang isang kulay."
+
+#. Translators: Item hint for the Color Picker's "Switch to previous tool" option.
+#. AI-generated translation; human review requested.
+msgid "Return to the tool that was active before the Color Picker."
+msgstr "Bumalik sa kasangkapang aktibo bago ang Color Picker."
+
+#. Translators: Item hint for the Color Picker's "Switch to Pencil tool" option.
+#. AI-generated translation; human review requested.
+msgid "Switch to the Pencil tool, ready to draw with the picked color."
+msgstr "Lumipat sa kasangkapang Lapis, handang gumuhit gamit ang napiling kulay."
+
+#. Translators: Item hint for the Color Picker's Single Pixel sample size.
+#. AI-generated translation; human review requested.
+msgid "Sample the exact color of the pixel under the pointer."
+msgstr "Kunin ang eksaktong kulay ng pixel sa ilalim ng pointer."
+
+#. Translators: Item hint for the Color Picker's 3 x 3 Region sample size.
+#. AI-generated translation; human review requested.
+msgid "Average the colors in a 3 x 3 area around the pointer."
+msgstr "Kunin ang average ng mga kulay sa 3 x 3 na lugar sa paligid ng pointer."
+
+#. Translators: Item hint for the Color Picker's 5 x 5 Region sample size.
+#. AI-generated translation; human review requested.
+msgid "Average the colors in a 5 x 5 area around the pointer."
+msgstr "Kunin ang average ng mga kulay sa 5 x 5 na lugar sa paligid ng pointer."
+
+#. Translators: Item hint for the Color Picker's 7 x 7 Region sample size.
+#. AI-generated translation; human review requested.
+msgid "Average the colors in a 7 x 7 area around the pointer."
+msgstr "Kunin ang average ng mga kulay sa 7 x 7 na lugar sa paligid ng pointer."
+
+#. Translators: Item hint for the Color Picker's 9 x 9 Region sample size.
+#. AI-generated translation; human review requested.
+msgid "Average the colors in a 9 x 9 area around the pointer."
+msgstr "Kunin ang average ng mga kulay sa 9 x 9 na lugar sa paligid ng pointer."
+
+#. Translators: Item hint for the Color Picker's Layer sample scope.
+#. AI-generated translation; human review requested.
+msgid "Sample from the current layer only."
+msgstr "Kumuha ng sample mula sa kasalukuyang layer lamang."
+
+#. Translators: Item hint for the Color Picker's Image sample scope.
+#. AI-generated translation; human review requested.
+msgid "Sample from the composited image, including all visible layers."
+msgstr "Kumuha ng sample mula sa pinagsamang larawan, kasama ang lahat ng nakikitang layer."
+
+#. Translators: Item hint for the Linear Gradient type.
+#. AI-generated translation; human review requested.
+msgid "Transitions colors in a straight line between the two endpoints."
+msgstr "Pinagsasalit-salit ang mga kulay sa tuwid na linya sa pagitan ng dalawang dulo."
+
+#. Translators: Item hint for the Linear Reflected Gradient type.
+#. AI-generated translation; human review requested.
+msgid "Mirrors the linear transition on both sides of the start point."
+msgstr "Sinasalamin ang linear na paglilipat sa magkabilang panig ng panimulang punto."
+
+#. Translators: Item hint for the Linear Diamond Gradient type.
+#. AI-generated translation; human review requested.
+msgid "Transitions colors outward from the start point in a diamond shape."
+msgstr "Pinagsasalit-salit ang mga kulay palabas mula sa panimulang punto sa hugis-diamante."
+
+#. Translators: Item hint for the Radial Gradient type.
+#. AI-generated translation; human review requested.
+msgid "Transitions colors outward from the start point in a circle."
+msgstr "Pinagsasalit-salit ang mga kulay palabas mula sa panimulang punto sa hugis-bilog."
+
+#. Translators: Item hint for the Conical Gradient type.
+#. AI-generated translation; human review requested.
+msgid "Transitions colors in a sweep around the start point."
+msgstr "Pinagsasalit-salit ang mga kulay sa isang ikot palibot sa panimulang punto."
+
+#. Translators: Item hint for the Gradient tool's Color Mode.
+#. AI-generated translation; human review requested.
+msgid "Transition between the primary and secondary colors."
+msgstr "Paglilipat sa pagitan ng pangunahin at pangalawang kulay."
+
+#. Translators: Item hint for the Gradient tool's Transparency Mode.
+#. AI-generated translation; human review requested.
+msgid "Transition the primary color from opaque to transparent."
+msgstr "Ilipat ang pangunahing kulay mula sa opaque tungo sa transparent."
+
+#. Translators: Item hint for the Normal font-variant option.
+#. AI-generated translation; human review requested.
+msgid "Regular upper and lower case letters."
+msgstr "Karaniwang malaki at maliit na titik."
+
+#. Translators: Item hint for the Small Caps font-variant option.
+#. AI-generated translation; human review requested.
+msgid "Lower case letters are replaced with smaller capital letters."
+msgstr "Ang mga maliit na titik ay papalitan ng mas maliliit na malaking titik."
+
+#. Translators: Item hint for the Petite Caps font-variant option.
+#. AI-generated translation; human review requested.
+msgid "Like Small Caps, but the substituted capitals are slightly smaller."
+msgstr "Katulad ng Small Caps, ngunit ang mga kapalit na malaking titik ay mas maliit pa."
+
+#. Translators: Item hint for the All Petite Caps font-variant option.
+#. AI-generated translation; human review requested.
+msgid "Like All Small Caps, but the substituted capitals are slightly smaller."
+msgstr "Katulad ng All Small Caps, ngunit ang mga kapalit na malaking titik ay mas maliit pa."
+
+#. Translators: Item hint for the Title Caps font-variant option.
+#. AI-generated translation; human review requested.
+msgid "Uses title-specific capital letter forms where available."
+msgstr "Gumagamit ng mga espesyal na anyo ng malaking titik para sa pamagat, kung mayroon."
+
+#. Translators: Item hint for the Normal text style.
+#. AI-generated translation; human review requested.
+msgid "Fill the text with the primary color."
+msgstr "Punuin ang teksto ng pangunahing kulay."
+
+#. Translators: Item hint for the Outline text style.
+#. AI-generated translation; human review requested.
+msgid "Draw only the outline of the text, using the secondary color."
+msgstr "Iguhit lamang ang balangkas ng teksto, gamit ang pangalawang kulay."
+
+#. Translators: Item hint for the Fill Background text style.
+#. AI-generated translation; human review requested.
+msgid "Fill the text's bounding box with the secondary color, behind the text."
+msgstr "Punuin ang bounding box ng teksto ng pangalawang kulay, sa likod ng teksto."
+
+#. Translators: Tooltip for the text outline width spin button.
+#. AI-generated translation; human review requested.
+msgid "Thickness of the text outline, in pixels."
+msgstr "Kapal ng balangkas ng teksto, sa pixel."
+
+#. Translators: Item hint for the Miter Join line join option.
+#. AI-generated translation; human review requested.
+msgid "Sharp, pointed corners on the outline."
+msgstr "Matulis at matalim na sulok sa balangkas."
+
+#. Translators: Item hint for the Round Join line join option.
+#. AI-generated translation; human review requested.
+msgid "Rounded corners on the outline."
+msgstr "Bilog na sulok sa balangkas."
+
+#. Translators: Item hint for the Bevel Join line join option.
+#. AI-generated translation; human review requested.
+msgid "Flattened, squared-off corners on the outline."
+msgstr "Pantay at parisukat na sulok sa balangkas."
+
+#. Translators: Tooltip shown while editing re-editable text, hints at the key to finish.
+#. AI-generated translation; human review requested.
+msgid "Finish typing (Esc)"
+msgstr "Tapusin ang pag-type (Esc)"
+
+#. Translators: Tooltip shown over a re-editable text object, hints at the gesture to edit it.
+#. AI-generated translation; human review requested.
+msgid "Ctrl+Click to edit"
+msgstr "Ctrl+Click para i-edit"

@@ -3308,3 +3308,223 @@ msgstr "팝오버 힌트를 재설정하여 모든 UI 힌트를 표시합니다.
 
 #~ msgid "The following depedencies required by this add-in are not available:"
 #~ msgstr "이 추가 기능에 필요한 다음 종속성을 사용할 수 없습니다:"
+
+#. Translators: Tooltip for the checkbox showing/hiding the arrowhead at the start of a line or curve.
+#. AI-generated translation; human review requested.
+msgid "Show an arrowhead at the start point."
+msgstr "시작점에 화살촉을 표시합니다."
+
+#. Translators: Tooltip for the checkbox showing/hiding the arrowhead at the end of a line or curve.
+#. AI-generated translation; human review requested.
+msgid "Show an arrowhead at the end point."
+msgstr "끝점에 화살촉을 표시합니다."
+
+#. Translators: Tooltip for the arrowhead size spin button.
+#. AI-generated translation; human review requested.
+msgid "Length of the arrowhead, in pixels."
+msgstr "화살촉의 길이(픽셀 단위)입니다."
+
+#. Translators: Tooltip for the arrowhead angle spin button.
+#. AI-generated translation; human review requested.
+msgid "Angle, in degrees, between the arrowhead's wings and the line."
+msgstr "화살촉의 날개와 선 사이의 각도(도 단위)입니다."
+
+#. Translators: Tooltip for the arrowhead wing-length spin button.
+#. AI-generated translation; human review requested.
+msgid "Length of the arrowhead's wings; does not change the line's length."
+msgstr "화살촉 날개의 길이입니다. 선의 길이는 변경되지 않습니다."
+
+#. Translators: Item hint for the Open Line/Curve Series shape type.
+#. AI-generated translation; human review requested.
+msgid "Draws a line or curve with a start and an end point."
+msgstr "시작점과 끝점이 있는 선이나 곡선을 그립니다."
+
+#. Translators: Item hint for the Ellipse shape type.
+#. AI-generated translation; human review requested.
+msgid "Draws an ellipse or circle."
+msgstr "타원이나 원을 그립니다."
+
+#. Translators: Item hint for the Rounded Line Series shape type.
+#. AI-generated translation; human review requested.
+msgid "Like Closed Line/Curve Series, but with rounded corners at each point."
+msgstr "닫힌 선/곡선 연속과 비슷하지만 각 점의 모서리가 둥글게 처리됩니다."
+
+#. Translators: Item hint explaining the Curved Segments On option for shape tools.
+#. AI-generated translation; human review requested.
+msgid "Curved Segments On"
+msgstr "곡선 세그먼트 켜짐"
+
+#. Translators: Item hint explaining the Curved Segments Off option for shape tools.
+#. AI-generated translation; human review requested.
+msgid "Curved Segments Off"
+msgstr "곡선 세그먼트 꺼짐"
+
+#. Translators: Item hint for the Outline Shape fill style.
+#. AI-generated translation; human review requested.
+msgid "Draw only the shape's outline, using the primary color."
+msgstr "기본 색상을 사용하여 도형의 윤곽선만 그립니다."
+
+#. Translators: Item hint for the Fill Shape fill style.
+#. AI-generated translation; human review requested.
+msgid "Fill the shape's interior with the secondary color, no outline."
+msgstr "보조 색상으로 도형의 내부를 채우고 윤곽선은 그리지 않습니다."
+
+#. Translators: Tooltip for the corner radius spin button on rounded shapes.
+#. AI-generated translation; human review requested.
+msgid "Corner-rounding radius, in pixels, applied at each point of the shape."
+msgstr "도형의 각 점에 적용되는 모서리 둥글림 반경(픽셀 단위)입니다."
+
+#. Translators: Item hint for the Color Picker's "Do not switch tool" option.
+#. AI-generated translation; human review requested.
+msgid "Keep using the Color Picker after a color is chosen."
+msgstr "색상을 선택한 후에도 색상 선택 도구를 계속 사용합니다."
+
+#. Translators: Item hint for the Color Picker's "Switch to previous tool" option.
+#. AI-generated translation; human review requested.
+msgid "Return to the tool that was active before the Color Picker."
+msgstr "색상 선택 도구를 사용하기 전에 활성화되어 있던 도구로 돌아갑니다."
+
+#. Translators: Item hint for the Color Picker's "Switch to Pencil tool" option.
+#. AI-generated translation; human review requested.
+msgid "Switch to the Pencil tool, ready to draw with the picked color."
+msgstr "연필 도구로 전환하여 선택한 색상으로 바로 그릴 수 있습니다."
+
+#. Translators: Item hint for the Color Picker's Single Pixel sample size.
+#. AI-generated translation; human review requested.
+msgid "Sample the exact color of the pixel under the pointer."
+msgstr "포인터 아래 픽셀의 정확한 색상을 추출합니다."
+
+#. Translators: Item hint for the Color Picker's 3 x 3 Region sample size.
+#. AI-generated translation; human review requested.
+msgid "Average the colors in a 3 x 3 area around the pointer."
+msgstr "포인터 주변 3 x 3 영역의 색상을 평균화합니다."
+
+#. Translators: Item hint for the Color Picker's 5 x 5 Region sample size.
+#. AI-generated translation; human review requested.
+msgid "Average the colors in a 5 x 5 area around the pointer."
+msgstr "포인터 주변 5 x 5 영역의 색상을 평균화합니다."
+
+#. Translators: Item hint for the Color Picker's 7 x 7 Region sample size.
+#. AI-generated translation; human review requested.
+msgid "Average the colors in a 7 x 7 area around the pointer."
+msgstr "포인터 주변 7 x 7 영역의 색상을 평균화합니다."
+
+#. Translators: Item hint for the Color Picker's 9 x 9 Region sample size.
+#. AI-generated translation; human review requested.
+msgid "Average the colors in a 9 x 9 area around the pointer."
+msgstr "포인터 주변 9 x 9 영역의 색상을 평균화합니다."
+
+#. Translators: Item hint for the Color Picker's Layer sample scope.
+#. AI-generated translation; human review requested.
+msgid "Sample from the current layer only."
+msgstr "현재 레이어에서만 색상을 추출합니다."
+
+#. Translators: Item hint for the Color Picker's Image sample scope.
+#. AI-generated translation; human review requested.
+msgid "Sample from the composited image, including all visible layers."
+msgstr "표시되는 모든 레이어를 포함하여 합성된 이미지에서 색상을 추출합니다."
+
+#. Translators: Item hint for the Linear Gradient type.
+#. AI-generated translation; human review requested.
+msgid "Transitions colors in a straight line between the two endpoints."
+msgstr "두 끝점 사이를 직선으로 색상을 전환합니다."
+
+#. Translators: Item hint for the Linear Reflected Gradient type.
+#. AI-generated translation; human review requested.
+msgid "Mirrors the linear transition on both sides of the start point."
+msgstr "시작점을 기준으로 선형 전환을 양쪽으로 대칭시킵니다."
+
+#. Translators: Item hint for the Linear Diamond Gradient type.
+#. AI-generated translation; human review requested.
+msgid "Transitions colors outward from the start point in a diamond shape."
+msgstr "시작점에서 다이아몬드 모양으로 바깥쪽으로 색상을 전환합니다."
+
+#. Translators: Item hint for the Radial Gradient type.
+#. AI-generated translation; human review requested.
+msgid "Transitions colors outward from the start point in a circle."
+msgstr "시작점에서 원형으로 바깥쪽으로 색상을 전환합니다."
+
+#. Translators: Item hint for the Conical Gradient type.
+#. AI-generated translation; human review requested.
+msgid "Transitions colors in a sweep around the start point."
+msgstr "시작점을 중심으로 회전하며 색상을 전환합니다."
+
+#. Translators: Item hint for the Gradient tool's Color Mode.
+#. AI-generated translation; human review requested.
+msgid "Transition between the primary and secondary colors."
+msgstr "기본 색상과 보조 색상 사이를 전환합니다."
+
+#. Translators: Item hint for the Gradient tool's Transparency Mode.
+#. AI-generated translation; human review requested.
+msgid "Transition the primary color from opaque to transparent."
+msgstr "기본 색상을 불투명에서 투명으로 전환합니다."
+
+#. Translators: Item hint for the Normal font-variant option.
+#. AI-generated translation; human review requested.
+msgid "Regular upper and lower case letters."
+msgstr "일반 대소문자입니다."
+
+#. Translators: Item hint for the Small Caps font-variant option.
+#. AI-generated translation; human review requested.
+msgid "Lower case letters are replaced with smaller capital letters."
+msgstr "소문자가 더 작은 대문자로 대체됩니다."
+
+#. Translators: Item hint for the Petite Caps font-variant option.
+#. AI-generated translation; human review requested.
+msgid "Like Small Caps, but the substituted capitals are slightly smaller."
+msgstr "작은 대문자와 비슷하지만 대체된 대문자가 약간 더 작습니다."
+
+#. Translators: Item hint for the All Petite Caps font-variant option.
+#. AI-generated translation; human review requested.
+msgid "Like All Small Caps, but the substituted capitals are slightly smaller."
+msgstr "모든 작은 대문자와 비슷하지만 대체된 대문자가 약간 더 작습니다."
+
+#. Translators: Item hint for the Title Caps font-variant option.
+#. AI-generated translation; human review requested.
+msgid "Uses title-specific capital letter forms where available."
+msgstr "가능한 경우 제목 전용 대문자 형태를 사용합니다."
+
+#. Translators: Item hint for the Normal text style.
+#. AI-generated translation; human review requested.
+msgid "Fill the text with the primary color."
+msgstr "기본 색상으로 텍스트를 채웁니다."
+
+#. Translators: Item hint for the Outline text style.
+#. AI-generated translation; human review requested.
+msgid "Draw only the outline of the text, using the secondary color."
+msgstr "보조 색상을 사용하여 텍스트의 윤곽선만 그립니다."
+
+#. Translators: Item hint for the Fill Background text style.
+#. AI-generated translation; human review requested.
+msgid "Fill the text's bounding box with the secondary color, behind the text."
+msgstr "텍스트 뒤의 경계 상자를 보조 색상으로 채웁니다."
+
+#. Translators: Tooltip for the text outline width spin button.
+#. AI-generated translation; human review requested.
+msgid "Thickness of the text outline, in pixels."
+msgstr "텍스트 윤곽선의 두께(픽셀 단위)입니다."
+
+#. Translators: Item hint for the Miter Join line join option.
+#. AI-generated translation; human review requested.
+msgid "Sharp, pointed corners on the outline."
+msgstr "윤곽선의 날카롭고 뾰족한 모서리입니다."
+
+#. Translators: Item hint for the Round Join line join option.
+#. AI-generated translation; human review requested.
+msgid "Rounded corners on the outline."
+msgstr "윤곽선의 둥근 모서리입니다."
+
+#. Translators: Item hint for the Bevel Join line join option.
+#. AI-generated translation; human review requested.
+msgid "Flattened, squared-off corners on the outline."
+msgstr "윤곽선의 평평하고 각진 모서리입니다."
+
+#. Translators: Tooltip shown while editing re-editable text, hints at the key to finish.
+#. AI-generated translation; human review requested.
+msgid "Finish typing (Esc)"
+msgstr "입력 완료 (Esc)"
+
+#. Translators: Tooltip shown over a re-editable text object, hints at the gesture to edit it.
+#. AI-generated translation; human review requested.
+msgid "Ctrl+Click to edit"
+msgstr "Ctrl+클릭으로 편집"

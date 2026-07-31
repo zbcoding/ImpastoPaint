@@ -267,6 +267,7 @@ public abstract class ArrowedEditEngine : BaseEditEngine
 	private Gtk.CheckButton CreateArrowOneEnabledCheckBox ()
 	{
 		Gtk.CheckButton result = Gtk.CheckButton.NewWithLabel ("1");
+		result.TooltipText = Translations.GetString ("Show an arrowhead at the start point.");
 		result.FocusOnClick = false;
 		result.Active = settings.GetSetting (SettingNames.Arrow1 (tool_prefix), previous_settings_1.Show);
 		result.OnToggled += (o, e) => ArrowEnabledToggled (true);
@@ -279,6 +280,7 @@ public abstract class ArrowedEditEngine : BaseEditEngine
 	private Gtk.CheckButton CreateArrowTwoEnabledCheckBox ()
 	{
 		Gtk.CheckButton result = Gtk.CheckButton.NewWithLabel ("2");
+		result.TooltipText = Translations.GetString ("Show an arrowhead at the end point.");
 		result.FocusOnClick = false;
 		result.Active = settings.GetSetting (SettingNames.Arrow2 (tool_prefix), previous_settings_2.Show);
 		result.OnToggled += (o, e) => ArrowEnabledToggled (false);
@@ -294,6 +296,7 @@ public abstract class ArrowedEditEngine : BaseEditEngine
 	private Gtk.SpinButton CreateArrowSize ()
 	{
 		Gtk.SpinButton result = GtkExtensions.CreateToolBarSpinButton (1, 100, 1, settings.GetSetting (SettingNames.ArrowSize (tool_prefix), 10));
+		result.TooltipText = Translations.GetString ("Length of the arrowhead, in pixels.");
 		result.OnValueChanged += (o, e) => {
 			var activeEngine = (LineCurveSeriesEngine?) ActiveShapeEngine;
 			if (activeEngine == null) return;
@@ -315,6 +318,7 @@ public abstract class ArrowedEditEngine : BaseEditEngine
 	private Gtk.SpinButton CreateArrowAngleOffset ()
 	{
 		Gtk.SpinButton result = GtkExtensions.CreateToolBarSpinButton (-89, 89, 1, settings.GetSetting (SettingNames.ArrowAngle (tool_prefix), 15));
+		result.TooltipText = Translations.GetString ("Angle, in degrees, between the arrowhead's wings and the line.");
 		result.OnValueChanged += (o, e) => {
 			var activeEngine = (LineCurveSeriesEngine?) ActiveShapeEngine;
 			if (activeEngine == null) return;
@@ -336,6 +340,7 @@ public abstract class ArrowedEditEngine : BaseEditEngine
 	private Gtk.SpinButton CreateArrowLengthOffset ()
 	{
 		Gtk.SpinButton result = GtkExtensions.CreateToolBarSpinButton (-100, 100, 1, settings.GetSetting (SettingNames.ArrowLength (tool_prefix), 10));
+		result.TooltipText = Translations.GetString ("Length of the arrowhead's wings; does not change the line's length.");
 		result.OnValueChanged += (o, e) => {
 			var activeEngine = (LineCurveSeriesEngine?) ActiveShapeEngine;
 			if (activeEngine == null) return;

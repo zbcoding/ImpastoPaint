@@ -3077,3 +3077,223 @@ msgstr ""
 #. Translators: Explains that resetting UI preferences restores all popover hints.
 msgid "This resets popover hints to show all UI hints."
 msgstr ""
+
+#: ../Pinta.Tools/Editable/EditEngines/ArrowedEditEngine.cs:270
+#. Translators: Tooltip for the checkbox showing/hiding the arrowhead at the start of a line or curve.
+msgid "Show an arrowhead at the start point."
+msgstr ""
+
+#: ../Pinta.Tools/Editable/EditEngines/ArrowedEditEngine.cs:283
+#. Translators: Tooltip for the checkbox showing/hiding the arrowhead at the end of a line or curve.
+msgid "Show an arrowhead at the end point."
+msgstr ""
+
+#: ../Pinta.Tools/Editable/EditEngines/ArrowedEditEngine.cs:299
+#. Translators: Tooltip for the arrowhead size spin button.
+msgid "Length of the arrowhead, in pixels."
+msgstr ""
+
+#: ../Pinta.Tools/Editable/EditEngines/ArrowedEditEngine.cs:321
+#. Translators: Tooltip for the arrowhead angle spin button.
+msgid "Angle, in degrees, between the arrowhead's wings and the line."
+msgstr ""
+
+#: ../Pinta.Tools/Editable/EditEngines/ArrowedEditEngine.cs:343
+#. Translators: Tooltip for the arrowhead wing-length spin button.
+msgid "Length of the arrowhead's wings; does not change the line's length."
+msgstr ""
+
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:293
+#. Translators: Item hint for the Open Line/Curve Series shape type.
+msgid "Draws a line or curve with a start and an end point."
+msgstr ""
+
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:295
+#. Translators: Item hint for the Ellipse shape type.
+msgid "Draws an ellipse or circle."
+msgstr ""
+
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:296
+#. Translators: Item hint for the Rounded Line Series shape type.
+msgid "Like Closed Line/Curve Series, but with rounded corners at each point."
+msgstr ""
+
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:344
+#. Translators: Item hint explaining the Curved Segments On option for shape tools.
+msgid "Curved Segments On"
+msgstr ""
+
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:345
+#. Translators: Item hint explaining the Curved Segments Off option for shape tools.
+msgid "Curved Segments Off"
+msgstr ""
+
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:376
+#. Translators: Item hint for the Outline Shape fill style.
+msgid "Draw only the shape's outline, using the primary color."
+msgstr ""
+
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:377
+#. Translators: Item hint for the Fill Shape fill style.
+msgid "Fill the shape's interior with the secondary color, no outline."
+msgstr ""
+
+#: ../Pinta.Tools/Editable/EditEngines/RoundedLineEditEngine.cs:93
+#. Translators: Tooltip for the corner radius spin button on rounded shapes.
+msgid "Corner-rounding radius, in pixels, applied at each point of the shape."
+msgstr ""
+
+#: ../Pinta.Tools/Tools/ColorPickerTool.cs:220
+#. Translators: Item hint for the Color Picker's "Do not switch tool" option.
+msgid "Keep using the Color Picker after a color is chosen."
+msgstr ""
+
+#: ../Pinta.Tools/Tools/ColorPickerTool.cs:221
+#. Translators: Item hint for the Color Picker's "Switch to previous tool" option.
+msgid "Return to the tool that was active before the Color Picker."
+msgstr ""
+
+#: ../Pinta.Tools/Tools/ColorPickerTool.cs:222
+#. Translators: Item hint for the Color Picker's "Switch to Pencil tool" option.
+msgid "Switch to the Pencil tool, ready to draw with the picked color."
+msgstr ""
+
+#: ../Pinta.Tools/Tools/ColorPickerTool.cs:239
+#. Translators: Item hint for the Color Picker's Single Pixel sample size.
+msgid "Sample the exact color of the pixel under the pointer."
+msgstr ""
+
+#: ../Pinta.Tools/Tools/ColorPickerTool.cs:240
+#. Translators: Item hint for the Color Picker's 3 x 3 Region sample size.
+msgid "Average the colors in a 3 x 3 area around the pointer."
+msgstr ""
+
+#: ../Pinta.Tools/Tools/ColorPickerTool.cs:241
+#. Translators: Item hint for the Color Picker's 5 x 5 Region sample size.
+msgid "Average the colors in a 5 x 5 area around the pointer."
+msgstr ""
+
+#: ../Pinta.Tools/Tools/ColorPickerTool.cs:242
+#. Translators: Item hint for the Color Picker's 7 x 7 Region sample size.
+msgid "Average the colors in a 7 x 7 area around the pointer."
+msgstr ""
+
+#: ../Pinta.Tools/Tools/ColorPickerTool.cs:243
+#. Translators: Item hint for the Color Picker's 9 x 9 Region sample size.
+msgid "Average the colors in a 9 x 9 area around the pointer."
+msgstr ""
+
+#: ../Pinta.Tools/Tools/ColorPickerTool.cs:257
+#. Translators: Item hint for the Color Picker's Layer sample scope.
+msgid "Sample from the current layer only."
+msgstr ""
+
+#: ../Pinta.Tools/Tools/ColorPickerTool.cs:258
+#. Translators: Item hint for the Color Picker's Image sample scope.
+msgid "Sample from the composited image, including all visible layers."
+msgstr ""
+
+#: ../Pinta.Tools/Tools/GradientTool.cs:297
+#. Translators: Item hint for the Linear Gradient type.
+msgid "Transitions colors in a straight line between the two endpoints."
+msgstr ""
+
+#: ../Pinta.Tools/Tools/GradientTool.cs:298
+#. Translators: Item hint for the Linear Reflected Gradient type.
+msgid "Mirrors the linear transition on both sides of the start point."
+msgstr ""
+
+#: ../Pinta.Tools/Tools/GradientTool.cs:299
+#. Translators: Item hint for the Linear Diamond Gradient type.
+msgid "Transitions colors outward from the start point in a diamond shape."
+msgstr ""
+
+#: ../Pinta.Tools/Tools/GradientTool.cs:300
+#. Translators: Item hint for the Radial Gradient type.
+msgid "Transitions colors outward from the start point in a circle."
+msgstr ""
+
+#: ../Pinta.Tools/Tools/GradientTool.cs:301
+#. Translators: Item hint for the Conical Gradient type.
+msgid "Transitions colors in a sweep around the start point."
+msgstr ""
+
+#: ../Pinta.Tools/Tools/GradientTool.cs:331
+#. Translators: Item hint for the Gradient tool's Color Mode.
+msgid "Transition between the primary and secondary colors."
+msgstr ""
+
+#: ../Pinta.Tools/Tools/GradientTool.cs:332
+#. Translators: Item hint for the Gradient tool's Transparency Mode.
+msgid "Transition the primary color from opaque to transparent."
+msgstr ""
+
+#: ../Pinta.Tools/Tools/TextTool.cs:189
+#. Translators: Item hint for the Normal font-variant option.
+msgid "Regular upper and lower case letters."
+msgstr ""
+
+#: ../Pinta.Tools/Tools/TextTool.cs:196
+#. Translators: Item hint for the Small Caps font-variant option.
+msgid "Lower case letters are replaced with smaller capital letters."
+msgstr ""
+
+#: ../Pinta.Tools/Tools/TextTool.cs:210
+#. Translators: Item hint for the Petite Caps font-variant option.
+msgid "Like Small Caps, but the substituted capitals are slightly smaller."
+msgstr ""
+
+#: ../Pinta.Tools/Tools/TextTool.cs:217
+#. Translators: Item hint for the All Petite Caps font-variant option.
+msgid "Like All Small Caps, but the substituted capitals are slightly smaller."
+msgstr ""
+
+#: ../Pinta.Tools/Tools/TextTool.cs:231
+#. Translators: Item hint for the Title Caps font-variant option.
+msgid "Uses title-specific capital letter forms where available."
+msgstr ""
+
+#: ../Pinta.Tools/Tools/TextTool.cs:412
+#. Translators: Item hint for the Normal text style.
+msgid "Fill the text with the primary color."
+msgstr ""
+
+#: ../Pinta.Tools/Tools/TextTool.cs:414
+#. Translators: Item hint for the Outline text style.
+msgid "Draw only the outline of the text, using the secondary color."
+msgstr ""
+
+#: ../Pinta.Tools/Tools/TextTool.cs:415
+#. Translators: Item hint for the Fill Background text style.
+msgid "Fill the text's bounding box with the secondary color, behind the text."
+msgstr ""
+
+#: ../Pinta.Tools/Tools/TextTool.cs:440
+#. Translators: Tooltip for the text outline width spin button.
+msgid "Thickness of the text outline, in pixels."
+msgstr ""
+
+#: ../Pinta.Tools/Tools/TextTool.cs:458
+#. Translators: Item hint for the Miter Join line join option.
+msgid "Sharp, pointed corners on the outline."
+msgstr ""
+
+#: ../Pinta.Tools/Tools/TextTool.cs:465
+#. Translators: Item hint for the Round Join line join option.
+msgid "Rounded corners on the outline."
+msgstr ""
+
+#: ../Pinta.Tools/Tools/TextTool.cs:472
+#. Translators: Item hint for the Bevel Join line join option.
+msgid "Flattened, squared-off corners on the outline."
+msgstr ""
+
+#: ../Pinta.Tools/Tools/TextTool.cs:495
+#. Translators: Tooltip shown while editing re-editable text, hints at the key to finish.
+msgid "Finish typing (Esc)"
+msgstr ""
+
+#: ../Pinta.Tools/Tools/TextTool.cs:1794
+#. Translators: Tooltip shown over a re-editable text object, hints at the gesture to edit it.
+msgid "Ctrl+Click to edit"
+msgstr ""

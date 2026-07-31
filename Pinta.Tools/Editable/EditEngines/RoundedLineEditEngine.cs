@@ -90,6 +90,7 @@ public sealed class RoundedLineEditEngine : BaseEditEngine
 
 		if (radius == null) {
 			radius = GtkExtensions.CreateToolBarSpinButton (0, 1e5, 1, settings.GetSetting (SettingNames.Radius (toolPrefix), 20));
+			radius.TooltipText = Translations.GetString ("Corner-rounding radius, in pixels, applied at each point of the shape.");
 
 			radius.OnValueChanged += (o, e) => {
 				//Go through the Get/Set routine.

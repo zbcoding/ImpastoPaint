@@ -3624,3 +3624,223 @@ msgstr ""
 
 #~ msgid "Delay before taking a screenshot (seconds):"
 #~ msgstr "Demora antes de capturar la pantalla (segundos):"
+
+#. Translators: Tooltip for the checkbox showing/hiding the arrowhead at the start of a line or curve.
+#. AI-generated translation; human review requested.
+msgid "Show an arrowhead at the start point."
+msgstr "Muestra una punta de flecha en el punto inicial."
+
+#. Translators: Tooltip for the checkbox showing/hiding the arrowhead at the end of a line or curve.
+#. AI-generated translation; human review requested.
+msgid "Show an arrowhead at the end point."
+msgstr "Muestra una punta de flecha en el punto final."
+
+#. Translators: Tooltip for the arrowhead size spin button.
+#. AI-generated translation; human review requested.
+msgid "Length of the arrowhead, in pixels."
+msgstr "Longitud de la punta de flecha, en píxeles."
+
+#. Translators: Tooltip for the arrowhead angle spin button.
+#. AI-generated translation; human review requested.
+msgid "Angle, in degrees, between the arrowhead's wings and the line."
+msgstr "Ángulo, en grados, entre las alas de la punta de flecha y la línea."
+
+#. Translators: Tooltip for the arrowhead wing-length spin button.
+#. AI-generated translation; human review requested.
+msgid "Length of the arrowhead's wings; does not change the line's length."
+msgstr "Longitud de las alas de la punta de flecha; no cambia la longitud de la línea."
+
+#. Translators: Item hint for the Open Line/Curve Series shape type.
+#. AI-generated translation; human review requested.
+msgid "Draws a line or curve with a start and an end point."
+msgstr "Dibuja una línea o curva con un punto inicial y un punto final."
+
+#. Translators: Item hint for the Ellipse shape type.
+#. AI-generated translation; human review requested.
+msgid "Draws an ellipse or circle."
+msgstr "Dibuja una elipse o un círculo."
+
+#. Translators: Item hint for the Rounded Line Series shape type.
+#. AI-generated translation; human review requested.
+msgid "Like Closed Line/Curve Series, but with rounded corners at each point."
+msgstr "Como Serie de líneas/curvas cerradas, pero con esquinas redondeadas en cada punto."
+
+#. Translators: Item hint explaining the Curved Segments On option for shape tools.
+#. AI-generated translation; human review requested.
+msgid "Curved Segments On"
+msgstr "Segmentos curvos activados"
+
+#. Translators: Item hint explaining the Curved Segments Off option for shape tools.
+#. AI-generated translation; human review requested.
+msgid "Curved Segments Off"
+msgstr "Segmentos curvos desactivados"
+
+#. Translators: Item hint for the Outline Shape fill style.
+#. AI-generated translation; human review requested.
+msgid "Draw only the shape's outline, using the primary color."
+msgstr "Dibuja solo el contorno de la forma, usando el color primario."
+
+#. Translators: Item hint for the Fill Shape fill style.
+#. AI-generated translation; human review requested.
+msgid "Fill the shape's interior with the secondary color, no outline."
+msgstr "Rellena el interior de la forma con el color secundario, sin contorno."
+
+#. Translators: Tooltip for the corner radius spin button on rounded shapes.
+#. AI-generated translation; human review requested.
+msgid "Corner-rounding radius, in pixels, applied at each point of the shape."
+msgstr "Radio de redondeo de esquinas, en píxeles, aplicado en cada punto de la forma."
+
+#. Translators: Item hint for the Color Picker's "Do not switch tool" option.
+#. AI-generated translation; human review requested.
+msgid "Keep using the Color Picker after a color is chosen."
+msgstr "Sigue usando el Selector de color después de elegir un color."
+
+#. Translators: Item hint for the Color Picker's "Switch to previous tool" option.
+#. AI-generated translation; human review requested.
+msgid "Return to the tool that was active before the Color Picker."
+msgstr "Vuelve a la herramienta que estaba activa antes del Selector de color."
+
+#. Translators: Item hint for the Color Picker's "Switch to Pencil tool" option.
+#. AI-generated translation; human review requested.
+msgid "Switch to the Pencil tool, ready to draw with the picked color."
+msgstr "Cambia a la herramienta Lápiz, lista para dibujar con el color elegido."
+
+#. Translators: Item hint for the Color Picker's Single Pixel sample size.
+#. AI-generated translation; human review requested.
+msgid "Sample the exact color of the pixel under the pointer."
+msgstr "Muestrea el color exacto del píxel bajo el puntero."
+
+#. Translators: Item hint for the Color Picker's 3 x 3 Region sample size.
+#. AI-generated translation; human review requested.
+msgid "Average the colors in a 3 x 3 area around the pointer."
+msgstr "Promedia los colores en un área de 3 x 3 alrededor del puntero."
+
+#. Translators: Item hint for the Color Picker's 5 x 5 Region sample size.
+#. AI-generated translation; human review requested.
+msgid "Average the colors in a 5 x 5 area around the pointer."
+msgstr "Promedia los colores en un área de 5 x 5 alrededor del puntero."
+
+#. Translators: Item hint for the Color Picker's 7 x 7 Region sample size.
+#. AI-generated translation; human review requested.
+msgid "Average the colors in a 7 x 7 area around the pointer."
+msgstr "Promedia los colores en un área de 7 x 7 alrededor del puntero."
+
+#. Translators: Item hint for the Color Picker's 9 x 9 Region sample size.
+#. AI-generated translation; human review requested.
+msgid "Average the colors in a 9 x 9 area around the pointer."
+msgstr "Promedia los colores en un área de 9 x 9 alrededor del puntero."
+
+#. Translators: Item hint for the Color Picker's Layer sample scope.
+#. AI-generated translation; human review requested.
+msgid "Sample from the current layer only."
+msgstr "Muestrea solo de la capa actual."
+
+#. Translators: Item hint for the Color Picker's Image sample scope.
+#. AI-generated translation; human review requested.
+msgid "Sample from the composited image, including all visible layers."
+msgstr "Muestrea de la imagen compuesta, incluyendo todas las capas visibles."
+
+#. Translators: Item hint for the Linear Gradient type.
+#. AI-generated translation; human review requested.
+msgid "Transitions colors in a straight line between the two endpoints."
+msgstr "Transiciona los colores en línea recta entre los dos extremos."
+
+#. Translators: Item hint for the Linear Reflected Gradient type.
+#. AI-generated translation; human review requested.
+msgid "Mirrors the linear transition on both sides of the start point."
+msgstr "Refleja la transición lineal a ambos lados del punto inicial."
+
+#. Translators: Item hint for the Linear Diamond Gradient type.
+#. AI-generated translation; human review requested.
+msgid "Transitions colors outward from the start point in a diamond shape."
+msgstr "Transiciona los colores hacia afuera desde el punto inicial en forma de rombo."
+
+#. Translators: Item hint for the Radial Gradient type.
+#. AI-generated translation; human review requested.
+msgid "Transitions colors outward from the start point in a circle."
+msgstr "Transiciona los colores hacia afuera desde el punto inicial en forma de círculo."
+
+#. Translators: Item hint for the Conical Gradient type.
+#. AI-generated translation; human review requested.
+msgid "Transitions colors in a sweep around the start point."
+msgstr "Transiciona los colores en un barrido alrededor del punto inicial."
+
+#. Translators: Item hint for the Gradient tool's Color Mode.
+#. AI-generated translation; human review requested.
+msgid "Transition between the primary and secondary colors."
+msgstr "Transiciona entre el color primario y el secundario."
+
+#. Translators: Item hint for the Gradient tool's Transparency Mode.
+#. AI-generated translation; human review requested.
+msgid "Transition the primary color from opaque to transparent."
+msgstr "Transiciona el color primario de opaco a transparente."
+
+#. Translators: Item hint for the Normal font-variant option.
+#. AI-generated translation; human review requested.
+msgid "Regular upper and lower case letters."
+msgstr "Letras mayúsculas y minúsculas normales."
+
+#. Translators: Item hint for the Small Caps font-variant option.
+#. AI-generated translation; human review requested.
+msgid "Lower case letters are replaced with smaller capital letters."
+msgstr "Las letras minúsculas se reemplazan por mayúsculas más pequeñas."
+
+#. Translators: Item hint for the Petite Caps font-variant option.
+#. AI-generated translation; human review requested.
+msgid "Like Small Caps, but the substituted capitals are slightly smaller."
+msgstr "Como Versalitas, pero las mayúsculas sustituidas son ligeramente más pequeñas."
+
+#. Translators: Item hint for the All Petite Caps font-variant option.
+#. AI-generated translation; human review requested.
+msgid "Like All Small Caps, but the substituted capitals are slightly smaller."
+msgstr "Como Todo en versalitas, pero las mayúsculas sustituidas son ligeramente más pequeñas."
+
+#. Translators: Item hint for the Title Caps font-variant option.
+#. AI-generated translation; human review requested.
+msgid "Uses title-specific capital letter forms where available."
+msgstr "Usa formas de letra mayúscula específicas para títulos cuando estén disponibles."
+
+#. Translators: Item hint for the Normal text style.
+#. AI-generated translation; human review requested.
+msgid "Fill the text with the primary color."
+msgstr "Rellena el texto con el color primario."
+
+#. Translators: Item hint for the Outline text style.
+#. AI-generated translation; human review requested.
+msgid "Draw only the outline of the text, using the secondary color."
+msgstr "Dibuja solo el contorno del texto, usando el color secundario."
+
+#. Translators: Item hint for the Fill Background text style.
+#. AI-generated translation; human review requested.
+msgid "Fill the text's bounding box with the secondary color, behind the text."
+msgstr "Rellena el cuadro delimitador del texto con el color secundario, detrás del texto."
+
+#. Translators: Tooltip for the text outline width spin button.
+#. AI-generated translation; human review requested.
+msgid "Thickness of the text outline, in pixels."
+msgstr "Grosor del contorno del texto, en píxeles."
+
+#. Translators: Item hint for the Miter Join line join option.
+#. AI-generated translation; human review requested.
+msgid "Sharp, pointed corners on the outline."
+msgstr "Esquinas puntiagudas en el contorno."
+
+#. Translators: Item hint for the Round Join line join option.
+#. AI-generated translation; human review requested.
+msgid "Rounded corners on the outline."
+msgstr "Esquinas redondeadas en el contorno."
+
+#. Translators: Item hint for the Bevel Join line join option.
+#. AI-generated translation; human review requested.
+msgid "Flattened, squared-off corners on the outline."
+msgstr "Esquinas achaflanadas y aplanadas en el contorno."
+
+#. Translators: Tooltip shown while editing re-editable text, hints at the key to finish.
+#. AI-generated translation; human review requested.
+msgid "Finish typing (Esc)"
+msgstr "Terminar de escribir (Esc)"
+
+#. Translators: Tooltip shown over a re-editable text object, hints at the gesture to edit it.
+#. AI-generated translation; human review requested.
+msgid "Ctrl+Click to edit"
+msgstr "Ctrl+Clic para editar"

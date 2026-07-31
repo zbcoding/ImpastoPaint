@@ -223,9 +223,9 @@ public sealed class FreeformShapeTool : BaseBrushTool
 			if (fill_button == null) {
 				fill_button = ToolBarDropDownButton.New ();
 
-				fill_button.AddItem (Translations.GetString ("Outline Shape"), Pinta.Resources.Icons.FillStyleOutline, 0);
-				fill_button.AddItem (Translations.GetString ("Fill Shape"), Pinta.Resources.Icons.FillStyleFill, 1);
-				fill_button.AddItem (Translations.GetString ("Fill and Outline Shape"), Pinta.Resources.Icons.FillStyleOutlineFill, 2);
+				fill_button.AddItem (Translations.GetString ("Outline Shape"), Pinta.Resources.Icons.FillStyleOutline, 0, Translations.GetString ("Draw only the shape's outline, using the primary color."));
+				fill_button.AddItem (Translations.GetString ("Fill Shape"), Pinta.Resources.Icons.FillStyleFill, 1, Translations.GetString ("Fill the shape's interior with the secondary color, no outline."));
+				fill_button.AddItem (Translations.GetString ("Fill and Outline Shape"), Pinta.Resources.Icons.FillStyleOutlineFill, 2, Translations.GetString ("Fill the interior with the secondary color and outline it with the primary color."));
 
 				fill_button.SelectedIndex = Settings.GetSetting (SettingNames.FREEFORM_SHAPE_FILL_TYPE, 0);
 				fill_button.SelectedItemChanged += OnFillStyleChanged;

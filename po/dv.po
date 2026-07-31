@@ -3006,3 +3006,223 @@ msgstr "Reset UI Settings?"
 #. AI-generated translation; human review requested.
 msgid "This resets popover hints to show all UI hints."
 msgstr "This resets popover hints to show all UI hints."
+
+#. Translators: Tooltip for the checkbox showing/hiding the arrowhead at the start of a line or curve.
+#. AI-generated translation; human review requested.
+msgid "Show an arrowhead at the start point."
+msgstr "ފެށޭ ޕޮއިންޓްގައި ތީރު ބޯ ދައްކާ."
+
+#. Translators: Tooltip for the checkbox showing/hiding the arrowhead at the end of a line or curve.
+#. AI-generated translation; human review requested.
+msgid "Show an arrowhead at the end point."
+msgstr "ނިމޭ ޕޮއިންޓްގައި ތީރު ބޯ ދައްކާ."
+
+#. Translators: Tooltip for the arrowhead size spin button.
+#. AI-generated translation; human review requested.
+msgid "Length of the arrowhead, in pixels."
+msgstr "ތީރު ބޯގެ ދިގުމިން، ޕިކްސެލުން."
+
+#. Translators: Tooltip for the arrowhead angle spin button.
+#. AI-generated translation; human review requested.
+msgid "Angle, in degrees, between the arrowhead's wings and the line."
+msgstr "ތީރު ބޯގެ ފިޔަތަކާއި ރޮނގާ ދެމެދުގައިވާ ކަނަ، ޑިގްރީން."
+
+#. Translators: Tooltip for the arrowhead wing-length spin button.
+#. AI-generated translation; human review requested.
+msgid "Length of the arrowhead's wings; does not change the line's length."
+msgstr "ތީރު ބޯގެ ފިޔަތަކުގެ ދިގުމިން؛ ރޮނގުގެ ދިގުމިނަށް ބަދަލެއް ނާންނާނެ."
+
+#. Translators: Item hint for the Open Line/Curve Series shape type.
+#. AI-generated translation; human review requested.
+msgid "Draws a line or curve with a start and an end point."
+msgstr "ފެށޭ ޕޮއިންޓަކާއި ނިމޭ ޕޮއިންޓަކާއެކު ރޮނގެއް ނުވަތަ ކާވްއެއް ކުރަހާ."
+
+#. Translators: Item hint for the Ellipse shape type.
+#. AI-generated translation; human review requested.
+msgid "Draws an ellipse or circle."
+msgstr "ބިސްބުރެއް ނުވަތަ ވަށްބުރެއް ކުރަހާ."
+
+#. Translators: Item hint for the Rounded Line Series shape type.
+#. AI-generated translation; human review requested.
+msgid "Like Closed Line/Curve Series, but with rounded corners at each point."
+msgstr "\"ބަންދު ރޮނގު/ކާވް ސީރީޒް\" ފަދަ، ނަމަވެސް ކޮންމެ ޕޮއިންޓެއްގައި ކަނަތައް ވަށްކޮށްފައި."
+
+#. Translators: Item hint explaining the Curved Segments On option for shape tools.
+#. AI-generated translation; human review requested.
+msgid "Curved Segments On"
+msgstr "ކާވް ސެގްމަންޓް ހުޅުވިފައި"
+
+#. Translators: Item hint explaining the Curved Segments Off option for shape tools.
+#. AI-generated translation; human review requested.
+msgid "Curved Segments Off"
+msgstr "ކާވް ސެގްމަންޓް ނިވިފައި"
+
+#. Translators: Item hint for the Outline Shape fill style.
+#. AI-generated translation; human review requested.
+msgid "Draw only the shape's outline, using the primary color."
+msgstr "ބައްޓަނުގެ ބޭރު ރޮނގު އެކަނި، އަސާސީ ކުލައިން ކުރަހާ."
+
+#. Translators: Item hint for the Fill Shape fill style.
+#. AI-generated translation; human review requested.
+msgid "Fill the shape's interior with the secondary color, no outline."
+msgstr "ބައްޓަނުގެ އެތެރެ ސާނަވީ ކުލައިން ފުރާ، ބޭރު ރޮނގަކާ ނުލާ."
+
+#. Translators: Tooltip for the corner radius spin button on rounded shapes.
+#. AI-generated translation; human review requested.
+msgid "Corner-rounding radius, in pixels, applied at each point of the shape."
+msgstr "ބައްޓަނުގެ ކޮންމެ ޕޮއިންޓެއްގައި ބޭނުންކުރާ ކަނަ ވަށްކުރާ ރޭޑިއަސް، ޕިކްސެލުން."
+
+#. Translators: Item hint for the Color Picker's "Do not switch tool" option.
+#. AI-generated translation; human review requested.
+msgid "Keep using the Color Picker after a color is chosen."
+msgstr "ކުލައެއް ނެގުމަށްފަހުވެސް ކުލަ ނަގާ ވަސީލަތް ބޭނުންކުރުން ކުރިއަށް ގެންދޭ."
+
+#. Translators: Item hint for the Color Picker's "Switch to previous tool" option.
+#. AI-generated translation; human review requested.
+msgid "Return to the tool that was active before the Color Picker."
+msgstr "ކުލަ ނަގާ ވަސީލަތް ބޭނުންކުރުމުގެ ކުރިން ބޭނުންކުރި ވަސީލަތަށް އެނބުރި ދޭ."
+
+#. Translators: Item hint for the Color Picker's "Switch to Pencil tool" option.
+#. AI-generated translation; human review requested.
+msgid "Switch to the Pencil tool, ready to draw with the picked color."
+msgstr "ނެގި ކުލައިން ކުރެހުމަށް ތައްޔާރަށް، ޕެންސިލް ވަސީލަތަށް ބަދަލުކުރޭ."
+
+#. Translators: Item hint for the Color Picker's Single Pixel sample size.
+#. AI-generated translation; human review requested.
+msgid "Sample the exact color of the pixel under the pointer."
+msgstr "ޕޮއިންޓަރުގެ ދަށުގައިވާ ޕިކްސެލްގެ ސީދާ ކުލަ ނަގާ."
+
+#. Translators: Item hint for the Color Picker's 3 x 3 Region sample size.
+#. AI-generated translation; human review requested.
+msgid "Average the colors in a 3 x 3 area around the pointer."
+msgstr "ޕޮއިންޓަރު ވަށައިގެންވާ 3 × 3 ސަރަހައްދެއްގެ ކުލަތަކުގެ އެވަރެޖް ނަގާ."
+
+#. Translators: Item hint for the Color Picker's 5 x 5 Region sample size.
+#. AI-generated translation; human review requested.
+msgid "Average the colors in a 5 x 5 area around the pointer."
+msgstr "ޕޮއިންޓަރު ވަށައިގެންވާ 5 × 5 ސަރަހައްދެއްގެ ކުލަތަކުގެ އެވަރެޖް ނަގާ."
+
+#. Translators: Item hint for the Color Picker's 7 x 7 Region sample size.
+#. AI-generated translation; human review requested.
+msgid "Average the colors in a 7 x 7 area around the pointer."
+msgstr "ޕޮއިންޓަރު ވަށައިގެންވާ 7 × 7 ސަރަހައްދެއްގެ ކުލަތަކުގެ އެވަރެޖް ނަގާ."
+
+#. Translators: Item hint for the Color Picker's 9 x 9 Region sample size.
+#. AI-generated translation; human review requested.
+msgid "Average the colors in a 9 x 9 area around the pointer."
+msgstr "ޕޮއިންޓަރު ވަށައިގެންވާ 9 × 9 ސަރަހައްދެއްގެ ކުލަތަކުގެ އެވަރެޖް ނަގާ."
+
+#. Translators: Item hint for the Color Picker's Layer sample scope.
+#. AI-generated translation; human review requested.
+msgid "Sample from the current layer only."
+msgstr "ހަމައެކަނި މިހާރު ބޭނުންކުރާ ލޭޔަރުން ކުލަ ނަގާ."
+
+#. Translators: Item hint for the Color Picker's Image sample scope.
+#. AI-generated translation; human review requested.
+msgid "Sample from the composited image, including all visible layers."
+msgstr "ފެންނަ ހުރިހާ ލޭޔަރުތަކާއެކު ތައްޔާރުކޮށްފައިވާ އިމޭޖުން ކުލަ ނަގާ."
+
+#. Translators: Item hint for the Linear Gradient type.
+#. AI-generated translation; human review requested.
+msgid "Transitions colors in a straight line between the two endpoints."
+msgstr "ދެ ނިމޭ ޕޮއިންޓްގެ ދެމެދުގައި ސީދާ ރޮނގަކުން ކުލަތައް ބަދަލުކުރޭ."
+
+#. Translators: Item hint for the Linear Reflected Gradient type.
+#. AI-generated translation; human review requested.
+msgid "Mirrors the linear transition on both sides of the start point."
+msgstr "ސީދާ ބަދަލު ފެށޭ ޕޮއިންޓްގެ ދެފަރާތުގައި މިރާކުރޭ."
+
+#. Translators: Item hint for the Linear Diamond Gradient type.
+#. AI-generated translation; human review requested.
+msgid "Transitions colors outward from the start point in a diamond shape."
+msgstr "ފެށޭ ޕޮއިންޓުން ބޭރަށް، ޑައިމަންޑް ބައްޓަމަކަށް ކުލަތައް ބަދަލުކުރޭ."
+
+#. Translators: Item hint for the Radial Gradient type.
+#. AI-generated translation; human review requested.
+msgid "Transitions colors outward from the start point in a circle."
+msgstr "ފެށޭ ޕޮއިންޓުން ބޭރަށް، ވަށްބުރެއްގެ ބައްޓަމަށް ކުލަތައް ބަދަލުކުރޭ."
+
+#. Translators: Item hint for the Conical Gradient type.
+#. AI-generated translation; human review requested.
+msgid "Transitions colors in a sweep around the start point."
+msgstr "ފެށޭ ޕޮއިންޓް ވަށައިގެން އެނބުރޭގޮތަށް ކުލަތައް ބަދަލުކުރޭ."
+
+#. Translators: Item hint for the Gradient tool's Color Mode.
+#. AI-generated translation; human review requested.
+msgid "Transition between the primary and secondary colors."
+msgstr "އަސާސީ ކުލައާއި ސާނަވީ ކުލައާ ދެމެދު ބަދަލުކުރޭ."
+
+#. Translators: Item hint for the Gradient tool's Transparency Mode.
+#. AI-generated translation; human review requested.
+msgid "Transition the primary color from opaque to transparent."
+msgstr "އަސާސީ ކުލަ ފުރިހަމައަށް ފެންނަ ގޮތުން ނުފެންނަ ގޮތަށް ބަދަލުކުރޭ."
+
+#. Translators: Item hint for the Normal font-variant option.
+#. AI-generated translation; human review requested.
+msgid "Regular upper and lower case letters."
+msgstr "އާދައިގެ ބޮޑު އަދި ކުޑަ އަކުރު."
+
+#. Translators: Item hint for the Small Caps font-variant option.
+#. AI-generated translation; human review requested.
+msgid "Lower case letters are replaced with smaller capital letters."
+msgstr "ކުޑަ އަކުރުތައް ކުޑަ ބޮޑު އަކުރުތަކަށް ބަދަލުކުރޭ."
+
+#. Translators: Item hint for the Petite Caps font-variant option.
+#. AI-generated translation; human review requested.
+msgid "Like Small Caps, but the substituted capitals are slightly smaller."
+msgstr "\"ސްމޯލް ކެޕްސް\" ފަދަ، ނަމަވެސް ބަދަލުކުރި ބޮޑު އަކުރުތައް ތަންކޮޅެއް ކުޑަ."
+
+#. Translators: Item hint for the All Petite Caps font-variant option.
+#. AI-generated translation; human review requested.
+msgid "Like All Small Caps, but the substituted capitals are slightly smaller."
+msgstr "\"އޯލް ސްމޯލް ކެޕްސް\" ފަދަ، ނަމަވެސް ބަދަލުކުރި ބޮޑު އަކުރުތައް ތަންކޮޅެއް ކުޑަ."
+
+#. Translators: Item hint for the Title Caps font-variant option.
+#. AI-generated translation; human review requested.
+msgid "Uses title-specific capital letter forms where available."
+msgstr "ލިބެން ހުރި ނަމަ، ސުރުޚީއަށް ޚާއްސަ ބޮޑު އަކުރުގެ ބައްޓަންތައް ބޭނުންކުރޭ."
+
+#. Translators: Item hint for the Normal text style.
+#. AI-generated translation; human review requested.
+msgid "Fill the text with the primary color."
+msgstr "ލިޔުން އަސާސީ ކުލައިން ފުރާ."
+
+#. Translators: Item hint for the Outline text style.
+#. AI-generated translation; human review requested.
+msgid "Draw only the outline of the text, using the secondary color."
+msgstr "ސާނަވީ ކުލައިން ލިޔުމުގެ ބޭރު ރޮނގު އެކަނި ކުރަހާ."
+
+#. Translators: Item hint for the Fill Background text style.
+#. AI-generated translation; human review requested.
+msgid "Fill the text's bounding box with the secondary color, behind the text."
+msgstr "ލިޔުމުގެ ފުރަގަހުގައި، ސާނަވީ ކުލައިން ލިޔުމުގެ ބައުންޑިންގ ބޮކްސް ފުރާ."
+
+#. Translators: Tooltip for the text outline width spin button.
+#. AI-generated translation; human review requested.
+msgid "Thickness of the text outline, in pixels."
+msgstr "ލިޔުމުގެ ބޭރު ރޮނގުގެ ބޯމިން، ޕިކްސެލުން."
+
+#. Translators: Item hint for the Miter Join line join option.
+#. AI-generated translation; human review requested.
+msgid "Sharp, pointed corners on the outline."
+msgstr "ބޭރު ރޮނގުގައި ތޫނު، ސީދާ ކަނަތައް."
+
+#. Translators: Item hint for the Round Join line join option.
+#. AI-generated translation; human review requested.
+msgid "Rounded corners on the outline."
+msgstr "ބޭރު ރޮނގުގައި ވަށްކޮށްފައިވާ ކަނަތައް."
+
+#. Translators: Item hint for the Bevel Join line join option.
+#. AI-generated translation; human review requested.
+msgid "Flattened, squared-off corners on the outline."
+msgstr "ބޭރު ރޮނގުގައި ފަތިކޮށް، ސީދާކޮށްފައިވާ ކަނަތައް."
+
+#. Translators: Tooltip shown while editing re-editable text, hints at the key to finish.
+#. AI-generated translation; human review requested.
+msgid "Finish typing (Esc)"
+msgstr "ލިޔުން ނިންމާ (Esc)"
+
+#. Translators: Tooltip shown over a re-editable text object, hints at the gesture to edit it.
+#. AI-generated translation; human review requested.
+msgid "Ctrl+Click to edit"
+msgstr "އެޑިޓްކުރުމަށް Ctrl+Click"

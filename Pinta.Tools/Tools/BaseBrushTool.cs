@@ -44,10 +44,8 @@ public abstract class BaseBrushTool : BaseTool
 	{
 		Palette = services.GetService<IPaletteService> ();
 
-		BrushWidthSpinButton.TooltipText = Translations.GetString ("Change brush width.") + "\n"
-			+ "\n" + Translations.GetString ("Shortcut keys:")
-			+ "\n" + Translations.GetString ("Press {0} to decrease brush width", "\"[\"")
-			+ "\n" + Translations.GetString ("Press {0} to increase brush width", "\"]\"");
+		UpdateBrushWidthTooltip ();
+		PintaCore.Shortcuts.ShortcutsChanged += (_, _) => UpdateBrushWidthTooltip ();
 		BrushWidthSpinButton.OnValueChanged += (_, _) => OnBrushWidthChanged ();
 	}
 
@@ -128,4 +126,15 @@ public abstract class BaseBrushTool : BaseTool
 
 	protected SpinButton BrushWidthSpinButton => brush_width ??= GtkExtensions.CreateToolBarSpinButton (1, 1e5, 1, Settings.GetSetting (SettingNames.BrushWidth (this), DEFAULT_BRUSH_WIDTH));
 	protected Label BrushWidthLabel => brush_width_label ??= Label.New (string.Format (" {0}: ", Translations.GetString ("Brush width")));
+
+	private void UpdateBrushWidthTooltip ()
+	{
+		KeyGesture decrease = PintaCore.Shortcuts.GetToolBinding (KeyboardShortcutManager.BrushDecreaseWidth);
+		KeyGesture increase = PintaCore.Shortcuts.GetToolBinding (KeyboardShortcutManager.BrushIncreaseWidth);
+
+		BrushWidthSpinButton.TooltipText = Translations.GetString ("Change brush width.") + "\n"
+			+ "\n" + Translations.GetString ("Shortcut keys:")
+			+ "\n" + Translations.GetString ("Press {0} to decrease brush width", decrease.ToLabel ())
+			+ "\n" + Translations.GetString ("Press {0} to increase brush width", increase.ToLabel ());
+	}
 }

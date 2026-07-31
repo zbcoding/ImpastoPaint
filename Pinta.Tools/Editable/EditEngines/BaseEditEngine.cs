@@ -290,10 +290,10 @@ public abstract class BaseEditEngine
 		if (shape_type_button == null) {
 			shape_type_button = ToolBarDropDownButton.New ();
 
-			shape_type_button.AddItem (Translations.GetString ("Open Line/Curve Series"), Resources.Icons.ToolLine, 0);
-			shape_type_button.AddItem (Translations.GetString ("Closed Line/Curve Series"), Resources.Icons.ToolRectangle, 1);
-			shape_type_button.AddItem (Translations.GetString ("Ellipse"), Resources.Icons.ToolEllipse, 2);
-			shape_type_button.AddItem (Translations.GetString ("Rounded Line Series"), Resources.Icons.ToolRectangleRounded, 3);
+			shape_type_button.AddItem (Translations.GetString ("Open Line/Curve Series"), Resources.Icons.ToolLine, 0, Translations.GetString ("Draws a line or curve with a start and an end point."));
+			shape_type_button.AddItem (Translations.GetString ("Closed Line/Curve Series"), Resources.Icons.ToolRectangle, 1, Translations.GetString ("Automatically connects the last point back to the first, closing the shape."));
+			shape_type_button.AddItem (Translations.GetString ("Ellipse"), Resources.Icons.ToolEllipse, 2, Translations.GetString ("Draws an ellipse or circle."));
+			shape_type_button.AddItem (Translations.GetString ("Rounded Line Series"), Resources.Icons.ToolRectangleRounded, 3, Translations.GetString ("Like Closed Line/Curve Series, but with rounded corners at each point."));
 
 			shape_type_button.SelectedIndex = settings.GetSetting (
 				SettingNames.ShapeType (toolPrefix),
@@ -341,8 +341,8 @@ public abstract class BaseEditEngine
 		if (curved_segments_button == null) {
 			curved_segments_button = ToolBarDropDownButton.New ();
 
-			curved_segments_button.AddItem (Translations.GetString ("Curved Segments On"), Resources.Icons.ToolLine, true);
-			curved_segments_button.AddItem (Translations.GetString ("Curved Segments Off"), Resources.Icons.ToolLine, false);
+			curved_segments_button.AddItem (Translations.GetString ("Curved Segments On"), Resources.Icons.ToolLine, true, Translations.GetString ("Clicking a segment while editing inserts a control point to smoothly curve it."));
+			curved_segments_button.AddItem (Translations.GetString ("Curved Segments Off"), Resources.Icons.ToolLine, false, Translations.GetString ("Segments stay straight; clicking a segment does not insert curve control points."));
 
 			curved_segments_enabled = settings.GetSetting (SettingNames.SHAPE_CURVED_SEGMENTS, true);
 			curved_segments_button.SelectedIndex = curved_segments_enabled ? 0 : 1;
@@ -373,9 +373,9 @@ public abstract class BaseEditEngine
 		if (fill_button == null) {
 			fill_button = ToolBarDropDownButton.New ();
 
-			fill_button.AddItem (Translations.GetString ("Outline Shape"), Resources.Icons.FillStyleOutline, 0);
-			fill_button.AddItem (Translations.GetString ("Fill Shape"), Resources.Icons.FillStyleFill, 1);
-			fill_button.AddItem (Translations.GetString ("Fill and Outline Shape"), Resources.Icons.FillStyleOutlineFill, 2);
+			fill_button.AddItem (Translations.GetString ("Outline Shape"), Resources.Icons.FillStyleOutline, 0, Translations.GetString ("Draw only the shape's outline, using the primary color."));
+			fill_button.AddItem (Translations.GetString ("Fill Shape"), Resources.Icons.FillStyleFill, 1, Translations.GetString ("Fill the shape's interior with the secondary color, no outline."));
+			fill_button.AddItem (Translations.GetString ("Fill and Outline Shape"), Resources.Icons.FillStyleOutlineFill, 2, Translations.GetString ("Fill the interior with the secondary color and outline it with the primary color."));
 
 			fill_button.SelectedIndex = settings.GetSetting (
 				SettingNames.FillStyle (toolPrefix),

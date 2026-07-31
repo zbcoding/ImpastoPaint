@@ -3007,3 +3007,223 @@ msgstr "Reset UI Settings?"
 #. AI-generated translation; human review requested.
 msgid "This resets popover hints to show all UI hints."
 msgstr "This resets popover hints to show all UI hints."
+
+#. Translators: Tooltip for the checkbox showing/hiding the arrowhead at the start of a line or curve.
+#. AI-generated translation; human review requested.
+msgid "Show an arrowhead at the start point."
+msgstr "ආරම්භක ලක්ෂ්‍යයේ ඊතල හිසක් පෙන්වන්න."
+
+#. Translators: Tooltip for the checkbox showing/hiding the arrowhead at the end of a line or curve.
+#. AI-generated translation; human review requested.
+msgid "Show an arrowhead at the end point."
+msgstr "අවසාන ලක්ෂ්‍යයේ ඊතල හිසක් පෙන්වන්න."
+
+#. Translators: Tooltip for the arrowhead size spin button.
+#. AI-generated translation; human review requested.
+msgid "Length of the arrowhead, in pixels."
+msgstr "ඊතල හිසෙහි දිග, පික්සල් වලින්."
+
+#. Translators: Tooltip for the arrowhead angle spin button.
+#. AI-generated translation; human review requested.
+msgid "Angle, in degrees, between the arrowhead's wings and the line."
+msgstr "ඊතල හිසෙහි පියාපත් සහ රේඛාව අතර කෝණය, අංශක වලින්."
+
+#. Translators: Tooltip for the arrowhead wing-length spin button.
+#. AI-generated translation; human review requested.
+msgid "Length of the arrowhead's wings; does not change the line's length."
+msgstr "ඊතල හිසෙහි පියාපත්වල දිග; රේඛාවේ දිග වෙනස් නොකරයි."
+
+#. Translators: Item hint for the Open Line/Curve Series shape type.
+#. AI-generated translation; human review requested.
+msgid "Draws a line or curve with a start and an end point."
+msgstr "ආරම්භක සහ අවසාන ලක්ෂ්‍යයක් සහිත රේඛාවක් හෝ වක්‍රයක් අඳියි."
+
+#. Translators: Item hint for the Ellipse shape type.
+#. AI-generated translation; human review requested.
+msgid "Draws an ellipse or circle."
+msgstr "ඉලිප්සයක් හෝ රවුමක් අඳියි."
+
+#. Translators: Item hint for the Rounded Line Series shape type.
+#. AI-generated translation; human review requested.
+msgid "Like Closed Line/Curve Series, but with rounded corners at each point."
+msgstr "වසන ලද රේඛා/වක්‍ර මාලාව මෙන්ම, නමුත් සෑම ලක්ෂ්‍යයකම වටකුරු කෙළවර සහිතව."
+
+#. Translators: Item hint explaining the Curved Segments On option for shape tools.
+#. AI-generated translation; human review requested.
+msgid "Curved Segments On"
+msgstr "වක්‍ර කොටස් ක්‍රියාත්මකයි"
+
+#. Translators: Item hint explaining the Curved Segments Off option for shape tools.
+#. AI-generated translation; human review requested.
+msgid "Curved Segments Off"
+msgstr "වක්‍ර කොටස් අක්‍රියයි"
+
+#. Translators: Item hint for the Outline Shape fill style.
+#. AI-generated translation; human review requested.
+msgid "Draw only the shape's outline, using the primary color."
+msgstr "ප්‍රාථමික වර්ණය භාවිතයෙන් හැඩයේ මායිම පමණක් අඳියි."
+
+#. Translators: Item hint for the Fill Shape fill style.
+#. AI-generated translation; human review requested.
+msgid "Fill the shape's interior with the secondary color, no outline."
+msgstr "හැඩයේ අභ්‍යන්තරය ද්විතීයික වර්ණයෙන් පුරවයි, මායිමක් නොමැතිව."
+
+#. Translators: Tooltip for the corner radius spin button on rounded shapes.
+#. AI-generated translation; human review requested.
+msgid "Corner-rounding radius, in pixels, applied at each point of the shape."
+msgstr "හැඩයේ සෑම ලක්ෂ්‍යයකටම යොදන කෙළවර වටකුරු කිරීමේ අරය, පික්සල් වලින්."
+
+#. Translators: Item hint for the Color Picker's "Do not switch tool" option.
+#. AI-generated translation; human review requested.
+msgid "Keep using the Color Picker after a color is chosen."
+msgstr "වර්ණයක් තෝරාගත් පසුවත් වර්ණ තෝරනය දිගටම භාවිතා කරන්න."
+
+#. Translators: Item hint for the Color Picker's "Switch to previous tool" option.
+#. AI-generated translation; human review requested.
+msgid "Return to the tool that was active before the Color Picker."
+msgstr "වර්ණ තෝරනයට පෙර ක්‍රියාත්මකව තිබූ මෙවලමට ආපසු යන්න."
+
+#. Translators: Item hint for the Color Picker's "Switch to Pencil tool" option.
+#. AI-generated translation; human review requested.
+msgid "Switch to the Pencil tool, ready to draw with the picked color."
+msgstr "තෝරාගත් වර්ණයෙන් අඳින්නට සූදානම්ව පැන්සල් මෙවලමට මාරු වන්න."
+
+#. Translators: Item hint for the Color Picker's Single Pixel sample size.
+#. AI-generated translation; human review requested.
+msgid "Sample the exact color of the pixel under the pointer."
+msgstr "දර්ශකය යටතේ ඇති පික්සලයේ නිශ්චිත වර්ණය නියැදනය කරන්න."
+
+#. Translators: Item hint for the Color Picker's 3 x 3 Region sample size.
+#. AI-generated translation; human review requested.
+msgid "Average the colors in a 3 x 3 area around the pointer."
+msgstr "දර්ශකය වටා 3 × 3 ප්‍රදේශයේ වර්ණවල සාමාන්‍යය ගන්න."
+
+#. Translators: Item hint for the Color Picker's 5 x 5 Region sample size.
+#. AI-generated translation; human review requested.
+msgid "Average the colors in a 5 x 5 area around the pointer."
+msgstr "දර්ශකය වටා 5 × 5 ප්‍රදේශයේ වර්ණවල සාමාන්‍යය ගන්න."
+
+#. Translators: Item hint for the Color Picker's 7 x 7 Region sample size.
+#. AI-generated translation; human review requested.
+msgid "Average the colors in a 7 x 7 area around the pointer."
+msgstr "දර්ශකය වටා 7 × 7 ප්‍රදේශයේ වර්ණවල සාමාන්‍යය ගන්න."
+
+#. Translators: Item hint for the Color Picker's 9 x 9 Region sample size.
+#. AI-generated translation; human review requested.
+msgid "Average the colors in a 9 x 9 area around the pointer."
+msgstr "දර්ශකය වටා 9 × 9 ප්‍රදේශයේ වර්ණවල සාමාන්‍යය ගන්න."
+
+#. Translators: Item hint for the Color Picker's Layer sample scope.
+#. AI-generated translation; human review requested.
+msgid "Sample from the current layer only."
+msgstr "වත්මන් ස්තරයෙන් පමණක් නියැදනය කරන්න."
+
+#. Translators: Item hint for the Color Picker's Image sample scope.
+#. AI-generated translation; human review requested.
+msgid "Sample from the composited image, including all visible layers."
+msgstr "පෙනෙන සියලුම ස්තර ඇතුළුව, සංයුක්ත රූපයෙන් නියැදනය කරන්න."
+
+#. Translators: Item hint for the Linear Gradient type.
+#. AI-generated translation; human review requested.
+msgid "Transitions colors in a straight line between the two endpoints."
+msgstr "අන්ත ලක්ෂ්‍ය දෙක අතර සරල රේඛාවක වර්ණ සංක්‍රමණය කරයි."
+
+#. Translators: Item hint for the Linear Reflected Gradient type.
+#. AI-generated translation; human review requested.
+msgid "Mirrors the linear transition on both sides of the start point."
+msgstr "ආරම්භක ලක්ෂ්‍යයේ දෙපස රේඛීය සංක්‍රමණය පිළිබිඹු කරයි."
+
+#. Translators: Item hint for the Linear Diamond Gradient type.
+#. AI-generated translation; human review requested.
+msgid "Transitions colors outward from the start point in a diamond shape."
+msgstr "ආරම්භක ලක්ෂ්‍යයේ සිට වජ්‍ර හැඩයකින් පිටතට වර්ණ සංක්‍රමණය කරයි."
+
+#. Translators: Item hint for the Radial Gradient type.
+#. AI-generated translation; human review requested.
+msgid "Transitions colors outward from the start point in a circle."
+msgstr "ආරම්භක ලක්ෂ්‍යයේ සිට රවුමකින් පිටතට වර්ණ සංක්‍රමණය කරයි."
+
+#. Translators: Item hint for the Conical Gradient type.
+#. AI-generated translation; human review requested.
+msgid "Transitions colors in a sweep around the start point."
+msgstr "ආරම්භක ලක්ෂ්‍යය වටා ස්වීප් එකකින් වර්ණ සංක්‍රමණය කරයි."
+
+#. Translators: Item hint for the Gradient tool's Color Mode.
+#. AI-generated translation; human review requested.
+msgid "Transition between the primary and secondary colors."
+msgstr "ප්‍රාථමික සහ ද්විතීයික වර්ණ අතර සංක්‍රමණය."
+
+#. Translators: Item hint for the Gradient tool's Transparency Mode.
+#. AI-generated translation; human review requested.
+msgid "Transition the primary color from opaque to transparent."
+msgstr "ප්‍රාථමික වර්ණය අපාරදෘශ්‍ය සිට විනිවිද පෙනෙන දක්වා සංක්‍රමණය කරයි."
+
+#. Translators: Item hint for the Normal font-variant option.
+#. AI-generated translation; human review requested.
+msgid "Regular upper and lower case letters."
+msgstr "සාමාන්‍ය මහළු සහ කුඩා අකුරු."
+
+#. Translators: Item hint for the Small Caps font-variant option.
+#. AI-generated translation; human review requested.
+msgid "Lower case letters are replaced with smaller capital letters."
+msgstr "කුඩා අකුරු ඊට කුඩා මහළු අකුරු වලින් ප්‍රතිස්ථාපනය වේ."
+
+#. Translators: Item hint for the Petite Caps font-variant option.
+#. AI-generated translation; human review requested.
+msgid "Like Small Caps, but the substituted capitals are slightly smaller."
+msgstr "කුඩා මහළු අකුරු මෙන්ම, නමුත් ප්‍රතිස්ථාපිත මහළු අකුරු තරමක් කුඩාය."
+
+#. Translators: Item hint for the All Petite Caps font-variant option.
+#. AI-generated translation; human review requested.
+msgid "Like All Small Caps, but the substituted capitals are slightly smaller."
+msgstr "සියලුම කුඩා මහළු අකුරු මෙන්ම, නමුත් ප්‍රතිස්ථාපිත මහළු අකුරු තරමක් කුඩාය."
+
+#. Translators: Item hint for the Title Caps font-variant option.
+#. AI-generated translation; human review requested.
+msgid "Uses title-specific capital letter forms where available."
+msgstr "ලද හැකි විට මාතෘකාවට විශේෂිත මහළු අකුරු ආකෘති භාවිතා කරයි."
+
+#. Translators: Item hint for the Normal text style.
+#. AI-generated translation; human review requested.
+msgid "Fill the text with the primary color."
+msgstr "ප්‍රාථමික වර්ණයෙන් පෙළ පුරවයි."
+
+#. Translators: Item hint for the Outline text style.
+#. AI-generated translation; human review requested.
+msgid "Draw only the outline of the text, using the secondary color."
+msgstr "ද්විතීයික වර්ණය භාවිතයෙන් පෙළෙහි මායිම පමණක් අඳියි."
+
+#. Translators: Item hint for the Fill Background text style.
+#. AI-generated translation; human review requested.
+msgid "Fill the text's bounding box with the secondary color, behind the text."
+msgstr "පෙළ පිටුපස, පෙළෙහි මායිම් කොටුව ද්විතීයික වර්ණයෙන් පුරවයි."
+
+#. Translators: Tooltip for the text outline width spin button.
+#. AI-generated translation; human review requested.
+msgid "Thickness of the text outline, in pixels."
+msgstr "පෙළෙහි මායිමේ ඝණකම, පික්සල් වලින්."
+
+#. Translators: Item hint for the Miter Join line join option.
+#. AI-generated translation; human review requested.
+msgid "Sharp, pointed corners on the outline."
+msgstr "මායිමේ තියුණු, තියුණු කෙළවර."
+
+#. Translators: Item hint for the Round Join line join option.
+#. AI-generated translation; human review requested.
+msgid "Rounded corners on the outline."
+msgstr "මායිමේ වටකුරු කෙළවර."
+
+#. Translators: Item hint for the Bevel Join line join option.
+#. AI-generated translation; human review requested.
+msgid "Flattened, squared-off corners on the outline."
+msgstr "මායිමේ පැතලි කරන ලද, කොන් කපන ලද කෙළවර."
+
+#. Translators: Tooltip shown while editing re-editable text, hints at the key to finish.
+#. AI-generated translation; human review requested.
+msgid "Finish typing (Esc)"
+msgstr "ටයිප් කිරීම අවසන් කරන්න (Esc)"
+
+#. Translators: Tooltip shown over a re-editable text object, hints at the gesture to edit it.
+#. AI-generated translation; human review requested.
+msgid "Ctrl+Click to edit"
+msgstr "සංස්කරණය කිරීමට Ctrl+ක්ලික් කරන්න"

@@ -120,7 +120,15 @@ public abstract class FloodTool : BaseTool
 
 	protected Label ModeLabel => mode_label ??= Label.New (string.Format (" {0}: ", Translations.GetString ("Flood Mode")));
 	protected Label ToleranceLabel => tolerance_label ??= Label.New (string.Format (" {0}: ", Translations.GetString ("Tolerance")));
-	protected Scale ToleranceSlider => tolerance_slider ??= GtkExtensions.CreateToolBarSlider (0, 100, 1, Settings.GetSetting (SettingNames.FloodToolFillTolerance (this), 0));
+	protected Scale ToleranceSlider {
+		get {
+			if (tolerance_slider is null) {
+				tolerance_slider = GtkExtensions.CreateToolBarSlider (0, 100, 1, Settings.GetSetting (SettingNames.FloodToolFillTolerance (this), 0));
+				tolerance_slider.TooltipText = Translations.GetString ("Higher tolerance includes more colors similar to the clicked pixel in the fill.");
+			}
+			return tolerance_slider;
+		}
+	}
 	protected Separator Separator => mode_sep ??= GtkExtensions.CreateToolBarSeparator ();
 
 	protected ToolBarDropDownButton ModeDropDown {
@@ -128,8 +136,8 @@ public abstract class FloodTool : BaseTool
 			if (mode_button is null) {
 				mode_button = ToolBarDropDownButton.New ();
 
-				mode_button.AddItem (Translations.GetString ("Contiguous"), Pinta.Resources.Icons.ToolFreeformShape, false);
-				mode_button.AddItem (Translations.GetString ("Global"), Pinta.Resources.Icons.HelpWebsite, true);
+				mode_button.AddItem (Translations.GetString ("Contiguous"), Pinta.Resources.Icons.ToolFreeformShape, false, Translations.GetString ("Fill only the connected region of similar color touching the click point."));
+				mode_button.AddItem (Translations.GetString ("Global"), Pinta.Resources.Icons.HelpWebsite, true, Translations.GetString ("Fill every matching pixel in the image, even disconnected regions. Hold Shift to use this mode temporarily."));
 
 				mode_button.SelectedIndex = Settings.GetSetting (SettingNames.FloodToolFillMode (this), 0);
 			}

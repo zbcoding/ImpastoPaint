@@ -3063,6 +3063,226 @@ msgid "This resets popover hints to show all UI hints."
 msgstr ""
 "இது அனைத்து UI குறிப்புகளையும் காட்டும் வகையில் பாப்ஓவர் குறிப்புகளை மீட்டமைக்கிறது."
 
+#. Translators: Tooltip for the checkbox showing/hiding the arrowhead at the start of a line or curve.
+#. AI-generated translation; human review requested.
+msgid "Show an arrowhead at the start point."
+msgstr "துவக்கப் புள்ளியில் அம்புக்குறியைக் காட்டு."
+
+#. Translators: Tooltip for the checkbox showing/hiding the arrowhead at the end of a line or curve.
+#. AI-generated translation; human review requested.
+msgid "Show an arrowhead at the end point."
+msgstr "முடிவுப் புள்ளியில் அம்புக்குறியைக் காட்டு."
+
+#. Translators: Tooltip for the arrowhead size spin button.
+#. AI-generated translation; human review requested.
+msgid "Length of the arrowhead, in pixels."
+msgstr "அம்புக்குறியின் நீளம், பிக்சல்களில்."
+
+#. Translators: Tooltip for the arrowhead angle spin button.
+#. AI-generated translation; human review requested.
+msgid "Angle, in degrees, between the arrowhead's wings and the line."
+msgstr "அம்புக்குறியின் இறக்கைகளுக்கும் கோட்டுக்கும் இடையிலான கோணம், டிகிரிகளில்."
+
+#. Translators: Tooltip for the arrowhead wing-length spin button.
+#. AI-generated translation; human review requested.
+msgid "Length of the arrowhead's wings; does not change the line's length."
+msgstr "அம்புக்குறியின் இறக்கைகளின் நீளம்; கோட்டின் நீளத்தை மாற்றாது."
+
+#. Translators: Item hint for the Open Line/Curve Series shape type.
+#. AI-generated translation; human review requested.
+msgid "Draws a line or curve with a start and an end point."
+msgstr "தொடக்கப் புள்ளியும் முடிவுப் புள்ளியும் கொண்ட ஒரு கோடு அல்லது வளைவை வரையும்."
+
+#. Translators: Item hint for the Ellipse shape type.
+#. AI-generated translation; human review requested.
+msgid "Draws an ellipse or circle."
+msgstr "ஒரு நீள்வட்டம் அல்லது வட்டத்தை வரையும்."
+
+#. Translators: Item hint for the Rounded Line Series shape type.
+#. AI-generated translation; human review requested.
+msgid "Like Closed Line/Curve Series, but with rounded corners at each point."
+msgstr "மூடிய கோடு/வளைவு தொடர் போன்றது, ஆனால் ஒவ்வொரு புள்ளியிலும் வட்டமான மூலைகளுடன்."
+
+#. Translators: Item hint explaining the Curved Segments On option for shape tools.
+#. AI-generated translation; human review requested.
+msgid "Curved Segments On"
+msgstr "வளைந்த பகுதிகள் இயக்கத்தில்"
+
+#. Translators: Item hint explaining the Curved Segments Off option for shape tools.
+#. AI-generated translation; human review requested.
+msgid "Curved Segments Off"
+msgstr "வளைந்த பகுதிகள் நிறுத்தப்பட்டது"
+
+#. Translators: Item hint for the Outline Shape fill style.
+#. AI-generated translation; human review requested.
+msgid "Draw only the shape's outline, using the primary color."
+msgstr "முதன்மை நிறத்தைப் பயன்படுத்தி வடிவத்தின் கோட்டை மட்டும் வரையவும்."
+
+#. Translators: Item hint for the Fill Shape fill style.
+#. AI-generated translation; human review requested.
+msgid "Fill the shape's interior with the secondary color, no outline."
+msgstr "இரண்டாம் நிற நிறத்துடன் வடிவத்தின் உட்புறத்தை நிரப்பவும், கோடு இல்லாமல்."
+
+#. Translators: Tooltip for the corner radius spin button on rounded shapes.
+#. AI-generated translation; human review requested.
+msgid "Corner-rounding radius, in pixels, applied at each point of the shape."
+msgstr "வடிவத்தின் ஒவ்வொரு புள்ளியிலும் பயன்படுத்தப்படும் மூலை-வட்டமாக்கும் ஆரம், பிக்சல்களில்."
+
+#. Translators: Item hint for the Color Picker's "Do not switch tool" option.
+#. AI-generated translation; human review requested.
+msgid "Keep using the Color Picker after a color is chosen."
+msgstr "ஒரு நிறம் தேர்ந்தெடுக்கப்பட்ட பிறகும் வண்ணத் தேர்வியைத் தொடர்ந்து பயன்படுத்தவும்."
+
+#. Translators: Item hint for the Color Picker's "Switch to previous tool" option.
+#. AI-generated translation; human review requested.
+msgid "Return to the tool that was active before the Color Picker."
+msgstr "வண்ணத் தேர்வி செயல்படுத்தப்படுவதற்கு முன் இயங்கிய கருவிக்குத் திரும்பவும்."
+
+#. Translators: Item hint for the Color Picker's "Switch to Pencil tool" option.
+#. AI-generated translation; human review requested.
+msgid "Switch to the Pencil tool, ready to draw with the picked color."
+msgstr "தேர்ந்தெடுத்த நிறத்துடன் வரைய தயாராக பென்சில் கருவிக்கு மாறவும்."
+
+#. Translators: Item hint for the Color Picker's Single Pixel sample size.
+#. AI-generated translation; human review requested.
+msgid "Sample the exact color of the pixel under the pointer."
+msgstr "சுட்டியின் கீழ் உள்ள பிக்சலின் சரியான நிறத்தை மாதிரி எடுக்கவும்."
+
+#. Translators: Item hint for the Color Picker's 3 x 3 Region sample size.
+#. AI-generated translation; human review requested.
+msgid "Average the colors in a 3 x 3 area around the pointer."
+msgstr "சுட்டியைச் சுற்றியுள்ள 3 x 3 பகுதியில் நிறங்களை சராசரி செய்யவும்."
+
+#. Translators: Item hint for the Color Picker's 5 x 5 Region sample size.
+#. AI-generated translation; human review requested.
+msgid "Average the colors in a 5 x 5 area around the pointer."
+msgstr "சுட்டியைச் சுற்றியுள்ள 5 x 5 பகுதியில் நிறங்களை சராசரி செய்யவும்."
+
+#. Translators: Item hint for the Color Picker's 7 x 7 Region sample size.
+#. AI-generated translation; human review requested.
+msgid "Average the colors in a 7 x 7 area around the pointer."
+msgstr "சுட்டியைச் சுற்றியுள்ள 7 x 7 பகுதியில் நிறங்களை சராசரி செய்யவும்."
+
+#. Translators: Item hint for the Color Picker's 9 x 9 Region sample size.
+#. AI-generated translation; human review requested.
+msgid "Average the colors in a 9 x 9 area around the pointer."
+msgstr "சுட்டியைச் சுற்றியுள்ள 9 x 9 பகுதியில் நிறங்களை சராசரி செய்யவும்."
+
+#. Translators: Item hint for the Color Picker's Layer sample scope.
+#. AI-generated translation; human review requested.
+msgid "Sample from the current layer only."
+msgstr "தற்போதைய லேயரில் இருந்து மட்டும் மாதிரி எடுக்கவும்."
+
+#. Translators: Item hint for the Color Picker's Image sample scope.
+#. AI-generated translation; human review requested.
+msgid "Sample from the composited image, including all visible layers."
+msgstr "அனைத்து காணக்கூடிய லேயர்கள் உட்பட, ஒருங்கிணைந்த படத்திலிருந்து மாதிரி எடுக்கவும்."
+
+#. Translators: Item hint for the Linear Gradient type.
+#. AI-generated translation; human review requested.
+msgid "Transitions colors in a straight line between the two endpoints."
+msgstr "இரண்டு முனைப் புள்ளிகளுக்கு இடையே நேர்க்கோட்டில் நிறங்களை மாற்றுகிறது."
+
+#. Translators: Item hint for the Linear Reflected Gradient type.
+#. AI-generated translation; human review requested.
+msgid "Mirrors the linear transition on both sides of the start point."
+msgstr "தொடக்கப் புள்ளியின் இரு பக்கங்களிலும் நேரியல் மாற்றத்தைப் பிரதிபலிக்கிறது."
+
+#. Translators: Item hint for the Linear Diamond Gradient type.
+#. AI-generated translation; human review requested.
+msgid "Transitions colors outward from the start point in a diamond shape."
+msgstr "தொடக்கப் புள்ளியிலிருந்து வெளிப்புறமாக ஒரு வைர வடிவத்தில் நிறங்களை மாற்றுகிறது."
+
+#. Translators: Item hint for the Radial Gradient type.
+#. AI-generated translation; human review requested.
+msgid "Transitions colors outward from the start point in a circle."
+msgstr "தொடக்கப் புள்ளியிலிருந்து வெளிப்புறமாக ஒரு வட்டத்தில் நிறங்களை மாற்றுகிறது."
+
+#. Translators: Item hint for the Conical Gradient type.
+#. AI-generated translation; human review requested.
+msgid "Transitions colors in a sweep around the start point."
+msgstr "தொடக்கப் புள்ளியைச் சுற்றி ஒரு சுழற்சியில் நிறங்களை மாற்றுகிறது."
+
+#. Translators: Item hint for the Gradient tool's Color Mode.
+#. AI-generated translation; human review requested.
+msgid "Transition between the primary and secondary colors."
+msgstr "முதன்மை மற்றும் இரண்டாம் நிற நிறங்களுக்கு இடையே மாறுகிறது."
+
+#. Translators: Item hint for the Gradient tool's Transparency Mode.
+#. AI-generated translation; human review requested.
+msgid "Transition the primary color from opaque to transparent."
+msgstr "முதன்மை நிறத்தை ஒளிபுகா நிலையிலிருந்து ஒளிஊடுருவும் நிலைக்கு மாற்றுகிறது."
+
+#. Translators: Item hint for the Normal font-variant option.
+#. AI-generated translation; human review requested.
+msgid "Regular upper and lower case letters."
+msgstr "வழக்கமான பெரிய மற்றும் சிறிய எழுத்துகள்."
+
+#. Translators: Item hint for the Small Caps font-variant option.
+#. AI-generated translation; human review requested.
+msgid "Lower case letters are replaced with smaller capital letters."
+msgstr "சிறிய எழுத்துகள் சிறிய பெரிய எழுத்துகளால் மாற்றப்படுகின்றன."
+
+#. Translators: Item hint for the Petite Caps font-variant option.
+#. AI-generated translation; human review requested.
+msgid "Like Small Caps, but the substituted capitals are slightly smaller."
+msgstr "சிறிய பேரெழுத்துகள் போன்றது, ஆனால் மாற்றப்பட்ட பெரிய எழுத்துகள் சற்று சிறியவை."
+
+#. Translators: Item hint for the All Petite Caps font-variant option.
+#. AI-generated translation; human review requested.
+msgid "Like All Small Caps, but the substituted capitals are slightly smaller."
+msgstr "அனைத்து சிறிய பேரெழுத்துகள் போன்றது, ஆனால் மாற்றப்பட்ட பெரிய எழுத்துகள் சற்று சிறியவை."
+
+#. Translators: Item hint for the Title Caps font-variant option.
+#. AI-generated translation; human review requested.
+msgid "Uses title-specific capital letter forms where available."
+msgstr "கிடைக்கும் இடங்களில் தலைப்புக்கான சிறப்பு பெரிய எழுத்து வடிவங்களைப் பயன்படுத்துகிறது."
+
+#. Translators: Item hint for the Normal text style.
+#. AI-generated translation; human review requested.
+msgid "Fill the text with the primary color."
+msgstr "முதன்மை நிறத்துடன் உரையை நிரப்பவும்."
+
+#. Translators: Item hint for the Outline text style.
+#. AI-generated translation; human review requested.
+msgid "Draw only the outline of the text, using the secondary color."
+msgstr "இரண்டாம் நிற நிறத்தைப் பயன்படுத்தி உரையின் கோட்டை மட்டும் வரையவும்."
+
+#. Translators: Item hint for the Fill Background text style.
+#. AI-generated translation; human review requested.
+msgid "Fill the text's bounding box with the secondary color, behind the text."
+msgstr "உரையின் பின்னால், இரண்டாம் நிற நிறத்துடன் உரையின் எல்லைப் பெட்டியை நிரப்பவும்."
+
+#. Translators: Tooltip for the text outline width spin button.
+#. AI-generated translation; human review requested.
+msgid "Thickness of the text outline, in pixels."
+msgstr "உரைக் கோட்டின் தடிமன், பிக்சல்களில்."
+
+#. Translators: Item hint for the Miter Join line join option.
+#. AI-generated translation; human review requested.
+msgid "Sharp, pointed corners on the outline."
+msgstr "கோட்டில் கூர்மையான, முனைத்த மூலைகள்."
+
+#. Translators: Item hint for the Round Join line join option.
+#. AI-generated translation; human review requested.
+msgid "Rounded corners on the outline."
+msgstr "கோட்டில் வட்டமான மூலைகள்."
+
+#. Translators: Item hint for the Bevel Join line join option.
+#. AI-generated translation; human review requested.
+msgid "Flattened, squared-off corners on the outline."
+msgstr "கோட்டில் தட்டையான, சதுர வடிவ மூலைகள்."
+
+#. Translators: Tooltip shown while editing re-editable text, hints at the key to finish.
+#. AI-generated translation; human review requested.
+msgid "Finish typing (Esc)"
+msgstr "தட்டச்சிடலை முடிக்கவும் (Esc)"
+
+#. Translators: Tooltip shown over a re-editable text object, hints at the gesture to edit it.
+#. AI-generated translation; human review requested.
+msgid "Ctrl+Click to edit"
+msgstr "திருத்த Ctrl+கிளிக் செய்யவும்"
+
 #~ msgid "Change brush width. Shortcut keys: [ ]"
 #~ msgstr "தூரிகை அகலத்தை மாற்றவும். குறுக்குவழி விசைகள்: []"
 

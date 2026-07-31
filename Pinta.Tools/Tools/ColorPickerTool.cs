@@ -217,9 +217,9 @@ public class ColorPickerTool : BaseTool
 			if (tool_select is null) {
 				tool_select = ToolBarDropDownButton.New (true);
 
-				tool_select.AddItem (Translations.GetString ("Do not switch tool"), Pinta.Resources.Icons.ToolColorPicker, 0);
-				tool_select.AddItem (Translations.GetString ("Switch to previous tool"), Pinta.Resources.Icons.ToolColorPickerPreviousTool, 1);
-				tool_select.AddItem (Translations.GetString ("Switch to Pencil tool"), Pinta.Resources.Icons.ToolPencil, 2);
+				tool_select.AddItem (Translations.GetString ("Do not switch tool"), Pinta.Resources.Icons.ToolColorPicker, 0, Translations.GetString ("Keep using the Color Picker after a color is chosen."));
+				tool_select.AddItem (Translations.GetString ("Switch to previous tool"), Pinta.Resources.Icons.ToolColorPickerPreviousTool, 1, Translations.GetString ("Return to the tool that was active before the Color Picker."));
+				tool_select.AddItem (Translations.GetString ("Switch to Pencil tool"), Pinta.Resources.Icons.ToolPencil, 2, Translations.GetString ("Switch to the Pencil tool, ready to draw with the picked color."));
 
 				tool_select.SelectedIndex = Settings.GetSetting (SettingNames.COLOR_PICKER_TOOL_SELECTION, 0);
 			}
@@ -236,11 +236,11 @@ public class ColorPickerTool : BaseTool
 				// Change the cursor when the SampleSize is changed.
 				sample_size.SelectedItemChanged += (sender, e) => SetCursor (DefaultCursor);
 
-				sample_size.AddItem (Translations.GetString ("Single Pixel"), Pinta.Resources.Icons.Sampling1, 1);
-				sample_size.AddItem (Translations.GetString ("3 x 3 Region"), Pinta.Resources.Icons.Sampling3, 3);
-				sample_size.AddItem (Translations.GetString ("5 x 5 Region"), Pinta.Resources.Icons.Sampling5, 5);
-				sample_size.AddItem (Translations.GetString ("7 x 7 Region"), Pinta.Resources.Icons.Sampling7, 7);
-				sample_size.AddItem (Translations.GetString ("9 x 9 Region"), Pinta.Resources.Icons.Sampling9, 9);
+				sample_size.AddItem (Translations.GetString ("Single Pixel"), Pinta.Resources.Icons.Sampling1, 1, Translations.GetString ("Sample the exact color of the pixel under the pointer."));
+				sample_size.AddItem (Translations.GetString ("3 x 3 Region"), Pinta.Resources.Icons.Sampling3, 3, Translations.GetString ("Average the colors in a 3 x 3 area around the pointer."));
+				sample_size.AddItem (Translations.GetString ("5 x 5 Region"), Pinta.Resources.Icons.Sampling5, 5, Translations.GetString ("Average the colors in a 5 x 5 area around the pointer."));
+				sample_size.AddItem (Translations.GetString ("7 x 7 Region"), Pinta.Resources.Icons.Sampling7, 7, Translations.GetString ("Average the colors in a 7 x 7 area around the pointer."));
+				sample_size.AddItem (Translations.GetString ("9 x 9 Region"), Pinta.Resources.Icons.Sampling9, 9, Translations.GetString ("Average the colors in a 9 x 9 area around the pointer."));
 
 				sample_size.SelectedIndex = Settings.GetSetting (SettingNames.COLOR_PICKER_SAMPLE_SIZE, 0);
 			}
@@ -254,8 +254,8 @@ public class ColorPickerTool : BaseTool
 			if (sample_type is null) {
 				sample_type = ToolBarDropDownButton.New (true);
 
-				sample_type.AddItem (Translations.GetString ("Layer"), Pinta.Resources.Icons.LayerMergeDown, true);
-				sample_type.AddItem (Translations.GetString ("Image"), Pinta.Resources.Icons.ResizeCanvasBase, false);
+				sample_type.AddItem (Translations.GetString ("Layer"), Pinta.Resources.Icons.LayerMergeDown, true, Translations.GetString ("Sample from the current layer only."));
+				sample_type.AddItem (Translations.GetString ("Image"), Pinta.Resources.Icons.ResizeCanvasBase, false, Translations.GetString ("Sample from the composited image, including all visible layers."));
 
 				sample_type.SelectedIndex = Settings.GetSetting (SettingNames.COLOR_PICKER_SAMPLE_TYPE, 0);
 			}

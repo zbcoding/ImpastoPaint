@@ -294,11 +294,11 @@ public sealed class GradientTool : BaseTool
 			if (gradient_button == null) {
 				gradient_button = ToolBarDropDownButton.New ();
 
-				gradient_button.AddItem (Translations.GetString ("Linear Gradient"), Pinta.Resources.Icons.GradientLinear, GradientType.Linear);
-				gradient_button.AddItem (Translations.GetString ("Linear Reflected Gradient"), Pinta.Resources.Icons.GradientLinearReflected, GradientType.LinearReflected);
-				gradient_button.AddItem (Translations.GetString ("Linear Diamond Gradient"), Pinta.Resources.Icons.GradientDiamond, GradientType.Diamond);
-				gradient_button.AddItem (Translations.GetString ("Radial Gradient"), Pinta.Resources.Icons.GradientRadial, GradientType.Radial);
-				gradient_button.AddItem (Translations.GetString ("Conical Gradient"), Pinta.Resources.Icons.GradientConical, GradientType.Conical);
+				gradient_button.AddItem (Translations.GetString ("Linear Gradient"), Pinta.Resources.Icons.GradientLinear, GradientType.Linear, Translations.GetString ("Transitions colors in a straight line between the two endpoints."));
+				gradient_button.AddItem (Translations.GetString ("Linear Reflected Gradient"), Pinta.Resources.Icons.GradientLinearReflected, GradientType.LinearReflected, Translations.GetString ("Mirrors the linear transition on both sides of the start point."));
+				gradient_button.AddItem (Translations.GetString ("Linear Diamond Gradient"), Pinta.Resources.Icons.GradientDiamond, GradientType.Diamond, Translations.GetString ("Transitions colors outward from the start point in a diamond shape."));
+				gradient_button.AddItem (Translations.GetString ("Radial Gradient"), Pinta.Resources.Icons.GradientRadial, GradientType.Radial, Translations.GetString ("Transitions colors outward from the start point in a circle."));
+				gradient_button.AddItem (Translations.GetString ("Conical Gradient"), Pinta.Resources.Icons.GradientConical, GradientType.Conical, Translations.GetString ("Transitions colors in a sweep around the start point."));
 
 				gradient_button.SelectedIndex = Settings.GetSetting (SettingNames.GRADIENT_TYPE, 0);
 				gradient_button.SelectedItemChanged += HandleGradientTypeChanged;
@@ -328,8 +328,8 @@ public sealed class GradientTool : BaseTool
 			if (color_mode_button == null) {
 				color_mode_button = ToolBarDropDownButton.New ();
 
-				color_mode_button.AddItem (Translations.GetString ("Color Mode"), Pinta.Resources.Icons.ColorModeColor, GradientColorMode.Color);
-				color_mode_button.AddItem (Translations.GetString ("Transparency Mode"), Pinta.Resources.Icons.ColorModeTransparency, GradientColorMode.Transparency);
+				color_mode_button.AddItem (Translations.GetString ("Color Mode"), Pinta.Resources.Icons.ColorModeColor, GradientColorMode.Color, Translations.GetString ("Transition between the primary and secondary colors."));
+				color_mode_button.AddItem (Translations.GetString ("Transparency Mode"), Pinta.Resources.Icons.ColorModeTransparency, GradientColorMode.Transparency, Translations.GetString ("Transition the primary color from opaque to transparent."));
 
 				color_mode_button.SelectedIndex = Settings.GetSetting (SettingNames.GRADIENT_COLOR_MODE, 0);
 				color_mode_button.SelectedItemChanged += HandleGradientTypeChanged;

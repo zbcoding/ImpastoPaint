@@ -3007,3 +3007,223 @@ msgstr "UI সেটিংস পুনরায় সেট করবেন?"
 #. AI-generated translation; human review requested.
 msgid "This resets popover hints to show all UI hints."
 msgstr "এটি পপওভার ইঙ্গিত পুনরায় সেট করে সমস্ত UI ইঙ্গিত দেখাবে।"
+
+#. Translators: Tooltip for the checkbox showing/hiding the arrowhead at the start of a line or curve.
+#. AI-generated translation; human review requested.
+msgid "Show an arrowhead at the start point."
+msgstr "শুরুর বিন্দুতে তীরচিহ্ন দেখান।"
+
+#. Translators: Tooltip for the checkbox showing/hiding the arrowhead at the end of a line or curve.
+#. AI-generated translation; human review requested.
+msgid "Show an arrowhead at the end point."
+msgstr "শেষ বিন্দুতে তীরচিহ্ন দেখান।"
+
+#. Translators: Tooltip for the arrowhead size spin button.
+#. AI-generated translation; human review requested.
+msgid "Length of the arrowhead, in pixels."
+msgstr "তীরচিহ্নের দৈর্ঘ্য, পিক্সেলে।"
+
+#. Translators: Tooltip for the arrowhead angle spin button.
+#. AI-generated translation; human review requested.
+msgid "Angle, in degrees, between the arrowhead's wings and the line."
+msgstr "তীরচিহ্নের ডানা ও রেখার মধ্যবর্তী কোণ, ডিগ্রিতে।"
+
+#. Translators: Tooltip for the arrowhead wing-length spin button.
+#. AI-generated translation; human review requested.
+msgid "Length of the arrowhead's wings; does not change the line's length."
+msgstr "তীরচিহ্নের ডানার দৈর্ঘ্য; এটি রেখার দৈর্ঘ্য পরিবর্তন করে না।"
+
+#. Translators: Item hint for the Open Line/Curve Series shape type.
+#. AI-generated translation; human review requested.
+msgid "Draws a line or curve with a start and an end point."
+msgstr "শুরু ও শেষ বিন্দুসহ একটি রেখা বা বক্ররেখা আঁকে।"
+
+#. Translators: Item hint for the Ellipse shape type.
+#. AI-generated translation; human review requested.
+msgid "Draws an ellipse or circle."
+msgstr "একটি উপবৃত্ত বা বৃত্ত আঁকে।"
+
+#. Translators: Item hint for the Rounded Line Series shape type.
+#. AI-generated translation; human review requested.
+msgid "Like Closed Line/Curve Series, but with rounded corners at each point."
+msgstr "বদ্ধ রেখা/বক্ররেখা ধারাবাহিকের মতো, তবে প্রতিটি বিন্দুতে গোলাকার কোণসহ।"
+
+#. Translators: Item hint explaining the Curved Segments On option for shape tools.
+#. AI-generated translation; human review requested.
+msgid "Curved Segments On"
+msgstr "বক্র অংশ সক্রিয়"
+
+#. Translators: Item hint explaining the Curved Segments Off option for shape tools.
+#. AI-generated translation; human review requested.
+msgid "Curved Segments Off"
+msgstr "বক্র অংশ নিষ্ক্রিয়"
+
+#. Translators: Item hint for the Outline Shape fill style.
+#. AI-generated translation; human review requested.
+msgid "Draw only the shape's outline, using the primary color."
+msgstr "প্রধান রঙ দিয়ে শুধু আকৃতির রূপরেখা আঁকুন।"
+
+#. Translators: Item hint for the Fill Shape fill style.
+#. AI-generated translation; human review requested.
+msgid "Fill the shape's interior with the secondary color, no outline."
+msgstr "রূপরেখা ছাড়াই মাধ্যমিক রঙ দিয়ে আকৃতির ভেতরের অংশ পূরণ করুন।"
+
+#. Translators: Tooltip for the corner radius spin button on rounded shapes.
+#. AI-generated translation; human review requested.
+msgid "Corner-rounding radius, in pixels, applied at each point of the shape."
+msgstr "আকৃতির প্রতিটি বিন্দুতে প্রয়োগ করা কোণ-গোলাকার ব্যাসার্ধ, পিক্সেলে।"
+
+#. Translators: Item hint for the Color Picker's "Do not switch tool" option.
+#. AI-generated translation; human review requested.
+msgid "Keep using the Color Picker after a color is chosen."
+msgstr "রঙ নির্বাচনের পরেও কালার পিকার ব্যবহার চালিয়ে যান।"
+
+#. Translators: Item hint for the Color Picker's "Switch to previous tool" option.
+#. AI-generated translation; human review requested.
+msgid "Return to the tool that was active before the Color Picker."
+msgstr "কালার পিকারের আগে সক্রিয় ছিল এমন টুলে ফিরে যান।"
+
+#. Translators: Item hint for the Color Picker's "Switch to Pencil tool" option.
+#. AI-generated translation; human review requested.
+msgid "Switch to the Pencil tool, ready to draw with the picked color."
+msgstr "পেন্সিল টুলে পরিবর্তন করুন, নির্বাচিত রঙে আঁকার জন্য প্রস্তুত।"
+
+#. Translators: Item hint for the Color Picker's Single Pixel sample size.
+#. AI-generated translation; human review requested.
+msgid "Sample the exact color of the pixel under the pointer."
+msgstr "পয়েন্টারের নিচের পিক্সেলের সঠিক রঙ নমুনা নিন।"
+
+#. Translators: Item hint for the Color Picker's 3 x 3 Region sample size.
+#. AI-generated translation; human review requested.
+msgid "Average the colors in a 3 x 3 area around the pointer."
+msgstr "পয়েন্টারের চারপাশে ৩ x ৩ এলাকার রঙের গড় নিন।"
+
+#. Translators: Item hint for the Color Picker's 5 x 5 Region sample size.
+#. AI-generated translation; human review requested.
+msgid "Average the colors in a 5 x 5 area around the pointer."
+msgstr "পয়েন্টারের চারপাশে ৫ x ৫ এলাকার রঙের গড় নিন।"
+
+#. Translators: Item hint for the Color Picker's 7 x 7 Region sample size.
+#. AI-generated translation; human review requested.
+msgid "Average the colors in a 7 x 7 area around the pointer."
+msgstr "পয়েন্টারের চারপাশে ৭ x ৭ এলাকার রঙের গড় নিন।"
+
+#. Translators: Item hint for the Color Picker's 9 x 9 Region sample size.
+#. AI-generated translation; human review requested.
+msgid "Average the colors in a 9 x 9 area around the pointer."
+msgstr "পয়েন্টারের চারপাশে ৯ x ৯ এলাকার রঙের গড় নিন।"
+
+#. Translators: Item hint for the Color Picker's Layer sample scope.
+#. AI-generated translation; human review requested.
+msgid "Sample from the current layer only."
+msgstr "শুধুমাত্র বর্তমান স্তর থেকে নমুনা নিন।"
+
+#. Translators: Item hint for the Color Picker's Image sample scope.
+#. AI-generated translation; human review requested.
+msgid "Sample from the composited image, including all visible layers."
+msgstr "সব দৃশ্যমান স্তরসহ মিশ্রিত ছবি থেকে নমুনা নিন।"
+
+#. Translators: Item hint for the Linear Gradient type.
+#. AI-generated translation; human review requested.
+msgid "Transitions colors in a straight line between the two endpoints."
+msgstr "দুটি প্রান্তবিন্দুর মধ্যে সরলরেখায় রঙ পরিবর্তিত হয়।"
+
+#. Translators: Item hint for the Linear Reflected Gradient type.
+#. AI-generated translation; human review requested.
+msgid "Mirrors the linear transition on both sides of the start point."
+msgstr "শুরুর বিন্দুর উভয় পাশে রৈখিক পরিবর্তনের প্রতিফলন ঘটায়।"
+
+#. Translators: Item hint for the Linear Diamond Gradient type.
+#. AI-generated translation; human review requested.
+msgid "Transitions colors outward from the start point in a diamond shape."
+msgstr "শুরুর বিন্দু থেকে বাইরের দিকে হীরক আকৃতিতে রঙ পরিবর্তিত হয়।"
+
+#. Translators: Item hint for the Radial Gradient type.
+#. AI-generated translation; human review requested.
+msgid "Transitions colors outward from the start point in a circle."
+msgstr "শুরুর বিন্দু থেকে বাইরের দিকে বৃত্তাকারে রঙ পরিবর্তিত হয়।"
+
+#. Translators: Item hint for the Conical Gradient type.
+#. AI-generated translation; human review requested.
+msgid "Transitions colors in a sweep around the start point."
+msgstr "শুরুর বিন্দুর চারপাশে ঘুরে রঙ পরিবর্তিত হয়।"
+
+#. Translators: Item hint for the Gradient tool's Color Mode.
+#. AI-generated translation; human review requested.
+msgid "Transition between the primary and secondary colors."
+msgstr "প্রধান ও মাধ্যমিক রঙের মধ্যে পরিবর্তন।"
+
+#. Translators: Item hint for the Gradient tool's Transparency Mode.
+#. AI-generated translation; human review requested.
+msgid "Transition the primary color from opaque to transparent."
+msgstr "প্রধান রঙকে অস্বচ্ছ থেকে স্বচ্ছে পরিবর্তন করুন।"
+
+#. Translators: Item hint for the Normal font-variant option.
+#. AI-generated translation; human review requested.
+msgid "Regular upper and lower case letters."
+msgstr "সাধারণ বড় ও ছোট হাতের অক্ষর।"
+
+#. Translators: Item hint for the Small Caps font-variant option.
+#. AI-generated translation; human review requested.
+msgid "Lower case letters are replaced with smaller capital letters."
+msgstr "ছোট হাতের অক্ষরগুলো ছোট আকারের বড় হাতের অক্ষর দিয়ে প্রতিস্থাপিত হয়।"
+
+#. Translators: Item hint for the Petite Caps font-variant option.
+#. AI-generated translation; human review requested.
+msgid "Like Small Caps, but the substituted capitals are slightly smaller."
+msgstr "স্মল ক্যাপসের মতো, তবে প্রতিস্থাপিত বড় হাতের অক্ষরগুলো কিছুটা ছোট।"
+
+#. Translators: Item hint for the All Petite Caps font-variant option.
+#. AI-generated translation; human review requested.
+msgid "Like All Small Caps, but the substituted capitals are slightly smaller."
+msgstr "অল স্মল ক্যাপসের মতো, তবে প্রতিস্থাপিত বড় হাতের অক্ষরগুলো কিছুটা ছোট।"
+
+#. Translators: Item hint for the Title Caps font-variant option.
+#. AI-generated translation; human review requested.
+msgid "Uses title-specific capital letter forms where available."
+msgstr "যেখানে উপলব্ধ, শিরোনাম-নির্দিষ্ট বড় হাতের অক্ষরের রূপ ব্যবহার করে।"
+
+#. Translators: Item hint for the Normal text style.
+#. AI-generated translation; human review requested.
+msgid "Fill the text with the primary color."
+msgstr "প্রধান রঙ দিয়ে টেক্সট পূরণ করুন।"
+
+#. Translators: Item hint for the Outline text style.
+#. AI-generated translation; human review requested.
+msgid "Draw only the outline of the text, using the secondary color."
+msgstr "মাধ্যমিক রঙ দিয়ে শুধু টেক্সটের রূপরেখা আঁকুন।"
+
+#. Translators: Item hint for the Fill Background text style.
+#. AI-generated translation; human review requested.
+msgid "Fill the text's bounding box with the secondary color, behind the text."
+msgstr "টেক্সটের পেছনে, মাধ্যমিক রঙ দিয়ে টেক্সটের সীমানা বাক্স পূরণ করুন।"
+
+#. Translators: Tooltip for the text outline width spin button.
+#. AI-generated translation; human review requested.
+msgid "Thickness of the text outline, in pixels."
+msgstr "টেক্সটের রূপরেখার পুরুত্ব, পিক্সেলে।"
+
+#. Translators: Item hint for the Miter Join line join option.
+#. AI-generated translation; human review requested.
+msgid "Sharp, pointed corners on the outline."
+msgstr "রূপরেখায় ধারালো, সূচালো কোণ।"
+
+#. Translators: Item hint for the Round Join line join option.
+#. AI-generated translation; human review requested.
+msgid "Rounded corners on the outline."
+msgstr "রূপরেখায় গোলাকার কোণ।"
+
+#. Translators: Item hint for the Bevel Join line join option.
+#. AI-generated translation; human review requested.
+msgid "Flattened, squared-off corners on the outline."
+msgstr "রূপরেখায় চ্যাপ্টা, কাটা কোণ।"
+
+#. Translators: Tooltip shown while editing re-editable text, hints at the key to finish.
+#. AI-generated translation; human review requested.
+msgid "Finish typing (Esc)"
+msgstr "টাইপ করা শেষ করুন (Esc)"
+
+#. Translators: Tooltip shown over a re-editable text object, hints at the gesture to edit it.
+#. AI-generated translation; human review requested.
+msgid "Ctrl+Click to edit"
+msgstr "সম্পাদনার জন্য Ctrl+ক্লিক করুন"

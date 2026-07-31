@@ -43,3 +43,6 @@ xdg/pinta.desktop
 xdg/pinta.appdata.xml
 .vs
 .vscode
+
+/graphify-out/
+**/graphify-out/

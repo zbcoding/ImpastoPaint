@@ -80,6 +80,9 @@ jobs:
         if-no-files-found: error
 
   build-macos:
+    # Temporarily disabled; Linux is the only active build target.
+    if: ${{ false }}
+
     # Build for both intel and arm64
     strategy:
       matrix:
@@ -132,6 +135,9 @@ jobs:
         if-no-files-found: error
 
   build-windows:
+    # Temporarily disabled; Linux is the only active build target.
+    if: ${{ false }}
+
     # Build for both x64 and arm64
     strategy:
       matrix:
@@ -203,4 +209,3 @@ jobs:
         name: "Pinta-signed-${{matrix.build.dotnet_rid}}.exe"
         path: ./signed-artifacts/Pinta.exe
         if-no-files-found: error
-

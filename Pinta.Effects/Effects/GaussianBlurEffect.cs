@@ -91,67 +91,93 @@ public sealed class GaussianBlurEffect : BaseEffect
 		int height = src.Height;
 		int threads = system.RenderThreads;
 
-		// --- Pass 1: Horizontal convolution (parallelized by row) ---
+		// --- Intermediate horizontal-pass buffers (one entry per pixel) ---
 		int size = width * height;
 		int[] h_b = new int[size];
 		int[] h_g = new int[size];
 		int[] h_r = new int[size];
 		int[] h_a = new int[size];
 
-		// Precompute horizontal weight sums (depends only on x position)
-		long[] h_weight_sums = new long[width];
-		for (int x = 0; x < width; ++x) {
-			long sum = 0;
-			int wx_start = Math.Max (0, r - x);
-			int wx_end = Math.Min (wlen, width - x + r);
-			for (int wx = wx_start; wx < wx_end; ++wx)
-				sum += weights[wx];
-			h_weight_sums[x] = sum;
-		}
+		// This effect is non-tileable, so the caller supplies the full render
+		// bounds. To avoid re-allocating for each region, the horizontal sums
+		// are recomputed into the shared buffers, so process regions sequentially.
+		foreach (var rect in rois) {
 
-		Parallel.For (0, height,
-			new ParallelOptions { MaxDegreeOfParallelism = threads },
-			y => {
-				ReadOnlySpan<ColorBgra> src_data = src.GetReadOnlyPixelData ();
-				int row_offset = y * width;
+			if (rect.Width < 1 || rect.Height < 1)
+				continue;
 
-				for (int x = 0; x < width; ++x) {
-					int s_b = 0, s_g = 0, s_r = 0, s_a = 0;
+			// Clamp the region to the surface.
+			int xstart = Math.Max (0, rect.Left);
+			int xend = Math.Min (width, rect.Right + 1);
+			int vystart = Math.Max (0, rect.Top);
+			int vyend = Math.Min (height, rect.Bottom + 1);
 
-					int wx_start = Math.Max (0, r - x);
-					int wx_end = Math.Min (wlen, width - x + r);
+			if (xstart >= xend || vystart >= vyend)
+				continue;
 
-					for (int wx = wx_start; wx < wx_end; ++wx) {
-						int src_x = x + wx - r;
-						ColorBgra c = src_data[row_offset + src_x];
-						int w = weights[wx];
+			// The vertical pass at output row y reads intermediate rows in
+			// [y - r, y + r], so the horizontal pass must cover an expanded
+			// vertical range around the region.
+			int hystart = Math.Max (0, rect.Top - r);
+			int hyend = Math.Min (height, rect.Bottom + r + 1);
 
-						s_b += w * c.B;
-						s_g += w * c.G;
-						s_r += w * c.R;
-						s_a += w * c.A;
+			// Precompute horizontal weight sums (depends only on x position).
+			long[] h_weight_sums = new long[xend - xstart];
+			for (int x = xstart; x < xend; ++x) {
+				long sum = 0;
+				int wx_start = Math.Max (0, r - x);
+				int wx_end = Math.Min (wlen, width - x + r);
+				for (int wx = wx_start; wx < wx_end; ++wx)
+					sum += weights[wx];
+				h_weight_sums[x - xstart] = sum;
+			}
+
+			// --- Pass 1: Horizontal convolution (parallelized by row) ---
+			Parallel.For (hystart, hyend,
+				new ParallelOptions { MaxDegreeOfParallelism = threads },
+				y => {
+					ReadOnlySpan<ColorBgra> src_data = src.GetReadOnlyPixelData ();
+					int row_offset = y * width;
+
+					for (int x = xstart; x < xend; ++x) {
+						int s_b = 0, s_g = 0, s_r = 0, s_a = 0;
+
+						int wx_start = Math.Max (0, r - x);
+						int wx_end = Math.Min (wlen, width - x + r);
+
+						for (int wx = wx_start; wx < wx_end; ++wx) {
+							int src_x = x + wx - r;
+							ColorBgra c = src_data[row_offset + src_x];
+							int w = weights[wx];
+
+							s_b += w * c.B;
+							s_g += w * c.G;
+							s_r += w * c.R;
+							s_a += w * c.A;
+						}
+
+						int idx = row_offset + x;
+						h_b[idx] = s_b;
+						h_g[idx] = s_g;
+						h_r[idx] = s_r;
+						h_a[idx] = s_a;
 					}
+				});
 
-					int idx = row_offset + x;
-					h_b[idx] = s_b;
-					h_g[idx] = s_g;
-					h_r[idx] = s_r;
-					h_a[idx] = s_a;
-				}
-			});
-
-		// --- Pass 2: Vertical convolution (parallelized by row) ---
-		Parallel.For (0, height,
-			new ParallelOptions { MaxDegreeOfParallelism = threads },
-			y => {
-				Span<ColorBgra> dst_data = dest.GetPixelData ();
-				RenderVerticalRow (dst_data, y, width, height, r, weights, wlen, h_b, h_g, h_r, h_a, h_weight_sums);
-			});
+			// --- Pass 2: Vertical convolution (parallelized by row) ---
+			Parallel.For (vystart, vyend,
+				new ParallelOptions { MaxDegreeOfParallelism = threads },
+				y => {
+					Span<ColorBgra> dst_data = dest.GetPixelData ();
+					RenderVerticalRow (dst_data, y, xstart, xend, width, height, r, weights, wlen, h_b, h_g, h_r, h_a, h_weight_sums);
+				});
+		}
 	}
 
 	private static void RenderVerticalRow (
 		Span<ColorBgra> dst_data,
 		int y,
+		int xstart, int xend,
 		int width, int height, int r,
 		ImmutableArray<int> weights, int wlen,
 		int[] h_b, int[] h_g, int[] h_r, int[] h_a,
@@ -166,16 +192,17 @@ public sealed class GaussianBlurEffect : BaseEffect
 			v_weight_sum += weights[wy];
 
 		// Rent accumulators from the pool to avoid per-row heap allocation
-		long[] rent_b = ArrayPool<long>.Shared.Rent (width);
-		long[] rent_g = ArrayPool<long>.Shared.Rent (width);
-		long[] rent_r = ArrayPool<long>.Shared.Rent (width);
-		long[] rent_a = ArrayPool<long>.Shared.Rent (width);
+		int columns = xend - xstart;
+		long[] rent_b = ArrayPool<long>.Shared.Rent (columns);
+		long[] rent_g = ArrayPool<long>.Shared.Rent (columns);
+		long[] rent_r = ArrayPool<long>.Shared.Rent (columns);
+		long[] rent_a = ArrayPool<long>.Shared.Rent (columns);
 
 		try {
-			Span<long> sum_b = rent_b.AsSpan (0, width);
-			Span<long> sum_g = rent_g.AsSpan (0, width);
-			Span<long> sum_r = rent_r.AsSpan (0, width);
-			Span<long> sum_a = rent_a.AsSpan (0, width);
+			Span<long> sum_b = rent_b.AsSpan (0, columns);
+			Span<long> sum_g = rent_g.AsSpan (0, columns);
+			Span<long> sum_r = rent_r.AsSpan (0, columns);
+			Span<long> sum_a = rent_a.AsSpan (0, columns);
 
 			sum_b.Clear ();
 			sum_g.Clear ();
@@ -186,18 +213,18 @@ public sealed class GaussianBlurEffect : BaseEffect
 			for (int wy = wy_start; wy < wy_end; ++wy) {
 				int src_y = y + wy - r;
 				int w = weights[wy];
-				int row_offset = src_y * width;
+				int row_offset = src_y * width + xstart;
 
-				AccumulateRow (sum_b, h_b, row_offset, width, w);
-				AccumulateRow (sum_g, h_g, row_offset, width, w);
-				AccumulateRow (sum_r, h_r, row_offset, width, w);
-				AccumulateRow (sum_a, h_a, row_offset, width, w);
+				AccumulateRow (sum_b, h_b, row_offset, columns, w);
+				AccumulateRow (sum_g, h_g, row_offset, columns, w);
+				AccumulateRow (sum_r, h_r, row_offset, columns, w);
+				AccumulateRow (sum_a, h_a, row_offset, columns, w);
 			}
 
 			// Write output pixels
-			var dst_row = dst_data.Slice (y * width, width);
+			var dst_row = dst_data.Slice (y * width + xstart, columns);
 
-			for (int x = 0; x < width; ++x) {
+			for (int x = 0; x < columns; ++x) {
 				long total_weight = h_weight_sums[x] * v_weight_sum;
 
 				if (total_weight == 0 || sum_a[x] == 0) {

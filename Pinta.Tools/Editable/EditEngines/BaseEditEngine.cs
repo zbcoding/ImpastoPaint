@@ -1114,7 +1114,7 @@ public abstract class BaseEditEngine
 		current_point = e.PointDouble;
 		bool shiftKey = e.IsShiftPressed;
 		KeyGesture switchGesture = PintaCore.Shortcuts.GetToolBinding (KeyboardShortcutManager.TriangleTypeSwitch);
-		triangle_switch_down = (e.State & KeyGesture.AcceleratorMask) == switchGesture.Modifiers;
+		triangle_switch_down = IsSwitchGesturePressed (switchGesture, e.State);
 
 		if (!is_drawing) {
 			//Redraw the active shape to show a (temporary) highlighted control point (over any shape) when applicable.
@@ -1242,6 +1242,22 @@ public abstract class BaseEditEngine
 
 
 		last_mouse_pos = current_point;
+	}
+
+	private static bool IsSwitchGesturePressed (KeyGesture gesture, Gdk.ModifierType state)
+	{
+		Gdk.ModifierType modifier = gesture.Key.Value switch {
+			Gdk.Constants.KEY_Control_L or Gdk.Constants.KEY_Control_R => Gdk.ModifierType.ControlMask,
+			Gdk.Constants.KEY_Shift_L or Gdk.Constants.KEY_Shift_R => Gdk.ModifierType.ShiftMask,
+			Gdk.Constants.KEY_Alt_L or Gdk.Constants.KEY_Alt_R => Gdk.ModifierType.AltMask,
+			Gdk.Constants.KEY_Meta_L or Gdk.Constants.KEY_Meta_R => Gdk.ModifierType.MetaMask,
+			Gdk.Constants.KEY_Super_L or Gdk.Constants.KEY_Super_R => Gdk.ModifierType.SuperMask,
+			Gdk.Constants.KEY_Hyper_L or Gdk.Constants.KEY_Hyper_R => Gdk.ModifierType.HyperMask,
+			_ => default,
+		};
+
+		Gdk.ModifierType required = gesture.Modifiers | modifier;
+		return required != default && (state & required) == required;
 	}
 
 

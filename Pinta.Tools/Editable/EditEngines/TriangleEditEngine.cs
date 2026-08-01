@@ -84,7 +84,7 @@ public sealed class TriangleEditEngine : BaseEditEngine
 			return;
 		}
 
-		//Holding the type-switch key (default: Ctrl) while dragging draws the other
+		//Holding the type-switch key (default: Shift) while dragging draws the other
 		//triangle type than the one picked in the toolbar.
 		TriangleType effectiveType = selected_type;
 		if (SelectedShapeEngine is LineCurveSeriesEngine lineEngine)

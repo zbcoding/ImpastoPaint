@@ -318,7 +318,7 @@ public sealed class KeyboardShortcutManager
 		"TriangleTool.TypeSwitch",
 		Translations.GetString ("Triangle Tool"),
 		Translations.GetString ("Switch between right and equilateral triangle while drawing"),
-		new KeyGesture (new Gdk.Key (Gdk.Constants.KEY_Control_L), Gdk.ModifierType.ControlMask));
+		new KeyGesture (new Gdk.Key (Gdk.Constants.KEY_Shift_L)));
 
 
 	// Transform Tools (Move Selection, Move Layer, etc.)

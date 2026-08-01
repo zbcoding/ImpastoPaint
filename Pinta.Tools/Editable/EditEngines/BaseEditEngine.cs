@@ -302,7 +302,7 @@ public abstract class BaseEditEngine
 			shape_type_button = ToolBarDropDownButton.New ();
 
 			shape_type_button.AddItem (Translations.GetString ("Open Line/Curve Series"), Resources.Icons.ToolLine, 0, Translations.GetString ("Draws a line or curve with a start and an end point."));
-			shape_type_button.AddItem (Translations.GetString ("Closed Line/Curve Series"), Resources.Icons.ToolRectangle, 1, Translations.GetString ("Automatically connects the last point back to the first, closing the shape."));
+			shape_type_button.AddItem (Translations.GetString ("Closed Line/Curve Series"), Resources.Icons.ToolRectangle, 1, Translations.GetString ("Automatically connects the last point back to the first, closing the shape (e.g. a rectangle)."));
 			shape_type_button.AddItem (Translations.GetString ("Ellipse"), Resources.Icons.ToolEllipse, 2, Translations.GetString ("Draws an ellipse or circle."));
 			shape_type_button.AddItem (Translations.GetString ("Rounded Line Series"), Resources.Icons.ToolRectangleRounded, 3, Translations.GetString ("Like Closed Line/Curve Series, but with rounded corners at each point."));
 

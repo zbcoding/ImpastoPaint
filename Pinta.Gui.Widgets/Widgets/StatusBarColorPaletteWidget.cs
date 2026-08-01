@@ -78,6 +78,7 @@ public sealed partial class StatusBarColorPaletteWidget
 	// proxy for "the footer is getting tight", since GTK Box doesn't expose a
 	// resize signal of its own.
 	public event EventHandler<int>? WidthChanged;
+	public bool ActionButtonsAtRightEdge { get; private set; }
 
 	// Fires when a section folds in/out of the bar, so the popover content can be
 	// rebuilt to match.
@@ -681,6 +682,10 @@ public sealed partial class StatusBarColorPaletteWidget
 			color_wheel_icon_rect.Y,
 			ACTION_ICON_SIZE,
 			ACTION_ICON_SIZE);
+		// When the action pair reaches this limit, its right edge is touching the
+		// palette's trailing boundary, which is the cursor group's leading edge.
+		ActionButtonsAtRightEdge = show_action_icons
+			&& float_colors_icon_rect.Right >= width - PaletteWidget.PALETTE_MARGIN;
 
 		if (quick_colors_folded != was_quick_folded || recent_colors_folded != was_recent_folded || swatches_folded != was_swatches_folded)
 			FoldStateChanged?.Invoke (this, EventArgs.Empty);

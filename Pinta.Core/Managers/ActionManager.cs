@@ -146,35 +146,30 @@ public sealed class ActionManager
 	private Gtk.Widget? cursor_position_label;
 	private Gtk.Widget? image_size_icon;
 	private Gtk.Widget? image_size_label;
+	private bool show_cursor_position;
+	private bool show_image_size;
 
 	public void SetStatusBarCursorPositionVisible (bool visible)
 	{
+		show_cursor_position = visible;
 		cursor_position_icon?.SetVisible (visible);
 		cursor_position_label?.SetVisible (visible);
+		footer_cursor_group?.SetVisible (visible && !cursor_group_hidden);
 	}
 
 	public void SetStatusBarImageSizeVisible (bool visible)
 	{
+		show_image_size = visible;
 		image_size_icon?.SetVisible (visible);
 		image_size_label?.SetVisible (visible);
+		footer_image_group?.SetVisible (visible && !image_group_hidden);
 	}
 
-	// Impasto: how tight the docked color palette's own width gets before the
-	// cursor position / image size groups give it room back (see
-	// SetFooterAvailableWidth). These are show/hide thresholds only - the groups
-	// vanish instantly when they would collide with the color area, they don't
-	// fade. The cursor group hides before the image size group (a wider palette
-	// survivor width = it gives up first, because the cursor box is what reaches
-	// the color area first as the window narrows). The gap between HIDE and SHOW
-	// is kept wider than that group's own reclaimed width, so hiding a group
-	// doesn't immediately regrow the palette bar past the threshold that re-shows
-	// it. This is purely width-driven and layers on top of the Settings visibility
-	// toggles above - a group the user turned off via Settings has its icon/label
-	// individually invisible, so showing/hiding the surrounding group here has no
-	// visible effect on it either way.
-	private const int CURSOR_GROUP_HIDE_WIDTH = 350;
+	// The cursor group hides at the exact edge contact reported by the palette.
+	// The image group waits for a later contact, after the cursor group has
+	// already reclaimed its width. Show thresholds remain wider to prevent
+	// resize flicker.
 	private const int CURSOR_GROUP_SHOW_WIDTH = 480;
-	private const int IMAGE_GROUP_HIDE_WIDTH = 180;
 	private const int IMAGE_GROUP_SHOW_WIDTH = 300;
 
 	private Gtk.Widget? footer_cursor_group;
@@ -182,27 +177,28 @@ public sealed class ActionManager
 
 	// Latched hide state so the labels don't flicker during the resize: once a
 	// group is hidden it stays hidden until the palette regrows well past the hide
-	// threshold (see HIDE/SHOW constants above).
+	// threshold (see the SHOW constants above).
 	private bool cursor_group_hidden;
 	private bool image_group_hidden;
 
-	// Impasto: called by MainWindow whenever the docked color palette's allocated
-	// width changes, as a proxy for "the footer status bar is getting tight".
-	public void SetFooterAvailableWidth (int availableWidth)
+	// Called by MainWindow after the palette has laid out its action buttons.
+	public void SetFooterGeometry (int availableWidth, bool action_buttons_at_right_edge)
 	{
+		bool cursor_was_hidden = cursor_group_hidden || !show_cursor_position;
+
 		if (footer_cursor_group is not null) {
-			if (availableWidth < CURSOR_GROUP_HIDE_WIDTH)
+			if (action_buttons_at_right_edge)
 				cursor_group_hidden = true;
 			else if (availableWidth > CURSOR_GROUP_SHOW_WIDTH)
 				cursor_group_hidden = false;
-			footer_cursor_group.SetVisible (!cursor_group_hidden);
+			footer_cursor_group.SetVisible (show_cursor_position && !cursor_group_hidden);
 		}
 		if (footer_image_group is not null) {
-			if (availableWidth < IMAGE_GROUP_HIDE_WIDTH)
+			if (action_buttons_at_right_edge && cursor_was_hidden)
 				image_group_hidden = true;
 			else if (availableWidth > IMAGE_GROUP_SHOW_WIDTH)
 				image_group_hidden = false;
-			footer_image_group.SetVisible (!image_group_hidden);
+			footer_image_group.SetVisible (show_image_size && !image_group_hidden);
 		}
 	}
 
@@ -231,9 +227,7 @@ public sealed class ActionManager
 		statusbar.Append (cursor_group);
 		footer_cursor_group = cursor_group;
 
-		bool showCursorPosition = PintaCore.Settings.GetSetting (SettingNames.STATUSBAR_SHOW_CURSOR_POSITION, true);
-		cursor_position_icon.SetVisible (showCursorPosition);
-		cursor_position_label.SetVisible (showCursorPosition);
+		SetStatusBarCursorPositionVisible (PintaCore.Settings.GetSetting (SettingNames.STATUSBAR_SHOW_CURSOR_POSITION, true));
 
 		chrome.LastCanvasCursorPointChanged += delegate {
 			var pt = chrome.LastCanvasCursorPoint;

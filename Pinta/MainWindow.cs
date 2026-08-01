@@ -524,10 +524,9 @@ internal sealed class MainWindow
 			PintaCore.System);
 		colors_palette.Hexpand = true;
 		colors_palette.Halign = Gtk.Align.Fill;
-		// Impasto: as the docked palette bar narrows, use its own width as a proxy
-		// for "the footer is tight" to fade the cursor position / image size labels
-		// out of the way (see ActionManager.SetFooterAvailableWidth).
-		colors_palette.WidthChanged += (_, width) => PintaCore.Actions.SetFooterAvailableWidth (width);
+		// Impasto: hide footer labels when the palette action buttons reach the
+		// palette's trailing boundary (see ActionManager.SetFooterGeometry).
+		colors_palette.WidthChanged += (_, width) => PintaCore.Actions.SetFooterGeometry (width, colors_palette.ActionButtonsAtRightEdge);
 
 		colors_wheel = ColorWheelWidget.New (PintaCore.Palette);
 		colors_wheel.MarginStart = 6;

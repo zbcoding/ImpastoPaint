@@ -373,9 +373,11 @@ public sealed partial class ToolBoxWidget
 
 		foreach (BaseTool member in stack.Members) {
 
+			// No native tooltip here: GTK4 mapping a tooltip popup while this entry's own
+			// popover (a grabbing popup) is open can leave the pointer grab stuck, freezing
+			// input until the next click - the icon and label already say what this is.
 			Gtk.Button entry = Gtk.Button.New ();
 			entry.SetCssClasses ([AdwaitaStyles.Flat]);
-			entry.TooltipText = TooltipFor (member);
 
 			Gtk.Box row = Gtk.Box.New (Gtk.Orientation.Horizontal, 6);
 			row.Append (Gtk.Image.NewFromIconName (member.Icon));

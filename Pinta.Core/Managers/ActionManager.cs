@@ -165,10 +165,9 @@ public sealed class ActionManager
 		footer_image_group?.SetVisible (visible && !image_group_hidden);
 	}
 
-	// The cursor group hides at the exact edge contact reported by the palette.
-	// The image group waits for a later contact, after the cursor group has
-	// already reclaimed its width. Show thresholds remain wider to prevent
-	// resize flicker.
+	// The image group hides at the first edge contact reported by the palette.
+	// The cursor group waits for a later contact, after the image group has
+	// already reclaimed its width. Show thresholds restore them in reverse order.
 	private const int CURSOR_GROUP_SHOW_WIDTH = 480;
 	private const int IMAGE_GROUP_SHOW_WIDTH = 300;
 
@@ -184,21 +183,21 @@ public sealed class ActionManager
 	// Called by MainWindow after the palette has laid out its action buttons.
 	public void SetFooterGeometry (int availableWidth, bool action_buttons_at_right_edge)
 	{
-		bool cursor_was_hidden = cursor_group_hidden || !show_cursor_position;
+		bool image_was_hidden = image_group_hidden || !show_image_size;
 
-		if (footer_cursor_group is not null) {
-			if (action_buttons_at_right_edge)
-				cursor_group_hidden = true;
-			else if (availableWidth > CURSOR_GROUP_SHOW_WIDTH)
-				cursor_group_hidden = false;
-			footer_cursor_group.SetVisible (show_cursor_position && !cursor_group_hidden);
-		}
 		if (footer_image_group is not null) {
-			if (action_buttons_at_right_edge && cursor_was_hidden)
+			if (action_buttons_at_right_edge)
 				image_group_hidden = true;
 			else if (availableWidth > IMAGE_GROUP_SHOW_WIDTH)
 				image_group_hidden = false;
 			footer_image_group.SetVisible (show_image_size && !image_group_hidden);
+		}
+		if (footer_cursor_group is not null) {
+			if (action_buttons_at_right_edge && image_was_hidden)
+				cursor_group_hidden = true;
+			else if (availableWidth > CURSOR_GROUP_SHOW_WIDTH)
+				cursor_group_hidden = false;
+			footer_cursor_group.SetVisible (show_cursor_position && !cursor_group_hidden);
 		}
 	}
 

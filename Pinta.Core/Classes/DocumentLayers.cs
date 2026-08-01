@@ -233,7 +233,8 @@ public sealed class DocumentLayers
 
 			// Check for "name copy (N)" pattern
 			if (name.StartsWith (sourceName + " copy (")) {
-				string numPart = name[(sourceName.Length + 6)..].TrimEnd (')');
+				// The " copy (" suffix is 7 characters long.
+				string numPart = name[(sourceName.Length + 7)..].TrimEnd (')');
 				if (int.TryParse (numPart, out int n) && n > maxCopy)
 					maxCopy = n;
 			}

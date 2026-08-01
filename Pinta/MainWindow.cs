@@ -750,7 +750,7 @@ internal sealed class MainWindow
 
 	private void CreateDockAndPads (Gtk.Box container)
 	{
-		ToolBoxWidget toolbox = ToolBoxWidget.New (PintaCore.Tools);
+		ToolBoxWidget toolbox = ToolBoxWidget.New (PintaCore.Tools, PintaCore.Settings.GetSetting (SettingNames.TOOLBOX_CLASSIC_LAYOUT, false));
 		this.toolbox = toolbox;
 
 		Gtk.ScrolledWindow toolbox_scroll = Gtk.ScrolledWindow.New ();

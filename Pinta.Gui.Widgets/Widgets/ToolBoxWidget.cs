@@ -62,27 +62,42 @@ public sealed partial class ToolBoxWidget
 	// the flyout's grab would dismiss the pin menu before it can be clicked.
 	private Gtk.Popover? open_pin_menu;
 
-	private static Gtk.FlowBox CreateSectionBox ()
+	/// <param name="classic">
+	/// The pre-fork layout: Vertical orientation, so ChildrenPerLine counts children per
+	/// *column* and is left unbounded, letting the box overflow into another column only
+	/// once it runs out of vertical space, instead of a fixed 2-column grid.
+	/// </param>
+	private static Gtk.FlowBox CreateSectionBox (bool classic)
 	{
 		Gtk.FlowBox section = Gtk.FlowBox.New ();
-		// Horizontal orientation: ChildrenPerLine counts children per *row*, so this pins
-		// every section to 2 columns and the buttons line up across the separators.
-		// (Upstream used Vertical, where the same property counts children per column and
-		// each section would pick its own width.)
-		section.SetOrientation (Gtk.Orientation.Horizontal);
-		section.MinChildrenPerLine = 2;
-		section.MaxChildrenPerLine = 2;
+		if (classic) {
+			section.SetOrientation (Gtk.Orientation.Vertical);
+		} else {
+			// Horizontal orientation: ChildrenPerLine counts children per *row*, so this
+			// pins every section to 2 columns and the buttons line up across the separators.
+			section.SetOrientation (Gtk.Orientation.Horizontal);
+			section.MinChildrenPerLine = 2;
+			section.MaxChildrenPerLine = 2;
+		}
 		section.Homogeneous = true;
 		section.SelectionMode = Gtk.SelectionMode.None; // Don't allow the buttons to be selected.
 		section.Visible = false; // Shown when it receives its first tool.
 		return section;
 	}
 
+	// Impasto: whether to use the pre-fork single-column layout instead of the sectioned
+	// 2-column grid. Set once from Configure(); changing it takes effect on next launch,
+	// since the section boxes below are only built once.
+	private bool classic_layout;
+
 	partial void Initialize ()
 	{
 		SetOrientation (Gtk.Orientation.Vertical);
+	}
 
-		pinned_section = CreateSectionBox ();
+	private void BuildLayout ()
+	{
+		pinned_section = CreateSectionBox (classic_layout);
 		pinned_section.Visible = true; // Container visibility is managed instead.
 
 		Gtk.Image pinIcon = Gtk.Image.NewFromIconName (Resources.StandardIcons.Pin);
@@ -117,22 +132,25 @@ public sealed partial class ToolBoxWidget
 				Append (separator);
 			}
 
-			Gtk.FlowBox section = CreateSectionBox ();
+			Gtk.FlowBox section = CreateSectionBox (classic_layout);
 			sections[i] = section;
 			Append (section);
 		}
 	}
 
-	public static ToolBoxWidget New (ToolManager tools)
+	public static ToolBoxWidget New (ToolManager tools, bool classicLayout)
 	{
 		ToolBoxWidget widget = NewWithProperties ([]);
-		widget.Configure (tools);
+		widget.Configure (tools, classicLayout);
 		return widget;
 	}
 
-	private void Configure (ToolManager tools)
+	private void Configure (ToolManager tools, bool classicLayout)
 	{
 		this.tools = tools;
+		this.classic_layout = classicLayout;
+
+		BuildLayout ();
 
 		tools.ToolAdded += (_, e) => HandleToolAdded (e.Tool);
 		tools.ToolRemoved += (_, e) => HandleToolRemoved (e.Tool);
@@ -140,8 +158,15 @@ public sealed partial class ToolBoxWidget
 		PintaCore.Shortcuts.ShortcutsChanged += (_, _) => RefreshTooltips ();
 	}
 
-	internal static int SectionIndex (int priority)
+	/// <summary>
+	/// In classic layout every tool shares section 0, so the sections below it never
+	/// populate and stay hidden, leaving one continuous column.
+	/// </summary>
+	internal int SectionIndex (int priority)
 	{
+		if (classic_layout)
+			return 0;
+
 		for (int i = 0; i < section_bounds.Length; i++)
 			if (priority <= section_bounds[i])
 				return i;

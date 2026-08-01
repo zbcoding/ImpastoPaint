@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-08-01 01:22-0500\n"
+"POT-Creation-Date: 2026-08-01 05:54-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -458,7 +458,7 @@ msgstr ""
 msgid "Change brush width."
 msgstr ""
 
-#: ../Pinta.Tools/Tools/TextTool.cs:586
+#: ../Pinta.Tools/Tools/TextTool.cs:590
 msgid "Change font size."
 msgstr ""
 
@@ -889,7 +889,7 @@ msgstr ""
 msgid "Drag and drop to reorder"
 msgstr ""
 
-#: ../Pinta.Tools/Tools/TextTool.cs:2346
+#: ../Pinta.Tools/Tools/TextTool.cs:2350
 msgid "Drag corner to resize (changes font size)"
 msgstr ""
 
@@ -1176,7 +1176,7 @@ msgstr ""
 msgid "Finish selection (Enter)"
 msgstr ""
 
-#: ../Pinta.Tools/Tools/TextTool.cs:578
+#: ../Pinta.Tools/Tools/TextTool.cs:578 ../Pinta.Tools/Tools/TextTool.cs:582
 #, csharp-format
 msgid "Finish typing ({0})"
 msgstr ""
@@ -2081,7 +2081,7 @@ msgid "Noise"
 msgstr ""
 
 #: ../Pinta/Actions/Help/KeyboardShortcutsDialogAction.cs:48
-#: ../Pinta.Core/Classes/KeyGesture.cs:31 ../Pinta.Tools/Tools/TextTool.cs:1210
+#: ../Pinta.Core/Classes/KeyGesture.cs:31 ../Pinta.Tools/Tools/TextTool.cs:1214
 msgid "None"
 msgstr ""
 
@@ -2574,7 +2574,7 @@ msgstr ""
 msgid "Press {0} to decrease brush width"
 msgstr ""
 
-#: ../Pinta.Tools/Tools/TextTool.cs:588
+#: ../Pinta.Tools/Tools/TextTool.cs:592
 #, csharp-format
 msgid "Press {0} to decrease font size"
 msgstr ""
@@ -2589,7 +2589,7 @@ msgstr ""
 msgid "Press {0} to increase brush width"
 msgstr ""
 
-#: ../Pinta.Tools/Tools/TextTool.cs:589
+#: ../Pinta.Tools/Tools/TextTool.cs:593
 #, csharp-format
 msgid "Press {0} to increase font size"
 msgstr ""
@@ -2887,7 +2887,7 @@ msgstr ""
 msgid "Right Align"
 msgstr ""
 
-#: ../Pinta.Tools/Tools/TextTool.cs:2341
+#: ../Pinta.Tools/Tools/TextTool.cs:2345
 msgid "Right click to move"
 msgstr ""
 
@@ -3157,7 +3157,7 @@ msgstr ""
 
 #: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:115
 #: ../Pinta.Tools/Tools/BaseBrushTool.cs:136
-#: ../Pinta.Tools/Tools/TextTool.cs:587
+#: ../Pinta.Tools/Tools/TextTool.cs:591
 msgid "Shortcut keys:"
 msgstr ""
 
@@ -3955,17 +3955,17 @@ msgstr ""
 msgid "{0} palette ({1})"
 msgstr ""
 
-#: ../Pinta.Tools/Tools/TextTool.cs:2339
+#: ../Pinta.Tools/Tools/TextTool.cs:2343
 #, csharp-format
 msgid "{0} to edit"
 msgstr ""
 
-#: ../Pinta.Tools/Tools/TextTool.cs:2340
+#: ../Pinta.Tools/Tools/TextTool.cs:2344
 #, csharp-format
 msgid "{0} to open text properties"
 msgstr ""
 
-#: ../Pinta.Tools/Tools/TextTool.cs:2347
+#: ../Pinta.Tools/Tools/TextTool.cs:2351
 #, csharp-format
 msgid "{0} to rotate"
 msgstr ""

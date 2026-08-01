@@ -29,6 +29,7 @@ public sealed partial class ToolBarDropDownButton
 		// We create the widgets inside the dropdown to avoid having to create yet another custom widget
 		// for the selectedFactory. Also, we can reference them directly when updated, avoiding
 		// .nextSibling hacks.
+		dropdown_label.MarginStart = 4;
 		selected_box.Append (dropdown_icon);
 		selected_box.Append (dropdown_label);
 
@@ -183,6 +184,8 @@ internal sealed partial class ToolBarItemWidget
 		selected_icon.Visible = false;
 		selected_icon.Hexpand = true;
 		selected_icon.Halign = Gtk.Align.End;
+
+		label.MarginStart = 4;
 
 		Append (image);
 		Append (label);

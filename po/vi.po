@@ -3662,3 +3662,23 @@ msgstr "Ctrl+Nhấp để chỉnh sửa"
 #, csharp-format
 #~ msgid "Exception occurred: {0}"
 #~ msgstr "Xảy ra lỗi đặc biệt: {0}"
+
+#. Translators: Checkbox label: switches the toolbox to a layout that fills one thin column before wrapping into more.
+#. AI-generated translation; human review requested.
+msgid "Use thin column toolbox layout"
+msgstr "Dùng bố cục hộp công cụ dạng cột mỏng"
+
+#. Translators: Tooltip explaining the thin-column toolbox layout option.
+#. AI-generated translation; human review requested.
+msgid "Tools fill one column instead of the sectioned 2-column grid, overflowing into another column once it runs out of vertical space. Requires a restart."
+msgstr "Công cụ lấp đầy một cột mỏng và tràn sang cột kế tiếp khi hết chỗ theo chiều dọc. Yêu cầu khởi động lại."
+
+#. Translators: Restart prompt dialog title, shown after changing the toolbox layout setting.
+#. AI-generated translation; human review requested.
+msgid "Restart Impasto"
+msgstr "Khởi động lại Impasto"
+
+#. Translators: Restart prompt body explaining why a restart is needed after changing the toolbox layout.
+#. AI-generated translation; human review requested.
+msgid "Please restart Impasto for the toolbox layout change to take effect."
+msgstr "Vui lòng khởi động lại Impasto để thay đổi bố cục hộp công cụ có hiệu lực."

@@ -3297,3 +3297,23 @@ msgstr "Enda skriving ({0})"
 #. AI-generated translation; human review requested.
 msgid "Ctrl+Click to edit"
 msgstr "Ctrl+klikk fyri at rætta"
+
+#. Translators: Checkbox label: switches the toolbox to a layout that fills one thin column before wrapping into more.
+#. AI-generated translation; human review requested.
+msgid "Use thin column toolbox layout"
+msgstr "Brúka mjógvan dálk sum amboðskassa skipan"
+
+#. Translators: Tooltip explaining the thin-column toolbox layout option.
+#. AI-generated translation; human review requested.
+msgid "Tools fill one column instead of the sectioned 2-column grid, overflowing into another column once it runs out of vertical space. Requires a restart."
+msgstr "Amboð fylla ein mjógvan dálk og renna síðani yvir í ein annan, tá ið loðrætta plássið er uppbrúkt. Krevur endurstart."
+
+#. Translators: Restart prompt dialog title, shown after changing the toolbox layout setting.
+#. AI-generated translation; human review requested.
+msgid "Restart Impasto"
+msgstr "Endurstarta Impasto"
+
+#. Translators: Restart prompt body explaining why a restart is needed after changing the toolbox layout.
+#. AI-generated translation; human review requested.
+msgid "Please restart Impasto for the toolbox layout change to take effect."
+msgstr "Vinarliga endurstarta Impasto, so broytingin av amboðskassa skipanini virkar."

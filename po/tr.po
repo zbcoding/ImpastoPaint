@@ -3751,3 +3751,23 @@ msgstr "Düzenlemek için Ctrl+Tıkla"
 #~ msgstr ""
 #~ "{0} adlı yerden resim indirilemiyor.\n"
 #~ "Ayrıntılar: {1}"
+
+#. Translators: Checkbox label: switches the toolbox to a layout that fills one thin column before wrapping into more.
+#. AI-generated translation; human review requested.
+msgid "Use thin column toolbox layout"
+msgstr "İnce sütunlu araç kutusu düzenini kullan"
+
+#. Translators: Tooltip explaining the thin-column toolbox layout option.
+#. AI-generated translation; human review requested.
+msgid "Tools fill one column instead of the sectioned 2-column grid, overflowing into another column once it runs out of vertical space. Requires a restart."
+msgstr "Araçlar dikey boşluk bitene kadar tek bir ince sütunu doldurur, ardından sonraki sütuna taşar. Yeniden başlatma gerektirir."
+
+#. Translators: Restart prompt dialog title, shown after changing the toolbox layout setting.
+#. AI-generated translation; human review requested.
+msgid "Restart Impasto"
+msgstr "Impasto'yu yeniden başlat"
+
+#. Translators: Restart prompt body explaining why a restart is needed after changing the toolbox layout.
+#. AI-generated translation; human review requested.
+msgid "Please restart Impasto for the toolbox layout change to take effect."
+msgstr "Araç kutusu düzeni değişikliğinin etkili olması için lütfen Impasto'yu yeniden başlatın."

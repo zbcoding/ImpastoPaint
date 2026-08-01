@@ -163,7 +163,7 @@ public sealed partial class PreferencesDialog
 		extendedPaletteRow.Append (CreateResetButton (ResetExtendedPaletteRows));
 		popoverHintPage.Append (extendedPaletteRow);
 
-		Gtk.CheckButton toolboxClassicLayoutCheckButton = Gtk.CheckButton.NewWithLabel (Translations.GetString ("Use the classic single-column toolbox layout"));
+		Gtk.CheckButton toolboxClassicLayoutCheckButton = Gtk.CheckButton.NewWithLabel (Translations.GetString ("Use thin column toolbox layout"));
 		toolboxClassicLayoutCheckButton.TooltipText = Translations.GetString ("Tools fill one column instead of the sectioned 2-column grid, overflowing into another column once it runs out of vertical space. Requires a restart.");
 		Gtk.Box toolboxClassicLayoutRow = Gtk.Box.New (Gtk.Orientation.Horizontal, SPACING);
 		toolboxClassicLayoutCheckButton.Hexpand = true;

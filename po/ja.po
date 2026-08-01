@@ -3622,3 +3622,23 @@ msgstr "入力を終了します({0})"
 #. AI-generated translation; human review requested.
 msgid "Ctrl+Click to edit"
 msgstr "Ctrl+クリックで編集"
+
+#. Translators: Checkbox label: switches the toolbox to a layout that fills one thin column before wrapping into more.
+#. AI-generated translation; human review requested.
+msgid "Use thin column toolbox layout"
+msgstr "細い列のツールボックスレイアウトを使用"
+
+#. Translators: Tooltip explaining the thin-column toolbox layout option.
+#. AI-generated translation; human review requested.
+msgid "Tools fill one column instead of the sectioned 2-column grid, overflowing into another column once it runs out of vertical space. Requires a restart."
+msgstr "縦方向のスペースがなくなるまで1本の細い列にツールを並べ、その後は次の列にあふれます。再起動が必要です。"
+
+#. Translators: Restart prompt dialog title, shown after changing the toolbox layout setting.
+#. AI-generated translation; human review requested.
+msgid "Restart Impasto"
+msgstr "Impasto を再起動"
+
+#. Translators: Restart prompt body explaining why a restart is needed after changing the toolbox layout.
+#. AI-generated translation; human review requested.
+msgid "Please restart Impasto for the toolbox layout change to take effect."
+msgstr "ツールボックスのレイアウト変更を反映するには、Impasto を再起動してください。"

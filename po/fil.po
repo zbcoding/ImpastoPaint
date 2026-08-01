@@ -3248,3 +3248,23 @@ msgstr "Tapusin ang pag-type ({0})"
 #. AI-generated translation; human review requested.
 msgid "Ctrl+Click to edit"
 msgstr "Ctrl+Click para i-edit"
+
+#. Translators: Checkbox label: switches the toolbox to a layout that fills one thin column before wrapping into more.
+#. AI-generated translation; human review requested.
+msgid "Use thin column toolbox layout"
+msgstr "Gamitin ang manipis na hanay na disenyo ng toolbox"
+
+#. Translators: Tooltip explaining the thin-column toolbox layout option.
+#. AI-generated translation; human review requested.
+msgid "Tools fill one column instead of the sectioned 2-column grid, overflowing into another column once it runs out of vertical space. Requires a restart."
+msgstr "Pupunuin ng mga kasangkapan ang isang manipis na hanay bago aapaw sa susunod na hanay kapag naubos na ang patayong espasyo. Kailangan ng restart."
+
+#. Translators: Restart prompt dialog title, shown after changing the toolbox layout setting.
+#. AI-generated translation; human review requested.
+msgid "Restart Impasto"
+msgstr "I-restart ang Impasto"
+
+#. Translators: Restart prompt body explaining why a restart is needed after changing the toolbox layout.
+#. AI-generated translation; human review requested.
+msgid "Please restart Impasto for the toolbox layout change to take effect."
+msgstr "Pakisuyong i-restart ang Impasto upang magkabisa ang pagbabago sa disenyo ng toolbox."

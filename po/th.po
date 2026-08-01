@@ -3259,3 +3259,23 @@ msgstr "Ctrl+คลิกเพื่อแก้ไข"
 
 #~ msgid "Xor (Ctrl + Right Click)"
 #~ msgstr "ตรงข้าม (Ctrl + คลิกขวา)"
+
+#. Translators: Checkbox label: switches the toolbox to a layout that fills one thin column before wrapping into more.
+#. AI-generated translation; human review requested.
+msgid "Use thin column toolbox layout"
+msgstr "ใช้เค้าโครงกล่องเครื่องมือแบบคอลัมน์บาง"
+
+#. Translators: Tooltip explaining the thin-column toolbox layout option.
+#. AI-generated translation; human review requested.
+msgid "Tools fill one column instead of the sectioned 2-column grid, overflowing into another column once it runs out of vertical space. Requires a restart."
+msgstr "เครื่องมือจะเติมคอลัมน์บางหนึ่งคอลัมน์ก่อนล้นไปยังคอลัมน์ถัดไปเมื่อพื้นที่แนวตั้งหมด ต้องรีสตาร์ท"
+
+#. Translators: Restart prompt dialog title, shown after changing the toolbox layout setting.
+#. AI-generated translation; human review requested.
+msgid "Restart Impasto"
+msgstr "รีสตาร์ท Impasto"
+
+#. Translators: Restart prompt body explaining why a restart is needed after changing the toolbox layout.
+#. AI-generated translation; human review requested.
+msgid "Please restart Impasto for the toolbox layout change to take effect."
+msgstr "โปรดรีสตาร์ท Impasto เพื่อให้การเปลี่ยนแปลงเค้าโครงกล่องเครื่องมือมีผล"

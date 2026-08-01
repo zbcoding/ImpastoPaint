@@ -3287,3 +3287,23 @@ msgstr "Baigti rašyti ({0})"
 #. AI-generated translation; human review requested.
 msgid "Ctrl+Click to edit"
 msgstr "Ctrl+spustelėjimas redaguoti"
+
+#. Translators: Checkbox label: switches the toolbox to a layout that fills one thin column before wrapping into more.
+#. AI-generated translation; human review requested.
+msgid "Use thin column toolbox layout"
+msgstr "Naudoti siauro stulpelio įrankių juostos išdėstymą"
+
+#. Translators: Tooltip explaining the thin-column toolbox layout option.
+#. AI-generated translation; human review requested.
+msgid "Tools fill one column instead of the sectioned 2-column grid, overflowing into another column once it runs out of vertical space. Requires a restart."
+msgstr "Įrankiai užpildo vieną siaurą stulpelį ir pereina į kitą, kai baigiasi vertikali vieta. Reikia paleisti iš naujo."
+
+#. Translators: Restart prompt dialog title, shown after changing the toolbox layout setting.
+#. AI-generated translation; human review requested.
+msgid "Restart Impasto"
+msgstr "Paleisti Impasto iš naujo"
+
+#. Translators: Restart prompt body explaining why a restart is needed after changing the toolbox layout.
+#. AI-generated translation; human review requested.
+msgid "Please restart Impasto for the toolbox layout change to take effect."
+msgstr "Paleiskite Impasto iš naujo, kad įrankių juostos išdėstymo pakeitimas įsigaliotų."

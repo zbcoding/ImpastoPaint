@@ -3229,3 +3229,23 @@ msgstr "टाइपिंग समाप्त करें ({0})"
 #. AI-generated translation; human review requested.
 msgid "Ctrl+Click to edit"
 msgstr "संपादित करने के लिए Ctrl+क्लिक करें"
+
+#. Translators: Checkbox label: switches the toolbox to a layout that fills one thin column before wrapping into more.
+#. AI-generated translation; human review requested.
+msgid "Use thin column toolbox layout"
+msgstr "पतले कॉलम वाला टूलबॉक्स लेआउट उपयोग करें"
+
+#. Translators: Tooltip explaining the thin-column toolbox layout option.
+#. AI-generated translation; human review requested.
+msgid "Tools fill one column instead of the sectioned 2-column grid, overflowing into another column once it runs out of vertical space. Requires a restart."
+msgstr "औज़ार एक पतले कॉलम को भरते हैं और खड़ी जगह खत्म होने पर अगले कॉलम में चले जाते हैं। पुनः आरंभ आवश्यक है।"
+
+#. Translators: Restart prompt dialog title, shown after changing the toolbox layout setting.
+#. AI-generated translation; human review requested.
+msgid "Restart Impasto"
+msgstr "Impasto पुनः आरंभ करें"
+
+#. Translators: Restart prompt body explaining why a restart is needed after changing the toolbox layout.
+#. AI-generated translation; human review requested.
+msgid "Please restart Impasto for the toolbox layout change to take effect."
+msgstr "कृपया टूलबॉक्स लेआउट परिवर्तन प्रभावी करने के लिए Impasto को पुनः आरंभ करें।"

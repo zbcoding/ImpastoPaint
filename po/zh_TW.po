@@ -3634,3 +3634,23 @@ msgstr "Ctrl+點按以進行編輯"
 #~ msgstr ""
 #~ "按著 Ctrl 鍵，然後用滑鼠左鍵點選要複製像素的中心點！然後放開鍵盤，按滑鼠左"
 #~ "鍵當筆刷塗抹。"
+
+#. Translators: Checkbox label: switches the toolbox to a layout that fills one thin column before wrapping into more.
+#. AI-generated translation; human review requested.
+msgid "Use thin column toolbox layout"
+msgstr "使用細欄工具箱版面配置"
+
+#. Translators: Tooltip explaining the thin-column toolbox layout option.
+#. AI-generated translation; human review requested.
+msgid "Tools fill one column instead of the sectioned 2-column grid, overflowing into another column once it runs out of vertical space. Requires a restart."
+msgstr "工具會先填滿一個細欄，垂直空間用完後再溢出到下一欄。需要重新啟動。"
+
+#. Translators: Restart prompt dialog title, shown after changing the toolbox layout setting.
+#. AI-generated translation; human review requested.
+msgid "Restart Impasto"
+msgstr "重新啟動 Impasto"
+
+#. Translators: Restart prompt body explaining why a restart is needed after changing the toolbox layout.
+#. AI-generated translation; human review requested.
+msgid "Please restart Impasto for the toolbox layout change to take effect."
+msgstr "請重新啟動 Impasto，讓工具箱版面配置的變更生效。"

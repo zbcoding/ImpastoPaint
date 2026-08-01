@@ -3641,3 +3641,23 @@ msgstr "Gépelés befejezése ({0})"
 #. AI-generated translation; human review requested.
 msgid "Ctrl+Click to edit"
 msgstr "Ctrl+kattintás a szerkesztéshez"
+
+#. Translators: Checkbox label: switches the toolbox to a layout that fills one thin column before wrapping into more.
+#. AI-generated translation; human review requested.
+msgid "Use thin column toolbox layout"
+msgstr "Keskeny oszlopos eszköztár-elrendezés használata"
+
+#. Translators: Tooltip explaining the thin-column toolbox layout option.
+#. AI-generated translation; human review requested.
+msgid "Tools fill one column instead of the sectioned 2-column grid, overflowing into another column once it runs out of vertical space. Requires a restart."
+msgstr "Az eszközök egyetlen keskeny oszlopot töltenek ki, majd átfolynak a következőbe, ha elfogy a függőleges hely. Újraindítást igényel."
+
+#. Translators: Restart prompt dialog title, shown after changing the toolbox layout setting.
+#. AI-generated translation; human review requested.
+msgid "Restart Impasto"
+msgstr "Impasto újraindítása"
+
+#. Translators: Restart prompt body explaining why a restart is needed after changing the toolbox layout.
+#. AI-generated translation; human review requested.
+msgid "Please restart Impasto for the toolbox layout change to take effect."
+msgstr "Kérjük, indítsa újra az Impasto-t, hogy az eszköztár-elrendezés módosítása érvénybe lépjen."

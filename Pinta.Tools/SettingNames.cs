@@ -67,6 +67,9 @@ internal static class SettingNames
 	internal static string ShapeType (string prefix)
 		=> $"{prefix}-shape-type";
 
+	internal static string TriangleType (string prefix)
+		=> $"{prefix}-triangle-type";
+
 	internal static string DashPattern (string prefix)
 		=> $"{prefix}-dash-pattern";
 

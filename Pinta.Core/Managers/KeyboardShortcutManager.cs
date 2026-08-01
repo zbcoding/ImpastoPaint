@@ -314,6 +314,13 @@ public sealed class KeyboardShortcutManager
 		Translations.GetString ("Create new shape at selected control point"),
 		new KeyGesture (new Gdk.Key (Gdk.Constants.KEY_Left), Gdk.ModifierType.ControlMask)); // or Right
 
+	public static readonly ToolBindingDescriptor TriangleTypeSwitch = new (
+		"TriangleTool.TypeSwitch",
+		Translations.GetString ("Triangle Tool"),
+		Translations.GetString ("Switch between right and equilateral triangle while drawing"),
+		new KeyGesture (new Gdk.Key (Gdk.Constants.KEY_Control_L), Gdk.ModifierType.ControlMask));
+
+
 	// Transform Tools (Move Selection, Move Layer, etc.)
 	public static readonly ToolBindingDescriptor TransformNudgeLeft = new (
 		"TransformTool.NudgeLeft",
@@ -462,6 +469,7 @@ public sealed class KeyboardShortcutManager
 		ShapeSelectPrevPoint,
 		ShapeSelectNextPoint,
 		ShapeCreateNewAtPoint,
+		TriangleTypeSwitch,
 		TransformNudgeLeft,
 		TransformNudgeRight,
 		TransformNudgeUp,

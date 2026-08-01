@@ -275,6 +275,8 @@ public static class Icons
 	public const string ToolSelectRectangle = "tool-select-rectangle-symbolic";
 	public const string ToolText = "tool-text-symbolic";
 	public const string ToolTriangle = "tool-triangle-symbolic";
+	public const string ToolTriangleEquilateral = "tool-triangle-equilateral-symbolic";
+	public const string ToolTriangleRight = "tool-triangle-right-symbolic";
 	public const string ToolZoom = "tool-zoom-symbolic";
 
 	public const string ViewGrid = "view-grid";

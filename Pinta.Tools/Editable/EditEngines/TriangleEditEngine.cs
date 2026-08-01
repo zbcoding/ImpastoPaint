@@ -31,12 +31,25 @@ using Pinta.Core;
 
 namespace Pinta.Tools;
 
+public enum TriangleType
+{
+	Right = 0,
+	Equilateral = 1,
+}
+
 public sealed class TriangleEditEngine : BaseEditEngine
 {
 	protected override string ShapeName
 		=> Translations.GetString ("Triangle Shape");
 
 	private readonly IWorkspaceService workspace;
+	private TriangleType selected_type = TriangleType.Right;
+	private ToolBarDropDownButton? triangle_type_button;
+	private Gtk.Label? triangle_type_label;
+	private Gtk.Separator? triangle_type_sep;
+	private string right_triangle_tooltip = "";
+	private string equilateral_triangle_tooltip = "";
+
 	public TriangleEditEngine (
 		IServiceProvider services,
 		ShapeTool passedOwner
@@ -65,7 +78,18 @@ public sealed class TriangleEditEngine : BaseEditEngine
 
 	protected override void MovePoint (List<ControlPoint> controlPoints)
 	{
-		if (controlPoints.Count == 3 && ctrl_key_down) {
+		if (controlPoints.Count != 3) {
+			base.MovePoint (controlPoints);
+			return;
+		}
+
+		//Holding the type-switch key (default: Ctrl) while dragging draws the other
+		//triangle type than the one picked in the toolbar.
+		TriangleType effectiveType = selected_type;
+		if (triangle_switch_down)
+			effectiveType = effectiveType == TriangleType.Equilateral ? TriangleType.Right : TriangleType.Equilateral;
+
+		if (effectiveType == TriangleType.Equilateral) {
 			MoveEquilateralPoint (controlPoints);
 			return;
 		}
@@ -74,21 +98,91 @@ public sealed class TriangleEditEngine : BaseEditEngine
 		base.MovePoint (controlPoints);
 	}
 
-	//Holding Ctrl while dragging a triangle draws an equilateral triangle (apex up,
-	//level base centered underneath) instead of the default right triangle. The base
-	//follows the mouse's vertical drag; its half-width is derived so all sides are equal.
+	//An equilateral triangle (one point up and two below, or the reverse when dragging
+	//upwards): the apex stays on the first point, and the level base is centered beneath
+	//it. The base follows the mouse's vertical drag; its half-width makes all sides equal.
 	private void MoveEquilateralPoint (List<ControlPoint> controlPoints)
 	{
 		PointD apex = controlPoints[0].Position;
 
-		//Keep the altitude positive so the base always stays below the apex (a zero or
-		//inverted altitude would produce a degenerate or upside-down triangle).
-		double altitude = Math.Max (current_point.Y - apex.Y, 0.01d);
+		//Use the absolute altitude so the triangle also grows when dragging upward,
+		//putting the base on the opposite side of the apex (pointing down).
+		double dy = current_point.Y - apex.Y;
+		double altitude = Math.Max (Math.Abs (dy), 0.01d);
 		double halfBase = altitude / Math.Sqrt (3d);
 
-		double baseY = apex.Y + altitude;
+		double baseY = apex.Y + dy;
 
 		controlPoints[1].Position = new PointD (apex.X - halfBase, baseY);
 		controlPoints[2].Position = new PointD (apex.X + halfBase, baseY);
+	}
+
+	protected override void BuildTriangleTypeToolBar (Gtk.Box tb, ISettingsService settings, string toolPrefix)
+	{
+		triangle_type_sep ??= GtkExtensions.CreateToolBarSeparator ();
+		tb.Append (triangle_type_sep);
+
+		if (triangle_type_label == null) {
+			string typeText = Translations.GetString ("Type");
+			triangle_type_label = Gtk.Label.New ($" {typeText}: ");
+		}
+
+		tb.Append (triangle_type_label);
+
+		if (triangle_type_button == null) {
+			triangle_type_button = ToolBarDropDownButton.New ();
+
+			string hint = TriangleTypeSwitchHint ();
+			right_triangle_tooltip = Translations.GetString ("An isosceles right triangle, with the first point at its right angle.");
+			equilateral_triangle_tooltip = Translations.GetString ("A triangle with equal sides, growing up or down from the first point.");
+
+			triangle_type_button.AddItem (Translations.GetString ("Right Triangle"),
+				Pinta.Resources.Icons.ToolTriangleRight, TriangleType.Right, right_triangle_tooltip + "\n" + hint);
+			triangle_type_button.AddItem (Translations.GetString ("Equilateral Triangle"),
+				Pinta.Resources.Icons.ToolTriangleEquilateral, TriangleType.Equilateral, equilateral_triangle_tooltip + "\n" + hint);
+
+			triangle_type_button.SelectedIndex = settings.GetSetting (SettingNames.TriangleType (toolPrefix), (int) TriangleType.Right);
+			selected_type = (TriangleType) triangle_type_button.SelectedIndex;
+
+			triangle_type_button.SelectedItemChanged += (o, e) => {
+				selected_type = triangle_type_button!.SelectedItem.GetTagOrDefault (TriangleType.Right);
+				settings.PutSetting (SettingNames.TriangleType (toolPrefix), triangle_type_button.SelectedIndex);
+				UpdateTriangleTypeTooltip ();
+			};
+
+			UpdateTriangleTypeTooltip ();
+			PintaCore.Shortcuts.ShortcutsChanged += (_, _) => UpdateTriangleTypeTooltip ();
+		}
+
+		triangle_type_button.SelectedItem = triangle_type_button.Items[(int) selected_type];
+		tb.Append (triangle_type_button);
+	}
+
+	private void UpdateTriangleTypeTooltip ()
+	{
+		if (triangle_type_button is null)
+			return;
+
+		string description = selected_type == TriangleType.Right ? right_triangle_tooltip : equilateral_triangle_tooltip;
+		string text = triangle_type_button.SelectedItem.Text;
+		triangle_type_button.TooltipText = $"{text}\n{description}\n{TriangleTypeSwitchHint ()}";
+	}
+
+	private static string TriangleTypeSwitchHint ()
+	{
+		KeyGesture gesture = PintaCore.Shortcuts.GetToolBinding (KeyboardShortcutManager.TriangleTypeSwitch);
+
+		if (!gesture.IsValid)
+			return Translations.GetString ("Hold the switch key to draw the other triangle type.");
+
+		return Translations.GetString ("Hold {0} to switch between right and equilateral triangle.", gesture.ToLabel ());
+	}
+
+	public override void OnSaveSettings (ISettingsService settings, string toolPrefix)
+	{
+		base.OnSaveSettings (settings, toolPrefix);
+
+		if (triangle_type_button is not null)
+			settings.PutSetting (SettingNames.TriangleType (toolPrefix), triangle_type_button.SelectedIndex);
 	}
 }

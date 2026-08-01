@@ -59,7 +59,7 @@ public abstract class BaseEditEngine
 
 	protected PointD shape_origin;
 	protected PointD current_point;
-	protected bool ctrl_key_down;
+	protected bool triangle_switch_down;
 
 	public static Color OutlineColor {
 		get => PintaCore.Palette.PrimaryColor;
@@ -347,6 +347,8 @@ public abstract class BaseEditEngine
 
 		tb.Append (shape_type_button);
 
+		BuildTriangleTypeToolBar (tb, settings, toolPrefix);
+
 		BuildShapeToolBar (tb, settings, toolPrefix);
 
 		curved_segments_sep ??= GtkExtensions.CreateToolBarSeparator ();
@@ -369,6 +371,10 @@ public abstract class BaseEditEngine
 
 		curved_segments_button.SelectedIndex = curved_segments_enabled ? 0 : 1;
 		tb.Append (curved_segments_button);
+	}
+
+	protected virtual void BuildTriangleTypeToolBar (Gtk.Box tb, ISettingsService settings, string toolPrefix)
+	{
 	}
 
 	protected virtual void BuildShapeToolBar (Gtk.Box tb, ISettingsService settings, string toolPrefix)
@@ -1097,7 +1103,8 @@ public abstract class BaseEditEngine
 	{
 		current_point = e.PointDouble;
 		bool shiftKey = e.IsShiftPressed;
-		ctrl_key_down = e.IsControlPressed;
+		KeyGesture switchGesture = PintaCore.Shortcuts.GetToolBinding (KeyboardShortcutManager.TriangleTypeSwitch);
+		triangle_switch_down = (e.State & KeyGesture.AcceleratorMask) == switchGesture.Modifiers;
 
 		if (!is_drawing) {
 			//Redraw the active shape to show a (temporary) highlighted control point (over any shape) when applicable.

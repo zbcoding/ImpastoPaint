@@ -7,7 +7,7 @@ _X-GNOME-FullName=Impasto Paint
 # ponytail: binary is still named pinta; autotools packaging untouched. Rename both together or not at all.
 TryExec=pinta
 Exec=pinta %F
-Icon=com.github.zbcoding.Impasto
+Icon=com.github.Impasto.Impasto
 StartupNotify=false
 StartupWMClass=Impasto
 Terminal=false

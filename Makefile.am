@@ -65,8 +65,8 @@ list:
 
 #target: updatepotfiles - update the POTFILES.in file
 updatepotfiles:
-	echo xdg/com.github.zbcoding.Impasto.desktop.in > po/POTFILES.in
-	echo xdg/com.github.zbcoding.Impasto.metainfo.xml.in >> po/POTFILES.in
+	echo xdg/com.github.Impasto.Impasto.desktop.in > po/POTFILES.in
+	echo xdg/com.github.Impasto.Impasto.metainfo.xml.in >> po/POTFILES.in
 	find \
 		Pinta \
 		Pinta.Core \

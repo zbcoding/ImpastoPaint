@@ -1,5 +1,5 @@
-xdg/com.github.zbcoding.Impasto.desktop.in
-xdg/com.github.zbcoding.Impasto.metainfo.xml.in
+xdg/com.github.Impasto.Impasto.desktop.in
+xdg/com.github.Impasto.Impasto.metainfo.xml.in
 Pinta.Core/Actions/AddinActions.cs
 Pinta.Core/Actions/AdjustmentsActions.cs
 Pinta.Core/Actions/AppActions.cs

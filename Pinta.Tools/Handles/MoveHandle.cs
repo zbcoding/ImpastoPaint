@@ -37,6 +37,8 @@ public sealed class MoveHandle : IToolHandle
 
 	public Gdk.Cursor Cursor { get; set; } = default_cursor;
 
+	public string? TooltipText { get; set; }
+
 	/// <summary>
 	/// Tests whether the window point is inside the handle's area.
 	/// The area to grab a handle is a bit larger than the rendered area for easier selection.

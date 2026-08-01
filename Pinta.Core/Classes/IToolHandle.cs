@@ -15,6 +15,12 @@ public interface IToolHandle
 	public bool Active { get; }
 
 	/// <summary>
+	/// Text to show in a tooltip after the mouse hovers over this handle for a moment.
+	/// Null (the default) means no tooltip is shown.
+	/// </summary>
+	public string? TooltipText => null;
+
+	/// <summary>
 	/// Tests whether the window point is inside the handle's area.
 	/// </summary>
 	public bool ContainsPoint (PointD windowPoint);

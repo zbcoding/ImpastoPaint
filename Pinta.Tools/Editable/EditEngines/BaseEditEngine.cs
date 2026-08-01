@@ -1389,11 +1389,6 @@ public abstract class BaseEditEngine
 
 	protected RectangleD DrawShape (ShapeEngine engine, Layer l, bool drawCP, bool drawHoverSelection, bool ctrl_key)
 	{
-		ShapeEngine? activeEngine = ActiveShapeEngine;
-
-		if (activeEngine == null)
-			return RectangleD.Zero;
-
 		Document doc = workspace.ActiveDocument;
 
 		using Context g = new (l.Surface);
@@ -1402,29 +1397,29 @@ public abstract class BaseEditEngine
 		g.FillRule = FillRule.EvenOdd;
 		g.Clip ();
 
-		g.Antialias = activeEngine.AntiAliasing ? Antialias.Subpixel : Antialias.None;
+		g.Antialias = engine.AntiAliasing ? Antialias.Subpixel : Antialias.None;
 
 		// Widen the gaps by the spacing multiplier by expanding each space in the pattern.
-		string dashPattern = activeEngine.DashSpacing > 1
-			? activeEngine.DashPattern.Replace (" ", new string (' ', activeEngine.DashSpacing))
-			: activeEngine.DashPattern;
-		bool isDashedLine = g.SetDashFromString (dashPattern, activeEngine.BrushWidth, LineCap.Square);
+		string dashPattern = engine.DashSpacing > 1
+			? engine.DashPattern.Replace (" ", new string (' ', engine.DashSpacing))
+			: engine.DashPattern;
+		bool isDashedLine = g.SetDashFromString (dashPattern, engine.BrushWidth, LineCap.Square);
 
-		g.LineWidth = activeEngine.BrushWidth;
+		g.LineWidth = engine.BrushWidth;
 
 		RectangleD? totalDirty = null;
 
 		//Draw the shape.
-		if (activeEngine.ControlPoints.Count > 0) {
+		if (engine.ControlPoints.Count > 0) {
 			//Generate the points that make up the shape.
-			activeEngine.GeneratePoints (activeEngine.BrushWidth);
+			engine.GeneratePoints (engine.BrushWidth);
 
-			var points = activeEngine.GetActualPoints ();
+			var points = engine.GetActualPoints ();
 
 			//Expand the invalidation rectangle as necessary.
 
 			if (FillShape) {
-				Color fillColor = StrokeShape ? activeEngine.FillColor : activeEngine.OutlineColor;
+				Color fillColor = StrokeShape ? engine.FillColor : engine.OutlineColor;
 				RectangleD dirty = g.FillPolygonal (points.AsSpan (), fillColor);
 				totalDirty = totalDirty?.Union (dirty) ?? dirty;
 			}
@@ -1435,9 +1430,9 @@ public abstract class BaseEditEngine
 				LineCap lineCap =
 					isDashedLine
 					? LineCap.Square
-					: activeEngine.LineCap;
+					: engine.LineCap;
 
-				RectangleD dirty = g.DrawPolygonal (points.AsSpan (), activeEngine.OutlineColor, lineCap);
+				RectangleD dirty = g.DrawPolygonal (points.AsSpan (), engine.OutlineColor, lineCap);
 				totalDirty = totalDirty?.Union (dirty) ?? dirty;
 			}
 		}
@@ -1446,7 +1441,7 @@ public abstract class BaseEditEngine
 
 		//Draw anything extra (that not every shape has), like arrows.
 		DrawExtras (ref totalDirty, g, engine);
-		DrawControlPoints (g, activeEngine, drawCP, drawHoverSelection, ctrl_key);
+		DrawControlPoints (g, engine, drawCP, drawHoverSelection, ctrl_key);
 
 		return totalDirty ?? RectangleD.Zero;
 	}
@@ -1488,6 +1483,12 @@ public abstract class BaseEditEngine
 	/// </summary>
 	protected void UpdateHoverHandle (bool draw_selection, bool ctrl_key)
 	{
+		// SetOtherShapesControlPointsHidden() redraws other shapes via DrawShape(), which calls
+		// back into this method for those shapes. Ignore those reentrant calls so they can't
+		// clobber the hover state just computed for the actively hovered shape.
+		if (updating_other_shapes_visibility)
+			return;
+
 		RectangleI dirty =
 			hover_handle.Active
 			? hover_handle.InvalidateRect
@@ -1495,6 +1496,7 @@ public abstract class BaseEditEngine
 
 		// Don't show the hover handle while the user is changing a control point's tension.
 		hover_handle.Active = hover_handle.Selected = false;
+		hover_handle.TooltipText = null;
 		bool hovering_control_point = false;
 		bool hovering_segment = false;
 
@@ -1515,6 +1517,9 @@ public abstract class BaseEditEngine
 				hovering_control_point = hover_handle.ContainsPoint (current_window_point);
 				if (hovering_control_point) {
 					hover_handle.Active = hover_handle.Selected = true;
+					hover_handle.TooltipText =
+						$"{(int) Math.Round (closestControlPoint.Position.X)}, {(int) Math.Round (closestControlPoint.Position.Y)}\n"
+						+ Translations.GetString ("Shift-drag to snap the adjacent segment to a 15° angle.");
 				}
 			}
 
@@ -1557,7 +1562,61 @@ public abstract class BaseEditEngine
 			tool.SetCursor (tool.DefaultCursor);
 		}
 
+		hovering_over_control_point = hovering_control_point;
+
+		// While Ctrl is held over the canvas (about to start a fresh shape), hide other
+		// pending shapes' control points so their handles don't visually clutter the spot
+		// being clicked.
+		SetOtherShapesControlPointsHidden (ctrl_key && !is_drawing && draw_selection);
+
 		workspace.InvalidateWindowRect (dirty);
+	}
+
+	// True while the hover handle represents an actual control point (not a generated segment point).
+	private bool hovering_over_control_point = false;
+
+	/// <summary>
+	/// The canvas position of the control point currently being hovered over, for tooltip display. Null if none.
+	/// </summary>
+	public PointD? HoveredControlPointPosition =>
+		hovering_over_control_point ? hover_handle.CanvasPosition : null;
+
+	private bool other_shapes_points_hidden = false;
+	private bool updating_other_shapes_visibility = false;
+
+	/// <summary>
+	/// Shows/hides the control point handles of every pending shape other than the active one.
+	/// </summary>
+	private void SetOtherShapesControlPointsHidden (bool hidden)
+	{
+		if (other_shapes_points_hidden == hidden)
+			return;
+
+		other_shapes_points_hidden = hidden;
+
+		Document doc = workspace.ActiveDocument;
+
+		updating_other_shapes_visibility = true;
+		try {
+			for (int i = 0; i < SEngines.Count; ++i) {
+
+				if (i == SelectedShapeIndex)
+					continue;
+
+				ShapeEngine otherEngine = SEngines[i];
+
+				if (otherEngine.ControlPoints.Count == 0)
+					continue;
+
+				otherEngine.DrawingLayer.Layer.Clear ();
+
+				RectangleD dirty = DrawShape (otherEngine, otherEngine.DrawingLayer.Layer, drawCP: !hidden, drawHoverSelection: false, ctrl_key: false);
+
+				doc.Workspace.Invalidate (dirty.Clamped ().ToInt ());
+			}
+		} finally {
+			updating_other_shapes_visibility = false;
+		}
 	}
 
 	/// <summary>

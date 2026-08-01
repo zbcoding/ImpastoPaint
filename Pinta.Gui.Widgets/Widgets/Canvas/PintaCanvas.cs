@@ -72,6 +72,26 @@ internal sealed partial class PintaCanvas
 		Halign = Gtk.Align.Center;
 		Vexpand = false;
 		Valign = Gtk.Align.Center;
+
+		// GTK handles the hover delay natively; we just need to answer whether the hovered
+		// point (in this widget's own coordinate space) lands on a handle with tooltip text.
+		HasTooltip = true;
+		OnQueryTooltip += HandleQueryTooltip;
+	}
+
+	private bool HandleQueryTooltip (Gtk.Widget sender, QueryTooltipSignalArgs args)
+	{
+		PointD windowPoint = new (args.X, args.Y);
+
+		string? text = tools.CurrentTool?.Handles
+			.FirstOrDefault (h => h.Active && h.TooltipText != null && h.ContainsPoint (windowPoint))
+			?.TooltipText;
+
+		if (text is null)
+			return false;
+
+		args.Tooltip.SetText (text);
+		return true;
 	}
 
 	/// <summary>

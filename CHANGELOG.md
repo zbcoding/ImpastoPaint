@@ -66,6 +66,7 @@ Thanks to the following contributors who worked on this release:
 - Fixed a potential UI freeze when pasting into the Text Tool, caused by blocking the GTK thread on the clipboard read
 - Fixed undo/redo operating on the active document instead of the one the history item belongs to, so undoing while a different tab is focused no longer corrupts the wrong document
 - Fixed status-bar labels reserving space after being disabled in Settings, and made image size/aspect ratio yield before cursor position at the fully expanded color-section boundary without re-expanding folded color sections during a narrowing resize.
+- Fixed the status bar collapsing erratically as the window narrows: the cursor position and image size chips now slide out to the right under the zoom controls in a fixed order, the color swatch grids shrink before either section folds into the color wheel popover, and the color wheel / float colors buttons no longer drift across the swatches.
 - Fixed saving images as JPEG on some systems where the image loader reports an alpha channel even when the pixbuf has none, which caused "encoder does not support the color type Rgba8" errors (#1774, #2238)
 - Fixed saving a file without a file extension when a format is chosen from the Save As dialog's type dropdown, without mangling filenames that already have an (unrecognized) extension
 - Fixed AVIF export being unavailable on Windows due to a native library name mismatch, and added the missing `libavif` dependency to the Windows and macOS build workflows

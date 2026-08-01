@@ -156,7 +156,9 @@ public sealed class ActionManager
 		show_cursor_position = visible;
 		cursor_position_icon?.SetVisible (visible);
 		cursor_position_label?.SetVisible (visible);
-		footer_cursor_group?.SetVisible (visible && !cursor_group_hidden);
+		cursor_slot?.SetVisible (visible);
+		if (cursor_slot is not null)
+			cursor_slot.RevealChild = visible && !cursor_group_hidden;
 	}
 
 	public void SetStatusBarImageSizeVisible (bool visible)
@@ -164,63 +166,81 @@ public sealed class ActionManager
 		show_image_size = visible;
 		image_size_icon?.SetVisible (visible);
 		image_size_label?.SetVisible (visible);
-		footer_image_group?.SetVisible (visible && !image_group_hidden);
+		image_slot?.SetVisible (visible);
+		if (image_slot is not null)
+			image_slot.RevealChild = visible && !image_group_hidden;
 	}
 
-	// The labels collide with the fully expanded color section, not with the
-	// action buttons' current position. Keep a small visual gap at the boundary
-	// and enough hysteresis to avoid immediately showing a group after it reclaims
-	// its own width.
-	private const int FOOTER_COLLISION_GAP = 1;
-	private const int FOOTER_RESHOW_GAP = 16;
+	private const uint FOOTER_SLIDE_MS = 150;
 
 	private Gtk.Widget? footer_cursor_group;
 	private Gtk.Widget? footer_image_group;
-	private int cursor_group_reclaimed_width;
-	private int image_group_reclaimed_width;
-
-	// Latched hide state so the labels don't flicker during the resize: once a
-	// group is hidden it stays hidden until the palette regrows well past the hide
-	// threshold (see the SHOW constants above).
+	private Gtk.Revealer? cursor_slot;
+	private Gtk.Revealer? image_slot;
 	private bool cursor_group_hidden;
 	private bool image_group_hidden;
 
-	// Called by MainWindow after the palette has laid out its natural full-color
-	// boundary and the footer has allocated the label groups.
-	public void SetFooterGeometry (int availableWidth, double full_color_section_right)
+	// The chips don't stretch, so their natural width is what they occupy - and
+	// unlike GetWidth() it stays valid while the chip is hidden or mid-slide.
+	private static int NaturalWidth (Gtk.Widget? widget)
 	{
-		bool image_was_hidden = image_group_hidden || !show_image_size;
-		int cursor_group_width = footer_cursor_group?.GetWidth () ?? 0;
-		if (cursor_group_width > 0)
-			cursor_group_reclaimed_width = cursor_group_width + 4;
+		if (widget is null)
+			return 0;
+		widget.Measure (Gtk.Orientation.Horizontal, -1, out _, out int natural, out _, out _);
+		return natural;
+	}
 
-		int image_group_width = footer_image_group?.GetWidth () ?? 0;
-		if (image_group_width > 0)
-			image_group_reclaimed_width = image_group_width + 8;
+	/// <summary>
+	/// What the chips currently take out of the palette's row, and what each would
+	/// take if shown. The palette adds its own allocation to the first number to get
+	/// its budget: the palette and the chips divide one fixed region between them, so
+	/// that sum stays put even mid-slide, while the toolbar's padding and the spacing
+	/// between status bar children fall outside it and cancel. Reconstructing the
+	/// budget from the status bar's total width instead silently dropped that padding
+	/// and handed the palette a few pixels it didn't have, which is what let the
+	/// action buttons run under the chip on its left.
+	/// </summary>
+	public (int occupiedByChips, int cursorWidth, int imageWidth, bool sliding) GetFooterChipRoom ()
+	{
+		int occupied = (cursor_slot?.GetWidth () ?? 0) + (image_slot?.GetWidth () ?? 0);
 
-		int image_collision_width = (int) Math.Floor (
-			full_color_section_right - cursor_group_reclaimed_width - FOOTER_COLLISION_GAP);
-		bool image_is_touching = availableWidth <= image_collision_width;
-		bool cursor_is_touching = availableWidth <= full_color_section_right + FOOTER_COLLISION_GAP;
+		return (
+			occupied,
+			show_cursor_position ? NaturalWidth (footer_cursor_group) : 0,
+			show_image_size ? NaturalWidth (footer_image_group) : 0,
+			SlideInProgress (cursor_slot) || SlideInProgress (image_slot));
+	}
 
-		if (footer_image_group is not null) {
-			if (image_is_touching) {
-				image_group_reclaimed_width = Math.Max (image_group_reclaimed_width, image_group_width + 8);
-				image_group_hidden = true;
-			} else if (image_group_hidden && availableWidth > image_collision_width + image_group_reclaimed_width + FOOTER_RESHOW_GAP) {
-				image_group_hidden = false;
-			}
-			footer_image_group.SetVisible (show_image_size && !image_group_hidden);
-		}
-		if (footer_cursor_group is not null) {
-			if (cursor_is_touching && image_was_hidden) {
-				cursor_group_reclaimed_width = Math.Max (cursor_group_reclaimed_width, cursor_group_width + 4);
-				cursor_group_hidden = true;
-			} else if (cursor_group_hidden && availableWidth > full_color_section_right + cursor_group_reclaimed_width + FOOTER_RESHOW_GAP) {
-				cursor_group_hidden = false;
-			}
-			footer_cursor_group.SetVisible (show_cursor_position && !cursor_group_hidden);
-		}
+	// A revealer reports its target and its settled state separately; they differ
+	// only while the slide animation is running.
+	private static bool SlideInProgress (Gtk.Revealer? slot) =>
+		slot is not null && slot.RevealChild != slot.ChildRevealed;
+
+	/// <summary>
+	/// Applies the chip half of the palette's collapse cascade: a chip that lost its
+	/// room slides out to the right, under the zoom controls.
+	/// </summary>
+	public void SetFooterChipsVisible (bool cursor, bool image)
+	{
+		cursor_group_hidden = !cursor;
+		image_group_hidden = !image;
+
+		if (cursor_slot is not null)
+			cursor_slot.RevealChild = show_cursor_position && cursor;
+		if (image_slot is not null)
+			image_slot.RevealChild = show_image_size && image;
+	}
+
+	// Wraps a chip so it slides out to the right, under the zoom controls, instead
+	// of blinking out of the bar.
+	private static Gtk.Revealer CreateChipSlot (Gtk.Widget chip)
+	{
+		Gtk.Revealer slot = Gtk.Revealer.New ();
+		slot.TransitionType = Gtk.RevealerTransitionType.SlideLeft;
+		slot.TransitionDuration = FOOTER_SLIDE_MS;
+		slot.RevealChild = true;
+		slot.SetChild (chip);
+		return slot;
 	}
 
 	// A subtle rounded chip background, matching the low-contrast hover chrome
@@ -239,13 +259,14 @@ public sealed class ActionManager
 		cursor_position_icon = Gtk.Image.NewFromIconName (Resources.Icons.CursorPosition);
 		cursor_group.Append (cursor_position_icon);
 		var cursor = Gtk.Label.New ("0, 0");
-		cursor.Xalign = 0.0f;
-		cursor.Halign = Gtk.Align.Start;
-		cursor.WidthChars = 11;
+		cursor.Xalign = 0.5f;
+		cursor.Halign = Gtk.Align.Center;
+		cursor.WidthChars = 8;
 		cursor_group.Append (cursor);
 		cursor_position_label = cursor;
 		ApplyStatusBarChipStyle (cursor_group);
-		statusbar.Append (cursor_group);
+		cursor_slot = CreateChipSlot (cursor_group);
+		statusbar.Append (cursor_slot);
 		footer_cursor_group = cursor_group;
 
 		SetStatusBarCursorPositionVisible (PintaCore.Settings.GetSetting (SettingNames.STATUSBAR_SHOW_CURSOR_POSITION, true));
@@ -287,13 +308,14 @@ public sealed class ActionManager
 		image_size_icon = Gtk.Image.NewFromIconName (Resources.Icons.ImageResize);
 		image_group.Append (image_size_icon);
 		var image_size = Gtk.Label.New ("");
-		image_size.Xalign = 0.0f;
-		image_size.Halign = Gtk.Align.Start;
-		image_size.WidthChars = 16;
+		image_size.Xalign = 0.5f;
+		image_size.Halign = Gtk.Align.Center;
+		image_size.WidthChars = 14;
 		image_group.Append (image_size);
 		image_size_label = image_size;
 		ApplyStatusBarChipStyle (image_group);
-		statusbar.Append (image_group);
+		image_slot = CreateChipSlot (image_group);
+		statusbar.Append (image_slot);
 		footer_image_group = image_group;
 
 		SetStatusBarImageSizeVisible (PintaCore.Settings.GetSetting (SettingNames.STATUSBAR_SHOW_IMAGE_SIZE, true));
@@ -305,10 +327,8 @@ public sealed class ActionManager
 				return;
 			}
 			var size = workspaceManager.ActiveDocument.ImageSize;
-			string text = $"{size.Width} × {size.Height} · {GetAspectRatio (size.Width, size.Height)}";
-			if (text.Length > image_size.WidthChars)
-				image_size.WidthChars = text.Length;
-			image_size.SetText (text);
+			// The label grows past WidthChars on its own for oversized dimensions.
+			image_size.SetText ($"{size.Width} × {size.Height} · {GetAspectRatio (size.Width, size.Height)}");
 		}
 
 		workspaceManager.ActiveDocumentChanged += delegate { UpdateImageSizeLabel (); };

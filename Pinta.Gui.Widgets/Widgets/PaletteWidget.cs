@@ -9,6 +9,11 @@ internal static class PaletteWidget
 	// darker row (see PaletteHelper.GetPaletteRowCount ()).
 	internal static int PALETTE_ROWS => PaletteHelper.GetPaletteRowCount ();
 	internal const int SWATCH_SIZE = 19;
+	// The status bar palette shrinks its tiles rather than folding a whole section
+	// away, down to this floor. Kept close to the full size on purpose: folding the
+	// quick colors away early and leaving the recent colors legible beats squeezing
+	// both grids down to specks.
+	internal const int MIN_SWATCH_SIZE = 15;
 	internal static int WIDGET_HEIGHT => 4 + SWATCH_SIZE * PALETTE_ROWS;
 	internal const int PALETTE_MARGIN = 10;
 
@@ -21,7 +26,8 @@ internal static class PaletteWidget
 		IPaletteService palette,
 		PointD point,
 		RectangleD palette_bounds,
-		bool recentColorPalette = false)
+		bool recentColorPalette = false,
+		int swatchSize = SWATCH_SIZE)
 	{
 		int max =
 			recentColorPalette
@@ -30,7 +36,7 @@ internal static class PaletteWidget
 
 		// This could be more efficient, but is good enough for now
 		for (int i = 0; i < max; i++)
-			if (GetSwatchBounds (palette, i, palette_bounds, recentColorPalette).ContainsPoint (point))
+			if (GetSwatchBounds (palette, i, palette_bounds, recentColorPalette, swatchSize).ContainsPoint (point))
 				return i;
 
 		return -1;
@@ -40,7 +46,8 @@ internal static class PaletteWidget
 		IPaletteService palette,
 		int index,
 		RectangleD palette_bounds,
-		bool recentColorPalette = false)
+		bool recentColorPalette = false,
+		int swatchSize = SWATCH_SIZE)
 	{
 		// Normal swatches are laid out like this:
 		// 0 | 2 | 4 | 6
@@ -55,9 +62,9 @@ internal static class PaletteWidget
 		int col = recentColorPalette ? index % recent_cols : index / PALETTE_ROWS;
 
 		// Now we need to construct the bounds of that row/column
-		double x = palette_bounds.X + (col * SWATCH_SIZE);
-		double y = palette_bounds.Y + (row * SWATCH_SIZE);
+		double x = palette_bounds.X + (col * swatchSize);
+		double y = palette_bounds.Y + (row * swatchSize);
 
-		return new (x, y, SWATCH_SIZE, SWATCH_SIZE);
+		return new (x, y, swatchSize, swatchSize);
 	}
 }

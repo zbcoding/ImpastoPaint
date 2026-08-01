@@ -197,6 +197,7 @@ public sealed class ViewActions
 		ZoomComboBox.ComboBox.WidthRequest = -1;
 		ZoomComboBox.ComboBox.GetEntry ().SetWidthChars (6);
 		ZoomComboBox.ComboBox.GetEntry ().SetMaxWidthChars (7);
+		ZoomComboBox.ComboBox.GetEntry ().Xalign = 0.5f;
 
 		// The toolbar is shown by default.
 		ToolBar.Value = true;

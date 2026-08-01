@@ -48,19 +48,8 @@ public sealed partial class StatusBarColorPaletteWidget
 	private const int ICON_SIZE = 12;
 	private const int ACTION_ICON_SIZE = 28;
 
-	// Responsive folding thresholds (own allocated width). As the bar narrows past
-	// each one, that section stops drawing in the bar - its content moves into the
-	// color-wheel popover instead (see MainWindow's popover section builders).
-	// Each has a separate, wider UNFOLD threshold so the section stays folded once
-	// it's been folded (hysteresis): a tiny width wobble around the boundary (which
-	// happens as other sections above it pack/unpack the same bar) can't make it
-	// ping-pong back into the footer.
-	private const int FOLD_QUICK_COLORS_WIDTH = 300;
-	private const int FOLD_QUICK_COLORS_UNFOLD = 350;
-	private const int FOLD_RECENT_COLORS_WIDTH = 220;
-	private const int FOLD_RECENT_COLORS_UNFOLD = 270;
-	private const int FOLD_SWATCHES_WIDTH = 130;
-	private const int FOLD_SWATCHES_UNFOLD = 180;
+	// The primary/secondary block occupies the bar's left edge up to this x.
+	private const int SWATCHES_SECTION_RIGHT = 47;
 
 	private IChromeService chrome = null!; // NRT - set by factory method
 	private IPaletteService palette = null!;
@@ -78,10 +67,27 @@ public sealed partial class StatusBarColorPaletteWidget
 	// proxy for "the footer is getting tight", since GTK Box doesn't expose a
 	// resize signal of its own.
 	public event EventHandler<int>? WidthChanged;
-	public bool ActionButtonsAtRightEdge { get; private set; }
-	public double FullColorSectionRight { get; private set; }
-	private bool section_unfold_armed = true;
-	private int last_layout_width;
+
+	/// <summary>
+	/// What the collapsing chips take out of this widget's row right now, and what
+	/// each would take if shown. Supplied by the status bar, which owns the chips.
+	/// </summary>
+	public readonly record struct FooterMetrics (int OccupiedByChips, int CursorChipWidth, int ImageChipWidth, bool Sliding);
+
+	/// <summary>Queried at the start of every layout pass; see <see cref="FooterMetrics"/>.</summary>
+	public Func<FooterMetrics>? GetFooterMetrics { get; set; }
+
+	/// <summary>Which chips the collapse cascade left room for this pass.</summary>
+	public event EventHandler<(bool cursor, bool image)>? ChipVisibilityChanged;
+
+	// Tile size of the two swatch grids. Shrinks before either section folds, so the
+	// colors stay reachable on a narrow window for as long as possible.
+	private int swatch_size = PaletteWidget.SWATCH_SIZE;
+
+	// Latest cascade verdict for each chip. Held across passes so a slide in flight
+	// can't have its own outcome re-litigated on skewed measurements.
+	private bool show_cursor_chip = true;
+	private bool show_image_chip = true;
 
 	// Fires when a section folds in/out of the bar, so the popover content can be
 	// rebuilt to match.
@@ -243,7 +249,7 @@ public sealed partial class StatusBarColorPaletteWidget
 
 			case WidgetElement.Palette:
 
-				int index = PaletteWidget.GetSwatchAtLocation (palette, point, palette_rect);
+				int index = PaletteWidget.GetSwatchAtLocation (palette, point, palette_rect, false, swatch_size);
 
 				if (index < 0)
 					break;
@@ -268,7 +274,7 @@ public sealed partial class StatusBarColorPaletteWidget
 
 			case WidgetElement.RecentColorsPalette:
 
-				int recent_index = PaletteWidget.GetSwatchAtLocation (palette, point, recent_palette_rect, true);
+				int recent_index = PaletteWidget.GetSwatchAtLocation (palette, point, recent_palette_rect, true, swatch_size);
 
 				if (recent_index < 0)
 					break;
@@ -335,7 +341,7 @@ public sealed partial class StatusBarColorPaletteWidget
 
 			for (int i = 0; i < recent_count; i++) {
 
-				RectangleD swatchBounds = PaletteWidget.GetSwatchBounds (palette, i, recent_palette_rect, true);
+				RectangleD swatchBounds = PaletteWidget.GetSwatchBounds (palette, i, recent_palette_rect, true, swatch_size);
 				Color recentColor = recent.ElementAt (i);
 
 				if (recentColor.A < 1) // Only draw checkered pattern if there is transparency
@@ -351,7 +357,7 @@ public sealed partial class StatusBarColorPaletteWidget
 
 			for (int i = 0; i < currentPalette.Colors.Count; i++) {
 
-				RectangleD swatchBounds = PaletteWidget.GetSwatchBounds (palette, i, palette_rect);
+				RectangleD swatchBounds = PaletteWidget.GetSwatchBounds (palette, i, palette_rect, false, swatch_size);
 				Color paletteColor = currentPalette.Colors[i];
 
 				if (paletteColor.A < 1) // Only draw checkered pattern if there is transparency
@@ -595,52 +601,79 @@ public sealed partial class StatusBarColorPaletteWidget
 		bool was_quick_folded = quick_colors_folded;
 		bool was_recent_folded = recent_colors_folded;
 		bool was_swatches_folded = swatches_folded;
-		bool was_action_buttons_at_right_edge = ActionButtonsAtRightEdge;
-		if (was_action_buttons_at_right_edge)
-			section_unfold_armed = false;
-		else if (width > last_layout_width)
-			section_unfold_armed = true;
-		last_layout_width = width;
-
-		// A folded section only unfolds after its wider threshold is reached. Once
-		// unfolded, it stays visible until the narrower fold threshold is reached;
-		// do not apply the unfold threshold again while it is already visible.
-		// Also wait until the action pair is no longer pinned to the right edge.
-		// That edge state can be caused by a label reclaiming width while the
-		// window is still narrowing, and must not bring palette sections back.
-		bool may_unfold_sections = !ActionButtonsAtRightEdge && section_unfold_armed;
-		if (quick_colors_folded) {
-			if (may_unfold_sections && width >= FOLD_QUICK_COLORS_UNFOLD)
-				quick_colors_folded = false;
-		} else if (width < FOLD_QUICK_COLORS_WIDTH) {
-			quick_colors_folded = true;
-		}
-
-		if (recent_colors_folded) {
-			if (may_unfold_sections && width >= FOLD_RECENT_COLORS_UNFOLD)
-				recent_colors_folded = false;
-		} else if (width < FOLD_RECENT_COLORS_WIDTH) {
-			recent_colors_folded = true;
-		}
-
-		if (swatches_folded) {
-			if (may_unfold_sections && width >= FOLD_SWATCHES_UNFOLD)
-				swatches_folded = false;
-		} else if (width < FOLD_SWATCHES_WIDTH) {
-			swatches_folded = true;
-		}
 
 		int recent_cols = PaletteWidget.GetRecentColorColumns (palette.MaxRecentlyUsedColor);
 		int swatch_height = PaletteWidget.SWATCH_SIZE * PaletteWidget.PALETTE_ROWS;
-		FullColorSectionRight = show_action_icons ? CalculateFullColorSectionRight (recent_cols) : 0;
+		double actions_width = 2 * ACTION_ICON_SIZE + SECTION_GAP;
+
+		// One budget drives the whole footer: this widget's row, shared with the status
+		// bar chips. The two divide a fixed region, so the sum holds still - measuring
+		// against this widget's allocation alone made each collapse hand its space
+		// straight back to the palette, so a section folded, reappeared, and the chips
+		// took turns flashing. Everything below is a plain function of the budget.
+		//
+		// The one thing that sum can't survive is a slide in flight: this widget's
+		// allocation arrives fresh from the resize while the slot's is still the
+		// previous pass's, and the skew is enough to flip a chip that's sitting on its
+		// threshold back and forth every frame - the chips vibrated instead of sliding.
+		// The cascade already settled that chip's fate, so leave the whole decision
+		// alone until the slide lands, then re-decide on numbers that agree.
+		FooterMetrics metrics = GetFooterMetrics?.Invoke () ?? default;
+		double budget = width + metrics.OccupiedByChips;
+
+		if (!metrics.Sliding) {
+			show_cursor_chip = true;
+			show_image_chip = true;
+			swatch_size = PaletteWidget.SWATCH_SIZE;
+			quick_colors_folded = false;
+			recent_colors_folded = false;
+			swatches_folded = false;
+
+			// What the footer needs at the current state: the color content, the action
+			// pair it must never overlap, and whichever chips are still shown.
+			double Needed () =>
+				(swatches_folded ? PaletteWidget.PALETTE_MARGIN : SWATCHES_SECTION_RIGHT)
+				+ (recent_colors_folded ? 0 : SectionWidth (recent_cols, swatch_size))
+				+ (quick_colors_folded ? 0 : SectionWidth (PaletteColumns, swatch_size))
+				+ actions_width + PaletteWidget.PALETTE_MARGIN
+				+ (show_image_chip ? metrics.ImageChipWidth : 0)
+				+ (show_cursor_chip ? metrics.CursorChipWidth : 0);
+
+			// Tiles give up size before a section gives up its place, but only down to
+			// the floor - past that, folding the section is the better trade. Whatever
+			// grid is left gets to start over from full size, so folding the quick
+			// colors away leaves the recent colors legible again.
+			void ShrinkTiles ()
+			{
+				swatch_size = PaletteWidget.SWATCH_SIZE;
+				while (Needed () > budget && swatch_size > PaletteWidget.MIN_SWATCH_SIZE)
+					swatch_size--;
+			}
+
+			// Collapse order, outermost first. Image size / aspect ratio goes, then
+			// cursor position, then the swatch grids shrink, and only then do whole
+			// sections fold into the popover. While the colors are floating there is
+			// nothing in the bar to collide with, so the chips keep their room.
+			if (show_action_icons) {
+				if (Needed () > budget) show_image_chip = false;
+				if (Needed () > budget) show_cursor_chip = false;
+				ShrinkTiles ();
+				if (Needed () > budget) { quick_colors_folded = true; ShrinkTiles (); }
+				if (Needed () > budget) { recent_colors_folded = true; ShrinkTiles (); }
+				if (Needed () > budget) swatches_folded = true;
+			}
+		}
+
+		// Swatch grids keep their vertical centre as the tiles shrink.
+		double swatch_y = 2 + (swatch_height - swatch_size * PaletteWidget.PALETTE_ROWS) / 2.0;
 
 		// The anchor where the next visible section starts. Normally that's right
 		// after the swap/reset icons (x=47); once those fold too, start from the
 		// left margin instead.
-		double cursor_x = swatches_folded ? PaletteWidget.PALETTE_MARGIN : 47;
+		double cursor_x = swatches_folded ? PaletteWidget.PALETTE_MARGIN : SWATCHES_SECTION_RIGHT;
 
 		// Recent-colors section: a separator, then a small clock icon column, then the
-		// recent swatches. Folds out first as the bar gets tight (past FOLD_RECENT_COLORS_WIDTH).
+		// recent swatches. Folds out after the quick colors section.
 		if (!recent_colors_folded) {
 			recent_separator_x = cursor_x;
 			recent_icon_rect = new RectangleD (
@@ -652,9 +685,9 @@ public sealed partial class StatusBarColorPaletteWidget
 
 			recent_palette_rect = new RectangleD (
 				recent_swatches_x,
-				2,
-				PaletteWidget.SWATCH_SIZE * recent_cols,
-				swatch_height);
+				swatch_y,
+				swatch_size * recent_cols,
+				swatch_size * PaletteWidget.PALETTE_ROWS);
 			cursor_x = recent_palette_rect.Right + SECTION_GAP;
 		} else {
 			recent_separator_x = -1;
@@ -663,9 +696,8 @@ public sealed partial class StatusBarColorPaletteWidget
 		}
 
 		// Palette section: a separator, then a small palette icon column, then the
-		// rainbow swatches. Folds out before the recent-colors section (past
-		// FOLD_QUICK_COLORS_WIDTH, a wider threshold), since it's usually the wider
-		// of the two.
+		// rainbow swatches. Folds out before the recent-colors section, since it's
+		// usually the wider of the two.
 		if (!quick_colors_folded) {
 			palette_separator_x = cursor_x;
 			palette_icon_rect = new RectangleD (
@@ -678,13 +710,11 @@ public sealed partial class StatusBarColorPaletteWidget
 			// The swatches are drawn for every palette color, so the clickable rect must
 			// cover them all - the action icons are hit-tested first, so they stay safe
 			// even if a long palette is drawn underneath them.
-			int palette_columns = (palette.CurrentPalette.Colors.Count + PaletteWidget.PALETTE_ROWS - 1) / PaletteWidget.PALETTE_ROWS;
-
 			palette_rect = new RectangleD (
 				palette_swatches_x,
-				2,
-				PaletteWidget.SWATCH_SIZE * palette_columns,
-				swatch_height);
+				swatch_y,
+				swatch_size * PaletteColumns,
+				swatch_size * PaletteWidget.PALETTE_ROWS);
 			cursor_x = palette_rect.Right + SECTION_GAP;
 		} else {
 			palette_separator_x = -1;
@@ -692,12 +722,12 @@ public sealed partial class StatusBarColorPaletteWidget
 			palette_rect = RectangleD.Zero;
 		}
 
-		// The action icons sit after the last visible section, but never off the
-		// right edge, and never at a negative position on a very narrow bar.
-		double actions_width = 2 * ACTION_ICON_SIZE + SECTION_GAP;
-		double actions_x = Math.Max (0, Math.Min (
-			cursor_x,
-			Math.Max (0, width - actions_width - PaletteWidget.PALETTE_MARGIN)));
+		// The action icons sit immediately after the last visible section and nowhere
+		// else. They used to be clamped to the bar's right edge as well, which pulled
+		// them left across the swatches whenever this widget's allocation briefly
+		// lagged the cascade - they'd slide over the colors and snap back. The
+		// cascade already guarantees they fit, so the clamp only ever misplaced them.
+		double actions_x = Math.Max (0, cursor_x);
 
 		color_wheel_icon_rect = new RectangleD (
 			actions_x,
@@ -709,26 +739,19 @@ public sealed partial class StatusBarColorPaletteWidget
 			color_wheel_icon_rect.Y,
 			ACTION_ICON_SIZE,
 			ACTION_ICON_SIZE);
-		// When the action pair reaches this limit, its right edge is touching the
-		// palette's trailing boundary, which is the cursor group's leading edge.
-		ActionButtonsAtRightEdge = show_action_icons
-			&& float_colors_icon_rect.Right >= width - PaletteWidget.PALETTE_MARGIN;
+		ChipVisibilityChanged?.Invoke (this, (show_cursor_chip, show_image_chip));
 		WidthChanged?.Invoke (this, width);
 
 		if (quick_colors_folded != was_quick_folded || recent_colors_folded != was_recent_folded || swatches_folded != was_swatches_folded)
 			FoldStateChanged?.Invoke (this, EventArgs.Empty);
 	}
 
-	private double CalculateFullColorSectionRight (int recent_cols)
-	{
-		double cursor_x = 47;
-		cursor_x += SECTION_GAP + ICON_SIZE + SECTION_GAP + PaletteWidget.SWATCH_SIZE * recent_cols + SECTION_GAP;
+	private int PaletteColumns =>
+		(palette.CurrentPalette.Colors.Count + PaletteWidget.PALETTE_ROWS - 1) / PaletteWidget.PALETTE_ROWS;
 
-		int palette_cols = (palette.CurrentPalette.Colors.Count + PaletteWidget.PALETTE_ROWS - 1) / PaletteWidget.PALETTE_ROWS;
-		cursor_x += SECTION_GAP + ICON_SIZE + SECTION_GAP + PaletteWidget.SWATCH_SIZE * palette_cols + SECTION_GAP;
-
-		return cursor_x + 2 * ACTION_ICON_SIZE + SECTION_GAP;
-	}
+	// A swatch section: separator gap, icon column, gap, the swatches, trailing gap.
+	private static double SectionWidth (int columns, int swatchSize) =>
+		SECTION_GAP + ICON_SIZE + SECTION_GAP + swatchSize * columns + SECTION_GAP;
 
 	/// <summary>
 	/// Provide a custom tooltip based on the cursor location.
@@ -754,7 +777,7 @@ public sealed partial class StatusBarColorPaletteWidget
 				text = Translations.GetString ("Float Colors");
 				break;
 			case WidgetElement.Palette:
-				int paletteIndex = PaletteWidget.GetSwatchAtLocation (palette, point, palette_rect);
+				int paletteIndex = PaletteWidget.GetSwatchAtLocation (palette, point, palette_rect, false, swatch_size);
 				if (paletteIndex >= 0) {
 					text = BuildColorTooltip (palette.CurrentPalette.Colors[paletteIndex],
 					// Translators: {0} is 'Ctrl', or a platform-specific key such as 'Command' on macOS.
@@ -763,7 +786,7 @@ public sealed partial class StatusBarColorPaletteWidget
 				}
 				break;
 			case WidgetElement.RecentColorsPalette:
-				int recentColorsIndex = PaletteWidget.GetSwatchAtLocation (palette, point, recent_palette_rect, true);
+				int recentColorsIndex = PaletteWidget.GetSwatchAtLocation (palette, point, recent_palette_rect, true, swatch_size);
 				if (recentColorsIndex >= 0) {
 					text = BuildColorTooltip (palette.RecentlyUsedColors[recentColorsIndex],
 					Translations.GetString ("Left click to set primary color. Right click to set secondary color."));

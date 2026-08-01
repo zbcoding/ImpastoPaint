@@ -524,9 +524,13 @@ internal sealed class MainWindow
 			PintaCore.System);
 		colors_palette.Hexpand = true;
 		colors_palette.Halign = Gtk.Align.Fill;
-		// Impasto: hide footer labels when the palette action buttons reach the
-		// palette's trailing boundary (see ActionManager.SetFooterGeometry).
-		colors_palette.WidthChanged += (_, width) => PintaCore.Actions.SetFooterGeometry (width, colors_palette.FullColorSectionRight);
+		// Impasto: the palette runs one collapse cascade for the whole footer - the
+		// status bar supplies the budget and reports back which chips survived it.
+		colors_palette.GetFooterMetrics = () => {
+			var (occupied, cursor, image, sliding) = PintaCore.Actions.GetFooterChipRoom ();
+			return new StatusBarColorPaletteWidget.FooterMetrics (occupied, cursor, image, sliding);
+		};
+		colors_palette.ChipVisibilityChanged += (_, chips) => PintaCore.Actions.SetFooterChipsVisible (chips.cursor, chips.image);
 
 		colors_wheel = ColorWheelWidget.New (PintaCore.Palette);
 		colors_wheel.MarginStart = 6;

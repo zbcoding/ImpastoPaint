@@ -38,6 +38,7 @@ public sealed class ReEditableLayer
 	private bool in_the_loop = false;
 
 	public bool InTheLoop => in_the_loop;
+	public UserLayer ParentLayer => parent;
 
 	public Layer Layer {
 		get {

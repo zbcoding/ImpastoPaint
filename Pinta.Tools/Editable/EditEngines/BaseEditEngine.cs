@@ -139,6 +139,9 @@ public abstract class BaseEditEngine
 		}
 	}
 
+	private int CurrentFillStyle
+		=> fill_button?.SelectedItem?.Tag is int value ? value : 0;
+
 	private ShapeTypes ShapeType {
 		get {
 			if (shape_type_button.SelectedItem?.Tag is int value)
@@ -245,6 +248,10 @@ public abstract class BaseEditEngine
 
 	private void OnFillStyleChanged (object? sender, EventArgs e)
 	{
+		ShapeEngine? activeEngine = ActiveShapeEngine;
+		if (activeEngine is not null)
+			activeEngine.FillStyle = CurrentFillStyle;
+
 		outline_width.Visible = outline_width_label.Visible = outline_width_sep.Visible = StrokeShape;
 		dash_pattern_box.SetVisible (StrokeShape);
 		DrawActiveShape (false, false, true, false, false);
@@ -253,16 +260,15 @@ public abstract class BaseEditEngine
 	#endregion ToolbarEventHandlers
 
 	private readonly IToolService tools;
-	private readonly ActionManager actions;
 	private readonly IPaletteService palette;
 	private readonly IWorkspaceService workspace;
+	private static UserLayer? runtime_layer;
 
 	public BaseEditEngine (
 		IServiceProvider services,
 		ShapeTool passedOwner)
 	{
 		tools = services.GetService<IToolService> ();
-		actions = services.GetService<ActionManager> ();
 		palette = services.GetService<IPaletteService> ();
 		workspace = services.GetService<IWorkspaceService> ();
 
@@ -489,6 +495,7 @@ public abstract class BaseEditEngine
 
 	public virtual void HandleActivated ()
 	{
+		EnsureShapesForCurrentLayer ();
 		RecallPreviousSettings ();
 
 		palette.PrimaryColorChanged += Palette_PrimaryColorChanged;
@@ -502,10 +509,11 @@ public abstract class BaseEditEngine
 
 		StorePreviousSettings ();
 
-		//Determine if the tool being switched to will be another editable tool.
-		if (workspace.HasOpenDocuments && !(newTool?.IsEditableShapeTool == true)) {
-			//The tool being switched to is not editable. Finalize every editable shape not yet finalized.
-			FinalizeAllShapes ();
+		if (workspace.HasOpenDocuments) {
+			// Keep the raster overlay separate from UserLayer.Surface. Shape engines are
+			// re-editable even while a non-shape tool is active.
+			DrawAllShapes (preventSwitchBack: false);
+			PersistShapeObjects (workspace.ActiveDocument.Layers.CurrentUserLayer);
 		}
 
 		palette.PrimaryColorChanged -= Palette_PrimaryColorChanged;
@@ -514,18 +522,17 @@ public abstract class BaseEditEngine
 
 	public virtual void HandleAfterSave ()
 	{
-		//When saving, everything will be finalized, which is good; however, afterwards, the user will expect
-		//everything to remain editable. Currently, a finalization history item will always be added.
-		actions.Edit.Undo.Activate ();
+		if (!workspace.HasOpenDocuments)
+			return;
 
-		//Redraw all of the editable shapes in case saving caused some extra/unexpected behavior.
-		DrawAllShapes ();
+		DrawAllShapes (preventSwitchBack: false);
+		PersistShapeObjects (workspace.ActiveDocument.Layers.CurrentUserLayer);
 	}
 
 	public virtual void HandleCommit ()
 	{
-		//Finalize every editable shape not yet finalized.
-		FinalizeAllShapes ();
+		if (workspace.HasOpenDocuments)
+			PersistShapeObjects (workspace.ActiveDocument.Layers.CurrentUserLayer);
 	}
 
 	public virtual bool HandleBeforeUndo ()
@@ -567,7 +574,7 @@ public abstract class BaseEditEngine
 		}
 
 		if (IsBinding (KeyboardShortcutManager.ShapeFinalize)) {
-			FinalizeAllShapes ();
+			CommitShapeEditing ();
 			return true;
 		}
 
@@ -637,7 +644,7 @@ public abstract class BaseEditEngine
 			case Gdk.Constants.KEY_KP_Enter:
 				if (!IsDefault (KeyboardShortcutManager.ShapeFinalize))
 					return false;
-				FinalizeAllShapes ();
+				CommitShapeEditing ();
 				return true;
 			case Gdk.Constants.KEY_space:
 				if (!IsDefault (KeyboardShortcutManager.ShapeAddPoint) ||
@@ -909,6 +916,7 @@ public abstract class BaseEditEngine
 
 	public virtual void HandleMouseDown (Document document, ToolMouseEventArgs e)
 	{
+		EnsureShapesForCurrentLayer ();
 		PointD unclamped_point = e.PointDouble;
 
 		//If we are already drawing, ignore any additional mouse down events.
@@ -1060,6 +1068,7 @@ public abstract class BaseEditEngine
 			if (activeEngine != null) {
 				//Set the AntiAliasing.
 				activeEngine.AntiAliasing = owner.UseAntialiasing;
+				activeEngine.FillStyle = CurrentFillStyle;
 			}
 
 			StorePreviousSettings ();
@@ -1101,6 +1110,7 @@ public abstract class BaseEditEngine
 
 	public virtual void HandleMouseMove (Document document, ToolMouseEventArgs e)
 	{
+		EnsureShapesForCurrentLayer ();
 		current_point = e.PointDouble;
 		bool shiftKey = e.IsShiftPressed;
 		KeyGesture switchGesture = PintaCore.Shortcuts.GetToolBinding (KeyboardShortcutManager.TriangleTypeSwitch);
@@ -1246,6 +1256,7 @@ public abstract class BaseEditEngine
 	/// <param name="preventSwitchBack">Whether to prevent switching back to the old tool if a tool change is necessary.</param>
 	public void DrawActiveShape (bool calculateOrganizedPoints, bool finalize, bool drawHoverSelection, bool shiftKey, bool preventSwitchBack, bool ctrl_key = false)
 	{
+		EnsureShapesForCurrentLayer ();
 		ShapeTool? oldTool = BaseEditEngine.ActivateCorrespondingTool (SelectedShapeIndex, calculateOrganizedPoints);
 
 		//First, determine if the currently active tool matches the shape's corresponding tool, and if not, switch to it.
@@ -1272,6 +1283,7 @@ public abstract class BaseEditEngine
 		if (activeEngine == null) {
 			//No shape will be drawn; however, the hover point still needs to be drawn if drawHoverSelection is true.
 			UpdateHoverHandle (drawHoverSelection, ctrl_key);
+			PersistShapeObjects (workspace.ActiveDocument.Layers.CurrentUserLayer);
 			return;
 		}
 
@@ -1291,6 +1303,7 @@ public abstract class BaseEditEngine
 			OrganizePoints (activeEngine);
 
 		InvalidateAfterDraw (dirty);
+		PersistShapeObjects (workspace.ActiveDocument.Layers.CurrentUserLayer);
 	}
 
 	/// <summary>
@@ -1429,13 +1442,15 @@ public abstract class BaseEditEngine
 
 			//Expand the invalidation rectangle as necessary.
 
-			if (FillShape) {
-				Color fillColor = StrokeShape ? engine.FillColor : engine.OutlineColor;
+			bool strokeShape = engine.FillStyle % 2 == 0;
+			bool fillShape = engine.FillStyle >= 1;
+			if (fillShape) {
+				Color fillColor = strokeShape ? engine.FillColor : engine.OutlineColor;
 				RectangleD dirty = g.FillPolygonal (points.AsSpan (), fillColor);
 				totalDirty = totalDirty?.Union (dirty) ?? dirty;
 			}
 
-			if (StrokeShape) {
+			if (strokeShape) {
 
 				// dashpatterns cannot work with butt, so if we are using a dashpattern we default to square.
 				LineCap lineCap =
@@ -1633,7 +1648,7 @@ public abstract class BaseEditEngine
 	/// <summary>
 	/// Go through every editable shape and draw it.
 	/// </summary>
-	public void DrawAllShapes ()
+	public void DrawAllShapes (bool preventSwitchBack = true)
 	{
 		//Store the SelectedShapeIndex value for later restoration.
 		int previousToolSI = SelectedShapeIndex;
@@ -1641,7 +1656,7 @@ public abstract class BaseEditEngine
 		//Draw all of the shapes.
 		for (SelectedShapeIndex = 0; SelectedShapeIndex < SEngines.Count; ++SelectedShapeIndex) {
 			//Only draw the selected point for the selected shape.
-			DrawActiveShape (true, false, previousToolSI == SelectedShapeIndex, false, true);
+			DrawActiveShape (true, false, previousToolSI == SelectedShapeIndex, false, preventSwitchBack);
 		}
 
 		//Restore the previous SelectedShapeIndex value.
@@ -1651,6 +1666,40 @@ public abstract class BaseEditEngine
 		BaseEditEngine.ActivateCorrespondingTool (SelectedShapeIndex, false);
 
 		//The currently active tool should now match the shape's corresponding tool.
+	}
+
+	private void EnsureShapesForCurrentLayer ()
+	{
+		if (!workspace.HasOpenDocuments)
+			return;
+
+		UserLayer layer = workspace.ActiveDocument.Layers.CurrentUserLayer;
+		if (runtime_layer == layer)
+			return;
+
+		if (runtime_layer is not null)
+			PersistShapeObjects (runtime_layer);
+
+		foreach (ShapeEngine engine in SEngines)
+			engine.DrawingLayer.TryRemoveLayer ();
+
+		SEngines.Clear ();
+		runtime_layer = layer;
+		layer.ShapeLayer.Layer.Clear ();
+		foreach (ShapeObject source in layer.ShapeObjects)
+			SEngines.Add (ShapeEngineCollection.Create (layer, source));
+	}
+
+	public static void PersistShapeObjects (UserLayer layer)
+		=> ShapeEngineCollection.Store (layer, SEngines);
+
+	private void CommitShapeEditing ()
+	{
+		SelectedPointIndex = -1;
+		SelectedShapeIndex = -1;
+		DrawAllShapes (preventSwitchBack: false);
+		if (workspace.HasOpenDocuments)
+			PersistShapeObjects (workspace.ActiveDocument.Layers.CurrentUserLayer);
 	}
 
 	/// <summary>
@@ -1901,6 +1950,8 @@ public abstract class BaseEditEngine
 		FillColor = engine.FillColor;
 
 		BrushWidth = engine.BrushWidth;
+		if (fill_button is not null)
+			fill_button.SelectedIndex = engine.FillStyle;
 
 		StorePreviousSettings ();
 	}

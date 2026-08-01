@@ -42,6 +42,8 @@ public sealed class OraFormat : IImageImporter, IImageExporter
 	// Sidecar entry that keeps text objects editable when round-tripping .ora files.
 	// Standard OpenRaster readers ignore it; Impasto uses it to restore text layers.
 	private const string TEXT_ENTRY_PATH = "data/impasto-text.xml";
+	private const string SHAPE_ENTRY_PATH = "data/impasto-shapes.xml";
+	private const string SHAPE_IMAGE_PREFIX = "data/impasto-shapes-layer";
 
 	public Document Import (Gio.File file)
 	{
@@ -133,6 +135,7 @@ public sealed class OraFormat : IImageImporter, IImageExporter
 
 		// Restore any editable text objects saved in the sidecar entry.
 		LoadTextEntry (zipfile, newDocument);
+		LoadShapeEntry (zipfile, newDocument);
 
 		return newDocument;
 	}
@@ -202,6 +205,7 @@ public sealed class OraFormat : IImageImporter, IImageExporter
 		AddLayerEntries (archive, document);
 		AddStackEntry (archive, document);
 		AddTextEntry (archive, document);
+		AddShapeEntry (archive, document);
 		AddMergedImage (archive, flattened);
 		AddThumbnail (archive, flattened);
 	}
@@ -270,6 +274,173 @@ public sealed class OraFormat : IImageImporter, IImageExporter
 		ZipArchiveEntry textEntry = archive.CreateEntry (TEXT_ENTRY_PATH);
 		using Stream textStream = textEntry.Open ();
 		ms.CopyTo (textStream);
+	}
+
+	private static void AddShapeEntry (ZipArchive archive, Document document)
+	{
+		IReadOnlyList<UserLayer> layers = document.Layers.UserLayers;
+		if (!layers.Any (layer => layer.ShapeObjects.Count > 0))
+			return;
+
+		using MemoryStream ms = new ();
+		using (XmlTextWriter writer = new (ms, System.Text.Encoding.UTF8) { Formatting = Formatting.Indented }) {
+			writer.WriteStartElement ("impasto-shapes");
+			writer.WriteAttributeString ("version", "1");
+
+			for (int i = 0; i < layers.Count; i++) {
+				UserLayer layer = layers[i];
+				if (layer.ShapeObjects.Count == 0)
+					continue;
+
+				writer.WriteStartElement ("layer");
+				writer.WriteAttributeString ("index", i.ToString ());
+				foreach (ShapeObject shape in layer.ShapeObjects)
+					WriteShapeObject (writer, shape);
+				writer.WriteEndElement ();
+
+				using ImageSurface shapeOverlay = layer.CreateShapeOverlay ();
+				using Pixbuf overlay = shapeOverlay.ToPixbuf ();
+				byte[] bytes = overlay.SaveToBuffer ("png");
+				ZipArchiveEntry imageEntry = archive.CreateEntry ($"{SHAPE_IMAGE_PREFIX}{i}.png");
+				using Stream imageStream = imageEntry.Open ();
+				imageStream.Write (bytes, 0, bytes.Length);
+			}
+
+			writer.WriteEndElement ();
+		}
+
+		ms.Position = 0;
+		ZipArchiveEntry shapeEntry = archive.CreateEntry (SHAPE_ENTRY_PATH);
+		using Stream shapeStream = shapeEntry.Open ();
+		ms.CopyTo (shapeStream);
+	}
+
+	private static void WriteShapeObject (XmlTextWriter writer, ShapeObject shape)
+	{
+		writer.WriteStartElement ("shape");
+		writer.WriteAttributeString ("type", ((int) shape.ShapeType).ToString ());
+		writer.WriteAttributeString ("antialias", shape.AntiAliasing ? "1" : "0");
+		writer.WriteAttributeString ("closed", shape.Closed ? "1" : "0");
+		writer.WriteAttributeString ("outline", shape.OutlineColor.ToHex (addAlpha: true));
+		writer.WriteAttributeString ("fill", shape.FillColor.ToHex (addAlpha: true));
+		writer.WriteAttributeString ("width", shape.BrushWidth.ToString ());
+		writer.WriteAttributeString ("cap", ((int) shape.LineCap).ToString ());
+		writer.WriteAttributeString ("dash", shape.DashPattern);
+		writer.WriteAttributeString ("spacing", shape.DashSpacing.ToString ());
+		writer.WriteAttributeString ("style", shape.FillStyle.ToString ());
+		writer.WriteAttributeString ("radius", shape.RoundedRadius.ToString (GetFormat ()));
+		writer.WriteAttributeString ("triangle", shape.TriangleType.ToString ());
+		writer.WriteAttributeString ("partial", shape.IsPartialEllipse ? "1" : "0");
+		writer.WriteAttributeString ("partial-cx", shape.PartialEllipseCenter.X.ToString (GetFormat ()));
+		writer.WriteAttributeString ("partial-cy", shape.PartialEllipseCenter.Y.ToString (GetFormat ()));
+		writer.WriteAttributeString ("partial-rx", shape.PartialEllipseRadiusX.ToString (GetFormat ()));
+		writer.WriteAttributeString ("partial-ry", shape.PartialEllipseRadiusY.ToString (GetFormat ()));
+
+		WriteArrow (writer, "arrow1", shape.Arrow1);
+		WriteArrow (writer, "arrow2", shape.Arrow2);
+		foreach (ShapeControlPoint point in shape.ControlPoints) {
+			writer.WriteStartElement ("point");
+			writer.WriteAttributeString ("x", point.Position.X.ToString (GetFormat ()));
+			writer.WriteAttributeString ("y", point.Position.Y.ToString (GetFormat ()));
+			writer.WriteAttributeString ("tension", point.Tension.ToString (GetFormat ()));
+			writer.WriteEndElement ();
+		}
+
+		writer.WriteEndElement ();
+	}
+
+	private static void WriteArrow (XmlTextWriter writer, string name, ShapeArrow arrow)
+	{
+		writer.WriteStartElement (name);
+		writer.WriteAttributeString ("show", arrow.Show ? "1" : "0");
+		writer.WriteAttributeString ("size", arrow.Size.ToString (GetFormat ()));
+		writer.WriteAttributeString ("angle", arrow.AngleOffset.ToString (GetFormat ()));
+		writer.WriteAttributeString ("length", arrow.LengthOffset.ToString (GetFormat ()));
+		writer.WriteEndElement ();
+	}
+
+	private static void LoadShapeEntry (ZipArchive zipfile, Document document)
+	{
+		ZipArchiveEntry? entry = zipfile.GetEntry (SHAPE_ENTRY_PATH);
+		if (entry is null)
+			return;
+
+		XmlDocument xml = new ();
+		xml.Load (entry.Open ());
+		XmlElement root = xml.DocumentElement!;
+		foreach (XmlElement layerElement in root.GetElementsByTagName ("layer")) {
+			if (!int.TryParse (GetAttribute (layerElement, "index", "-1"), out int index) || index < 0 || index >= document.Layers.UserLayers.Count)
+				continue;
+
+			UserLayer layer = document.Layers.UserLayers[index];
+			foreach (XmlElement shapeElement in layerElement.GetElementsByTagName ("shape")) {
+				ShapeObject? shape = ReadShapeObject (shapeElement);
+				if (shape is not null)
+					layer.ShapeObjects.Add (shape);
+			}
+
+			ZipArchiveEntry? imageEntry = zipfile.GetEntry ($"{SHAPE_IMAGE_PREFIX}{index}.png");
+			if (imageEntry is not null) {
+				string temporaryFile = System.IO.Path.GetTempFileName ();
+				using (Stream input = imageEntry.Open ())
+				using (Stream output = File.Open (temporaryFile, FileMode.Create, FileAccess.Write))
+					input.CopyTo (output);
+
+				using Pixbuf overlay = Pixbuf.NewFromFile (temporaryFile)!;
+				using Context g = new (layer.ShapeLayer.Layer.Surface);
+				g.DrawPixbuf (overlay, PointD.Zero);
+				try { File.Delete (temporaryFile); } catch { }
+			}
+		}
+	}
+
+	private static ShapeObject? ReadShapeObject (XmlElement element)
+	{
+		try {
+			ShapeObject shape = new () {
+				ShapeType = (ShapeObjectType) int.Parse (GetAttribute (element, "type", "0")),
+				AntiAliasing = GetAttribute (element, "antialias", "1") == "1",
+				Closed = GetAttribute (element, "closed", "0") == "1",
+				OutlineColor = Color.FromHex (GetAttribute (element, "outline", "#000000ff")) ?? Color.Black,
+				FillColor = Color.FromHex (GetAttribute (element, "fill", "#ffffffff")) ?? Color.White,
+				BrushWidth = int.Parse (GetAttribute (element, "width", "2")),
+				LineCap = (LineCap) int.Parse (GetAttribute (element, "cap", "0")),
+				DashPattern = GetAttribute (element, "dash", "-"),
+				DashSpacing = int.Parse (GetAttribute (element, "spacing", "1")),
+				FillStyle = int.Parse (GetAttribute (element, "style", "0")),
+				RoundedRadius = double.Parse (GetAttribute (element, "radius", "0"), GetFormat ()),
+				TriangleType = int.Parse (GetAttribute (element, "triangle", "0")),
+				IsPartialEllipse = GetAttribute (element, "partial", "0") == "1",
+				PartialEllipseCenter = new PointD (double.Parse (GetAttribute (element, "partial-cx", "0"), GetFormat ()), double.Parse (GetAttribute (element, "partial-cy", "0"), GetFormat ())),
+				PartialEllipseRadiusX = double.Parse (GetAttribute (element, "partial-rx", "0"), GetFormat ()),
+				PartialEllipseRadiusY = double.Parse (GetAttribute (element, "partial-ry", "0"), GetFormat ()),
+			};
+
+			ReadArrow (element, "arrow1", shape.Arrow1);
+			ReadArrow (element, "arrow2", shape.Arrow2);
+			foreach (XmlElement pointElement in element.GetElementsByTagName ("point"))
+				shape.ControlPoints.Add (new ShapeControlPoint {
+					Position = new PointD (double.Parse (GetAttribute (pointElement, "x", "0"), GetFormat ()), double.Parse (GetAttribute (pointElement, "y", "0"), GetFormat ())),
+					Tension = double.Parse (GetAttribute (pointElement, "tension", "0"), GetFormat ()),
+				});
+
+			return shape;
+		} catch {
+			return null;
+		}
+	}
+
+	private static void ReadArrow (XmlElement shape, string name, ShapeArrow arrow)
+	{
+		XmlNodeList nodes = shape.GetElementsByTagName (name);
+		if (nodes.Count == 0)
+			return;
+
+		XmlElement element = (XmlElement) nodes[0]!;
+		arrow.Show = GetAttribute (element, "show", "0") == "1";
+		arrow.Size = double.Parse (GetAttribute (element, "size", "10"), GetFormat ());
+		arrow.AngleOffset = double.Parse (GetAttribute (element, "angle", "15"), GetFormat ());
+		arrow.LengthOffset = double.Parse (GetAttribute (element, "length", "10"), GetFormat ());
 	}
 
 	private static void WriteTextObject (XmlTextWriter writer, TextObject obj)

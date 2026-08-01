@@ -67,6 +67,7 @@ public sealed class TriangleEditEngine : BaseEditEngine
 
 		LineCurveSeriesEngine newEngine = new (doc.Layers.CurrentUserLayer, null, BaseEditEngine.ShapeTypes.Triangle,
 			owner.UseAntialiasing, true, BaseEditEngine.OutlineColor, BaseEditEngine.FillColor, owner.EditEngine.BrushWidth, LineCap.Square);
+		newEngine.TriangleType = (int) selected_type;
 
 		AddTrianglePoints (ctrlKey, clickedOnControlPoint, newEngine, prevSelPoint);
 
@@ -86,6 +87,8 @@ public sealed class TriangleEditEngine : BaseEditEngine
 		//Holding the type-switch key (default: Ctrl) while dragging draws the other
 		//triangle type than the one picked in the toolbar.
 		TriangleType effectiveType = selected_type;
+		if (SelectedShapeEngine is LineCurveSeriesEngine lineEngine)
+			effectiveType = (TriangleType) lineEngine.TriangleType;
 		if (triangle_switch_down)
 			effectiveType = effectiveType == TriangleType.Equilateral ? TriangleType.Right : TriangleType.Equilateral;
 
@@ -184,5 +187,15 @@ public sealed class TriangleEditEngine : BaseEditEngine
 
 		if (triangle_type_button is not null)
 			settings.PutSetting (SettingNames.TriangleType (toolPrefix), triangle_type_button.SelectedIndex);
+	}
+
+	public override void UpdateToolbarSettings (ShapeEngine engine)
+	{
+		if (engine is LineCurveSeriesEngine lineEngine)
+			selected_type = (TriangleType) lineEngine.TriangleType;
+
+		base.UpdateToolbarSettings (engine);
+		if (triangle_type_button is not null)
+			triangle_type_button.SelectedIndex = (int) selected_type;
 	}
 }

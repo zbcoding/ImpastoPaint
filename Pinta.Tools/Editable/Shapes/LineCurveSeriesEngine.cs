@@ -34,6 +34,7 @@ public sealed class LineCurveSeriesEngine : ShapeEngine
 {
 	public Arrow Arrow1 { get; internal set; }
 	public Arrow Arrow2 { get; internal set; }
+	public int TriangleType { get; internal set; }
 
 	/// <summary>
 	/// Create a new LineCurveSeriesEngine.
@@ -77,6 +78,7 @@ public sealed class LineCurveSeriesEngine : ShapeEngine
 	{
 		Arrow1 = src.Arrow1;
 		Arrow2 = src.Arrow2;
+		TriangleType = src.TriangleType;
 	}
 
 	public override LineCurveSeriesEngine Clone ()

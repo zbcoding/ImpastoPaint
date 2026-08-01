@@ -39,6 +39,7 @@ public sealed class UserLayer : Layer
 	//Special layers to be drawn on to keep things editable by drawing them separately from the UserLayers.
 	internal Collection<ReEditableLayer> ReEditableLayers { get; } = [];
 	public ReEditableLayer TextLayer { get; }
+	public ReEditableLayer ShapeLayer { get; }
 
 	//Call the base class constructor and setup the engines.
 	public UserLayer (ImageSurface surface)
@@ -55,10 +56,36 @@ public sealed class UserLayer : Layer
 		: base (surface, hidden, opacity, name)
 	{
 		TextLayer = new ReEditableLayer (this);
+		ShapeLayer = new ReEditableLayer (this);
 	}
 
 	//The re-editable text objects on this layer.
 	public List<TextObject> TextObjects { get; } = [];
+
+	/// <summary>
+	/// The source-of-truth state for editable shapes on this layer. Tool-specific
+	/// engines are adapters over this collection and are not persisted here.
+	/// </summary>
+	public List<ShapeObject> ShapeObjects { get; } = [];
+
+	/// <summary>
+	/// Creates a raster fallback for editable shape overlays. It is used by ORA
+	/// import before the shape tool has hydrated its engines.
+	/// </summary>
+	public ImageSurface CreateShapeOverlay ()
+	{
+		ImageSurface overlay = CairoExtensions.CreateImageSurface (Surface.Format, Surface.Width, Surface.Height);
+		using Context g = new (overlay);
+		foreach (ReEditableLayer layer in ReEditableLayers) {
+			if (layer == TextLayer || !layer.IsLayerSetup)
+				continue;
+
+			g.SetSourceSurface (layer.Layer.Surface, 0, 0);
+			g.Paint ();
+		}
+
+		return overlay;
+	}
 
 	public override void ApplyTransform (
 		Matrix xform,

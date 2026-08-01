@@ -55,6 +55,14 @@ public sealed class EllipseEngine : ShapeEngine
 		return isPartial && r_x > 0 && r_y > 0;
 	}
 
+	public void SetPartialGeometry (PointD center, double radiusX, double radiusY)
+	{
+		isPartial = true;
+		partialCenter = center;
+		partialRx = radiusX;
+		partialRy = radiusY;
+	}
+
 	/// <summary>
 	/// Create a new EllipseEngine.
 	/// </summary>
@@ -343,7 +351,7 @@ public sealed class EllipseEngine : ShapeEngine
 			PointD p0 = ControlPoints[i].Position;
 			PointD p1 = ControlPoints[j].Position;
 
-		double a0 = angles[i];
+			double a0 = angles[i];
 			double a1 = angles[j];
 			if (a1 <= a0) a1 += twoPi;
 
@@ -434,9 +442,9 @@ public sealed class EllipseEngine : ShapeEngine
 			foreach (var p in GenerateCubicBezierCurvePoints (
 				ControlPoints[iMinusOne].Position,
 				new PointD (ControlPoints[iMinusOne].Position.X + tangents[iMinusOne].X,
-				            ControlPoints[iMinusOne].Position.Y + tangents[iMinusOne].Y),
+					    ControlPoints[iMinusOne].Position.Y + tangents[iMinusOne].Y),
 				new PointD (ControlPoints[i].Position.X - tangents[i].X,
-				            ControlPoints[i].Position.Y - tangents[i].Y),
+					    ControlPoints[i].Position.Y - tangents[i].Y),
 				ControlPoints[i].Position,
 				i)) {
 				yield return p;
@@ -448,9 +456,9 @@ public sealed class EllipseEngine : ShapeEngine
 		foreach (var p in GenerateCubicBezierCurvePoints (
 			ControlPoints[last].Position,
 			new PointD (ControlPoints[last].Position.X + tangents[last].X,
-			            ControlPoints[last].Position.Y + tangents[last].Y),
+				    ControlPoints[last].Position.Y + tangents[last].Y),
 			new PointD (ControlPoints[0].Position.X - tangents[0].X,
-			            ControlPoints[0].Position.Y - tangents[0].Y),
+				    ControlPoints[0].Position.Y - tangents[0].Y),
 			ControlPoints[0].Position,
 			0)) {
 			yield return p;

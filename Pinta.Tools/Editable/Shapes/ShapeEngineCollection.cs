@@ -34,6 +34,89 @@ namespace Pinta.Tools;
 
 public static class ShapeEngineCollection
 {
+	public static ShapeEngine Create (UserLayer parentLayer, ShapeObject source)
+	{
+		ShapeEngine engine = source.ShapeType switch {
+			ShapeObjectType.Ellipse => new EllipseEngine (parentLayer, null, source.AntiAliasing, source.OutlineColor, source.FillColor, source.BrushWidth, source.LineCap),
+			ShapeObjectType.RoundedLineSeries => new RoundedLineEngine (parentLayer, null, source.RoundedRadius, source.AntiAliasing, source.OutlineColor, source.FillColor, source.BrushWidth, source.LineCap),
+			_ => new LineCurveSeriesEngine (parentLayer, null, (BaseEditEngine.ShapeTypes) source.ShapeType, source.AntiAliasing, source.Closed, source.OutlineColor, source.FillColor, source.BrushWidth, source.LineCap),
+		};
+
+		engine.DashPattern = source.DashPattern;
+		engine.DashSpacing = source.DashSpacing;
+		engine.FillStyle = source.FillStyle;
+		engine.ControlPoints = source.ControlPoints.ConvertAll (point => new ControlPoint (point.Position, point.Tension));
+
+		if (engine is LineCurveSeriesEngine lineEngine) {
+			lineEngine.Arrow1 = ToArrow (source.Arrow1);
+			lineEngine.Arrow2 = ToArrow (source.Arrow2);
+			lineEngine.TriangleType = source.TriangleType;
+		}
+
+		if (engine is EllipseEngine ellipse && source.IsPartialEllipse)
+			ellipse.SetPartialGeometry (source.PartialEllipseCenter, source.PartialEllipseRadiusX, source.PartialEllipseRadiusY);
+
+		return engine;
+	}
+
+	public static ShapeObject ToShapeObject (this ShapeEngine engine)
+	{
+		ShapeObject result = new () {
+			ShapeType = (ShapeObjectType) engine.ShapeType,
+			AntiAliasing = engine.AntiAliasing,
+			Closed = engine.Closed,
+			OutlineColor = engine.OutlineColor,
+			FillColor = engine.FillColor,
+			BrushWidth = engine.BrushWidth,
+			LineCap = engine.LineCap,
+			DashPattern = engine.DashPattern,
+			DashSpacing = engine.DashSpacing,
+			FillStyle = engine.FillStyle,
+		};
+
+		result.ControlPoints.AddRange (engine.ControlPoints.ConvertAll (point => new ShapeControlPoint {
+			Position = point.Position,
+			Tension = point.Tension,
+		}));
+
+		if (engine is LineCurveSeriesEngine lineEngine) {
+			result.Arrow1 = FromArrow (lineEngine.Arrow1);
+			result.Arrow2 = FromArrow (lineEngine.Arrow2);
+			result.TriangleType = lineEngine.TriangleType;
+		}
+
+		if (engine is RoundedLineEngine rounded)
+			result.RoundedRadius = rounded.Radius;
+
+		if (engine is EllipseEngine ellipse && ellipse.TryGetPartialGeometry (out PointD center, out double radiusX, out double radiusY)) {
+			result.IsPartialEllipse = true;
+			result.PartialEllipseCenter = center;
+			result.PartialEllipseRadiusX = radiusX;
+			result.PartialEllipseRadiusY = radiusY;
+		}
+
+		return result;
+	}
+
+	public static void Store (UserLayer layer, IReadOnlyList<ShapeEngine> engines)
+	{
+		layer.ShapeObjects.Clear ();
+		foreach (ShapeEngine engine in engines)
+			if (engine.ParentLayer == layer)
+				layer.ShapeObjects.Add (engine.ToShapeObject ());
+	}
+
+	private static Arrow ToArrow (ShapeArrow arrow)
+		=> new (arrow.Show, arrow.Size, arrow.AngleOffset, arrow.LengthOffset);
+
+	private static ShapeArrow FromArrow (Arrow arrow)
+		=> new () {
+			Show = arrow.Show,
+			Size = arrow.ArrowSize,
+			AngleOffset = arrow.AngleOffset,
+			LengthOffset = arrow.LengthOffset,
+		};
+
 	/// <summary>
 	/// Clone the necessary data in each of the ShapeEngines in the collection.
 	/// </summary>
@@ -93,7 +176,7 @@ public static class ShapeEngineCollection
 public abstract class ShapeEngine
 {
 	//A collection of the original ControlPoints that the shape is based on and that the user interacts with.
-	public List<ControlPoint> ControlPoints { get; private set; } = [];
+	public List<ControlPoint> ControlPoints { get; internal set; } = [];
 	public List<MoveHandle> ControlPointHandles { get; private set; } = [];
 
 	//A collection of calculated GeneratedPoints that make up the entirety of the shape being drawn.
@@ -114,10 +197,12 @@ public abstract class ShapeEngine
 	public Color FillColor { get; internal set; }
 
 	public int BrushWidth { get; internal set; }
+	public int FillStyle { get; internal set; }
 
 	public BaseEditEngine.ShapeTypes ShapeType { get; }
 
 	public LineCap LineCap { get; set; }
+	public UserLayer ParentLayer => parent_layer ?? DrawingLayer.ParentLayer;
 
 	/// <summary>
 	/// Create a new ShapeEngine.
@@ -160,6 +245,7 @@ public abstract class ShapeEngine
 		OutlineColor = src.OutlineColor;
 		FillColor = src.FillColor;
 		BrushWidth = src.BrushWidth;
+		FillStyle = src.FillStyle;
 		LineCap = src.LineCap;
 
 		// Don't clone the GeneratedPoints or OrganizedPoints, as they will be calculated.

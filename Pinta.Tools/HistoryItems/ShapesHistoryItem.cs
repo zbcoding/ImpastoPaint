@@ -138,6 +138,7 @@ public sealed class ShapesHistoryItem : BaseHistoryItem
 
 		Swap (ref selected_point_index, ref ee.SelectedPointIndex);
 		Swap (ref selected_shape_index, ref ee.SelectedShapeIndex);
+		BaseEditEngine.PersistShapeObjects (user_layer);
 
 		//Determine if the currently active tool matches the shape's corresponding tool, and if not, switch to it.
 		if (BaseEditEngine.ActivateCorrespondingTool (ee.SelectedShapeIndex, true) != null) {

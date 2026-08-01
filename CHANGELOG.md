@@ -38,6 +38,7 @@ Thanks to the following contributors who worked on this release:
 - Added a keyboard shortcuts dialog (#2172, #1434)
 - The Clone Stamp tool now visualizes the position of the clone origin (#1923, #2190)
 - The text tool now keeps text as re-editable objects per layer, so it can be re-edited later with Ctrl+click and moved with right-drag (#1337)
+- Shape tools now keep shapes as re-editable objects per layer, including geometry, style, arrows, rounded corners, and specialized shape state (#1405)
 
 ### Changed
 - Effect dialogs no longer dim the canvas during live previews (#1334, reported by @prokoudine)

@@ -86,6 +86,7 @@ public sealed class ShapesModifyHistoryItem : BaseHistoryItem
 
 		Swap (ref selected_point_index, ref ee.SelectedPointIndex);
 		Swap (ref selected_shape_index, ref ee.SelectedShapeIndex);
+		BaseEditEngine.PersistShapeObjects (PintaCore.Workspace.ActiveDocument.Layers.CurrentUserLayer);
 
 		//Determine if the currently active tool matches the shape's corresponding tool, and if not, switch to it.
 		BaseEditEngine.ActivateCorrespondingTool (selected_shape_index, true);

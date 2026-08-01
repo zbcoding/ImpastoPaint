@@ -87,6 +87,7 @@ public abstract class ShapeTool : BaseTool
 	protected override void OnActivated (Document? document)
 	{
 		EditEngine.HandleActivated ();
+		EditEngine.DrawAllShapes ();
 
 		base.OnActivated (document);
 	}

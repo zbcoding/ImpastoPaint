@@ -79,6 +79,7 @@ public sealed partial class StatusBarColorPaletteWidget
 	// resize signal of its own.
 	public event EventHandler<int>? WidthChanged;
 	public bool ActionButtonsAtRightEdge { get; private set; }
+	public double FullColorSectionRight { get; private set; }
 	private bool section_unfold_armed = true;
 	private int last_layout_width;
 
@@ -631,6 +632,7 @@ public sealed partial class StatusBarColorPaletteWidget
 
 		int recent_cols = PaletteWidget.GetRecentColorColumns (palette.MaxRecentlyUsedColor);
 		int swatch_height = PaletteWidget.SWATCH_SIZE * PaletteWidget.PALETTE_ROWS;
+		FullColorSectionRight = show_action_icons ? CalculateFullColorSectionRight (recent_cols) : 0;
 
 		// The anchor where the next visible section starts. Normally that's right
 		// after the swap/reset icons (x=47); once those fold too, start from the
@@ -715,6 +717,17 @@ public sealed partial class StatusBarColorPaletteWidget
 
 		if (quick_colors_folded != was_quick_folded || recent_colors_folded != was_recent_folded || swatches_folded != was_swatches_folded)
 			FoldStateChanged?.Invoke (this, EventArgs.Empty);
+	}
+
+	private double CalculateFullColorSectionRight (int recent_cols)
+	{
+		double cursor_x = 47;
+		cursor_x += SECTION_GAP + ICON_SIZE + SECTION_GAP + PaletteWidget.SWATCH_SIZE * recent_cols + SECTION_GAP;
+
+		int palette_cols = (palette.CurrentPalette.Colors.Count + PaletteWidget.PALETTE_ROWS - 1) / PaletteWidget.PALETTE_ROWS;
+		cursor_x += SECTION_GAP + ICON_SIZE + SECTION_GAP + PaletteWidget.SWATCH_SIZE * palette_cols + SECTION_GAP;
+
+		return cursor_x + 2 * ACTION_ICON_SIZE + SECTION_GAP;
 	}
 
 	/// <summary>

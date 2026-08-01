@@ -526,7 +526,7 @@ internal sealed class MainWindow
 		colors_palette.Halign = Gtk.Align.Fill;
 		// Impasto: hide footer labels when the palette action buttons reach the
 		// palette's trailing boundary (see ActionManager.SetFooterGeometry).
-		colors_palette.WidthChanged += (_, width) => PintaCore.Actions.SetFooterGeometry (width, colors_palette.ActionButtonsAtRightEdge);
+		colors_palette.WidthChanged += (_, width) => PintaCore.Actions.SetFooterGeometry (width, colors_palette.FullColorSectionRight);
 
 		colors_wheel = ColorWheelWidget.New (PintaCore.Palette);
 		colors_wheel.MarginStart = 6;

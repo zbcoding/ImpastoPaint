@@ -24,6 +24,8 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+using System;
+
 namespace Pinta.Core;
 
 public sealed class ActionManager
@@ -165,14 +167,17 @@ public sealed class ActionManager
 		footer_image_group?.SetVisible (visible && !image_group_hidden);
 	}
 
-	// The image group hides at the first edge contact reported by the palette.
-	// The cursor group waits for a later contact, after the image group has
-	// already reclaimed its width. Show thresholds restore them in reverse order.
-	private const int CURSOR_GROUP_SHOW_WIDTH = 480;
-	private const int IMAGE_GROUP_SHOW_WIDTH = 300;
+	// The labels collide with the fully expanded color section, not with the
+	// action buttons' current position. Keep a small visual gap at the boundary
+	// and enough hysteresis to avoid immediately showing a group after it reclaims
+	// its own width.
+	private const int FOOTER_COLLISION_GAP = 1;
+	private const int FOOTER_RESHOW_GAP = 16;
 
 	private Gtk.Widget? footer_cursor_group;
 	private Gtk.Widget? footer_image_group;
+	private int cursor_group_reclaimed_width;
+	private int image_group_reclaimed_width;
 
 	// Latched hide state so the labels don't flicker during the resize: once a
 	// group is hidden it stays hidden until the palette regrows well past the hide
@@ -180,23 +185,40 @@ public sealed class ActionManager
 	private bool cursor_group_hidden;
 	private bool image_group_hidden;
 
-	// Called by MainWindow after the palette has laid out its action buttons.
-	public void SetFooterGeometry (int availableWidth, bool action_buttons_at_right_edge)
+	// Called by MainWindow after the palette has laid out its natural full-color
+	// boundary and the footer has allocated the label groups.
+	public void SetFooterGeometry (int availableWidth, double full_color_section_right)
 	{
 		bool image_was_hidden = image_group_hidden || !show_image_size;
+		int cursor_group_width = footer_cursor_group?.GetWidth () ?? 0;
+		if (cursor_group_width > 0)
+			cursor_group_reclaimed_width = cursor_group_width + 4;
+
+		int image_group_width = footer_image_group?.GetWidth () ?? 0;
+		if (image_group_width > 0)
+			image_group_reclaimed_width = image_group_width + 8;
+
+		int image_collision_width = (int) Math.Floor (
+			full_color_section_right - cursor_group_reclaimed_width - FOOTER_COLLISION_GAP);
+		bool image_is_touching = availableWidth <= image_collision_width;
+		bool cursor_is_touching = availableWidth <= full_color_section_right + FOOTER_COLLISION_GAP;
 
 		if (footer_image_group is not null) {
-			if (action_buttons_at_right_edge)
+			if (image_is_touching) {
+				image_group_reclaimed_width = Math.Max (image_group_reclaimed_width, image_group_width + 8);
 				image_group_hidden = true;
-			else if (availableWidth > IMAGE_GROUP_SHOW_WIDTH)
+			} else if (image_group_hidden && availableWidth > image_collision_width + image_group_reclaimed_width + FOOTER_RESHOW_GAP) {
 				image_group_hidden = false;
+			}
 			footer_image_group.SetVisible (show_image_size && !image_group_hidden);
 		}
 		if (footer_cursor_group is not null) {
-			if (action_buttons_at_right_edge && image_was_hidden)
+			if (cursor_is_touching && image_was_hidden) {
+				cursor_group_reclaimed_width = Math.Max (cursor_group_reclaimed_width, cursor_group_width + 4);
 				cursor_group_hidden = true;
-			else if (availableWidth > CURSOR_GROUP_SHOW_WIDTH)
+			} else if (cursor_group_hidden && availableWidth > full_color_section_right + cursor_group_reclaimed_width + FOOTER_RESHOW_GAP) {
 				cursor_group_hidden = false;
+			}
 			footer_cursor_group.SetVisible (show_cursor_position && !cursor_group_hidden);
 		}
 	}

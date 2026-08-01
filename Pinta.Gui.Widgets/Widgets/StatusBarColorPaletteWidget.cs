@@ -79,6 +79,8 @@ public sealed partial class StatusBarColorPaletteWidget
 	// resize signal of its own.
 	public event EventHandler<int>? WidthChanged;
 	public bool ActionButtonsAtRightEdge { get; private set; }
+	private bool section_unfold_armed = true;
+	private int last_layout_width;
 
 	// Fires when a section folds in/out of the bar, so the popover content can be
 	// rebuilt to match.
@@ -585,7 +587,6 @@ public sealed partial class StatusBarColorPaletteWidget
 	private void HandleSizeAllocated (Gtk.DrawingArea.ResizeSignalArgs e)
 	{
 		UpdateLayout (e.Width);
-		WidthChanged?.Invoke (this, e.Width);
 	}
 
 	private void UpdateLayout (int width)
@@ -593,6 +594,12 @@ public sealed partial class StatusBarColorPaletteWidget
 		bool was_quick_folded = quick_colors_folded;
 		bool was_recent_folded = recent_colors_folded;
 		bool was_swatches_folded = swatches_folded;
+		bool was_action_buttons_at_right_edge = ActionButtonsAtRightEdge;
+		if (was_action_buttons_at_right_edge)
+			section_unfold_armed = false;
+		else if (width > last_layout_width)
+			section_unfold_armed = true;
+		last_layout_width = width;
 
 		// A folded section only unfolds after its wider threshold is reached. Once
 		// unfolded, it stays visible until the narrower fold threshold is reached;
@@ -600,7 +607,7 @@ public sealed partial class StatusBarColorPaletteWidget
 		// Also wait until the action pair is no longer pinned to the right edge.
 		// That edge state can be caused by a label reclaiming width while the
 		// window is still narrowing, and must not bring palette sections back.
-		bool may_unfold_sections = !ActionButtonsAtRightEdge;
+		bool may_unfold_sections = !ActionButtonsAtRightEdge && section_unfold_armed;
 		if (quick_colors_folded) {
 			if (may_unfold_sections && width >= FOLD_QUICK_COLORS_UNFOLD)
 				quick_colors_folded = false;
@@ -704,6 +711,7 @@ public sealed partial class StatusBarColorPaletteWidget
 		// palette's trailing boundary, which is the cursor group's leading edge.
 		ActionButtonsAtRightEdge = show_action_icons
 			&& float_colors_icon_rect.Right >= width - PaletteWidget.PALETTE_MARGIN;
+		WidthChanged?.Invoke (this, width);
 
 		if (quick_colors_folded != was_quick_folded || recent_colors_folded != was_recent_folded || swatches_folded != was_swatches_folded)
 			FoldStateChanged?.Invoke (this, EventArgs.Empty);

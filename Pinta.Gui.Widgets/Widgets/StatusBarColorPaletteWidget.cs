@@ -594,15 +594,33 @@ public sealed partial class StatusBarColorPaletteWidget
 		bool was_recent_folded = recent_colors_folded;
 		bool was_swatches_folded = swatches_folded;
 
-		quick_colors_folded = quick_colors_folded
-			? width < FOLD_QUICK_COLORS_UNFOLD
-			: width < FOLD_QUICK_COLORS_WIDTH;
-		recent_colors_folded = recent_colors_folded
-			? width < FOLD_RECENT_COLORS_UNFOLD
-			: width < FOLD_RECENT_COLORS_WIDTH;
-		swatches_folded = swatches_folded
-			? width < FOLD_SWATCHES_UNFOLD
-			: width < FOLD_SWATCHES_WIDTH;
+		// A folded section only unfolds after its wider threshold is reached. Once
+		// unfolded, it stays visible until the narrower fold threshold is reached;
+		// do not apply the unfold threshold again while it is already visible.
+		// Also wait until the action pair is no longer pinned to the right edge.
+		// That edge state can be caused by a label reclaiming width while the
+		// window is still narrowing, and must not bring palette sections back.
+		bool may_unfold_sections = !ActionButtonsAtRightEdge;
+		if (quick_colors_folded) {
+			if (may_unfold_sections && width >= FOLD_QUICK_COLORS_UNFOLD)
+				quick_colors_folded = false;
+		} else if (width < FOLD_QUICK_COLORS_WIDTH) {
+			quick_colors_folded = true;
+		}
+
+		if (recent_colors_folded) {
+			if (may_unfold_sections && width >= FOLD_RECENT_COLORS_UNFOLD)
+				recent_colors_folded = false;
+		} else if (width < FOLD_RECENT_COLORS_WIDTH) {
+			recent_colors_folded = true;
+		}
+
+		if (swatches_folded) {
+			if (may_unfold_sections && width >= FOLD_SWATCHES_UNFOLD)
+				swatches_folded = false;
+		} else if (width < FOLD_SWATCHES_WIDTH) {
+			swatches_folded = true;
+		}
 
 		int recent_cols = PaletteWidget.GetRecentColorColumns (palette.MaxRecentlyUsedColor);
 		int swatch_height = PaletteWidget.SWATCH_SIZE * PaletteWidget.PALETTE_ROWS;

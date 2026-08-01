@@ -179,6 +179,30 @@ public sealed class KeyboardShortcutManager
 		Translations.GetString ("Increase font size"),
 		new KeyGesture (new Gdk.Key (Gdk.Constants.KEY_bracketright)));
 
+	public static readonly ToolBindingDescriptor TextReEdit = new (
+		"TextTool.ReEdit",
+		Translations.GetString ("Text Tool"),
+		Translations.GetString ("Re-edit existing text"),
+		new KeyGesture (new Gdk.Key (Gdk.Constants.KEY_Pointer_Button1), Gdk.ModifierType.ControlMask));
+
+	public static readonly ToolBindingDescriptor TextOpenProperties = new (
+		"TextTool.OpenTextProperties",
+		Translations.GetString ("Text Tool"),
+		Translations.GetString ("Open text properties"),
+		new KeyGesture (new Gdk.Key (Gdk.Constants.KEY_Pointer_Button1), Gdk.ModifierType.ControlMask | Gdk.ModifierType.ShiftMask));
+
+	public static readonly ToolBindingDescriptor TextResize = new (
+		"TextTool.Resize",
+		Translations.GetString ("Text Tool"),
+		Translations.GetString ("Resize text (drag corner, changes font size)"),
+		new KeyGesture (new Gdk.Key (Gdk.Constants.KEY_Pointer_Button1)));
+
+	public static readonly ToolBindingDescriptor TextRotate = new (
+		"TextTool.Rotate",
+		Translations.GetString ("Text Tool"),
+		Translations.GetString ("Rotate text"),
+		new KeyGesture (new Gdk.Key (Gdk.Constants.KEY_Pointer_Button1), Gdk.ModifierType.AltMask));
+
 	// Shared brush and shape width controls
 	public static readonly ToolBindingDescriptor BrushDecreaseWidth = new (
 		"BrushTools.DecreaseWidth",
@@ -410,6 +434,10 @@ public sealed class KeyboardShortcutManager
 		TextCopy,
 		TextDecreaseFontSize,
 		TextIncreaseFontSize,
+		TextReEdit,
+		TextOpenProperties,
+		TextResize,
+		TextRotate,
 		BrushDecreaseWidth,
 		BrushIncreaseWidth,
 		SwapColors,

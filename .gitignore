@@ -1,9 +1,9 @@
 /docs-private
 .env*
 
-/.claude
 .claude/settings.local.json
 
+*.lock
 *.pidb
 *.suo
 *.swp

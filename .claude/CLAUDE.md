@@ -257,6 +257,14 @@ Impasto must stay rebasable against upstream Pinta: `git fetch upstream && git r
 - AI-generated translations must be marked in each PO entry with `#. AI-generated translation; human review requested.`
 - Add a descriptive `#. Translators: ...` note immediately above the AI-generated marker, so the entry reads `Translators` note, then AI-generated marker, then `msgid`/`msgstr`
 
+## Keybindings
+User can set custom keybindings for everything. They're saved in a keybindings .json file.
+When user updates keybindings, tooltips update too, so that the keybinding is shown in that tool tip.
+If user adds keybinding to feature that has None default keybinding, the hint tooltip still updates and adds that new keybinding.
+Examples already in the codebase.
+Keybinding menu usually shows user when duplicates have been set (red highlight as warning), but some buttons, like the tool menu buttons,
+use the same key to cycle through the tool menu buttons.
+
 ## Completed Features (This Fork)
 
 Based on `IMPASTO.md`, these are verified working:

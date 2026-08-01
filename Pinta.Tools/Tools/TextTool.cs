@@ -10,6 +10,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Cairo;
 using Pinta.Core;
@@ -23,10 +24,35 @@ public sealed class TextTool : BaseTool
 	private PointI start_click_point;
 	private bool tracking;
 	private readonly Gdk.Cursor cursor_move = GdkExtensions.CursorFromName (Pinta.Resources.StandardCursors.Move);
+	private readonly Gdk.Cursor cursor_rotate = CreateRotateCursor ();
+
+	private static Gdk.Cursor CreateRotateCursor ()
+	{
+		//Reuse the same rotation icon the image transform tools use.
+		Gdk.Texture texture = BaseTransformTool.LoadRotateTexture ();
+		return Gdk.Cursor.NewFromTexture (texture, texture.Width / 2, texture.Height / 2, null);
+	}
 
 	private PointI click_point;
 	private bool is_editing;
 	private RectangleI old_cursor_bounds = RectangleI.Zero;
+
+	//The kind of canvas manipulation (move/rotate/resize) currently in progress,
+	//invoked by dragging the dashed interaction rectangle around a text object.
+	private enum TextManipulation { None, Move, Rotate, Resize }
+
+	private TextManipulation manipulation = TextManipulation.None;
+	//The corner (0 TL, 1 TR, 2 BR, 3 BL) being dragged during a resize.
+	private int resize_corner;
+	//The object's rotation (degrees) and pointer angle (degrees) at gesture start.
+	private double start_rotation_angle;
+	private double start_pointer_angle;
+	//The font size (pixels) and center-to-corner distance at gesture start.
+	private double resize_start_fontsize;
+	private double resize_start_corner_dist;
+	//Prevents the toolbar's font-size spin handler from re-applying the toolbar font
+	//while the font size is being set programmatically (e.g. live during a corner resize).
+	private bool is_updating_font_size;
 
 	//The text object currently being edited or moved, or null.
 	private TextObject? current_text_object;
@@ -68,8 +94,13 @@ public sealed class TextTool : BaseTool
 	// (mirrors the nudge hint in BaseTransformTool).
 	private bool edit_hint_visible = false;
 	private TextObject? edit_hint_target;
+	private HitZone edit_hint_zone;
+	private TextObject? hover_hint_target;
+	private HitZone hover_hint_zone;
 	private Gtk.Popover? edit_hint_popover;
 	private Gtk.Label? edit_hint_label;
+	//Delays showing the hover hint until the cursor has lingered for a moment.
+	private uint hover_hint_timeout_id = 0;
 
 	//While this is true, text will not be committed upon Surface.Clone calls.
 	private bool ignore_clone_finalizations = false;
@@ -144,6 +175,8 @@ public sealed class TextTool : BaseTool
 	private ToolBarDropDownButton join_btn = null!;
 	private Gtk.Separator confirm_sep = null!;
 	private Gtk.Button confirm_btn = null!;
+	private Gtk.Separator text_properties_sep = null!;
+	private Gtk.Button text_properties_btn = null!;
 
 	protected override void OnBuildToolBar (Gtk.Box tb)
 	{
@@ -487,6 +520,23 @@ public sealed class TextTool : BaseTool
 	{
 		base.OnBuildToolBarEnd (tb);
 
+		text_properties_sep ??= GtkExtensions.CreateToolBarSeparator ();
+		tb.Append (text_properties_sep);
+
+		if (text_properties_btn == null) {
+			text_properties_btn = Gtk.Button.New ();
+			text_properties_btn.IconName = Pinta.Resources.Icons.LayerProperties;
+			text_properties_btn.TooltipText = TextPropertiesTooltip ();
+			text_properties_btn.CanFocus = false;
+			text_properties_btn.OnClicked += (_, _) => {
+				if (current_text_object is not null)
+					OpenTextProperties (current_text_object);
+			};
+			PintaCore.Shortcuts.ShortcutsChanged += (_, _) => text_properties_btn.TooltipText = TextPropertiesTooltip ();
+		}
+
+		tb.Append (text_properties_btn);
+
 		confirm_sep ??= GtkExtensions.CreateToolBarSeparator ();
 		tb.Append (confirm_sep);
 
@@ -501,14 +551,28 @@ public sealed class TextTool : BaseTool
 		UpdateConfirmButtonVisibility ();
 	}
 
-	// The checkmark only makes sense while text is actively being typed/edited.
+	// Both the properties button and the checkmark only make sense while text is
+	// actively being typed/edited.
 	private void UpdateConfirmButtonVisibility ()
 	{
 		if (confirm_btn is null || confirm_sep is null)
 			return;
 
 		confirm_btn.Visible = confirm_sep.Visible = is_editing;
+		UpdateTextPropertiesButtonVisibility ();
 	}
+
+	private void UpdateTextPropertiesButtonVisibility ()
+	{
+		if (text_properties_btn is null || text_properties_sep is null)
+			return;
+
+		text_properties_btn.Visible = text_properties_sep.Visible = is_editing;
+	}
+
+	private static string TextPropertiesTooltip ()
+		=> Translations.GetString ("Text properties ({0})",
+			ClickBindingLabel (KeyboardShortcutManager.TextOpenProperties));
 
 	private static string FinishTypingTooltip ()
 		=> Translations.GetString ("Finish typing ({0})",
@@ -527,6 +591,11 @@ public sealed class TextTool : BaseTool
 
 	private void HandleFontSizeChanged (object? sender, EventArgs e)
 	{
+		//When the font size is being set programmatically (e.g. live while resizing by
+		//dragging a corner), skip re-applying the toolbar font to the object.
+		if (is_updating_font_size)
+			return;
+
 		var font = font_button.FontDesc!.Copy ()!;
 		font.SetSize (PangoExtensions.UnitsFromPixels (font_size.GetValueAsInt ()));
 		font_button.FontDesc = font;
@@ -786,6 +855,10 @@ public sealed class TextTool : BaseTool
 			edit_hint_popover = null;
 			edit_hint_label = null;
 		}
+		if (hover_hint_timeout_id != 0) {
+			GLib.Functions.SourceRemove (hover_hint_timeout_id);
+			hover_hint_timeout_id = 0;
+		}
 		edit_hint_visible = false;
 	}
 	#endregion
@@ -813,8 +886,30 @@ public sealed class TextTool : BaseTool
 		//Store the mouse position.
 		PointI pt = e.Point;
 
-		// If we're editing and clicked inside the current text, just move the cursor there.
+		// If we're editing this object and click inside of it, decide whether to place the
+		// text cursor or to manipulate (move/rotate/resize) it. Manipulation can happen
+		// without leaving text-entry mode, so an already-positioned object can still be
+		// nudged around while the text input cursor is active.
 		if (is_editing && current_text_object is not null && current_text_object.TextBounds.Contains (pt)) {
+			TextObject editing = current_text_object;
+
+			//Rotate on the border/interior while holding the rotate modifier.
+			if (IsClickBindingPressed (KeyboardShortcutManager.TextRotate, e)) {
+				BeginManipulation (document, editing, CurrentUserLayer, TextManipulation.Rotate, e.PointDouble);
+				return;
+			}
+
+			//Corner / border clicks manipulate; interior clicks place the text cursor.
+			HitZone zone = GetHitZone (editing, e.PointDouble);
+			if (zone == HitZone.Resize) {
+				BeginManipulation (document, editing, CurrentUserLayer, TextManipulation.Resize, e.PointDouble, FindCorner (editing, e.PointDouble));
+				return;
+			}
+			if (zone == HitZone.Move) {
+				BeginManipulation (document, editing, CurrentUserLayer, TextManipulation.Move, e.PointDouble);
+				return;
+			}
+
 			TextPosition p = CurrentTextLayout.PointToTextPosition (pt);
 			CurrentTextEngine.SetCursorPosition (p, true);
 
@@ -828,15 +923,51 @@ public sealed class TextTool : BaseTool
 		if (is_editing)
 			CommitCurrentText ();
 
+		// Ctrl+Shift+Click opens the text properties window for the object under the cursor.
+		if (IsClickBindingPressed (KeyboardShortcutManager.TextOpenProperties, e)) {
+			(UserLayer? pl, TextObject? phit) = HitTest (pt, document, allLayers: true);
+			if (phit is not null) {
+				if (pl != CurrentUserLayer)
+					document.Layers.SetCurrentUserLayer (pl!); // NRT - Non-null when phit is non-null.
+				OpenTextProperties (phit);
+			}
+			return;
+		}
+
 		// Ctrl+click re-edits text (on any layer). A plain click on a text object on the
 		// current layer also selects and edits it.
-		(UserLayer? layer, TextObject? hit) = HitTest (pt, document, allLayers: ctrl_key);
+		(UserLayer? layer, TextObject? hit) = HitTest (pt, document, allLayers: ctrl_key || IsClickBindingPressed (KeyboardShortcutManager.TextReEdit, e));
 		if (hit is not null) {
 
 			//The mouse clicked on editable text. Switch to its layer if needed.
 			if (layer != CurrentUserLayer)
 				document.Layers.SetCurrentUserLayer (layer!); // NRT - Non-null when hit is non-null.
 
+			// Holding the rotate modifier (default Alt) rotates the object about its center.
+			if (IsClickBindingPressed (KeyboardShortcutManager.TextRotate, e)) {
+				BeginManipulation (document, hit, layer!, TextManipulation.Rotate, e.PointDouble);
+				return;
+			}
+
+			// Dragging a corner handle resizes (changes the font size proportionally).
+			HitZone zone = GetHitZone (hit, e.PointDouble);
+			if (zone == HitZone.Resize) {
+				BeginManipulation (document, hit, layer!, TextManipulation.Resize, e.PointDouble, FindCorner (hit, e.PointDouble));
+				return;
+			}
+
+			// Dragging the dashed border moves the object.
+			if (zone == HitZone.Move) {
+				BeginManipulation (document, hit, layer!, TextManipulation.Move, e.PointDouble);
+				return;
+			}
+
+			//Inside the padded interaction rectangle but on the text: if we got here the
+			//cursor is not on a corner or border yet was a reported hit, so just stop.
+			if (zone == HitZone.None)
+				return;
+
+			//The mouse clicked inside the text. Start editing it.
 			StartEditing (hit);
 
 			//Set the cursor in the editable text where the mouse was clicked.
@@ -880,17 +1011,46 @@ public sealed class TextTool : BaseTool
 		if (layer != CurrentUserLayer)
 			document.Layers.SetCurrentUserLayer (layer!); // NRT - Non-null when hit is non-null.
 
-		current_text_object = hit;
+		BeginManipulation (document, hit, layer!, TextManipulation.Move, e.PointDouble);
+	}
+
+	/// <summary>
+	/// Starts a move/rotate/resize gesture on the given text object.
+	/// </summary>
+	private void BeginManipulation (Document document, TextObject obj, UserLayer layer, TextManipulation kind, PointD mouse, int corner = -1)
+	{
+		current_text_object = obj;
 		editing_layer = layer;
-
-		//Remember the position of the mouse and the text before the text is dragged.
 		tracking = true;
-		start_mouse_xy = e.PointDouble;
-		start_click_point = hit.Engine.Origin;
+		manipulation = kind;
+		resize_corner = corner;
+		start_mouse_xy = mouse;
 
-		CaptureUndoState ();
+		//When starting a manipulation during an active text edit, the editing session has
+		//already captured the undo state, so don't clobber it. The final commit will fold
+		//the move/rotate/resize into the edit's history item.
+		if (!is_editing)
+			CaptureUndoState ();
 
-		//Change the cursor to indicate that the text is being dragged.
+		switch (kind) {
+			case TextManipulation.Move:
+				start_click_point = obj.Engine.Origin;
+				break;
+			case TextManipulation.Rotate:
+				start_rotation_angle = obj.Rotation;
+				start_pointer_angle = AngleDeg (mouse, GetRotationPivot (obj));
+				break;
+			case TextManipulation.Resize: {
+				layout.Engine = obj.Engine;
+				resize_start_fontsize = PangoExtensions.UnitsToPixels (obj.Engine.Font.GetSize ());
+				RectangleD pr = GetPaddedLocalRect (obj);
+				PointD[] localCorners = GetLocalPaddedCorners (pr);
+				resize_start_corner_dist = Math.Max (1, Distance (localCorners[corner], GetRotationPivot (obj)));
+				break;
+			}
+		}
+
+		//Change the cursor to indicate that the text is being manipulated.
 		UpdateMouseCursor (document);
 	}
 
@@ -900,54 +1060,168 @@ public sealed class TextTool : BaseTool
 
 		last_mouse_position = e.Point;
 
-		// If we're dragging the text around, do that
+		// If we're manipulating the text around, do that
 		if (tracking) {
-			PointD delta = new (
-				e.PointDouble.X - start_mouse_xy.X,
-				e.PointDouble.Y - start_mouse_xy.Y);
 
-			current_text_object!.Engine.Origin = new PointI (
-				(int) (start_click_point.X + delta.X),
-				(int) (start_click_point.Y + delta.Y));
+			TextObject obj = current_text_object!;
+
+			switch (manipulation) {
+				case TextManipulation.Move: {
+					PointD delta = new (
+						e.PointDouble.X - start_mouse_xy.X,
+						e.PointDouble.Y - start_mouse_xy.Y);
+
+					obj.Engine.Origin = new PointI (
+						(int) (start_click_point.X + delta.X),
+						(int) (start_click_point.Y + delta.Y));
+					break;
+				}
+
+				case TextManipulation.Rotate: {
+					double curAngle = AngleDeg (e.PointDouble, GetRotationPivot (obj));
+					obj.Rotation = NormalizeRotation (start_rotation_angle - (curAngle - start_pointer_angle));
+					break;
+				}
+
+				case TextManipulation.Resize: {
+					PointD pivot = GetRotationPivot (obj);
+					PointD lp = RotatePoint (e.PointDouble, pivot, -RotationRadians (obj));
+					double ratio = Distance (lp, pivot) / resize_start_corner_dist;
+					int newSize = Math.Max (1, (int) Math.Round (resize_start_fontsize * ratio));
+
+					//Reflect the new size in the toolbar's font size control in realtime.
+					if (font_size is not null) {
+						is_updating_font_size = true;
+						try {
+							font_size.Adjustment!.Value = newSize;
+						} finally {
+							is_updating_font_size = false;
+						}
+					}
+
+					Pango.FontDescription font = obj.Engine.Font.Copy ()!;
+					font.SetSize (PangoExtensions.UnitsFromPixels (newSize));
+					obj.Engine.SetFont (font, obj.Engine.Alignment, obj.Engine.Underline);
+					break;
+				}
+			}
 
 			RedrawText (false);
 		} else {
-			UpdateMouseCursor (document);
+			UpdateMouseCursor (document, e);
 			UpdateEditHint (document, e.Point);
 		}
 	}
 
 	protected override void OnMouseUp (Document document, ToolMouseEventArgs e)
 	{
-		// If we were dragging the text around, finish that up
+		// If we were manipulating the text, finish that up
 		if (!tracking)
 			return;
 
-		PointD delta = new (e.PointDouble.X - start_mouse_xy.X, e.PointDouble.Y - start_mouse_xy.Y);
-		PointI newOrigin = new (
-			(int) (start_click_point.X + delta.X),
-			(int) (start_click_point.Y + delta.Y));
+		if (current_text_object is not null) {
+			bool changed = manipulation switch {
+				TextManipulation.Move => current_text_object.Engine.Origin != start_click_point,
+				TextManipulation.Rotate => current_text_object.Rotation != start_rotation_angle,
+				TextManipulation.Resize => PangoExtensions.UnitsToPixels (current_text_object.Engine.Font.GetSize ()) != resize_start_fontsize,
+				_ => false,
+			};
 
-		//Commit the move as a history item if the object actually moved.
-		if (current_text_object is not null && current_text_object.Engine.Origin != start_click_point) {
-			current_text_object.Engine.Origin = newOrigin;
-			PushTextHistoryItem ();
+			//While editing, the change is folded into the editing session's own history item,
+			//so don't push a separate one here.
+			if (changed && !is_editing)
+				PushTextHistoryItem ();
 		}
 
-		RedrawText (false);
+		//If we're still editing (manipulated without leaving text-entry mode), redraw with
+		//the caret so the input cursor returns.
+		RedrawText (is_editing);
 		tracking = false;
+		manipulation = TextManipulation.None;
 		UpdateMouseCursor (document);
 	}
 
-	private void UpdateMouseCursor (Document document)
+	private void UpdateMouseCursor (Document document, ToolMouseEventArgs? e = null)
 	{
 		if (tracking) {
-			SetCursor (cursor_move);
+			Gdk.Cursor cursor = manipulation switch {
+				TextManipulation.Rotate => cursor_rotate,
+				TextManipulation.Resize => ResizeCursorForCorner (current_text_object!, resize_corner),
+				_ => cursor_move,
+			};
+			if (CurrentCursor != cursor)
+				SetCursor (cursor);
 			return;
 		}
 
-		if (CurrentCursor != DefaultCursor)
+		Gdk.Cursor? hoverCursor = GetHoverCursor (document, e);
+		if (hoverCursor is not null) {
+			if (CurrentCursor != hoverCursor)
+				SetCursor (hoverCursor);
+		} else if (CurrentCursor != DefaultCursor) {
 			SetCursor (DefaultCursor);
+		}
+	}
+
+	//Returns the resize cursor glyph for a corner (0 TL, 1 TR, 2 BR, 3 BL), accounting
+	//for the object's rotation via the same octant logic the image transform tools use.
+	private static Gdk.Cursor ResizeCursorForCorner (TextObject obj, int corner)
+		=> ResizeCursors.ForCorner (corner, thetaDeg: -obj.Rotation);
+
+	//The cursor to show while hovering, according to what is under the pointer.
+	private Gdk.Cursor? GetHoverCursor (Document document, ToolMouseEventArgs? e)
+	{
+		if (!workspace.HasOpenDocuments)
+			return null;
+
+		(_, TextObject? hit) = HitTest (last_mouse_position, document, allLayers: true);
+		if (hit is null || hit.IsEmpty)
+			return null;
+
+		//Holding the rotate modifier (default Alt) over an object rotates it.
+		if (e is not null && IsClickBindingPressed (KeyboardShortcutManager.TextRotate, e))
+			return cursor_rotate;
+
+		HitZone zone = GetHitZone (hit, last_mouse_position.ToDouble ());
+		if (zone == HitZone.Resize)
+			return ResizeCursorForCorner (hit, FindCorner (hit, last_mouse_position.ToDouble ()));
+		if (zone == HitZone.Move)
+			return cursor_move;
+
+		return null;
+	}
+
+	//Checks whether a mouse click matches a "click" tool binding (e.g. Ctrl+Shift+Click),
+	//by matching the modifiers the user configured for that binding.
+	private static bool IsClickBindingPressed (ToolBindingDescriptor binding, ToolMouseEventArgs e)
+	{
+		KeyGesture gesture = PintaCore.Shortcuts.GetToolBinding (binding);
+		if (!gesture.IsValid)
+			return false;
+
+		return (e.State & KeyGesture.AcceleratorMask) == gesture.Modifiers;
+	}
+
+	//Renders a human-readable label for a "click" tool binding (e.g. "Ctrl+Shift+Click").
+	private static string ClickBindingLabel (ToolBindingDescriptor binding)
+	{
+		KeyGesture gesture = PintaCore.Shortcuts.GetToolBinding (binding);
+		if (!gesture.IsValid)
+			return Translations.GetString ("None");
+
+		List<string> parts = [];
+		Gdk.ModifierType m = gesture.Modifiers;
+		if (m.HasFlag (Gdk.ModifierType.ControlMask))
+			parts.Add ("Ctrl");
+		if (m.HasFlag (Gdk.ModifierType.ShiftMask))
+			parts.Add ("Shift");
+		if (m.HasFlag (Gdk.ModifierType.AltMask))
+			parts.Add ("Alt");
+		if (m.HasFlag (Gdk.ModifierType.SuperMask) || m.HasFlag (Gdk.ModifierType.MetaMask))
+			parts.Add ("Super");
+		parts.Add ("Click");
+
+		return string.Join ("+", parts);
 	}
 	#endregion
 
@@ -1488,6 +1762,42 @@ public sealed class TextTool : BaseTool
 		selection = null;
 		old_cursor_bounds = RectangleI.Zero;
 	}
+
+	#endregion
+
+	#region Text Properties Window
+
+	/// <summary>
+	/// Opens the Text Properties window for the given text object. Changes are applied
+	/// live; a single history item is pushed when the window closes (only if something
+	/// actually changed).
+	/// </summary>
+	private void OpenTextProperties (TextObject obj)
+	{
+		if (!workspace.HasOpenDocuments)
+			return;
+
+		//Commit any in-progress edit so the object is in a stable, final state.
+		if (is_editing)
+			CommitCurrentText ();
+
+		CaptureUndoState ();
+		RedrawText (false);
+
+		TextPropertiesDialog? dialog = null;
+		dialog = new TextPropertiesDialog (
+			chrome.MainWindow,
+			obj,
+			() => RedrawText (false),
+			() => {
+				RedrawText (false);
+				PushTextHistoryItem ();
+				dialog?.Dispose ();
+			});
+
+		dialog.Present ();
+	}
+
 	#endregion
 
 	#region Text Drawing Methods
@@ -1564,15 +1874,10 @@ public sealed class TextTool : BaseTool
 	}
 
 	/// <summary>
-	/// Computes the on-canvas bounds of a text object.
+	/// Computes the on-canvas bounds of a text object, accounting for rotation.
 	/// </summary>
 	private RectangleI GetTextObjectBounds (TextObject obj)
-	{
-		layout.Engine = obj.Engine;
-		return layout
-			.GetLayoutBounds ()
-			.Inflated (10 + obj.OutlineWidth, 10 + obj.OutlineWidth);
-	}
+		=> GetRotatedBounds (obj);
 
 	/// <summary>
 	/// Draws a single text object (using its own font, colors, and style) onto the given layer's TextLayer.
@@ -1607,6 +1912,8 @@ public sealed class TextTool : BaseTool
 		g.Save ();
 		PangoCairo.Functions.ContextSetFontOptions (chrome.MainWindow.GetPangoContext (), options);
 
+		ApplyRotation (g, obj);
+
 		// Selected text highlight (only for the active object).
 		if (isActive) {
 			Color c = new (
@@ -1632,6 +1939,7 @@ public sealed class TextTool : BaseTool
 			using Context g2 = new (surf);
 			if (isActive)
 				selection?.Clip (g2);
+			ApplyRotation (g2, obj);
 			g2.FillRectangle (layout.GetLayoutBounds ().ToDouble (), engine.SecondaryColor);
 		}
 
@@ -1694,8 +2002,13 @@ public sealed class TextTool : BaseTool
 			if (obj.IsEmpty)
 				continue;
 
-			//Draw the text edit rectangle.
-			g.AppendPath (g.CreateRectanglePath (obj.TextBounds.ToDouble ()));
+			//Draw the rotated text interaction rectangle (the dashed outline).
+			PointD[] corners = GetInteractionCorners (obj);
+
+			g.MoveTo (corners[3].X, corners[3].Y);
+			foreach (PointD corner in corners)
+				g.LineTo (corner.X, corner.Y);
+			g.ClosePath ();
 
 			g.LineWidth = 1;
 
@@ -1706,6 +2019,23 @@ public sealed class TextTool : BaseTool
 			g.SetSourceColor (new Color (1, .1, .2));
 
 			g.Stroke ();
+
+			//Draw the corner resize handles as blue dots, matching the look of the
+			//selection / shape-handle grips used elsewhere in the app.
+			g.Save ();
+			g.SetDash ([], 0);
+			const double HANDLE_RADIUS = 5;
+			foreach (PointD corner in corners) {
+				g.NewPath ();
+				g.Arc (corner.X, corner.Y, HANDLE_RADIUS, 0, 2 * Math.PI);
+				g.ClosePath ();
+				g.SetSourceColor (new Color (0, 0, 1));
+				g.FillPreserve ();
+				g.LineWidth = 1.5;
+				g.SetSourceColor (new Color (1, 1, 1, 0.85));
+				g.Stroke ();
+			}
+			g.Restore ();
 		}
 
 		g.Restore ();
@@ -1727,6 +2057,150 @@ public sealed class TextTool : BaseTool
 
 	#endregion
 
+	#region Text Manipulation Geometry
+
+	private static double DegToRad (double deg) => deg * Math.PI / 180.0;
+	private static double RadToDeg (double rad) => rad * 180.0 / Math.PI;
+
+	//A positive Rotation (degrees) renders as counter-clockwise on screen.
+	private double RotationRadians (TextObject obj) => -DegToRad (obj.Rotation);
+
+	private static PointD RotatePoint (PointD p, PointD center, double angleRad)
+	{
+		double dx = p.X - center.X;
+		double dy = p.Y - center.Y;
+		double cos = Math.Cos (angleRad);
+		double sin = Math.Sin (angleRad);
+		return new PointD (
+			center.X + dx * cos - dy * sin,
+			center.Y + dx * sin + dy * cos);
+	}
+
+	private static double Distance (PointD a, PointD b)
+	{
+		double dx = a.X - b.X;
+		double dy = a.Y - b.Y;
+		return Math.Sqrt (dx * dx + dy * dy);
+	}
+
+	private static double AngleDeg (PointD p, PointD center)
+		=> Math.Atan2 (p.Y - center.Y, p.X - center.X) * 180.0 / Math.PI;
+
+	private static double NormalizeRotation (double degrees)
+	{
+		degrees %= 360;
+		if (degrees < 0)
+			degrees += 360;
+		return degrees;
+	}
+
+	//Rotates the given context about the text object's fixed top-left origin so the
+	//whole object (fill, stroke, selection highlight, and caret) renders rotated.
+	private void ApplyRotation (Context g, TextObject obj)
+	{
+		if (obj.Rotation == 0)
+			return;
+
+		PointD pivot = GetRotationPivot (obj);
+		g.Translate (pivot.X, pivot.Y);
+		g.Rotate (RotationRadians (obj));
+		g.Translate (-pivot.X, -pivot.Y);
+	}
+
+	//The rotation pivot of the text object, in canvas coordinates. This is the object's
+	//top-left origin, which does NOT move when the content (and thus its layout bounds)
+	//grows or shrinks. Rotating about this fixed point keeps an already-positioned,
+	//rotated text in place while the user types more or less text.
+	private PointD GetRotationPivot (TextObject obj)
+		=> obj.Engine.Origin.ToDouble ();
+
+	//The unrotated, outline-padded rectangle that the dashed interaction box is based on.
+	private RectangleD GetPaddedLocalRect (TextObject obj)
+	{
+		layout.Engine = obj.Engine;
+		RectangleD local = layout.GetLayoutBounds ().ToDouble ();
+		double pad = 10 + obj.OutlineWidth;
+		return local.Inflated (pad, pad);
+	}
+
+	//The 4 local (unrotated) padded corners: 0 TL, 1 TR, 2 BR, 3 BL.
+	private static PointD[] GetLocalPaddedCorners (RectangleD pr)
+		=> [
+			pr.Location (),
+			new PointD (pr.Right + 1, pr.Top),
+			new PointD (pr.Right + 1, pr.Bottom + 1),
+			new PointD (pr.Left, pr.Bottom + 1),
+		];
+
+	//The 4 screen-space (rotated) corners of the dashed interaction rectangle.
+	private PointD[] GetInteractionCorners (TextObject obj)
+	{
+		RectangleD pr = GetPaddedLocalRect (obj);
+		PointD pivot = GetRotationPivot (obj);
+		double a = RotationRadians (obj);
+		PointD[] local = GetLocalPaddedCorners (pr);
+		return [RotatePoint (local[0], pivot, a), RotatePoint (local[1], pivot, a), RotatePoint (local[2], pivot, a), RotatePoint (local[3], pivot, a)];
+	}
+
+	//The axis-aligned bounding box of the rotated interaction rectangle.
+	private RectangleI GetRotatedBounds (TextObject obj)
+	{
+		PointD[] corners = GetInteractionCorners (obj);
+		double minX = corners.Min (c => c.X), minY = corners.Min (c => c.Y);
+		double maxX = corners.Max (c => c.X), maxY = corners.Max (c => c.Y);
+		return new RectangleD (minX, minY, maxX - minX, maxY - minY).ToInt ();
+	}
+
+	private enum HitZone { None, Move, Resize, Interior }
+
+	//Classifies where the cursor is relative to a text object's interaction rectangle.
+	private HitZone GetHitZone (TextObject obj, PointD p)
+	{
+		if (obj.IsEmpty)
+			return HitZone.None;
+
+		RectangleD pr = GetPaddedLocalRect (obj);
+		PointD pivot = GetRotationPivot (obj);
+		PointD lp = RotatePoint (p, pivot, -RotationRadians (obj));
+
+		const double HANDLE_R = 16;
+		const double EDGE_R = 8;
+
+		PointD[] corners = GetLocalPaddedCorners (pr);
+		for (int i = 0; i < 4; i++)
+			if (Distance (lp, corners[i]) <= HANDLE_R)
+				return HitZone.Resize;
+
+		if (!pr.ContainsPoint (lp))
+			return HitZone.None;
+
+		//Near an edge of the dashed rectangle → drag to move.
+		double nearX = Math.Min (lp.X - pr.Left, pr.Right + 1 - lp.X);
+		double nearY = Math.Min (lp.Y - pr.Top, pr.Bottom + 1 - lp.Y);
+		if (Math.Min (nearX, nearY) <= EDGE_R)
+			return HitZone.Move;
+
+		return HitZone.Interior;
+	}
+
+	//Returns the local corner index (0 TL, 1 TR, 2 BR, 3 BL) nearest to the point.
+	private int FindCorner (TextObject obj, PointD p)
+	{
+		PointD[] corners = GetInteractionCorners (obj);
+		int best = 0;
+		double bestDist = double.MaxValue;
+		for (int i = 0; i < 4; i++) {
+			double d = Distance (p, corners[i]);
+			if (d < bestDist) {
+				bestDist = d;
+				best = i;
+			}
+		}
+		return best;
+	}
+
+	#endregion
+
 	#region Hit Testing & Edit Hint
 
 	/// <summary>
@@ -1736,10 +2210,13 @@ public sealed class TextTool : BaseTool
 	private (UserLayer? layer, TextObject? text) HitTest (PointI point, Document document, bool allLayers)
 	{
 		//Search in reverse so the topmost (last-drawn) object wins when they overlap.
+		//Bounds are inflated slightly so the resize grips (which stick out a bit past the
+		//dashed rectangle's bounding box) are easy to grab.
+		const int HIT_MARGIN = 10;
 		IReadOnlyList<TextObject> currentObjects = CurrentUserLayer.TextObjects;
 		for (int i = currentObjects.Count - 1; i >= 0; i--) {
 			TextObject obj = currentObjects[i];
-			if (!obj.IsEmpty && obj.TextBounds.Contains (point))
+			if (!obj.IsEmpty && obj.TextBounds.Inflated (HIT_MARGIN, HIT_MARGIN).Contains (point))
 				return (CurrentUserLayer, obj);
 		}
 
@@ -1751,7 +2228,7 @@ public sealed class TextTool : BaseTool
 				IReadOnlyList<TextObject> objects = ul.TextObjects;
 				for (int i = objects.Count - 1; i >= 0; i--) {
 					TextObject obj = objects[i];
-					if (!obj.IsEmpty && obj.TextBounds.Contains (point))
+					if (!obj.IsEmpty && obj.TextBounds.Inflated (HIT_MARGIN, HIT_MARGIN).Contains (point))
 						return (ul, obj);
 				}
 			}
@@ -1779,22 +2256,38 @@ public sealed class TextTool : BaseTool
 			return;
 		}
 
-		ShowEditHint (hit);
+		HitZone zone = GetHitZone (hit, mousePosition.ToDouble ());
+
+		//Already showing the right hint for this object/zone.
+		if (edit_hint_visible && edit_hint_target == hit && edit_hint_zone == zone)
+			return;
+
+		//Schedule (or reschedule) the hint to appear after the cursor lingers briefly.
+		if (hover_hint_timeout_id != 0) {
+			GLib.Functions.SourceRemove (hover_hint_timeout_id);
+			hover_hint_timeout_id = 0;
+		}
+
+		hover_hint_target = hit;
+		hover_hint_zone = zone;
+		hover_hint_timeout_id = GLib.Functions.TimeoutAdd (0, HoverHintDelayMs, () => {
+			hover_hint_timeout_id = 0;
+			if (edit_hint_visible && edit_hint_target == hit && edit_hint_zone == zone)
+				return false;
+			ShowHint (hit, zone);
+			return false;
+		});
 	}
 
-	private void ShowEditHint (TextObject obj)
+	//Show the hover hint (either the general one or the corner resize one) for an object.
+	private void ShowHint (TextObject obj, HitZone zone)
 	{
 		if (!workspace.HasOpenDocuments)
 			return;
 
-		//The hint is already anchored to this object.
-		if (edit_hint_visible && edit_hint_target == obj)
-			return;
-
 		Gtk.Widget canvas = workspace.ActiveWorkspace.Canvas;
 
-		// Translators: hint shown when hovering an existing text object with the text tool.
-		string hint = Translations.GetString ("Ctrl+Click to edit");
+		string hint = zone == HitZone.Resize ? CornerHintText () : EditHintText ();
 
 		if (edit_hint_popover is null) {
 			edit_hint_popover = Gtk.Popover.New ();
@@ -1815,13 +2308,20 @@ public sealed class TextTool : BaseTool
 			}
 		}
 
-		//Anchor the popover to the lower-right of the hovered text object,
-		//mirroring the nudge hint location.
-		PointD lowerRightView = workspace.ActiveWorkspace.CanvasPointToView (
-			new PointD (obj.TextBounds.Right, obj.TextBounds.Bottom));
+		//Anchor the popover to the hovered corner for the resize hint, otherwise to the
+		//lower-right of the object (mirroring the nudge hint location).
+		PointD anchor;
+		if (zone == HitZone.Resize) {
+			PointD[] corners = GetInteractionCorners (obj);
+			anchor = corners[FindCorner (obj, last_mouse_position.ToDouble ())];
+		} else {
+			anchor = new PointD (obj.TextBounds.Right, obj.TextBounds.Bottom);
+		}
+
+		PointD anchorView = workspace.ActiveWorkspace.CanvasPointToView (anchor);
 		Gdk.Rectangle pointing = new () {
-			X = (int) Math.Clamp (lowerRightView.X, 0, 10000),
-			Y = (int) Math.Clamp (lowerRightView.Y, 0, 10000),
+			X = (int) Math.Clamp (anchorView.X, 0, 10000),
+			Y = (int) Math.Clamp (anchorView.Y, 0, 10000),
 			Width = 1,
 			Height = 1
 		};
@@ -1830,10 +2330,32 @@ public sealed class TextTool : BaseTool
 		edit_hint_popover.Popup ();
 		edit_hint_visible = true;
 		edit_hint_target = obj;
+		edit_hint_zone = zone;
 	}
+
+	private static string EditHintText ()
+		// Translators: hints shown when hovering a text object with the text tool.
+		=> string.Join ("\n",
+			Translations.GetString ("{0} to edit", ClickBindingLabel (KeyboardShortcutManager.TextReEdit)),
+			Translations.GetString ("{0} to open text properties", ClickBindingLabel (KeyboardShortcutManager.TextOpenProperties)),
+			Translations.GetString ("Right click to move"));
+
+	// Translators: hints shown when hovering a text object's resize corner.
+	private static string CornerHintText ()
+		=> string.Join ("\n",
+			Translations.GetString ("Drag corner to resize (changes font size)"),
+			Translations.GetString ("{0} to rotate", ClickBindingLabel (KeyboardShortcutManager.TextRotate)));
+
+	//How long (ms) the cursor must linger over an object before its hint appears.
+	private const uint HoverHintDelayMs = 600;
 
 	private void HideEditHint ()
 	{
+		if (hover_hint_timeout_id != 0) {
+			GLib.Functions.SourceRemove (hover_hint_timeout_id);
+			hover_hint_timeout_id = 0;
+		}
+
 		if (!edit_hint_visible && edit_hint_popover is null)
 			return;
 

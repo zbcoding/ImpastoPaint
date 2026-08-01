@@ -1109,7 +1109,7 @@ public abstract class BaseTransformTool : BaseTool
 	/// Tries direct file load first (bypasses Gtk IconTheme recoloring), then
 	/// Resources.GetIcon, then a manual Cairo fallback.
 	/// </summary>
-	private static Gdk.Texture LoadRotateTexture ()
+	internal static Gdk.Texture LoadRotateTexture ()
 	{
 		// Try direct file load from the installed icons directory — this preserves
 		// the white halo + black stroke, unlike the symbolic IconTheme path.

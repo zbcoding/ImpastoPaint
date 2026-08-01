@@ -28,6 +28,9 @@ public sealed class TextObject
 	public int OutlineWidth { get; set; } = 2;
 	public LineJoin LineJoin { get; set; } = LineJoin.Miter;
 
+	//The rotation of the text, in degrees, counter-clockwise. 0 is unrotated.
+	public double Rotation { get; set; } = 0;
+
 	public TextObject (TextEngine engine)
 	{
 		Engine = engine;
@@ -43,6 +46,7 @@ public sealed class TextObject
 			FillStyle = FillStyle,
 			OutlineWidth = OutlineWidth,
 			LineJoin = LineJoin,
+			Rotation = Rotation,
 		};
 
 	public static List<TextObject> CloneAll (IReadOnlyList<TextObject> objects)

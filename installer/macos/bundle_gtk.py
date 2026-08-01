@@ -14,7 +14,8 @@ RSVG_LIB = "lib/librsvg-2.2.dylib"
 TIFF_LIB = "lib/libtiff.6.dylib"
 WEBP_DEMUX_LIB = "lib/libwebpdemux.2.dylib"
 WEBP_MUX_LIB = "lib/libwebpmux.3.dylib"
-ROOT_LIBS = [GTK_LIB, RSVG_LIB, TIFF_LIB, WEBP_DEMUX_LIB, WEBP_MUX_LIB]
+AVIF_LIB = "lib/libavif.16.dylib"
+ROOT_LIBS = [GTK_LIB, RSVG_LIB, TIFF_LIB, WEBP_DEMUX_LIB, WEBP_MUX_LIB, AVIF_LIB]
 
 ADWAITA_THEME = "share/icons/Adwaita/index.theme"
 PIXBUF_LOADERS = "lib/gdk-pixbuf-2.0/2.10.0"

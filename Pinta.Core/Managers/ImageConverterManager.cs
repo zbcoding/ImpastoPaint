@@ -45,8 +45,14 @@ public sealed class ImageConverterManager
 	private static IEnumerable<FormatDescriptor> GetInitialFormats ()
 	{
 		// All the formats supported by Gdk
-		foreach (var format in GdkPixbufExtensions.GetFormats ())
+		foreach (var format in GdkPixbufExtensions.GetFormats ()) {
+			// AVIF is handled by our own importer/exporter below, so that saving
+			// works even though gdk-pixbuf's AVIF loader is read-only.
+			if (format.GetName ()?.Equals ("avif", StringComparison.OrdinalIgnoreCase) == true)
+				continue;
+
 			yield return CreateFormatDescriptor (format);
+		}
 
 		// Create all the formats we have our own importers/exporters for
 
@@ -80,6 +86,16 @@ public sealed class ImageConverterManager
 			supportsLayers: false
 		);
 		yield return netpbmPortablePixmapDescriptor;
+
+		AvifFormat avifHandler = new ();
+		FormatDescriptor avifFormatDescriptor = new (
+			displayPrefix: "AVIF",
+			extensions: ["avif", "AVIF"],
+			mimes: ["image/avif"],
+			importer: avifHandler,
+			exporter: AvifFormat.IsAvailable ? avifHandler : null,
+			supportsLayers: false);
+		yield return avifFormatDescriptor;
 	}
 
 	private static FormatDescriptor CreateFormatDescriptor (PixbufFormat format)

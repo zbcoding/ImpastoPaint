@@ -86,6 +86,12 @@
     <GtkFile Include="$(MinGWBinFolder)\libwebpdemux-2.dll" />
     <GtkFile Include="$(MinGWBinFolder)\libwebpmux-3.dll" />
 
+    <!-- Additional dependencies for the avif exporter (libavif + libaom AV1 encoder). -->
+    <GtkFile Include="$(MinGWBinFolder)\libavif-16.dll" />
+    <GtkFile Include="$(MinGWBinFolder)\libaom-3.dll" />
+    <GtkFile Include="$(MinGWBinFolder)\libyuv.dll" />
+    <GtkFile Include="$(MinGWBinFolder)\libsharpyuv-0.dll" />
+
     <!-- Package the Vulkan DLL (https://gitlab.gnome.org/GNOME/gtk/-/issues/7214) -->
     <GtkFile Include="$(MinGWBinFolder)\vulkan-1.dll" />
 

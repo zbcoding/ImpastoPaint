@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Text;
 using Cairo;
 using NUnit.Framework;
 
@@ -62,4 +63,21 @@ internal sealed class FileFormatTests
 			new[] { "sixcolors_standard_lf.ppm" }
 		),
 	];
+
+	[Test]
+	public void Export_Avif_ProducesValidFile ()
+	{
+		// AVIF export needs the native libavif library; skip where it is not installed.
+		Assume.That (AvifFormat.IsAvailable, Is.True, "libavif is not available on this system");
+
+		using ImageSurface surface = Utilities.LoadImage (Utilities.GetAssetPath ("sixcolorsinput.gif"));
+
+		AvifFormat exporter = new ();
+		byte[] bytes = exporter.EncodeImage (surface, quality: 90);
+
+		// ISO Base Media File Format: 4-byte size, then "ftyp" and the "avif" brand.
+		Assert.That (bytes.Length, Is.GreaterThan (16));
+		Assert.That (Encoding.ASCII.GetString (bytes, 4, 4), Is.EqualTo ("ftyp"));
+		Assert.That (Encoding.ASCII.GetString (bytes, 8, 4), Is.EqualTo ("avif"));
+	}
 }

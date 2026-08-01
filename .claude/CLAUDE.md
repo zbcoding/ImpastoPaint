@@ -6,9 +6,35 @@ These rules apply to every task in this project unless explicitly overridden.
 Bias: caution over speed on non-trivial work. Use judgment on trivial tasks.
 
 ## Use JJ for version management
-it's a jj and git combined repo.
-Use jj workspaces to avoid file clashes when multiple agents are running.
-Use jj commits so file merges are easier.
+It's a jj and git combined repo (colocated). `main` is the shared trunk everyone merges into.
+
+**Never do code work in the `default` workspace.** It's shared — another agent may be
+mid-edit there right now, and any jj command run against it snapshots whatever is on
+disk into your commit, silently absorbing their in-progress work into yours.
+- Per agent, per task: `jj workspace add <name> <path> -r main` before touching any file.
+  Do all edits, builds, and `jj commit`s inside that workspace.
+- Read-only history lookups (`jj log`, `jj show`) against the repo in general are fine from
+  anywhere, but pass `--ignore-working-copy` when running them from `default` so you don't
+  trigger a snapshot of someone else's live edit.
+- Plain `git log`/`git show`/`git diff` never touch the jj working copy — prefer them over
+  `jj` equivalents for pure history reading in a shared context.
+
+**Rebase onto the current `main` tip immediately before landing, not whenever you branched.**
+This is the failure mode that already bit us once: an agent's fix was silently deleted
+by a second agent's *own, unrelated* fix landing right after, because the second agent's
+file was a stale pre-fix copy and its diff clobbered the first agent's change along with
+making its own. Before moving the `main` bookmark:
+1. `jj rebase -d main@` (or equivalent) so your commit's parent is the actual current tip,
+   not wherever your workspace started.
+2. Skim `jj diff` against that new parent — if it touches a file another commit changed
+   since you branched, read that file's current state, don't trust your workspace's copy.
+3. Build + run tests on the rebased commit, then `jj bookmark set main -r <your commit>`
+   and `jj git export`.
+- If two agents land on `main` at nearly the same moment, the second one to rebase will
+  see the collision in step 2 — resolve it there, don't just force the bookmark forward.
+- After anything unexpected turns up in `git status`/`git log` in `default` (files you
+  didn't touch, detached-looking `HEAD`), that's normal jj colocation, not damage — don't
+  `git reset`/`checkout` it away. Investigate with read-only commands first.
 
 ## Variable Naming
 Jane Street house style inspired by OCAML descriptive tranformation

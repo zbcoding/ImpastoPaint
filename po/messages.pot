@@ -3,7 +3,6 @@
 # This file is distributed under the same license as the PACKAGE package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
-#, fuzzy
 # PO translation metadata:
 # Translations must include a descriptive translator note.
 # AI-generated translations are tagged.
@@ -12,6 +11,7 @@
 #   #. AI-generated translation; human review requested.
 #   msgid "..."
 #   msgstr "..."
+#, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
@@ -84,6 +84,12 @@ msgstr ""
 msgid "Added"
 msgstr ""
 
+#: Pinta/Dialogs/PreferencesDialog.cs:147
+msgid ""
+"Adds a darker shade of each color beneath the standard palette. The status "
+"bar grows taller to fit the extra row."
+msgstr ""
+
 #: ../Pinta/MainWindow.cs:451
 msgid "Adjustments"
 msgstr ""
@@ -95,6 +101,11 @@ msgstr ""
 #: ../Pinta.Effects/Dialogs/Effects.AlignmentDialog.cs:72
 #: ../Pinta.Effects/Effects/AlignObjectEffect.cs:12
 msgid "Align Object"
+msgstr ""
+
+#. Translators: This mode shows every contextual popover hint in the UI.
+#: ../Pinta/Dialogs/PreferencesDialog.cs:109
+msgid "All"
 msgstr ""
 
 #. Translators: 'All Petite Caps' refers to the font-variant text property
@@ -111,6 +122,13 @@ msgstr ""
 #: ../Pinta.Gui.Addins/AddinManagerDialog.cs:285
 #: ../Pinta/Actions/File/OpenDocumentAction.cs:102
 msgid "All files"
+msgstr ""
+
+#. Translators: Describes the three available popover-hint display modes.
+#: ../Pinta/Dialogs/PreferencesDialog.cs:136
+msgid ""
+"All: show all UI hints. Essential: show only specific tool hints. None: turn "
+"off UI popover hints."
 msgstr ""
 
 #: ../Pinta.Gui.Widgets/Widgets/ColorPickerSlider.cs:340
@@ -146,6 +164,11 @@ msgstr ""
 #: ../Pinta/Actions/Layers/RotateZoomLayerAction.cs:145
 #: ../Pinta/Dialogs/CanvasGridSettingsDialog.cs:52
 msgid "Angle"
+msgstr ""
+
+#. Translators: Tooltip for the arrowhead angle spin button.
+#: ../Pinta.Tools/Editable/EditEngines/ArrowedEditEngine.cs:321
+msgid "Angle, in degrees, between the arrowhead's wings and the line."
 msgstr ""
 
 #: ../Pinta.Effects/Effects/TwistEffect.cs:225
@@ -192,6 +215,26 @@ msgstr ""
 msgid "Available in repository: {0}"
 msgstr ""
 
+#. Translators: Item hint for the Color Picker's 3 x 3 Region sample size.
+#: ../Pinta.Tools/Tools/ColorPickerTool.cs:240
+msgid "Average the colors in a 3 x 3 area around the pointer."
+msgstr ""
+
+#. Translators: Item hint for the Color Picker's 5 x 5 Region sample size.
+#: ../Pinta.Tools/Tools/ColorPickerTool.cs:241
+msgid "Average the colors in a 5 x 5 area around the pointer."
+msgstr ""
+
+#. Translators: Item hint for the Color Picker's 7 x 7 Region sample size.
+#: ../Pinta.Tools/Tools/ColorPickerTool.cs:242
+msgid "Average the colors in a 7 x 7 area around the pointer."
+msgstr ""
+
+#. Translators: Item hint for the Color Picker's 9 x 9 Region sample size.
+#: ../Pinta.Tools/Tools/ColorPickerTool.cs:243
+msgid "Average the colors in a 9 x 9 area around the pointer."
+msgstr ""
+
 #: ../Pinta.Core/Managers/WorkspaceManager.cs:131
 msgid "Background"
 msgstr ""
@@ -202,6 +245,10 @@ msgstr ""
 
 #: ../Pinta/Dialogs/NewImageDialog.cs:302
 msgid "Background:"
+msgstr ""
+
+#: Pinta/Dialogs/PreferencesDialog.cs:171
+msgid "Backup"
 msgstr ""
 
 #: ../Pinta/Actions/Help/AboutDialogAction.cs:94
@@ -295,6 +342,10 @@ msgstr ""
 msgid "Brush Size"
 msgstr ""
 
+#: ../Pinta.Core/Managers/KeyboardShortcutManager.cs:191
+msgid "Brush Tools"
+msgstr ""
+
 #: ../Pinta.Tools/Tools/BaseBrushTool.cs:129
 msgid "Brush width"
 msgstr ""
@@ -323,11 +374,12 @@ msgstr ""
 #: ../Pinta.Gui.Widgets/Widgets/ColorPickerDialog.cs:392
 #: ../Pinta/Actions/File/SaveDocumentImplementationAction.cs:96
 #: ../Pinta/Dialogs/PreferencesDialog.cs:111
+#: Pinta/Dialogs/PreferencesDialog.cs:247
 msgid "Cancel"
 msgstr ""
 
-#: ../Pinta/Pads/CanvasPad.cs:41
-#: ../Pinta/Dialogs/PreferencesDialog.cs:90
+#: ../Pinta/Pads/CanvasPad.cs:41 ../Pinta/Dialogs/PreferencesDialog.cs:90
+#: Pinta/Dialogs/PreferencesDialog.cs:168
 msgid "Canvas"
 msgstr ""
 
@@ -337,6 +389,11 @@ msgstr ""
 
 #: ../Pinta.Core/Actions/ViewActions.cs:125
 msgid "Canvas Grid..."
+msgstr ""
+
+#: ../Pinta/Dialogs/PreferencesDialog.cs:71
+#: Pinta/Dialogs/PreferencesDialog.cs:101
+msgid "Canvas surround color:"
 msgstr ""
 
 #: ../Pinta.Effects/Effects/CellsEffect.cs:176
@@ -405,6 +462,7 @@ msgstr ""
 #: ../Pinta.Effects/Dialogs/Effects.LevelsDialog.cs:639
 #: ../Pinta.Gui.Widgets/Dialogs/SimpleEffectDialog.cs:356
 #: ../Pinta/Dialogs/PreferencesDialog.cs:107
+#: Pinta/Dialogs/PreferencesDialog.cs:227
 msgid "Choose Color"
 msgstr ""
 
@@ -414,6 +472,11 @@ msgstr ""
 
 #: ../Pinta.Gui.Widgets/Widgets/StatusBarColorPaletteWidget.cs:153
 msgid "Choose Palette Color"
+msgstr ""
+
+#: ../Pinta/Dialogs/PreferencesDialog.cs:53
+#: Pinta/Dialogs/PreferencesDialog.cs:81
+msgid "Choose color..."
 msgstr ""
 
 #: ../Pinta.Tools/Brushes/CircleBrush.cs:36
@@ -481,6 +544,7 @@ msgstr ""
 #: ../Pinta/Dialogs/NewImageDialog.cs:410
 #: ../Pinta/Dialogs/NewImageDialog.cs:429
 #: ../Pinta/Dialogs/NewImageDialog.cs:525
+#: Pinta/Dialogs/PreferencesDialog.cs:169
 msgid "Clipboard"
 msgstr ""
 
@@ -607,6 +671,11 @@ msgstr ""
 msgid "Copyright"
 msgstr ""
 
+#. Translators: Tooltip for the corner radius spin button on rounded shapes.
+#: ../Pinta.Tools/Editable/EditEngines/RoundedLineEditEngine.cs:93
+msgid "Corner-rounding radius, in pixels, applied at each point of the shape."
+msgstr ""
+
 #. Translators: Gradient with the colors of blue and pink cotton candy
 #: ../Pinta.Effects/Utilities/GradientHelper.cs:39
 msgid "Cotton Candy"
@@ -634,12 +703,27 @@ msgstr ""
 msgid "Crop to Selection"
 msgstr ""
 
+#. Translators: Tooltip shown over a re-editable text object, hints at the gesture to edit it.
+#: ../Pinta.Tools/Tools/TextTool.cs:1794
+msgid "Ctrl+Click to edit"
+msgstr ""
+
 #: ../Pinta.Effects/Effects/DitheringEffect.cs:162
 msgid "Current Palette"
 msgstr ""
 
 #: ../Pinta.Effects/Effects/TileEffect.cs:247
 msgid "Curved"
+msgstr ""
+
+#. Translators: Item hint explaining the Curved Segments Off option for shape tools.
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:345
+msgid "Curved Segments Off"
+msgstr ""
+
+#. Translators: Item hint explaining the Curved Segments On option for shape tools.
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:344
+msgid "Curved Segments On"
 msgstr ""
 
 #: ../Pinta.Effects/Adjustments/CurvesEffect.cs:27
@@ -672,9 +756,18 @@ msgstr ""
 msgid "Dash"
 msgstr ""
 
+#: ../Pinta.Core/Managers/KeyboardShortcutManager.cs:194
+msgid "Decrease brush width"
+msgstr ""
+
 #. Translators: This refers to using the system's default color scheme.
 #: ../Pinta.Core/Actions/ViewActions.cs:247
 msgid "Default"
+msgstr ""
+
+#: ../Pinta/Dialogs/PreferencesDialog.cs:51
+#: Pinta/Dialogs/PreferencesDialog.cs:89
+msgid "Default canvas size (on application open):"
 msgstr ""
 
 #: ../Pinta.Core/Actions/LayerActions.cs:68
@@ -738,6 +831,26 @@ msgstr ""
 #: ../Pinta.Gui.Addins/AddinInfoView.cs:221
 #, csharp-format
 msgid "Download size: {0}"
+msgstr ""
+
+#. Translators: Item hint for the Outline text style.
+#: ../Pinta.Tools/Tools/TextTool.cs:414
+msgid "Draw only the outline of the text, using the secondary color."
+msgstr ""
+
+#. Translators: Item hint for the Outline Shape fill style.
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:376
+msgid "Draw only the shape's outline, using the primary color."
+msgstr ""
+
+#. Translators: Item hint for the Open Line/Curve Series shape type.
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:293
+msgid "Draws a line or curve with a start and an end point."
+msgstr ""
+
+#. Translators: Item hint for the Ellipse shape type.
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:295
+msgid "Draws an ellipse or circle."
 msgstr ""
 
 #: ../Pinta.Core/Actions/LayerActions.cs:75
@@ -809,6 +922,11 @@ msgstr ""
 msgid "Error Diffusion Method"
 msgstr ""
 
+#. Translators: This mode shows only contextual hints tied to a specific tool.
+#: ../Pinta/Dialogs/PreferencesDialog.cs:110
+msgid "Essential"
+msgstr ""
+
 #: ../Pinta.Core/Classes/SelectionModeHandler.cs:46
 msgid "Exclude (-) (Right Click)"
 msgstr ""
@@ -816,6 +934,18 @@ msgstr ""
 #. Translators: This refers to expanding the canvas size when pasting a larger image.
 #: ../Pinta/Actions/Edit/PasteAction.cs:226
 msgid "Expand"
+msgstr ""
+
+#: Pinta/Dialogs/PreferencesDialog.cs:246
+msgid "Export"
+msgstr ""
+
+#: Pinta/Dialogs/PreferencesDialog.cs:243
+msgid "Export Settings"
+msgstr ""
+
+#: Pinta/Dialogs/PreferencesDialog.cs:154
+msgid "Export Settings..."
 msgstr ""
 
 #: ../Pinta.Gui.Addins/AddinManagerDialog.cs:277
@@ -831,6 +961,11 @@ msgstr ""
 msgid "Failed to access XDG Desktop Portals"
 msgstr ""
 
+#: Pinta/Dialogs/PreferencesDialog.cs:270
+#, csharp-format
+msgid "Failed to export settings: {0}"
+msgstr ""
+
 #: ../Pinta/MainWindow.cs:324
 msgid "Failed to initialize add-in"
 msgstr ""
@@ -841,6 +976,11 @@ msgstr ""
 
 #: ../Pinta.Core/Managers/WorkspaceManager.cs:460
 msgid "Failed to open image"
+msgstr ""
+
+#: Pinta/Dialogs/PreferencesDialog.cs:297
+#, csharp-format
+msgid "Failed to read settings file: {0}"
 msgstr ""
 
 #: ../Pinta/Actions/File/SaveDocumentImplementationAction.cs:234
@@ -896,6 +1036,21 @@ msgstr ""
 msgid "Fill and Outline Shape"
 msgstr ""
 
+#. Translators: Item hint for the Fill Shape fill style.
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:377
+msgid "Fill the shape's interior with the secondary color, no outline."
+msgstr ""
+
+#. Translators: Item hint for the Normal text style.
+#: ../Pinta.Tools/Tools/TextTool.cs:412
+msgid "Fill the text with the primary color."
+msgstr ""
+
+#. Translators: Item hint for the Fill Background text style.
+#: ../Pinta.Tools/Tools/TextTool.cs:415
+msgid "Fill the text's bounding box with the secondary color, behind the text."
+msgstr ""
+
 #: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:1117
 #: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:1403
 #: ../Pinta.Tools/Tools/GradientTool.cs:186
@@ -906,10 +1061,21 @@ msgstr ""
 msgid "Finish Pixels"
 msgstr ""
 
+#. Translators: {0} is the current "finish editing" keybinding label (e.g. "Esc"); it updates if the user rebinds it.
+#: ../Pinta.Tools/Tools/TextTool.cs:495
+#, csharp-format
+msgid "Finish typing ({0})"
+msgstr ""
+
 #: ../Pinta.Core/Actions/ImageActions.cs:117
 #: ../Pinta.Core/Actions/ImageActions.cs:221
 #: ../Pinta/Actions/File/SaveDocumentImplementationAction.cs:274
 msgid "Flatten"
+msgstr ""
+
+#. Translators: Item hint for the Bevel Join line join option.
+#: ../Pinta.Tools/Tools/TextTool.cs:472
+msgid "Flattened, squared-off corners on the outline."
 msgstr ""
 
 #: ../Pinta/Actions/File/SaveDocumentImplementationAction.cs:270
@@ -992,6 +1158,10 @@ msgstr ""
 msgid "Gaussian Blur"
 msgstr ""
 
+#: ../Pinta.Core/Managers/KeyboardShortcutManager.cs:205
+msgid "General"
+msgstr ""
+
 #: ../Pinta.Tools/Tools/FloodTool.cs:132
 msgid "Global"
 msgstr ""
@@ -1037,6 +1207,7 @@ msgstr ""
 #: ../Pinta/Dialogs/NewImageDialog.cs:328
 #: ../Pinta/Dialogs/ResizeCanvasDialog.cs:81
 #: ../Pinta/Dialogs/ResizeImageDialog.cs:126
+#: Pinta/Dialogs/PreferencesDialog.cs:96
 msgid "Height:"
 msgstr ""
 
@@ -1047,6 +1218,11 @@ msgstr ""
 #: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:100
 #: ../Pinta/Actions/Layers/LayerPropertiesAction.cs:113
 msgid "Hide Layer"
+msgstr ""
+
+#. Translators: Tooltip explaining the None popover-hint mode.
+#: ../Pinta/Dialogs/PreferencesDialog.cs:116
+msgid "Hide all UI popover hints."
 msgstr ""
 
 #: ../Pinta.Effects/Effects/RedEyeRemoveEffect.cs:58
@@ -1127,12 +1303,35 @@ msgstr ""
 msgid "Image too large"
 msgstr ""
 
+#: Pinta/Dialogs/PreferencesDialog.cs:352
+msgid "Import"
+msgstr ""
+
 #: ../Pinta.Core/Actions/LayerActions.cs:258
 msgid "Import From File"
 msgstr ""
 
+#: Pinta/Dialogs/PreferencesDialog.cs:348
+msgid "Import Keyboard Shortcuts?"
+msgstr ""
+
+#: Pinta/Dialogs/PreferencesDialog.cs:284
+msgid "Import Settings"
+msgstr ""
+
+#: Pinta/Dialogs/PreferencesDialog.cs:156
+msgid "Import Settings..."
+msgstr ""
+
 #: ../Pinta.Core/Actions/LayerActions.cs:89
 msgid "Import from File..."
+msgstr ""
+
+#: Pinta/Dialogs/PreferencesDialog.cs:335
+#, csharp-format
+msgid ""
+"Imported {0} setting(s); {1} entry(ies) were skipped (unrecognized or "
+"invalid). {2} Restart Impasto for all changes to fully take effect."
 msgstr ""
 
 #: ../Pinta.Tools/Tools/LassoSelectTool.cs:57
@@ -1146,6 +1345,10 @@ msgstr ""
 
 #: ../Pinta.Core/Actions/ViewActions.cs:227
 msgid "Inches"
+msgstr ""
+
+#: ../Pinta.Core/Managers/KeyboardShortcutManager.cs:200
+msgid "Increase brush width"
 msgstr ""
 
 #: ../Pinta.Effects/Effects/InkSketchEffect.cs:146
@@ -1222,6 +1425,23 @@ msgstr ""
 
 #: ../Pinta.Effects/Effects/JuliaFractalEffect.cs:26
 msgid "Julia Fractal"
+msgstr ""
+
+#: Pinta/Dialogs/PreferencesDialog.cs:351
+msgid "Keep Mine"
+msgstr ""
+
+#. Translators: Item hint for the Color Picker's "Do not switch tool" option.
+#: ../Pinta.Tools/Tools/ColorPickerTool.cs:220
+msgid "Keep using the Color Picker after a color is chosen."
+msgstr ""
+
+#: Pinta/Dialogs/PreferencesDialog.cs:331
+msgid "Keyboard shortcuts were imported, replacing your current ones."
+msgstr ""
+
+#: Pinta/Dialogs/PreferencesDialog.cs:332
+msgid "Keyboard shortcuts were left unchanged."
 msgstr ""
 
 #: ../Pinta/Dialogs/NewImageDialog.cs:295
@@ -1374,6 +1594,16 @@ msgstr ""
 msgid "Length"
 msgstr ""
 
+#. Translators: Tooltip for the arrowhead wing-length spin button.
+#: ../Pinta.Tools/Editable/EditEngines/ArrowedEditEngine.cs:343
+msgid "Length of the arrowhead's wings; does not change the line's length."
+msgstr ""
+
+#. Translators: Tooltip for the arrowhead size spin button.
+#: ../Pinta.Tools/Editable/EditEngines/ArrowedEditEngine.cs:299
+msgid "Length of the arrowhead, in pixels."
+msgstr ""
+
 #: ../Pinta.Effects/Adjustments/LevelsEffect.cs:23
 msgid "Levels"
 msgstr ""
@@ -1405,6 +1635,21 @@ msgstr ""
 msgid "Lightness"
 msgstr ""
 
+#. Translators: Item hint for the All Petite Caps font-variant option.
+#: ../Pinta.Tools/Tools/TextTool.cs:217
+msgid "Like All Small Caps, but the substituted capitals are slightly smaller."
+msgstr ""
+
+#. Translators: Item hint for the Rounded Line Series shape type.
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:296
+msgid "Like Closed Line/Curve Series, but with rounded corners at each point."
+msgstr ""
+
+#. Translators: Item hint for the Petite Caps font-variant option.
+#: ../Pinta.Tools/Tools/TextTool.cs:210
+msgid "Like Small Caps, but the substituted capitals are slightly smaller."
+msgstr ""
+
 #. Translators: Gradient with a citrusy vibe that starts out white, goes through light yellow, several shades of green, and then transparent, blending with the background
 #: ../Pinta.Effects/Utilities/GradientHelper.cs:47
 msgid "Lime Lemon"
@@ -1428,6 +1673,11 @@ msgstr ""
 
 #: ../Pinta.Effects/Dialogs/Effects.PosterizeDialog.cs:83
 msgid "Linked"
+msgstr ""
+
+#. Translators: Item hint for the Small Caps font-variant option.
+#: ../Pinta.Tools/Tools/TextTool.cs:196
+msgid "Lower case letters are replaced with smaller capital letters."
 msgstr ""
 
 #: ../Pinta.Core/Algorithms/PixelOps/UserBlendOps.cs:44
@@ -1481,6 +1731,11 @@ msgstr ""
 
 #: ../Pinta.Tools/Brushes/SplatterBrush.cs:56
 msgid "Minimum Size"
+msgstr ""
+
+#. Translators: Item hint for the Linear Reflected Gradient type.
+#: ../Pinta.Tools/Tools/GradientTool.cs:298
+msgid "Mirrors the linear transition on both sides of the start point."
 msgstr ""
 
 #. Translators: 'Miter Join' refers to the Cairo.LineJoin property
@@ -1565,6 +1820,11 @@ msgstr ""
 msgid "Noise"
 msgstr ""
 
+#. Translators: This mode disables contextual popover hints in the UI.
+#: ../Pinta/Dialogs/PreferencesDialog.cs:111
+msgid "None"
+msgstr ""
+
 #. Translators: 'Normal' refers to the font-variant text property
 #. Translators: 'Normal' (400) refers to the font-weight text property
 #: ../Pinta.Core/Algorithms/PixelOps/UserBlendOps.cs:31
@@ -1586,6 +1846,30 @@ msgstr ""
 msgid "Normal and Outline"
 msgstr ""
 
+#: ../Pinta.Tools/Tools/BaseTransformTool.cs:834
+msgid "Nudge 10% of canvas: Ctrl+Arrow keys"
+msgstr ""
+
+#: ../Pinta.Tools/Tools/BaseTransformTool.cs:833
+msgid "Nudge 10px: Shift+Arrow keys"
+msgstr ""
+
+#: ../Pinta.Tools/Tools/BaseTransformTool.cs:835
+msgid "Nudge 20% of canvas: Ctrl+Shift+Arrow keys"
+msgstr ""
+
+#: ../Pinta.Tools/Tools/BaseTransformTool.cs:620
+msgid "Nudge {0} ({1}): {2}"
+msgstr ""
+
+#: ../Pinta.Tools/Tools/BaseTransformTool.cs:619
+msgid "Nudge {0}: {1}"
+msgstr ""
+
+#: ../Pinta.Tools/Tools/BaseTransformTool.cs:832
+msgid "Nudge: Arrow keys"
+msgstr ""
+
 #: ../Pinta.Effects/Effects/CellsEffect.cs:172
 #: ../Pinta.Effects/Effects/VoronoiDiagramEffect.cs:187
 msgid "Number of Cells"
@@ -1596,6 +1880,7 @@ msgid "Number of threads to use for rendering"
 msgstr ""
 
 #: ../Pinta.Gui.Widgets/Widgets/ColorPickerDialog.cs:387
+#: Pinta/Dialogs/PreferencesDialog.cs:383
 msgid "OK"
 msgstr ""
 
@@ -1748,6 +2033,10 @@ msgstr ""
 msgid "Paste Into New Layer"
 msgstr ""
 
+#: Pinta/Dialogs/PreferencesDialog.cs:112
+msgid "Paste external images onto a new layer by default"
+msgstr ""
+
 #: ../Pinta.Tools/Tools/PencilTool.cs:48
 msgid "Pencil"
 msgstr ""
@@ -1872,6 +2161,13 @@ msgstr ""
 
 #: ../Pinta.Tools/Tools/LassoSelectTool.cs:221
 msgid "Polygon"
+msgstr ""
+
+#. #-#-#-#-#  - (PACKAGE VERSION)  #-#-#-#-#
+#. Translators: Label for the popover-hint mode setting.
+#: ../Pinta/Dialogs/PreferencesDialog.cs:142
+#: Pinta/Dialogs/PreferencesDialog.cs:135
+msgid "Popover hints:"
 msgstr ""
 
 #: ../Pinta/Dialogs/NewImageDialog.cs:291
@@ -2077,6 +2373,11 @@ msgstr ""
 msgid "Refresh"
 msgstr ""
 
+#. Translators: Item hint for the Normal font-variant option.
+#: ../Pinta.Tools/Tools/TextTool.cs:189
+msgid "Regular upper and lower case letters."
+msgstr ""
+
 #: ../Pinta/Actions/Help/AboutDialogAction.cs:91
 msgid "Released under the MIT X11 License."
 msgstr ""
@@ -2124,8 +2425,25 @@ msgstr ""
 msgid "Reset"
 msgstr ""
 
+#: ../Pinta/Dialogs/PreferencesDialog.cs:109
+msgid "Reset Canvas Settings?"
+msgstr ""
+
+#. Translators: Confirmation title shown before resetting UI preferences.
+#: ../Pinta/Dialogs/PreferencesDialog.cs:205
+msgid "Reset UI Settings?"
+msgstr ""
+
 #: ../Pinta.Core/Actions/EditActions.cs:182
 msgid "Reset to Default"
+msgstr ""
+
+#: ../Pinta/Dialogs/PreferencesDialog.cs:80
+msgid "Reset to Defaults"
+msgstr ""
+
+#: Pinta/Dialogs/PreferencesDialog.cs:405
+msgid "Reset to default"
 msgstr ""
 
 #: ../Pinta/Dialogs/ResizeCanvasDialog.cs:93
@@ -2157,6 +2475,11 @@ msgstr ""
 
 #: ../Pinta/Actions/View/MenuBarToggledAction.cs:39
 msgid "Restart Pinta"
+msgstr ""
+
+#. Translators: Item hint for the Color Picker's "Switch to previous tool" option.
+#: ../Pinta.Tools/Tools/ColorPickerTool.cs:221
+msgid "Return to the tool that was active before the Color Picker."
 msgstr ""
 
 #: ../Pinta.Effects/Effects/CellsEffect.cs:191
@@ -2225,12 +2548,32 @@ msgstr ""
 msgid "Rounded Rectangle"
 msgstr ""
 
+#. Translators: Item hint for the Round Join line join option.
+#: ../Pinta.Tools/Tools/TextTool.cs:465
+msgid "Rounded corners on the outline."
+msgstr ""
+
 #: ../Pinta.Core/Actions/ViewActions.cs:231
 msgid "Ruler Units"
 msgstr ""
 
 #: ../Pinta.Core/Actions/ViewActions.cs:149
 msgid "Rulers"
+msgstr ""
+
+#. Translators: Item hint for the Color Picker's Image sample scope.
+#: ../Pinta.Tools/Tools/ColorPickerTool.cs:258
+msgid "Sample from the composited image, including all visible layers."
+msgstr ""
+
+#. Translators: Item hint for the Color Picker's Layer sample scope.
+#: ../Pinta.Tools/Tools/ColorPickerTool.cs:257
+msgid "Sample from the current layer only."
+msgstr ""
+
+#. Translators: Item hint for the Color Picker's Single Pixel sample size.
+#: ../Pinta.Tools/Tools/ColorPickerTool.cs:239
+msgid "Sample the exact color of the pixel under the pointer."
 msgstr ""
 
 #: ../Pinta.Tools/Tools/ColorPickerTool.cs:208
@@ -2283,6 +2626,12 @@ msgstr ""
 msgid "Save changes to image \"{0}\" before closing?"
 msgstr ""
 
+#: Pinta/Dialogs/PreferencesDialog.cs:161
+msgid ""
+"Save your settings and preferences to a file, or load them from a previously "
+"exported file."
+msgstr ""
+
 #: ../Pinta.Effects/Effects/CloudsEffect.cs:134
 #: ../Pinta.Effects/Effects/DentsEffect.cs:135
 msgid "Scale"
@@ -2290,6 +2639,10 @@ msgstr ""
 
 #: ../Pinta.Core/Algorithms/PixelOps/UserBlendOps.cs:39
 msgid "Screen"
+msgstr ""
+
+#: ../Pinta/Actions/Help/KeyboardShortcutsDialogAction.cs:114
+msgid "Search by name or key with quotes like \"ctrl-A\""
 msgstr ""
 
 #: ../Pinta.Effects/Classes/EdgeBehavior.cs:19
@@ -2331,12 +2684,27 @@ msgstr ""
 msgid "Set Number of Colors"
 msgstr ""
 
+#: ../Pinta/Dialogs/PreferencesDialog.cs:65
+#: Pinta/Dialogs/PreferencesDialog.cs:174
+#: Pinta/Dialogs/PreferencesDialog.cs:382
+msgid "Settings"
+msgstr ""
+
+#: Pinta/Dialogs/PreferencesDialog.cs:277
+msgid "Settings files"
+msgstr ""
+
 #: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:265
 msgid "Shape Type"
 msgstr ""
 
 #: ../Pinta.Effects/Effects/TileEffect.cs:244
 msgid "Sharp Edges"
+msgstr ""
+
+#. Translators: Item hint for the Miter Join line join option.
+#: ../Pinta.Tools/Tools/TextTool.cs:458
+msgid "Sharp, pointed corners on the outline."
 msgstr ""
 
 #: ../Pinta.Effects/Effects/SharpenEffect.cs:23
@@ -2360,58 +2728,6 @@ msgstr ""
 msgid "Shortcut keys:"
 msgstr ""
 
-#: ../Pinta.Core/Managers/KeyboardShortcutManager.cs:191
-msgid "Brush Tools"
-msgstr ""
-
-#: ../Pinta.Core/Managers/KeyboardShortcutManager.cs:194
-msgid "Decrease brush width"
-msgstr ""
-
-#: ../Pinta.Core/Managers/KeyboardShortcutManager.cs:200
-msgid "Increase brush width"
-msgstr ""
-
-#: ../Pinta/Actions/Help/KeyboardShortcutsDialogAction.cs:114
-msgid "Search by name or key with quotes like \"ctrl-A\""
-msgstr ""
-
-#: ../Pinta.Tools/Tools/BaseTransformTool.cs:832
-msgid "Nudge: Arrow keys"
-msgstr ""
-
-#: ../Pinta.Tools/Tools/BaseTransformTool.cs:833
-msgid "Nudge 10px: Shift+Arrow keys"
-msgstr ""
-
-#: ../Pinta.Tools/Tools/BaseTransformTool.cs:834
-msgid "Nudge 10% of canvas: Ctrl+Arrow keys"
-msgstr ""
-
-#: ../Pinta.Tools/Tools/BaseTransformTool.cs:835
-msgid "Nudge 20% of canvas: Ctrl+Shift+Arrow keys"
-msgstr ""
-
-#: ../Pinta.Tools/Tools/BaseTransformTool.cs:619
-msgid "Nudge {0}: {1}"
-msgstr ""
-
-#: ../Pinta.Tools/Tools/BaseTransformTool.cs:620
-msgid "Nudge {0} ({1}): {2}"
-msgstr ""
-
-#: ../Pinta.Core/Managers/KeyboardShortcutManager.cs:205
-msgid "General"
-msgstr ""
-
-#: ../Pinta.Core/Managers/KeyboardShortcutManager.cs:208
-msgid "Swap primary and secondary colors"
-msgstr ""
-
-#: ../Pinta.Core/Managers/KeyboardShortcutManager.cs:216
-msgid "Switch to document {0}"
-msgstr ""
-
 #: ../Pinta/Dialogs/CanvasGridSettingsDialog.cs:56
 msgid "Show Axonometric Grid"
 msgstr ""
@@ -2432,6 +2748,30 @@ msgstr ""
 
 #: ../Pinta.Gui.Widgets/Widgets/ColorPickerDialog.cs:192
 msgid "Show Value"
+msgstr ""
+
+#: Pinta/Dialogs/PreferencesDialog.cs:146
+msgid "Show a third row of darker colors in the palette"
+msgstr ""
+
+#. Translators: Tooltip explaining the All popover-hint mode.
+#: ../Pinta/Dialogs/PreferencesDialog.cs:114
+msgid "Show all UI popover hints."
+msgstr ""
+
+#. Translators: Tooltip for the checkbox showing/hiding the arrowhead at the end of a line or curve.
+#: ../Pinta.Tools/Editable/EditEngines/ArrowedEditEngine.cs:283
+msgid "Show an arrowhead at the end point."
+msgstr ""
+
+#. Translators: Tooltip for the checkbox showing/hiding the arrowhead at the start of a line or curve.
+#: ../Pinta.Tools/Editable/EditEngines/ArrowedEditEngine.cs:270
+msgid "Show an arrowhead at the start point."
+msgstr ""
+
+#. Translators: Tooltip explaining the Essential popover-hint mode.
+#: ../Pinta/Dialogs/PreferencesDialog.cs:115
+msgid "Show only essential tool hints."
 msgstr ""
 
 #: ../Pinta.Core/Actions/ViewActions.cs:243
@@ -2510,12 +2850,25 @@ msgstr ""
 msgid "Stylize"
 msgstr ""
 
+#: ../Pinta.Core/Managers/KeyboardShortcutManager.cs:208
+msgid "Swap primary and secondary colors"
+msgstr ""
+
 #: ../Pinta.Tools/Tools/ColorPickerTool.cs:218
 msgid "Switch to Pencil tool"
 msgstr ""
 
+#: ../Pinta.Core/Managers/KeyboardShortcutManager.cs:216
+msgid "Switch to document {0}"
+msgstr ""
+
 #: ../Pinta.Tools/Tools/ColorPickerTool.cs:217
 msgid "Switch to previous tool"
+msgstr ""
+
+#. Translators: Item hint for the Color Picker's "Switch to Pencil tool" option.
+#: ../Pinta.Tools/Tools/ColorPickerTool.cs:222
+msgid "Switch to the Pencil tool, ready to draw with the picked color."
 msgstr ""
 
 #: ../Pinta.Tools/Tools/TextTool.cs:80
@@ -2538,6 +2891,10 @@ msgstr ""
 
 #: ../Pinta/Actions/Edit/PasteAction.cs:207
 msgid "The clipboard does not contain an image."
+msgstr ""
+
+#: Pinta/Dialogs/PreferencesDialog.cs:329
+msgid "The file had no keyboard shortcuts to import."
 msgstr ""
 
 #: ../Pinta.Gui.Addins/InstallDialog.cs:200
@@ -2598,13 +2955,37 @@ msgstr ""
 msgid "Thickness"
 msgstr ""
 
+#. Translators: Tooltip for the text outline width spin button.
+#: ../Pinta.Tools/Tools/TextTool.cs:440
+msgid "Thickness of the text outline, in pixels."
+msgstr ""
+
 #. Translators: 'Thin' (100) refers to the font-weight text property
 #: ../Pinta.Tools/Tools/TextTool.cs:260
 msgid "Thin"
 msgstr ""
 
+#: Pinta/Dialogs/PreferencesDialog.cs:302
+msgid "This does not look like a valid settings file."
+msgstr ""
+
+#: Pinta/Dialogs/PreferencesDialog.cs:349
+msgid ""
+"This file also contains keyboard shortcut overrides. Importing them will "
+"overwrite your current keyboard-shortcuts.json."
+msgstr ""
+
 #: ../Pinta/Actions/File/SaveDocumentImplementationAction.cs:269
 msgid "This format does not support layers. Flatten image?"
+msgstr ""
+
+#. Translators: Explains that resetting UI preferences restores all popover hints.
+#: ../Pinta/Dialogs/PreferencesDialog.cs:206
+msgid "This resets popover hints to show all UI hints."
+msgstr ""
+
+#: ../Pinta/Dialogs/PreferencesDialog.cs:110
+msgid "This resets the canvas size and surround color to their defaults."
 msgstr ""
 
 #: ../Pinta.Effects/Effects/TileEffect.cs:28
@@ -2668,6 +3049,36 @@ msgstr ""
 msgid "Transfer Map"
 msgstr ""
 
+#. Translators: Item hint for the Gradient tool's Color Mode.
+#: ../Pinta.Tools/Tools/GradientTool.cs:331
+msgid "Transition between the primary and secondary colors."
+msgstr ""
+
+#. Translators: Item hint for the Gradient tool's Transparency Mode.
+#: ../Pinta.Tools/Tools/GradientTool.cs:332
+msgid "Transition the primary color from opaque to transparent."
+msgstr ""
+
+#. Translators: Item hint for the Linear Gradient type.
+#: ../Pinta.Tools/Tools/GradientTool.cs:297
+msgid "Transitions colors in a straight line between the two endpoints."
+msgstr ""
+
+#. Translators: Item hint for the Conical Gradient type.
+#: ../Pinta.Tools/Tools/GradientTool.cs:301
+msgid "Transitions colors in a sweep around the start point."
+msgstr ""
+
+#. Translators: Item hint for the Radial Gradient type.
+#: ../Pinta.Tools/Tools/GradientTool.cs:300
+msgid "Transitions colors outward from the start point in a circle."
+msgstr ""
+
+#. Translators: Item hint for the Linear Diamond Gradient type.
+#: ../Pinta.Tools/Tools/GradientTool.cs:299
+msgid "Transitions colors outward from the start point in a diamond shape."
+msgstr ""
+
 #: ../Pinta.Core/Actions/HelpActions.cs:65
 msgid "Translate This Application"
 msgstr ""
@@ -2697,6 +3108,13 @@ msgstr ""
 #: ../Pinta.Tools/Tools/EraserTool.cs:332
 #: ../Pinta.Tools/Tools/PaintBrushTool.cs:228
 msgid "Type"
+msgstr ""
+
+#. #-#-#-#-#  - (PACKAGE VERSION)  #-#-#-#-#
+#. Translators: Preferences tab containing user-interface settings.
+#: ../Pinta/Dialogs/PreferencesDialog.cs:154
+#: Pinta/Dialogs/PreferencesDialog.cs:170
+msgid "UI"
 msgstr ""
 
 #. Translators: 'Ultrabold' (800) refers to the font-weight text property
@@ -2773,6 +3191,11 @@ msgid ""
 "quality for final quality, large images, and large angles."
 msgstr ""
 
+#. Translators: Item hint for the Title Caps font-variant option.
+#: ../Pinta.Tools/Tools/TextTool.cs:231
+msgid "Uses title-specific capital letter forms where available."
+msgstr ""
+
 #: ../Pinta/Actions/Help/AboutDialogAction.cs:98
 msgid "Using some icons from:"
 msgstr ""
@@ -2831,6 +3254,7 @@ msgstr ""
 #: ../Pinta/Dialogs/NewImageDialog.cs:320
 #: ../Pinta/Dialogs/ResizeCanvasDialog.cs:73
 #: ../Pinta/Dialogs/ResizeImageDialog.cs:123
+#: Pinta/Dialogs/PreferencesDialog.cs:91
 msgid "Width:"
 msgstr ""
 
@@ -2959,6 +3383,7 @@ msgstr ""
 #: ../Pinta/Dialogs/ResizeCanvasDialog.cs:108
 #: ../Pinta/Dialogs/ResizeImageDialog.cs:136
 #: ../Pinta/Dialogs/ResizeImageDialog.cs:140
+#: Pinta/Dialogs/PreferencesDialog.cs:93 Pinta/Dialogs/PreferencesDialog.cs:98
 msgid "pixels"
 msgstr ""
 
@@ -2993,307 +3418,4 @@ msgstr ""
 #: ../Pinta.Core/Actions/ViewActions.cs:377
 #, csharp-format
 msgid "{0}%"
-msgstr ""
-
-#: ../Pinta/Dialogs/PreferencesDialog.cs:53
-msgid "Choose color..."
-msgstr ""
-
-#: ../Pinta/Dialogs/PreferencesDialog.cs:71
-msgid "Canvas surround color:"
-msgstr ""
-
-#: ../Pinta/Dialogs/PreferencesDialog.cs:51
-msgid "Default canvas size (on application open):"
-msgstr ""
-
-#: ../Pinta/Dialogs/PreferencesDialog.cs:109
-msgid "Reset Canvas Settings?"
-msgstr ""
-
-#: ../Pinta/Dialogs/PreferencesDialog.cs:110
-msgid "This resets the canvas size and surround color to their defaults."
-msgstr ""
-
-#: ../Pinta/Dialogs/PreferencesDialog.cs:80
-msgid "Reset to Defaults"
-msgstr ""
-
-#: ../Pinta/Dialogs/PreferencesDialog.cs:65
-msgid "Settings"
-msgstr ""
-
-#: ../Pinta/Dialogs/PreferencesDialog.cs:109
-#. Translators: This mode shows every contextual popover hint in the UI.
-msgid "All"
-msgstr ""
-
-#: ../Pinta/Dialogs/PreferencesDialog.cs:110
-#. Translators: This mode shows only contextual hints tied to a specific tool.
-msgid "Essential"
-msgstr ""
-
-#: ../Pinta/Dialogs/PreferencesDialog.cs:111
-#. Translators: This mode disables contextual popover hints in the UI.
-msgid "None"
-msgstr ""
-
-#: ../Pinta/Dialogs/PreferencesDialog.cs:114
-#. Translators: Tooltip explaining the All popover-hint mode.
-msgid "Show all UI popover hints."
-msgstr ""
-
-#: ../Pinta/Dialogs/PreferencesDialog.cs:115
-#. Translators: Tooltip explaining the Essential popover-hint mode.
-msgid "Show only essential tool hints."
-msgstr ""
-
-#: ../Pinta/Dialogs/PreferencesDialog.cs:116
-#. Translators: Tooltip explaining the None popover-hint mode.
-msgid "Hide all UI popover hints."
-msgstr ""
-
-#: ../Pinta/Dialogs/PreferencesDialog.cs:136
-#. Translators: Describes the three available popover-hint display modes.
-msgid "All: show all UI hints. Essential: show only specific tool hints. None: turn off UI popover hints."
-msgstr ""
-
-#: ../Pinta/Dialogs/PreferencesDialog.cs:142
-#. Translators: Label for the popover-hint mode setting.
-msgid "Popover hints:"
-msgstr ""
-
-#: ../Pinta/Dialogs/PreferencesDialog.cs:154
-#. Translators: Preferences tab containing user-interface settings.
-msgid "UI"
-msgstr ""
-
-#: ../Pinta/Dialogs/PreferencesDialog.cs:205
-#. Translators: Confirmation title shown before resetting UI preferences.
-msgid "Reset UI Settings?"
-msgstr ""
-
-#: ../Pinta/Dialogs/PreferencesDialog.cs:206
-#. Translators: Explains that resetting UI preferences restores all popover hints.
-msgid "This resets popover hints to show all UI hints."
-msgstr ""
-
-#: ../Pinta.Tools/Editable/EditEngines/ArrowedEditEngine.cs:270
-#. Translators: Tooltip for the checkbox showing/hiding the arrowhead at the start of a line or curve.
-msgid "Show an arrowhead at the start point."
-msgstr ""
-
-#: ../Pinta.Tools/Editable/EditEngines/ArrowedEditEngine.cs:283
-#. Translators: Tooltip for the checkbox showing/hiding the arrowhead at the end of a line or curve.
-msgid "Show an arrowhead at the end point."
-msgstr ""
-
-#: ../Pinta.Tools/Editable/EditEngines/ArrowedEditEngine.cs:299
-#. Translators: Tooltip for the arrowhead size spin button.
-msgid "Length of the arrowhead, in pixels."
-msgstr ""
-
-#: ../Pinta.Tools/Editable/EditEngines/ArrowedEditEngine.cs:321
-#. Translators: Tooltip for the arrowhead angle spin button.
-msgid "Angle, in degrees, between the arrowhead's wings and the line."
-msgstr ""
-
-#: ../Pinta.Tools/Editable/EditEngines/ArrowedEditEngine.cs:343
-#. Translators: Tooltip for the arrowhead wing-length spin button.
-msgid "Length of the arrowhead's wings; does not change the line's length."
-msgstr ""
-
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:293
-#. Translators: Item hint for the Open Line/Curve Series shape type.
-msgid "Draws a line or curve with a start and an end point."
-msgstr ""
-
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:295
-#. Translators: Item hint for the Ellipse shape type.
-msgid "Draws an ellipse or circle."
-msgstr ""
-
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:296
-#. Translators: Item hint for the Rounded Line Series shape type.
-msgid "Like Closed Line/Curve Series, but with rounded corners at each point."
-msgstr ""
-
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:344
-#. Translators: Item hint explaining the Curved Segments On option for shape tools.
-msgid "Curved Segments On"
-msgstr ""
-
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:345
-#. Translators: Item hint explaining the Curved Segments Off option for shape tools.
-msgid "Curved Segments Off"
-msgstr ""
-
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:376
-#. Translators: Item hint for the Outline Shape fill style.
-msgid "Draw only the shape's outline, using the primary color."
-msgstr ""
-
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:377
-#. Translators: Item hint for the Fill Shape fill style.
-msgid "Fill the shape's interior with the secondary color, no outline."
-msgstr ""
-
-#: ../Pinta.Tools/Editable/EditEngines/RoundedLineEditEngine.cs:93
-#. Translators: Tooltip for the corner radius spin button on rounded shapes.
-msgid "Corner-rounding radius, in pixels, applied at each point of the shape."
-msgstr ""
-
-#: ../Pinta.Tools/Tools/ColorPickerTool.cs:220
-#. Translators: Item hint for the Color Picker's "Do not switch tool" option.
-msgid "Keep using the Color Picker after a color is chosen."
-msgstr ""
-
-#: ../Pinta.Tools/Tools/ColorPickerTool.cs:221
-#. Translators: Item hint for the Color Picker's "Switch to previous tool" option.
-msgid "Return to the tool that was active before the Color Picker."
-msgstr ""
-
-#: ../Pinta.Tools/Tools/ColorPickerTool.cs:222
-#. Translators: Item hint for the Color Picker's "Switch to Pencil tool" option.
-msgid "Switch to the Pencil tool, ready to draw with the picked color."
-msgstr ""
-
-#: ../Pinta.Tools/Tools/ColorPickerTool.cs:239
-#. Translators: Item hint for the Color Picker's Single Pixel sample size.
-msgid "Sample the exact color of the pixel under the pointer."
-msgstr ""
-
-#: ../Pinta.Tools/Tools/ColorPickerTool.cs:240
-#. Translators: Item hint for the Color Picker's 3 x 3 Region sample size.
-msgid "Average the colors in a 3 x 3 area around the pointer."
-msgstr ""
-
-#: ../Pinta.Tools/Tools/ColorPickerTool.cs:241
-#. Translators: Item hint for the Color Picker's 5 x 5 Region sample size.
-msgid "Average the colors in a 5 x 5 area around the pointer."
-msgstr ""
-
-#: ../Pinta.Tools/Tools/ColorPickerTool.cs:242
-#. Translators: Item hint for the Color Picker's 7 x 7 Region sample size.
-msgid "Average the colors in a 7 x 7 area around the pointer."
-msgstr ""
-
-#: ../Pinta.Tools/Tools/ColorPickerTool.cs:243
-#. Translators: Item hint for the Color Picker's 9 x 9 Region sample size.
-msgid "Average the colors in a 9 x 9 area around the pointer."
-msgstr ""
-
-#: ../Pinta.Tools/Tools/ColorPickerTool.cs:257
-#. Translators: Item hint for the Color Picker's Layer sample scope.
-msgid "Sample from the current layer only."
-msgstr ""
-
-#: ../Pinta.Tools/Tools/ColorPickerTool.cs:258
-#. Translators: Item hint for the Color Picker's Image sample scope.
-msgid "Sample from the composited image, including all visible layers."
-msgstr ""
-
-#: ../Pinta.Tools/Tools/GradientTool.cs:297
-#. Translators: Item hint for the Linear Gradient type.
-msgid "Transitions colors in a straight line between the two endpoints."
-msgstr ""
-
-#: ../Pinta.Tools/Tools/GradientTool.cs:298
-#. Translators: Item hint for the Linear Reflected Gradient type.
-msgid "Mirrors the linear transition on both sides of the start point."
-msgstr ""
-
-#: ../Pinta.Tools/Tools/GradientTool.cs:299
-#. Translators: Item hint for the Linear Diamond Gradient type.
-msgid "Transitions colors outward from the start point in a diamond shape."
-msgstr ""
-
-#: ../Pinta.Tools/Tools/GradientTool.cs:300
-#. Translators: Item hint for the Radial Gradient type.
-msgid "Transitions colors outward from the start point in a circle."
-msgstr ""
-
-#: ../Pinta.Tools/Tools/GradientTool.cs:301
-#. Translators: Item hint for the Conical Gradient type.
-msgid "Transitions colors in a sweep around the start point."
-msgstr ""
-
-#: ../Pinta.Tools/Tools/GradientTool.cs:331
-#. Translators: Item hint for the Gradient tool's Color Mode.
-msgid "Transition between the primary and secondary colors."
-msgstr ""
-
-#: ../Pinta.Tools/Tools/GradientTool.cs:332
-#. Translators: Item hint for the Gradient tool's Transparency Mode.
-msgid "Transition the primary color from opaque to transparent."
-msgstr ""
-
-#: ../Pinta.Tools/Tools/TextTool.cs:189
-#. Translators: Item hint for the Normal font-variant option.
-msgid "Regular upper and lower case letters."
-msgstr ""
-
-#: ../Pinta.Tools/Tools/TextTool.cs:196
-#. Translators: Item hint for the Small Caps font-variant option.
-msgid "Lower case letters are replaced with smaller capital letters."
-msgstr ""
-
-#: ../Pinta.Tools/Tools/TextTool.cs:210
-#. Translators: Item hint for the Petite Caps font-variant option.
-msgid "Like Small Caps, but the substituted capitals are slightly smaller."
-msgstr ""
-
-#: ../Pinta.Tools/Tools/TextTool.cs:217
-#. Translators: Item hint for the All Petite Caps font-variant option.
-msgid "Like All Small Caps, but the substituted capitals are slightly smaller."
-msgstr ""
-
-#: ../Pinta.Tools/Tools/TextTool.cs:231
-#. Translators: Item hint for the Title Caps font-variant option.
-msgid "Uses title-specific capital letter forms where available."
-msgstr ""
-
-#: ../Pinta.Tools/Tools/TextTool.cs:412
-#. Translators: Item hint for the Normal text style.
-msgid "Fill the text with the primary color."
-msgstr ""
-
-#: ../Pinta.Tools/Tools/TextTool.cs:414
-#. Translators: Item hint for the Outline text style.
-msgid "Draw only the outline of the text, using the secondary color."
-msgstr ""
-
-#: ../Pinta.Tools/Tools/TextTool.cs:415
-#. Translators: Item hint for the Fill Background text style.
-msgid "Fill the text's bounding box with the secondary color, behind the text."
-msgstr ""
-
-#: ../Pinta.Tools/Tools/TextTool.cs:440
-#. Translators: Tooltip for the text outline width spin button.
-msgid "Thickness of the text outline, in pixels."
-msgstr ""
-
-#: ../Pinta.Tools/Tools/TextTool.cs:458
-#. Translators: Item hint for the Miter Join line join option.
-msgid "Sharp, pointed corners on the outline."
-msgstr ""
-
-#: ../Pinta.Tools/Tools/TextTool.cs:465
-#. Translators: Item hint for the Round Join line join option.
-msgid "Rounded corners on the outline."
-msgstr ""
-
-#: ../Pinta.Tools/Tools/TextTool.cs:472
-#. Translators: Item hint for the Bevel Join line join option.
-msgid "Flattened, squared-off corners on the outline."
-msgstr ""
-
-#: ../Pinta.Tools/Tools/TextTool.cs:495
-#. Translators: Tooltip shown while editing re-editable text, hints at the key to finish.
-msgid "Finish typing (Esc)"
-msgstr ""
-
-#: ../Pinta.Tools/Tools/TextTool.cs:1794
-#. Translators: Tooltip shown over a re-editable text object, hints at the gesture to edit it.
-msgid "Ctrl+Click to edit"
 msgstr ""

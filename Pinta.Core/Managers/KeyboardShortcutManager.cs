@@ -483,6 +483,51 @@ public sealed class KeyboardShortcutManager
 				this.tools.SetShortcutKeyOverride (tool, gesture);
 	}
 
+	/// <summary>
+	/// A snapshot of the user's shortcut overrides, matching the on-disk shape of
+	/// keyboard-shortcuts.json. Used to bundle shortcuts into a settings export.
+	/// </summary>
+	public sealed class ShortcutFile
+	{
+		public Dictionary<string, string>? Commands { get; set; }
+		public Dictionary<string, string>? Tools { get; set; }
+		public Dictionary<string, string>? ToolBindings { get; set; }
+	}
+
+	public ShortcutFile ExportOverrides ()
+		=> new () {
+			Commands = new (command_overrides),
+			Tools = new (tool_overrides),
+			ToolBindings = new (binding_overrides),
+		};
+
+	/// <summary>
+	/// Replaces all shortcut overrides with the given set, overwriting
+	/// keyboard-shortcuts.json and re-applying to the live commands and tools.
+	/// </summary>
+	public void ImportOverrides (ShortcutFile overrides)
+	{
+		command_overrides.Clear ();
+		tool_overrides.Clear ();
+		binding_overrides.Clear ();
+
+		if (overrides.Commands is not null)
+			foreach (var kv in overrides.Commands)
+				command_overrides[kv.Key] = kv.Value;
+
+		if (overrides.Tools is not null)
+			foreach (var kv in overrides.Tools)
+				tool_overrides[kv.Key] = kv.Value;
+
+		if (overrides.ToolBindings is not null)
+			foreach (var kv in overrides.ToolBindings)
+				binding_overrides[kv.Key] = kv.Value;
+
+		Save ();
+		LoadAndApply ();
+		ShortcutsChanged?.Invoke (this, EventArgs.Empty);
+	}
+
 	private void Load ()
 	{
 		command_overrides.Clear ();
@@ -648,11 +693,4 @@ public sealed class KeyboardShortcutManager
 			.Where (p => p.PropertyType == typeof (Command))
 			.Select (p => (Command) p.GetValue (actionCollection)!)
 			.Where (c => c != null);
-
-	private sealed class ShortcutFile
-	{
-		public Dictionary<string, string>? Commands { get; set; }
-		public Dictionary<string, string>? Tools { get; set; }
-		public Dictionary<string, string>? ToolBindings { get; set; }
-	}
 }

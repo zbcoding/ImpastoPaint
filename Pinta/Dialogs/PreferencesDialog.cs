@@ -263,6 +263,7 @@ public sealed partial class PreferencesDialog
 						Value = kv.Value.ToString () ?? string.Empty,
 					})
 				],
+				KeyboardShortcuts = PintaCore.Shortcuts.ExportOverrides (),
 			};
 			File.WriteAllText (path, JsonSerializer.Serialize (export, new JsonSerializerOptions { WriteIndented = true }));
 		} catch (Exception ex) {
@@ -318,9 +319,43 @@ public sealed partial class PreferencesDialog
 
 		RefreshFromSettings ();
 
+		bool hasShortcuts = import.KeyboardShortcuts is { } ks
+			&& (ks.Commands?.Count > 0 || ks.Tools?.Count > 0 || ks.ToolBindings?.Count > 0);
+		bool importedShortcuts = hasShortcuts && await ConfirmImportKeyboardShortcuts ();
+		if (importedShortcuts)
+			PintaCore.Shortcuts.ImportOverrides (import.KeyboardShortcuts!);
+
+		string shortcutsSummary = !hasShortcuts
+			? Translations.GetString ("The file had no keyboard shortcuts to import.")
+			: importedShortcuts
+				? Translations.GetString ("Keyboard shortcuts were imported, replacing your current ones.")
+				: Translations.GetString ("Keyboard shortcuts were left unchanged.");
+
 		await ShowMessage (Translations.GetString (
-			"Imported {0} setting(s); {1} entry(ies) were skipped (unrecognized or invalid). Restart Impasto for all changes to fully take effect.",
-			applied, skipped));
+			"Imported {0} setting(s); {1} entry(ies) were skipped (unrecognized or invalid). {2} Restart Impasto for all changes to fully take effect.",
+			applied, skipped, shortcutsSummary));
+	}
+
+	// Importing shortcuts overwrites keyboard-shortcuts.json outright, so the user
+	// gets a chance to keep their current hand-tuned bindings instead.
+	private async Task<bool> ConfirmImportKeyboardShortcuts ()
+	{
+		const string keep_response = "keep";
+		const string import_response = "import";
+
+		using Adw.MessageDialog dialog = Adw.MessageDialog.New (
+			this,
+			Translations.GetString ("Import Keyboard Shortcuts?"),
+			Translations.GetString ("This file also contains keyboard shortcut overrides. Importing them will overwrite your current keyboard-shortcuts.json."));
+
+		dialog.AddResponse (keep_response, Translations.GetString ("Keep Mine"));
+		dialog.AddResponse (import_response, Translations.GetString ("Import"));
+		dialog.SetResponseAppearance (import_response, Adw.ResponseAppearance.Suggested);
+		dialog.CloseResponse = keep_response;
+		dialog.DefaultResponse = keep_response;
+
+		string response = await dialog.RunAsync ();
+		return response == import_response;
 	}
 
 	private void RefreshFromSettings ()
@@ -378,6 +413,7 @@ public sealed partial class PreferencesDialog
 	private sealed class SettingsExportFile
 	{
 		public List<SettingsExportEntry>? Settings { get; set; }
+		public KeyboardShortcutManager.ShortcutFile? KeyboardShortcuts { get; set; }
 	}
 
 	private sealed class SettingsExportEntry

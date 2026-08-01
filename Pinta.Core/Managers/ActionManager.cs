@@ -160,35 +160,49 @@ public sealed class ActionManager
 	}
 
 	// Impasto: how tight the docked color palette's own width gets before the
-	// cursor position / image size groups start giving it room back (see
-	// SetFooterAvailableWidth). The DIM/HIDE gap for each group is kept wider than
-	// that group's own reclaimed width, so hiding a group doesn't immediately
-	// regrow the palette bar past the threshold that re-shows it. This is purely
-	// width-driven and layers on top of the Settings visibility toggles above -
-	// a group the user turned off via Settings has its icon/label individually
-	// invisible, so showing/dimming the surrounding group here has no visible
-	// effect on it either way.
-	private const int CURSOR_GROUP_DIM_WIDTH = 460;
+	// cursor position / image size groups give it room back (see
+	// SetFooterAvailableWidth). These are show/hide thresholds only - the groups
+	// vanish instantly when they would collide with the color area, they don't
+	// fade. The cursor group hides before the image size group (a wider palette
+	// survivor width = it gives up first, because the cursor box is what reaches
+	// the color area first as the window narrows). The gap between HIDE and SHOW
+	// is kept wider than that group's own reclaimed width, so hiding a group
+	// doesn't immediately regrow the palette bar past the threshold that re-shows
+	// it. This is purely width-driven and layers on top of the Settings visibility
+	// toggles above - a group the user turned off via Settings has its icon/label
+	// individually invisible, so showing/hiding the surrounding group here has no
+	// visible effect on it either way.
 	private const int CURSOR_GROUP_HIDE_WIDTH = 350;
-	private const int IMAGE_GROUP_DIM_WIDTH = 340;
+	private const int CURSOR_GROUP_SHOW_WIDTH = 480;
 	private const int IMAGE_GROUP_HIDE_WIDTH = 180;
+	private const int IMAGE_GROUP_SHOW_WIDTH = 300;
 
 	private Gtk.Widget? footer_cursor_group;
 	private Gtk.Widget? footer_image_group;
+
+	// Latched hide state so the labels don't flicker during the resize: once a
+	// group is hidden it stays hidden until the palette regrows well past the hide
+	// threshold (see HIDE/SHOW constants above).
+	private bool cursor_group_hidden;
+	private bool image_group_hidden;
 
 	// Impasto: called by MainWindow whenever the docked color palette's allocated
 	// width changes, as a proxy for "the footer status bar is getting tight".
 	public void SetFooterAvailableWidth (int availableWidth)
 	{
 		if (footer_cursor_group is not null) {
-			bool hide = availableWidth < CURSOR_GROUP_HIDE_WIDTH;
-			footer_cursor_group.SetVisible (!hide);
-			footer_cursor_group.Opacity = availableWidth < CURSOR_GROUP_DIM_WIDTH ? 0.35 : 1.0;
+			if (availableWidth < CURSOR_GROUP_HIDE_WIDTH)
+				cursor_group_hidden = true;
+			else if (availableWidth > CURSOR_GROUP_SHOW_WIDTH)
+				cursor_group_hidden = false;
+			footer_cursor_group.SetVisible (!cursor_group_hidden);
 		}
 		if (footer_image_group is not null) {
-			bool hide = availableWidth < IMAGE_GROUP_HIDE_WIDTH;
-			footer_image_group.SetVisible (!hide);
-			footer_image_group.Opacity = availableWidth < IMAGE_GROUP_DIM_WIDTH ? 0.35 : 1.0;
+			if (availableWidth < IMAGE_GROUP_HIDE_WIDTH)
+				image_group_hidden = true;
+			else if (availableWidth > IMAGE_GROUP_SHOW_WIDTH)
+				image_group_hidden = false;
+			footer_image_group.SetVisible (!image_group_hidden);
 		}
 	}
 

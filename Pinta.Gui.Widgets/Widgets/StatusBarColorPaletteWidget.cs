@@ -51,9 +51,16 @@ public sealed partial class StatusBarColorPaletteWidget
 	// Responsive folding thresholds (own allocated width). As the bar narrows past
 	// each one, that section stops drawing in the bar - its content moves into the
 	// color-wheel popover instead (see MainWindow's popover section builders).
+	// Each has a separate, wider UNFOLD threshold so the section stays folded once
+	// it's been folded (hysteresis): a tiny width wobble around the boundary (which
+	// happens as other sections above it pack/unpack the same bar) can't make it
+	// ping-pong back into the footer.
 	private const int FOLD_QUICK_COLORS_WIDTH = 300;
+	private const int FOLD_QUICK_COLORS_UNFOLD = 350;
 	private const int FOLD_RECENT_COLORS_WIDTH = 220;
+	private const int FOLD_RECENT_COLORS_UNFOLD = 270;
 	private const int FOLD_SWATCHES_WIDTH = 130;
+	private const int FOLD_SWATCHES_UNFOLD = 180;
 
 	private IChromeService chrome = null!; // NRT - set by factory method
 	private IPaletteService palette = null!;
@@ -350,6 +357,12 @@ public sealed partial class StatusBarColorPaletteWidget
 			}
 		}
 
+		// Draw the wheel/float action buttons last so they sit on top of the color
+		// bars that slide underneath as the bar narrows (they'd otherwise be painted
+		// over by the recent/quick swatch loops above).
+		if (show_action_icons)
+			DrawActionButtons (g);
+
 		g.Dispose ();
 	}
 
@@ -415,27 +428,45 @@ public sealed partial class StatusBarColorPaletteWidget
 			g.DrawLine (new PointD (palette_separator_x, top), new PointD (palette_separator_x, bottom), separator, 1);
 			DrawPaletteIcon (g, palette_icon_rect, fg);
 		}
+	}
 
-		if (!show_action_icons)
-			return;
+	// The color-wheel and float-colors buttons, drawn as a pair at the right edge.
+	// They render on top of whatever color bar is sliding underneath (see Draw), and
+	// each gets an opaque rounded background so the bar below can't be seen through
+	// or clicked through while it slides past.
+	private void DrawActionButtons (Context g)
+	{
+		GetStyleContext ().GetColor (out Gdk.RGBA fg_rgba);
+		Color fg = fg_rgba.ToCairoColor ();
 
-		// Once any section has folded out, the wheel/float buttons no longer sit
-		// naturally after a swatch grid - group them with a low-contrast pill so
-		// they still read as a pair.
-		if (quick_colors_folded) {
-			RectangleD pill = new (
-				color_wheel_icon_rect.X - 4,
-				color_wheel_icon_rect.Y - 4,
-				float_colors_icon_rect.Right - color_wheel_icon_rect.X + 8,
-				color_wheel_icon_rect.Height + 8);
-			g.FillRoundedRectangle (pill, 6, new Color (fg.R, fg.G, fg.B, 0.08));
-		}
+		RectangleD pill = new (
+			color_wheel_icon_rect.X - 4,
+			color_wheel_icon_rect.Y - 4,
+			float_colors_icon_rect.Right - color_wheel_icon_rect.X + 8,
+			color_wheel_icon_rect.Height + 8);
+		g.FillRoundedRectangle (pill, 6, ResolveOpaqueBackground ());
 
 		DrawButtonChrome (g, color_wheel_icon_rect, fg, hovered_element == WidgetElement.ColorWheel);
 		DrawColorWheelIcon (g, color_wheel_icon_rect);
 
 		DrawButtonChrome (g, float_colors_icon_rect, fg, hovered_element == WidgetElement.FloatColors);
 		DrawFloatIcon (g, float_colors_icon_rect, fg, palette.PrimaryColor);
+	}
+
+	// The footer's own background grey, resolved from the theme. It's what the pill
+	// needs to be opaque against so the color bar sliding underneath stays hidden.
+	private Color ResolveOpaqueBackground ()
+	{
+		if (GetStyleContext ().LookupColor ("window_bg_color", out Gdk.RGBA bg))
+			return bg.ToCairoColor ();
+
+		// Fallback: a neutral grey derived from the foreground when the named color
+		// isn't available, so the pill never has a transparent see-through fill.
+		GetStyleContext ().GetColor (out Gdk.RGBA fg_rgba);
+		Cairo.Color fg = fg_rgba.ToCairoColor ();
+		double lum = 0.3 * fg.R + 0.59 * fg.G + 0.11 * fg.B;
+		double v = lum > 0.5 ? 0.93 : 0.15;
+		return new Color (v, v, v);
 	}
 
 	// A rounded background + border behind an action icon, shown on hover so it reads
@@ -562,9 +593,15 @@ public sealed partial class StatusBarColorPaletteWidget
 		bool was_recent_folded = recent_colors_folded;
 		bool was_swatches_folded = swatches_folded;
 
-		quick_colors_folded = width < FOLD_QUICK_COLORS_WIDTH;
-		recent_colors_folded = width < FOLD_RECENT_COLORS_WIDTH;
-		swatches_folded = width < FOLD_SWATCHES_WIDTH;
+		quick_colors_folded = quick_colors_folded
+			? width < FOLD_QUICK_COLORS_UNFOLD
+			: width < FOLD_QUICK_COLORS_WIDTH;
+		recent_colors_folded = recent_colors_folded
+			? width < FOLD_RECENT_COLORS_UNFOLD
+			: width < FOLD_RECENT_COLORS_WIDTH;
+		swatches_folded = swatches_folded
+			? width < FOLD_SWATCHES_UNFOLD
+			: width < FOLD_SWATCHES_WIDTH;
 
 		int recent_cols = PaletteWidget.GetRecentColorColumns (palette.MaxRecentlyUsedColor);
 		int swatch_height = PaletteWidget.SWATCH_SIZE * PaletteWidget.PALETTE_ROWS;

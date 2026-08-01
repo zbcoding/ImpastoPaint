@@ -38,7 +38,7 @@ public sealed class AvifFormat : IImageImporter, IImageExporter
 	{
 		NativeImportResolver.RegisterLibrary (
 			library: AvifLibraryName,
-			windowsLibraryName: "avif.dll",
+			windowsLibraryName: "libavif-16.dll",
 			linuxLibraryName: "libavif.so.16",
 			osxLibraryName: "libavif.16.dylib");
 	}
@@ -46,7 +46,7 @@ public sealed class AvifFormat : IImageImporter, IImageExporter
 	private static bool ProbeLibrary ()
 	{
 		string name = OperatingSystem.IsWindows ()
-			? "avif.dll"
+			? "libavif-16.dll"
 			: OperatingSystem.IsMacOS ()
 				? "libavif.16.dylib"
 				: "libavif.so.16";

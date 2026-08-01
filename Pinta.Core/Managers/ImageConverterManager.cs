@@ -164,7 +164,7 @@ public sealed class ImageConverterManager
 		FormatDescriptor? fd = GetFormatByExtension (extension);
 
 		// We found the last one we used
-		if (fd != null)
+		if (fd != null && fd.IsExportAvailable ())
 			return fd;
 
 		// Return any format we have

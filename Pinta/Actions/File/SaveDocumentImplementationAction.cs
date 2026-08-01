@@ -26,6 +26,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Pinta.Core;
@@ -152,10 +153,11 @@ internal sealed class SaveDocumentImplmentationAction : IActionHandler
 					format = image_formats.GetDefaultSaveFormat ();
 			}
 
-			// If the entered name has no extension matching a known format, append
-			// the extension of the selected format so the file isn't saved without
-			// one (e.g. when saving as AVIF for the first time).
-			if (image_formats.GetFormatByFile (displayName) is null) {
+			// If the entered name has no extension at all, append the extension of
+			// the selected format so the file isn't saved without one (e.g. when
+			// saving as AVIF for the first time). Leave an explicitly typed but
+			// unrecognized extension (e.g. "painting.foo") alone.
+			if (Path.GetExtension (displayName) == string.Empty) {
 				displayName += "." + format.Extensions.First ();
 				file = file.GetParent ()!.GetChild (displayName);
 			}

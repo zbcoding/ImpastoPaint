@@ -36,6 +36,7 @@ internal sealed class PreferencesAction : IActionHandler
 		Cairo.Color canvasSurroundColor = Cairo.Color.FromHex (storedCanvasSurroundColor) ?? defaultCanvasSurroundColor;
 		bool extendedPaletteRows = settings.GetSetting (SettingNames.EXTENDED_PALETTE_ROWS, false);
 		bool toolboxClassicLayout = settings.GetSetting (SettingNames.TOOLBOX_CLASSIC_LAYOUT, false);
+		bool toolSettingsWrapRows = settings.GetSetting (SettingNames.TOOL_SETTINGS_WRAP_ROWS, true);
 
 		using PreferencesDialog dialog = PreferencesDialog.New (
 			chrome,
@@ -47,6 +48,7 @@ internal sealed class PreferencesAction : IActionHandler
 			settings.GetSetting (SettingNames.PASTE_EXTERNAL_IMAGES_TO_NEW_LAYER, false),
 			extendedPaletteRows,
 			toolboxClassicLayout,
+			toolSettingsWrapRows,
 			(PopoverHintMode) settings.GetSetting (SettingNames.POPOVER_HINT_MODE, (int) PopoverHintMode.All),
 			settings.GetSetting (SettingNames.STATUSBAR_SHOW_CURSOR_POSITION, true),
 			settings.GetSetting (SettingNames.STATUSBAR_SHOW_IMAGE_SIZE, true));
@@ -63,6 +65,8 @@ internal sealed class PreferencesAction : IActionHandler
 			settings.PutSetting (SettingNames.POPOVER_HINT_MODE, (int) dialog.PopoverHintMode);
 			settings.PutSetting (SettingNames.STATUSBAR_SHOW_CURSOR_POSITION, dialog.StatusBarShowCursorPosition);
 			settings.PutSetting (SettingNames.STATUSBAR_SHOW_IMAGE_SIZE, dialog.StatusBarShowImageSize);
+			settings.PutSetting (SettingNames.TOOL_SETTINGS_WRAP_ROWS, dialog.ToolSettingsWrapRows);
+			PintaCore.Tools.WrapToolBarRows = dialog.ToolSettingsWrapRows;
 			PintaCore.Actions.SetStatusBarCursorPositionVisible (dialog.StatusBarShowCursorPosition);
 			PintaCore.Actions.SetStatusBarImageSizeVisible (dialog.StatusBarShowImageSize);
 

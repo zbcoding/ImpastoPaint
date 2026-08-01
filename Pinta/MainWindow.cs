@@ -497,7 +497,9 @@ internal sealed class MainWindow
 	private void CreateToolToolBar ()
 	{
 		Gtk.Box tool_toolbar = window_shell.CreateToolBar ("tool_toolbar");
-		tool_toolbar.HeightRequest = 48;
+		tool_toolbar.HeightRequest = 42;
+
+		PintaCore.Tools.WrapToolBarRows = PintaCore.Settings.GetSetting (SettingNames.TOOL_SETTINGS_WRAP_ROWS, true);
 
 		PintaCore.Chrome.InitializeToolToolBar (tool_toolbar);
 	}

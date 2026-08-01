@@ -35,6 +35,9 @@ internal static class SettingNames
 	// Impasto: pre-fork single-column toolbox layout, offered as an opt-in for users who
 	// prefer it over the sectioned 2-column grid.
 	internal const string TOOLBOX_CLASSIC_LAYOUT = "toolbox-classic-layout";
+	// Impasto: wrap the tool settings onto extra rows when the window is too narrow,
+	// instead of scrolling them horizontally.
+	internal const string TOOL_SETTINGS_WRAP_ROWS = "tool-settings-wrap-rows";
 	internal const string COLORS_FLOATING = "colors-floating";
 	// Impasto: add a third row of darker colors to the default palette.
 	internal const string EXTENDED_PALETTE_ROWS = "extended-palette-rows";

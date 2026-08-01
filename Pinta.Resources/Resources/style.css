@@ -34,6 +34,43 @@
     box-shadow: 0px 0px 2px 2px #7F7F7F;
 }
 
+/* Impasto: border around the tool name chip, and one around the tool settings area
+   as a whole - however many rows the settings wrap onto. */
+.tool-setting-group {
+    border: 1px solid alpha(@window_fg_color, 0.15);
+    border-radius: 6px;
+    padding: 3px 4px;
+    margin: 1px 3px;
+}
+
+/* Impasto: keep the settings clear of the tool name chip and of the toolbox column's
+   right edge below it. */
+.tool-settings-area {
+    margin-left: 18px;
+}
+
+/* Impasto: the Adwaita toolbar style pads 6px vertically, which leaves a wide gap between
+   the tool settings and the icon toolbar above it. */
+#tool_toolbar {
+    padding-top: 2px;
+    padding-bottom: 2px;
+}
+
+/* Impasto: same box, no border, for tools that have no settings. */
+.tool-settings-empty {
+    border-color: transparent;
+}
+
+/* Impasto: real padding for the tool settings, replacing the spaces the tools pad their
+   labels with. Keeps the groups apart without wasting width when they wrap onto rows. */
+.tool-setting-cluster {
+    margin: 0px 3px;
+}
+
+.tool-setting-cluster > label {
+    margin-right: 4px;
+}
+
 /* Impasto: low-contrast pill behind the status bar's cursor-position and
    image-size/aspect-ratio icon+label groups. */
 .statusbar-chip {

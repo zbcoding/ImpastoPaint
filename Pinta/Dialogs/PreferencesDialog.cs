@@ -21,6 +21,7 @@ public sealed partial class PreferencesDialog
 	private Gtk.CheckButton paste_external_images_to_new_layer_check_button;
 	private Gtk.CheckButton extended_palette_rows_check_button;
 	private Gtk.CheckButton toolbox_classic_layout_check_button;
+	private Gtk.CheckButton tool_settings_wrap_rows_check_button;
 	private Gtk.CheckButton statusbar_show_cursor_position_check_button;
 	private Gtk.CheckButton statusbar_show_image_size_check_button;
 	private Gtk.ToggleButton popover_hint_mode_all_button;
@@ -45,6 +46,7 @@ public sealed partial class PreferencesDialog
 	public bool PasteExternalImagesToNewLayer => paste_external_images_to_new_layer_check_button.Active;
 	public bool ExtendedPaletteRows => extended_palette_rows_check_button.Active;
 	public bool ToolboxClassicLayout => toolbox_classic_layout_check_button.Active;
+	public bool ToolSettingsWrapRows => tool_settings_wrap_rows_check_button.Active;
 	public bool StatusBarShowCursorPosition => statusbar_show_cursor_position_check_button.Active;
 	public bool StatusBarShowImageSize => statusbar_show_image_size_check_button.Active;
 	public PopoverHintMode PopoverHintMode
@@ -52,7 +54,7 @@ public sealed partial class PreferencesDialog
 			: popover_hint_mode_essential_button.Active ? PopoverHintMode.Essential
 			: PopoverHintMode.None;
 
-	internal static PreferencesDialog New (ChromeManager chrome, int defaultCanvasWidth, int defaultCanvasHeight, Cairo.Color canvasSurroundColor, bool canvasSurroundColorIsDefault, Cairo.Color defaultCanvasSurroundColor, bool pasteExternalImagesToNewLayer, bool extendedPaletteRows, bool toolboxClassicLayout, PopoverHintMode popoverHintMode, bool statusBarShowCursorPosition, bool statusBarShowImageSize)
+	internal static PreferencesDialog New (ChromeManager chrome, int defaultCanvasWidth, int defaultCanvasHeight, Cairo.Color canvasSurroundColor, bool canvasSurroundColorIsDefault, Cairo.Color defaultCanvasSurroundColor, bool pasteExternalImagesToNewLayer, bool extendedPaletteRows, bool toolboxClassicLayout, bool toolSettingsWrapRows, PopoverHintMode popoverHintMode, bool statusBarShowCursorPosition, bool statusBarShowImageSize)
 	{
 		PreferencesDialog dialog = NewWithProperties ([]);
 		dialog.canvas_width_spinner.Value = defaultCanvasWidth;
@@ -63,6 +65,7 @@ public sealed partial class PreferencesDialog
 		dialog.paste_external_images_to_new_layer_check_button.Active = pasteExternalImagesToNewLayer;
 		dialog.extended_palette_rows_check_button.Active = extendedPaletteRows;
 		dialog.toolbox_classic_layout_check_button.Active = toolboxClassicLayout;
+		dialog.tool_settings_wrap_rows_check_button.Active = toolSettingsWrapRows;
 		dialog.SetPopoverHintMode (popoverHintMode);
 		dialog.statusbar_show_cursor_position_check_button.Active = statusBarShowCursorPosition;
 		dialog.statusbar_show_image_size_check_button.Active = statusBarShowImageSize;
@@ -76,6 +79,7 @@ public sealed partial class PreferencesDialog
 	[MemberNotNull (nameof (paste_external_images_to_new_layer_check_button))]
 	[MemberNotNull (nameof (extended_palette_rows_check_button))]
 	[MemberNotNull (nameof (toolbox_classic_layout_check_button))]
+	[MemberNotNull (nameof (tool_settings_wrap_rows_check_button))]
 	[MemberNotNull (nameof (statusbar_show_cursor_position_check_button))]
 	[MemberNotNull (nameof (statusbar_show_image_size_check_button))]
 	[MemberNotNull (nameof (popover_hint_mode_all_button))]
@@ -171,6 +175,14 @@ public sealed partial class PreferencesDialog
 		toolboxClassicLayoutRow.Append (CreateResetButton (ResetToolboxClassicLayout));
 		popoverHintPage.Append (toolboxClassicLayoutRow);
 
+		Gtk.CheckButton toolSettingsWrapRowsCheckButton = Gtk.CheckButton.NewWithLabel (Translations.GetString ("Wrap tool settings onto extra rows"));
+		toolSettingsWrapRowsCheckButton.TooltipText = Translations.GetString ("When the window is too narrow for all of the current tool's settings, they continue on another row instead of scrolling horizontally.");
+		Gtk.Box toolSettingsWrapRowsRow = Gtk.Box.New (Gtk.Orientation.Horizontal, SPACING);
+		toolSettingsWrapRowsCheckButton.Hexpand = true;
+		toolSettingsWrapRowsRow.Append (toolSettingsWrapRowsCheckButton);
+		toolSettingsWrapRowsRow.Append (CreateResetButton (ResetToolSettingsWrapRows));
+		popoverHintPage.Append (toolSettingsWrapRowsRow);
+
 		Gtk.CheckButton statusbarShowCursorPositionCheckButton = Gtk.CheckButton.NewWithLabel (Translations.GetString ("Show cursor position in the status bar"));
 		Gtk.Box statusbarCursorPositionRow = Gtk.Box.New (Gtk.Orientation.Horizontal, SPACING);
 		statusbarShowCursorPositionCheckButton.Hexpand = true;
@@ -218,6 +230,7 @@ public sealed partial class PreferencesDialog
 		paste_external_images_to_new_layer_check_button = pasteExternalImagesCheckButton;
 		extended_palette_rows_check_button = extendedPaletteRowsCheckButton;
 		toolbox_classic_layout_check_button = toolboxClassicLayoutCheckButton;
+		tool_settings_wrap_rows_check_button = toolSettingsWrapRowsCheckButton;
 		statusbar_show_cursor_position_check_button = statusbarShowCursorPositionCheckButton;
 		statusbar_show_image_size_check_button = statusbarShowImageSizeCheckButton;
 		popover_hint_mode_all_button = popoverHintModeAllButton;
@@ -245,6 +258,9 @@ public sealed partial class PreferencesDialog
 
 	private void ResetToolboxClassicLayout (Gtk.Button sender, EventArgs e)
 		=> toolbox_classic_layout_check_button.Active = false;
+
+	private void ResetToolSettingsWrapRows (Gtk.Button sender, EventArgs e)
+		=> tool_settings_wrap_rows_check_button.Active = true;
 
 	private void ResetStatusBarShowCursorPosition (Gtk.Button sender, EventArgs e)
 		=> statusbar_show_cursor_position_check_button.Active = true;
@@ -413,6 +429,7 @@ public sealed partial class PreferencesDialog
 		paste_external_images_to_new_layer_check_button.Active = settings.GetSetting (SettingNames.PASTE_EXTERNAL_IMAGES_TO_NEW_LAYER, PasteExternalImagesToNewLayer);
 		extended_palette_rows_check_button.Active = settings.GetSetting (SettingNames.EXTENDED_PALETTE_ROWS, ExtendedPaletteRows);
 		toolbox_classic_layout_check_button.Active = settings.GetSetting (SettingNames.TOOLBOX_CLASSIC_LAYOUT, ToolboxClassicLayout);
+		tool_settings_wrap_rows_check_button.Active = settings.GetSetting (SettingNames.TOOL_SETTINGS_WRAP_ROWS, ToolSettingsWrapRows);
 		statusbar_show_cursor_position_check_button.Active = settings.GetSetting (SettingNames.STATUSBAR_SHOW_CURSOR_POSITION, StatusBarShowCursorPosition);
 		statusbar_show_image_size_check_button.Active = settings.GetSetting (SettingNames.STATUSBAR_SHOW_IMAGE_SIZE, StatusBarShowImageSize);
 		SetPopoverHintMode ((PopoverHintMode) settings.GetSetting (SettingNames.POPOVER_HINT_MODE, (int) PopoverHintMode));

@@ -265,36 +265,12 @@ Examples already in the codebase.
 Keybinding menu usually shows user when duplicates have been set (red highlight as warning), but some buttons, like the tool menu buttons,
 use the same key to cycle through the tool menu buttons.
 
-## Completed Features (This Fork)
-
-Based on `IMPASTO.md`, these are verified working:
-
-- Renamed to Impasto: app ID (`com.github.zbcoding.Impasto`), window title, settings directory
-- Menu bar by default (File/Edit/View/…) instead of hamburger
-- Toolbox split into 6 priority-based sections with separators
-- Toolbox fixed at 2 columns (mostly)
-- Shape tools collapsed into stacked button with right-click pin menu
-- Tool right-click to pin into Pinned section (persistence + rendering verified)
-
-These are built but not fully verified in UI:
-- Colors palette docked in status bar, View → Float Colors pops it out
-- Inline HSV color wheel in floating colors
-- Dock tooltips: "Minimize to icon" / "Maximize to side menu"
-
-## Deferred (Big Rocks)
-
-These are real projects, not quick tasks. Don't add them to scope casually:
-
-1. **Numeric color entry inline** — `ColorWheelWidget` covers hue/sat/value; alpha, RGB fields, hex still in `ColorPickerDialog` (a 1,013-line dialog; worst rebase target in the tree)
-2. **Merging shape tools** — Impasto has four tools sharing a button (looks similar, cheap); real merge needs refactoring `ShapeTool` subclasses in `Pinta.Tools`
-3. **Paint.NET plugin compatibility** — The actual moat; multi-phase project involving `BitmapEffect`, `IndirectUI`, classic `Effect` adapter, and `GpuImageEffect`
-
 ## Known Issues
 
 - **Toolbox column count** under wide/maximized windows may show a single column with stray buttons instead of clean 2-column grid (unconfirmed; reproduce before changing)
 - Binary still named `pinta`; `.desktop` `Exec` matches it (rename binary + autotools packaging together or not at all)
 - Icon artwork still Pinta's (MIT-licensed, fine to ship; swap before release)
-- Bug/support URLs still point at PintaProject; fix once this repo stabilizes
+- Bug/support URLs still point at PintaProject; use these URLs for PRs back into PintaProject or fix once this repo stabilizes
 
 ## Debugging Tips
 

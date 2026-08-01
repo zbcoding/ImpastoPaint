@@ -2308,14 +2308,17 @@ public sealed class TextTool : BaseTool
 			}
 		}
 
-		//Anchor the popover to the hovered corner for the resize hint, otherwise to the
-		//lower-right of the object (mirroring the nudge hint location).
+		//Anchor the popover to the hovered corner for the resize hint. Otherwise,
+		//spawn it slightly below the center of the word (not the lower-right corner,
+		//which is an invisible corner when the object isn't focused/being edited).
 		PointD anchor;
 		if (zone == HitZone.Resize) {
 			PointD[] corners = GetInteractionCorners (obj);
 			anchor = corners[FindCorner (obj, last_mouse_position.ToDouble ())];
 		} else {
-			anchor = new PointD (obj.TextBounds.Right, obj.TextBounds.Bottom);
+			anchor = new PointD (
+				(obj.TextBounds.Left + obj.TextBounds.Right) / 2.0,
+				obj.TextBounds.Bottom);
 		}
 
 		PointD anchorView = workspace.ActiveWorkspace.CanvasPointToView (anchor);

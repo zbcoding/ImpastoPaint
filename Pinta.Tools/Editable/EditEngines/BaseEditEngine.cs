@@ -407,10 +407,8 @@ public abstract class BaseEditEngine
 					BaseTool.DEFAULT_BRUSH_WIDTH
 				)
 			);
-			outline_width.TooltipText = Translations.GetString ("Change outline width.") + "\n"
-				+ "\n" + Translations.GetString ("Shortcut keys:")
-				+ "\n" + Translations.GetString ("Press {0} to decrease outline width", "\"[\"")
-				+ "\n" + Translations.GetString ("Press {0} to increase outline width", "\"]\"");
+			UpdateOutlineWidthTooltip ();
+			PintaCore.Shortcuts.ShortcutsChanged += (_, _) => UpdateOutlineWidthTooltip ();
 
 			outline_width.OnValueChanged += (o, e) => {
 

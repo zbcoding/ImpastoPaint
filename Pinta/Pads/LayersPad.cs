@@ -44,7 +44,7 @@ internal sealed class LayersPad : IDockPad
 		DockItem layers_item = DockItem.New (
 			child: layers,
 			uniqueName: "Layers",
-			iconName: Resources.Icons.LayerDuplicate
+			iconName: Resources.Icons.Layers
 		);
 		layers_item.Label = Translations.GetString ("Layers");
 

@@ -202,6 +202,7 @@ public static class Icons
 	public const string JoinRound = "join-round-symbolic";
 	public const string JoinBevel = "join-bevel-symbolic";
 
+	public const string Layers = "layers";
 	public const string LayerDelete = "layers-remove-layer";
 	public const string LayerDuplicate = "layers-duplicate-layer";
 	public const string LayerFlipHorizontal = ImageFlipHorizontal;

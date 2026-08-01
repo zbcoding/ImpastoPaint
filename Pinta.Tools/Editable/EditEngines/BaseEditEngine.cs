@@ -59,6 +59,7 @@ public abstract class BaseEditEngine
 
 	protected PointD shape_origin;
 	protected PointD current_point;
+	protected bool ctrl_key_down;
 
 	public static Color OutlineColor {
 		get => PintaCore.Palette.PrimaryColor;
@@ -1096,6 +1097,7 @@ public abstract class BaseEditEngine
 	{
 		current_point = e.PointDouble;
 		bool shiftKey = e.IsShiftPressed;
+		ctrl_key_down = e.IsControlPressed;
 
 		if (!is_drawing) {
 			//Redraw the active shape to show a (temporary) highlighted control point (over any shape) when applicable.

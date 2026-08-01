@@ -65,7 +65,30 @@ public sealed class TriangleEditEngine : BaseEditEngine
 
 	protected override void MovePoint (List<ControlPoint> controlPoints)
 	{
+		if (controlPoints.Count == 3 && ctrl_key_down) {
+			MoveEquilateralPoint (controlPoints);
+			return;
+		}
+
 		MoveTriangularPoint (controlPoints);
 		base.MovePoint (controlPoints);
+	}
+
+	//Holding Ctrl while dragging a triangle draws an equilateral triangle (apex up,
+	//level base centered underneath) instead of the default right triangle. The base
+	//follows the mouse's vertical drag; its half-width is derived so all sides are equal.
+	private void MoveEquilateralPoint (List<ControlPoint> controlPoints)
+	{
+		PointD apex = controlPoints[0].Position;
+
+		//Keep the altitude positive so the base always stays below the apex (a zero or
+		//inverted altitude would produce a degenerate or upside-down triangle).
+		double altitude = Math.Max (current_point.Y - apex.Y, 0.01d);
+		double halfBase = altitude / Math.Sqrt (3d);
+
+		double baseY = apex.Y + altitude;
+
+		controlPoints[1].Position = new PointD (apex.X - halfBase, baseY);
+		controlPoints[2].Position = new PointD (apex.X + halfBase, baseY);
 	}
 }

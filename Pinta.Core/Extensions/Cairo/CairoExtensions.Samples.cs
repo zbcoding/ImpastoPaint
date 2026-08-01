@@ -338,13 +338,25 @@ partial class CairoExtensions
 			return Gdk.Functions.PixbufGetFromSurface (sourceSurface, 0, 0, width, height)!;
 		}
 
-		// If we need a pixbuf without alpha, it's easiest to convert from a temporary RGB cairo surface.
-		using Cairo.ImageSurface rgbSurface = new (Format.Rgb24, width, height);
-		using Cairo.Context context = new (rgbSurface);
-		context.SetSourceSurface (sourceSurface, 0.0, 0.0);
-		context.Paint ();
-
-		return Gdk.Functions.PixbufGetFromSurface (rgbSurface, 0, 0, width, height)!;
+		// Some pixbuf encoders (e.g. glycin's JPEG) reject alpha-bearing pixbufs, so drop the
+		// alpha channel deterministically rather than relying on GDK inferring "no alpha" from
+		// a temporary RGB24 cairo surface (which some builds report back as Rgba8).
+		using GdkPixbuf.Pixbuf rgb = GdkPixbuf.Pixbuf.New (GdkPixbuf.Colorspace.Rgb, false, 8, width, height);
+		Span<ColorBgra> sourceData = sourceSurface.GetPixelData ();
+		unsafe {
+			byte* dest = (byte*) rgb.Pixels;
+			for (int y = 0; y < height; y++) {
+				byte* row = dest + (long) y * rgb.Rowstride;
+				int srcIndex = y * width;
+				for (int x = 0; x < width; x++) {
+					ColorBgra c = sourceData[srcIndex + x];
+					row[x * 3 + 0] = c.R;
+					row[x * 3 + 1] = c.G;
+					row[x * 3 + 2] = c.B;
+				}
+			}
+		}
+		return rgb;
 	}
 
 	/// <summary>

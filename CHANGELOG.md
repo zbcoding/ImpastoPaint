@@ -57,6 +57,7 @@ Thanks to the following contributors who worked on this release:
 - Menu buttons now display popout nested menus instead of sliding menus (#2131)
 
 ### Fixed
+- Fixed saving images as JPEG on some systems where the image loader reports an alpha channel even when the pixbuf has none, which caused "encoder does not support the color type Rgba8" errors (#1774, #2238)
 - Fixed saving a file without a file extension when a format is chosen from the Save As dialog's type dropdown, without mangling filenames that already have an (unrecognized) extension
 - Fixed AVIF export being unavailable on Windows due to a native library name mismatch, and added the missing `libavif` dependency to the Windows and macOS build workflows
 - Fixed a persisted AVIF default save format being selected even when libavif is unavailable, which could crash Save As

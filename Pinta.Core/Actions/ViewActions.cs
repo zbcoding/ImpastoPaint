@@ -192,6 +192,11 @@ public sealed class ViewActions
 
 		ZoomCollection = default_zoom_levels;
 		ZoomComboBox = ToolBarComboBox.New (90, DefaultZoomIndex (), true, ZoomCollection);
+		// Size to content (longest entry, e.g. "3,600%" / "Window") plus a little breathing room,
+		// in characters rather than a pixel WidthRequest, so it still fits if UI font size becomes configurable.
+		ZoomComboBox.ComboBox.WidthRequest = -1;
+		ZoomComboBox.ComboBox.GetEntry ().SetWidthChars (6);
+		ZoomComboBox.ComboBox.GetEntry ().SetMaxWidthChars (7);
 
 		// The toolbar is shown by default.
 		ToolBar.Value = true;

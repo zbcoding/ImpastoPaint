@@ -26,6 +26,10 @@ internal static class SettingNames
 	internal const string MENUBAR_SHOWN = "menubar-shown";
 	internal const string STATUSBAR_SHOWN = "statusbar-shown";
 	internal const string TOOLBOX_SHOWN = "toolbox-shown";
+	// Impasto: individually toggle the status bar's cursor position and image
+	// size/aspect ratio widgets (Settings dialog). Mirrors Pinta.Core.SettingNames.
+	internal const string STATUSBAR_SHOW_CURSOR_POSITION = "statusbar-show-cursor-position";
+	internal const string STATUSBAR_SHOW_IMAGE_SIZE = "statusbar-show-image-size";
 	internal const string COLORS_SHOWN = "colors-shown";
 	internal const string TOOLBOX_PINNED = "toolbox-pinned";
 	// Impasto: pre-fork single-column toolbox layout, offered as an opt-in for users who

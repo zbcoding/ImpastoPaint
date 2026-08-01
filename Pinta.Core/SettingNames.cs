@@ -27,6 +27,11 @@ internal static class SettingNames
 	// Impasto: add a third row of darker colors to the default palette.
 	internal const string EXTENDED_PALETTE_ROWS = "extended-palette-rows";
 
+	// Impasto: individually toggle the status bar's cursor position and image
+	// size/aspect ratio widgets (Settings dialog).
+	internal const string STATUSBAR_SHOW_CURSOR_POSITION = "statusbar-show-cursor-position";
+	internal const string STATUSBAR_SHOW_IMAGE_SIZE = "statusbar-show-image-size";
+
 	internal static string ToolAntialias (BaseTool tool)
 		=> $"{tool.GetType ().Name.ToLowerInvariant ()}-antialias";
 

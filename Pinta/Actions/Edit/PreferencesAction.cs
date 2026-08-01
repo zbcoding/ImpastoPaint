@@ -47,7 +47,9 @@ internal sealed class PreferencesAction : IActionHandler
 			settings.GetSetting (SettingNames.PASTE_EXTERNAL_IMAGES_TO_NEW_LAYER, false),
 			extendedPaletteRows,
 			toolboxClassicLayout,
-			(PopoverHintMode) settings.GetSetting (SettingNames.POPOVER_HINT_MODE, (int) PopoverHintMode.All));
+			(PopoverHintMode) settings.GetSetting (SettingNames.POPOVER_HINT_MODE, (int) PopoverHintMode.All),
+			settings.GetSetting (SettingNames.STATUSBAR_SHOW_CURSOR_POSITION, true),
+			settings.GetSetting (SettingNames.STATUSBAR_SHOW_IMAGE_SIZE, true));
 
 		try {
 			if (await dialog.RunAsync () != Gtk.ResponseType.Ok)
@@ -59,6 +61,10 @@ internal sealed class PreferencesAction : IActionHandler
 			settings.PutSetting (SettingNames.CANVAS_SURROUND_COLOR, selectedCanvasSurroundColor?.ToHex (addAlpha: false) ?? SettingNames.DEFAULT_CANVAS_SURROUND_COLOR);
 			settings.PutSetting (SettingNames.PASTE_EXTERNAL_IMAGES_TO_NEW_LAYER, dialog.PasteExternalImagesToNewLayer);
 			settings.PutSetting (SettingNames.POPOVER_HINT_MODE, (int) dialog.PopoverHintMode);
+			settings.PutSetting (SettingNames.STATUSBAR_SHOW_CURSOR_POSITION, dialog.StatusBarShowCursorPosition);
+			settings.PutSetting (SettingNames.STATUSBAR_SHOW_IMAGE_SIZE, dialog.StatusBarShowImageSize);
+			PintaCore.Actions.SetStatusBarCursorPositionVisible (dialog.StatusBarShowCursorPosition);
+			PintaCore.Actions.SetStatusBarImageSizeVisible (dialog.StatusBarShowImageSize);
 
 			// The toolbox is only ever built once at startup, so a layout change needs a
 			// restart to take effect - only mention that when it actually changed.

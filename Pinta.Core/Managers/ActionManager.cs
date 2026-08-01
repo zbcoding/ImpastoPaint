@@ -142,15 +142,38 @@ public sealed class ActionManager
 		header.PackStart (Edit.Deselect.CreateToolBarItem ());
 	}
 
+	private Gtk.Widget? cursor_position_icon;
+	private Gtk.Widget? cursor_position_label;
+	private Gtk.Widget? image_size_icon;
+	private Gtk.Widget? image_size_label;
+
+	public void SetStatusBarCursorPositionVisible (bool visible)
+	{
+		cursor_position_icon?.SetVisible (visible);
+		cursor_position_label?.SetVisible (visible);
+	}
+
+	public void SetStatusBarImageSizeVisible (bool visible)
+	{
+		image_size_icon?.SetVisible (visible);
+		image_size_label?.SetVisible (visible);
+	}
+
 	public void CreateStatusBar (Gtk.Box statusbar, WorkspaceManager workspaceManager)
 	{
 		// Cursor position widget - left aligned with enough space to display coordinates up to tens of thousands (e.g. 10000, 10000).
-		statusbar.Append (Gtk.Image.NewFromIconName (Resources.Icons.CursorPosition));
+		cursor_position_icon = Gtk.Image.NewFromIconName (Resources.Icons.CursorPosition);
+		statusbar.Append (cursor_position_icon);
 		var cursor = Gtk.Label.New ("0, 0");
 		cursor.Xalign = 0.0f;
 		cursor.Halign = Gtk.Align.Start;
 		cursor.WidthChars = 11;
 		statusbar.Append (cursor);
+		cursor_position_label = cursor;
+
+		bool showCursorPosition = PintaCore.Settings.GetSetting (SettingNames.STATUSBAR_SHOW_CURSOR_POSITION, true);
+		cursor_position_icon.SetVisible (showCursorPosition);
+		cursor_position_label.SetVisible (showCursorPosition);
 
 		chrome.LastCanvasCursorPointChanged += delegate {
 			var pt = chrome.LastCanvasCursorPoint;
@@ -184,12 +207,16 @@ public sealed class ActionManager
 		};
 
 		// Image dimensions widget - "800 × 600 · 4:3" (PR #2013).
-		statusbar.Append (Gtk.Image.NewFromIconName (Resources.Icons.ImageResize));
+		image_size_icon = Gtk.Image.NewFromIconName (Resources.Icons.ImageResize);
+		statusbar.Append (image_size_icon);
 		var image_size = Gtk.Label.New ("");
 		image_size.Xalign = 0.0f;
 		image_size.Halign = Gtk.Align.Start;
 		image_size.WidthChars = 16;
 		statusbar.Append (image_size);
+		image_size_label = image_size;
+
+		SetStatusBarImageSizeVisible (PintaCore.Settings.GetSetting (SettingNames.STATUSBAR_SHOW_IMAGE_SIZE, true));
 
 		void UpdateImageSizeLabel ()
 		{

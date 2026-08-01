@@ -48,6 +48,13 @@ public sealed partial class StatusBarColorPaletteWidget
 	private const int ICON_SIZE = 12;
 	private const int ACTION_ICON_SIZE = 28;
 
+	// Responsive folding thresholds (own allocated width). As the bar narrows past
+	// each one, that section stops drawing in the bar - its content moves into the
+	// color-wheel popover instead (see MainWindow's popover section builders).
+	private const int FOLD_QUICK_COLORS_WIDTH = 300;
+	private const int FOLD_RECENT_COLORS_WIDTH = 220;
+	private const int FOLD_SWATCHES_WIDTH = 130;
+
 	private IChromeService chrome = null!; // NRT - set by factory method
 	private IPaletteService palette = null!;
 	private ISystemService system = null!;
@@ -58,6 +65,22 @@ public sealed partial class StatusBarColorPaletteWidget
 	// Right-clicking the float button asks for the "Reset window" popover.
 	public event EventHandler? ResetColorWindowClicked;
 	public RectangleD FloatColorsButtonRect => float_colors_icon_rect;
+
+	// Fires whenever this widget's allocated width changes - other status bar
+	// widgets (e.g. the cursor position / image size labels) use it as a cheap
+	// proxy for "the footer is getting tight", since GTK Box doesn't expose a
+	// resize signal of its own.
+	public event EventHandler<int>? WidthChanged;
+
+	// Fires when a section folds in/out of the bar, so the popover content can be
+	// rebuilt to match.
+	public event EventHandler? FoldStateChanged;
+	private bool quick_colors_folded;
+	private bool recent_colors_folded;
+	private bool swatches_folded;
+	public bool QuickColorsFolded => quick_colors_folded;
+	public bool RecentColorsFolded => recent_colors_folded;
+	public bool SwatchesFolded => swatches_folded;
 
 	// Impasto: the wheel / float buttons only make sense while docked - the floating
 	// window already shows the wheel, and clicking them there popped up an empty
@@ -257,65 +280,74 @@ public sealed partial class StatusBarColorPaletteWidget
 		using Pattern checkeredPattern =
 			CairoExtensions.CreateTransparentBackgroundPattern (TILE_SIZE);
 
-		// Draw Secondary color swatch
-
-		if (palette.SecondaryColor.A < 1)
-			g.FillRectangle (secondary_rect, checkeredPattern);
-
-		g.FillRectangle (secondary_rect, palette.SecondaryColor);
-		g.DrawRectangle (new RectangleD (secondary_rect.X + 1, secondary_rect.Y + 1, secondary_rect.Width - 2, secondary_rect.Height - 2), new Color (1, 1, 1), 1);
-		g.DrawRectangle (secondary_rect, new Color (0, 0, 0), 1);
-
-		// Draw Primary color swatch
-
-		if (palette.PrimaryColor.A < 1)
-			g.FillRectangle (primary_rect, checkeredPattern);
-
-		g.FillRectangle (primary_rect, palette.PrimaryColor);
-		g.DrawRectangle (new RectangleD (primary_rect.X + 1, primary_rect.Y + 1, primary_rect.Width - 2, primary_rect.Height - 2), new Color (1, 1, 1), 1);
-		g.DrawRectangle (primary_rect, new Color (0, 0, 0), 1);
-
-		// Draw the swap icon.
 		GetStyleContext ().GetColor (out Gdk.RGBA fg_color);
 		Cairo.Color cairo_fg_color = fg_color.ToCairoColor ();
-		DrawSwapIcon (g, cairo_fg_color);
+
+		if (!swatches_folded) {
+
+			// Draw Secondary color swatch
+
+			if (palette.SecondaryColor.A < 1)
+				g.FillRectangle (secondary_rect, checkeredPattern);
+
+			g.FillRectangle (secondary_rect, palette.SecondaryColor);
+			g.DrawRectangle (new RectangleD (secondary_rect.X + 1, secondary_rect.Y + 1, secondary_rect.Width - 2, secondary_rect.Height - 2), new Color (1, 1, 1), 1);
+			g.DrawRectangle (secondary_rect, new Color (0, 0, 0), 1);
+
+			// Draw Primary color swatch
+
+			if (palette.PrimaryColor.A < 1)
+				g.FillRectangle (primary_rect, checkeredPattern);
+
+			g.FillRectangle (primary_rect, palette.PrimaryColor);
+			g.DrawRectangle (new RectangleD (primary_rect.X + 1, primary_rect.Y + 1, primary_rect.Width - 2, primary_rect.Height - 2), new Color (1, 1, 1), 1);
+			g.DrawRectangle (primary_rect, new Color (0, 0, 0), 1);
+
+			// Draw the swap icon.
+			DrawSwapIcon (g, cairo_fg_color);
+
+			// Draw the reset icon.
+			double square_size = 0.6 * reset_rect.Width;
+			g.DrawRectangle (new RectangleD (reset_rect.Location (), square_size, square_size), cairo_fg_color, 1);
+			g.FillRectangle (new RectangleD (reset_rect.Right - square_size, reset_rect.Bottom - square_size, square_size, square_size), cairo_fg_color);
+		}
+
 		DrawSectionDecorations (g);
 
-		// Draw the reset icon.
-		double square_size = 0.6 * reset_rect.Width;
-		g.DrawRectangle (new RectangleD (reset_rect.Location (), square_size, square_size), cairo_fg_color, 1);
-		g.FillRectangle (new RectangleD (reset_rect.Right - square_size, reset_rect.Bottom - square_size, square_size, square_size), cairo_fg_color);
-
 		// Draw recently used color swatches
-		var recent = palette.RecentlyUsedColors;
+		if (!recent_colors_folded) {
+			var recent = palette.RecentlyUsedColors;
 
-		// Only draw up to MaxRecentlyUsedColor, which is what the grid fits. The list
-		// can transiently hold more if the extended-palette setting was just toggled.
-		int recent_count = Math.Min (recent.Count, palette.MaxRecentlyUsedColor);
+			// Only draw up to MaxRecentlyUsedColor, which is what the grid fits. The list
+			// can transiently hold more if the extended-palette setting was just toggled.
+			int recent_count = Math.Min (recent.Count, palette.MaxRecentlyUsedColor);
 
-		for (int i = 0; i < recent_count; i++) {
+			for (int i = 0; i < recent_count; i++) {
 
-			RectangleD swatchBounds = PaletteWidget.GetSwatchBounds (palette, i, recent_palette_rect, true);
-			Color recentColor = recent.ElementAt (i);
+				RectangleD swatchBounds = PaletteWidget.GetSwatchBounds (palette, i, recent_palette_rect, true);
+				Color recentColor = recent.ElementAt (i);
 
-			if (recentColor.A < 1) // Only draw checkered pattern if there is transparency
-				g.FillRectangle (swatchBounds, checkeredPattern);
+				if (recentColor.A < 1) // Only draw checkered pattern if there is transparency
+					g.FillRectangle (swatchBounds, checkeredPattern);
 
-			g.FillRectangle (swatchBounds, recentColor);
+				g.FillRectangle (swatchBounds, recentColor);
+			}
 		}
 
 		// Draw color swatches
-		var currentPalette = palette.CurrentPalette;
+		if (!quick_colors_folded) {
+			var currentPalette = palette.CurrentPalette;
 
-		for (int i = 0; i < currentPalette.Colors.Count; i++) {
+			for (int i = 0; i < currentPalette.Colors.Count; i++) {
 
-			RectangleD swatchBounds = PaletteWidget.GetSwatchBounds (palette, i, palette_rect);
-			Color paletteColor = currentPalette.Colors[i];
+				RectangleD swatchBounds = PaletteWidget.GetSwatchBounds (palette, i, palette_rect);
+				Color paletteColor = currentPalette.Colors[i];
 
-			if (paletteColor.A < 1) // Only draw checkered pattern if there is transparency
-				g.FillRectangle (swatchBounds, checkeredPattern);
+				if (paletteColor.A < 1) // Only draw checkered pattern if there is transparency
+					g.FillRectangle (swatchBounds, checkeredPattern);
 
-			g.FillRectangle (swatchBounds, paletteColor);
+				g.FillRectangle (swatchBounds, paletteColor);
+			}
 		}
 
 		g.Dispose ();
@@ -374,14 +406,30 @@ public sealed partial class StatusBarColorPaletteWidget
 		double top = 3;
 		double bottom = 3 + PaletteWidget.SWATCH_SIZE * PaletteWidget.PALETTE_ROWS;
 
-		g.DrawLine (new PointD (recent_separator_x, top), new PointD (recent_separator_x, bottom), separator, 1);
-		g.DrawLine (new PointD (palette_separator_x, top), new PointD (palette_separator_x, bottom), separator, 1);
+		if (!recent_colors_folded) {
+			g.DrawLine (new PointD (recent_separator_x, top), new PointD (recent_separator_x, bottom), separator, 1);
+			DrawClockIcon (g, recent_icon_rect, fg);
+		}
 
-		DrawClockIcon (g, recent_icon_rect, fg);
-		DrawPaletteIcon (g, palette_icon_rect, fg);
+		if (!quick_colors_folded) {
+			g.DrawLine (new PointD (palette_separator_x, top), new PointD (palette_separator_x, bottom), separator, 1);
+			DrawPaletteIcon (g, palette_icon_rect, fg);
+		}
 
 		if (!show_action_icons)
 			return;
+
+		// Once any section has folded out, the wheel/float buttons no longer sit
+		// naturally after a swatch grid - group them with a low-contrast pill so
+		// they still read as a pair.
+		if (quick_colors_folded) {
+			RectangleD pill = new (
+				color_wheel_icon_rect.X - 4,
+				color_wheel_icon_rect.Y - 4,
+				float_colors_icon_rect.Right - color_wheel_icon_rect.X + 8,
+				color_wheel_icon_rect.Height + 8);
+			g.FillRoundedRectangle (pill, 6, new Color (fg.R, fg.G, fg.B, 0.08));
+		}
 
 		DrawButtonChrome (g, color_wheel_icon_rect, fg, hovered_element == WidgetElement.ColorWheel);
 		DrawColorWheelIcon (g, color_wheel_icon_rect);
@@ -503,56 +551,88 @@ public sealed partial class StatusBarColorPaletteWidget
 	}
 
 	private void HandleSizeAllocated (Gtk.DrawingArea.ResizeSignalArgs e)
-		=> UpdateLayout (e.Width);
+	{
+		UpdateLayout (e.Width);
+		WidthChanged?.Invoke (this, e.Width);
+	}
 
 	private void UpdateLayout (int width)
 	{
+		bool was_quick_folded = quick_colors_folded;
+		bool was_recent_folded = recent_colors_folded;
+		bool was_swatches_folded = swatches_folded;
+
+		quick_colors_folded = width < FOLD_QUICK_COLORS_WIDTH;
+		recent_colors_folded = width < FOLD_RECENT_COLORS_WIDTH;
+		swatches_folded = width < FOLD_SWATCHES_WIDTH;
+
 		int recent_cols = PaletteWidget.GetRecentColorColumns (palette.MaxRecentlyUsedColor);
 		int swatch_height = PaletteWidget.SWATCH_SIZE * PaletteWidget.PALETTE_ROWS;
 
-		// Recent-colors section: a separator, then a small clock icon column, then the
-		// recent swatches.
-		recent_separator_x = 47;
-		recent_icon_rect = new RectangleD (
-			recent_separator_x + SECTION_GAP,
-			2 + (swatch_height - ICON_SIZE) / 2.0,
-			ICON_SIZE,
-			ICON_SIZE);
-		double recent_swatches_x = recent_icon_rect.Right + SECTION_GAP;
+		// The anchor where the next visible section starts. Normally that's right
+		// after the swap/reset icons (x=47); once those fold too, start from the
+		// left margin instead.
+		double cursor_x = swatches_folded ? PaletteWidget.PALETTE_MARGIN : 47;
 
-		recent_palette_rect = new RectangleD (
-			recent_swatches_x,
-			2,
-			PaletteWidget.SWATCH_SIZE * recent_cols,
-			swatch_height);
+		// Recent-colors section: a separator, then a small clock icon column, then the
+		// recent swatches. Folds out first as the bar gets tight (past FOLD_RECENT_COLORS_WIDTH).
+		if (!recent_colors_folded) {
+			recent_separator_x = cursor_x;
+			recent_icon_rect = new RectangleD (
+				recent_separator_x + SECTION_GAP,
+				2 + (swatch_height - ICON_SIZE) / 2.0,
+				ICON_SIZE,
+				ICON_SIZE);
+			double recent_swatches_x = recent_icon_rect.Right + SECTION_GAP;
+
+			recent_palette_rect = new RectangleD (
+				recent_swatches_x,
+				2,
+				PaletteWidget.SWATCH_SIZE * recent_cols,
+				swatch_height);
+			cursor_x = recent_palette_rect.Right + SECTION_GAP;
+		} else {
+			recent_separator_x = -1;
+			recent_icon_rect = RectangleD.Zero;
+			recent_palette_rect = RectangleD.Zero;
+		}
 
 		// Palette section: a separator, then a small palette icon column, then the
-		// rainbow swatches, and finally the color-wheel and float-colors action icons
-		// on the right edge of the docked color picker.
-		palette_separator_x = recent_palette_rect.Right + SECTION_GAP;
-		palette_icon_rect = new RectangleD (
-			palette_separator_x + SECTION_GAP,
-			2 + (swatch_height - ICON_SIZE) / 2.0,
-			ICON_SIZE,
-			ICON_SIZE);
-		double palette_swatches_x = palette_icon_rect.Right + SECTION_GAP;
+		// rainbow swatches. Folds out before the recent-colors section (past
+		// FOLD_QUICK_COLORS_WIDTH, a wider threshold), since it's usually the wider
+		// of the two.
+		if (!quick_colors_folded) {
+			palette_separator_x = cursor_x;
+			palette_icon_rect = new RectangleD (
+				palette_separator_x + SECTION_GAP,
+				2 + (swatch_height - ICON_SIZE) / 2.0,
+				ICON_SIZE,
+				ICON_SIZE);
+			double palette_swatches_x = palette_icon_rect.Right + SECTION_GAP;
 
-		// The swatches are drawn for every palette color, so the clickable rect must
-		// cover them all - the action icons are hit-tested first, so they stay safe
-		// even if a long palette is drawn underneath them.
-		int palette_columns = (palette.CurrentPalette.Colors.Count + PaletteWidget.PALETTE_ROWS - 1) / PaletteWidget.PALETTE_ROWS;
+			// The swatches are drawn for every palette color, so the clickable rect must
+			// cover them all - the action icons are hit-tested first, so they stay safe
+			// even if a long palette is drawn underneath them.
+			int palette_columns = (palette.CurrentPalette.Colors.Count + PaletteWidget.PALETTE_ROWS - 1) / PaletteWidget.PALETTE_ROWS;
 
-		palette_rect = new RectangleD (
-			palette_swatches_x,
-			2,
-			PaletteWidget.SWATCH_SIZE * palette_columns,
-			swatch_height);
+			palette_rect = new RectangleD (
+				palette_swatches_x,
+				2,
+				PaletteWidget.SWATCH_SIZE * palette_columns,
+				swatch_height);
+			cursor_x = palette_rect.Right + SECTION_GAP;
+		} else {
+			palette_separator_x = -1;
+			palette_icon_rect = RectangleD.Zero;
+			palette_rect = RectangleD.Zero;
+		}
 
-		// The action icons sit after the swatches, but never off the right edge.
+		// The action icons sit after the last visible section, but never off the
+		// right edge, and never at a negative position on a very narrow bar.
 		double actions_width = 2 * ACTION_ICON_SIZE + SECTION_GAP;
-		double actions_x = Math.Min (
-			palette_rect.Right + SECTION_GAP,
-			Math.Max (0, width - actions_width - PaletteWidget.PALETTE_MARGIN));
+		double actions_x = Math.Max (0, Math.Min (
+			cursor_x,
+			Math.Max (0, width - actions_width - PaletteWidget.PALETTE_MARGIN)));
 
 		color_wheel_icon_rect = new RectangleD (
 			actions_x,
@@ -564,6 +644,9 @@ public sealed partial class StatusBarColorPaletteWidget
 			color_wheel_icon_rect.Y,
 			ACTION_ICON_SIZE,
 			ACTION_ICON_SIZE);
+
+		if (quick_colors_folded != was_quick_folded || recent_colors_folded != was_recent_folded || swatches_folded != was_swatches_folded)
+			FoldStateChanged?.Invoke (this, EventArgs.Empty);
 	}
 
 	/// <summary>
@@ -642,6 +725,11 @@ public sealed partial class StatusBarColorPaletteWidget
 		}
 	}
 
+	// Exposed so the color-wheel popover's folded-in primary/secondary mini section
+	// (MainWindow) can reuse the same color picker dialog as the bar's swatches,
+	// instead of duplicating the dialog setup.
+	public Task<PaletteColors?> PickColorsAsync (bool primarySelected) => RunColorPicker (primarySelected);
+
 	private async Task<PaletteColors?> RunColorPicker (bool primarySelected)
 	{
 		using ColorPickerDialog colorPicker = ColorPickerDialog.New (
@@ -694,28 +782,28 @@ public sealed partial class StatusBarColorPaletteWidget
 		if (show_action_icons && float_colors_icon_rect.ContainsPoint (point))
 			return WidgetElement.FloatColors;
 
-		if (recent_icon_rect.ContainsPoint (point))
+		if (!recent_colors_folded && recent_icon_rect.ContainsPoint (point))
 			return WidgetElement.RecentColorsIcon;
 
-		if (palette_icon_rect.ContainsPoint (point))
+		if (!quick_colors_folded && palette_icon_rect.ContainsPoint (point))
 			return WidgetElement.PaletteIcon;
 
-		if (palette_rect.ContainsPoint (point))
+		if (!quick_colors_folded && palette_rect.ContainsPoint (point))
 			return WidgetElement.Palette;
 
-		if (recent_palette_rect.ContainsPoint (point))
+		if (!recent_colors_folded && recent_palette_rect.ContainsPoint (point))
 			return WidgetElement.RecentColorsPalette;
 
-		if (primary_rect.ContainsPoint (point))
+		if (!swatches_folded && primary_rect.ContainsPoint (point))
 			return WidgetElement.PrimaryColor;
 
-		if (secondary_rect.ContainsPoint (point))
+		if (!swatches_folded && secondary_rect.ContainsPoint (point))
 			return WidgetElement.SecondaryColor;
 
-		if (swap_rect.ContainsPoint (point))
+		if (!swatches_folded && swap_rect.ContainsPoint (point))
 			return WidgetElement.SwapColors;
 
-		if (reset_rect.ContainsPoint (point))
+		if (!swatches_folded && reset_rect.ContainsPoint (point))
 			return WidgetElement.ResetColors;
 
 		return WidgetElement.Nothing;

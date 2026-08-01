@@ -159,17 +159,63 @@ public sealed class ActionManager
 		image_size_label?.SetVisible (visible);
 	}
 
+	// Impasto: how tight the docked color palette's own width gets before the
+	// cursor position / image size groups start giving it room back (see
+	// SetFooterAvailableWidth). The DIM/HIDE gap for each group is kept wider than
+	// that group's own reclaimed width, so hiding a group doesn't immediately
+	// regrow the palette bar past the threshold that re-shows it. This is purely
+	// width-driven and layers on top of the Settings visibility toggles above -
+	// a group the user turned off via Settings has its icon/label individually
+	// invisible, so showing/dimming the surrounding group here has no visible
+	// effect on it either way.
+	private const int CURSOR_GROUP_DIM_WIDTH = 460;
+	private const int CURSOR_GROUP_HIDE_WIDTH = 350;
+	private const int IMAGE_GROUP_DIM_WIDTH = 340;
+	private const int IMAGE_GROUP_HIDE_WIDTH = 180;
+
+	private Gtk.Widget? footer_cursor_group;
+	private Gtk.Widget? footer_image_group;
+
+	// Impasto: called by MainWindow whenever the docked color palette's allocated
+	// width changes, as a proxy for "the footer status bar is getting tight".
+	public void SetFooterAvailableWidth (int availableWidth)
+	{
+		if (footer_cursor_group is not null) {
+			bool hide = availableWidth < CURSOR_GROUP_HIDE_WIDTH;
+			footer_cursor_group.SetVisible (!hide);
+			footer_cursor_group.Opacity = availableWidth < CURSOR_GROUP_DIM_WIDTH ? 0.35 : 1.0;
+		}
+		if (footer_image_group is not null) {
+			bool hide = availableWidth < IMAGE_GROUP_HIDE_WIDTH;
+			footer_image_group.SetVisible (!hide);
+			footer_image_group.Opacity = availableWidth < IMAGE_GROUP_DIM_WIDTH ? 0.35 : 1.0;
+		}
+	}
+
+	// A subtle rounded chip background, matching the low-contrast hover chrome
+	// used elsewhere in the docked color palette, so each footer label group
+	// reads as a distinct pill instead of loose icon+text floating in the bar.
+	private static void ApplyStatusBarChipStyle (Gtk.Widget group)
+	{
+		group.AddCssClass ("statusbar-chip");
+	}
+
 	public void CreateStatusBar (Gtk.Box statusbar, WorkspaceManager workspaceManager)
 	{
 		// Cursor position widget - left aligned with enough space to display coordinates up to tens of thousands (e.g. 10000, 10000).
+		Gtk.Box cursor_group = Gtk.Box.New (Gtk.Orientation.Horizontal, 4);
+		cursor_group.MarginEnd = 4;
 		cursor_position_icon = Gtk.Image.NewFromIconName (Resources.Icons.CursorPosition);
-		statusbar.Append (cursor_position_icon);
+		cursor_group.Append (cursor_position_icon);
 		var cursor = Gtk.Label.New ("0, 0");
 		cursor.Xalign = 0.0f;
 		cursor.Halign = Gtk.Align.Start;
 		cursor.WidthChars = 11;
-		statusbar.Append (cursor);
+		cursor_group.Append (cursor);
 		cursor_position_label = cursor;
+		ApplyStatusBarChipStyle (cursor_group);
+		statusbar.Append (cursor_group);
+		footer_cursor_group = cursor_group;
 
 		bool showCursorPosition = PintaCore.Settings.GetSetting (SettingNames.STATUSBAR_SHOW_CURSOR_POSITION, true);
 		cursor_position_icon.SetVisible (showCursorPosition);
@@ -207,14 +253,19 @@ public sealed class ActionManager
 		};
 
 		// Image dimensions widget - "800 × 600 · 4:3" (PR #2013).
+		Gtk.Box image_group = Gtk.Box.New (Gtk.Orientation.Horizontal, 4);
+		image_group.MarginStart = 4;
 		image_size_icon = Gtk.Image.NewFromIconName (Resources.Icons.ImageResize);
-		statusbar.Append (image_size_icon);
+		image_group.Append (image_size_icon);
 		var image_size = Gtk.Label.New ("");
 		image_size.Xalign = 0.0f;
 		image_size.Halign = Gtk.Align.Start;
 		image_size.WidthChars = 16;
-		statusbar.Append (image_size);
+		image_group.Append (image_size);
 		image_size_label = image_size;
+		ApplyStatusBarChipStyle (image_group);
+		statusbar.Append (image_group);
+		footer_image_group = image_group;
 
 		SetStatusBarImageSizeVisible (PintaCore.Settings.GetSetting (SettingNames.STATUSBAR_SHOW_IMAGE_SIZE, true));
 

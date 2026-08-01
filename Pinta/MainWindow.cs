@@ -25,7 +25,9 @@
 // THE SOFTWARE.
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
+using Cairo;
 using Mono.Addins;
 using Pinta.Core;
 using Pinta.Docking;
@@ -45,6 +47,7 @@ internal sealed class MainWindow
 	StatusBarColorPaletteWidget colors_palette = null!;
 	ColorWheelWidget colors_wheel = null!; // Impasto: floating or shown in the dock popover.
 	Gtk.Popover colors_wheel_popover = null!;
+	Gtk.Box colors_popover_box = null!;    // Impasto: colors_wheel + folded-in mini sections, docked popover only.
 	Gtk.Button colors_more_button = null!;
 	ColorSlidersWidget colors_sliders = null!; // Impasto: advanced section of the floating window.
 	Gtk.Button colors_back_button = null!;     // Impasto: advanced -> simple, lives in the titlebar.
@@ -521,10 +524,20 @@ internal sealed class MainWindow
 			PintaCore.System);
 		colors_palette.Hexpand = true;
 		colors_palette.Halign = Gtk.Align.Fill;
+		// Impasto: as the docked palette bar narrows, use its own width as a proxy
+		// for "the footer is tight" to fade the cursor position / image size labels
+		// out of the way (see ActionManager.SetFooterAvailableWidth).
+		colors_palette.WidthChanged += (_, width) => PintaCore.Actions.SetFooterAvailableWidth (width);
 
 		colors_wheel = ColorWheelWidget.New (PintaCore.Palette);
 		colors_wheel.MarginStart = 6;
 		colors_wheel.MarginEnd = 6;
+
+		// Impasto: holds colors_wheel plus whichever bar sections have folded out
+		// of the docked palette (quick colors, recent colors, primary/secondary) -
+		// rebuilt on demand right before the popover opens (see RebuildColorPopoverSections).
+		colors_popover_box = Gtk.Box.New (Gtk.Orientation.Vertical, 6);
+		colors_popover_box.Append (colors_wheel);
 
 		// "More >>" expands the floating window in place instead of opening the modal
 		// picker - the advanced section is the same sliders, applied live.
@@ -555,6 +568,7 @@ internal sealed class MainWindow
 		colors_wheel_popover.Position = Gtk.PositionType.Top;
 		colors_wheel_popover.SetParent (colors_palette);
 		colors_palette.ColorWheelClicked += (_, _) => {
+			RebuildColorPopoverSections ();
 			RectangleD r = colors_palette.ColorWheelButtonRect;
 			colors_wheel_popover.PointingTo = new Gdk.Rectangle {
 				X = (int) r.X,
@@ -686,8 +700,10 @@ internal sealed class MainWindow
 
 		if (floating) {
 			colors_wheel_popover.Popdown ();
-			if (colors_wheel_popover.Child == colors_wheel)
+			if (colors_wheel_popover.Child == colors_popover_box)
 				colors_wheel_popover.Child = null;
+			if (colors_wheel.Parent == colors_popover_box)
+				colors_popover_box.Remove (colors_wheel);
 
 			if (colors_palette.Parent == colors_dock)
 				colors_dock.Remove (colors_palette);
@@ -712,8 +728,10 @@ internal sealed class MainWindow
 			colors_palette.MarginEnd = 0;
 			if (colors_palette.Parent != colors_dock)
 				colors_dock.Prepend (colors_palette);
-			if (colors_wheel_popover.Child != colors_wheel)
-				colors_wheel_popover.Child = colors_wheel;
+			if (colors_wheel.Parent != colors_popover_box)
+				colors_popover_box.Prepend (colors_wheel);
+			if (colors_wheel_popover.Child != colors_popover_box)
+				colors_wheel_popover.Child = colors_popover_box;
 		}
 
 		UpdateColorsVisibility ();
@@ -740,6 +758,152 @@ internal sealed class MainWindow
 		} else {
 			colors_window.Hide ();
 		}
+	}
+
+	// Impasto: mirrors whatever has folded out of the docked palette bar
+	// (StatusBarColorPaletteWidget.QuickColorsFolded etc.) into the color-wheel
+	// popover, in the same order it left the bar - quick colors, then recent
+	// colors, then primary/secondary. Rebuilt fresh each time the popover is about
+	// to open, so it's always in sync without needing to track every color-change
+	// event separately.
+	Gtk.Widget? popover_quick_section;
+	Gtk.Widget? popover_recent_section;
+	Gtk.Widget? popover_swatches_section;
+
+	private void RebuildColorPopoverSections ()
+	{
+		if (popover_quick_section is not null) {
+			colors_popover_box.Remove (popover_quick_section);
+			popover_quick_section = null;
+		}
+		if (popover_recent_section is not null) {
+			colors_popover_box.Remove (popover_recent_section);
+			popover_recent_section = null;
+		}
+		if (popover_swatches_section is not null) {
+			colors_popover_box.Remove (popover_swatches_section);
+			popover_swatches_section = null;
+		}
+
+		if (colors_palette.QuickColorsFolded) {
+			int rows = PaletteHelper.GetPaletteRowCount ();
+			popover_quick_section = BuildMiniSwatchGrid (
+				PintaCore.Palette.CurrentPalette.Colors,
+				rows,
+				recentOrder: false);
+			colors_popover_box.Append (popover_quick_section);
+		}
+
+		if (colors_palette.RecentColorsFolded) {
+			int rows = PaletteHelper.GetPaletteRowCount ();
+			int count = Math.Min (PintaCore.Palette.RecentlyUsedColors.Count, PintaCore.Palette.MaxRecentlyUsedColor);
+			popover_recent_section = BuildMiniSwatchGrid (
+				PintaCore.Palette.RecentlyUsedColors.Take (count).ToList (),
+				rows,
+				recentOrder: true);
+			colors_popover_box.Append (popover_recent_section);
+		}
+
+		if (colors_palette.SwatchesFolded) {
+			popover_swatches_section = BuildPrimarySecondaryMiniSection ();
+			colors_popover_box.Append (popover_swatches_section);
+		}
+	}
+
+	// Left click sets the primary color, right click the secondary - same
+	// semantics as the docked bar's quick/recent swatches (see
+	// StatusBarColorPaletteWidget's WidgetElement.Palette / RecentColorsPalette
+	// click handling).
+	private static Gtk.Widget BuildMiniSwatchGrid (IReadOnlyList<Cairo.Color> colors, int rows, bool recentOrder)
+	{
+		Gtk.Grid grid = Gtk.Grid.New ();
+		grid.RowSpacing = 1;
+		grid.ColumnSpacing = 1;
+
+		int columns = Math.Max (1, (colors.Count + rows - 1) / rows);
+
+		for (int i = 0; i < colors.Count; i++) {
+			Cairo.Color color = colors[i];
+			int row = recentOrder ? i / columns : i % rows;
+			int col = recentOrder ? i % columns : i / rows;
+			grid.Attach (
+				BuildMiniSwatchButton (
+					color,
+					size: 14,
+					onPrimary: () => PintaCore.Palette.SetColor (true, color, false),
+					onSecondary: () => PintaCore.Palette.SetColor (false, color, false)),
+				col, row, 1, 1);
+		}
+
+		return grid;
+	}
+
+	private Gtk.Widget BuildPrimarySecondaryMiniSection ()
+	{
+		Gtk.Box box = Gtk.Box.New (Gtk.Orientation.Horizontal, 6);
+
+		box.Append (BuildMiniSwatchButton (
+			PintaCore.Palette.PrimaryColor,
+			size: 20,
+			onPrimary: () => MiniPickColor (primarySelected: true),
+			onSecondary: () => MiniPickColor (primarySelected: true)));
+		box.Append (BuildMiniSwatchButton (
+			PintaCore.Palette.SecondaryColor,
+			size: 20,
+			onPrimary: () => MiniPickColor (primarySelected: false),
+			onSecondary: () => MiniPickColor (primarySelected: false)));
+
+		Gtk.Button swap_button = Gtk.Button.NewWithLabel ("⇄");
+		swap_button.TooltipText = Translations.GetString ("Click to switch between primary and secondary color.");
+		swap_button.OnClicked += (_, _) => {
+			Cairo.Color temp = PintaCore.Palette.PrimaryColor;
+			PintaCore.Palette.SetColor (true, PintaCore.Palette.SecondaryColor, false);
+			PintaCore.Palette.SetColor (false, temp, false);
+		};
+		box.Append (swap_button);
+
+		Gtk.Button reset_button = Gtk.Button.NewWithLabel ("↺");
+		reset_button.TooltipText = Translations.GetString ("Click to reset primary and secondary color.");
+		reset_button.OnClicked += (_, _) => {
+			PintaCore.Palette.PrimaryColor = new Cairo.Color (0, 0, 0);
+			PintaCore.Palette.SecondaryColor = new Cairo.Color (1, 1, 1);
+		};
+		box.Append (reset_button);
+
+		return box;
+	}
+
+	// Reuses the same color picker dialog as the bar's primary/secondary swatches
+	// (StatusBarColorPaletteWidget.PickColorsAsync), rather than duplicating its setup.
+	private async void MiniPickColor (bool primarySelected)
+	{
+		PaletteColors? choices = await colors_palette.PickColorsAsync (primarySelected);
+		if (choices is null)
+			return;
+		if (PintaCore.Palette.PrimaryColor != choices.Primary)
+			PintaCore.Palette.PrimaryColor = choices.Primary;
+		if (PintaCore.Palette.SecondaryColor != choices.Secondary)
+			PintaCore.Palette.SecondaryColor = choices.Secondary;
+	}
+
+	private static Gtk.Button BuildMiniSwatchButton (Cairo.Color color, int size, Action onPrimary, Action onSecondary)
+	{
+		Gtk.Button button = Gtk.Button.New ();
+		button.WidthRequest = size;
+		button.HeightRequest = size;
+
+		Gtk.CssProvider provider = Gtk.CssProvider.New ();
+		provider.LoadFromString ($"button {{ background-color: #{color.ToHex (addAlpha: false)}; min-width: {size}px; min-height: {size}px; padding: 0; }}");
+		button.GetStyleContext ().AddProvider (provider, Gtk.Constants.STYLE_PROVIDER_PRIORITY_APPLICATION);
+
+		button.OnClicked += (_, _) => onPrimary ();
+
+		Gtk.GestureClick right_click = Gtk.GestureClick.New ();
+		right_click.SetButton (GtkExtensions.MOUSE_RIGHT_BUTTON);
+		right_click.OnPressed += (_, _) => onSecondary ();
+		button.AddController (right_click);
+
+		return button;
 	}
 
 	private void CreatePanels ()

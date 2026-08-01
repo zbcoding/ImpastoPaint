@@ -491,10 +491,9 @@ public sealed class TextTool : BaseTool
 		tb.Append (confirm_sep);
 
 		if (confirm_btn == null) {
-			confirm_btn = GtkExtensions.CreateConfirmToolBarButton (
-				Translations.GetString ("Finish typing (Esc)"));
-
+			confirm_btn = GtkExtensions.CreateConfirmToolBarButton (FinishTypingTooltip ());
 			confirm_btn.OnClicked += (_, _) => CommitCurrentText ();
+			PintaCore.Shortcuts.ShortcutsChanged += (_, _) => confirm_btn.TooltipText = FinishTypingTooltip ();
 		}
 
 		tb.Append (confirm_btn);
@@ -510,6 +509,10 @@ public sealed class TextTool : BaseTool
 
 		confirm_btn.Visible = confirm_sep.Visible = is_editing;
 	}
+
+	private static string FinishTypingTooltip ()
+		=> Translations.GetString ("Finish typing ({0})",
+			PintaCore.Shortcuts.GetToolBinding (KeyboardShortcutManager.TextStopEditing).ToLabel ());
 
 	private void UpdateFontSizeTooltip ()
 	{

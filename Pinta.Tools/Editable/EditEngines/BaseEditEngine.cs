@@ -106,6 +106,17 @@ public abstract class BaseEditEngine
 		}
 	}
 
+	private void UpdateOutlineWidthTooltip ()
+	{
+		KeyGesture decrease = PintaCore.Shortcuts.GetToolBinding (KeyboardShortcutManager.BrushDecreaseWidth);
+		KeyGesture increase = PintaCore.Shortcuts.GetToolBinding (KeyboardShortcutManager.BrushIncreaseWidth);
+
+		outline_width.TooltipText = Translations.GetString ("Change outline width.") + "\n"
+			+ "\n" + Translations.GetString ("Shortcut keys:")
+			+ "\n" + Translations.GetString ("Press {0} to decrease outline width", decrease.ToLabel ())
+			+ "\n" + Translations.GetString ("Press {0} to increase outline width", increase.ToLabel ());
+	}
+
 	private int prev_outline_width = BaseTool.DEFAULT_BRUSH_WIDTH;
 
 	private bool StrokeShape {

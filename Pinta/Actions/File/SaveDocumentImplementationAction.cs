@@ -152,6 +152,14 @@ internal sealed class SaveDocumentImplmentationAction : IActionHandler
 					format = image_formats.GetDefaultSaveFormat ();
 			}
 
+			// If the entered name has no extension matching a known format, append
+			// the extension of the selected format so the file isn't saved without
+			// one (e.g. when saving as AVIF for the first time).
+			if (image_formats.GetFormatByFile (displayName) is null) {
+				displayName += "." + format.Extensions.First ();
+				file = file.GetParent ()!.GetChild (displayName);
+			}
+
 			if (!await ConfirmFlatten (document, format)) {
 				continue;
 			}

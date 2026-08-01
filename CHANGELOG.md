@@ -57,6 +57,7 @@ Thanks to the following contributors who worked on this release:
 - Menu buttons now display popout nested menus instead of sliding menus (#2131)
 
 ### Fixed
+- Fixed saving a file without a file extension when a format is chosen from the Save As dialog's type dropdown
 - Fixed a bug where duplicate submenus could be produced by add-ins with effect categories that were not translated (#1933, #1935)
 - The layers and history panels now scroll automatically to the selected item after any updates (#1867, #1828)
 - Fixed a bug where toolbox buttons other than the active tool could be highlighted in certain situations (#1369, #2099)

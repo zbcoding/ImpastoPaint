@@ -550,10 +550,6 @@ msgstr "Modalità colore"
 msgid "Color Picker"
 msgstr "Selettore colore"
 
-#: ../Pinta.Tools/Tools/ColorPickerAllLayersTool.cs:19
-msgid "Color Picker (All Layers)"
-msgstr ""
-
 #: ../Pinta.Effects/Effects/PencilSketchEffect.cs:89
 msgid "Color Range"
 msgstr "Intervallo di colore"
@@ -1405,15 +1401,6 @@ msgid ""
 msgstr ""
 "Click sinistro per sostituire il colore secondario con il colore primario.\n"
 "Click destro per invertire."
-
-#: ../Pinta.Tools/Tools/ColorPickerAllLayersTool.cs:21
-#: ../Pinta.Tools/Tools/ColorPickerTool.cs:59
-msgid ""
-"Left click to set primary color.\n"
-"Right click to set secondary color."
-msgstr ""
-"Click sinistro per impostare il colore primario.\n"
-"Click destro per impostare il colore secondario."
 
 #: ../Pinta.Gui.Widgets/Widgets/StatusBarColorPaletteWidget.cs:328
 msgid "Left click to set primary color. Right click to set secondary color."
@@ -2312,6 +2299,10 @@ msgstr "Righelli"
 msgid "Sampling"
 msgstr "Campionamento"
 
+#: ../Pinta.Tools/Tools/ColorPickerTool.cs:215
+msgid "Source"
+msgstr "Sorgente"
+
 #. Translators: this is an abbreviation for "Saturation"
 #: ../Pinta.Gui.Widgets/Widgets/ColorPickerSlider.cs:335
 msgid "Sat"
@@ -2379,10 +2370,6 @@ msgstr "Seleziona Tutto"
 #: ../Pinta.Effects/Utilities/GradientHelper.cs:13
 msgid "Selected Colors"
 msgstr "Colori Selezionati"
-
-#: ../Pinta.Tools/Tools/ColorPickerAllLayersTool.cs:21
-msgid "Selects the color in view."
-msgstr ""
 
 #: ../Pinta.Tools/Tools/ColorPickerTool.cs:59
 msgid "Selects the color on the current layer and current selected area."
@@ -3672,9 +3659,13 @@ msgid "Sample from the current layer only."
 msgstr "Campiona solo dal livello corrente."
 
 #. Translators: Item hint for the Color Picker's Image sample scope.
-#. AI-generated translation; human review requested.
-msgid "Sample from the composited image, including all visible layers."
-msgstr "Campiona dall'immagine composita, inclusi tutti i livelli visibili."
+#: ../Pinta.Tools/Tools/ColorPickerTool.cs:266
+msgid ""
+"Selects the color in view. Sample from the composited image, including all "
+"visible layers."
+msgstr ""
+"Seleziona il colore nella vista. Campiona dall'immagine composita, inclusi "
+"tutti i livelli visibili."
 
 #. Translators: Item hint for the Linear Gradient type.
 #. AI-generated translation; human review requested.
@@ -3773,8 +3764,8 @@ msgstr "Angoli appiattiti e squadrati sul contorno."
 
 #. Translators: Tooltip shown while editing re-editable text, hints at the key to finish.
 #. AI-generated translation; human review requested.
-msgid "Finish typing (Esc)"
-msgstr "Termina la digitazione (Esc)"
+msgid "Finish typing ({0})"
+msgstr "Termina la digitazione ({0})"
 
 #. Translators: Tooltip shown over a re-editable text object, hints at the gesture to edit it.
 #. AI-generated translation; human review requested.

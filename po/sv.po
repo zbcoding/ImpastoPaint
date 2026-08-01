@@ -551,10 +551,6 @@ msgstr "Färgläge"
 msgid "Color Picker"
 msgstr "Färghämtare"
 
-#: ../Pinta.Tools/Tools/ColorPickerAllLayersTool.cs:19
-msgid "Color Picker (All Layers)"
-msgstr ""
-
 #: ../Pinta.Effects/Effects/PencilSketchEffect.cs:89
 msgid "Color Range"
 msgstr "Färgområde"
@@ -1402,15 +1398,6 @@ msgid ""
 msgstr ""
 "Vänsterklicka för att ersätta den sekundära färgen med den primära färgen.\n"
 "Högerklicka för att vända."
-
-#: ../Pinta.Tools/Tools/ColorPickerAllLayersTool.cs:21
-#: ../Pinta.Tools/Tools/ColorPickerTool.cs:59
-msgid ""
-"Left click to set primary color.\n"
-"Right click to set secondary color."
-msgstr ""
-"Vänsterklicka för att ställa in primärfärg.\n"
-"Högerklicka för att ställa in sekundär färg."
 
 #: ../Pinta.Gui.Widgets/Widgets/StatusBarColorPaletteWidget.cs:328
 msgid "Left click to set primary color. Right click to set secondary color."
@@ -2309,6 +2296,10 @@ msgstr "Linjaler"
 msgid "Sampling"
 msgstr "Provtagning"
 
+#: ../Pinta.Tools/Tools/ColorPickerTool.cs:215
+msgid "Source"
+msgstr "Källa"
+
 #. Translators: this is an abbreviation for "Saturation"
 #: ../Pinta.Gui.Widgets/Widgets/ColorPickerSlider.cs:335
 msgid "Sat"
@@ -2376,10 +2367,6 @@ msgstr "Markera alla"
 #: ../Pinta.Effects/Utilities/GradientHelper.cs:13
 msgid "Selected Colors"
 msgstr "Valda färger"
-
-#: ../Pinta.Tools/Tools/ColorPickerAllLayersTool.cs:21
-msgid "Selects the color in view."
-msgstr ""
 
 #: ../Pinta.Tools/Tools/ColorPickerTool.cs:59
 msgid "Selects the color on the current layer and current selected area."
@@ -3211,9 +3198,13 @@ msgid "Sample from the current layer only."
 msgstr "Ta prov endast från det aktuella lagret."
 
 #. Translators: Item hint for the Color Picker's Image sample scope.
-#. AI-generated translation; human review requested.
-msgid "Sample from the composited image, including all visible layers."
-msgstr "Ta prov från den sammansatta bilden, inklusive alla synliga lager."
+#: ../Pinta.Tools/Tools/ColorPickerTool.cs:266
+msgid ""
+"Selects the color in view. Sample from the composited image, including all "
+"visible layers."
+msgstr ""
+"Väljer färgen i vyn. Ta prov från den sammansatta bilden, inklusive alla "
+"synliga lager."
 
 #. Translators: Item hint for the Linear Gradient type.
 #. AI-generated translation; human review requested.
@@ -3312,8 +3303,8 @@ msgstr "Plana, kvadratiska hörn på konturen."
 
 #. Translators: Tooltip shown while editing re-editable text, hints at the key to finish.
 #. AI-generated translation; human review requested.
-msgid "Finish typing (Esc)"
-msgstr "Avsluta skrivning (Esc)"
+msgid "Finish typing ({0})"
+msgstr "Avsluta skrivning ({0})"
 
 #. Translators: Tooltip shown over a re-editable text object, hints at the gesture to edit it.
 #. AI-generated translation; human review requested.

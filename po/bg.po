@@ -542,10 +542,6 @@ msgstr ""
 msgid "Color Picker"
 msgstr "Избор на цвят"
 
-#: ../Pinta.Tools/Tools/ColorPickerAllLayersTool.cs:19
-msgid "Color Picker (All Layers)"
-msgstr ""
-
 #: ../Pinta.Effects/Effects/PencilSketchEffect.cs:89
 msgid "Color Range"
 msgstr "Цветови обхват"
@@ -1351,13 +1347,6 @@ msgstr ""
 msgid ""
 "Left click to replace the secondary color with the primary color.\n"
 "Right click to reverse."
-msgstr ""
-
-#: ../Pinta.Tools/Tools/ColorPickerAllLayersTool.cs:21
-#: ../Pinta.Tools/Tools/ColorPickerTool.cs:59
-msgid ""
-"Left click to set primary color.\n"
-"Right click to set secondary color."
 msgstr ""
 
 #: ../Pinta.Gui.Widgets/Widgets/StatusBarColorPaletteWidget.cs:328
@@ -2245,6 +2234,10 @@ msgstr "Линии"
 msgid "Sampling"
 msgstr ""
 
+#: ../Pinta.Tools/Tools/ColorPickerTool.cs:215
+msgid "Source"
+msgstr "Източник"
+
 #. Translators: this is an abbreviation for "Saturation"
 #: ../Pinta.Gui.Widgets/Widgets/ColorPickerSlider.cs:335
 msgid "Sat"
@@ -2311,10 +2304,6 @@ msgstr "Избиране на всичко"
 
 #: ../Pinta.Effects/Utilities/GradientHelper.cs:13
 msgid "Selected Colors"
-msgstr ""
-
-#: ../Pinta.Tools/Tools/ColorPickerAllLayersTool.cs:21
-msgid "Selects the color in view."
 msgstr ""
 
 #: ../Pinta.Tools/Tools/ColorPickerTool.cs:59
@@ -3216,9 +3205,13 @@ msgid "Sample from the current layer only."
 msgstr "Взема цвят само от текущия слой."
 
 #. Translators: Item hint for the Color Picker's Image sample scope.
-#. AI-generated translation; human review requested.
-msgid "Sample from the composited image, including all visible layers."
-msgstr "Взема цвят от съставното изображение, включително всички видими слоеве."
+#: ../Pinta.Tools/Tools/ColorPickerTool.cs:266
+msgid ""
+"Selects the color in view. Sample from the composited image, including all "
+"visible layers."
+msgstr ""
+"Избира цвета в изгледа. Взема цвят от съставното изображение, включително "
+"всички видими слоеве."
 
 #. Translators: Item hint for the Linear Gradient type.
 #. AI-generated translation; human review requested.
@@ -3317,8 +3310,8 @@ msgstr "Изравнени, отрязани ъгли на контура."
 
 #. Translators: Tooltip shown while editing re-editable text, hints at the key to finish.
 #. AI-generated translation; human review requested.
-msgid "Finish typing (Esc)"
-msgstr "Завършване на въвеждането (Esc)"
+msgid "Finish typing ({0})"
+msgstr "Завършване на въвеждането ({0})"
 
 #. Translators: Tooltip shown over a re-editable text object, hints at the gesture to edit it.
 #. AI-generated translation; human review requested.

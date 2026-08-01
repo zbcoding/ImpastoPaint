@@ -541,10 +541,6 @@ msgstr ""
 msgid "Color Picker"
 msgstr "Pemilih Warna"
 
-#: ../Pinta.Tools/Tools/ColorPickerAllLayersTool.cs:19
-msgid "Color Picker (All Layers)"
-msgstr ""
-
 #: ../Pinta.Effects/Effects/PencilSketchEffect.cs:89
 msgid "Color Range"
 msgstr "Julat Warna"
@@ -1350,13 +1346,6 @@ msgstr ""
 msgid ""
 "Left click to replace the secondary color with the primary color.\n"
 "Right click to reverse."
-msgstr ""
-
-#: ../Pinta.Tools/Tools/ColorPickerAllLayersTool.cs:21
-#: ../Pinta.Tools/Tools/ColorPickerTool.cs:59
-msgid ""
-"Left click to set primary color.\n"
-"Right click to set secondary color."
 msgstr ""
 
 #: ../Pinta.Gui.Widgets/Widgets/StatusBarColorPaletteWidget.cs:328
@@ -2252,6 +2241,10 @@ msgstr "Pembaris"
 msgid "Sampling"
 msgstr "Persampelan"
 
+#: ../Pinta.Tools/Tools/ColorPickerTool.cs:215
+msgid "Source"
+msgstr "Sumber"
+
 #. Translators: this is an abbreviation for "Saturation"
 #: ../Pinta.Gui.Widgets/Widgets/ColorPickerSlider.cs:335
 msgid "Sat"
@@ -2318,10 +2311,6 @@ msgstr "Pilih Semua"
 
 #: ../Pinta.Effects/Utilities/GradientHelper.cs:13
 msgid "Selected Colors"
-msgstr ""
-
-#: ../Pinta.Tools/Tools/ColorPickerAllLayersTool.cs:21
-msgid "Selects the color in view."
 msgstr ""
 
 #: ../Pinta.Tools/Tools/ColorPickerTool.cs:59
@@ -3636,9 +3625,13 @@ msgid "Sample from the current layer only."
 msgstr "Petik hanya daripada lapisan semasa."
 
 #. Translators: Item hint for the Color Picker's Image sample scope.
-#. AI-generated translation; human review requested.
-msgid "Sample from the composited image, including all visible layers."
-msgstr "Petik daripada imej gabungan, termasuk semua lapisan yang kelihatan."
+#: ../Pinta.Tools/Tools/ColorPickerTool.cs:266
+msgid ""
+"Selects the color in view. Sample from the composited image, including all "
+"visible layers."
+msgstr ""
+"Memilih warna dalam paparan. Petik daripada imej gabungan, termasuk semua "
+"lapisan yang kelihatan."
 
 #. Translators: Item hint for the Linear Gradient type.
 #. AI-generated translation; human review requested.
@@ -3737,8 +3730,8 @@ msgstr "Sudut rata dan bersegi pada rangka."
 
 #. Translators: Tooltip shown while editing re-editable text, hints at the key to finish.
 #. AI-generated translation; human review requested.
-msgid "Finish typing (Esc)"
-msgstr "Selesai menaip (Esc)"
+msgid "Finish typing ({0})"
+msgstr "Selesai menaip ({0})"
 
 #. Translators: Tooltip shown over a re-editable text object, hints at the gesture to edit it.
 #. AI-generated translation; human review requested.

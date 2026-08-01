@@ -552,10 +552,6 @@ msgstr "Modus boja"
 msgid "Color Picker"
 msgstr "Kapaljka"
 
-#: ../Pinta.Tools/Tools/ColorPickerAllLayersTool.cs:19
-msgid "Color Picker (All Layers)"
-msgstr ""
-
 #: ../Pinta.Effects/Effects/PencilSketchEffect.cs:89
 msgid "Color Range"
 msgstr "Raspon boje"
@@ -1403,15 +1399,6 @@ msgid ""
 msgstr ""
 "Lijevi klik za zamjenu sekundarne boje primarnom bojom.\n"
 "Desni klik za obratno."
-
-#: ../Pinta.Tools/Tools/ColorPickerAllLayersTool.cs:21
-#: ../Pinta.Tools/Tools/ColorPickerTool.cs:59
-msgid ""
-"Left click to set primary color.\n"
-"Right click to set secondary color."
-msgstr ""
-"Lijevi klik za postavljanje primarne boje.\n"
-"Desni klik za postavljanje sekundarne boje."
 
 #: ../Pinta.Gui.Widgets/Widgets/StatusBarColorPaletteWidget.cs:328
 msgid "Left click to set primary color. Right click to set secondary color."
@@ -2311,6 +2298,10 @@ msgstr "Ravnala"
 msgid "Sampling"
 msgstr "Uzorkovanje"
 
+#: ../Pinta.Tools/Tools/ColorPickerTool.cs:215
+msgid "Source"
+msgstr "Izvor"
+
 #. Translators: this is an abbreviation for "Saturation"
 #: ../Pinta.Gui.Widgets/Widgets/ColorPickerSlider.cs:335
 msgid "Sat"
@@ -2378,10 +2369,6 @@ msgstr "Odaberi sve"
 #: ../Pinta.Effects/Utilities/GradientHelper.cs:13
 msgid "Selected Colors"
 msgstr "Odabrane boje"
-
-#: ../Pinta.Tools/Tools/ColorPickerAllLayersTool.cs:21
-msgid "Selects the color in view."
-msgstr ""
 
 #: ../Pinta.Tools/Tools/ColorPickerTool.cs:59
 msgid "Selects the color on the current layer and current selected area."
@@ -3347,9 +3334,13 @@ msgid "Sample from the current layer only."
 msgstr "Uzorkuje samo iz trenutnog sloja."
 
 #. Translators: Item hint for the Color Picker's Image sample scope.
-#. AI-generated translation; human review requested.
-msgid "Sample from the composited image, including all visible layers."
-msgstr "Uzorkuje iz spojene slike, uključujući sve vidljive slojeve."
+#: ../Pinta.Tools/Tools/ColorPickerTool.cs:266
+msgid ""
+"Selects the color in view. Sample from the composited image, including all "
+"visible layers."
+msgstr ""
+"Odabire boju u prikazu. Uzorkuje iz spojene slike, uključujući sve vidljive "
+"slojeve."
 
 #. Translators: Item hint for the Linear Gradient type.
 #. AI-generated translation; human review requested.
@@ -3448,8 +3439,8 @@ msgstr "Spljošteni, uglati kutovi na obrisu."
 
 #. Translators: Tooltip shown while editing re-editable text, hints at the key to finish.
 #. AI-generated translation; human review requested.
-msgid "Finish typing (Esc)"
-msgstr "Završi upisivanje (Esc)"
+msgid "Finish typing ({0})"
+msgstr "Završi upisivanje ({0})"
 
 #. Translators: Tooltip shown over a re-editable text object, hints at the gesture to edit it.
 #. AI-generated translation; human review requested.

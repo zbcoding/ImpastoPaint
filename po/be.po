@@ -542,10 +542,6 @@ msgstr ""
 msgid "Color Picker"
 msgstr "Піпетка"
 
-#: ../Pinta.Tools/Tools/ColorPickerAllLayersTool.cs:19
-msgid "Color Picker (All Layers)"
-msgstr ""
-
 #: ../Pinta.Effects/Effects/PencilSketchEffect.cs:89
 msgid "Color Range"
 msgstr "Дыяпазон колераў"
@@ -1352,13 +1348,6 @@ msgstr ""
 msgid ""
 "Left click to replace the secondary color with the primary color.\n"
 "Right click to reverse."
-msgstr ""
-
-#: ../Pinta.Tools/Tools/ColorPickerAllLayersTool.cs:21
-#: ../Pinta.Tools/Tools/ColorPickerTool.cs:59
-msgid ""
-"Left click to set primary color.\n"
-"Right click to set secondary color."
 msgstr ""
 
 #: ../Pinta.Gui.Widgets/Widgets/StatusBarColorPaletteWidget.cs:328
@@ -2254,6 +2243,10 @@ msgstr "Лінейкі"
 msgid "Sampling"
 msgstr "Выбарка"
 
+#: ../Pinta.Tools/Tools/ColorPickerTool.cs:215
+msgid "Source"
+msgstr "Крыніца"
+
 #. Translators: this is an abbreviation for "Saturation"
 #: ../Pinta.Gui.Widgets/Widgets/ColorPickerSlider.cs:335
 msgid "Sat"
@@ -2320,10 +2313,6 @@ msgstr "Выбраць ўсё"
 
 #: ../Pinta.Effects/Utilities/GradientHelper.cs:13
 msgid "Selected Colors"
-msgstr ""
-
-#: ../Pinta.Tools/Tools/ColorPickerAllLayersTool.cs:21
-msgid "Selects the color in view."
 msgstr ""
 
 #: ../Pinta.Tools/Tools/ColorPickerTool.cs:59
@@ -3635,9 +3624,13 @@ msgid "Sample from the current layer only."
 msgstr "Узяць узор толькі з бягучага пласта."
 
 #. Translators: Item hint for the Color Picker's Image sample scope.
-#. AI-generated translation; human review requested.
-msgid "Sample from the composited image, including all visible layers."
-msgstr "Узяць узор з выніковага малюнка, уключаючы ўсе бачныя пласты."
+#: ../Pinta.Tools/Tools/ColorPickerTool.cs:266
+msgid ""
+"Selects the color in view. Sample from the composited image, including all "
+"visible layers."
+msgstr ""
+"Выбірае колер у праглядзе. Узяць узор з выніковага малюнка, уключаючы ўсе "
+"бачныя пласты."
 
 #. Translators: Item hint for the Linear Gradient type.
 #. AI-generated translation; human review requested.
@@ -3736,8 +3729,8 @@ msgstr "Сплюшчаныя, зрэзаныя вуглы контуру."
 
 #. Translators: Tooltip shown while editing re-editable text, hints at the key to finish.
 #. AI-generated translation; human review requested.
-msgid "Finish typing (Esc)"
-msgstr "Скончыць набор тэксту (Esc)"
+msgid "Finish typing ({0})"
+msgstr "Скончыць набор тэксту ({0})"
 
 #. Translators: Tooltip shown over a re-editable text object, hints at the gesture to edit it.
 #. AI-generated translation; human review requested.

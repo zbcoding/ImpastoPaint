@@ -554,10 +554,6 @@ msgstr "Mode Warna"
 msgid "Color Picker"
 msgstr "Pemilih Warna"
 
-#: ../Pinta.Tools/Tools/ColorPickerAllLayersTool.cs:19
-msgid "Color Picker (All Layers)"
-msgstr ""
-
 #: ../Pinta.Effects/Effects/PencilSketchEffect.cs:89
 msgid "Color Range"
 msgstr "Kisaran Warna"
@@ -1409,15 +1405,6 @@ msgid ""
 msgstr ""
 "Klik kiri untuk mengganti warna sekunder dengan warna primer.\n"
 "Klik kanan untuk mundur kembali."
-
-#: ../Pinta.Tools/Tools/ColorPickerAllLayersTool.cs:21
-#: ../Pinta.Tools/Tools/ColorPickerTool.cs:59
-msgid ""
-"Left click to set primary color.\n"
-"Right click to set secondary color."
-msgstr ""
-"Klik kiri untuk menetapkan warna primer.\n"
-"Klik kanan untuk menetapkan warna sekunder."
 
 #: ../Pinta.Gui.Widgets/Widgets/StatusBarColorPaletteWidget.cs:328
 msgid "Left click to set primary color. Right click to set secondary color."
@@ -2317,6 +2304,10 @@ msgstr "Mistar"
 msgid "Sampling"
 msgstr "Pengambilan Sampel"
 
+#: ../Pinta.Tools/Tools/ColorPickerTool.cs:215
+msgid "Source"
+msgstr "Sumber"
+
 #. Translators: this is an abbreviation for "Saturation"
 #: ../Pinta.Gui.Widgets/Widgets/ColorPickerSlider.cs:335
 msgid "Sat"
@@ -2384,10 +2375,6 @@ msgstr "Pilih Semua"
 #: ../Pinta.Effects/Utilities/GradientHelper.cs:13
 msgid "Selected Colors"
 msgstr "Warna yang Dipilih"
-
-#: ../Pinta.Tools/Tools/ColorPickerAllLayersTool.cs:21
-msgid "Selects the color in view."
-msgstr ""
 
 #: ../Pinta.Tools/Tools/ColorPickerTool.cs:59
 msgid "Selects the color on the current layer and current selected area."
@@ -3670,9 +3657,13 @@ msgid "Sample from the current layer only."
 msgstr "Mengambil sampel hanya dari lapisan saat ini."
 
 #. Translators: Item hint for the Color Picker's Image sample scope.
-#. AI-generated translation; human review requested.
-msgid "Sample from the composited image, including all visible layers."
-msgstr "Mengambil sampel dari gambar gabungan, termasuk semua lapisan yang terlihat."
+#: ../Pinta.Tools/Tools/ColorPickerTool.cs:266
+msgid ""
+"Selects the color in view. Sample from the composited image, including all "
+"visible layers."
+msgstr ""
+"Memilih warna dalam tampilan. Mengambil sampel dari gambar gabungan, "
+"termasuk semua lapisan yang terlihat."
 
 #. Translators: Item hint for the Linear Gradient type.
 #. AI-generated translation; human review requested.
@@ -3771,8 +3762,8 @@ msgstr "Sudut rata dan persegi pada garis luar."
 
 #. Translators: Tooltip shown while editing re-editable text, hints at the key to finish.
 #. AI-generated translation; human review requested.
-msgid "Finish typing (Esc)"
-msgstr "Selesai mengetik (Esc)"
+msgid "Finish typing ({0})"
+msgstr "Selesai mengetik ({0})"
 
 #. Translators: Tooltip shown over a re-editable text object, hints at the gesture to edit it.
 #. AI-generated translation; human review requested.

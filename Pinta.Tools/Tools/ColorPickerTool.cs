@@ -60,10 +60,7 @@ public class ColorPickerTool : BaseTool
 	public override Gdk.Key ShortcutKey => new (Gdk.Constants.KEY_K);
 	public override int Priority => 33;
 	private int SampleSize => SampleSizeDropDown.SelectedItem.GetTagOrDefault (1);
-	// Overridden by the All Layers picker, which always samples the composited image.
-	protected virtual bool SampleLayerOnly => SampleTypeDropDown.SelectedItem.GetTagOrDefault (false);
-	// The All Layers picker hides the Layer/Image selector, since it's always Image.
-	protected virtual bool ShowSampleTypeSelector => true;
+	private bool SampleLayerOnly => SampleTypeDropDown.SelectedItem.GetTagOrDefault (false);
 
 	public override Gdk.Cursor DefaultCursor {
 		get {
@@ -87,8 +84,8 @@ public class ColorPickerTool : BaseTool
 
 		tb.Append (SamplingLabel);
 		tb.Append (SampleSizeDropDown);
-		if (ShowSampleTypeSelector)
-			tb.Append (SampleTypeDropDown);
+		tb.Append (SourceLabel);
+		tb.Append (SampleTypeDropDown);
 
 		tb.Append (Separator);
 
@@ -204,12 +201,22 @@ public class ColorPickerTool : BaseTool
 	private ToolBarDropDownButton? tool_select;
 	private Label? tool_select_label;
 	private Label? sampling_label;
+	private Label? source_label;
 	private ToolBarDropDownButton? sample_size;
 	private ToolBarDropDownButton? sample_type;
 	private Separator? sample_sep;
 
 	private Label ToolSelectionLabel => tool_select_label ??= Label.New (string.Format (" {0}: ", Translations.GetString ("After select")));
 	private Label SamplingLabel => sampling_label ??= Label.New (string.Format (" {0}: ", Translations.GetString ("Sampling")));
+	private Label SourceLabel {
+		get {
+			if (source_label is null) {
+				source_label = Label.New (string.Format (" {0}: ", Translations.GetString ("Source")));
+				source_label.MarginStart = 10;
+			}
+			return source_label;
+		}
+	}
 	private Separator Separator => sample_sep ??= GtkExtensions.CreateToolBarSeparator ();
 
 	private ToolBarDropDownButton ToolSelectionDropDown {
@@ -254,8 +261,8 @@ public class ColorPickerTool : BaseTool
 			if (sample_type is null) {
 				sample_type = ToolBarDropDownButton.New (true);
 
-				sample_type.AddItem (Translations.GetString ("Layer"), Pinta.Resources.Icons.LayerMergeDown, true, Translations.GetString ("Sample from the current layer only."));
-				sample_type.AddItem (Translations.GetString ("Image"), Pinta.Resources.Icons.ResizeCanvasBase, false, Translations.GetString ("Sample from the composited image, including all visible layers."));
+				sample_type.AddItem (Translations.GetString ("Layer"), Pinta.Resources.Icons.ToolColorPickerAllLayers, true, Translations.GetString ("Sample from the current layer only."));
+				sample_type.AddItem (Translations.GetString ("Image"), Pinta.Resources.Icons.ResizeCanvasBase, false, Translations.GetString ("Selects the color in view. Sample from the composited image, including all visible layers."));
 
 				sample_type.SelectedIndex = Settings.GetSetting (SettingNames.COLOR_PICKER_SAMPLE_TYPE, 0);
 			}

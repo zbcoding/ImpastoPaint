@@ -555,10 +555,6 @@ msgstr "Цветовой режим"
 msgid "Color Picker"
 msgstr "Получение цвета"
 
-#: ../Pinta.Tools/Tools/ColorPickerAllLayersTool.cs:19
-msgid "Color Picker (All Layers)"
-msgstr ""
-
 #: ../Pinta.Effects/Effects/PencilSketchEffect.cs:89
 msgid "Color Range"
 msgstr "Цветовой диапазон"
@@ -1421,15 +1417,6 @@ msgstr ""
 "Щёлкните левой кнопкой мыши, чтобы поменять местами дополнительный и "
 "основной цвет.\n"
 "Щёлкните правой кнопкой мыши, чтобы вернуть обратно."
-
-#: ../Pinta.Tools/Tools/ColorPickerAllLayersTool.cs:21
-#: ../Pinta.Tools/Tools/ColorPickerTool.cs:59
-msgid ""
-"Left click to set primary color.\n"
-"Right click to set secondary color."
-msgstr ""
-"Щёлкните левой кнопкой мыши, чтобы установить основной цвет.\n"
-"Щёлкните правой кнопкой мыши, чтобы установить дополнительный цвет."
 
 #: ../Pinta.Gui.Widgets/Widgets/StatusBarColorPaletteWidget.cs:328
 msgid "Left click to set primary color. Right click to set secondary color."
@@ -2330,6 +2317,10 @@ msgstr "Линейки"
 msgid "Sampling"
 msgstr "Выборка"
 
+#: ../Pinta.Tools/Tools/ColorPickerTool.cs:215
+msgid "Source"
+msgstr "Источник"
+
 #. Translators: this is an abbreviation for "Saturation"
 #: ../Pinta.Gui.Widgets/Widgets/ColorPickerSlider.cs:335
 msgid "Sat"
@@ -2397,10 +2388,6 @@ msgstr "Выделить всё"
 #: ../Pinta.Effects/Utilities/GradientHelper.cs:13
 msgid "Selected Colors"
 msgstr "Выбранные цвета"
-
-#: ../Pinta.Tools/Tools/ColorPickerAllLayersTool.cs:21
-msgid "Selects the color in view."
-msgstr ""
 
 #: ../Pinta.Tools/Tools/ColorPickerTool.cs:59
 msgid "Selects the color on the current layer and current selected area."
@@ -3796,9 +3783,13 @@ msgid "Sample from the current layer only."
 msgstr "Считывать цвет только с текущего слоя."
 
 #. Translators: Item hint for the Color Picker's Image sample scope.
-#. AI-generated translation; human review requested.
-msgid "Sample from the composited image, including all visible layers."
-msgstr "Считывать цвет с итогового изображения, включая все видимые слои."
+#: ../Pinta.Tools/Tools/ColorPickerTool.cs:266
+msgid ""
+"Selects the color in view. Sample from the composited image, including all "
+"visible layers."
+msgstr ""
+"Выбирает цвет в представлении. Считывать цвет с итогового изображения, "
+"включая все видимые слои."
 
 #. Translators: Item hint for the Linear Gradient type.
 #. AI-generated translation; human review requested.
@@ -3897,8 +3888,8 @@ msgstr "Срезанные, плоские углы контура."
 
 #. Translators: Tooltip shown while editing re-editable text, hints at the key to finish.
 #. AI-generated translation; human review requested.
-msgid "Finish typing (Esc)"
-msgstr "Завершить ввод текста (Esc)"
+msgid "Finish typing ({0})"
+msgstr "Завершить ввод текста ({0})"
 
 #. Translators: Tooltip shown over a re-editable text object, hints at the gesture to edit it.
 #. AI-generated translation; human review requested.

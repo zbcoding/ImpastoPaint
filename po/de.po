@@ -550,10 +550,6 @@ msgstr "Farbmodus"
 msgid "Color Picker"
 msgstr "Farbpipette"
 
-#: ../Pinta.Tools/Tools/ColorPickerAllLayersTool.cs:19
-msgid "Color Picker (All Layers)"
-msgstr ""
-
 #: ../Pinta.Effects/Effects/PencilSketchEffect.cs:89
 msgid "Color Range"
 msgstr "Farbbereich"
@@ -1417,15 +1413,6 @@ msgstr ""
 "Klicken Sie mit der linken Maustaste, um die Sekundärfarbe durch die "
 "Primärfarbe zu ersetzen.\n"
 "Klicken Sie mit der rechten Maustaste, um die Farbe umzukehren."
-
-#: ../Pinta.Tools/Tools/ColorPickerAllLayersTool.cs:21
-#: ../Pinta.Tools/Tools/ColorPickerTool.cs:59
-msgid ""
-"Left click to set primary color.\n"
-"Right click to set secondary color."
-msgstr ""
-"Klicken Sie mit der linken Maustaste, um die Primärfarbe auszuwählen.\n"
-"Klicken Sie mit der rechten Maustaste, um die Sekundärfarbe auszuwählen."
 
 #: ../Pinta.Gui.Widgets/Widgets/StatusBarColorPaletteWidget.cs:328
 msgid "Left click to set primary color. Right click to set secondary color."
@@ -2327,6 +2314,10 @@ msgstr "Lineale"
 msgid "Sampling"
 msgstr "Abtastgröße"
 
+#: ../Pinta.Tools/Tools/ColorPickerTool.cs:215
+msgid "Source"
+msgstr "Quelle"
+
 #. Translators: this is an abbreviation for "Saturation"
 #: ../Pinta.Gui.Widgets/Widgets/ColorPickerSlider.cs:335
 msgid "Sat"
@@ -2394,10 +2385,6 @@ msgstr "Alles auswählen"
 #: ../Pinta.Effects/Utilities/GradientHelper.cs:13
 msgid "Selected Colors"
 msgstr "Ausgewählte Farben"
-
-#: ../Pinta.Tools/Tools/ColorPickerAllLayersTool.cs:21
-msgid "Selects the color in view."
-msgstr ""
 
 #: ../Pinta.Tools/Tools/ColorPickerTool.cs:59
 msgid "Selects the color on the current layer and current selected area."
@@ -3702,9 +3689,13 @@ msgid "Sample from the current layer only."
 msgstr "Nur aus der aktuellen Ebene erfassen."
 
 #. Translators: Item hint for the Color Picker's Image sample scope.
-#. AI-generated translation; human review requested.
-msgid "Sample from the composited image, including all visible layers."
-msgstr "Aus dem zusammengesetzten Bild erfassen, einschließlich aller sichtbaren Ebenen."
+#: ../Pinta.Tools/Tools/ColorPickerTool.cs:266
+msgid ""
+"Selects the color in view. Sample from the composited image, including all "
+"visible layers."
+msgstr ""
+"Wählt die Farbe in der Ansicht. Aus dem zusammengesetzten Bild erfassen, "
+"einschließlich aller sichtbaren Ebenen."
 
 #. Translators: Item hint for the Linear Gradient type.
 #. AI-generated translation; human review requested.
@@ -3803,8 +3794,8 @@ msgstr "Abgeflachte, eckig gekappte Ecken an der Umrisslinie."
 
 #. Translators: Tooltip shown while editing re-editable text, hints at the key to finish.
 #. AI-generated translation; human review requested.
-msgid "Finish typing (Esc)"
-msgstr "Eingabe beenden (Esc)"
+msgid "Finish typing ({0})"
+msgstr "Eingabe beenden ({0})"
 
 #. Translators: Tooltip shown over a re-editable text object, hints at the gesture to edit it.
 #. AI-generated translation; human review requested.

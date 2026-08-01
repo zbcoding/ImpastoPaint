@@ -549,10 +549,6 @@ msgstr "Chế độ màu"
 msgid "Color Picker"
 msgstr "Chọn màu"
 
-#: ../Pinta.Tools/Tools/ColorPickerAllLayersTool.cs:19
-msgid "Color Picker (All Layers)"
-msgstr ""
-
 #: ../Pinta.Effects/Effects/PencilSketchEffect.cs:89
 msgid "Color Range"
 msgstr "Khoảng màu"
@@ -1389,15 +1385,6 @@ msgid ""
 msgstr ""
 "Nhấp chuột trái để thay thế màu phụ bằng màu chính.\n"
 "Nhấp chuột phải để đảo ngược."
-
-#: ../Pinta.Tools/Tools/ColorPickerAllLayersTool.cs:21
-#: ../Pinta.Tools/Tools/ColorPickerTool.cs:59
-msgid ""
-"Left click to set primary color.\n"
-"Right click to set secondary color."
-msgstr ""
-"Nhấp chuột trái để đặt màu chính.\n"
-"Nhấp chuột phải để đặt màu phụ."
 
 #: ../Pinta.Gui.Widgets/Widgets/StatusBarColorPaletteWidget.cs:328
 msgid "Left click to set primary color. Right click to set secondary color."
@@ -2292,6 +2279,10 @@ msgstr "Thước kẻ"
 msgid "Sampling"
 msgstr "Lấy mẫu"
 
+#: ../Pinta.Tools/Tools/ColorPickerTool.cs:215
+msgid "Source"
+msgstr "Nguồn"
+
 #. Translators: this is an abbreviation for "Saturation"
 #: ../Pinta.Gui.Widgets/Widgets/ColorPickerSlider.cs:335
 msgid "Sat"
@@ -2359,10 +2350,6 @@ msgstr "Chọn tất cả"
 #: ../Pinta.Effects/Utilities/GradientHelper.cs:13
 msgid "Selected Colors"
 msgstr "Màu đã chọn"
-
-#: ../Pinta.Tools/Tools/ColorPickerAllLayersTool.cs:21
-msgid "Selects the color in view."
-msgstr ""
 
 #: ../Pinta.Tools/Tools/ColorPickerTool.cs:59
 msgid "Selects the color on the current layer and current selected area."
@@ -3184,9 +3171,13 @@ msgid "Sample from the current layer only."
 msgstr "Chỉ lấy mẫu từ lớp hiện tại."
 
 #. Translators: Item hint for the Color Picker's Image sample scope.
-#. AI-generated translation; human review requested.
-msgid "Sample from the composited image, including all visible layers."
-msgstr "Lấy mẫu từ ảnh đã tổng hợp, bao gồm tất cả các lớp hiển thị."
+#: ../Pinta.Tools/Tools/ColorPickerTool.cs:266
+msgid ""
+"Selects the color in view. Sample from the composited image, including all "
+"visible layers."
+msgstr ""
+"Chọn màu trong chế độ xem. Lấy mẫu từ ảnh đã tổng hợp, bao gồm tất cả các "
+"lớp hiển thị."
 
 #. Translators: Item hint for the Linear Gradient type.
 #. AI-generated translation; human review requested.
@@ -3285,8 +3276,8 @@ msgstr "Góc vuông, phẳng trên đường viền."
 
 #. Translators: Tooltip shown while editing re-editable text, hints at the key to finish.
 #. AI-generated translation; human review requested.
-msgid "Finish typing (Esc)"
-msgstr "Hoàn tất nhập (Esc)"
+msgid "Finish typing ({0})"
+msgstr "Hoàn tất nhập ({0})"
 
 #. Translators: Tooltip shown over a re-editable text object, hints at the gesture to edit it.
 #. AI-generated translation; human review requested.

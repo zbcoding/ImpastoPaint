@@ -551,10 +551,6 @@ msgstr "Režim barev"
 msgid "Color Picker"
 msgstr "Kapátko"
 
-#: ../Pinta.Tools/Tools/ColorPickerAllLayersTool.cs:19
-msgid "Color Picker (All Layers)"
-msgstr ""
-
 #: ../Pinta.Effects/Effects/PencilSketchEffect.cs:89
 msgid "Color Range"
 msgstr "Rozsah barev"
@@ -1396,15 +1392,6 @@ msgid ""
 msgstr ""
 "Levé kliknutí na záměnu sekundární barvy za primární.\n"
 "Pravé kliknutí opačně."
-
-#: ../Pinta.Tools/Tools/ColorPickerAllLayersTool.cs:21
-#: ../Pinta.Tools/Tools/ColorPickerTool.cs:59
-msgid ""
-"Left click to set primary color.\n"
-"Right click to set secondary color."
-msgstr ""
-"Levé kliknutí na nastavení primární barvy.\n"
-"Pravé kliknutí na nastavení sekundární barvy."
 
 #: ../Pinta.Gui.Widgets/Widgets/StatusBarColorPaletteWidget.cs:328
 msgid "Left click to set primary color. Right click to set secondary color."
@@ -2304,6 +2291,10 @@ msgstr "Pravítka"
 msgid "Sampling"
 msgstr "Vzorkování"
 
+#: ../Pinta.Tools/Tools/ColorPickerTool.cs:215
+msgid "Source"
+msgstr "Zdroj"
+
 #. Translators: this is an abbreviation for "Saturation"
 #: ../Pinta.Gui.Widgets/Widgets/ColorPickerSlider.cs:335
 msgid "Sat"
@@ -2371,10 +2362,6 @@ msgstr "Vybrat vše"
 #: ../Pinta.Effects/Utilities/GradientHelper.cs:13
 msgid "Selected Colors"
 msgstr "Vybrané Barvy"
-
-#: ../Pinta.Tools/Tools/ColorPickerAllLayersTool.cs:21
-msgid "Selects the color in view."
-msgstr ""
 
 #: ../Pinta.Tools/Tools/ColorPickerTool.cs:59
 msgid "Selects the color on the current layer and current selected area."
@@ -3627,9 +3614,13 @@ msgid "Sample from the current layer only."
 msgstr "Vzorkovat pouze z aktuální vrstvy."
 
 #. Translators: Item hint for the Color Picker's Image sample scope.
-#. AI-generated translation; human review requested.
-msgid "Sample from the composited image, including all visible layers."
-msgstr "Vzorkovat ze složeného obrazu, včetně všech viditelných vrstev."
+#: ../Pinta.Tools/Tools/ColorPickerTool.cs:266
+msgid ""
+"Selects the color in view. Sample from the composited image, including all "
+"visible layers."
+msgstr ""
+"Vybere barvu v pohledu. Vzorkovat ze složeného obrazu, včetně všech "
+"viditelných vrstev."
 
 #. Translators: Item hint for the Linear Gradient type.
 #. AI-generated translation; human review requested.
@@ -3728,8 +3719,8 @@ msgstr "Zploštělé, seříznuté rohy na obrysu."
 
 #. Translators: Tooltip shown while editing re-editable text, hints at the key to finish.
 #. AI-generated translation; human review requested.
-msgid "Finish typing (Esc)"
-msgstr "Dokončit psaní (Esc)"
+msgid "Finish typing ({0})"
+msgstr "Dokončit psaní ({0})"
 
 #. Translators: Tooltip shown over a re-editable text object, hints at the gesture to edit it.
 #. AI-generated translation; human review requested.

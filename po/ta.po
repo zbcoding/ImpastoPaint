@@ -544,10 +544,6 @@ msgstr "வண்ண பயன்முறை"
 msgid "Color Picker"
 msgstr "வண்ண தேர்வாளர்"
 
-#: ../Pinta.Tools/Tools/ColorPickerAllLayersTool.cs:19
-msgid "Color Picker (All Layers)"
-msgstr ""
-
 #: ../Pinta.Effects/Effects/PencilSketchEffect.cs:89
 msgid "Color Range"
 msgstr "வண்ண வரம்பு"
@@ -1383,15 +1379,6 @@ msgid ""
 msgstr ""
 "இரண்டாம் நிலை நிறத்தை முதன்மை வண்ணத்துடன் மாற்ற இடது சொடுக்கு செய்யவும்.\n"
 " தலைகீழாக வலது சொடுக்கு செய்யவும்."
-
-#: ../Pinta.Tools/Tools/ColorPickerAllLayersTool.cs:21
-#: ../Pinta.Tools/Tools/ColorPickerTool.cs:59
-msgid ""
-"Left click to set primary color.\n"
-"Right click to set secondary color."
-msgstr ""
-"முதன்மை வண்ணத்தை அமைக்க இடது சொடுக்கு செய்யவும்.\n"
-" இரண்டாம் நிலை நிறத்தை அமைக்க வலது சொடுக்கு செய்யவும்."
 
 #: ../Pinta.Gui.Widgets/Widgets/StatusBarColorPaletteWidget.cs:328
 msgid "Left click to set primary color. Right click to set secondary color."
@@ -2288,6 +2275,10 @@ msgstr "ஆட்சியாளர்கள்"
 msgid "Sampling"
 msgstr "மாதிரி எடுத்தல்"
 
+#: ../Pinta.Tools/Tools/ColorPickerTool.cs:215
+msgid "Source"
+msgstr "மூலம்"
+
 #. Translators: this is an abbreviation for "Saturation"
 #: ../Pinta.Gui.Widgets/Widgets/ColorPickerSlider.cs:335
 msgid "Sat"
@@ -2355,10 +2346,6 @@ msgstr "அனைத்தையும் தெரிவுசெய்"
 #: ../Pinta.Effects/Utilities/GradientHelper.cs:13
 msgid "Selected Colors"
 msgstr "தேர்ந்தெடுக்கப்பட்ட வண்ணங்கள்"
-
-#: ../Pinta.Tools/Tools/ColorPickerAllLayersTool.cs:21
-msgid "Selects the color in view."
-msgstr ""
 
 #: ../Pinta.Tools/Tools/ColorPickerTool.cs:59
 msgid "Selects the color on the current layer and current selected area."
@@ -3174,9 +3161,13 @@ msgid "Sample from the current layer only."
 msgstr "தற்போதைய லேயரில் இருந்து மட்டும் மாதிரி எடுக்கவும்."
 
 #. Translators: Item hint for the Color Picker's Image sample scope.
-#. AI-generated translation; human review requested.
-msgid "Sample from the composited image, including all visible layers."
-msgstr "அனைத்து காணக்கூடிய லேயர்கள் உட்பட, ஒருங்கிணைந்த படத்திலிருந்து மாதிரி எடுக்கவும்."
+#: ../Pinta.Tools/Tools/ColorPickerTool.cs:266
+msgid ""
+"Selects the color in view. Sample from the composited image, including all "
+"visible layers."
+msgstr ""
+"காட்சியில் உள்ள வண்ணத்தைத் தேர்ந்தெடுக்கிறது. அனைத்து காணக்கூடிய லேயர்கள் "
+"உட்பட, ஒருங்கிணைந்த படத்திலிருந்து மாதிரி எடுக்கவும்."
 
 #. Translators: Item hint for the Linear Gradient type.
 #. AI-generated translation; human review requested.
@@ -3275,8 +3266,8 @@ msgstr "கோட்டில் தட்டையான, சதுர வட�
 
 #. Translators: Tooltip shown while editing re-editable text, hints at the key to finish.
 #. AI-generated translation; human review requested.
-msgid "Finish typing (Esc)"
-msgstr "தட்டச்சிடலை முடிக்கவும் (Esc)"
+msgid "Finish typing ({0})"
+msgstr "தட்டச்சிடலை முடிக்கவும் ({0})"
 
 #. Translators: Tooltip shown over a re-editable text object, hints at the gesture to edit it.
 #. AI-generated translation; human review requested.

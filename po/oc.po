@@ -541,10 +541,6 @@ msgstr "Mòde color"
 msgid "Color Picker"
 msgstr "Pipeta a colors"
 
-#: ../Pinta.Tools/Tools/ColorPickerAllLayersTool.cs:19
-msgid "Color Picker (All Layers)"
-msgstr ""
-
 #: ../Pinta.Effects/Effects/PencilSketchEffect.cs:89
 msgid "Color Range"
 msgstr "Gama de colors"
@@ -1345,13 +1341,6 @@ msgstr ""
 msgid ""
 "Left click to replace the secondary color with the primary color.\n"
 "Right click to reverse."
-msgstr ""
-
-#: ../Pinta.Tools/Tools/ColorPickerAllLayersTool.cs:21
-#: ../Pinta.Tools/Tools/ColorPickerTool.cs:59
-msgid ""
-"Left click to set primary color.\n"
-"Right click to set secondary color."
 msgstr ""
 
 #: ../Pinta.Gui.Widgets/Widgets/StatusBarColorPaletteWidget.cs:328
@@ -2239,6 +2228,10 @@ msgstr "Règlas"
 msgid "Sampling"
 msgstr ""
 
+#: ../Pinta.Tools/Tools/ColorPickerTool.cs:215
+msgid "Source"
+msgstr "Font"
+
 #. Translators: this is an abbreviation for "Saturation"
 #: ../Pinta.Gui.Widgets/Widgets/ColorPickerSlider.cs:335
 msgid "Sat"
@@ -2305,10 +2298,6 @@ msgstr "Seleccionar tot"
 
 #: ../Pinta.Effects/Utilities/GradientHelper.cs:13
 msgid "Selected Colors"
-msgstr ""
-
-#: ../Pinta.Tools/Tools/ColorPickerAllLayersTool.cs:21
-msgid "Selects the color in view."
 msgstr ""
 
 #: ../Pinta.Tools/Tools/ColorPickerTool.cs:59
@@ -3232,9 +3221,13 @@ msgid "Sample from the current layer only."
 msgstr "Preleva sonque sul calc actual."
 
 #. Translators: Item hint for the Color Picker's Image sample scope.
-#. AI-generated translation; human review requested.
-msgid "Sample from the composited image, including all visible layers."
-msgstr "Preleva sus l'imatge compausat, en incluant totes los calcs visibles."
+#: ../Pinta.Tools/Tools/ColorPickerTool.cs:266
+msgid ""
+"Selects the color in view. Sample from the composited image, including all "
+"visible layers."
+msgstr ""
+"Selecciona la color dins la vista. Preleva sus l'imatge compausat, en "
+"incluant totes los calcs visibles."
 
 #. Translators: Item hint for the Linear Gradient type.
 #. AI-generated translation; human review requested.
@@ -3333,8 +3326,8 @@ msgstr "Angles aplatits e escaironats sul contorn."
 
 #. Translators: Tooltip shown while editing re-editable text, hints at the key to finish.
 #. AI-generated translation; human review requested.
-msgid "Finish typing (Esc)"
-msgstr "Acabar la sasida (Escap)"
+msgid "Finish typing ({0})"
+msgstr "Acabar la sasida ({0})"
 
 #. Translators: Tooltip shown over a re-editable text object, hints at the gesture to edit it.
 #. AI-generated translation; human review requested.

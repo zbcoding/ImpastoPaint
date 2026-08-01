@@ -542,10 +542,6 @@ msgstr "Väritila"
 msgid "Color Picker"
 msgstr "Värinpoimija"
 
-#: ../Pinta.Tools/Tools/ColorPickerAllLayersTool.cs:19
-msgid "Color Picker (All Layers)"
-msgstr ""
-
 #: ../Pinta.Effects/Effects/PencilSketchEffect.cs:89
 msgid "Color Range"
 msgstr "Värialue"
@@ -1353,15 +1349,6 @@ msgid ""
 "Left click to replace the secondary color with the primary color.\n"
 "Right click to reverse."
 msgstr ""
-
-#: ../Pinta.Tools/Tools/ColorPickerAllLayersTool.cs:21
-#: ../Pinta.Tools/Tools/ColorPickerTool.cs:59
-msgid ""
-"Left click to set primary color.\n"
-"Right click to set secondary color."
-msgstr ""
-"Vasen napsautus asettaa ensisijaisen värin.\n"
-"Oikea napsautus asettaa toissijaisen värin."
 
 #: ../Pinta.Gui.Widgets/Widgets/StatusBarColorPaletteWidget.cs:328
 msgid "Left click to set primary color. Right click to set secondary color."
@@ -2259,6 +2246,10 @@ msgstr "Viivoitin"
 msgid "Sampling"
 msgstr "Näytteistys"
 
+#: ../Pinta.Tools/Tools/ColorPickerTool.cs:215
+msgid "Source"
+msgstr "Lähde"
+
 #. Translators: this is an abbreviation for "Saturation"
 #: ../Pinta.Gui.Widgets/Widgets/ColorPickerSlider.cs:335
 msgid "Sat"
@@ -2326,10 +2317,6 @@ msgstr "Valitse kaikki"
 #: ../Pinta.Effects/Utilities/GradientHelper.cs:13
 msgid "Selected Colors"
 msgstr "Valitut värit"
-
-#: ../Pinta.Tools/Tools/ColorPickerAllLayersTool.cs:21
-msgid "Selects the color in view."
-msgstr ""
 
 #: ../Pinta.Tools/Tools/ColorPickerTool.cs:59
 msgid "Selects the color on the current layer and current selected area."
@@ -3665,9 +3652,13 @@ msgid "Sample from the current layer only."
 msgstr "Näytteistää vain nykyisestä tasosta."
 
 #. Translators: Item hint for the Color Picker's Image sample scope.
-#. AI-generated translation; human review requested.
-msgid "Sample from the composited image, including all visible layers."
-msgstr "Näytteistää yhdistetystä kuvasta, mukaan lukien kaikki näkyvät tasot."
+#: ../Pinta.Tools/Tools/ColorPickerTool.cs:266
+msgid ""
+"Selects the color in view. Sample from the composited image, including all "
+"visible layers."
+msgstr ""
+"Valitsee värin näkymässä. Näytteistää yhdistetystä kuvasta, mukaan lukien "
+"kaikki näkyvät tasot."
 
 #. Translators: Item hint for the Linear Gradient type.
 #. AI-generated translation; human review requested.
@@ -3766,8 +3757,8 @@ msgstr "Litistetyt, suorakulmaiset kulmat ääriviivassa."
 
 #. Translators: Tooltip shown while editing re-editable text, hints at the key to finish.
 #. AI-generated translation; human review requested.
-msgid "Finish typing (Esc)"
-msgstr "Lopeta kirjoittaminen (Esc)"
+msgid "Finish typing ({0})"
+msgstr "Lopeta kirjoittaminen ({0})"
 
 #. Translators: Tooltip shown over a re-editable text object, hints at the gesture to edit it.
 #. AI-generated translation; human review requested.

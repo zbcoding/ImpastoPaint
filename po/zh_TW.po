@@ -549,10 +549,6 @@ msgstr "色彩模式"
 msgid "Color Picker"
 msgstr "顏色拾取器"
 
-#: ../Pinta.Tools/Tools/ColorPickerAllLayersTool.cs:19
-msgid "Color Picker (All Layers)"
-msgstr ""
-
 #: ../Pinta.Effects/Effects/PencilSketchEffect.cs:89
 msgid "Color Range"
 msgstr "顏色範圍"
@@ -1385,15 +1381,6 @@ msgid ""
 msgstr ""
 "左鍵按一下可將次要顏色換成主要顏色。\n"
 "按一下滑鼠右鍵可反色。"
-
-#: ../Pinta.Tools/Tools/ColorPickerAllLayersTool.cs:21
-#: ../Pinta.Tools/Tools/ColorPickerTool.cs:59
-msgid ""
-"Left click to set primary color.\n"
-"Right click to set secondary color."
-msgstr ""
-"左鍵按一下以設定主要顏色。\n"
-"按一下滑鼠右鍵可設定次要顏色。"
 
 #: ../Pinta.Gui.Widgets/Widgets/StatusBarColorPaletteWidget.cs:328
 msgid "Left click to set primary color. Right click to set secondary color."
@@ -2286,6 +2273,10 @@ msgstr "尺規"
 msgid "Sampling"
 msgstr "取樣"
 
+#: ../Pinta.Tools/Tools/ColorPickerTool.cs:215
+msgid "Source"
+msgstr "來源"
+
 #. Translators: this is an abbreviation for "Saturation"
 #: ../Pinta.Gui.Widgets/Widgets/ColorPickerSlider.cs:335
 msgid "Sat"
@@ -2353,10 +2344,6 @@ msgstr "全選"
 #: ../Pinta.Effects/Utilities/GradientHelper.cs:13
 msgid "Selected Colors"
 msgstr "選定的顏色"
-
-#: ../Pinta.Tools/Tools/ColorPickerAllLayersTool.cs:21
-msgid "Selects the color in view."
-msgstr ""
 
 #: ../Pinta.Tools/Tools/ColorPickerTool.cs:59
 msgid "Selects the color on the current layer and current selected area."
@@ -3176,9 +3163,11 @@ msgid "Sample from the current layer only."
 msgstr "僅從目前圖層取樣。"
 
 #. Translators: Item hint for the Color Picker's Image sample scope.
-#. AI-generated translation; human review requested.
-msgid "Sample from the composited image, including all visible layers."
-msgstr "從合成後的影像取樣,包含所有可見圖層。"
+#: ../Pinta.Tools/Tools/ColorPickerTool.cs:266
+msgid ""
+"Selects the color in view. Sample from the composited image, including all "
+"visible layers."
+msgstr "選取檢視中的顏色。 從合成後的影像取樣,包含所有可見圖層。"
 
 #. Translators: Item hint for the Linear Gradient type.
 #. AI-generated translation; human review requested.
@@ -3277,8 +3266,8 @@ msgstr "外框上扁平、方正的轉角。"
 
 #. Translators: Tooltip shown while editing re-editable text, hints at the key to finish.
 #. AI-generated translation; human review requested.
-msgid "Finish typing (Esc)"
-msgstr "完成輸入(Esc)"
+msgid "Finish typing ({0})"
+msgstr "完成輸入({0})"
 
 #. Translators: Tooltip shown over a re-editable text object, hints at the gesture to edit it.
 #. AI-generated translation; human review requested.

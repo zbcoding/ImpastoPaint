@@ -552,10 +552,6 @@ msgstr "Renk Modu"
 msgid "Color Picker"
 msgstr "Renk Seçici"
 
-#: ../Pinta.Tools/Tools/ColorPickerAllLayersTool.cs:19
-msgid "Color Picker (All Layers)"
-msgstr ""
-
 #: ../Pinta.Effects/Effects/PencilSketchEffect.cs:89
 msgid "Color Range"
 msgstr "Renk Dizisi"
@@ -1405,15 +1401,6 @@ msgid ""
 msgstr ""
 "İkincil rengi birincil renk ile değiştirmek için Sol tıkı kullanın.\n"
 "Sağ tık ile tersine çevirin."
-
-#: ../Pinta.Tools/Tools/ColorPickerAllLayersTool.cs:21
-#: ../Pinta.Tools/Tools/ColorPickerTool.cs:59
-msgid ""
-"Left click to set primary color.\n"
-"Right click to set secondary color."
-msgstr ""
-"Birincil rengi ayarlamak için Sol tıkı kullanın.\n"
-"İkincil rengi ayarlamak için Sağ tıkı kullanın."
 
 #: ../Pinta.Gui.Widgets/Widgets/StatusBarColorPaletteWidget.cs:328
 msgid "Left click to set primary color. Right click to set secondary color."
@@ -2315,6 +2302,10 @@ msgstr "Cetvel"
 msgid "Sampling"
 msgstr "Örnekliyor"
 
+#: ../Pinta.Tools/Tools/ColorPickerTool.cs:215
+msgid "Source"
+msgstr "Kaynak"
+
 #. Translators: this is an abbreviation for "Saturation"
 #: ../Pinta.Gui.Widgets/Widgets/ColorPickerSlider.cs:335
 msgid "Sat"
@@ -2384,10 +2375,6 @@ msgstr "Tümünü Seç"
 #: ../Pinta.Effects/Utilities/GradientHelper.cs:13
 msgid "Selected Colors"
 msgstr "Seçilen Renkler"
-
-#: ../Pinta.Tools/Tools/ColorPickerAllLayersTool.cs:21
-msgid "Selects the color in view."
-msgstr ""
 
 #: ../Pinta.Tools/Tools/ColorPickerTool.cs:59
 msgid "Selects the color on the current layer and current selected area."
@@ -3220,9 +3207,13 @@ msgid "Sample from the current layer only."
 msgstr "Yalnızca geçerli katmandan örnekleyin."
 
 #. Translators: Item hint for the Color Picker's Image sample scope.
-#. AI-generated translation; human review requested.
-msgid "Sample from the composited image, including all visible layers."
-msgstr "Görünür tüm katmanlar dahil, birleştirilmiş görüntüden örnekleyin."
+#: ../Pinta.Tools/Tools/ColorPickerTool.cs:266
+msgid ""
+"Selects the color in view. Sample from the composited image, including all "
+"visible layers."
+msgstr ""
+"Görünümdeki rengi seçer. Görünür tüm katmanlar dahil, birleştirilmiş "
+"görüntüden örnekleyin."
 
 #. Translators: Item hint for the Linear Gradient type.
 #. AI-generated translation; human review requested.
@@ -3321,8 +3312,8 @@ msgstr "Dış hatta düzleştirilmiş, kare köşeler."
 
 #. Translators: Tooltip shown while editing re-editable text, hints at the key to finish.
 #. AI-generated translation; human review requested.
-msgid "Finish typing (Esc)"
-msgstr "Yazmayı bitir (Esc)"
+msgid "Finish typing ({0})"
+msgstr "Yazmayı bitir ({0})"
 
 #. Translators: Tooltip shown over a re-editable text object, hints at the gesture to edit it.
 #. AI-generated translation; human review requested.

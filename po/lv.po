@@ -546,10 +546,6 @@ msgstr "Krāsu Režīms"
 msgid "Color Picker"
 msgstr "Krāsas noteicējs"
 
-#: ../Pinta.Tools/Tools/ColorPickerAllLayersTool.cs:19
-msgid "Color Picker (All Layers)"
-msgstr ""
-
 #: ../Pinta.Effects/Effects/PencilSketchEffect.cs:89
 msgid "Color Range"
 msgstr "Krāsu apgabals"
@@ -1369,15 +1365,6 @@ msgid ""
 "Left click to replace the secondary color with the primary color.\n"
 "Right click to reverse."
 msgstr ""
-
-#: ../Pinta.Tools/Tools/ColorPickerAllLayersTool.cs:21
-#: ../Pinta.Tools/Tools/ColorPickerTool.cs:59
-msgid ""
-"Left click to set primary color.\n"
-"Right click to set secondary color."
-msgstr ""
-"Noklikšķināt ar kreiso taustiņu lai izvēlētos primāro krāsu.\n"
-"Noklikšķināt ar labo taustiņu lai izvēlētos primāro krāsu."
 
 #: ../Pinta.Gui.Widgets/Widgets/StatusBarColorPaletteWidget.cs:328
 msgid "Left click to set primary color. Right click to set secondary color."
@@ -2275,6 +2262,10 @@ msgstr "Lineāli"
 msgid "Sampling"
 msgstr "Paraugu Ņemšana"
 
+#: ../Pinta.Tools/Tools/ColorPickerTool.cs:215
+msgid "Source"
+msgstr "Avots"
+
 #. Translators: this is an abbreviation for "Saturation"
 #: ../Pinta.Gui.Widgets/Widgets/ColorPickerSlider.cs:335
 msgid "Sat"
@@ -2342,10 +2333,6 @@ msgstr "Iezīmēt visu"
 #: ../Pinta.Effects/Utilities/GradientHelper.cs:13
 msgid "Selected Colors"
 msgstr "Izvēlētās Krāsas"
-
-#: ../Pinta.Tools/Tools/ColorPickerAllLayersTool.cs:21
-msgid "Selects the color in view."
-msgstr ""
 
 #: ../Pinta.Tools/Tools/ColorPickerTool.cs:59
 msgid "Selects the color on the current layer and current selected area."
@@ -3299,9 +3286,13 @@ msgid "Sample from the current layer only."
 msgstr "Paraugot tikai no pašreizējā slāņa."
 
 #. Translators: Item hint for the Color Picker's Image sample scope.
-#. AI-generated translation; human review requested.
-msgid "Sample from the composited image, including all visible layers."
-msgstr "Paraugot no apvienotā attēla, ieskaitot visus redzamos slāņus."
+#: ../Pinta.Tools/Tools/ColorPickerTool.cs:266
+msgid ""
+"Selects the color in view. Sample from the composited image, including all "
+"visible layers."
+msgstr ""
+"Izvēlas krāsu skatā. Paraugot no apvienotā attēla, ieskaitot visus redzamos "
+"slāņus."
 
 #. Translators: Item hint for the Linear Gradient type.
 #. AI-generated translation; human review requested.
@@ -3400,8 +3391,8 @@ msgstr "Saplacināti, taisnstūra formas stūri uz kontūras."
 
 #. Translators: Tooltip shown while editing re-editable text, hints at the key to finish.
 #. AI-generated translation; human review requested.
-msgid "Finish typing (Esc)"
-msgstr "Pabeigt rakstīšanu (Esc)"
+msgid "Finish typing ({0})"
+msgstr "Pabeigt rakstīšanu ({0})"
 
 #. Translators: Tooltip shown over a re-editable text object, hints at the gesture to edit it.
 #. AI-generated translation; human review requested.

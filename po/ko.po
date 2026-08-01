@@ -548,10 +548,6 @@ msgstr "색상 모드"
 msgid "Color Picker"
 msgstr "색상 선택기"
 
-#: ../Pinta.Tools/Tools/ColorPickerAllLayersTool.cs:19
-msgid "Color Picker (All Layers)"
-msgstr ""
-
 #: ../Pinta.Effects/Effects/PencilSketchEffect.cs:89
 msgid "Color Range"
 msgstr "색상 범위"
@@ -1392,15 +1388,6 @@ msgid ""
 msgstr ""
 "왼쪽을 클릭하면 보조 색상이 기본 색상으로 바뀝니다.\n"
 "오른쪽을 클릭하면 반대로 바뀝니다."
-
-#: ../Pinta.Tools/Tools/ColorPickerAllLayersTool.cs:21
-#: ../Pinta.Tools/Tools/ColorPickerTool.cs:59
-msgid ""
-"Left click to set primary color.\n"
-"Right click to set secondary color."
-msgstr ""
-"왼쪽을 클릭하여 기본 색상을 설정하세요.\n"
-"오른쪽을 클릭하여 보조 색상을 설정하세요."
 
 #: ../Pinta.Gui.Widgets/Widgets/StatusBarColorPaletteWidget.cs:328
 msgid "Left click to set primary color. Right click to set secondary color."
@@ -2298,6 +2285,10 @@ msgstr "눈금자"
 msgid "Sampling"
 msgstr "샘플링"
 
+#: ../Pinta.Tools/Tools/ColorPickerTool.cs:215
+msgid "Source"
+msgstr "소스"
+
 #. Translators: this is an abbreviation for "Saturation"
 #: ../Pinta.Gui.Widgets/Widgets/ColorPickerSlider.cs:335
 msgid "Sat"
@@ -2365,10 +2356,6 @@ msgstr "전체 선택"
 #: ../Pinta.Effects/Utilities/GradientHelper.cs:13
 msgid "Selected Colors"
 msgstr "선택된 색상"
-
-#: ../Pinta.Tools/Tools/ColorPickerAllLayersTool.cs:21
-msgid "Selects the color in view."
-msgstr ""
 
 #: ../Pinta.Tools/Tools/ColorPickerTool.cs:59
 msgid "Selects the color on the current layer and current selected area."
@@ -3420,9 +3407,11 @@ msgid "Sample from the current layer only."
 msgstr "현재 레이어에서만 색상을 추출합니다."
 
 #. Translators: Item hint for the Color Picker's Image sample scope.
-#. AI-generated translation; human review requested.
-msgid "Sample from the composited image, including all visible layers."
-msgstr "표시되는 모든 레이어를 포함하여 합성된 이미지에서 색상을 추출합니다."
+#: ../Pinta.Tools/Tools/ColorPickerTool.cs:266
+msgid ""
+"Selects the color in view. Sample from the composited image, including all "
+"visible layers."
+msgstr "보기에서 색상을 선택합니다. 표시되는 모든 레이어를 포함하여 합성된 이미지에서 색상을 추출합니다."
 
 #. Translators: Item hint for the Linear Gradient type.
 #. AI-generated translation; human review requested.
@@ -3521,8 +3510,8 @@ msgstr "윤곽선의 평평하고 각진 모서리입니다."
 
 #. Translators: Tooltip shown while editing re-editable text, hints at the key to finish.
 #. AI-generated translation; human review requested.
-msgid "Finish typing (Esc)"
-msgstr "입력 완료 (Esc)"
+msgid "Finish typing ({0})"
+msgstr "입력 완료 ({0})"
 
 #. Translators: Tooltip shown over a re-editable text object, hints at the gesture to edit it.
 #. AI-generated translation; human review requested.

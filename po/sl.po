@@ -552,10 +552,6 @@ msgstr "Barvni način"
 msgid "Color Picker"
 msgstr "Izbirnik barv"
 
-#: ../Pinta.Tools/Tools/ColorPickerAllLayersTool.cs:19
-msgid "Color Picker (All Layers)"
-msgstr ""
-
 #: ../Pinta.Effects/Effects/PencilSketchEffect.cs:89
 msgid "Color Range"
 msgstr "Razpon barv"
@@ -1403,15 +1399,6 @@ msgid ""
 msgstr ""
 "Levi klik za zamenjavo pomožne barve z osnovno barvo.\n"
 "Desni klik za nasprotno."
-
-#: ../Pinta.Tools/Tools/ColorPickerAllLayersTool.cs:21
-#: ../Pinta.Tools/Tools/ColorPickerTool.cs:59
-msgid ""
-"Left click to set primary color.\n"
-"Right click to set secondary color."
-msgstr ""
-"Levi klik za določitev osnovne barve.\n"
-"Desni klik za določitev pomožne barve."
 
 #: ../Pinta.Gui.Widgets/Widgets/StatusBarColorPaletteWidget.cs:328
 msgid "Left click to set primary color. Right click to set secondary color."
@@ -2308,6 +2295,10 @@ msgstr "Ravnila"
 msgid "Sampling"
 msgstr "Vzorčenje"
 
+#: ../Pinta.Tools/Tools/ColorPickerTool.cs:215
+msgid "Source"
+msgstr "Vir"
+
 #. Translators: this is an abbreviation for "Saturation"
 #: ../Pinta.Gui.Widgets/Widgets/ColorPickerSlider.cs:335
 msgid "Sat"
@@ -2375,10 +2366,6 @@ msgstr "Izberi vse"
 #: ../Pinta.Effects/Utilities/GradientHelper.cs:13
 msgid "Selected Colors"
 msgstr "Izbrane barve"
-
-#: ../Pinta.Tools/Tools/ColorPickerAllLayersTool.cs:21
-msgid "Selects the color in view."
-msgstr ""
 
 #: ../Pinta.Tools/Tools/ColorPickerTool.cs:59
 msgid "Selects the color on the current layer and current selected area."
@@ -3729,9 +3716,13 @@ msgid "Sample from the current layer only."
 msgstr "Vzorči samo iz trenutne plasti."
 
 #. Translators: Item hint for the Color Picker's Image sample scope.
-#. AI-generated translation; human review requested.
-msgid "Sample from the composited image, including all visible layers."
-msgstr "Vzorči iz sestavljene slike, vključno z vsemi vidnimi plastmi."
+#: ../Pinta.Tools/Tools/ColorPickerTool.cs:266
+msgid ""
+"Selects the color in view. Sample from the composited image, including all "
+"visible layers."
+msgstr ""
+"Izbere barvo v pogledu. Vzorči iz sestavljene slike, vključno z vsemi "
+"vidnimi plastmi."
 
 #. Translators: Item hint for the Linear Gradient type.
 #. AI-generated translation; human review requested.
@@ -3830,8 +3821,8 @@ msgstr "Sploščeni, kvadratni vogali na orisu."
 
 #. Translators: Tooltip shown while editing re-editable text, hints at the key to finish.
 #. AI-generated translation; human review requested.
-msgid "Finish typing (Esc)"
-msgstr "Dokončaj vnos (Esc)"
+msgid "Finish typing ({0})"
+msgstr "Dokončaj vnos ({0})"
 
 #. Translators: Tooltip shown over a re-editable text object, hints at the gesture to edit it.
 #. AI-generated translation; human review requested.

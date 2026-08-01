@@ -551,10 +551,6 @@ msgstr "Mód Dathanna"
 msgid "Color Picker"
 msgstr "Roghnóir Dathanna"
 
-#: ../Pinta.Tools/Tools/ColorPickerAllLayersTool.cs:19
-msgid "Color Picker (All Layers)"
-msgstr ""
-
 #: ../Pinta.Effects/Effects/PencilSketchEffect.cs:89
 msgid "Color Range"
 msgstr "Raon na nDathanna"
@@ -1417,15 +1413,6 @@ msgstr ""
 "Cliceáil ar chlé chun an dath tánaisteach a athsholáthar leis an "
 "bpríomhdhath. \n"
 "Cliceáil ar dheis chun é a aisiompú."
-
-#: ../Pinta.Tools/Tools/ColorPickerAllLayersTool.cs:21
-#: ../Pinta.Tools/Tools/ColorPickerTool.cs:59
-msgid ""
-"Left click to set primary color.\n"
-"Right click to set secondary color."
-msgstr ""
-"Cliceáil ar chlé chun an dath príomhúil a shocrú. \n"
-"Cliceáil ar dheis chun an dath tánaisteach a shocrú."
 
 #: ../Pinta.Gui.Widgets/Widgets/StatusBarColorPaletteWidget.cs:328
 msgid "Left click to set primary color. Right click to set secondary color."
@@ -2326,6 +2313,10 @@ msgstr "Rialtóirí"
 msgid "Sampling"
 msgstr "Sampláil"
 
+#: ../Pinta.Tools/Tools/ColorPickerTool.cs:215
+msgid "Source"
+msgstr "Foinse"
+
 #. Translators: this is an abbreviation for "Saturation"
 #: ../Pinta.Gui.Widgets/Widgets/ColorPickerSlider.cs:335
 msgid "Sat"
@@ -2393,10 +2384,6 @@ msgstr "Roghnaigh Uile"
 #: ../Pinta.Effects/Utilities/GradientHelper.cs:13
 msgid "Selected Colors"
 msgstr "Dathanna Roghnaithe"
-
-#: ../Pinta.Tools/Tools/ColorPickerAllLayersTool.cs:21
-msgid "Selects the color in view."
-msgstr ""
 
 #: ../Pinta.Tools/Tools/ColorPickerTool.cs:59
 msgid "Selects the color on the current layer and current selected area."
@@ -3317,9 +3304,13 @@ msgid "Sample from the current layer only."
 msgstr "Sampláil ón gciseal reatha amháin."
 
 #. Translators: Item hint for the Color Picker's Image sample scope.
-#. AI-generated translation; human review requested.
-msgid "Sample from the composited image, including all visible layers."
-msgstr "Sampláil ón íomhá chomhshuite, lena n-áirítear gach ciseal infheicthe."
+#: ../Pinta.Tools/Tools/ColorPickerTool.cs:266
+msgid ""
+"Selects the color in view. Sample from the composited image, including all "
+"visible layers."
+msgstr ""
+"Roghnaíonn sé an dath atá le feiceáil. Sampláil ón íomhá chomhshuite, lena "
+"n-áirítear gach ciseal infheicthe."
 
 #. Translators: Item hint for the Linear Gradient type.
 #. AI-generated translation; human review requested.
@@ -3418,8 +3409,8 @@ msgstr "Coirnéil chothroma, chearnaithe ar an imlíne."
 
 #. Translators: Tooltip shown while editing re-editable text, hints at the key to finish.
 #. AI-generated translation; human review requested.
-msgid "Finish typing (Esc)"
-msgstr "Críochnaigh ag clóscríobh (Esc)"
+msgid "Finish typing ({0})"
+msgstr "Críochnaigh ag clóscríobh ({0})"
 
 #. Translators: Tooltip shown over a re-editable text object, hints at the gesture to edit it.
 #. AI-generated translation; human review requested.

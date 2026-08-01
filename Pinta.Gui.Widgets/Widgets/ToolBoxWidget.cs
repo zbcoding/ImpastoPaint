@@ -26,7 +26,6 @@ public sealed partial class ToolBoxWidget
 	/// icon of whichever member is currently selected.
 	/// </summary>
 	private static readonly int[][] stack_definitions = [
-		[33, 34], // Color Picker, Color Picker (All Layers)
 		[39, 41, 43, 45], // Rectangle, Rounded Rectangle, Ellipse, Freeform
 	];
 

@@ -603,10 +603,6 @@ msgstr ""
 msgid "Color Picker"
 msgstr ""
 
-#: ../Pinta.Tools/Tools/ColorPickerAllLayersTool.cs:19
-msgid "Color Picker (All Layers)"
-msgstr ""
-
 #: ../Pinta.Effects/Effects/PencilSketchEffect.cs:89
 msgid "Color Range"
 msgstr ""
@@ -1564,7 +1560,6 @@ msgid ""
 "Right click to reverse."
 msgstr ""
 
-#: ../Pinta.Tools/Tools/ColorPickerAllLayersTool.cs:21
 #: ../Pinta.Tools/Tools/ColorPickerTool.cs:59
 msgid ""
 "Left click to set primary color.\n"
@@ -2562,21 +2557,23 @@ msgid "Rulers"
 msgstr ""
 
 #. Translators: Item hint for the Color Picker's Image sample scope.
-#: ../Pinta.Tools/Tools/ColorPickerTool.cs:258
-msgid "Sample from the composited image, including all visible layers."
+#: ../Pinta.Tools/Tools/ColorPickerTool.cs:266
+msgid ""
+"Selects the color in view. Sample from the composited image, including all "
+"visible layers."
 msgstr ""
 
 #. Translators: Item hint for the Color Picker's Layer sample scope.
-#: ../Pinta.Tools/Tools/ColorPickerTool.cs:257
+#: ../Pinta.Tools/Tools/ColorPickerTool.cs:265
 msgid "Sample from the current layer only."
 msgstr ""
 
 #. Translators: Item hint for the Color Picker's Single Pixel sample size.
-#: ../Pinta.Tools/Tools/ColorPickerTool.cs:239
+#: ../Pinta.Tools/Tools/ColorPickerTool.cs:247
 msgid "Sample the exact color of the pixel under the pointer."
 msgstr ""
 
-#: ../Pinta.Tools/Tools/ColorPickerTool.cs:208
+#: ../Pinta.Tools/Tools/ColorPickerTool.cs:211
 msgid "Sampling"
 msgstr ""
 
@@ -2656,10 +2653,6 @@ msgstr ""
 
 #: ../Pinta.Effects/Utilities/GradientHelper.cs:13
 msgid "Selected Colors"
-msgstr ""
-
-#: ../Pinta.Tools/Tools/ColorPickerAllLayersTool.cs:21
-msgid "Selects the color in view."
 msgstr ""
 
 #: ../Pinta.Tools/Tools/ColorPickerTool.cs:59
@@ -2819,6 +2812,10 @@ msgstr ""
 
 #: ../Pinta.Effects/Effects/SoftenPortraitEffect.cs:125
 msgid "Softness"
+msgstr ""
+
+#: ../Pinta.Tools/Tools/ColorPickerTool.cs:215
+msgid "Source"
 msgstr ""
 
 #: ../Pinta.Tools/Brushes/SplatterBrush.cs:37

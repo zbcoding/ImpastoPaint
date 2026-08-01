@@ -2,6 +2,15 @@
     -gtk-icon-size: 2rem;
 }
 
+/* Impasto: Adwaita pads buttons more horizontally than vertically (and enforces a minimum
+   width), which comes out as a wide rectangle around a square icon. The thin column layout
+   pads evenly instead, so each button is a square around its icon. */
+.tool-box-button-thin {
+    min-width: 0;
+    min-height: 0;
+    padding: 4px;
+}
+
 .pinned-section {
     background-color: alpha(@accent_bg_color, 0.12);
     padding: 2px;

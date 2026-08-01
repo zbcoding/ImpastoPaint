@@ -72,6 +72,12 @@ public sealed partial class ToolBoxWidget
 		Gtk.FlowBox section = Gtk.FlowBox.New ();
 		if (classic) {
 			section.SetOrientation (Gtk.Orientation.Vertical);
+			// GtkFlowBox asks for ceil(children / min-children-per-line) *columns* of width,
+			// so upstream's 8 reserves three columns for 22 tools even when one is in use -
+			// that reserved width is the wide empty box around the column. A minimum above
+			// the tool count asks for the one column that is actually drawn.
+			section.MinChildrenPerLine = 1024;
+			section.MaxChildrenPerLine = 1024;
 		} else {
 			// Horizontal orientation: ChildrenPerLine counts children per *row*, so this
 			// pins every section to 2 columns and the buttons line up across the separators.
@@ -79,7 +85,10 @@ public sealed partial class ToolBoxWidget
 			section.MinChildrenPerLine = 2;
 			section.MaxChildrenPerLine = 2;
 		}
-		section.Homogeneous = true;
+		// Homogeneous stretches every cell to the widest one and inflates the box's minimum
+		// width, which is what made the thin column layout several buttons wide. The
+		// sectioned layout needs it so its two columns line up across the separators.
+		section.Homogeneous = !classic;
 		section.SelectionMode = Gtk.SelectionMode.None; // Don't allow the buttons to be selected.
 		section.Visible = false; // Shown when it receives its first tool.
 		return section;
@@ -189,6 +198,23 @@ public sealed partial class ToolBoxWidget
 		return $"{tool.Name}\n{shortcutText}\n{tool.StatusBarText}";
 	}
 
+	/// <summary>
+	/// In the thin column layout each button is a square around its icon: even padding from
+	/// the CSS class, and centered so the flow box cell doesn't stretch it out sideways.
+	/// The sectioned layout wants its buttons filling the grid cell.
+	/// </summary>
+	private void StyleToolButton (Gtk.ToggleButton button)
+	{
+		if (!classic_layout) {
+			button.SetCssClasses ([Resources.Styles.ToolBoxButton, AdwaitaStyles.Flat]);
+			return;
+		}
+
+		button.SetCssClasses ([Resources.Styles.ToolBoxButton, Resources.Styles.ToolBoxButtonThin, AdwaitaStyles.Flat]);
+		button.Halign = Gtk.Align.Center;
+		button.Valign = Gtk.Align.Center;
+	}
+
 	private Gtk.ToggleButton CreateToolButton (BaseTool tool)
 	{
 		Gtk.ToggleButton button = Gtk.ToggleButton.New ();
@@ -196,7 +222,7 @@ public sealed partial class ToolBoxWidget
 		button.Name = tool.Name;
 		button.CanFocus = false;
 
-		button.SetCssClasses ([Resources.Styles.ToolBoxButton, AdwaitaStyles.Flat]);
+		StyleToolButton (button);
 
 		button.TooltipText = TooltipFor (tool);
 
@@ -264,7 +290,7 @@ public sealed partial class ToolBoxWidget
 
 			Gtk.ToggleButton button = Gtk.ToggleButton.New ();
 			button.CanFocus = false;
-			button.SetCssClasses ([Resources.Styles.ToolBoxButton, AdwaitaStyles.Flat]);
+			StyleToolButton (button);
 			button.SetChild (overlay);
 
 			stack = new ToolStack {

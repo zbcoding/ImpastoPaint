@@ -925,7 +925,11 @@ internal sealed class MainWindow
 		Gtk.ScrolledWindow toolbox_scroll = Gtk.ScrolledWindow.New ();
 		toolbox_scroll.Child = toolbox;
 		toolbox_scroll.HscrollbarPolicy = Gtk.PolicyType.Never;
-		toolbox_scroll.VscrollbarPolicy = Gtk.PolicyType.Never;
+		// Impasto: the thin column layout asks for a single column's width, so a short window
+		// leaves tools below the fold - scroll them into reach instead of clipping them.
+		toolbox_scroll.VscrollbarPolicy = PintaCore.Settings.GetSetting (SettingNames.TOOLBOX_CLASSIC_LAYOUT, false)
+			? Gtk.PolicyType.Automatic
+			: Gtk.PolicyType.Never;
 		// Impasto: a border around the toolbox so its icons read as tools, not as loose
 		// icons next to the canvas.
 		toolbox_scroll.HasFrame = true;

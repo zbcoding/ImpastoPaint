@@ -109,7 +109,10 @@ public sealed class ToolManager : IEnumerable<BaseTool>, IToolService
 		=> shortcut_key_overrides.TryGetValue (tool.GetType ().Name, out var gesture) ? gesture : new KeyGesture (tool.ShortcutKey);
 
 	public void SetShortcutKeyOverride (BaseTool tool, KeyGesture gesture)
-		=> shortcut_key_overrides[tool.GetType ().Name] = gesture;
+		=> SetShortcutKeyOverride (tool.GetType ().Name, gesture);
+
+	public void SetShortcutKeyOverride (string toolTypeName, KeyGesture gesture)
+		=> shortcut_key_overrides[toolTypeName] = gesture;
 
 	public void ResetShortcutKeyOverride (BaseTool tool)
 		=> shortcut_key_overrides.Remove (tool.GetType ().Name);

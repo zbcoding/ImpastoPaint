@@ -478,9 +478,13 @@ public sealed class KeyboardShortcutManager
 			if (command_overrides.TryGetValue (command.Name, out var accel))
 				ApplyCommandShortcut (command, accel.Length == 0 ? [] : [accel]);
 
-		foreach (var tool in tools)
-			if (tool_overrides.TryGetValue (tool.GetType ().Name, out var keyName) && KeyGesture.TryParse (keyName) is KeyGesture gesture)
-				this.tools.SetShortcutKeyOverride (tool, gesture);
+		// Tools are registered asynchronously via the add-in extension mechanism,
+		// which can run after this method. Apply overrides by tool type name rather
+		// than iterating the (possibly still-empty) registered tool set so the saved
+		// toolbox activation-key overrides are never silently dropped at startup.
+		foreach (var kv in tool_overrides)
+			if (KeyGesture.TryParse (kv.Value) is KeyGesture gesture)
+				this.tools.SetShortcutKeyOverride (kv.Key, gesture);
 	}
 
 	/// <summary>
@@ -583,8 +587,6 @@ public sealed class KeyboardShortcutManager
 
 	public void SetCommandShortcut (Command command, string accel)
 	{
-		ClearConflicts (accel, except: command);
-
 		command_overrides[command.Name] = accel;
 		ApplyCommandShortcut (command, accel.Length == 0 ? [] : [accel]);
 		SaveAndNotify ();
@@ -607,8 +609,6 @@ public sealed class KeyboardShortcutManager
 
 	public void SetToolShortcut (BaseTool tool, KeyGesture gesture)
 	{
-		ClearToolConflicts (gesture, except: tool);
-
 		tool_overrides[tool.GetType ().Name] = gesture.ToAcceleratorName ();
 		tools.SetShortcutKeyOverride (tool, gesture);
 		SaveAndNotify ();
@@ -684,27 +684,6 @@ public sealed class KeyboardShortcutManager
 	}
 
 	// --- Helpers ---
-
-	// Prevents two commands from sharing the same accelerator: when a shortcut
-	// is bound to one command, release it from any other command currently
-	// using it. A cleared (empty) accelerator is not a conflict we resolve.
-	private void ClearConflicts (string accel, Command except)
-	{
-		if (accel.Length == 0)
-			return;
-
-		foreach (var command in AllCommands ())
-			if (command != except && command.Shortcuts.Contains (accel))
-				ApplyCommandShortcut (command, []);
-	}
-
-	// Prevents two tools from sharing the same toolbox activation key.
-	private void ClearToolConflicts (KeyGesture gesture, BaseTool except)
-	{
-		foreach (var tool in tools)
-			if (tool != except && tools.GetEffectiveShortcutKey (tool) == gesture)
-				tools.ResetShortcutKeyOverride (tool);
-	}
 
 	public IEnumerable<Command> AllCommands ()
 		=> new object[] {

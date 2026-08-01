@@ -375,13 +375,24 @@ public sealed partial class ToolBoxWidget
 
 			// No native tooltip here: GTK4 mapping a tooltip popup while this entry's own
 			// popover (a grabbing popup) is open can leave the pointer grab stuck, freezing
-			// input until the next click - the icon and label already say what this is.
+			// input until the next click. The shortcut is shown as an inline label instead,
+			// so it's still visible without relying on a second popup surface.
 			Gtk.Button entry = Gtk.Button.New ();
 			entry.SetCssClasses ([AdwaitaStyles.Flat]);
 
 			Gtk.Box row = Gtk.Box.New (Gtk.Orientation.Horizontal, 6);
 			row.Append (Gtk.Image.NewFromIconName (member.Icon));
 			row.Append (Gtk.Label.New (member.Name));
+
+			KeyGesture shortcut = tools.GetEffectiveShortcutKey (member);
+			if (shortcut.IsValid) {
+				Gtk.Label shortcutLabel = Gtk.Label.New (shortcut.ToLabel ());
+				shortcutLabel.AddCssClass (AdwaitaStyles.DimLabel);
+				shortcutLabel.Hexpand = true;
+				shortcutLabel.Halign = Gtk.Align.End;
+				row.Append (shortcutLabel);
+			}
+
 			entry.SetChild (row);
 
 			entry.OnClicked += (_, _) => {

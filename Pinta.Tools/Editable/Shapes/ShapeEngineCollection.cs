@@ -187,7 +187,7 @@ public abstract class ShapeEngine
 
 		ShapeEngine clone = newShapeType switch {
 
-			BaseEditEngine.ShapeTypes.ClosedLineCurveSeries => new LineCurveSeriesEngine (
+			BaseEditEngine.ShapeTypes.ClosedLineCurveSeries or BaseEditEngine.ShapeTypes.Triangle => new LineCurveSeriesEngine (
 				parent_layer,
 				DrawingLayer,
 				newShapeType,

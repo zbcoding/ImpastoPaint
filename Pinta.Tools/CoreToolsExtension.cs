@@ -70,6 +70,7 @@ public sealed class CoreToolsExtension : IExtension
 		PintaCore.Tools.AddTool (new RectangleTool (services));
 		PintaCore.Tools.AddTool (new RoundedRectangleTool (services));
 		PintaCore.Tools.AddTool (new EllipseTool (services));
+		PintaCore.Tools.AddTool (new TriangleTool (services));
 		PintaCore.Tools.AddTool (new FreeformShapeTool (services));
 		PintaCore.Tools.AddTool (new CloneStampTool (services));
 		PintaCore.Tools.AddTool (new HealingBrushTool (services));
@@ -105,6 +106,7 @@ public sealed class CoreToolsExtension : IExtension
 		PintaCore.Tools.RemoveInstanceOfTool<RectangleTool> ();
 		PintaCore.Tools.RemoveInstanceOfTool<RoundedRectangleTool> ();
 		PintaCore.Tools.RemoveInstanceOfTool<EllipseTool> ();
+		PintaCore.Tools.RemoveInstanceOfTool<TriangleTool> ();
 		PintaCore.Tools.RemoveInstanceOfTool<FreeformShapeTool> ();
 		PintaCore.Tools.RemoveInstanceOfTool<CloneStampTool> ();
 		PintaCore.Tools.RemoveInstanceOfTool<HealingBrushTool> ();

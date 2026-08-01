@@ -44,6 +44,7 @@ public abstract class BaseEditEngine
 		ClosedLineCurveSeries,
 		Ellipse,
 		RoundedLineSeries,
+		Triangle,
 	}
 
 	public static Dictionary<ShapeTypes, ShapeTool> CorrespondingTools { get; } = [];
@@ -305,6 +306,7 @@ public abstract class BaseEditEngine
 			shape_type_button.AddItem (Translations.GetString ("Closed Line/Curve Series"), Resources.Icons.ToolRectangle, 1, Translations.GetString ("Automatically connects the last point back to the first, closing the shape (e.g. a rectangle)."));
 			shape_type_button.AddItem (Translations.GetString ("Ellipse"), Resources.Icons.ToolEllipse, 2, Translations.GetString ("Draws an ellipse or circle."));
 			shape_type_button.AddItem (Translations.GetString ("Rounded Line Series"), Resources.Icons.ToolRectangleRounded, 3, Translations.GetString ("Like Closed Line/Curve Series, but with rounded corners at each point."));
+			shape_type_button.AddItem (Translations.GetString ("Triangle"), Resources.Icons.ToolTriangle, 4, Translations.GetString ("Draws a triangle."));
 
 			shape_type_button.SelectedIndex = settings.GetSetting (
 				SettingNames.ShapeType (toolPrefix),
@@ -2063,6 +2065,48 @@ public abstract class BaseEditEngine
 			//Even though it's supposed to be static, just in case the points get out of order
 			//(they do sometimes), update the opposite control point's position.
 			oppositePoint.Position = new PointD (nextPoint.Position.X, previousPoint.Position.Y);
+		}
+	}
+
+	protected void AddTrianglePoints (bool ctrlKey, bool clickedOnControlPoint, ShapeEngine selEngine, PointD prevSelPoint)
+	{
+		PointD startingPoint;
+
+		//Create the initial points of the shape. The third point (the moving base corner) will follow the mouse around until released.
+		if (ctrlKey && clickedOnControlPoint) {
+			startingPoint = prevSelPoint;
+
+			clicked_without_modifying = false;
+		} else {
+			startingPoint = shape_origin;
+		}
+
+		//Apex.
+		selEngine.ControlPoints.Add (new ControlPoint (new PointD (startingPoint.X, startingPoint.Y), 0.0));
+		//Base, left.
+		selEngine.ControlPoints.Add (
+			new ControlPoint (new PointD (startingPoint.X, startingPoint.Y + .01d), 0.0));
+		//Base, right (the moving point).
+		selEngine.ControlPoints.Add (
+			new ControlPoint (new PointD (startingPoint.X + .01d, startingPoint.Y + .01d), 0.0));
+
+		SelectedPointIndex = 2;
+		SelectedShapeIndex = SEngines.Count - 1;
+	}
+
+	//Keeps the triangle's base edge (points 1 and 2) level, the way MoveRectangularPoint keeps a rectangle's edges aligned.
+	protected void MoveTriangularPoint (List<ControlPoint> controlPoints)
+	{
+		if (controlPoints.Count != 3)
+			return;
+
+		switch (SelectedPointIndex) {
+			case 1:
+				controlPoints[2].Position = new PointD (controlPoints[2].Position.X, current_point.Y);
+				break;
+			case 2:
+				controlPoints[1].Position = new PointD (controlPoints[1].Position.X, current_point.Y);
+				break;
 		}
 	}
 }

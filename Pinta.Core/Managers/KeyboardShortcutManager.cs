@@ -587,6 +587,8 @@ public sealed class KeyboardShortcutManager
 
 	public void SetCommandShortcut (Command command, string accel)
 	{
+		ClearConflicts (accel, except: command);
+
 		command_overrides[command.Name] = accel;
 		ApplyCommandShortcut (command, accel.Length == 0 ? [] : [accel]);
 		SaveAndNotify ();
@@ -609,6 +611,8 @@ public sealed class KeyboardShortcutManager
 
 	public void SetToolShortcut (BaseTool tool, KeyGesture gesture)
 	{
+		ClearToolConflicts (gesture, except: tool);
+
 		tool_overrides[tool.GetType ().Name] = gesture.ToAcceleratorName ();
 		tools.SetShortcutKeyOverride (tool, gesture);
 		SaveAndNotify ();
@@ -630,6 +634,8 @@ public sealed class KeyboardShortcutManager
 
 	public void SetToolBinding (ToolBindingDescriptor descriptor, KeyGesture gesture)
 	{
+		ClearBindingConflicts (descriptor, gesture);
+
 		binding_overrides[descriptor.Id] = gesture.ToAcceleratorName ();
 		SaveAndNotify ();
 	}
@@ -684,6 +690,40 @@ public sealed class KeyboardShortcutManager
 	}
 
 	// --- Helpers ---
+
+	// Prevents two commands from sharing the same accelerator: when a shortcut
+	// is bound to one command, release it from any other command currently
+	// using it. A cleared (empty) accelerator is not a conflict we resolve.
+	private void ClearConflicts (string accel, Command except)
+	{
+		if (accel.Length == 0)
+			return;
+
+		foreach (var command in AllCommands ())
+			if (command != except && command.Shortcuts.Contains (accel))
+				ApplyCommandShortcut (command, []);
+	}
+
+	// Prevents two tools from sharing the same toolbox activation key.
+	private void ClearToolConflicts (KeyGesture gesture, BaseTool except)
+	{
+		foreach (var tool in tools)
+			if (tool != except && tools.GetEffectiveShortcutKey (tool) == gesture)
+				tools.ResetShortcutKeyOverride (tool);
+	}
+
+	// Prevents two tool-specific bindings in the same tab (i.e. usable while the
+	// same tool is active) from sharing the same key. Bindings in different tabs
+	// never conflict, since only one tool's bindings are live at a time.
+	private void ClearBindingConflicts (ToolBindingDescriptor descriptor, KeyGesture gesture)
+	{
+		if (!gesture.IsValid)
+			return;
+
+		foreach (var other in ToolBindings)
+			if (other != descriptor && other.TabName == descriptor.TabName && GetToolBinding (other) == gesture)
+				binding_overrides.Remove (other.Id);
+	}
 
 	public IEnumerable<Command> AllCommands ()
 		=> new object[] {

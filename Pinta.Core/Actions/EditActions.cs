@@ -64,6 +64,12 @@ public sealed class EditActions
 	// stays free for other tools. Credit: Sam-Gledhill, PR #2205.
 	private static readonly string[] selection_tools = ["Pinta.Tools.EllipseSelectTool", "Pinta.Tools.RectangleSelectTool", "Pinta.Tools.LassoSelectTool", "Pinta.Tools.ScissorsSelectTool"];
 
+	// Escape must be double-tapped to deselect, so a single stray Escape doesn't
+	// discard a selection. Window falls back to 400ms if GTK's own double-click
+	// interval isn't available.
+	private const int DEFAULT_DOUBLE_ESCAPE_MS = 400;
+	private DateTime? last_escape_time;
+
 	private readonly ChromeManager chrome;
 	private readonly PaletteFormatManager palette_formats;
 	private readonly PaletteManager palette;
@@ -420,11 +426,27 @@ public sealed class EditActions
 		doc.Workspace.Invalidate ();
 	}
 
-	// Escape only deselects while a selection tool is active. Credit: Sam-Gledhill, PR #2205.
+	// Escape only deselects while a selection tool is active, and only on the
+	// second press within a short window (double-tap), so a single stray
+	// Escape leaves the selection intact. Credit: Sam-Gledhill, PR #2205.
 	private void HandlePintaCoreActionsEditDeselectSelectionActivated (object sender, EventArgs e)
 	{
 		if (!selection_tools.Contains (tools.CurrentTool?.ToString ()))
 			return;
+
+		DateTime now = DateTime.UtcNow;
+		int double_click_ms = Gtk.Settings.GetDefault ()?.GtkDoubleClickTime ?? DEFAULT_DOUBLE_ESCAPE_MS;
+
+		bool is_double_tap =
+			last_escape_time is DateTime previous &&
+			(now - previous).TotalMilliseconds <= double_click_ms;
+
+		if (!is_double_tap) {
+			last_escape_time = now;
+			return;
+		}
+
+		last_escape_time = null;
 
 		HandlePintaCoreActionsEditDeselectActivated (sender, e);
 	}

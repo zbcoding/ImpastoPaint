@@ -64,6 +64,7 @@ Thanks to the following contributors who worked on this release:
 - Adjusted layout of toolbar options in the shape tools to improve usability (#2012, #2019, #2039, #2107)
 - Added new icons for several effects and menu buttons (#2102)
 - Menu buttons now display popout nested menus instead of sliding menus (#2131)
+- Deselecting via the Escape key now requires a double-tap, so a single stray Escape press no longer clears the selection
 
 ### Fixed
 - Fixed the floating Colors panel crashing on launch with a stack overflow, caused by the hex entry's change handler re-entering `ApplyColor`/`RedrawAll` before the reentrancy guard was set

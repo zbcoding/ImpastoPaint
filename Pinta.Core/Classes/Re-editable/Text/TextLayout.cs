@@ -140,9 +140,14 @@ public sealed class TextLayout
 				Layout.SetAlignment (Pango.Alignment.Center);
 				break;
 			case TextAlignment.Left:
+			case TextAlignment.Justify:
+				// Justified text left-aligns its base lines, with the extra inter-word
+				// spacing that fills the box applied by Pango.
 				Layout.SetAlignment (Pango.Alignment.Left);
 				break;
 		}
+
+		Layout.SetJustify (engine.Alignment == TextAlignment.Justify);
 
 		Layout.SetFontDescription (engine.Font);
 

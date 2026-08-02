@@ -179,6 +179,7 @@ public sealed class TextTool : BaseTool
 	private Gtk.ToggleButton left_alignment_btn = null!;
 	private Gtk.ToggleButton center_alignment_btn = null!;
 	private Gtk.ToggleButton right_alignment_btn = null!;
+	private Gtk.ToggleButton justify_alignment_btn = null!;
 	private Gtk.Label fill_label = null!;
 	private ToolBarDropDownButton fill_button = null!;
 	private Gtk.Separator fill_sep = null!;
@@ -457,6 +458,17 @@ public sealed class TextTool : BaseTool
 
 		tb.Append (right_alignment_btn);
 
+		if (justify_alignment_btn == null) {
+			justify_alignment_btn = Gtk.ToggleButton.New ();
+			justify_alignment_btn.IconName = Pinta.Resources.StandardIcons.FormatJustifyFill;
+			justify_alignment_btn.TooltipText = Translations.GetString ("Justify");
+			justify_alignment_btn.CanFocus = false;
+			justify_alignment_btn.Active = alignment == TextAlignment.Justify;
+			justify_alignment_btn.OnToggled += HandleJustifyAlignmentButtonToggled;
+		}
+
+		tb.Append (justify_alignment_btn);
+
 		fill_sep ??= GtkExtensions.CreateToolBarSeparator ();
 
 		tb.Append (fill_sep);
@@ -709,6 +721,8 @@ public sealed class TextTool : BaseTool
 				return TextAlignment.Right;
 			else if (center_alignment_btn.Active)
 				return TextAlignment.Center;
+			else if (justify_alignment_btn.Active)
+				return TextAlignment.Justify;
 			else
 				return TextAlignment.Left;
 		}
@@ -726,7 +740,8 @@ public sealed class TextTool : BaseTool
 		if (left_alignment_btn.Active) {
 			right_alignment_btn.Active = false;
 			center_alignment_btn.Active = false;
-		} else if (!right_alignment_btn.Active && !center_alignment_btn.Active) {
+			justify_alignment_btn.Active = false;
+		} else if (!right_alignment_btn.Active && !center_alignment_btn.Active && !justify_alignment_btn.Active) {
 			left_alignment_btn.Active = true;
 		}
 
@@ -738,7 +753,8 @@ public sealed class TextTool : BaseTool
 		if (center_alignment_btn.Active) {
 			right_alignment_btn.Active = false;
 			left_alignment_btn.Active = false;
-		} else if (!right_alignment_btn.Active && !left_alignment_btn.Active) {
+			justify_alignment_btn.Active = false;
+		} else if (!right_alignment_btn.Active && !left_alignment_btn.Active && !justify_alignment_btn.Active) {
 			center_alignment_btn.Active = true;
 		}
 
@@ -750,8 +766,22 @@ public sealed class TextTool : BaseTool
 		if (right_alignment_btn.Active) {
 			center_alignment_btn.Active = false;
 			left_alignment_btn.Active = false;
-		} else if (!center_alignment_btn.Active && !left_alignment_btn.Active) {
+			justify_alignment_btn.Active = false;
+		} else if (!center_alignment_btn.Active && !left_alignment_btn.Active && !justify_alignment_btn.Active) {
 			right_alignment_btn.Active = true;
+		}
+
+		UpdateFont ();
+	}
+
+	private void HandleJustifyAlignmentButtonToggled (object? sender, EventArgs e)
+	{
+		if (justify_alignment_btn.Active) {
+			center_alignment_btn.Active = false;
+			left_alignment_btn.Active = false;
+			right_alignment_btn.Active = false;
+		} else if (!center_alignment_btn.Active && !left_alignment_btn.Active && !right_alignment_btn.Active) {
+			justify_alignment_btn.Active = true;
 		}
 
 		UpdateFont ();
@@ -1741,6 +1771,7 @@ public sealed class TextTool : BaseTool
 		left_alignment_btn.Active = engine.Alignment == TextAlignment.Left;
 		center_alignment_btn.Active = engine.Alignment == TextAlignment.Center;
 		right_alignment_btn.Active = engine.Alignment == TextAlignment.Right;
+		justify_alignment_btn.Active = engine.Alignment == TextAlignment.Justify;
 
 		fill_button.SelectedIndex = obj.FillStyle;
 		outline_width.Adjustment!.Value = obj.OutlineWidth;

@@ -13,5 +13,6 @@ public enum TextAlignment
 {
 	Right,
 	Center,
-	Left
+	Left,
+	Justify
 }

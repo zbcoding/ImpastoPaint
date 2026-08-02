@@ -42,6 +42,7 @@ public static class StandardIcons
 	public const string FormatJustifyLeft = "format-justify-left-symbolic";
 	public const string FormatJustifyCenter = "format-justify-center-symbolic";
 	public const string FormatJustifyRight = "format-justify-right-symbolic";
+	public const string FormatJustifyFill = "format-justify-fill-symbolic";
 	public const string FormatTextItalic = "format-text-italic-symbolic";
 	public const string FormatTextUnderline = "format-text-underline-symbolic";
 

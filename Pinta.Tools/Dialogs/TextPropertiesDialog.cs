@@ -35,6 +35,7 @@ internal sealed class TextPropertiesDialog : IDisposable
 	private Gtk.ToggleButton left_alignment_btn;
 	private Gtk.ToggleButton center_alignment_btn;
 	private Gtk.ToggleButton right_alignment_btn;
+	private Gtk.ToggleButton justify_alignment_btn;
 	private Gtk.SpinButton rotation_spin;
 	#pragma warning restore CS8618
 
@@ -90,6 +91,8 @@ internal sealed class TextPropertiesDialog : IDisposable
 				return TextAlignment.Right;
 			else if (center_alignment_btn.Active)
 				return TextAlignment.Center;
+			else if (justify_alignment_btn.Active)
+				return TextAlignment.Justify;
 			else
 				return TextAlignment.Left;
 		}
@@ -237,6 +240,14 @@ internal sealed class TextPropertiesDialog : IDisposable
 		right_alignment_btn.OnToggled += (_, _) => HandleAlignment ();
 		alignRow.Append (right_alignment_btn);
 
+		justify_alignment_btn = Gtk.ToggleButton.New ();
+		justify_alignment_btn.IconName = StandardIcons.FormatJustifyFill;
+		justify_alignment_btn.TooltipText = Translations.GetString ("Justify");
+		justify_alignment_btn.CanFocus = false;
+		justify_alignment_btn.Active = alignment == TextAlignment.Justify;
+		justify_alignment_btn.OnToggled += (_, _) => HandleAlignment ();
+		alignRow.Append (justify_alignment_btn);
+
 		content.Append (alignRow);
 
 		// --- Variant ---
@@ -276,11 +287,13 @@ internal sealed class TextPropertiesDialog : IDisposable
 	private void HandleAlignment ()
 	{
 		if (left_alignment_btn.Active)
-			center_alignment_btn.Active = right_alignment_btn.Active = false;
+			center_alignment_btn.Active = right_alignment_btn.Active = justify_alignment_btn.Active = false;
 		else if (center_alignment_btn.Active)
-			left_alignment_btn.Active = right_alignment_btn.Active = false;
+			left_alignment_btn.Active = right_alignment_btn.Active = justify_alignment_btn.Active = false;
 		else if (right_alignment_btn.Active)
-			left_alignment_btn.Active = center_alignment_btn.Active = false;
+			left_alignment_btn.Active = center_alignment_btn.Active = justify_alignment_btn.Active = false;
+		else if (justify_alignment_btn.Active)
+			left_alignment_btn.Active = center_alignment_btn.Active = right_alignment_btn.Active = false;
 		else
 			left_alignment_btn.Active = true;
 

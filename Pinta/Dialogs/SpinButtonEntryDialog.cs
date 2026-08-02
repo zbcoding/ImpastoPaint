@@ -88,6 +88,10 @@ public sealed partial class SpinButtonEntryDialog
 		spin_button.SetRange (min, max);
 	}
 
+	public int Step {
+		set => spin_button.Adjustment!.StepIncrement = value;
+	}
+
 	public int Value {
 		get => spin_button.GetValueAsInt ();
 		set => spin_button.SetValue (value);

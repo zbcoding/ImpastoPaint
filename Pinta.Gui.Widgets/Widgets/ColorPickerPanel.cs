@@ -37,6 +37,10 @@ public sealed partial class ColorPickerPanel
 	const int SPACING = 6;
 	const int SWATCH_ICON_SIZE = 14;
 	const int DISPLAY_SIZE = 28;
+	// The floating panel is narrow (~220-500px). Cap the swatch grid at this many
+	// columns and wrap the rest into extra row-bands below, rather than growing
+	// wider than the panel or clipping.
+	const int MAX_SWATCH_COLUMNS = 10;
 
 	private IPaletteService palette = null!; // NRT - set by factory method
 	private bool primary_selected = true;
@@ -87,7 +91,7 @@ public sealed partial class ColorPickerPanel
 			icon: StatusBarColorPaletteWidget.DrawPaletteIcon,
 			tooltip: Translations.GetString ("Quick colors"),
 			swatchArea: out swatch_palette);
-		swatch_palette.SetDrawFunc ((_, g, w, _) => DrawQuickSwatches (g, w));
+		swatch_palette.SetDrawFunc ((_, g, _, _) => DrawQuickSwatches (g));
 
 		Append (topBox);
 		Append (Gtk.Separator.New (Gtk.Orientation.Horizontal));
@@ -279,8 +283,7 @@ public sealed partial class ColorPickerPanel
 		});
 
 		Gtk.DrawingArea swatch = Gtk.DrawingArea.New ();
-		swatch.WidthRequest = 220;
-		swatch.Hexpand = true;
+		swatch.WidthRequest = PaletteWidget.SWATCH_SIZE * MAX_SWATCH_COLUMNS;
 		swatch.HeightRequest = PaletteWidget.SWATCH_SIZE * PaletteWidget.PALETTE_ROWS;
 
 		Gtk.Box row = Gtk.Box.New (Gtk.Orientation.Horizontal, SPACING);
@@ -294,35 +297,41 @@ public sealed partial class ColorPickerPanel
 	private void DrawRecentSwatches (Context g)
 	{
 		var recent = palette.RecentlyUsedColors;
-		int recentCols = PaletteWidget.GetRecentColorColumns (palette.MaxRecentlyUsedColor);
-
-		RectangleD rect = new (
-			0, 0,
-			PaletteWidget.SWATCH_SIZE * recentCols,
-			PaletteWidget.SWATCH_SIZE * PaletteWidget.PALETTE_ROWS);
 
 		int count = Math.Min (recent.Count, palette.MaxRecentlyUsedColor);
 		for (int i = 0; i < count; i++)
-			g.FillRectangle (PaletteWidget.GetSwatchBounds (palette, i, rect, true), recent.ElementAt (i));
+			g.FillRectangle (
+				PaletteWidget.GetWrappedSwatchBounds (palette, i, new RectangleD (), MAX_SWATCH_COLUMNS, recentColorPalette: true),
+				recent.ElementAt (i));
 	}
 
-	private void DrawQuickSwatches (Context g, int width)
+	private void DrawQuickSwatches (Context g)
 	{
-		RectangleD rect = new (
-			0, 0,
-			width - PaletteWidget.PALETTE_MARGIN,
-			PaletteWidget.SWATCH_SIZE * PaletteWidget.PALETTE_ROWS);
-
 		Palette currentPalette = palette.CurrentPalette;
 		for (int i = 0; i < currentPalette.Colors.Count; i++)
-			g.FillRectangle (PaletteWidget.GetSwatchBounds (palette, i, rect), currentPalette.Colors[i]);
+			g.FillRectangle (
+				PaletteWidget.GetWrappedSwatchBounds (palette, i, new RectangleD (), MAX_SWATCH_COLUMNS),
+				currentPalette.Colors[i]);
+	}
+
+	// Recomputes the swatch areas' height to fit however many row-bands the current
+	// color count wraps into at MAX_SWATCH_COLUMNS.
+	private void UpdateSwatchSizes ()
+	{
+		int recentCols = PaletteWidget.GetRecentColorColumns (palette.MaxRecentlyUsedColor);
+		int recentBands = PaletteWidget.GetWrappedBandCount (recentCols, MAX_SWATCH_COLUMNS);
+		swatch_recent.HeightRequest = PaletteWidget.SWATCH_SIZE * PaletteWidget.PALETTE_ROWS * recentBands;
+
+		int quickCols = (palette.CurrentPalette.Colors.Count + PaletteWidget.PALETTE_ROWS - 1) / PaletteWidget.PALETTE_ROWS;
+		int quickBands = PaletteWidget.GetWrappedBandCount (quickCols, MAX_SWATCH_COLUMNS);
+		swatch_palette.HeightRequest = PaletteWidget.SWATCH_SIZE * PaletteWidget.PALETTE_ROWS * quickBands;
 	}
 
 	// Left click sets the primary color, right click the secondary - same semantics
 	// as the docked bar's quick/recent swatches (StatusBarColorPaletteWidget).
 	private void HandleSwatchClick (bool recent, PointD relPoint, uint button)
 	{
-		int index = PaletteWidget.GetSwatchAtLocation (palette, relPoint, new RectangleD (), recent);
+		int index = PaletteWidget.GetWrappedSwatchAtLocation (palette, relPoint, new RectangleD (), MAX_SWATCH_COLUMNS, recent);
 		if (index < 0)
 			return;
 
@@ -342,9 +351,10 @@ public sealed partial class ColorPickerPanel
 
 		palette.PrimaryColorChanged += (_, _) => { if (!updating) RedrawAll (); };
 		palette.SecondaryColorChanged += (_, _) => { if (!updating) RedrawAll (); };
-		palette.RecentColorsChanged += (_, _) => swatch_recent.QueueDraw ();
-		palette.CurrentPalette.PaletteChanged += (_, _) => swatch_palette.QueueDraw ();
+		palette.RecentColorsChanged += (_, _) => { UpdateSwatchSizes (); swatch_recent.QueueDraw (); };
+		palette.CurrentPalette.PaletteChanged += (_, _) => { UpdateSwatchSizes (); swatch_palette.QueueDraw (); };
 
+		UpdateSwatchSizes ();
 		RedrawAll ();
 	}
 

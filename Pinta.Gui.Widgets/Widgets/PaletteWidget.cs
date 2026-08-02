@@ -67,4 +67,55 @@ internal static class PaletteWidget
 
 		return new (x, y, swatchSize, swatchSize);
 	}
+
+	// Wrapped variant for contexts too narrow to grow the grid rightward forever
+	// (the floating Colors panel, the color-wheel popover's mini grids) - unlike the
+	// footer bar, which folds sections away instead of wrapping. Once the natural
+	// column count exceeds maxColumns, colors continue in a new row-band below.
+	public static RectangleD GetWrappedSwatchBounds (
+		IPaletteService palette,
+		int index,
+		RectangleD palette_bounds,
+		int maxColumns,
+		bool recentColorPalette = false,
+		int swatchSize = SWATCH_SIZE)
+	{
+		int recent_cols = GetRecentColorColumns (palette.MaxRecentlyUsedColor);
+		int row = recentColorPalette ? index / recent_cols : index % PALETTE_ROWS;
+		int col = recentColorPalette ? index % recent_cols : index / PALETTE_ROWS;
+
+		int band = col / maxColumns;
+		int wrappedCol = col % maxColumns;
+		int wrappedRow = row + band * PALETTE_ROWS;
+
+		double x = palette_bounds.X + (wrappedCol * swatchSize);
+		double y = palette_bounds.Y + (wrappedRow * swatchSize);
+
+		return new (x, y, swatchSize, swatchSize);
+	}
+
+	public static int GetWrappedSwatchAtLocation (
+		IPaletteService palette,
+		PointD point,
+		RectangleD palette_bounds,
+		int maxColumns,
+		bool recentColorPalette = false,
+		int swatchSize = SWATCH_SIZE)
+	{
+		int max =
+			recentColorPalette
+			? Math.Min (palette.RecentlyUsedColors.Count, palette.MaxRecentlyUsedColor)
+			: palette.CurrentPalette.Colors.Count;
+
+		for (int i = 0; i < max; i++)
+			if (GetWrappedSwatchBounds (palette, i, palette_bounds, maxColumns, recentColorPalette, swatchSize).ContainsPoint (point))
+				return i;
+
+		return -1;
+	}
+
+	// How many row-bands a grid of naturalColumns columns folds into once capped at
+	// maxColumns - used to size the containing widget.
+	public static int GetWrappedBandCount (int naturalColumns, int maxColumns)
+		=> Math.Max (1, (naturalColumns + maxColumns - 1) / maxColumns);
 }

@@ -20,6 +20,7 @@ public sealed partial class PreferencesDialog
 	private PintaColorButton canvas_surround_color_button;
 	private Gtk.CheckButton paste_external_images_to_new_layer_check_button;
 	private Gtk.CheckButton extended_palette_rows_check_button;
+	private Gtk.SpinButton palette_size_spinner;
 	private Gtk.CheckButton toolbox_classic_layout_check_button;
 	private Gtk.CheckButton tool_settings_wrap_rows_check_button;
 	private Gtk.CheckButton statusbar_show_cursor_position_check_button;
@@ -45,6 +46,7 @@ public sealed partial class PreferencesDialog
 	public Cairo.Color? CanvasSurroundColor => canvas_surround_color_is_default ? null : canvas_surround_color_button.DisplayColor;
 	public bool PasteExternalImagesToNewLayer => paste_external_images_to_new_layer_check_button.Active;
 	public bool ExtendedPaletteRows => extended_palette_rows_check_button.Active;
+	public int PaletteSize => palette_size_spinner.GetValueAsInt ();
 	public bool ToolboxClassicLayout => toolbox_classic_layout_check_button.Active;
 	public bool ToolSettingsWrapRows => tool_settings_wrap_rows_check_button.Active;
 	public bool StatusBarShowCursorPosition => statusbar_show_cursor_position_check_button.Active;
@@ -54,7 +56,7 @@ public sealed partial class PreferencesDialog
 			: popover_hint_mode_essential_button.Active ? PopoverHintMode.Essential
 			: PopoverHintMode.None;
 
-	internal static PreferencesDialog New (ChromeManager chrome, int defaultCanvasWidth, int defaultCanvasHeight, Cairo.Color canvasSurroundColor, bool canvasSurroundColorIsDefault, Cairo.Color defaultCanvasSurroundColor, bool pasteExternalImagesToNewLayer, bool extendedPaletteRows, bool toolboxClassicLayout, bool toolSettingsWrapRows, PopoverHintMode popoverHintMode, bool statusBarShowCursorPosition, bool statusBarShowImageSize)
+	internal static PreferencesDialog New (ChromeManager chrome, int defaultCanvasWidth, int defaultCanvasHeight, Cairo.Color canvasSurroundColor, bool canvasSurroundColorIsDefault, Cairo.Color defaultCanvasSurroundColor, bool pasteExternalImagesToNewLayer, bool extendedPaletteRows, int paletteSize, bool toolboxClassicLayout, bool toolSettingsWrapRows, PopoverHintMode popoverHintMode, bool statusBarShowCursorPosition, bool statusBarShowImageSize)
 	{
 		PreferencesDialog dialog = NewWithProperties ([]);
 		dialog.canvas_width_spinner.Value = defaultCanvasWidth;
@@ -64,6 +66,8 @@ public sealed partial class PreferencesDialog
 		dialog.default_canvas_surround_color = defaultCanvasSurroundColor;
 		dialog.paste_external_images_to_new_layer_check_button.Active = pasteExternalImagesToNewLayer;
 		dialog.extended_palette_rows_check_button.Active = extendedPaletteRows;
+		int rows = PaletteHelper.GetPaletteRowCount ();
+		dialog.palette_size_spinner.Value = PaletteHelper.RoundDownToRowMultiple (paletteSize, rows);
 		dialog.toolbox_classic_layout_check_button.Active = toolboxClassicLayout;
 		dialog.tool_settings_wrap_rows_check_button.Active = toolSettingsWrapRows;
 		dialog.SetPopoverHintMode (popoverHintMode);
@@ -78,6 +82,7 @@ public sealed partial class PreferencesDialog
 	[MemberNotNull (nameof (canvas_surround_color_button))]
 	[MemberNotNull (nameof (paste_external_images_to_new_layer_check_button))]
 	[MemberNotNull (nameof (extended_palette_rows_check_button))]
+	[MemberNotNull (nameof (palette_size_spinner))]
 	[MemberNotNull (nameof (toolbox_classic_layout_check_button))]
 	[MemberNotNull (nameof (tool_settings_wrap_rows_check_button))]
 	[MemberNotNull (nameof (statusbar_show_cursor_position_check_button))]
@@ -167,6 +172,20 @@ public sealed partial class PreferencesDialog
 		extendedPaletteRow.Append (CreateResetButton (ResetExtendedPaletteRows));
 		popoverHintPage.Append (extendedPaletteRow);
 
+		// Step by the row count so every column stays full - 2 normally, 3 once the
+		// extra darker row above is on.
+		int paletteRows = PaletteHelper.GetPaletteRowCount ();
+		Gtk.SpinButton paletteSizeSpinner = Gtk.SpinButton.NewWithRange (paletteRows, 96, paletteRows);
+		paletteSizeSpinner.SetActivatesDefaultImmediate (true);
+		Gtk.Box paletteSizeRow = Gtk.Box.New (Gtk.Orientation.Horizontal, SPACING);
+		Gtk.Label paletteSizeLabel = Gtk.Label.New (Translations.GetString ("Palette size:"));
+		paletteSizeLabel.Hexpand = true;
+		paletteSizeLabel.Halign = Gtk.Align.Start;
+		paletteSizeRow.Append (paletteSizeLabel);
+		paletteSizeRow.Append (paletteSizeSpinner);
+		paletteSizeRow.Append (CreateResetButton (ResetPaletteSize));
+		popoverHintPage.Append (paletteSizeRow);
+
 		Gtk.CheckButton toolboxClassicLayoutCheckButton = Gtk.CheckButton.NewWithLabel (Translations.GetString ("Use thin column toolbox layout"));
 		toolboxClassicLayoutCheckButton.TooltipText = Translations.GetString ("Tools fill one column instead of the sectioned 2-column grid, overflowing into another column once it runs out of vertical space. Requires a restart.");
 		Gtk.Box toolboxClassicLayoutRow = Gtk.Box.New (Gtk.Orientation.Horizontal, SPACING);
@@ -229,6 +248,7 @@ public sealed partial class PreferencesDialog
 		canvas_surround_color_button = canvasSurroundColorButton;
 		paste_external_images_to_new_layer_check_button = pasteExternalImagesCheckButton;
 		extended_palette_rows_check_button = extendedPaletteRowsCheckButton;
+		palette_size_spinner = paletteSizeSpinner;
 		toolbox_classic_layout_check_button = toolboxClassicLayoutCheckButton;
 		tool_settings_wrap_rows_check_button = toolSettingsWrapRowsCheckButton;
 		statusbar_show_cursor_position_check_button = statusbarShowCursorPositionCheckButton;
@@ -255,6 +275,9 @@ public sealed partial class PreferencesDialog
 
 	private void ResetExtendedPaletteRows (Gtk.Button sender, EventArgs e)
 		=> extended_palette_rows_check_button.Active = false;
+
+	private void ResetPaletteSize (Gtk.Button sender, EventArgs e)
+		=> palette_size_spinner.Value = PaletteHelper.EnumerateDefaultColors (extended_palette_rows_check_button.Active).Count ();
 
 	private void ResetToolboxClassicLayout (Gtk.Button sender, EventArgs e)
 		=> toolbox_classic_layout_check_button.Active = false;

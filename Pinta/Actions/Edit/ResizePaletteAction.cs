@@ -65,12 +65,17 @@ internal sealed class ResizePaletteAction : IActionHandler
 
 	private async Task<int?> PromptResize ()
 	{
+		int rows = PaletteHelper.GetPaletteRowCount ();
+
 		using SpinButtonEntryDialog dialog = SpinButtonEntryDialog.New ();
 		dialog.Title = Translations.GetString ("Resize Palette");
 		dialog.TransientFor = chrome.MainWindow;
 		dialog.LabelText = Translations.GetString ("New palette size:");
-		dialog.SetRange (1, 96);
-		dialog.Value = palette.CurrentPalette.Colors.Count;
+		dialog.SetRange (rows, 96);
+		dialog.Step = rows;
+		// Round down to the nearest full row so every column stays full - without
+		// silently resizing the actual palette until the user confirms.
+		dialog.Value = PaletteHelper.RoundDownToRowMultiple (palette.CurrentPalette.Colors.Count, rows);
 
 		try {
 			Gtk.ResponseType response = await dialog.RunAsync ();

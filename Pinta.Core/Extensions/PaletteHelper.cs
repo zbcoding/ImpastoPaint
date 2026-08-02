@@ -18,6 +18,11 @@ public static class PaletteHelper
 	public static int GetPaletteRowCount ()
 		=> PintaCore.Settings.GetSetting (SettingNames.EXTENDED_PALETTE_ROWS, false) ? 3 : 2;
 
+	// Rounds a palette size down to the nearest multiple of the row count (floored
+	// at one full row), so every column of the palette grid stays full.
+	public static int RoundDownToRowMultiple (int size, int rows)
+		=> Math.Max (rows, size / rows * rows);
+
 	public static void Save (this Palette palette, Gio.File file, IPaletteSaver saver)
 	{
 		saver.Save (palette.Colors, file);

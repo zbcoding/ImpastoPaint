@@ -747,18 +747,38 @@ internal sealed class MainWindow
 	// semantics as the docked bar's quick/recent swatches (see
 	// StatusBarColorPaletteWidget's WidgetElement.Palette / RecentColorsPalette
 	// click handling).
+	// The popover is tighter than the floating Colors panel, so wrap into extra
+	// row-bands below once this many columns is reached, rather than growing wider.
+	private const int MINI_SWATCH_MAX_COLUMNS = 8;
+
 	private static Gtk.Widget BuildMiniSwatchGrid (IReadOnlyList<Cairo.Color> colors, int rows, bool recentOrder)
 	{
 		Gtk.Grid grid = Gtk.Grid.New ();
 		grid.RowSpacing = 1;
 		grid.ColumnSpacing = 1;
 
-		int columns = Math.Max (1, (colors.Count + rows - 1) / rows);
+		int naturalColumns = Math.Max (1, (colors.Count + rows - 1) / rows);
+		int columns = Math.Min (naturalColumns, MINI_SWATCH_MAX_COLUMNS);
 
 		for (int i = 0; i < colors.Count; i++) {
 			Cairo.Color color = colors[i];
-			int row = recentOrder ? i / columns : i % rows;
-			int col = recentOrder ? i % columns : i / rows;
+
+			int row, col;
+			if (recentOrder) {
+				// Row-major fill: capping the column count alone already wraps
+				// correctly into extra rows below.
+				row = i / columns;
+				col = i % columns;
+			} else {
+				// Column-major fill: fold columns beyond the cap into extra
+				// row-bands stacked below the first `rows` rows.
+				int naturalRow = i % rows;
+				int naturalCol = i / rows;
+				int band = naturalCol / columns;
+				row = naturalRow + band * rows;
+				col = naturalCol % columns;
+			}
+
 			grid.Attach (
 				BuildMiniSwatchButton (
 					color,

@@ -40,6 +40,11 @@ public sealed partial class HistoryListView
 
 	private Document? active_document;
 
+	// Guards against re-entrancy: the Undo/Redo loop below fires ActionUndone/Redone,
+	// which drives OnUndoOrRedo -> SetSelected -> back into HandleSelectionChanged.
+	// Without this, that nested navigation can over-step and index past the layer stack.
+	private bool navigating;
+
 	public static new HistoryListView New ()
 		=> NewWithProperties ([]);
 
@@ -94,13 +99,21 @@ public sealed partial class HistoryListView
 	{
 		ArgumentNullException.ThrowIfNull (active_document);
 
+		if (navigating)
+			return;
+
 		int index = (int) selection_model.Selected;
 
-		while (active_document.History.Pointer < index)
-			active_document.History.Redo ();
+		navigating = true;
+		try {
+			while (active_document.History.Pointer < index)
+				active_document.History.Redo ();
 
-		while (active_document.History.Pointer > index)
-			active_document.History.Undo ();
+			while (active_document.History.Pointer > index)
+				active_document.History.Undo ();
+		} finally {
+			navigating = false;
+		}
 	}
 
 	private void OnActiveDocumentChanged (object? sender, EventArgs e)

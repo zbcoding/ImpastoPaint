@@ -21,6 +21,7 @@ Thanks to the following contributors who worked on this release:
 - @Pashockerr
 
 ### Added
+- The About dialog legal section now uses expandable license and notice panels with independent scrolling
 - The Text Tool now offers a Point/Area mode: Area (flow) text wraps to fit a box that can be resized by dragging a corner, in addition to the existing point text
 - The Text Tool now supports justified alignment, which stretches line spacing to fill the area box
 - The splatter brush now allows the minimum and maximum splatter size to be configured separately from the brush width

@@ -8,11 +8,13 @@ Bias: caution over speed on non-trivial work. Use judgment on trivial tasks.
 ## Use JJ for version management
 It's a jj and git combined repo (colocated). `main` is the shared trunk everyone merges into.
 
-**Never do code work in the `default` workspace.** It's shared — another agent may be
-mid-edit there right now, and any jj command run against it snapshots whatever is on
-disk into your commit, silently absorbing their in-progress work into yours.
+**The `default` workspace is the shared test checkout.** Never do code work there. It
+must always be checked out at the `main` bookmark so this command tests the landed tip:
+`cd /home/yumeko/DataDisk/Code/ImpastoPaint && dotnet run --project Pinta`.
 - Per agent, per task: `jj workspace add <name> <path> -r main` before touching any file.
   Do all edits, builds, and `jj commit`s inside that workspace.
+- Every code change must be landed on `main` before the task is complete. Small focused
+  commits are preferred over leaving changes only in an agent workspace.
 - Read-only history lookups (`jj log`, `jj show`) against the repo in general are fine from
   anywhere, but pass `--ignore-working-copy` when running them from `default` so you don't
   trigger a snapshot of someone else's live edit.
@@ -24,17 +26,20 @@ This is the failure mode that already bit us once: an agent's fix was silently d
 by a second agent's *own, unrelated* fix landing right after, because the second agent's
 file was a stale pre-fix copy and its diff clobbered the first agent's change along with
 making its own. Before moving the `main` bookmark:
-1. `jj rebase -d main@` (or equivalent) so your commit's parent is the actual current tip,
+1. `jj rebase -d main` (or equivalent) so your commit's parent is the actual current tip,
    not wherever your workspace started.
 2. Skim `jj diff` against that new parent — if it touches a file another commit changed
    since you branched, read that file's current state, don't trust your workspace's copy.
-3. Build + run tests on the rebased commit, then `jj bookmark set main -r <your commit>`
-   and `jj git export`.
+3. Build + run tests on the rebased commit.
+4. Move the bookmark with `jj bookmark set main -r <your commit>` and run `jj git export`.
+5. Refresh the shared checkout from the repository root with `jj edit main`. Only do this
+   after checking that `default` has no unrelated working-copy edits; if it does, stop and
+   coordinate instead of snapshotting or overwriting them.
+6. Verify `default` and `main` identify the same commit, then test from the default path.
 - If two agents land on `main` at nearly the same moment, the second one to rebase will
   see the collision in step 2 — resolve it there, don't just force the bookmark forward.
-- After anything unexpected turns up in `git status`/`git log` in `default` (files you
-  didn't touch, detached-looking `HEAD`), that's normal jj colocation, not damage — don't
-  `git reset`/`checkout` it away. Investigate with read-only commands first.
+- If anything unexpected turns up in `jj status`/`jj log` in `default`, do not use
+  `git reset`/`checkout` or overwrite it. Investigate with read-only commands first.
 
 ## Variable Naming
 Jane Street house style inspired by OCAML descriptive tranformation

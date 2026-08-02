@@ -67,10 +67,12 @@ internal sealed class AboutDialogAction : IActionHandler
 		dialog.ApplicationName = Translations.GetString ("Impasto");
 		dialog.ApplicationIcon = Icons.Pinta;
 		dialog.Version = application_version;
+		dialog.DefaultWidth = 800;
+		dialog.DefaultHeight = 700;
 		dialog.Website = "https://www.pinta-project.com";
 		dialog.Comments = Translations.GetString ("Easily create and edit images");
 		dialog.Copyright = BuildCopyrightText ();
-		dialog.License = EscapeMarkup (LoadEmbeddedText ("LICENSE-MIT.txt"));
+		dialog.License = string.Empty;
 
 		// The Legal and Credits sections below are populated verbatim from the
 		// corresponding files (embedded as resources in Pinta.csproj). To update what
@@ -89,6 +91,7 @@ internal sealed class AboutDialogAction : IActionHandler
 			string.Empty,
 			Gtk.License.Custom,
 			EscapeMarkup (LoadEmbeddedText ("LICENSE-PDN.txt")));
+		ReplaceLegalSections (dialog);
 		dialog.Developers = LoadContributors (LoadEmbeddedText ("CONTRIBUTORS.md"));
 		dialog.TranslatorCredits = Translations.GetString ("translator-credits");
 		dialog.IssueUrl = "https://github.com/PintaProject/Pinta/issues";
@@ -101,6 +104,93 @@ internal sealed class AboutDialogAction : IActionHandler
 		string copyrightText = Translations.GetString ("Copyright");
 		string contributorsText = Translations.GetString ("by Pinta contributors");
 		return $"{copyrightText} (c) 2010-2026 {contributorsText}";
+	}
+
+	private static void ReplaceLegalSections (Adw.AboutWindow dialog)
+	{
+		// ponytail: keep the stock AboutWindow until libadwaita exposes a public legal
+		// content widget; replace this tree lookup when that API becomes available.
+		Gtk.Box? legalBox = FindLegalBox (dialog, Translations.GetString ("Third-Party Notices"));
+		if (legalBox is null)
+			return;
+
+		while (legalBox.GetFirstChild () is Gtk.Widget child)
+			legalBox.Remove (child);
+
+		AppendCopyrightRow (legalBox, Translations.GetString ("Impasto contributions Copyright by the Impasto contributors"));
+		AppendCopyrightRow (legalBox, Translations.GetString ("Pinta Project contributions Copyright by the Pinta Project contributors"));
+		AppendLegalExpander (
+			legalBox,
+			Translations.GetString ("MIT License - Impasto"),
+			LoadEmbeddedText ("LICENSE-MIT.txt"));
+		AppendLegalExpander (
+			legalBox,
+			Translations.GetString ("MIT License - Pinta Project"),
+			LoadEmbeddedText ("LICENSE-MIT.txt"));
+		AppendLegalExpander (
+			legalBox,
+			Translations.GetString ("Third-Party Notices"),
+			LoadEmbeddedText ("THIRD-PARTY-NOTICES.md"));
+		AppendLegalExpander (
+			legalBox,
+			Translations.GetString ("Paint.NET Reference License"),
+			LoadEmbeddedText ("LICENSE-PDN.txt"));
+	}
+
+	private static void AppendCopyrightRow (Gtk.Box legalBox, string text)
+	{
+		Gtk.Label label = Gtk.Label.New (text);
+		label.AddCssClass ("body");
+		label.SetWrap (true);
+		label.SetXalign (0);
+		legalBox.Append (label);
+	}
+
+	private static void AppendLegalExpander (Gtk.Box legalBox, string title, string text)
+	{
+		Gtk.TextView textView = Gtk.TextView.New ();
+		textView.Buffer!.SetText (text, -1);
+		textView.Editable = false;
+		textView.CursorVisible = false;
+		textView.WrapMode = Gtk.WrapMode.WordChar;
+		textView.TopMargin = 8;
+		textView.BottomMargin = 8;
+		textView.LeftMargin = 8;
+		textView.RightMargin = 8;
+
+		Gtk.ScrolledWindow scroll = Gtk.ScrolledWindow.New ();
+		scroll.SetChild (textView);
+		scroll.HeightRequest = 250;
+		scroll.HscrollbarPolicy = Gtk.PolicyType.Never;
+		scroll.VscrollbarPolicy = Gtk.PolicyType.Automatic;
+
+		Gtk.Expander expander = Gtk.Expander.New (title);
+		expander.SetChild (scroll);
+		legalBox.Append (expander);
+	}
+
+	private static Gtk.Box? FindLegalBox (Gtk.Widget widget, string sectionTitle)
+	{
+		if (widget is Gtk.Box box && HasDirectLabel (box, sectionTitle))
+			return box;
+
+		for (Gtk.Widget? child = widget.GetFirstChild (); child is not null; child = child.GetNextSibling ()) {
+			Gtk.Box? legalBox = FindLegalBox (child, sectionTitle);
+			if (legalBox is not null)
+				return legalBox;
+		}
+
+		return null;
+	}
+
+	private static bool HasDirectLabel (Gtk.Box box, string text)
+	{
+		for (Gtk.Widget? child = box.GetFirstChild (); child is not null; child = child.GetNextSibling ()) {
+			if (child is Gtk.Label label && label.GetLabel () == text)
+				return true;
+		}
+
+		return false;
 	}
 
 	// The About dialog interprets the license/legal text as Pango markup, so escape it.

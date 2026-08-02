@@ -117,8 +117,8 @@ internal sealed class AboutDialogAction : IActionHandler
 		while (legalBox.GetFirstChild () is Gtk.Widget child)
 			legalBox.Remove (child);
 
-		AppendCopyrightRow (legalBox, Translations.GetString ("Impasto contributions Copyright by the Impasto contributors"));
-		AppendCopyrightRow (legalBox, Translations.GetString ("Pinta Project contributions Copyright by the Pinta Project contributors"));
+		AppendCopyrightRow (legalBox, Translations.GetString ("Impasto contributions - Copyright by the Impasto contributors"));
+		AppendCopyrightRow (legalBox, Translations.GetString ("Pinta Project contributions - Copyright (c) 2010-2026 by the Pinta Project contributors"));
 		AppendLegalExpander (
 			legalBox,
 			Translations.GetString ("MIT License - Impasto"),

@@ -58,6 +58,7 @@ Thanks to the following contributors who worked on this release:
 - Menu buttons now display popout nested menus instead of sliding menus (#2131)
 
 ### Fixed
+- Fixed a potential UI freeze when pasting into the Text Tool, caused by blocking the GTK thread on the clipboard read
 - Fixed undo/redo operating on the active document instead of the one the history item belongs to, so undoing while a different tab is focused no longer corrupts the wrong document
 - Fixed status-bar labels reserving space after being disabled in Settings, and made image size/aspect ratio yield before cursor position at the fully expanded color-section boundary without re-expanding folded color sections during a narrowing resize.
 - Fixed saving images as JPEG on some systems where the image loader reports an alpha channel even when the pixbuf has none, which caused "encoder does not support the color type Rgba8" errors (#1774, #2238)

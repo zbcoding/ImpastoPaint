@@ -1341,7 +1341,7 @@ public sealed class TextTool : BaseTool
 								(e.IsControlPressed && !IsDefaultBinding (KeyboardShortcutManager.TextCopy)))
 								return false;
 							if (e.IsShiftPressed) {
-								CurrentTextEngine.PerformPaste (GdkExtensions.GetDefaultClipboard ()).Wait ();
+								PerformPasteAndRedraw ();
 							} else if (e.IsControlPressed) {
 								CurrentTextEngine.PerformCopy (GdkExtensions.GetDefaultClipboard ());
 							}
@@ -1504,7 +1504,7 @@ public sealed class TextTool : BaseTool
 		}
 
 		if (IsBinding (KeyboardShortcutManager.TextPaste, e)) {
-			CurrentTextEngine.PerformPaste (GdkExtensions.GetDefaultClipboard ()).Wait ();
+			PerformPasteAndRedraw ();
 			return true;
 		}
 
@@ -2427,6 +2427,14 @@ public sealed class TextTool : BaseTool
 
 		CurrentTextEngine.PerformCopy (cb);
 		return true;
+	}
+
+	// ponytail: async void is the sanctioned fire-and-forget for event-thread paste.
+	// Never .Wait() on the GTK thread — ReadTextAsync can deadlock. Redraw when the read lands.
+	private async void PerformPasteAndRedraw ()
+	{
+		if (await CurrentTextEngine.PerformPaste (GdkExtensions.GetDefaultClipboard ()))
+			RedrawText (true);
 	}
 
 	protected override bool OnHandleCut (Document document, Gdk.Clipboard cb)

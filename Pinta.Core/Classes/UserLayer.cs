@@ -98,6 +98,19 @@ public sealed class UserLayer : Layer
 			if (rel.IsLayerSetup)
 				rel.Layer.ApplyTransform (xform, old_size, new_size);
 		}
+
+		// Shapes are stored as vector control points (the source of truth) that get
+		// redrawn from scratch, so transforming only the raster above isn't enough —
+		// the next redraw would clobber it with the un-transformed points.
+		// ponytail: rotate/flip only; radii stay valid since those keep aspect. If a
+		// non-uniform scale ever routes through here, the partial-ellipse radii need scaling too.
+		foreach (ShapeObject shape in ShapeObjects) {
+			foreach (ShapeControlPoint cp in shape.ControlPoints)
+				cp.Position = xform.TransformPoint (cp.Position);
+
+			if (shape.IsPartialEllipse)
+				shape.PartialEllipseCenter = xform.TransformPoint (shape.PartialEllipseCenter);
+		}
 	}
 
 	public void Rotate (

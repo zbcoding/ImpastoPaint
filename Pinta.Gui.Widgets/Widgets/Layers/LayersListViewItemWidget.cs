@@ -114,9 +114,9 @@ public sealed partial class LayersListViewItem
 			initial,
 			updated);
 
-		historyItem.Redo ();
-
 		doc.History.PushNewItem (historyItem);
+
+		historyItem.Redo ();
 	}
 
 	public event EventHandler? LayerModified;
@@ -289,8 +289,8 @@ public sealed partial class LayersListViewItemWidget
 			Translations.GetString ("Move Layer"),
 			from,
 			insert);
-		hist.Redo ();
 		doc.History.PushNewItem (hist);
+		hist.Redo ();
 		return true;
 	}
 

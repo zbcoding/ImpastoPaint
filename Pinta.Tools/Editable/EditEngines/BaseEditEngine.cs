@@ -512,7 +512,9 @@ public abstract class BaseEditEngine
 		if (workspace.HasOpenDocuments) {
 			// Keep the raster overlay separate from UserLayer.Surface. Shape engines are
 			// re-editable even while a non-shape tool is active.
-			DrawAllShapes (preventSwitchBack: false);
+			// ToolManager has not assigned the new tool yet, so do not switch tools while
+			// redrawing. A shape on another tool would otherwise re-enter deactivation.
+			DrawAllShapes (preventSwitchBack: false, switchTools: false);
 			PersistShapeObjects (workspace.ActiveDocument.Layers.CurrentUserLayer);
 		}
 
@@ -1271,9 +1273,21 @@ public abstract class BaseEditEngine
 	/// <param name="shiftKey">Whether the shift key is being pressed. This is for width/height constraining/equalizing.</param>
 	/// <param name="preventSwitchBack">Whether to prevent switching back to the old tool if a tool change is necessary.</param>
 	public void DrawActiveShape (bool calculateOrganizedPoints, bool finalize, bool drawHoverSelection, bool shiftKey, bool preventSwitchBack, bool ctrl_key = false)
+		=> DrawActiveShape (calculateOrganizedPoints, finalize, drawHoverSelection, shiftKey, preventSwitchBack, ctrl_key, skipToolSwitch: false);
+
+	private void DrawActiveShape (
+		bool calculateOrganizedPoints,
+		bool finalize,
+		bool drawHoverSelection,
+		bool shiftKey,
+		bool preventSwitchBack,
+		bool ctrl_key,
+		bool skipToolSwitch)
 	{
 		EnsureShapesForCurrentLayer ();
-		ShapeTool? oldTool = BaseEditEngine.ActivateCorrespondingTool (SelectedShapeIndex, calculateOrganizedPoints);
+		ShapeTool? oldTool = skipToolSwitch
+			? null
+			: BaseEditEngine.ActivateCorrespondingTool (SelectedShapeIndex, calculateOrganizedPoints);
 
 		//First, determine if the currently active tool matches the shape's corresponding tool, and if not, switch to it.
 		if (oldTool != null) {
@@ -1664,22 +1678,37 @@ public abstract class BaseEditEngine
 	/// <summary>
 	/// Go through every editable shape and draw it.
 	/// </summary>
-	public void DrawAllShapes (bool preventSwitchBack = true)
+	public void DrawAllShapes (bool preventSwitchBack = true, bool switchTools = true)
 	{
 		//Store the SelectedShapeIndex value for later restoration.
 		int previousToolSI = SelectedShapeIndex;
+		int previousToolPI = SelectedPointIndex;
 
 		//Draw all of the shapes.
 		for (SelectedShapeIndex = 0; SelectedShapeIndex < SEngines.Count; ++SelectedShapeIndex) {
 			//Only draw the selected point for the selected shape.
-			DrawActiveShape (true, false, previousToolSI == SelectedShapeIndex, false, preventSwitchBack);
+			if (switchTools) {
+				DrawActiveShape (true, false, previousToolSI == SelectedShapeIndex, false, preventSwitchBack);
+				continue;
+			}
+
+			ShapeTool? correspondingTool = GetCorrespondingTool (SEngines[SelectedShapeIndex].ShapeType);
+			BaseEditEngine drawingEngine = correspondingTool?.EditEngine ?? this;
+			int previousShapeIndex = drawingEngine.SelectedShapeIndex;
+			int previousPointIndex = drawingEngine.SelectedPointIndex;
+			drawingEngine.SelectedShapeIndex = SelectedShapeIndex;
+			drawingEngine.SelectedPointIndex = previousToolSI == SelectedShapeIndex ? previousToolPI : -1;
+			drawingEngine.DrawActiveShape (true, false, previousToolSI == SelectedShapeIndex, false, preventSwitchBack, false, skipToolSwitch: true);
+			drawingEngine.SelectedShapeIndex = previousShapeIndex;
+			drawingEngine.SelectedPointIndex = previousPointIndex;
 		}
 
 		//Restore the previous SelectedShapeIndex value.
 		SelectedShapeIndex = previousToolSI;
 
 		//Determine if the currently active tool matches the shape's corresponding tool, and if not, switch to it.
-		BaseEditEngine.ActivateCorrespondingTool (SelectedShapeIndex, false);
+		if (switchTools)
+			BaseEditEngine.ActivateCorrespondingTool (SelectedShapeIndex, false);
 
 		//The currently active tool should now match the shape's corresponding tool.
 	}

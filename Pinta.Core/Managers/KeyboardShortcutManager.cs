@@ -38,7 +38,11 @@ public sealed class KeyboardShortcutManager
 	private readonly ToolManager tools;
 	private readonly ChromeManager chrome;
 
-	private readonly Dictionary<string, string> command_overrides = [];
+	// Impasto: one accelerator string per shortcut *slot* (index), so commands with
+	// multiple default shortcuts (e.g. Deselect All: Ctrl+Shift+A and Ctrl+D) can have
+	// each slot independently rebound instead of the whole list being replaced by one.
+	// An empty string in a slot means "cleared" (no accelerator for that slot).
+	private readonly Dictionary<string, string[]> command_overrides = [];
 	private readonly Dictionary<string, string> tool_overrides = [];
 	private readonly Dictionary<string, string> binding_overrides = [];
 
@@ -511,8 +515,8 @@ public sealed class KeyboardShortcutManager
 		Load ();
 
 		foreach (var command in AllCommands ())
-			if (command_overrides.TryGetValue (command.Name, out var accel))
-				ApplyCommandShortcut (command, accel.Length == 0 ? [] : [accel]);
+			if (command_overrides.TryGetValue (command.Name, out var accels))
+				ApplyCommandShortcut (command, accels.Where (a => a.Length > 0).ToArray ());
 
 		// Tools are registered asynchronously via the add-in extension mechanism,
 		// which can run after this method. Apply overrides by tool type name rather
@@ -529,14 +533,18 @@ public sealed class KeyboardShortcutManager
 	/// </summary>
 	public sealed class ShortcutFile
 	{
+		// Legacy shape (pre multi-shortcut support): a single accelerator string per
+		// command. Only ever populated when reading an old keyboard-shortcuts.json;
+		// current saves always write CommandShortcuts instead.
 		public Dictionary<string, string>? Commands { get; set; }
+		public Dictionary<string, string[]>? CommandShortcuts { get; set; }
 		public Dictionary<string, string>? Tools { get; set; }
 		public Dictionary<string, string>? ToolBindings { get; set; }
 	}
 
 	public ShortcutFile ExportOverrides ()
 		=> new () {
-			Commands = new (command_overrides),
+			CommandShortcuts = command_overrides.ToDictionary (kv => kv.Key, kv => kv.Value),
 			Tools = new (tool_overrides),
 			ToolBindings = new (binding_overrides),
 		};
@@ -551,9 +559,7 @@ public sealed class KeyboardShortcutManager
 		tool_overrides.Clear ();
 		binding_overrides.Clear ();
 
-		if (overrides.Commands is not null)
-			foreach (var kv in overrides.Commands)
-				command_overrides[kv.Key] = kv.Value;
+		ApplyCommandOverridesFromFile (overrides);
 
 		if (overrides.Tools is not null)
 			foreach (var kv in overrides.Tools)
@@ -566,6 +572,20 @@ public sealed class KeyboardShortcutManager
 		Save ();
 		LoadAndApply ();
 		ShortcutsChanged?.Invoke (this, EventArgs.Empty);
+	}
+
+	// Prefers the current CommandShortcuts (one string[] per command); falls back to
+	// migrating the legacy single-string-per-command shape so upgrading doesn't
+	// silently discard a user's existing customizations.
+	private void ApplyCommandOverridesFromFile (ShortcutFile doc)
+	{
+		if (doc.CommandShortcuts is not null) {
+			foreach (var kv in doc.CommandShortcuts)
+				command_overrides[kv.Key] = kv.Value;
+		} else if (doc.Commands is not null) {
+			foreach (var kv in doc.Commands)
+				command_overrides[kv.Key] = [kv.Value];
+		}
 	}
 
 	private void Load ()
@@ -581,9 +601,8 @@ public sealed class KeyboardShortcutManager
 			using var stream = File.OpenRead (ShortcutsFilePath);
 			var doc = JsonSerializer.Deserialize<ShortcutFile> (stream);
 
-			if (doc?.Commands is not null)
-				foreach (var kv in doc.Commands)
-					command_overrides[kv.Key] = kv.Value;
+			if (doc is not null)
+				ApplyCommandOverridesFromFile (doc);
 
 			if (doc?.Tools is not null)
 				foreach (var kv in doc.Tools)
@@ -605,7 +624,7 @@ public sealed class KeyboardShortcutManager
 	{
 		try {
 			ShortcutFile doc = new () {
-				Commands = new (command_overrides),
+				CommandShortcuts = command_overrides.ToDictionary (kv => kv.Key, kv => kv.Value),
 				Tools = new (tool_overrides),
 				ToolBindings = new (binding_overrides),
 			};
@@ -621,20 +640,52 @@ public sealed class KeyboardShortcutManager
 
 	// --- Commands (menu / app actions) ---
 
-	public void SetCommandShortcut (Command command, string accel)
+	// Sets a single shortcut *slot* on a command without disturbing its other
+	// shortcuts, e.g. rebinding just Deselect All's "Alternate" (Ctrl+D) slot while
+	// leaving its primary (Ctrl+Shift+A) slot untouched.
+	public void SetCommandShortcut (Command command, int index, string accel)
 	{
 		ClearConflicts (accel, except: command);
 
-		command_overrides[command.Name] = accel;
-		ApplyCommandShortcut (command, accel.Length == 0 ? [] : [accel]);
+		string[] slots = ResolveCommandOverrideSlots (command);
+		if (index >= slots.Length) {
+			int oldLength = slots.Length;
+			Array.Resize (ref slots, index + 1);
+			for (int i = oldLength; i < slots.Length; i++)
+				slots[i] = string.Empty;
+		}
+		slots[index] = accel;
+
+		command_overrides[command.Name] = slots;
+		ApplyCommandShortcut (command, slots.Where (a => a.Length > 0).ToArray ());
 		SaveAndNotify ();
 	}
 
+	// Resets a single shortcut slot back to that slot's default accelerator.
+	public void ResetCommandShortcut (Command command, int index)
+	{
+		string defaultAccel = index < command.DefaultShortcuts.Length ? command.DefaultShortcuts[index] : string.Empty;
+		SetCommandShortcut (command, index, defaultAccel);
+	}
+
+	// Resets the whole command back to its full default shortcut list.
 	public void ResetCommandShortcut (Command command)
 	{
 		command_overrides.Remove (command.Name);
 		ApplyCommandShortcut (command, command.DefaultShortcuts);
 		SaveAndNotify ();
+	}
+
+	private string[] ResolveCommandOverrideSlots (Command command)
+	{
+		if (command_overrides.TryGetValue (command.Name, out var existing))
+			return (string[]) existing.Clone ();
+
+		int slotCount = Math.Max (command.Shortcuts.Length, command.DefaultShortcuts.Length);
+		string[] slots = Enumerable.Repeat (string.Empty, slotCount).ToArray ();
+		for (int i = 0; i < command.Shortcuts.Length; i++)
+			slots[i] = command.Shortcuts[i];
+		return slots;
 	}
 
 	private void ApplyCommandShortcut (Command command, IReadOnlyList<string> shortcuts)
@@ -730,14 +781,25 @@ public sealed class KeyboardShortcutManager
 	// Prevents two commands from sharing the same accelerator: when a shortcut
 	// is bound to one command, release it from any other command currently
 	// using it. A cleared (empty) accelerator is not a conflict we resolve.
+	// Only the specific colliding slot is cleared, so e.g. rebinding one command's
+	// Alternate shortcut doesn't wipe out an unrelated command's Primary shortcut.
 	private void ClearConflicts (string accel, Command except)
 	{
 		if (accel.Length == 0)
 			return;
 
-		foreach (var command in AllCommands ())
-			if (command != except && command.Shortcuts.Contains (accel))
-				ApplyCommandShortcut (command, []);
+		foreach (var command in AllCommands ()) {
+			if (command == except || !command.Shortcuts.Contains (accel))
+				continue;
+
+			string[] slots = ResolveCommandOverrideSlots (command);
+			for (int i = 0; i < slots.Length; i++)
+				if (slots[i] == accel)
+					slots[i] = string.Empty;
+
+			command_overrides[command.Name] = slots;
+			ApplyCommandShortcut (command, slots.Where (a => a.Length > 0).ToArray ());
+		}
 	}
 
 	// Prevents two tools from sharing the same toolbox activation key.

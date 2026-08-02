@@ -8,6 +8,7 @@
 /////////////////////////////////////////////////////////////////////////////////
 
 using System;
+using System.Threading.Tasks;
 
 namespace Pinta.Core;
 
@@ -79,12 +80,25 @@ public abstract class BinaryPixelOp : PixelOp
 		int dst_width = dst.Width;
 
 		// Do the work.
-		for (int row = 0; row < height; ++row) {
-			Apply (dst_data.Slice ((dstOffset.Y + row) * dst_width + dstOffset.X, width),
-			       lhs_data.Slice ((lhsOffset.Y + row) * lhs_width + lhsOffset.X, width),
-			       rhs_data.Slice ((rhsOffset.Y + row) * rhs_width + rhsOffset.X, width));
+		if (height < PARALLEL_ROW_THRESHOLD) {
+			for (int row = 0; row < height; ++row)
+				Apply (dst_data.Slice ((dstOffset.Y + row) * dst_width + dstOffset.X, width),
+				       lhs_data.Slice ((lhsOffset.Y + row) * lhs_width + lhsOffset.X, width),
+				       rhs_data.Slice ((rhsOffset.Y + row) * rhs_width + rhsOffset.X, width));
+		} else {
+			// Rows are independent; blend ops are stateless. Span is a ref
+			// struct so it can't be captured — re-fetch the data inside the body.
+			Parallel.For (0, height, row => {
+				Apply (dst.GetPixelData ().Slice ((dstOffset.Y + row) * dst_width + dstOffset.X, width),
+				       lhs.GetReadOnlyPixelData ().Slice ((lhsOffset.Y + row) * lhs_width + lhsOffset.X, width),
+				       rhs.GetReadOnlyPixelData ().Slice ((rhsOffset.Y + row) * rhs_width + rhsOffset.X, width));
+			});
 		}
 	}
+
+	// ponytail: below this many rows the thread-pool dispatch costs more than the
+	// blend it saves (brush dabs are tiny). Tune with a profiler if it matters.
+	const int PARALLEL_ROW_THRESHOLD = 64;
 
 	public override void Apply (Span<ColorBgra> dst, ReadOnlySpan<ColorBgra> src)
 	{
@@ -98,13 +112,19 @@ public abstract class BinaryPixelOp : PixelOp
 			throw new ArgumentException ("dst.Size != src.Size");
 		}
 
-		var src_data = src.GetReadOnlyPixelData ();
-		var dst_data = dst.GetPixelData ();
 		int width = src.Width;
+		int height = dst.Height;
 
-		for (int y = 0; y < dst.Height; ++y) {
-			Apply (dst_data.Slice (y * width, width),
-			      src_data.Slice (y * width, width));
+		if (height < PARALLEL_ROW_THRESHOLD) {
+			var src_data = src.GetReadOnlyPixelData ();
+			var dst_data = dst.GetPixelData ();
+			for (int y = 0; y < height; ++y)
+				Apply (dst_data.Slice (y * width, width),
+				      src_data.Slice (y * width, width));
+		} else {
+			Parallel.For (0, height, y =>
+				Apply (dst.GetPixelData ().Slice (y * width, width),
+				      src.GetReadOnlyPixelData ().Slice (y * width, width)));
 		}
 	}
 
@@ -118,15 +138,22 @@ public abstract class BinaryPixelOp : PixelOp
 			throw new ArgumentException ("lhs.Size != rhs.Size");
 		}
 
-		var lhs_data = lhs.GetReadOnlyPixelData ();
-		var rhs_data = rhs.GetReadOnlyPixelData ();
-		var dst_data = dst.GetPixelData ();
 		int width = dst.Width;
+		int height = dst.Height;
 
-		for (int y = 0; y < dst.Height; ++y) {
-			Apply (dst_data.Slice (y * width, width),
-			      lhs_data.Slice (y * width, width),
-			      rhs_data.Slice (y * width, width));
+		if (height < PARALLEL_ROW_THRESHOLD) {
+			var lhs_data = lhs.GetReadOnlyPixelData ();
+			var rhs_data = rhs.GetReadOnlyPixelData ();
+			var dst_data = dst.GetPixelData ();
+			for (int y = 0; y < height; ++y)
+				Apply (dst_data.Slice (y * width, width),
+				      lhs_data.Slice (y * width, width),
+				      rhs_data.Slice (y * width, width));
+		} else {
+			Parallel.For (0, height, y =>
+				Apply (dst.GetPixelData ().Slice (y * width, width),
+				      lhs.GetReadOnlyPixelData ().Slice (y * width, width),
+				      rhs.GetReadOnlyPixelData ().Slice (y * width, width)));
 		}
 	}
 

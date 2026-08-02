@@ -314,11 +314,10 @@ Use claude.md for rules. Credit/link the issue author, pr code author.
 Update the CHANGELOG.md too
 Only add a pull request if it's needed. Old pull requests may not be needed.
 
-In a commit message based on Pinta PR or issue, add trailers if possible
+In a commit message based on Pinta PR or issue, add trailers with the Pinta PR if possible, but don't link to the Pinta PR or issue.
 e.g.
-Based on PR #1234 by: Jane Doe <jane@example.com>
-Refs:   https://github.com/original/project/pull/123
-        https://github.com/Project/project/issues/12
+Based on Pinta PR #1234 by: Jane Doe <jane@example.com>
+Fix for issue similar to Pinta issue #123 by: John Doe <emailjohn@example.com>
 
 
 

@@ -120,7 +120,7 @@ public sealed class ActionManager
 
 		toolbar.Append (GtkExtensions.CreateToolBarSeparator ());
 		toolbar.Append (Image.CropToSelection.CreateToolBarItem ());
-		toolbar.Append (Edit.Deselect.CreateToolBarItem ());
+		toolbar.Append (CreateDeselectToolBarItem ());
 	}
 
 	public void CreateHeaderToolBar (Adw.HeaderBar header, string? pasteAlternateDescription = null)
@@ -141,7 +141,17 @@ public sealed class ActionManager
 
 		header.PackStart (GtkExtensions.CreateToolBarSeparator ());
 		header.PackStart (Image.CropToSelection.CreateToolBarItem ());
-		header.PackStart (Edit.Deselect.CreateToolBarItem ());
+		header.PackStart (CreateDeselectToolBarItem ());
+	}
+
+	// Impasto: the Deselect toolbar button is also reachable via a quick
+	// double-tap of Escape (see EditActions.HandlePintaCoreActionsEditDeselectSelectionActivated),
+	// which isn't a real accelerator on the command itself, so mention it manually.
+	private Gtk.Button CreateDeselectToolBarItem ()
+	{
+		Gtk.Button button = Edit.Deselect.CreateToolBarItem ();
+		button.TooltipText += "\n" + Translations.GetString ("Quick deselect: Esc (×2)");
+		return button;
 	}
 
 	private Gtk.Widget? cursor_position_icon;

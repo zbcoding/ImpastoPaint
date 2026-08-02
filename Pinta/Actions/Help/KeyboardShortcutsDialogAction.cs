@@ -168,7 +168,14 @@ internal sealed class KeyboardShortcutsDialogAction : IActionHandler
 
 		notebook.AppendPage (BuildCommandsPage (GetCommands (actions.Layers), states, refreshers, searchableLists, Query, searchResults), Gtk.Label.New (Translations.GetString ("Layers")));
 		notebook.AppendPage (BuildCommandsPage (GetCommands (actions.File), states, refreshers, searchableLists, Query, searchResults), Gtk.Label.New (Translations.GetString ("File")));
-		notebook.AppendPage (BuildCommandsPage (GetCommands (actions.Edit), states, refreshers, searchableLists, Query, searchResults), Gtk.Label.New (Translations.GetString ("Edit")));
+		notebook.AppendPage (
+			BuildCommandsPage (
+				GetCommands (actions.Edit), states, refreshers, searchableLists, Query, searchResults,
+				extraStaticRowFactory: () => BuildStaticInfoRow (
+					Translations.GetString ("Deselect All (Quick, ×2)"),
+					"Esc (×2)",
+					Translations.GetString ("Press Escape twice quickly to deselect. Reference only — not independently rebindable."))),
+			Gtk.Label.New (Translations.GetString ("Edit")));
 		notebook.AppendPage (BuildCommandsPage (GetCommands (actions.View), states, refreshers, searchableLists, Query, searchResults), Gtk.Label.New (Translations.GetString ("View")));
 		notebook.AppendPage (BuildCommandsPage (GetCommands (actions.Image), states, refreshers, searchableLists, Query, searchResults), Gtk.Label.New (Translations.GetString ("Image")));
 		notebook.AppendPage (BuildCommandsPage (actions.Adjustments.Actions, states, refreshers, searchableLists, Query, searchResults), Gtk.Label.New (Translations.GetString ("Adjustments")));
@@ -205,31 +212,84 @@ internal sealed class KeyboardShortcutsDialogAction : IActionHandler
 			.Where (c => c != null && !string.IsNullOrEmpty (c.Label));
 	}
 
-	private Gtk.Widget BuildCommandsPage (IEnumerable<Command> commands, List<ShortcutRowState> states, List<Action> refreshers, List<Gtk.ListBox> searchableLists, Func<string> query, Gtk.ListBox searchResults)
+	private Gtk.Widget BuildCommandsPage (
+		IEnumerable<Command> commands, List<ShortcutRowState> states, List<Action> refreshers, List<Gtk.ListBox> searchableLists, Func<string> query, Gtk.ListBox searchResults,
+		Func<Gtk.Widget>? extraStaticRowFactory = null)
 	{
 		Gtk.ListBox list = MakeSearchableList (query);
 
 		foreach (var command in commands.OrderBy (c => c.Label)) {
-			string value = command.Shortcuts.Length > 0 ? command.Shortcuts[0] : string.Empty;
-			IReadOnlyList<string> defaults = command.DefaultShortcuts.Length > 0 ? command.DefaultShortcuts : [string.Empty];
-			ShortcutRowState state = new (
-				command.Label.Replace ("_", ""),
-				value,
-				defaults,
-				(value, isDefault) => {
-					if (isDefault)
-						PintaCore.Shortcuts.ResetCommandShortcut (command);
-					else
-						PintaCore.Shortcuts.SetCommandShortcut (command, value);
-				},
-				ShortcutCategory.Command);
-			states.Add (state);
-			list.Append (BuildRow (state, () => RefreshDuplicates (states), refreshers));
-			searchResults.Append (BuildRow (state, () => RefreshDuplicates (states), refreshers));
+			string baseLabel = command.Label.Replace ("_", "");
+
+			// Impasto: a command can have more than one default shortcut (e.g. Deselect
+			// All: Ctrl+Shift+A and Ctrl+D). Give each shortcut slot its own editable
+			// row instead of only ever showing/editing Shortcuts[0].
+			int rowCount = Math.Max (command.Shortcuts.Length, command.DefaultShortcuts.Length);
+			if (rowCount == 0)
+				rowCount = 1;
+
+			for (int i = 0; i < rowCount; i++) {
+				int index = i;
+				string value = index < command.Shortcuts.Length ? command.Shortcuts[index] : string.Empty;
+				string defaultValue = index < command.DefaultShortcuts.Length ? command.DefaultShortcuts[index] : string.Empty;
+				string label = index switch {
+					0 => baseLabel,
+					1 => Translations.GetString ("{0} (Alternate)", baseLabel),
+					_ => Translations.GetString ("{0} (Alternate {1})", baseLabel, index),
+				};
+
+				ShortcutRowState state = new (
+					label,
+					value,
+					[defaultValue],
+					(value, isDefault) => {
+						if (isDefault)
+							PintaCore.Shortcuts.ResetCommandShortcut (command, index);
+						else
+							PintaCore.Shortcuts.SetCommandShortcut (command, index, value);
+					},
+					ShortcutCategory.Command);
+				states.Add (state);
+				list.Append (BuildRow (state, () => RefreshDuplicates (states), refreshers));
+				searchResults.Append (BuildRow (state, () => RefreshDuplicates (states), refreshers));
+			}
+		}
+
+		if (extraStaticRowFactory is not null) {
+			list.Append (extraStaticRowFactory ());
+			searchResults.Append (extraStaticRowFactory ());
 		}
 
 		searchableLists.Add (list);
 		return Wrap (list);
+	}
+
+	// Impasto: a non-editable, reference-only row — e.g. "Esc (×2)" for the quick
+	// double-tap deselect gesture, which isn't a real rebindable accelerator on any
+	// Command and so must never participate in ShortcutRowState/RefreshDuplicates.
+	private static Gtk.Widget BuildStaticInfoRow (string label, string shortcutText, string tooltip)
+	{
+		Gtk.Box row = Gtk.Box.New (Gtk.Orientation.Horizontal, 8);
+		row.SetAllMargins (6);
+		row.Sensitive = false;
+
+		Gtk.Label nameLabel = Gtk.Label.New (label);
+		nameLabel.Halign = Gtk.Align.Start;
+		nameLabel.Hexpand = true;
+		row.Append (nameLabel);
+
+		Gtk.Label shortcutLabel = Gtk.Label.New (shortcutText);
+		shortcutLabel.WidthRequest = 180;
+		row.Append (shortcutLabel);
+
+		Gtk.ListBoxRow listRow = Gtk.ListBoxRow.New ();
+		listRow.Activatable = false;
+		listRow.Selectable = false;
+		listRow.Sensitive = false;
+		listRow.Name = $"{label} {shortcutText}";
+		listRow.TooltipText = tooltip;
+		listRow.Child = row;
+		return listRow;
 	}
 
 	private Gtk.Widget BuildToolsPage (List<ShortcutRowState> states, List<Action> refreshers, List<Gtk.ListBox> searchableLists, Func<string> query, Gtk.ListBox searchResults)

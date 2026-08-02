@@ -1,6 +1,7 @@
 /docs-private
 .env*
 
+AGENTS.md
 .claude/settings.local.json
 
 *.lock

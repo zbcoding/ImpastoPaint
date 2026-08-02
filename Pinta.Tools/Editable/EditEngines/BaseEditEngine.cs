@@ -1722,18 +1722,32 @@ public abstract class BaseEditEngine
 		if (runtime_layer == layer)
 			return;
 
-		if (runtime_layer is not null)
+		if (runtime_layer is not null) {
 			PersistShapeObjects (runtime_layer);
+			// Bake the layer we're leaving into its persistent ShapeLayer so its shapes
+			// keep rendering once its live per-shape DrawingLayers leave the drawing
+			// loop below (otherwise the overlay desyncs into a white rectangle).
+			RedrawShapeLayerSurface (runtime_layer);
+		}
 
 		foreach (ShapeEngine engine in SEngines)
 			engine.DrawingLayer.TryRemoveLayer ();
 
 		SEngines.Clear ();
 		runtime_layer = layer;
+		// The active layer renders its shapes through the live DrawingLayers, so keep
+		// its ShapeLayer clear to avoid double-compositing the same geometry.
 		layer.ShapeLayer.Layer.Clear ();
 		foreach (ShapeObject source in layer.ShapeObjects)
 			SEngines.Add (ShapeEngineCollection.Create (layer, source));
 	}
+
+	/// <summary>
+	/// Rebuilds a layer's ShapeLayer surface from its ShapeObjects, maintaining the
+	/// invariant that the object surface equals the render of the object list.
+	/// </summary>
+	public static void RedrawShapeLayerSurface (UserLayer layer)
+		=> ShapeObjectRenderer.RenderAll (layer.ShapeLayer.Layer.Surface, layer);
 
 	public static void PersistShapeObjects (UserLayer layer)
 		=> ShapeEngineCollection.Store (layer, SEngines);

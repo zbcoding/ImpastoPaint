@@ -48,6 +48,8 @@ Thanks to the following contributors who worked on this release:
 - The floating Colors panel and color-wheel popover's quick/recent swatch grids now wrap into extra rows instead of growing wider or clipping
 - Preferences now has a Palette size control alongside the existing extended-palette-rows checkbox, and the palette resize dialogs now step by the current row count so every column stays full
 - Preferences now has a "Show quick access toolbar" checkbox to hide the main icon toolbar row, on by default
+- The Deselect toolbar button's tooltip now mentions the quick double-tap Escape shortcut ("Esc (×2)")
+- The Keyboard Shortcuts dialog now shows a reference-only "Deselect All (Quick, ×2)" row documenting the double-tap Escape gesture
 
 ### Changed
 - Effect dialogs no longer dim the canvas during live previews (#1334, reported by @prokoudine)
@@ -66,6 +68,7 @@ Thanks to the following contributors who worked on this release:
 - Added new icons for several effects and menu buttons (#2102)
 - Menu buttons now display popout nested menus instead of sliding menus (#2131)
 - Deselecting via the Escape key now requires a double-tap, so a single stray Escape press no longer clears the selection
+- The Keyboard Shortcuts dialog now shows a separate, independently rebindable row for each of a command's shortcuts (e.g. "Deselect All" and "Deselect All (Alternate)") instead of only exposing the first one
 
 ### Fixed
 - Fixed the floating Colors panel crashing on launch with a stack overflow, caused by the hex entry's change handler re-entering `ApplyColor`/`RedrawAll` before the reentrancy guard was set

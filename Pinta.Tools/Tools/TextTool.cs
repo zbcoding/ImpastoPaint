@@ -1089,6 +1089,12 @@ public sealed class TextTool : BaseTool
 					double ratio = Distance (lp, pivot) / resize_start_corner_dist;
 					int newSize = Math.Max (1, (int) Math.Round (resize_start_fontsize * ratio));
 
+					// A full re-layout of every text object is expensive with lots of text.
+					// Integer sizes mean many consecutive drag pixels map to the same size
+					// (especially at small fonts), so skip the relayout when nothing changed.
+					if (newSize == PangoExtensions.UnitsToPixels (obj.Engine.Font.GetSize ()))
+						return;
+
 					//Reflect the new size in the toolbar's font size control in realtime.
 					if (font_size is not null) {
 						is_updating_font_size = true;

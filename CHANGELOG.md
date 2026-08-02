@@ -66,6 +66,7 @@ Thanks to the following contributors who worked on this release:
 - Menu buttons now display popout nested menus instead of sliding menus (#2131)
 
 ### Fixed
+- Fixed the floating Colors panel crashing on launch with a stack overflow, caused by the hex entry's change handler re-entering `ApplyColor`/`RedrawAll` before the reentrancy guard was set
 - Fixed a crash when clicking around the History panel to jump between states non-linearly, caused by the selection handler re-entering itself while undoing/redoing
 - Fixed the Text Tool lagging while drag-resizing a large amount of text, by skipping the re-layout when the rounded font size has not actually changed
 - Fixed editable shapes reverting to their original position after rotating or flipping the image or layer, because the vector control points were not transformed along with the raster

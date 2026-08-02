@@ -355,7 +355,9 @@ public sealed partial class ColorPickerPanel
 		palette.CurrentPalette.PaletteChanged += (_, _) => { UpdateSwatchSizes (); swatch_palette.QueueDraw (); };
 
 		UpdateSwatchSizes ();
+		updating = true;
 		RedrawAll ();
+		updating = false;
 	}
 
 	public static ColorPickerPanel New (IPaletteService palette)
@@ -369,8 +371,8 @@ public sealed partial class ColorPickerPanel
 	{
 		updating = true;
 		palette.SetColor (setPrimary: primary_selected, color, addToRecent);
-		updating = false;
 		RedrawAll ();
+		updating = false;
 	}
 
 	private void CommitRecent ()

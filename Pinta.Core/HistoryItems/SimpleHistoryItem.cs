@@ -63,7 +63,7 @@ public sealed class SimpleHistoryItem : BaseHistoryItem
 
 	private void Swap ()
 	{
-		var doc = PintaCore.Workspace.ActiveDocument;
+		var doc = this.Document!;
 
 		// Grab the original surface
 		ImageSurface surf = doc.Layers[layer_index].Surface;

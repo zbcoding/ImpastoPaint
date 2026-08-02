@@ -53,7 +53,7 @@ public sealed class SwapLayersHistoryItem : BaseHistoryItem
 
 	private void Swap ()
 	{
-		var doc = PintaCore.Workspace.ActiveDocument;
+		var doc = this.Document!;
 
 		int selected = doc.Layers.CurrentUserLayerIndex;
 

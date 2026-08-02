@@ -38,7 +38,7 @@ public sealed class AddLayerHistoryItem : BaseHistoryItem
 
 	public override void Undo ()
 	{
-		var doc = PintaCore.Workspace.ActiveDocument;
+		var doc = this.Document!;
 
 		// Store the layer for "redo"
 		layer = doc.Layers[layer_index];
@@ -48,7 +48,7 @@ public sealed class AddLayerHistoryItem : BaseHistoryItem
 
 	public override void Redo ()
 	{
-		var doc = PintaCore.Workspace.ActiveDocument;
+		var doc = this.Document!;
 
 		doc.Layers.Insert (layer!, layer_index); // NRT - layer is set by Undo()
 

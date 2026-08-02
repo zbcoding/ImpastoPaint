@@ -85,7 +85,7 @@ public sealed class InvertHistoryItem : BaseHistoryItem
 
 	public override void Undo ()
 	{
-		var doc = PintaCore.Workspace.ActiveDocument;
+		var doc = this.Document!;
 
 		switch (type) {
 			//case InvertType.InvertColors:
@@ -119,7 +119,7 @@ public sealed class InvertHistoryItem : BaseHistoryItem
 
 	public override void Redo ()
 	{
-		var doc = PintaCore.Workspace.ActiveDocument;
+		var doc = this.Document!;
 
 		switch (type) {
 			//case InvertType.InvertColors:

@@ -60,8 +60,6 @@ public sealed class MovePixelsHistoryItem : BaseHistoryItem
 
 	private void Swap ()
 	{
-		var doc = PintaCore.Workspace.ActiveDocument;
-
 		DocumentSelection swap_selection = doc.Selection;
 		doc.Selection = old_selection!; // NRT - Set in TakeSnapshot
 		old_selection = swap_selection;
@@ -89,8 +87,6 @@ public sealed class MovePixelsHistoryItem : BaseHistoryItem
 
 	public void TakeSnapshot (bool lift)
 	{
-		var doc = PintaCore.Workspace.ActiveDocument;
-
 		lifted = lift;
 		is_lifted = true;
 

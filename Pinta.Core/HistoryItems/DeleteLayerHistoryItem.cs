@@ -39,7 +39,7 @@ public sealed class DeleteLayerHistoryItem : BaseHistoryItem
 
 	public override void Undo ()
 	{
-		var doc = PintaCore.Workspace.ActiveDocument;
+		var doc = this.Document!;
 
 		doc.Layers.Insert (layer!, layer_index); // NRT - layer is set by constructor
 
@@ -51,7 +51,7 @@ public sealed class DeleteLayerHistoryItem : BaseHistoryItem
 
 	public override void Redo ()
 	{
-		var doc = PintaCore.Workspace.ActiveDocument;
+		var doc = this.Document!;
 
 		// Store the layer for "undo"
 		layer = doc.Layers[layer_index];

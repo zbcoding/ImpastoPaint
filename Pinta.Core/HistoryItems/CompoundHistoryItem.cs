@@ -49,16 +49,22 @@ public class CompoundHistoryItem : BaseHistoryItem
 
 	public override void Undo ()
 	{
-		for (int i = history_stack.Count - 1; i >= 0; i--)
+		// Children are pushed onto this compound, not onto the document history,
+		// so they never get stamped by PushNewItem — propagate our document to them.
+		for (int i = history_stack.Count - 1; i >= 0; i--) {
+			history_stack[i].Document = Document;
 			history_stack[i].Undo ();
+		}
 	}
 
 	public override void Redo ()
 	{
 		// We want to redo the actions in the
 		// opposite order than the undo order
-		foreach (var item in history_stack)
+		foreach (var item in history_stack) {
+			item.Document = Document;
 			item.Redo ();
+		}
 	}
 
 	public void StartSnapshotOfImage ()

@@ -35,6 +35,13 @@ public class BaseHistoryItem
 	public HistoryItemState State { get; set; }
 	public virtual bool CausesDirty => true;
 
+	/// <summary>
+	/// The document this item belongs to, stamped when the item is pushed onto a
+	/// history stack. Undo/Redo must operate on this rather than the active document
+	/// so that undoing an operation on a background tab affects the right document.
+	/// </summary>
+	public Document? Document { get; internal set; }
+
 	public BaseHistoryItem ()
 	{
 	}

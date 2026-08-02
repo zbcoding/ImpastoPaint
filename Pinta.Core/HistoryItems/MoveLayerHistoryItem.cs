@@ -32,9 +32,9 @@ public sealed class MoveLayerHistoryItem : BaseHistoryItem
 
 	public override void Undo () => Move (to_index, from_index);
 
-	private static void Move (int from, int to)
+	private void Move (int from, int to)
 	{
-		var doc = PintaCore.Workspace.ActiveDocument;
+		var doc = this.Document!;
 
 		UserLayer layer = doc.Layers[from];
 		doc.Layers.DeleteLayer (from);

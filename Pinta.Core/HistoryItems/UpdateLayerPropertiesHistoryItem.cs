@@ -47,7 +47,7 @@ public sealed class UpdateLayerPropertiesHistoryItem : BaseHistoryItem
 
 	public override void Undo ()
 	{
-		var doc = PintaCore.Workspace.ActiveDocument;
+		var doc = this.Document!;
 
 		var layer = doc.Layers[layer_index];
 		layer.Opacity = initial_properties.Opacity;
@@ -60,7 +60,7 @@ public sealed class UpdateLayerPropertiesHistoryItem : BaseHistoryItem
 
 	public override void Redo ()
 	{
-		var doc = PintaCore.Workspace.ActiveDocument;
+		var doc = this.Document!;
 
 		var layer = doc.Layers[layer_index];
 		layer.Opacity = updated_properties.Opacity;

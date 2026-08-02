@@ -70,6 +70,7 @@ public sealed class DocumentHistory
 				break;
 		}
 
+		newItem.Document = document;
 		history.Add (newItem);
 		Pointer = history.Count - 1;
 

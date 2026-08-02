@@ -44,7 +44,7 @@ public sealed class PasteHistoryItem : BaseHistoryItem
 
 	public override void Redo ()
 	{
-		Document doc = PintaCore.Workspace.ActiveDocument;
+		Document doc = this.Document!;
 
 		// Copy the paste to the temp layer
 		doc.Layers.CreateSelectionLayer ();
@@ -62,7 +62,7 @@ public sealed class PasteHistoryItem : BaseHistoryItem
 
 	public override void Undo ()
 	{
-		var doc = PintaCore.Workspace.ActiveDocument;
+		var doc = this.Document!;
 
 		Swap ();
 
@@ -74,7 +74,7 @@ public sealed class PasteHistoryItem : BaseHistoryItem
 	{
 		// Swap the selection paths, and whether the
 		// selection path should be visible
-		Document doc = PintaCore.Workspace.ActiveDocument;
+		Document doc = this.Document!;
 
 		DocumentSelection swap_selection = doc.Selection;
 		doc.Selection = old_selection;

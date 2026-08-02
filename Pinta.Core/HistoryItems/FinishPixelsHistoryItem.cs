@@ -44,7 +44,7 @@ public sealed class FinishPixelsHistoryItem : BaseHistoryItem
 
 	public override void Undo ()
 	{
-		var doc = PintaCore.Workspace.ActiveDocument;
+		var doc = this.Document!;
 
 		doc.Layers.ShowSelectionLayer = true;
 
@@ -66,7 +66,7 @@ public sealed class FinishPixelsHistoryItem : BaseHistoryItem
 
 	public override void Redo ()
 	{
-		var doc = PintaCore.Workspace.ActiveDocument;
+		var doc = this.Document!;
 
 		Matrix swap_transfrom = doc.Layers.SelectionLayer.Transform;
 		ImageSurface swap_surf = doc.Layers.CurrentUserLayer.Surface.Clone ();

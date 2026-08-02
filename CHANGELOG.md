@@ -71,6 +71,7 @@ Thanks to the following contributors who worked on this release:
 - The Keyboard Shortcuts dialog now shows a separate, independently rebindable row for each of a command's shortcuts (e.g. "Deselect All" and "Deselect All (Alternate)") instead of only exposing the first one
 
 ### Fixed
+- Fixed a crash and unwanted rectangular background when switching away from an editable open curve on a layer containing other editable shapes
 - Fixed the floating Colors panel crashing on launch with a stack overflow, caused by the hex entry's change handler re-entering `ApplyColor`/`RedrawAll` before the reentrancy guard was set
 - Fixed a crash when clicking around the History panel to jump between states non-linearly, caused by the selection handler re-entering itself while undoing/redoing
 - Fixed the Text Tool lagging while drag-resizing a large amount of text, by skipping the re-layout when the rounded font size has not actually changed

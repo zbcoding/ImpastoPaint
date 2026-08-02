@@ -27,6 +27,13 @@
   </ItemGroup>
 
   <ItemGroup>
+    <EmbeddedResource Include="..\license-mit.txt" Link="Resources\license-mit.txt" LogicalName="LICENSE-MIT.txt" />
+    <EmbeddedResource Include="..\license-pdn.txt" Link="Resources\license-pdn.txt" LogicalName="LICENSE-PDN.txt" />
+    <EmbeddedResource Include="..\THIRD-PARTY-NOTICES.md" Link="Resources\THIRD-PARTY-NOTICES.md" LogicalName="THIRD-PARTY-NOTICES.md" />
+    <EmbeddedResource Include="..\CONTRIBUTORS.md" Link="Resources\CONTRIBUTORS.md" LogicalName="CONTRIBUTORS.md" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\Pinta.Core\Pinta.Core.csproj" />
     <ProjectReference Include="..\Pinta.Docking\Pinta.Docking.csproj" />
     <ProjectReference Include="..\Pinta.Gui.Addins\Pinta.Gui.Addins.csproj" />

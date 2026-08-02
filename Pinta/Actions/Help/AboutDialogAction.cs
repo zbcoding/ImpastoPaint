@@ -25,7 +25,9 @@
 // THE SOFTWARE.
 
 using System;
-using System.Text;
+using System.Collections.Generic;
+using System.IO;
+using System.Reflection;
 using Pinta.Core;
 using Pinta.Resources;
 
@@ -68,8 +70,26 @@ internal sealed class AboutDialogAction : IActionHandler
 		dialog.Website = "https://www.pinta-project.com";
 		dialog.Comments = Translations.GetString ("Easily create and edit images");
 		dialog.Copyright = BuildCopyrightText ();
-		dialog.License = BuildLicenseText ();
-		dialog.Developers = authors;
+		dialog.License = EscapeMarkup (LoadEmbeddedText ("LICENSE-MIT.txt"));
+
+		// The Legal and Credits sections below are populated verbatim from the
+		// corresponding files (embedded as resources in Pinta.csproj). To update what
+		// users see in the app, edit these files — don't hardcode text here:
+		//   license-mit.txt        -> MIT License (the application license)
+		//   THIRD-PARTY-NOTICES.md  -> Third-Party Notices (icons + component licenses)
+		//   license-pdn.txt        -> Paint.NET reference license
+		//   CONTRIBUTORS.md         -> Credits (contributors)
+		dialog.AddLegalSection (
+			Translations.GetString ("Third-Party Notices"),
+			string.Empty,
+			Gtk.License.Custom,
+			EscapeMarkup (LoadEmbeddedText ("THIRD-PARTY-NOTICES.md")));
+		dialog.AddLegalSection (
+			Translations.GetString ("Paint.NET Reference License"),
+			string.Empty,
+			Gtk.License.Custom,
+			EscapeMarkup (LoadEmbeddedText ("LICENSE-PDN.txt")));
+		dialog.Developers = LoadContributors (LoadEmbeddedText ("CONTRIBUTORS.md"));
 		dialog.TranslatorCredits = Translations.GetString ("translator-credits");
 		dialog.IssueUrl = "https://github.com/PintaProject/Pinta/issues";
 		dialog.SupportUrl = "https://github.com/PintaProject/Pinta/discussions";
@@ -83,122 +103,57 @@ internal sealed class AboutDialogAction : IActionHandler
 		return $"{copyrightText} (c) 2010-2026 {contributorsText}";
 	}
 
-	private static string BuildLicenseText ()
+	// The About dialog interprets the license/legal text as Pango markup, so escape it.
+	// Return the raw text on failure so a missing resource never crashes the dialog.
+	private static string EscapeMarkup (string text)
 	{
-		StringBuilder sb = new ();
+		if (string.IsNullOrEmpty (text))
+			return string.Empty;
 
-		sb.AppendFormat ("{0}:\n", Translations.GetString ("License"));
-		sb.AppendLine (Translations.GetString ("Released under the MIT X11 License."));
-		sb.AppendLine ();
-
-		sb.AppendLine (Translations.GetString ("Based on the work of Paint.NET:"));
-		sb.AppendLine ("http://www.getpaint.net/");
-		sb.AppendLine ();
-
-		sb.AppendLine (Translations.GetString ("Using some icons from:"));
-		sb.AppendLine ("Silk - http://www.famfamfam.com/lab/icons/silk");
-		sb.AppendLine ("Fugue - http://pinvoke.com/");
-		sb.AppendLine ("Google Material Icons - https://github.com/google/material-design-icons");
-		sb.AppendLine ("Microsoft Fluent UI System Icons - https://github.com/microsoft/fluentui-system-icons");
-		sb.AppendLine ("Pinta contributors");
-
-		return sb.ToString ();
+		try {
+			return GLib.Markup.EscapeText (text);
+		} catch (Exception ex) {
+			Console.Error.WriteLine ($"Failed to escape About text: {ex.Message}");
+			return text;
+		}
 	}
 
-	// AddCreditSection() isn't wrapped correctly by GtkSharp, so current and old authors are merged for now.
-	private readonly string[] authors = [
-		"@badcel",
-		"@bplaat",
-		"Cameron White (@cameronwhite)",
-		"Elvis Alistar (@ericksson)",
-		"James Carroll (@JGCarroll)",
-		"Lehonti Ramos (@Lehonti)",
-		"@Matthieu-LAURENT39",
-		"@PabloRufianJiminez",
-		"@pedropaulosuzuki",
-		"@spaghetti22",
-		"@stefan-dangl",
-		"@UrtsiSantsi",
+	// Parse CONTRIBUTORS.md into the developer/contributor credits list.
+	// Lines use either "- Name — [@handle](url)" or "- Name".
+	private static string[] LoadContributors (string markdown)
+	{
+		List<string> contributors = new ();
 
-		// Old authors.
-		"A. Karon @akaro2424",
-		"Aaron Bockover",
-		"Adam Doppelt",
-		"Adolfo Jayme Barrientos",
-		"Akshara Proddatoori",
-		"Alberto Fanjul (@albfan)",
-		"Anirudh Sanjeev",
-		"Andrija Rajter (@rajter)",
-		"André Veríssimo (@averissimo)",
-		"Andrew Davis",
-		"Balló György (@City-busz)",
-		"Bartosz Głowacki (@Zeti123)",
-		"Cameron White (@cameronwhite)",
-		"Ciprian Mustiata",
-		"Dan Dascalescu (@dandv)",
-		"David Nabraczky",
-		"Don McComb (@don-mccomb)",
-		"Elvis Alistar (@ericksson)",
-		"Felix Schmutz",
-		"Greg Lowe",
-		"Hanh Pham",
-		"James Carroll (@JGCarroll)",
-		"James Gifford",
-		"Jami Kettunen (@JamiKettunen)",
-		"Jared Kells (@jkells)",
-		"Jean-Michel Bea",
-		"Jennifer Nguyen (@jeneira94)",
-		"Jeremy Burns (@jaburns)",
-		"Joe Hillenbrand",
-		"John Burak",
-		"Jon Rimmer",
-		"Jonathan Bergknoff",
-		"Jonathan Pobst (@jpobst)",
-		"Juergen Obernolte",
-		"Julian Ospald (@hasufell)",
-		"Khairuddin Ni'am",
-		"Krzysztof Marecki",
-		"Maia Kozheva",
-		"Manish Sinha",
-		"Marco Rolappe",
-		"Marius Ungureanu",
-		"Martin Geier",
-		"Mathias Fussenegger",
-		"Matthias Mailänder (@Mailaender)",
-		"Miguel Fazenda (@miguelfazenda)",
-		"Mikhail Makarov",
-		"Mykola Franchuk (@thekolian1996)",
-		"Obinou Conseil",
-		"Olivier Dufour",
-		"Richard Cohn",
-		"Robert Nordan (@robpvn)",
-		"Romain Racamier (@Shuunen)",
-		"Stefan Moebius (@codeprof)",
-		"Timon de Groot (@tdgroot)",
-		"Tom Kadwill",
-		"@aivel",
-		"@anadvu",
-		"@darkdragon-001",
-		"@evgeniy-harchenko",
-		"@f-i-l-i-p",
-		"@iangzh",
-		"@JanDeDinoMan",
-		"@jefetienne",
-		"@khoidauminh",
-		"@logiclrd",
-		"@nikita-yfh",
-		"@pikachuiscool2",
-		"@potatoes1286",
-		"@ptixed",
-		"@scx",
-		"@skkestrel",
-		"@solarnomad7",
-		"@supershadoe",
-		"@tdaffin",
-		"@TheodorLasse",
-		"@yaminb",
-		"@yarikoptic",
-		"@Zekiah-A",
-		"@zWolfrost",
-	];
+		if (string.IsNullOrEmpty (markdown))
+			return contributors.ToArray ();
+
+		foreach (string rawLine in markdown.Split ('\n')) {
+			string line = rawLine.Trim ();
+			if (!line.StartsWith ("- ", StringComparison.Ordinal))
+				continue;
+
+			string entry = line.Substring (2).Trim ();
+
+			// Format is either "Name — [@handle](url)" or "Name".
+			int handleStart = entry.IndexOf ("[", StringComparison.Ordinal);
+			string name;
+			if (handleStart >= 0) {
+				string beforeHandle = entry.Substring (0, handleStart).Trim ();
+				name = beforeHandle.Split ("—", 2)[0].Trim ();
+			} else {
+				name = entry;
+			}
+
+			contributors.Add (name);
+		}
+
+		return contributors.ToArray ();
+	}
+
+	private static string LoadEmbeddedText (string logicalName)
+	{
+		using Stream stream = Assembly.GetExecutingAssembly ().GetManifestResourceStream (logicalName)!;
+		using StreamReader reader = new (stream);
+		return reader.ReadToEnd ();
+	}
 }

@@ -1,5 +1,14 @@
 # Third-Party Notices
 
+<!--
+    NOTE FOR EDITORS: This file is embedded into the application and displayed
+    verbatim in the "Third-Party Notices" expandable Legal section of the About
+    dialog (Pinta/Actions/Help/AboutDialogAction.cs). The main license
+    (license-mit.txt) and the Paint.NET license (license-pdn.txt) are shown as
+    their own sections. Whatever you write here is exactly what users see in the
+    app, so keep the formatting consistent.
+-->
+
 This product, **Impasto** (a fork of [Pinta](https://github.com/PintaProject/Pinta)),
 includes third-party components that are redistributed with the application (bundled
 in the macOS and Windows installers, or linked from system packages on Linux).
@@ -33,6 +42,22 @@ Attribution: Mark James, https://www.famfamfam.com.
 Fugue icon set, by Yusuke Kamiyamane. Used under the
 [Creative Commons Attribution 3.0 License](http://creativecommons.org/licenses/by/3.0/).
 Attribution: Yusuke Kamiyamane, https://p.yusukekamiyamane.com.
+
+### Google Material Icons
+
+Google Material Icons, from https://github.com/google/material-design-icons.
+Provided under the Apache License Version 2.0. See also `THIRD-PARTY-NOTICES.md`
+"Apache License 2.0" for the license text.
+
+### Microsoft Fluent UI System Icons
+
+Microsoft Fluent UI System Icons, from https://github.com/microsoft/fluentui-system-icons.
+Provided under the MIT License. See also `license-mit.txt` for the license text.
+
+### GIMP icons
+
+Some icons are derived from GIMP, https://gitlab.gnome.org/GNOME/gimp-data, provided
+under the Creative Commons Attribution 4.0 International license.
 
 ### Pinta contributors
 

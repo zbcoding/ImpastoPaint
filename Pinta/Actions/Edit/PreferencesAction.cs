@@ -52,7 +52,8 @@ internal sealed class PreferencesAction : IActionHandler
 			toolSettingsWrapRows,
 			(PopoverHintMode) settings.GetSetting (SettingNames.POPOVER_HINT_MODE, (int) PopoverHintMode.All),
 			settings.GetSetting (SettingNames.STATUSBAR_SHOW_CURSOR_POSITION, true),
-			settings.GetSetting (SettingNames.STATUSBAR_SHOW_IMAGE_SIZE, true));
+			settings.GetSetting (SettingNames.STATUSBAR_SHOW_IMAGE_SIZE, true),
+			settings.GetSetting (SettingNames.TOOLBAR_SHOWN, true));
 
 		try {
 			if (await dialog.RunAsync () != Gtk.ResponseType.Ok)
@@ -68,6 +69,8 @@ internal sealed class PreferencesAction : IActionHandler
 			settings.PutSetting (SettingNames.STATUSBAR_SHOW_IMAGE_SIZE, dialog.StatusBarShowImageSize);
 			settings.PutSetting (SettingNames.TOOL_SETTINGS_WRAP_ROWS, dialog.ToolSettingsWrapRows);
 			PintaCore.Tools.WrapToolBarRows = dialog.ToolSettingsWrapRows;
+			settings.PutSetting (SettingNames.TOOLBAR_SHOWN, dialog.ShowMainToolBar);
+			chrome.MainToolBar?.SetVisible (dialog.ShowMainToolBar);
 			PintaCore.Actions.SetStatusBarCursorPositionVisible (dialog.StatusBarShowCursorPosition);
 			PintaCore.Actions.SetStatusBarImageSizeVisible (dialog.StatusBarShowImageSize);
 

@@ -488,6 +488,9 @@ internal sealed class MainWindow
 			PintaCore.Actions.CreateHeaderToolBar (headerBar, pasteAlternateDescription);
 		} else {
 			var main_toolbar = window_shell.CreateToolBar ("main_toolbar");
+			PintaCore.Chrome.InitializeMainToolBar (main_toolbar);
+			// Impasto: let users hide the quick access icon toolbar (Preferences dialog).
+			main_toolbar.Visible = PintaCore.Settings.GetSetting (SettingNames.TOOLBAR_SHOWN, true);
 			PintaCore.Actions.CreateToolBar (main_toolbar, pasteAlternateDescription);
 		}
 	}

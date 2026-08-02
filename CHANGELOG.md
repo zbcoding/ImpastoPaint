@@ -47,6 +47,7 @@ Thanks to the following contributors who worked on this release:
 - The floating Colors window now shows a persistent live color picker (wheel/square surface, sliders, hex entry, swap display, and recent/quick swatches) instead of the docked color bar
 - The floating Colors panel and color-wheel popover's quick/recent swatch grids now wrap into extra rows instead of growing wider or clipping
 - Preferences now has a Palette size control alongside the existing extended-palette-rows checkbox, and the palette resize dialogs now step by the current row count so every column stays full
+- Preferences now has a "Show quick access toolbar" checkbox to hide the main icon toolbar row, on by default
 
 ### Changed
 - Effect dialogs no longer dim the canvas during live previews (#1334, reported by @prokoudine)

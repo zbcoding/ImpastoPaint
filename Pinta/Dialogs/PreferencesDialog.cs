@@ -23,6 +23,7 @@ public sealed partial class PreferencesDialog
 	private Gtk.SpinButton palette_size_spinner;
 	private Gtk.CheckButton toolbox_classic_layout_check_button;
 	private Gtk.CheckButton tool_settings_wrap_rows_check_button;
+	private Gtk.CheckButton show_main_toolbar_check_button;
 	private Gtk.CheckButton statusbar_show_cursor_position_check_button;
 	private Gtk.CheckButton statusbar_show_image_size_check_button;
 	private Gtk.ToggleButton popover_hint_mode_all_button;
@@ -49,6 +50,7 @@ public sealed partial class PreferencesDialog
 	public int PaletteSize => palette_size_spinner.GetValueAsInt ();
 	public bool ToolboxClassicLayout => toolbox_classic_layout_check_button.Active;
 	public bool ToolSettingsWrapRows => tool_settings_wrap_rows_check_button.Active;
+	public bool ShowMainToolBar => show_main_toolbar_check_button.Active;
 	public bool StatusBarShowCursorPosition => statusbar_show_cursor_position_check_button.Active;
 	public bool StatusBarShowImageSize => statusbar_show_image_size_check_button.Active;
 	public PopoverHintMode PopoverHintMode
@@ -56,7 +58,7 @@ public sealed partial class PreferencesDialog
 			: popover_hint_mode_essential_button.Active ? PopoverHintMode.Essential
 			: PopoverHintMode.None;
 
-	internal static PreferencesDialog New (ChromeManager chrome, int defaultCanvasWidth, int defaultCanvasHeight, Cairo.Color canvasSurroundColor, bool canvasSurroundColorIsDefault, Cairo.Color defaultCanvasSurroundColor, bool pasteExternalImagesToNewLayer, bool extendedPaletteRows, int paletteSize, bool toolboxClassicLayout, bool toolSettingsWrapRows, PopoverHintMode popoverHintMode, bool statusBarShowCursorPosition, bool statusBarShowImageSize)
+	internal static PreferencesDialog New (ChromeManager chrome, int defaultCanvasWidth, int defaultCanvasHeight, Cairo.Color canvasSurroundColor, bool canvasSurroundColorIsDefault, Cairo.Color defaultCanvasSurroundColor, bool pasteExternalImagesToNewLayer, bool extendedPaletteRows, int paletteSize, bool toolboxClassicLayout, bool toolSettingsWrapRows, PopoverHintMode popoverHintMode, bool statusBarShowCursorPosition, bool statusBarShowImageSize, bool showMainToolBar)
 	{
 		PreferencesDialog dialog = NewWithProperties ([]);
 		dialog.canvas_width_spinner.Value = defaultCanvasWidth;
@@ -70,6 +72,7 @@ public sealed partial class PreferencesDialog
 		dialog.palette_size_spinner.Value = PaletteHelper.RoundDownToRowMultiple (paletteSize, rows);
 		dialog.toolbox_classic_layout_check_button.Active = toolboxClassicLayout;
 		dialog.tool_settings_wrap_rows_check_button.Active = toolSettingsWrapRows;
+		dialog.show_main_toolbar_check_button.Active = showMainToolBar;
 		dialog.SetPopoverHintMode (popoverHintMode);
 		dialog.statusbar_show_cursor_position_check_button.Active = statusBarShowCursorPosition;
 		dialog.statusbar_show_image_size_check_button.Active = statusBarShowImageSize;
@@ -85,6 +88,7 @@ public sealed partial class PreferencesDialog
 	[MemberNotNull (nameof (palette_size_spinner))]
 	[MemberNotNull (nameof (toolbox_classic_layout_check_button))]
 	[MemberNotNull (nameof (tool_settings_wrap_rows_check_button))]
+	[MemberNotNull (nameof (show_main_toolbar_check_button))]
 	[MemberNotNull (nameof (statusbar_show_cursor_position_check_button))]
 	[MemberNotNull (nameof (statusbar_show_image_size_check_button))]
 	[MemberNotNull (nameof (popover_hint_mode_all_button))]
@@ -202,6 +206,14 @@ public sealed partial class PreferencesDialog
 		toolSettingsWrapRowsRow.Append (CreateResetButton (ResetToolSettingsWrapRows));
 		popoverHintPage.Append (toolSettingsWrapRowsRow);
 
+		Gtk.CheckButton showMainToolBarCheckButton = Gtk.CheckButton.NewWithLabel (Translations.GetString ("Show quick access toolbar"));
+		showMainToolBarCheckButton.TooltipText = Translations.GetString ("The row of icon buttons below the menu bar (New, Open, Save, Undo, Redo, Cut, Copy, Paste, and so on).");
+		Gtk.Box showMainToolBarRow = Gtk.Box.New (Gtk.Orientation.Horizontal, SPACING);
+		showMainToolBarCheckButton.Hexpand = true;
+		showMainToolBarRow.Append (showMainToolBarCheckButton);
+		showMainToolBarRow.Append (CreateResetButton (ResetShowMainToolBar));
+		popoverHintPage.Append (showMainToolBarRow);
+
 		Gtk.CheckButton statusbarShowCursorPositionCheckButton = Gtk.CheckButton.NewWithLabel (Translations.GetString ("Show cursor position in the status bar"));
 		Gtk.Box statusbarCursorPositionRow = Gtk.Box.New (Gtk.Orientation.Horizontal, SPACING);
 		statusbarShowCursorPositionCheckButton.Hexpand = true;
@@ -251,6 +263,7 @@ public sealed partial class PreferencesDialog
 		palette_size_spinner = paletteSizeSpinner;
 		toolbox_classic_layout_check_button = toolboxClassicLayoutCheckButton;
 		tool_settings_wrap_rows_check_button = toolSettingsWrapRowsCheckButton;
+		show_main_toolbar_check_button = showMainToolBarCheckButton;
 		statusbar_show_cursor_position_check_button = statusbarShowCursorPositionCheckButton;
 		statusbar_show_image_size_check_button = statusbarShowImageSizeCheckButton;
 		popover_hint_mode_all_button = popoverHintModeAllButton;
@@ -284,6 +297,9 @@ public sealed partial class PreferencesDialog
 
 	private void ResetToolSettingsWrapRows (Gtk.Button sender, EventArgs e)
 		=> tool_settings_wrap_rows_check_button.Active = true;
+
+	private void ResetShowMainToolBar (Gtk.Button sender, EventArgs e)
+		=> show_main_toolbar_check_button.Active = true;
 
 	private void ResetStatusBarShowCursorPosition (Gtk.Button sender, EventArgs e)
 		=> statusbar_show_cursor_position_check_button.Active = true;
@@ -453,6 +469,7 @@ public sealed partial class PreferencesDialog
 		extended_palette_rows_check_button.Active = settings.GetSetting (SettingNames.EXTENDED_PALETTE_ROWS, ExtendedPaletteRows);
 		toolbox_classic_layout_check_button.Active = settings.GetSetting (SettingNames.TOOLBOX_CLASSIC_LAYOUT, ToolboxClassicLayout);
 		tool_settings_wrap_rows_check_button.Active = settings.GetSetting (SettingNames.TOOL_SETTINGS_WRAP_ROWS, ToolSettingsWrapRows);
+		show_main_toolbar_check_button.Active = settings.GetSetting (SettingNames.TOOLBAR_SHOWN, ShowMainToolBar);
 		statusbar_show_cursor_position_check_button.Active = settings.GetSetting (SettingNames.STATUSBAR_SHOW_CURSOR_POSITION, StatusBarShowCursorPosition);
 		statusbar_show_image_size_check_button.Active = settings.GetSetting (SettingNames.STATUSBAR_SHOW_IMAGE_SIZE, StatusBarShowImageSize);
 		SetPopoverHintMode ((PopoverHintMode) settings.GetSetting (SettingNames.POPOVER_HINT_MODE, (int) PopoverHintMode));

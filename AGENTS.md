@@ -54,6 +54,16 @@ behind.
 - Re-run `jj workspace list` and `jj bookmark list` after cleanup so stale task entries are
   not carried into the next task.
 
+**JJ landing goal.** This workflow exists to prevent dangling commits, divergent bookmarks,
+lost code, unlanded work, testing the wrong revision, accidental worktree contamination,
+JJ/Git reference drift, stale workspaces, stale task bookmarks, and unverifiable completion.
+The required end state for every code task is:
+- The agent commit is reachable from `main`.
+- `main` and `default@` identify the same commit.
+- The default checkout builds and tests successfully.
+- Git refs have been exported.
+- Temporary workspaces and one-time bookmarks have been cleaned up.
+
 ## Variable Naming
 Jane Street house style inspired by OCAML descriptive tranformation
 ### Avoid minting new names if you can

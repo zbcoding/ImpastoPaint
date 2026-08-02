@@ -507,7 +507,10 @@ public sealed partial class StatusBarColorPaletteWidget
 		g.ClosePath ();
 	}
 
-	private static void DrawClockIcon (Context g, RectangleD r, Color color)
+	// Impasto: internal so the floating Colors window's live picker panel
+	// (ColorPickerPanel) can draw the same section icons above its recent/quick
+	// swatch rows.
+	internal static void DrawClockIcon (Context g, RectangleD r, Color color)
 	{
 		Color faded = new (color.R, color.G, color.B, 0.55);
 		g.DrawEllipse (r, faded, 1);
@@ -527,7 +530,7 @@ public sealed partial class StatusBarColorPaletteWidget
 		g.Restore ();
 	}
 
-	private static void DrawPaletteIcon (Context g, RectangleD r, Color color)
+	internal static void DrawPaletteIcon (Context g, RectangleD r, Color color)
 	{
 		Color faded = new (color.R, color.G, color.B, 0.55);
 		g.DrawEllipse (r, faded, 1);

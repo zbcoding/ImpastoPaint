@@ -44,6 +44,7 @@ Thanks to the following contributors who worked on this release:
 - The text tool now keeps text as re-editable objects per layer, so it can be re-edited later with Ctrl+click and moved with right-drag (#1337)
 - Shape tools now keep shapes as re-editable objects per layer, including geometry, style, arrows, rounded corners, and specialized shape state (#1405)
 - Brush-family tools now support Alt+Mouse Scroll to change brush size (#1883)
+- The floating Colors window now shows a persistent live color picker (wheel/square surface, sliders, hex entry, swap display, and recent/quick swatches) instead of the docked color bar
 
 ### Changed
 - Effect dialogs no longer dim the canvas during live previews (#1334, reported by @prokoudine)

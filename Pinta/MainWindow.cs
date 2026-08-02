@@ -42,15 +42,13 @@ internal sealed class MainWindow
 	// NRT - Created in OnActivated
 	WindowShell window_shell = null!;
 	Gtk.Window colors_window = null!; // Impasto: floating Colors palette.
-	Gtk.Box colors_dock = null!;      // Impasto: its home in the status bar when docked.
-	Gtk.Box colors_contents = null!;  // Impasto: palette + wheel + "More >>" when floating.
+	Gtk.Box colors_dock = null!;      // Impasto: its home in the status bar - the bar lives here always.
+	Gtk.Box colors_contents = null!;  // Impasto: holds the live picker panel when floating.
 	StatusBarColorPaletteWidget colors_palette = null!;
-	ColorWheelWidget colors_wheel = null!; // Impasto: floating or shown in the dock popover.
+	ColorWheelWidget colors_wheel = null!; // Impasto: shown in the docked popover when bar sections fold.
 	Gtk.Popover colors_wheel_popover = null!;
 	Gtk.Box colors_popover_box = null!;    // Impasto: colors_wheel + folded-in mini sections, docked popover only.
-	Gtk.Button colors_more_button = null!;
-	ColorSlidersWidget colors_sliders = null!; // Impasto: advanced section of the floating window.
-	Gtk.Button colors_back_button = null!;     // Impasto: advanced -> simple, lives in the titlebar.
+	ColorPickerPanel colors_picker_panel = null!; // Impasto: live picker shown in the floating Colors window.
 	ToolBoxWidget toolbox = null!; // Impasto: needed to persist pinned tools.
 	Dock dock = null!;
 	Gio.Menu menu_bar = null!;
@@ -534,6 +532,10 @@ internal sealed class MainWindow
 		};
 		colors_palette.ChipVisibilityChanged += (_, chips) => PintaCore.Actions.SetFooterChipsVisible (chips.cursor, chips.image);
 
+		// The bar lives in the dock permanently now - floating no longer reparents it,
+		// the floating window gets its own live picker panel instead (below).
+		colors_dock.Append (colors_palette);
+
 		colors_wheel = ColorWheelWidget.New (PintaCore.Palette);
 		colors_wheel.MarginStart = 6;
 		colors_wheel.MarginEnd = 6;
@@ -544,29 +546,18 @@ internal sealed class MainWindow
 		colors_popover_box = Gtk.Box.New (Gtk.Orientation.Vertical, 6);
 		colors_popover_box.Append (colors_wheel);
 
-		// "More >>" expands the floating window in place instead of opening the modal
-		// picker - the advanced section is the same sliders, applied live.
-		// "More" with the forward arrow icon, mirroring the back arrow that appears in the
-		// window titlebar once the advanced section is shown.
-		Gtk.Box colors_more_box = Gtk.Box.New (Gtk.Orientation.Horizontal, 6);
-		colors_more_box.Append (Gtk.Label.New (Translations.GetString ("More")));
-		colors_more_box.Append (Gtk.Image.NewFromIconName (Resources.StandardIcons.GoNext));
-		colors_more_button = Gtk.Button.New ();
-		colors_more_button.SetChild (colors_more_box);
-		colors_more_button.Halign = Gtk.Align.End;
-		colors_more_button.MarginEnd = 6;
-		colors_more_button.MarginBottom = 6;
-		colors_more_button.OnClicked += (_, _) => SetColorsAdvanced (true);
-
-		colors_sliders = ColorSlidersWidget.New (PintaCore.Palette);
-		colors_sliders.MarginStart = 6;
-		colors_sliders.MarginEnd = 6;
-		colors_sliders.MarginBottom = 6;
-		colors_sliders.Visible = false;
+		// Impasto: the floating window's content - a persistent live picker replicating
+		// ColorPickerDialog's "Choose Colors" UI (wheel/square surface, sliders, hex,
+		// swap display) plus recent/quick swatch rows, with no OK/Cancel and no dialog
+		// chrome; every change writes straight to the palette.
+		colors_picker_panel = ColorPickerPanel.New (PintaCore.Palette);
+		colors_picker_panel.MarginTop = 6;
+		colors_picker_panel.MarginBottom = 6;
+		colors_picker_panel.MarginStart = 6;
+		colors_picker_panel.MarginEnd = 6;
 
 		colors_contents = Gtk.Box.New (Gtk.Orientation.Vertical, 0);
-		colors_contents.Append (colors_sliders);
-		colors_contents.Append (colors_more_button);
+		colors_contents.Append (colors_picker_panel);
 
 		colors_wheel_popover = Gtk.Popover.New ();
 		colors_wheel_popover.Autohide = true;
@@ -639,26 +630,15 @@ internal sealed class MainWindow
 		colors_window.DestroyWithParent = true;
 		colors_window.Resizable = true;
 		colors_window.DefaultWidth = 480;
-		// Set the child once, like the original working floating window; floating just
-		// moves the palette/wheel in and out of colors_contents.
+		// Set the child once, like the original working floating window; the same
+		// colors_contents (holding the live picker panel) is reused across rebuilds.
 		colors_window.SetChild (colors_contents);
 
 		// Only a close button - closing the floating window re-docks the colors.
-		// In advanced mode a back arrow appears on the left to return to the
-		// simple wheel-only view.
 		Gtk.HeaderBar colors_header = Gtk.HeaderBar.New ();
 		colors_header.DecorationLayout = ":close";
-
-		colors_back_button = Gtk.Button.NewFromIconName (Resources.StandardIcons.GoPrevious);
-		colors_back_button.TooltipText = Translations.GetString ("Back to simple colors");
-		colors_back_button.Visible = colors_sliders.Visible;
-		colors_back_button.OnClicked += (_, _) => SetColorsAdvanced (false);
-		colors_header.PackStart (colors_back_button);
-
 		colors_window.Titlebar = colors_header;
 
-		// Closing docks the colors but keeps the advanced/simple choice, so reopening the
-		// floating window shows whatever the user last had expanded.
 		colors_window.OnCloseRequest += (_, _) => {
 			PintaCore.Actions.View.ColorsFloating.Value = false;
 			SetColorsFloating (false);
@@ -670,15 +650,12 @@ internal sealed class MainWindow
 	// Impasto. Callers re-present it afterwards.
 	private void RebuildColorsWindow ()
 	{
-		bool advanced = colors_sliders.Visible;
-
 		// Detach the shared contents first so destroying the window doesn't take them with it.
 		if (colors_window.Child == colors_contents)
 			colors_window.Child = null;
 		colors_window.Destroy ();
 
 		BuildColorsWindow ();
-		SetColorsAdvanced (advanced); // Restore the expanded/simple choice on the new window.
 	}
 
 	private void ResetColorsWindow ()
@@ -688,59 +665,10 @@ internal sealed class MainWindow
 		SetColorsFloating (true);
 	}
 
-	private void SetColorsAdvanced (bool advanced)
-	{
-		colors_sliders.Visible = advanced;
-		colors_more_button.Visible = !advanced;
-		colors_back_button.Visible = advanced;
-		// Let the window shrink back down when the sliders are hidden.
-		if (!advanced)
-			colors_window.SetDefaultSize (480, -1);
-	}
-
-	private void SetColorsFloating (bool floating)
-	{
-		// The wheel/float buttons are redundant inside the floating window.
-		colors_palette.ShowActionIcons = !floating;
-
-		if (floating) {
-			colors_wheel_popover.Popdown ();
-			if (colors_wheel_popover.Child == colors_popover_box)
-				colors_wheel_popover.Child = null;
-			if (colors_wheel.Parent == colors_popover_box)
-				colors_popover_box.Remove (colors_wheel);
-
-			if (colors_palette.Parent == colors_dock)
-				colors_dock.Remove (colors_palette);
-
-			if (colors_wheel.Parent != colors_contents)
-				colors_contents.Prepend (colors_wheel);
-			if (colors_palette.Parent != colors_contents)
-				colors_contents.Prepend (colors_palette);
-			colors_palette.MarginTop = 6;
-			colors_palette.MarginBottom = 6;
-			colors_palette.MarginStart = 6;
-			colors_palette.MarginEnd = 6;
-		} else {
-			if (colors_palette.Parent == colors_contents)
-				colors_contents.Remove (colors_palette);
-			if (colors_wheel.Parent == colors_contents)
-				colors_contents.Remove (colors_wheel);
-
-			colors_palette.MarginTop = 0;
-			colors_palette.MarginBottom = 0;
-			colors_palette.MarginStart = 0;
-			colors_palette.MarginEnd = 0;
-			if (colors_palette.Parent != colors_dock)
-				colors_dock.Prepend (colors_palette);
-			if (colors_wheel.Parent != colors_popover_box)
-				colors_popover_box.Prepend (colors_wheel);
-			if (colors_wheel_popover.Child != colors_popover_box)
-				colors_wheel_popover.Child = colors_popover_box;
-		}
-
-		UpdateColorsVisibility ();
-	}
+	// The bar (colors_palette) and its docked popover (colors_wheel) never leave the
+	// dock any more - the floating window has its own live picker panel (colors_picker_panel,
+	// inside colors_contents) instead, so there is nothing left to reparent here.
+	private void SetColorsFloating (bool floating) => UpdateColorsVisibility ();
 
 	private void UpdateColorsVisibility ()
 	{

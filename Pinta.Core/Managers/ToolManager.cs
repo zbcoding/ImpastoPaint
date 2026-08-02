@@ -56,6 +56,17 @@ public interface IToolService
 	void DoMouseDown (Document document, ToolMouseEventArgs e);
 
 	/// <summary>
+	/// Gives the currently selected tool a chance to handle Alt+Mouse Scroll.
+	/// Returns 'true' if handled.
+	/// </summary>
+	bool DoMouseScroll (Document document, bool increase);
+
+	/// <summary>
+	/// Whether the currently selected tool responds to Alt+Mouse Scroll.
+	/// </summary>
+	bool CurrentToolSupportsMouseScroll { get; }
+
+	/// <summary>
 	/// Gets the previously selected tool.
 	/// </summary>
 	BaseTool? PreviousTool { get; }
@@ -384,6 +395,12 @@ public sealed class ToolManager : IEnumerable<BaseTool>, IToolService
 
 	public bool DoKeyDown (Document document, ToolKeyEventArgs args)
 		=> CurrentTool?.DoKeyDown (document, args) ?? false;
+
+	public bool DoMouseScroll (Document document, bool increase)
+		=> CurrentTool?.DoMouseScroll (document, increase) ?? false;
+
+	public bool CurrentToolSupportsMouseScroll
+		=> CurrentTool?.SupportsMouseScroll ?? false;
 
 	public bool DoKeyUp (Document document, ToolKeyEventArgs args)
 		=> CurrentTool?.DoKeyUp (document, args) ?? false;

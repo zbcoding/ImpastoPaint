@@ -298,6 +298,22 @@ public abstract class BaseTool
 		=> false;
 
 	/// <summary>
+	/// Whether the tool responds to Alt+Mouse Scroll (e.g. brush-family tools resizing
+	/// their brush). Callers can check this before consuming a scroll event, so tools
+	/// that don't support it leave the event to fall through as normal window scrolling.
+	/// </summary>
+	public virtual bool SupportsMouseScroll
+		=> false;
+
+	/// <summary>
+	/// Called when Alt+Mouse Scroll is used over the canvas and <see cref="SupportsMouseScroll"/>
+	/// is true. Return 'true' if the scroll is handled, or 'false' to allow other components
+	/// to handle it.
+	/// </summary>
+	protected virtual bool OnMouseScroll (Document document, bool increase)
+		=> false;
+
+	/// <summary>
 	/// Called when a mouse button is pressed.
 	/// </summary>
 	protected virtual void OnMouseDown (Document document, ToolMouseEventArgs e)
@@ -452,6 +468,8 @@ public abstract class BaseTool
 	internal bool DoKeyDown (Document document, ToolKeyEventArgs args) => OnKeyDown (document, args);
 
 	internal bool DoKeyUp (Document document, ToolKeyEventArgs args) => OnKeyUp (document, args);
+
+	internal bool DoMouseScroll (Document document, bool increase) => OnMouseScroll (document, increase);
 
 	internal void DoMouseDown (Document document, ToolMouseEventArgs args)
 	{

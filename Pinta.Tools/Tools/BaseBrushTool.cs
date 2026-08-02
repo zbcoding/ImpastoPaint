@@ -59,6 +59,9 @@ public abstract class BaseBrushTool : BaseTool
 		}
 	}
 
+	public override bool SupportsMouseScroll
+		=> true;
+
 	protected override void OnBuildToolBar (Box tb)
 	{
 		base.OnBuildToolBar (tb);
@@ -104,6 +107,16 @@ public abstract class BaseBrushTool : BaseTool
 		}
 
 		return base.OnKeyDown (document, e);
+	}
+
+	protected override bool OnMouseScroll (Document document, bool increase)
+	{
+		if (increase)
+			BrushWidth++;
+		else
+			BrushWidth--;
+
+		return true;
 	}
 
 	protected override void OnSaveSettings (ISettingsService settings)

@@ -54,6 +54,7 @@ public sealed partial class CanvasWindow
 
 	private PointD current_canvas_pos = PointD.Zero;
 	private double cumulative_zoom_amount;
+	private double cumulative_alt_scroll_amount;
 	private double last_scale_delta;
 
 	private const double ZOOM_THRESHOLD_SCROLL = 1.25;
@@ -350,6 +351,11 @@ public sealed partial class CanvasWindow
 	{
 		if (gesture_zoom.IsActive ())
 			return true;
+
+		// Allow the current tool (e.g. brush size) to handle Alt-Mousewheel or Alt-two-finger-scroll
+		if (controller.GetCurrentEventState ().IsAltPressed ())
+			return HandleAltScroll (args.Dy);
+
 		// Allow the user to zoom in/out with Ctrl-Mousewheel or Ctrl-two-finger-scroll
 		if (!controller.GetCurrentEventState ().IsControlPressed ())
 			return false;
@@ -388,6 +394,45 @@ public sealed partial class CanvasWindow
 				cumulative_zoom_amount = 0;
 			}
 
+		}
+
+		return true;
+	}
+
+	// Alt+scroll adjusts the current tool's brush size. Tools that don't support it (anything
+	// other than brush-family tools) leave the event unhandled so it falls through as normal
+	// window scrolling. "Clicky" scroll wheels generate 1 or -1 per tick; analog/touchpad
+	// scrolling generates a continuous range of small values, accumulated the same way as
+	// Ctrl+scroll zoom.
+	private bool HandleAltScroll (double dy)
+	{
+		if (!tools.CurrentToolSupportsMouseScroll)
+			return false;
+
+		if (dy == -1)
+			return tools.DoMouseScroll (document, increase: true);
+
+		if (dy == 1)
+			return tools.DoMouseScroll (document, increase: false);
+
+		if (dy < 0) {
+			if (cumulative_alt_scroll_amount > 0)
+				cumulative_alt_scroll_amount = 0;
+
+			cumulative_alt_scroll_amount += dy;
+			if (cumulative_alt_scroll_amount <= -ZOOM_THRESHOLD_SCROLL) {
+				cumulative_alt_scroll_amount = 0;
+				tools.DoMouseScroll (document, increase: true);
+			}
+		} else {
+			if (cumulative_alt_scroll_amount < 0)
+				cumulative_alt_scroll_amount = 0;
+
+			cumulative_alt_scroll_amount += dy;
+			if (cumulative_alt_scroll_amount >= ZOOM_THRESHOLD_SCROLL) {
+				cumulative_alt_scroll_amount = 0;
+				tools.DoMouseScroll (document, increase: false);
+			}
 		}
 
 		return true;

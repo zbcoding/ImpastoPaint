@@ -41,6 +41,19 @@ making its own. Before moving the `main` bookmark:
 - If anything unexpected turns up in `jj status`/`jj log` in `default`, do not use
   `git reset`/`checkout` or overwrite it. Investigate with read-only commands first.
 
+**Clean up after landing.** Micro-commits must not leave stale workspaces or task bookmarks
+behind.
+- After the commit is on `main`, the default checkout is refreshed, and the build/test has
+  passed, run `jj workspace list` and `jj bookmark list` to identify one-time task entries.
+- Delete a one-time task bookmark with `jj bookmark delete <name>` after confirming it is
+  no longer needed and its commit is reachable from `main`.
+- Remove the completed agent workspace with `jj workspace forget <name>`, then remove its
+  one-time directory only after confirming it has no uncommitted work.
+- Never delete `main`, `origin`, the `default` workspace, or another agent's active workspace
+  or bookmark. If ownership is unclear, leave the entry and coordinate instead.
+- Re-run `jj workspace list` and `jj bookmark list` after cleanup so stale task entries are
+  not carried into the next task.
+
 ## Variable Naming
 Jane Street house style inspired by OCAML descriptive tranformation
 ### Avoid minting new names if you can

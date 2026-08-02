@@ -80,8 +80,18 @@ public sealed class TextLayout
 
 	public RectangleI GetLayoutBounds ()
 	{
-		Layout.GetPixelExtents (out RectangleI ink, out _);
+		Layout.GetPixelExtents (out RectangleI ink, out RectangleI logical);
 		var cursor = GetCursorLocation ();
+
+		// Area (flow) text: the box is a fixed width the user set, and its height comes
+		// from Pango's wrapped logical extents so it grows with the visual (wrapped) line
+		// count. This makes the interaction box track the flow box, not the ink.
+		if (engine.WrapWidth > 0)
+			return new (
+				engine.Origin.X,
+				engine.Origin.Y,
+				engine.WrapWidth,
+				Math.Max (cursor.Height, logical.Height));
 
 		// GetPixelExtents() doesn't really return a very sensible height.
 		// Instead of doing some hacky arithmetic to correct it, the height will just

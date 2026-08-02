@@ -53,6 +53,12 @@ public sealed class TextTool : BaseTool
 	//The area-text wrap width (pixels) at gesture start.
 	private int resize_start_wrapwidth;
 
+	//Area mode: while true, the current left-drag is defining a new flow box's width
+	//(draw-the-box-first) rather than manipulating an existing object. new_box_start_x
+	//is the drag's origin X in canvas space.
+	private bool drawing_new_box;
+	private int new_box_start_x;
+
 	//Default wrap width for a newly created area (flow) text box, and the floor a
 	//resize can shrink it to.
 	private const int DefaultAreaWidth = 200;
@@ -1035,10 +1041,18 @@ public sealed class TextTool : BaseTool
 		UpdateFont ();
 		click_point = click_point with { Y = click_point.Y - (CurrentTextLayout.FontHeight / 2) };
 		newObject.Engine.Origin = click_point;
-		if (AreaMode)
-			newObject.Engine.WrapWidth = DefaultAreaWidth;
 		CurrentUserLayer.TextObjects.Add (newObject);
 		StartEditing (newObject);
+		if (AreaMode) {
+			//Draw-the-box-first: give it a provisional width and let the drag define the
+			//real one (OnMouseMove). A click / tiny drag falls back to DefaultAreaWidth on
+			//mouse up.
+			newObject.Engine.WrapWidth = DefaultAreaWidth;
+			drawing_new_box = true;
+			new_box_start_x = pt.X;
+			tracking = true;
+			manipulation = TextManipulation.None;
+		}
 		RedrawText (true);
 	}
 
@@ -1113,6 +1127,16 @@ public sealed class TextTool : BaseTool
 
 			TextObject obj = current_text_object!;
 
+			// Area mode: defining a new flow box's width by dragging horizontally.
+			if (drawing_new_box) {
+				int width = Math.Abs (e.Point.X - new_box_start_x);
+				if (width >= MinAreaWidth && width != obj.Engine.WrapWidth) {
+					obj.Engine.WrapWidth = width;
+					RedrawText (true);
+				}
+				return;
+			}
+
 			switch (manipulation) {
 				case TextManipulation.Move: {
 					PointD delta = new (
@@ -1184,6 +1208,18 @@ public sealed class TextTool : BaseTool
 		// If we were manipulating the text, finish that up
 		if (!tracking)
 			return;
+
+		// Area mode: finish defining a freshly drawn flow box, then stay in edit mode so
+		// the user can type into it. A click or too-small drag falls back to the default.
+		if (drawing_new_box) {
+			drawing_new_box = false;
+			tracking = false;
+			if (current_text_object is not null && Math.Abs (e.Point.X - new_box_start_x) < MinAreaWidth)
+				current_text_object.Engine.WrapWidth = DefaultAreaWidth;
+			RedrawText (true);
+			UpdateMouseCursor (document);
+			return;
+		}
 
 		if (current_text_object is not null) {
 			bool changed = manipulation switch {
@@ -2354,7 +2390,7 @@ public sealed class TextTool : BaseTool
 
 		Gtk.Widget canvas = workspace.ActiveWorkspace.Canvas;
 
-		string hint = zone == HitZone.Resize ? CornerHintText () : EditHintText ();
+		string hint = zone == HitZone.Resize ? CornerHintText (obj.Engine.WrapWidth > 0) : EditHintText ();
 
 		if (edit_hint_popover is null) {
 			edit_hint_popover = Gtk.Popover.New ();
@@ -2411,9 +2447,11 @@ public sealed class TextTool : BaseTool
 			Translations.GetString ("Right click to move"));
 
 	// Translators: hints shown when hovering a text object's resize corner.
-	private static string CornerHintText ()
+	private static string CornerHintText (bool area)
 		=> string.Join ("\n",
-			Translations.GetString ("Drag corner to resize (changes font size)"),
+			area
+				? Translations.GetString ("Drag corner to resize the text box")
+				: Translations.GetString ("Drag corner to resize (changes font size)"),
 			Translations.GetString ("{0} to rotate", ClickBindingLabel (KeyboardShortcutManager.TextRotate)));
 
 	//How long (ms) the cursor must linger over an object before its hint appears.

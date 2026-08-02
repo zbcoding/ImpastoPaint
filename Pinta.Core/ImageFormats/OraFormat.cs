@@ -461,6 +461,7 @@ public sealed class OraFormat : IImageImporter, IImageExporter
 		writer.WriteAttributeString ("fill", obj.FillStyle.ToString ());
 		writer.WriteAttributeString ("outline", obj.OutlineWidth.ToString ());
 		writer.WriteAttributeString ("join", ((int) obj.LineJoin).ToString ());
+		writer.WriteAttributeString ("wrap-width", engine.WrapWidth.ToString ());
 
 		foreach (string line in engine.Lines)
 			writer.WriteElementString ("line", line);
@@ -532,6 +533,7 @@ public sealed class OraFormat : IImageImporter, IImageExporter
 			};
 
 			engine.SetFont (Pango.FontDescription.FromString (fontName), alignment, underline);
+			engine.WrapWidth = int.Parse (GetAttribute (element, "wrap-width", "0"));
 
 			RectangleI bounds = new (
 				int.Parse (GetAttribute (element, "bounds-x", "0")),

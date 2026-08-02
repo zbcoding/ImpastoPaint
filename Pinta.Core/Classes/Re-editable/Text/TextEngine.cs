@@ -57,6 +57,22 @@ public sealed partial class TextEngine
 	public TextMode State { get; set; }
 	public PointI Origin { get; set; }
 
+	private int wrap_width;
+
+	/// <summary>
+	/// Wrap width in pixels for area (flow) text: the text wraps to fit this width.
+	/// 0 means point (artistic) text, which never wraps and grows to its natural width.
+	/// </summary>
+	public int WrapWidth {
+		get => wrap_width;
+		set {
+			if (wrap_width == value)
+				return;
+			wrap_width = value;
+			OnModified ();
+		}
+	}
+
 	public event EventHandler? Modified;
 
 	public TextEngine ()
@@ -99,7 +115,8 @@ public sealed partial class TextEngine
 			SecondaryColor = secondary_color,
 			Alignment = Alignment,
 			Underline = Underline,
-			Origin = new PointI (Origin.X, Origin.Y)
+			Origin = new PointI (Origin.X, Origin.Y),
+			WrapWidth = wrap_width,
 		};
 
 		//The rest of the variables are calculated on the spot.

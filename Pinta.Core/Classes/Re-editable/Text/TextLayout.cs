@@ -136,6 +136,10 @@ public sealed class TextLayout
 
 		Layout.SetFontDescription (engine.Font);
 
+		// Area (flow) text wraps to a fixed width; point text (WrapWidth 0) uses -1 to
+		// grow to its natural width and only break on user-entered newlines.
+		Layout.SetWidth (engine.WrapWidth > 0 ? PangoExtensions.UnitsFromPixels (engine.WrapWidth) : -1);
+
 		Layout.SetMarkup (markup, -1);
 	}
 }

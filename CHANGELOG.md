@@ -21,6 +21,7 @@ Thanks to the following contributors who worked on this release:
 - @Pashockerr
 
 ### Added
+- The Text Tool now offers a Point/Area mode: Area (flow) text wraps to fit a box that can be resized by dragging a corner, in addition to the existing point text
 - The splatter brush now allows the minimum and maximum splatter size to be configured separately from the brush width
 - Impasto can now save images as AVIF (#2185)
 - Added a new "Slash" brush type (#1974)

@@ -50,6 +50,13 @@ public sealed class TextTool : BaseTool
 	//The font size (pixels) and center-to-corner distance at gesture start.
 	private double resize_start_fontsize;
 	private double resize_start_corner_dist;
+	//The area-text wrap width (pixels) at gesture start.
+	private int resize_start_wrapwidth;
+
+	//Default wrap width for a newly created area (flow) text box, and the floor a
+	//resize can shrink it to.
+	private const int DefaultAreaWidth = 200;
+	private const int MinAreaWidth = 20;
 	//Prevents the toolbar's font-size spin handler from re-applying the toolbar font
 	//while the font size is being set programmatically (e.g. live during a corner resize).
 	private bool is_updating_font_size;
@@ -157,6 +164,7 @@ public sealed class TextTool : BaseTool
 	// NRT - Created by OnBuildToolBar
 	private Gtk.Label font_label = null!;
 	private Gtk.FontDialogButton font_button = null!;
+	private ToolBarDropDownButton text_mode_btn = null!;
 	private ToolBarDropDownButton variant_btn = null!;
 	private Gtk.SpinButton font_size = null!;
 	private ToolBarDropDownButton weight_btn = null!;
@@ -181,6 +189,21 @@ public sealed class TextTool : BaseTool
 	protected override void OnBuildToolBar (Gtk.Box tb)
 	{
 		base.OnBuildToolBar (tb);
+
+		if (text_mode_btn == null) {
+			text_mode_btn = ToolBarDropDownButton.New ();
+			text_mode_btn.AddItem (Translations.GetString ("Point"), Pinta.Resources.Icons.ToolText, 0,
+				Translations.GetString ("Point text: the text grows to its natural width and only wraps where you press Enter."));
+			text_mode_btn.AddItem (Translations.GetString ("Area"), Pinta.Resources.Icons.ImageResizeCanvas, 1,
+				Translations.GetString ("Area text: the text flows to fit a box. Drag a corner to resize the box and re-wrap the text."));
+
+			text_mode_btn.SelectedIndex = Settings.GetSetting (SettingNames.TEXT_MODE, 0);
+			text_mode_btn.SelectedItemChanged += HandleTextModeChanged;
+		}
+
+		tb.Append (text_mode_btn);
+
+		tb.Append (GtkExtensions.CreateToolBarSeparator ());
 
 		if (font_label == null) {
 			string fontText = Translations.GetString ("Font");
@@ -633,6 +656,9 @@ public sealed class TextTool : BaseTool
 
 		if (join_btn is not null)
 			settings.PutSetting (SettingNames.TEXT_JOIN, join_btn.SelectedIndex);
+
+		if (text_mode_btn is not null)
+			settings.PutSetting (SettingNames.TEXT_MODE, text_mode_btn.SelectedIndex);
 	}
 
 	private void HandleFontChanged ()
@@ -645,6 +671,25 @@ public sealed class TextTool : BaseTool
 			workspace.ActiveDocument.Workspace.GrabFocusToCanvas ();
 
 		UpdateFont ();
+	}
+
+	//Whether the toolbar is set to create area (flow) text rather than point text.
+	private bool AreaMode => text_mode_btn?.SelectedIndex == 1;
+
+	private void HandleTextModeChanged (object? sender, EventArgs e)
+	{
+		//Convert the object currently being edited to match the new mode. Objects that
+		//aren't being edited keep whatever mode they were created with.
+		if (!is_editing || current_text_object is null)
+			return;
+
+		TextEngine engine = current_text_object.Engine;
+		if (AreaMode)
+			engine.WrapWidth = Math.Max (MinAreaWidth, current_text_object.TextBounds.Width);
+		else
+			engine.WrapWidth = 0;
+
+		RedrawText (true);
 	}
 
 	private void HandleVariantButtonChanged (object? sender, EventArgs e)
@@ -990,6 +1035,8 @@ public sealed class TextTool : BaseTool
 		UpdateFont ();
 		click_point = click_point with { Y = click_point.Y - (CurrentTextLayout.FontHeight / 2) };
 		newObject.Engine.Origin = click_point;
+		if (AreaMode)
+			newObject.Engine.WrapWidth = DefaultAreaWidth;
 		CurrentUserLayer.TextObjects.Add (newObject);
 		StartEditing (newObject);
 		RedrawText (true);
@@ -1046,6 +1093,7 @@ public sealed class TextTool : BaseTool
 				RectangleD pr = GetPaddedLocalRect (obj);
 				PointD[] localCorners = GetLocalPaddedCorners (pr);
 				resize_start_corner_dist = Math.Max (1, Distance (localCorners[corner], GetRotationPivot (obj)));
+				resize_start_wrapwidth = obj.Engine.WrapWidth;
 				break;
 			}
 		}
@@ -1087,6 +1135,18 @@ public sealed class TextTool : BaseTool
 					PointD pivot = GetRotationPivot (obj);
 					PointD lp = RotatePoint (e.PointDouble, pivot, -RotationRadians (obj));
 					double ratio = Distance (lp, pivot) / resize_start_corner_dist;
+
+					// Area (flow) text: resize the box and re-wrap the text instead of
+					// scaling the font. ponytail: reuses the corner-distance ratio, so the
+					// box scales diagonally like the font handle rather than pure-horizontal.
+					if (resize_start_wrapwidth > 0) {
+						int newWidth = Math.Max (MinAreaWidth, (int) Math.Round (resize_start_wrapwidth * ratio));
+						if (newWidth == obj.Engine.WrapWidth)
+							return;
+						obj.Engine.WrapWidth = newWidth;
+						break;
+					}
+
 					int newSize = Math.Max (1, (int) Math.Round (resize_start_fontsize * ratio));
 
 					// A full re-layout of every text object is expensive with lots of text.
@@ -1129,7 +1189,8 @@ public sealed class TextTool : BaseTool
 			bool changed = manipulation switch {
 				TextManipulation.Move => current_text_object.Engine.Origin != start_click_point,
 				TextManipulation.Rotate => current_text_object.Rotation != start_rotation_angle,
-				TextManipulation.Resize => PangoExtensions.UnitsToPixels (current_text_object.Engine.Font.GetSize ()) != resize_start_fontsize,
+				TextManipulation.Resize => PangoExtensions.UnitsToPixels (current_text_object.Engine.Font.GetSize ()) != resize_start_fontsize
+					|| current_text_object.Engine.WrapWidth != resize_start_wrapwidth,
 				_ => false,
 			};
 

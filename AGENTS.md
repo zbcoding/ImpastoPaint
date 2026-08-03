@@ -5,64 +5,41 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 These rules apply to every task in this project unless explicitly overridden.
 Bias: caution over speed on non-trivial work. Use judgment on trivial tasks.
 
-## Use JJ for version management
-It's a jj and git combined repo (colocated). `main` is the shared trunk everyone merges into.
+## Use Git for version management
+`main` is the shared trunk, kept checked out in the primary repo directory
+(`/home/yumeko/DataDisk/Code/ImpastoPaint`). Never commit directly onto `main`, never work
+from a detached HEAD, and never do task edits in the primary checkout — it stays on `main` so
+`dotnet run --project Pinta` there always tests the landed tip.
 
-**The `default` workspace is the shared test checkout.** Never do code work there. It
-must always be checked out at the `main` bookmark so this command tests the landed tip:
-`cd /home/yumeko/DataDisk/Code/ImpastoPaint && dotnet run --project Pinta`.
-- Per agent, per task: `jj workspace add <name> <path> -r main` before touching any file.
-  Do all edits, builds, and `jj commit`s inside that workspace.
-- Every code change must be landed on `main` before the task is complete. Small focused
-  commits are preferred over leaving changes only in an agent workspace.
-- Read-only history lookups (`jj log`, `jj show`) against the repo in general are fine from
-  anywhere, but pass `--ignore-working-copy` when running them from `default` so you don't
-  trigger a snapshot of someone else's live edit.
-- Plain `git log`/`git show`/`git diff` never touch the jj working copy — prefer them over
-  `jj` equivalents for pure history reading in a shared context.
+**One worktree per agent per task.** Multiple agents can edit the same files for different
+features at once, each isolated in its own checkout on its own branch:
+- `git worktree add <path> -b <branch> main` before touching any file. Do all edits, builds,
+  and commits inside that worktree.
+- Commit only the files your task changed. Never sweep unrelated changes in — stage explicit
+  paths (`git add <path>`), not `git add -A`.
+- Every change must land on `main` before the task is complete. Prefer small, focused commits.
 
 **Rebase onto the current `main` tip immediately before landing, not whenever you branched.**
-This is the failure mode that already bit us once: an agent's fix was silently deleted
-by a second agent's *own, unrelated* fix landing right after, because the second agent's
-file was a stale pre-fix copy and its diff clobbered the first agent's change along with
-making its own. Before moving the `main` bookmark:
-1. `jj rebase -d main` (or equivalent) so your commit's parent is the actual current tip,
-   not wherever your workspace started.
-2. Skim `jj diff` against that new parent — if it touches a file another commit changed
-   since you branched, read that file's current state, don't trust your workspace's copy.
-3. Build + run tests on the rebased commit.
-4. Move the bookmark with `jj bookmark set main -r <your commit>` and run `jj git export`.
-5. Refresh the shared checkout from the repository root with `jj edit main`. Only do this
-   after checking that `default` has no unrelated working-copy edits; if it does, stop and
-   coordinate instead of snapshotting or overwriting them.
-6. Verify `default` and `main` identify the same commit, then test from the default path.
-- If two agents land on `main` at nearly the same moment, the second one to rebase will
-  see the collision in step 2 — resolve it there, don't just force the bookmark forward.
-- If anything unexpected turns up in `jj status`/`jj log` in `default`, do not use
-  `git reset`/`checkout` or overwrite it. Investigate with read-only commands first.
+This failure mode already bit us once: one fix was silently deleted because a second, stale
+branch's diff clobbered it while landing its own unrelated change. To land your worktree's branch:
+1. From your worktree: `git fetch` then `git rebase main` so your branch replays on the actual
+   current tip. Two agents that edited the same file resolve their overlap here, as conflicts.
+2. Skim `git diff main...HEAD` — if it touches a file another commit changed since you branched,
+   read that file's current state; don't trust your branch's copy.
+3. Build + run tests on the rebased branch.
+4. Land from the primary checkout (it owns `main`, so a worktree can't `git switch main`):
+   `git -C <primary> merge --ff-only <branch>`. The rebase in step 1 guarantees a fast-forward;
+   if it isn't one, someone else landed first — re-run from step 1.
+5. Clean up: `git worktree remove <path>` then `git branch -d <branch>`.
 
-**Clean up after landing.** Micro-commits must not leave stale workspaces or task bookmarks
-behind.
-- After the commit is on `main`, the default checkout is refreshed, and the build/test has
-  passed, run `jj workspace list` and `jj bookmark list` to identify one-time task entries.
-- Delete a one-time task bookmark with `jj bookmark delete <name>` after confirming it is
-  no longer needed and its commit is reachable from `main`.
-- Remove the completed agent workspace with `jj workspace forget <name>`, then remove its
-  one-time directory only after confirming it has no uncommitted work.
-- Never delete `main`, `origin`, the `default` workspace, or another agent's active workspace
-  or bookmark. If ownership is unclear, leave the entry and coordinate instead.
-- Re-run `jj workspace list` and `jj bookmark list` after cleanup so stale task entries are
-  not carried into the next task.
+If two branches race to land, the second to rebase sees the collision in step 2 — resolve it
+there, never `git push --force` over the other's work. If anything unexpected turns up in
+`git status`/`git log`, investigate with read-only commands first; don't `git reset --hard`
+or `git checkout --` over changes you didn't make.
 
-**JJ landing goal.** This workflow exists to prevent dangling commits, divergent bookmarks,
-lost code, unlanded work, testing the wrong revision, accidental worktree contamination,
-JJ/Git reference drift, stale workspaces, stale task bookmarks, and unverifiable completion.
-The required end state for every code task is:
-- The agent commit is reachable from `main`.
-- `main` and `default@` identify the same commit.
-- The default checkout builds and tests successfully.
-- Git refs have been exported.
-- Temporary workspaces and one-time bookmarks have been cleaned up.
+**Landing goal.** The required end state for every code task:
+- The commit is reachable from `main`, and the primary checkout on `main` builds and tests.
+- The task's worktree is removed and its branch deleted.
 
 ## Variable Naming
 Jane Street house style inspired by OCAML descriptive tranformation
@@ -309,8 +286,7 @@ use the same key to cycle through the tool menu buttons.
 
 ## Pinta's PR and issue integration
 
-Use jj commits, jj workspaces. When merging back to jj main, it's here at Impasto not on the workspace.
-Use claude.md for rules. Credit/link the issue author, pr code author.
+Credit/link the issue author and PR code author.
 Update the CHANGELOG.md too
 Only add a pull request if it's needed. Old pull requests may not be needed.
 

@@ -24,16 +24,25 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using System.Collections.ObjectModel;
+using System.Collections.Generic;
 using Pinta.Core;
 
 namespace Pinta.Tools;
 
+/// <summary>
+/// A history item for when editable shapes are modified (add/move/delete a control point,
+/// restyle, reorder). Object-model based: it snapshots the affected layer's
+/// <see cref="UserLayer.ShapeObjects"/> and restores them on undo/redo, re-rendering the object
+/// surface and rebuilding the live editing engines. This is the shape counterpart of
+/// <see cref="TextHistoryItem"/>, and it is bound to a specific layer so stepping across a
+/// layer-changing history item (e.g. Add Layer) can never desync onto the wrong layer.
+/// </summary>
 public sealed class ShapesModifyHistoryItem : BaseHistoryItem
 {
 	private readonly BaseEditEngine ee;
+	private readonly UserLayer user_layer;
 
-	private Collection<ShapeEngine> s_engines;
+	private List<ShapeObject> shape_objects;
 
 	private int selected_point_index, selected_shape_index;
 
@@ -46,8 +55,13 @@ public sealed class ShapesModifyHistoryItem : BaseHistoryItem
 	public ShapesModifyHistoryItem (BaseEditEngine passedEE, string icon, string text) : base (icon, text)
 	{
 		ee = passedEE;
+		user_layer = PintaCore.Workspace.ActiveDocument.Layers.CurrentUserLayer;
 
-		s_engines = new Collection<ShapeEngine> (BaseEditEngine.SEngines.PartialClone ());
+		// Capture the before-change object state. Sync from the live engines first so the snapshot
+		// reflects any in-progress edits that have not yet been persisted.
+		BaseEditEngine.PersistShapeObjectsIfLive (user_layer);
+		shape_objects = ShapeObject.CloneAll (user_layer.ShapeObjects);
+
 		selected_point_index = ee.SelectedPointIndex;
 		selected_shape_index = ee.SelectedShapeIndex;
 	}
@@ -64,31 +78,22 @@ public sealed class ShapesModifyHistoryItem : BaseHistoryItem
 
 	private void Swap ()
 	{
-		Swap (ref s_engines, ref BaseEditEngine.SEngines);
+		// Snapshot the current (live) state, then swap in the stored state.
+		BaseEditEngine.PersistShapeObjectsIfLive (user_layer);
+		List<ShapeObject> live = ShapeObject.CloneAll (user_layer.ShapeObjects);
+		user_layer.ShapeObjects.Clear ();
+		user_layer.ShapeObjects.AddRange (shape_objects);
+		shape_objects = live;
 
-		//Ensure that all of the shapes that should no longer be drawn have their ReEditableLayer removed from the drawing loop.
-		foreach (ShapeEngine se in s_engines) {
-			//Determine if it is currently in the drawing loop and should no longer be. Note: a DrawingLayer could be both removed and then
-			//later added in the same swap operation, but this is faster than looping through each ShapeEngine in BaseEditEngine.SEngines.
-			if (se.DrawingLayer.InTheLoop && !BaseEditEngine.SEngines.Contains (se)) {
-				se.DrawingLayer.TryRemoveLayer ();
-			}
-		}
-
-
-		//Ensure that all of the shapes that should now be drawn have their ReEditableLayer in the drawing loop.
-		foreach (ShapeEngine se in BaseEditEngine.SEngines) {
-			//Determine if it is currently out of the drawing loop; if not, it should be.
-			if (!se.DrawingLayer.InTheLoop) {
-				se.DrawingLayer.TryAddLayer ();
-			}
-		}
+		// Rebuild the object surface and (if active) the live editing engines from the restored objects.
+		BaseEditEngine.ReloadLayerShapes (user_layer);
 
 		Swap (ref selected_point_index, ref ee.SelectedPointIndex);
 		Swap (ref selected_shape_index, ref ee.SelectedShapeIndex);
-		BaseEditEngine.PersistShapeObjects (PintaCore.Workspace.ActiveDocument.Layers.CurrentUserLayer);
+
+		PintaCore.Workspace.Invalidate ();
 
 		//Determine if the currently active tool matches the shape's corresponding tool, and if not, switch to it.
-		BaseEditEngine.ActivateCorrespondingTool (selected_shape_index, true);
+		BaseEditEngine.ActivateCorrespondingTool (ee.SelectedShapeIndex, true);
 	}
 }

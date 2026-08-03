@@ -24,12 +24,19 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using System.Collections.ObjectModel;
+using System.Collections.Generic;
 using Cairo;
 using Pinta.Core;
 
 namespace Pinta.Tools;
 
+/// <summary>
+/// A history item for when editable shapes are created, deleted, or finalized (baked into the
+/// layer's raster). Object-model based like <see cref="ShapesModifyHistoryItem"/>: it snapshots the
+/// affected layer's <see cref="UserLayer.ShapeObjects"/>, plus a diff of the base raster for the
+/// finalize case where geometry is baked into the layer's pixels. Bound to a specific layer so
+/// stepping across a layer-changing history item can never desync onto the wrong layer.
+/// </summary>
 public sealed class ShapesHistoryItem : BaseHistoryItem
 {
 	private readonly BaseEditEngine ee;
@@ -39,7 +46,7 @@ public sealed class ShapesHistoryItem : BaseHistoryItem
 	private readonly SurfaceDiff? user_surface_diff;
 	private ImageSurface? user_surface;
 
-	private Collection<ShapeEngine> s_engines;
+	private List<ShapeObject> shape_objects;
 
 	private int selected_point_index, selected_shape_index;
 
@@ -72,15 +79,17 @@ public sealed class ShapesHistoryItem : BaseHistoryItem
 
 		user_layer = passedUserLayer;
 
-
 		user_surface_diff = SurfaceDiff.Create (passedUserSurface, user_layer.Surface, true);
 
 		if (user_surface_diff == null) {
 			user_surface = passedUserSurface;
 		}
 
+		// Capture the before-change object state. Sync from the live engines first so the snapshot
+		// reflects any in-progress edits that have not yet been persisted.
+		BaseEditEngine.PersistShapeObjectsIfLive (user_layer);
+		shape_objects = ShapeObject.CloneAll (user_layer.ShapeObjects);
 
-		s_engines = new Collection<ShapeEngine> (BaseEditEngine.SEngines.PartialClone ());
 		selected_point_index = passedSelectedPointIndex;
 		selected_shape_index = passedSelectedShapeIndex;
 
@@ -99,46 +108,31 @@ public sealed class ShapesHistoryItem : BaseHistoryItem
 
 	private void Swap (bool redraw)
 	{
-		// Grab the original surface
+		// Swap the base raster (only finalization actually changes it; for create/delete the diff
+		// is empty and this is a no-op).
 		ImageSurface surf = user_layer.Surface;
 
 		if (user_surface_diff != null) {
 			user_surface_diff.ApplyAndSwap (surf);
-
 			PintaCore.Workspace.Invalidate (user_surface_diff.GetBounds ());
 		} else {
-			// Undo to the "old" surface
 			user_layer.Surface = user_surface!; // NRT - userSurface will be not-null in this branch
-
-			// Store the original surface for Redo
 			user_surface = surf;
-
-			//Redraw everything since surfaces were swapped.
 			PintaCore.Workspace.Invalidate ();
 		}
 
-		Swap (ref s_engines, ref BaseEditEngine.SEngines);
+		// Snapshot the current (live) object state, then swap in the stored state.
+		BaseEditEngine.PersistShapeObjectsIfLive (user_layer);
+		List<ShapeObject> live = ShapeObject.CloneAll (user_layer.ShapeObjects);
+		user_layer.ShapeObjects.Clear ();
+		user_layer.ShapeObjects.AddRange (shape_objects);
+		shape_objects = live;
 
-		//Ensure that all of the shapes that should no longer be drawn have their ReEditableLayer removed from the drawing loop.
-		foreach (ShapeEngine se in s_engines) {
-			//Determine if it is currently in the drawing loop and should no longer be. Note: a DrawingLayer could be both removed and then
-			//later added in the same swap operation, but this is faster than looping through each ShapeEngine in BaseEditEngine.SEngines.
-			if (se.DrawingLayer.InTheLoop && !BaseEditEngine.SEngines.Contains (se)) {
-				se.DrawingLayer.TryRemoveLayer ();
-			}
-		}
-
-		//Ensure that all of the shapes that should now be drawn have their ReEditableLayer in the drawing loop.
-		foreach (ShapeEngine se in BaseEditEngine.SEngines) {
-			//Determine if it is currently out of the drawing loop; if not, it should be.
-			if (!se.DrawingLayer.InTheLoop) {
-				se.DrawingLayer.TryAddLayer ();
-			}
-		}
+		// Rebuild the object surface and (if active) the live editing engines from the restored objects.
+		BaseEditEngine.ReloadLayerShapes (user_layer);
 
 		Swap (ref selected_point_index, ref ee.SelectedPointIndex);
 		Swap (ref selected_shape_index, ref ee.SelectedShapeIndex);
-		BaseEditEngine.PersistShapeObjects (user_layer);
 
 		//Determine if the currently active tool matches the shape's corresponding tool, and if not, switch to it.
 		if (BaseEditEngine.ActivateCorrespondingTool (ee.SelectedShapeIndex, true) != null) {

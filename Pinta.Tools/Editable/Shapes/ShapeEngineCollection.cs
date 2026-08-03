@@ -118,20 +118,6 @@ public static class ShapeEngineCollection
 		};
 
 	/// <summary>
-	/// Clone the necessary data in each of the ShapeEngines in the collection.
-	/// </summary>
-	/// <returns>The partially cloned ShapeEngineCollection.</returns>
-	public static List<ShapeEngine> PartialClone (this IReadOnlyList<ShapeEngine> source)
-	{
-		List<ShapeEngine> result = new (capacity: source.Count);
-
-		for (int i = 0; i < source.Count; i++)
-			result.Add (source[i].Clone ());
-
-		return result;
-	}
-
-	/// <summary>
 	/// Calculate the closest ControlPoint to currentPoint.
 	/// </summary>
 	/// <param name="reference">The point to calculate the closest ControlPoint to.</param>
@@ -227,6 +213,12 @@ public abstract class ShapeEngine
 		else
 			DrawingLayer = drawing_layer;
 
+		// Object-layer system: the active layer's shapes composite through its shared ShapeLayer
+		// surface, not per-shape overlays. Keep this vestigial DrawingLayer out of the drawing loop
+		// so it never double-composites. ponytail: property kept only as engine identity/scratch;
+		// remove it wholesale once no ShapeEngine paths reference it.
+		DrawingLayer.TryRemoveLayer ();
+
 		ShapeType = shape_type;
 		AntiAliasing = antialiasing;
 		Closed = closed;
@@ -239,6 +231,7 @@ public abstract class ShapeEngine
 	protected ShapeEngine (ShapeEngine src)
 	{
 		DrawingLayer = src.DrawingLayer;
+		DrawingLayer.TryRemoveLayer (); // See note in the primary constructor.
 		ShapeType = src.ShapeType;
 		AntiAliasing = src.AntiAliasing;
 		Closed = src.Closed;

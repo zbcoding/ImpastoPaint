@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using Cairo;
 
 namespace Pinta.Core;
@@ -89,4 +90,7 @@ public sealed class ShapeObject
 		clone.ControlPoints.AddRange (ControlPoints.ConvertAll (point => point.Clone ()));
 		return clone;
 	}
+
+	public static List<ShapeObject> CloneAll (IReadOnlyList<ShapeObject> objects)
+		=> [.. objects.Select (o => o.Clone ())];
 }

@@ -874,15 +874,9 @@ public abstract class BaseEditEngine
 			);
 
 
-			//Since the shape itself will be deleted, remove its ReEditableLayer from the drawing loop.
-
-			ReEditableLayer removeMe = SEngines.ElementAt (SelectedShapeIndex).DrawingLayer;
-
-			if (removeMe.InTheLoop)
-				SEngines.ElementAt (SelectedShapeIndex).DrawingLayer.TryRemoveLayer ();
-
-			//Delete the selected shape.
+			//Delete the selected shape and drop its geometry from the shared ShapeLayer surface.
 			SEngines.RemoveAt (SelectedShapeIndex);
+			RedrawActiveLayerShapeSurface ();
 
 			//Redraw the workspace.
 			doc.Workspace.Invalidate ();
@@ -1317,9 +1311,6 @@ public abstract class BaseEditEngine
 			return;
 		}
 
-		//Clear any temporary drawing, because something new will be drawn.
-		activeEngine.DrawingLayer.Layer.Clear ();
-
 		RectangleD dirty;
 
 		//Determine if the drawing should be for finalizing the shape onto the image or drawing it temporarily.
@@ -1368,8 +1359,8 @@ public abstract class BaseEditEngine
 		if (createHistoryItem && engine.ControlPoints.Count > 0) //We only need to create a history item if there was a previous shape.
 			undoSurface = doc.Layers.CurrentUserLayer.Surface.Clone ();
 
-		//Draw the finalized shape.
-		RectangleD dirty = DrawShape (engine, doc.Layers.CurrentUserLayer, false, false, false);
+		//Draw the finalized shape into the layer's base raster.
+		RectangleD dirty = DrawShapeGeometry (engine, doc.Layers.CurrentUserLayer.Surface);
 
 		if (createHistoryItem && undoSurface != null) {
 
@@ -1401,8 +1392,34 @@ public abstract class BaseEditEngine
 	/// <param name="shiftKey"></param>
 	private RectangleD DrawUnfinalized (ShapeEngine engine, bool drawHoverSelection, bool shiftKey, bool ctrl_key)
 	{
-		//Draw the shape onto the temporary DrawingLayer.
-		return DrawShape (engine, engine.DrawingLayer.Layer, true, drawHoverSelection, ctrl_key);
+		RectangleD totalDirty = RedrawActiveLayerShapeSurface ();
+
+		// Only the active shape refreshes its control-point handles; the other pending shapes keep
+		// the handles they were last drawn with (matching the previous per-shape overlay behavior).
+		DrawControlPoints (engine, true, drawHoverSelection, ctrl_key);
+
+		return totalDirty;
+	}
+
+	/// <summary>
+	/// Clears the active layer's shared ShapeLayer surface and re-renders every live shape's
+	/// geometry into it. This is how the object-layer system composites the active layer's shapes
+	/// now that per-shape overlays are retired. Returns the combined dirty rectangle.
+	/// </summary>
+	// ponytail: O(total control points) per redraw; fine for typical shape counts. If a layer ever
+	// holds many complex shapes, redraw only the changed shape into a scratch + composite.
+	private RectangleD RedrawActiveLayerShapeSurface ()
+	{
+		ImageSurface surface = workspace.ActiveDocument.Layers.CurrentUserLayer.ShapeLayer.Layer.Surface;
+		surface.Clear ();
+
+		RectangleD? totalDirty = null;
+		foreach (ShapeEngine engine in SEngines) {
+			RectangleD dirty = DrawShapeGeometry (engine, surface);
+			totalDirty = totalDirty?.Union (dirty) ?? dirty;
+		}
+
+		return totalDirty ?? RectangleD.Zero;
 	}
 
 	/// <summary>
@@ -1441,11 +1458,17 @@ public abstract class BaseEditEngine
 	}
 
 
-	protected RectangleD DrawShape (ShapeEngine engine, Layer l, bool drawCP, bool drawHoverSelection, bool ctrl_key)
+	/// <summary>
+	/// Draws a single shape's geometry (fill/stroke/arrows), selection-clipped, into the given
+	/// surface. Control-point handles are managed separately via <see cref="DrawControlPoints"/>,
+	/// so this has no handle side effects and can be called for every shape when rebuilding the
+	/// shared ShapeLayer surface.
+	/// </summary>
+	protected RectangleD DrawShapeGeometry (ShapeEngine engine, ImageSurface surface)
 	{
 		Document doc = workspace.ActiveDocument;
 
-		using Context g = new (l.Surface);
+		using Context g = new (surface);
 
 		g.AppendPath (doc.Selection.SelectionPath);
 		g.FillRule = FillRule.EvenOdd;
@@ -1497,12 +1520,11 @@ public abstract class BaseEditEngine
 
 		//Draw anything extra (that not every shape has), like arrows.
 		DrawExtras (ref totalDirty, g, engine);
-		DrawControlPoints (g, engine, drawCP, drawHoverSelection, ctrl_key);
 
 		return totalDirty ?? RectangleD.Zero;
 	}
 
-	private void DrawControlPoints (Context g, ShapeEngine shape, bool draw_controls, bool draw_selection, bool ctrl_key)
+	private void DrawControlPoints (ShapeEngine shape, bool draw_controls, bool draw_selection, bool ctrl_key)
 	{
 		RectangleI dirty = MoveHandle.UnionInvalidateRects (shape.ControlPointHandles);
 		shape.ControlPointHandles.Clear ();
@@ -1650,8 +1672,6 @@ public abstract class BaseEditEngine
 
 		other_shapes_points_hidden = hidden;
 
-		Document doc = workspace.ActiveDocument;
-
 		updating_other_shapes_visibility = true;
 		try {
 			for (int i = 0; i < SEngines.Count; ++i) {
@@ -1664,11 +1684,9 @@ public abstract class BaseEditEngine
 				if (otherEngine.ControlPoints.Count == 0)
 					continue;
 
-				otherEngine.DrawingLayer.Layer.Clear ();
-
-				RectangleD dirty = DrawShape (otherEngine, otherEngine.DrawingLayer.Layer, drawCP: !hidden, drawHoverSelection: false, ctrl_key: false);
-
-				doc.Workspace.Invalidate (dirty.Clamped ().ToInt ());
+				// Geometry is shared in the ShapeLayer surface and unaffected here; only the
+				// other shapes' control-point handles are shown/hidden.
+				DrawControlPoints (otherEngine, draw_controls: !hidden, draw_selection: false, ctrl_key: false);
 			}
 		} finally {
 			updating_other_shapes_visibility = false;
@@ -1723,23 +1741,24 @@ public abstract class BaseEditEngine
 			return;
 
 		if (runtime_layer is not null) {
+			// Bake the layer we're leaving into its persistent ShapeLayer from its object list so
+			// it keeps compositing once it's no longer the active layer (guards the white-rectangle
+			// desync even if some path mutated objects without refreshing the surface).
 			PersistShapeObjects (runtime_layer);
-			// Bake the layer we're leaving into its persistent ShapeLayer so its shapes
-			// keep rendering once its live per-shape DrawingLayers leave the drawing
-			// loop below (otherwise the overlay desyncs into a white rectangle).
 			RedrawShapeLayerSurface (runtime_layer);
 		}
 
-		foreach (ShapeEngine engine in SEngines)
-			engine.DrawingLayer.TryRemoveLayer ();
-
 		SEngines.Clear ();
 		runtime_layer = layer;
-		// The active layer renders its shapes through the live DrawingLayers, so keep
-		// its ShapeLayer clear to avoid double-compositing the same geometry.
-		layer.ShapeLayer.Layer.Clear ();
+
+		// Rebuild the live editing engines for the now-active layer from its object list,
+		// and render them into its ShapeLayer surface. The active layer now composites
+		// solely through this shared surface (per-shape overlays are retired), so the
+		// same geometry never renders twice.
 		foreach (ShapeObject source in layer.ShapeObjects)
 			SEngines.Add (ShapeEngineCollection.Create (layer, source));
+
+		RedrawShapeLayerSurface (layer);
 	}
 
 	/// <summary>
@@ -1751,6 +1770,46 @@ public abstract class BaseEditEngine
 
 	public static void PersistShapeObjects (UserLayer layer)
 		=> ShapeEngineCollection.Store (layer, SEngines);
+
+	/// <summary>
+	/// Persists the live editing engines into <paramref name="layer"/>'s object list only when they
+	/// actually belong to it (i.e. it is the active editing layer). Shape history items call this
+	/// before snapshotting so a layer that is not currently being edited is never clobbered by
+	/// another layer's engines.
+	/// </summary>
+	public static void PersistShapeObjectsIfLive (UserLayer layer)
+	{
+		if (runtime_layer == layer)
+			PersistShapeObjects (layer);
+	}
+
+	/// <summary>
+	/// Re-establishes the object surface and (if <paramref name="layer"/> is the active editing
+	/// layer) the live editing engines for a layer after a shape history item swapped its
+	/// <see cref="UserLayer.ShapeObjects"/>. This is the shape counterpart of the object-model
+	/// history restore: the ShapeLayer surface is a pure function of the object list, and the
+	/// live SEngines are rebuilt from it so editing reflects the restored state.
+	/// </summary>
+	public static void ReloadLayerShapes (UserLayer layer)
+	{
+		RedrawShapeLayerSurface (layer);
+
+		bool isActive = PintaCore.Workspace.HasOpenDocuments
+			&& PintaCore.Workspace.ActiveDocument.Layers.CurrentUserLayer == layer;
+
+		if (!isActive) {
+			// The live engines belong to a different layer; leave them untouched. Drop any
+			// stale binding so the engines are rebuilt when the user returns to this layer.
+			if (runtime_layer == layer)
+				runtime_layer = null;
+			return;
+		}
+
+		SEngines.Clear ();
+		foreach (ShapeObject source in layer.ShapeObjects)
+			SEngines.Add (ShapeEngineCollection.Create (layer, source));
+		runtime_layer = layer;
+	}
 
 	private void CommitShapeEditing ()
 	{
@@ -1794,9 +1853,6 @@ public abstract class BaseEditEngine
 			correspondingEngine.SelectedShapeIndex = SelectedShapeIndex;
 
 			correspondingEngine.BeforeDraw ();
-
-			//Clear any temporary drawing, because something new will be drawn.
-			SEngines[SelectedShapeIndex].DrawingLayer.Layer.Clear ();
 
 			//Draw the current shape with the corresponding tool's EditEngine.
 			RectangleD dirty = correspondingEngine.DrawFinalized (SEngines[SelectedShapeIndex], false, false);

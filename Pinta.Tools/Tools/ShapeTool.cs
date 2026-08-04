@@ -87,7 +87,10 @@ public abstract class ShapeTool : BaseTool
 	protected override void OnActivated (Document? document)
 	{
 		EditEngine.HandleActivated ();
-		EditEngine.DrawAllShapes ();
+		// We are mid-activation inside SetCurrentTool; switching tools here (as DrawAllShapes does
+		// by default when the layer already has shapes of another type) re-enters SetCurrentTool and
+		// corrupts the toolbar. Render every shape without switching, same as HandleDeactivated.
+		EditEngine.DrawAllShapes (preventSwitchBack: false, switchTools: false);
 
 		base.OnActivated (document);
 	}

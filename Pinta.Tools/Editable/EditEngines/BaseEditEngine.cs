@@ -51,6 +51,10 @@ public abstract class BaseEditEngine
 
 	protected abstract string ShapeName { get; }
 
+	// Base for a shape's default sub-row name; defaults to ShapeName but tools whose ShapeName is a
+	// generic geometry label (e.g. the rectangle tool's "Closed Curve Shape") can override it.
+	protected virtual string DefaultObjectName => ShapeName;
+
 	// Per-session, per-type running counter for default shape names ("Ellipse 1", "Ellipse 2", ...).
 	// ponytail: monotonic and never reused, so deleting a shape leaves a numbering gap; fine for a
 	// default label the user can rename.
@@ -1106,7 +1110,7 @@ public abstract class BaseEditEngine
 
 			//Create the shape, add its starting points, and add it to SEngines.
 			ShapeEngine newEngine = CreateShape (ctrlKey, clicked_control_point, prevSelPoint);
-			newEngine.Name = NextDefaultShapeName (ShapeName);
+			newEngine.Name = NextDefaultShapeName (DefaultObjectName);
 			SEngines.Add (newEngine);
 
 			//Select the new shape.

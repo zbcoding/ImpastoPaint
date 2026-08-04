@@ -36,6 +36,9 @@ public sealed class RectangleEditEngine : BaseEditEngine
 	protected override string ShapeName
 		=> Translations.GetString ("Closed Curve Shape");
 
+	protected override string DefaultObjectName
+		=> Translations.GetString ("Rectangle");
+
 	private readonly IWorkspaceService workspace;
 	public RectangleEditEngine (
 		IServiceProvider services,

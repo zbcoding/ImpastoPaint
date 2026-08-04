@@ -90,9 +90,16 @@ public abstract class BaseEditEngine
 	protected ToolBarDropDownButton curved_segments_button = null!;
 	protected Gtk.Separator curved_segments_sep = null!;
 
+	protected ToolBarDropDownButton rasterize_mode_button = null!;
+	protected Gtk.Separator rasterize_mode_sep = null!;
+
 	// Shared across all shape tools and remembered while the app is open.
 	// When off, clicking a shape's line no longer inserts nodes for curved segments.
 	private static bool curved_segments_enabled = true;
+
+	// Object (false) keeps shapes live/editable; Rasterized (true) bakes them into the layer's
+	// base raster on commit (Enter / tool switch), like classic paint tools. Shared across shape tools.
+	private static bool rasterize_shapes = false;
 
 	private bool prev_antialiasing = true;
 
@@ -377,6 +384,29 @@ public abstract class BaseEditEngine
 
 		curved_segments_button.SelectedIndex = curved_segments_enabled ? 0 : 1;
 		tb.Append (curved_segments_button);
+
+		rasterize_mode_sep ??= GtkExtensions.CreateToolBarSeparator ();
+		tb.Append (rasterize_mode_sep);
+
+		if (rasterize_mode_button == null) {
+			rasterize_mode_button = ToolBarDropDownButton.New ();
+
+			rasterize_mode_button.AddItem (Translations.GetString ("Object — editable later"), Resources.Icons.LayerProperties, false,
+				Translations.GetString ("Stays a live, re-editable shape. Cutting, erasing, or filtering across it will rasterize it first."));
+			rasterize_mode_button.AddItem (Translations.GetString ("Raster — fuses to layer"), Resources.Icons.LayerMergeDown, true,
+				Translations.GetString ("Painted into the layer's pixels on commit. Immediately cut/move/erase like any artwork, but not editable later."));
+
+			rasterize_shapes = settings.GetSetting (SettingNames.SHAPE_RASTERIZE_MODE, false);
+			rasterize_mode_button.SelectedIndex = rasterize_shapes ? 1 : 0;
+
+			rasterize_mode_button.SelectedItemChanged += (o, e) => {
+				rasterize_shapes = rasterize_mode_button.SelectedItem.GetTagOrDefault (false);
+				settings.PutSetting (SettingNames.SHAPE_RASTERIZE_MODE, rasterize_shapes);
+			};
+		}
+
+		rasterize_mode_button.SelectedIndex = rasterize_shapes ? 1 : 0;
+		tb.Append (rasterize_mode_button);
 	}
 
 	protected virtual void BuildTriangleTypeToolBar (Gtk.Box tb, ISettingsService settings, string toolPrefix)
@@ -510,11 +540,16 @@ public abstract class BaseEditEngine
 		StorePreviousSettings ();
 
 		if (workspace.HasOpenDocuments) {
-			// Keep the raster overlay separate from UserLayer.Surface. Shape engines are
-			// re-editable even while a non-shape tool is active.
-			// ToolManager has not assigned the new tool yet, so do not switch tools while
-			// redrawing. A shape on another tool would otherwise re-enter deactivation.
-			DrawAllShapes (preventSwitchBack: false, switchTools: false);
+			if (rasterize_shapes) {
+				// Rasterized mode: switching away commits the shapes into the layer's base raster.
+				FinalizeAllShapes ();
+			} else {
+				// Object mode: keep the raster overlay separate from UserLayer.Surface. Shape engines
+				// stay re-editable even while a non-shape tool is active.
+				// ToolManager has not assigned the new tool yet, so do not switch tools while
+				// redrawing. A shape on another tool would otherwise re-enter deactivation.
+				DrawAllShapes (preventSwitchBack: false, switchTools: false);
+			}
 			PersistShapeObjects (workspace.ActiveDocument.Layers.CurrentUserLayer);
 		}
 
@@ -1813,6 +1848,12 @@ public abstract class BaseEditEngine
 
 	private void CommitShapeEditing ()
 	{
+		if (rasterize_shapes) {
+			// Rasterized mode: bake the shapes into the layer's base raster and drop the objects.
+			FinalizeAllShapes ();
+			return;
+		}
+
 		SelectedPointIndex = -1;
 		SelectedShapeIndex = -1;
 		DrawAllShapes (preventSwitchBack: false);
@@ -1865,6 +1906,13 @@ public abstract class BaseEditEngine
 			doc.History.PushNewItem (new ShapesHistoryItem (this, owner.Icon, Translations.GetString ("Finalized"),
 				undoSurface, doc.Layers.CurrentUserLayer, previousSelectedPointIndex, prev_selected_shape_index, true));
 		}
+
+		// Rasterized shapes keep no editable object: drop them from the layer and clear the object
+		// surface so the baked pixels aren't composited twice (base raster + ShapeLayer). The history
+		// item pushed above already captured these objects, so undo restores them and removes the pixels.
+		UserLayer layer = doc.Layers.CurrentUserLayer;
+		layer.ShapeObjects.Clear ();
+		RedrawShapeLayerSurface (layer);
 
 		if (totalDirty.HasValue) {
 			InvalidateAfterDraw (totalDirty.Value);

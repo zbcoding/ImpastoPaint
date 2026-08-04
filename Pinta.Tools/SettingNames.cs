@@ -34,6 +34,7 @@ internal static class SettingNames
 	internal const string POPOVER_HINT_MODE = "popover-hint-mode";
 
 	internal const string SHAPE_CURVED_SEGMENTS = "shape-curved-segments";
+	internal const string SHAPE_RASTERIZE_MODE = "shape-rasterize-mode";
 
 	internal static string Arrow1 (string prefix)
 		=> $"{prefix}-arrow1";

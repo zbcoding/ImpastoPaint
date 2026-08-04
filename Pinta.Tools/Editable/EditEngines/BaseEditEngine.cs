@@ -550,12 +550,15 @@ public abstract class BaseEditEngine
 
 		palette.PrimaryColorChanged += Palette_PrimaryColorChanged;
 		palette.SecondaryColorChanged += Palette_SecondaryColorChanged;
+		workspace.SelectedLayerChanged += HandleSelectedLayerChanged;
 	}
 
 	public virtual void HandleDeactivated (BaseTool? newTool)
 	{
 		SelectedPointIndex = -1;
 		SelectedShapeIndex = -1;
+
+		workspace.SelectedLayerChanged -= HandleSelectedLayerChanged;
 
 		StorePreviousSettings ();
 
@@ -1816,6 +1819,19 @@ public abstract class BaseEditEngine
 			SEngines.Add (ShapeEngineCollection.Create (layer, source));
 
 		RedrawShapeLayerSurface (layer);
+	}
+
+	// Rebinds the live editing engines to the newly-selected layer. Without this, switching layers
+	// while a shape tool is active leaves the previous layer's SEngines (and their control-point
+	// handles / blue dots) in the draw loop even though the shapes no longer belong to the active
+	// layer.
+	private void HandleSelectedLayerChanged (object? sender, EventArgs e)
+	{
+		if (!workspace.HasOpenDocuments)
+			return;
+
+		DrawAllShapes (preventSwitchBack: false, switchTools: false);
+		EnsureShapesForCurrentLayer ();
 	}
 
 	/// <summary>

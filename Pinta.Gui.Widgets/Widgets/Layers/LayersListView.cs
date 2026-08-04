@@ -26,6 +26,7 @@
 // THE SOFTWARE.
 
 using System;
+using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using Pinta.Core;
@@ -35,16 +36,22 @@ namespace Pinta.Gui.Widgets;
 [GObject.Subclass<Gtk.ScrolledWindow>]
 public sealed partial class LayersListView
 {
-	private Gio.ListStore list_model;
+	private Gio.ListStore list_model;          // root model: one row per layer
+	private Gtk.TreeListModel tree_model;       // wraps root, exposes each layer's objects as children
 	private Gtk.SingleSelection selection_model;
 	private Gtk.ListView list_view;
 	private Document? active_document;
 	private bool changing_selection = false;
 
+	// Per-layer child model of object rows, kept so history changes can repopulate it in place
+	// (returning the same instance from the create func lets the tree update live).
+	private readonly Dictionary<UserLayer, Gio.ListStore> child_models = [];
+
 	public static new LayersListView New ()
 		=> NewWithProperties ([]);
 
 	[MemberNotNull (nameof (list_model))]
+	[MemberNotNull (nameof (tree_model))]
 	[MemberNotNull (nameof (selection_model))]
 	[MemberNotNull (nameof (list_view))]
 	partial void Initialize ()
@@ -53,7 +60,11 @@ public sealed partial class LayersListView
 
 		Gio.ListStore listModel = Gio.ListStore.New (LayersListViewItem.GetGType ());
 
-		Gtk.SingleSelection selectionModel = Gtk.SingleSelection.New (listModel);
+		// Wrap the flat layer list so each layer can expand to show its re-editable objects.
+		// Collapsed by default (autoexpand: false) to save space.
+		Gtk.TreeListModel treeModel = Gtk.TreeListModel.New (listModel, passthrough: false, autoexpand: false, CreateChildModel);
+
+		Gtk.SingleSelection selectionModel = Gtk.SingleSelection.New (treeModel);
 		selectionModel.OnSelectionChanged += HandleSelectionChanged;
 
 		Gtk.SignalListItemFactory factory = Gtk.SignalListItemFactory.New ();
@@ -77,6 +88,7 @@ public sealed partial class LayersListView
 		// --- References to keep
 
 		list_model = listModel;
+		tree_model = treeModel;
 		selection_model = selectionModel;
 		list_view = listView;
 
@@ -85,12 +97,47 @@ public sealed partial class LayersListView
 		PintaCore.Workspace.ActiveDocumentChanged += HandleActiveDocumentChanged;
 	}
 
+	// Returns the (cached, live) child model of object rows for a layer row, or null for object rows
+	// (no grandchildren) and layers with no objects (no expander shown).
+	private Gio.ListModel? CreateChildModel (GObject.Object obj)
+	{
+		if (active_document is null || obj is not LayersListViewItem item || item.UserLayer is null || item.IsObjectRow)
+			return null;
+
+		UserLayer layer = item.UserLayer;
+		if (layer.ShapeObjects.Count == 0 && layer.TextObjects.Count == 0)
+			return null;
+
+		if (!child_models.TryGetValue (layer, out Gio.ListStore? store)) {
+			store = Gio.ListStore.New (LayersListViewItem.GetGType ());
+			child_models[layer] = store;
+		}
+
+		PopulateChildModel (store, layer);
+		return store;
+	}
+
+	private void PopulateChildModel (Gio.ListStore store, UserLayer layer)
+	{
+		if (active_document is null)
+			return;
+
+		store.RemoveMultiple (0, store.GetNItems ());
+		foreach (TextObject text in layer.TextObjects)
+			store.Append (LayersListViewItem.NewTextObject (active_document, layer, text));
+		foreach (ShapeObject shape in layer.ShapeObjects)
+			store.Append (LayersListViewItem.NewShapeObject (active_document, layer, shape));
+	}
+
 	private static void HandleFactorySetup (
 		Gtk.SignalListItemFactory factory,
 		Gtk.SignalListItemFactory.SetupSignalArgs args)
 	{
 		var item = (Gtk.ListItem) args.Object;
-		item.SetChild (LayersListViewItemWidget.New ());
+		// A TreeExpander supplies the expand/collapse arrow and indentation; it wraps the row widget.
+		Gtk.TreeExpander expander = Gtk.TreeExpander.New ();
+		expander.SetChild (LayersListViewItemWidget.New ());
+		item.SetChild (expander);
 	}
 
 	private static void HandleFactoryBind (
@@ -98,9 +145,19 @@ public sealed partial class LayersListView
 		Gtk.SignalListItemFactory.BindSignalArgs args)
 	{
 		var list_item = (Gtk.ListItem) args.Object;
-		var model_item = (LayersListViewItem) list_item.GetItem ()!;
-		var widget = (LayersListViewItemWidget) list_item.GetChild ()!;
+		var row = (Gtk.TreeListRow) list_item.GetItem ()!;
+		var model_item = (LayersListViewItem) row.GetItem ()!;
+		var expander = (Gtk.TreeExpander) list_item.GetChild ()!;
+		expander.SetListRow (row);
+		var widget = (LayersListViewItemWidget) expander.GetChild ()!;
 		widget.SetItem (model_item);
+	}
+
+	// The item at a flattened tree position, or null if out of range.
+	private LayersListViewItem? ItemAt (uint position)
+	{
+		Gtk.TreeListRow? row = tree_model.GetRow (position);
+		return row?.GetItem () as LayersListViewItem;
 	}
 
 	private void HandleSelectionChanged (
@@ -120,21 +177,17 @@ public sealed partial class LayersListView
 
 			uint sel = selection_model.Selected;
 			// GTK_INVALID_LIST_POSITION is uint.MaxValue.
-			if (sel == uint.MaxValue || sel >= list_model.GetNItems ())
+			if (sel == uint.MaxValue)
 				return;
 
-			int model_idx = (int) sel;
-			int count = active_document.Layers.Count ();
-			if (count == 0)
+			// Selecting a layer row or any of its object rows makes that layer current.
+			LayersListViewItem? item = ItemAt (sel);
+			if (item?.UserLayer is not { } layer)
 				return;
 
-			int doc_idx = count - 1 - model_idx;
-			if (doc_idx < 0 || doc_idx >= count)
-				return;
-
-			if (active_document.Layers.CurrentUserLayerIndex != doc_idx) {
+			int doc_idx = active_document.Layers.IndexOf (layer);
+			if (doc_idx >= 0 && active_document.Layers.CurrentUserLayerIndex != doc_idx)
 				active_document.Layers.SetCurrentUserLayer (doc_idx);
-			}
 		} finally {
 			changing_selection = false;
 		}
@@ -170,6 +223,7 @@ public sealed partial class LayersListView
 
 		// Clear out old items and rebuild.
 		list_model.RemoveMultiple (0, list_model.GetNItems ());
+		child_models.Clear ();
 
 		active_document = doc;
 		if (doc is null)
@@ -179,9 +233,7 @@ public sealed partial class LayersListView
 			list_model.Append (LayersListViewItem.New (doc, layer));
 
 		// Update our selection to match the document's active layer.
-		int currentModelIndex = doc.Layers.Count () - 1 - doc.Layers.CurrentUserLayerIndex;
-		selection_model.SelectItem ((uint) currentModelIndex, unselectRest: true);
-		list_view.ScrollToSelectedItem (selection_model);
+		SelectLayerRow (doc.Layers.CurrentUserLayer);
 
 		doc.History.HistoryItemAdded += HandleHistoryChanged;
 		doc.History.ActionUndone += HandleHistoryChanged;
@@ -201,6 +253,55 @@ public sealed partial class LayersListView
 		for (uint i = 0; i < list_model.GetNItems (); ++i) {
 			LayersListViewItem item = (LayersListViewItem) list_model.GetObject (i)!;
 			item.NotifyLayerModified ();
+		}
+
+		RefreshObjectRows ();
+	}
+
+	// Keep each layer's object sub-rows in sync with its ShapeObjects/TextObjects after edits.
+	// Layers that already show children are repopulated in place (keeps expand state, no collapse
+	// on every point edit); layers that gained/lost their first object have their root row replaced
+	// so the tree re-evaluates expandability.
+	private void RefreshObjectRows ()
+	{
+		if (active_document is null)
+			return;
+
+		// Prune child models for layers no longer in the document.
+		foreach (UserLayer stale in child_models.Keys.Where (l => active_document.Layers.IndexOf (l) < 0).ToList ())
+			child_models.Remove (stale);
+
+		for (uint i = 0; i < list_model.GetNItems (); ++i) {
+			if (list_model.GetObject (i) is not LayersListViewItem item || item.UserLayer is not { } layer)
+				continue;
+
+			bool hasObjects = layer.ShapeObjects.Count > 0 || layer.TextObjects.Count > 0;
+			bool hasStore = child_models.TryGetValue (layer, out Gio.ListStore? store);
+
+			if (hasObjects && hasStore) {
+				PopulateChildModel (store!, layer);
+			} else if (hasObjects != hasStore) {
+				// Expandability changed (first object added, or last one removed): replace the root
+				// row so the TreeListModel re-runs the create func for it.
+				if (!hasObjects)
+					child_models.Remove (layer);
+				list_model.Remove (i);
+				list_model.Insert (i, LayersListViewItem.New (active_document, layer));
+			}
+		}
+	}
+
+	// Selects the row for a layer (the layer's own row, not one of its object rows).
+	private void SelectLayerRow (UserLayer layer)
+	{
+		uint n = tree_model.GetNItems ();
+		for (uint i = 0; i < n; ++i) {
+			LayersListViewItem? item = ItemAt (i);
+			if (item is not null && !item.IsObjectRow && item.UserLayer == layer) {
+				selection_model.SelectItem (i, unselectRest: true);
+				list_view.ScrollToSelectedItem (selection_model);
+				return;
+			}
 		}
 	}
 
@@ -257,12 +358,15 @@ public sealed partial class LayersListView
 		if (cur < 0 || cur >= count)
 			return;
 
-		int index = count - 1 - cur;
-		if (index < 0 || index >= (int) list_model.GetNItems ())
+		UserLayer layer = active_document.Layers[cur];
+
+		// If the selection is already on this layer's row or one of its object rows, leave it —
+		// otherwise clicking an object row would immediately bounce selection up to the layer row.
+		LayersListViewItem? current = ItemAt (selection_model.Selected);
+		if (current?.UserLayer == layer)
 			return;
 
-		selection_model.SelectItem ((uint) index, unselectRest: true);
-		list_view.ScrollToSelectedItem (selection_model);
+		SelectLayerRow (layer);
 	}
 
 	private void HandleLayerPropertyChanged (object? sender, EventArgs e)

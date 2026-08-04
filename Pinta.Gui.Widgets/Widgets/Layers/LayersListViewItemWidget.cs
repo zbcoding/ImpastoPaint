@@ -41,6 +41,12 @@ public sealed partial class LayersListViewItem
 	private Document? document;
 	public UserLayer? UserLayer { get; private set; }
 
+	// When set, this row represents a re-editable object (shape or text) nested under UserLayer,
+	// rather than the layer itself. Object rows are read-only in this first pass (select only).
+	public ShapeObject? ShapeObject { get; private set; }
+	public TextObject? TextObject { get; private set; }
+	public bool IsObjectRow => ShapeObject is not null || TextObject is not null;
+
 	public static LayersListViewItem New (Document doc, UserLayer userLayer)
 	{
 		LayersListViewItem item = NewWithProperties ([]);
@@ -49,7 +55,42 @@ public sealed partial class LayersListViewItem
 		return item;
 	}
 
-	public string Label => UserLayer?.Name ?? string.Empty;
+	public static LayersListViewItem NewShapeObject (Document doc, UserLayer userLayer, ShapeObject shape)
+	{
+		LayersListViewItem item = NewWithProperties ([]);
+		item.document = doc;
+		item.UserLayer = userLayer;
+		item.ShapeObject = shape;
+		return item;
+	}
+
+	public static LayersListViewItem NewTextObject (Document doc, UserLayer userLayer, TextObject text)
+	{
+		LayersListViewItem item = NewWithProperties ([]);
+		item.document = doc;
+		item.UserLayer = userLayer;
+		item.TextObject = text;
+		return item;
+	}
+
+	public string Label {
+		get {
+			if (ShapeObject is not null)
+				return ShapeTypeName (ShapeObject.ShapeType);
+			if (TextObject is not null)
+				return Translations.GetString ("Text");
+			return UserLayer?.Name ?? string.Empty;
+		}
+	}
+
+	private static string ShapeTypeName (ShapeObjectType type) => type switch {
+		ShapeObjectType.Ellipse => Translations.GetString ("Ellipse"),
+		ShapeObjectType.RoundedLineSeries => Translations.GetString ("Rounded Shape"),
+		ShapeObjectType.Triangle => Translations.GetString ("Triangle"),
+		ShapeObjectType.OpenLineCurveSeries => Translations.GetString ("Line/Curve"),
+		_ => Translations.GetString ("Shape"),
+	};
+
 	public bool Visible => !UserLayer?.Hidden ?? false;
 
 	public string TooltipText {
@@ -210,7 +251,7 @@ public sealed partial class LayersListViewItemWidget
 		Gtk.GestureClick _,
 		Gtk.GestureClick.PressedSignalArgs args)
 	{
-		if (item is null || item.UserLayer is null || !PintaCore.Workspace.HasOpenDocuments)
+		if (item is null || item.UserLayer is null || item.IsObjectRow || !PintaCore.Workspace.HasOpenDocuments)
 			return;
 
 		Document doc = PintaCore.Workspace.ActiveDocument;
@@ -252,7 +293,7 @@ public sealed partial class LayersListViewItemWidget
 		Gtk.DragSource _,
 		Gtk.DragSource.PrepareSignalArgs args)
 	{
-		if (item is null || item.UserLayer is null)
+		if (item is null || item.UserLayer is null || item.IsObjectRow)
 			return null;
 
 		return Gdk.ContentProvider.NewForValue (new GObject.Value ((GObject.Object) item));
@@ -262,10 +303,10 @@ public sealed partial class LayersListViewItemWidget
 		Gtk.DropTarget _,
 		Gtk.DropTarget.DropSignalArgs args)
 	{
-		if (item is null || item.UserLayer is null || !PintaCore.Workspace.HasOpenDocuments)
+		if (item is null || item.UserLayer is null || item.IsObjectRow || !PintaCore.Workspace.HasOpenDocuments)
 			return false;
 
-		if (args.Value.GetObject () is not LayersListViewItem source || source.UserLayer is null)
+		if (args.Value.GetObject () is not LayersListViewItem source || source.UserLayer is null || source.IsObjectRow)
 			return false;
 
 		Document doc = PintaCore.Workspace.ActiveDocument;
@@ -324,6 +365,18 @@ public sealed partial class LayersListViewItemWidget
 			throw new InvalidOperationException ($"{nameof (item)} is null");
 
 		item_label.SetText (item.Label);
+
+		// Object rows (nested shapes/text) are read-only in this pass: no thumbnail, no visibility
+		// checkbox, no tooltip. The TreeExpander supplies their indentation.
+		bool isObject = item.IsObjectRow;
+		visible_button.SetVisible (!isObject);
+		item_thumbnail.SetVisible (!isObject);
+
+		if (isObject) {
+			SetTooltipText (null);
+			return;
+		}
+
 		visible_button.SetActive (item.Visible);
 		SetTooltipText (item.TooltipText);
 

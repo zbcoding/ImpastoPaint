@@ -232,8 +232,10 @@ public sealed partial class LayersListView
 		foreach (var layer in doc.Layers.UserLayers.Reverse ())
 			list_model.Append (LayersListViewItem.New (doc, layer));
 
-		// Update our selection to match the document's active layer.
-		SelectLayerRow (doc.Layers.CurrentUserLayer);
+		// Update our selection to match the document's active layer (if there is one).
+		int cur = doc.Layers.CurrentUserLayerIndex;
+		if (cur >= 0 && cur < doc.Layers.Count ())
+			SelectLayerRow (doc.Layers[cur]);
 
 		doc.History.HistoryItemAdded += HandleHistoryChanged;
 		doc.History.ActionUndone += HandleHistoryChanged;

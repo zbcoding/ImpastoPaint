@@ -42,6 +42,7 @@ public static class ShapeEngineCollection
 			_ => new LineCurveSeriesEngine (parentLayer, null, (BaseEditEngine.ShapeTypes) source.ShapeType, source.AntiAliasing, source.Closed, source.OutlineColor, source.FillColor, source.BrushWidth, source.LineCap),
 		};
 
+		engine.Name = source.Name;
 		engine.DashPattern = source.DashPattern;
 		engine.DashSpacing = source.DashSpacing;
 		engine.FillStyle = source.FillStyle;
@@ -63,6 +64,7 @@ public static class ShapeEngineCollection
 	{
 		ShapeObject result = new () {
 			ShapeType = (ShapeObjectType) engine.ShapeType,
+			Name = engine.Name,
 			AntiAliasing = engine.AntiAliasing,
 			Closed = engine.Closed,
 			OutlineColor = engine.OutlineColor,
@@ -187,6 +189,10 @@ public abstract class ShapeEngine
 
 	public BaseEditEngine.ShapeTypes ShapeType { get; }
 
+	// User-facing default name (e.g. "Ellipse 1"), assigned at creation and carried through the
+	// ShapeObject round-trip so it survives persist/reload. Shown in the layers dock.
+	public string Name { get; internal set; } = "";
+
 	public LineCap LineCap { get; set; }
 	public UserLayer ParentLayer => parent_layer ?? DrawingLayer.ParentLayer;
 
@@ -232,6 +238,7 @@ public abstract class ShapeEngine
 	{
 		DrawingLayer = src.DrawingLayer;
 		DrawingLayer.TryRemoveLayer (); // See note in the primary constructor.
+		Name = src.Name;
 		ShapeType = src.ShapeType;
 		AntiAliasing = src.AntiAliasing;
 		Closed = src.Closed;
@@ -313,6 +320,7 @@ public abstract class ShapeEngine
 		};
 
 		// Don't clone the GeneratedPoints or OrganizedPoints, as they will be calculated.
+		clone.Name = Name;
 		clone.ControlPoints = ControlPoints.Select (i => i.Clone ()).ToList ();
 		clone.DashPattern = DashPattern;
 		clone.DashSpacing = DashSpacing;

@@ -51,6 +51,18 @@ public abstract class BaseEditEngine
 
 	protected abstract string ShapeName { get; }
 
+	// Per-session, per-type running counter for default shape names ("Ellipse 1", "Ellipse 2", ...).
+	// ponytail: monotonic and never reused, so deleting a shape leaves a numbering gap; fine for a
+	// default label the user can rename.
+	private static readonly Dictionary<string, int> shape_name_counters = [];
+
+	private static string NextDefaultShapeName (string baseName)
+	{
+		shape_name_counters.TryGetValue (baseName, out int n);
+		shape_name_counters[baseName] = ++n;
+		return $"{baseName} {n}";
+	}
+
 	protected readonly ShapeTool owner;
 
 	protected bool is_drawing = false;
@@ -91,7 +103,7 @@ public abstract class BaseEditEngine
 	protected Gtk.Separator curved_segments_sep = null!;
 
 	protected ToolBarDropDownButton rasterize_mode_button = null!;
-	protected Gtk.Separator rasterize_mode_sep = null!;
+	protected Gtk.Label rasterize_mode_label = null!;
 
 	// Shared across all shape tools and remembered while the app is open.
 	// When off, clicking a shape's line no longer inserts nodes for curved segments.
@@ -360,6 +372,33 @@ public abstract class BaseEditEngine
 
 		tb.Append (shape_type_button);
 
+		if (rasterize_mode_label == null) {
+			string modeText = Translations.GetString ("Mode");
+			rasterize_mode_label = Gtk.Label.New ($" {modeText}: ");
+		}
+
+		tb.Append (rasterize_mode_label);
+
+		if (rasterize_mode_button == null) {
+			rasterize_mode_button = ToolBarDropDownButton.New ();
+
+			rasterize_mode_button.AddItem (Translations.GetString ("Object — editable later"), Resources.Icons.LayerProperties, false,
+				Translations.GetString ("Stays a live, re-editable shape. Cutting, erasing, or filtering across it will rasterize it first."));
+			rasterize_mode_button.AddItem (Translations.GetString ("Raster — fuses to layer"), Resources.Icons.LayerMergeDown, true,
+				Translations.GetString ("Painted into the layer's pixels on commit. Immediately cut/move/erase like any artwork, but not editable later."));
+
+			rasterize_shapes = settings.GetSetting (SettingNames.SHAPE_RASTERIZE_MODE, false);
+			rasterize_mode_button.SelectedIndex = rasterize_shapes ? 1 : 0;
+
+			rasterize_mode_button.SelectedItemChanged += (o, e) => {
+				rasterize_shapes = rasterize_mode_button.SelectedItem.GetTagOrDefault (false);
+				settings.PutSetting (SettingNames.SHAPE_RASTERIZE_MODE, rasterize_shapes);
+			};
+		}
+
+		rasterize_mode_button.SelectedIndex = rasterize_shapes ? 1 : 0;
+		tb.Append (rasterize_mode_button);
+
 		BuildTriangleTypeToolBar (tb, settings, toolPrefix);
 
 		BuildShapeToolBar (tb, settings, toolPrefix);
@@ -384,29 +423,6 @@ public abstract class BaseEditEngine
 
 		curved_segments_button.SelectedIndex = curved_segments_enabled ? 0 : 1;
 		tb.Append (curved_segments_button);
-
-		rasterize_mode_sep ??= GtkExtensions.CreateToolBarSeparator ();
-		tb.Append (rasterize_mode_sep);
-
-		if (rasterize_mode_button == null) {
-			rasterize_mode_button = ToolBarDropDownButton.New ();
-
-			rasterize_mode_button.AddItem (Translations.GetString ("Object — editable later"), Resources.Icons.LayerProperties, false,
-				Translations.GetString ("Stays a live, re-editable shape. Cutting, erasing, or filtering across it will rasterize it first."));
-			rasterize_mode_button.AddItem (Translations.GetString ("Raster — fuses to layer"), Resources.Icons.LayerMergeDown, true,
-				Translations.GetString ("Painted into the layer's pixels on commit. Immediately cut/move/erase like any artwork, but not editable later."));
-
-			rasterize_shapes = settings.GetSetting (SettingNames.SHAPE_RASTERIZE_MODE, false);
-			rasterize_mode_button.SelectedIndex = rasterize_shapes ? 1 : 0;
-
-			rasterize_mode_button.SelectedItemChanged += (o, e) => {
-				rasterize_shapes = rasterize_mode_button.SelectedItem.GetTagOrDefault (false);
-				settings.PutSetting (SettingNames.SHAPE_RASTERIZE_MODE, rasterize_shapes);
-			};
-		}
-
-		rasterize_mode_button.SelectedIndex = rasterize_shapes ? 1 : 0;
-		tb.Append (rasterize_mode_button);
 	}
 
 	protected virtual void BuildTriangleTypeToolBar (Gtk.Box tb, ISettingsService settings, string toolPrefix)
@@ -1089,7 +1105,9 @@ public abstract class BaseEditEngine
 				doc.Layers.CurrentUserLayer.Surface.Clone (), doc.Layers.CurrentUserLayer, SelectedPointIndex, SelectedShapeIndex, false));
 
 			//Create the shape, add its starting points, and add it to SEngines.
-			SEngines.Add (CreateShape (ctrlKey, clicked_control_point, prevSelPoint));
+			ShapeEngine newEngine = CreateShape (ctrlKey, clicked_control_point, prevSelPoint);
+			newEngine.Name = NextDefaultShapeName (ShapeName);
+			SEngines.Add (newEngine);
 
 			//Select the new shape.
 			SelectedShapeIndex = SEngines.Count - 1;

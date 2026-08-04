@@ -257,7 +257,14 @@ public sealed partial class LayersListView
 			item.NotifyLayerModified ();
 		}
 
-		RefreshObjectRows ();
+		// The shape-creation history item is pushed *before* the engine's ShapeObjects are persisted
+		// (same synchronous gesture), so reading them now would lag one shape behind. Defer to idle so
+		// the refresh runs after the gesture returns to the main loop and ShapeObjects is current.
+		// ponytail: idle-deferred read; the alternative is cross-assembly persist notifications.
+		GLib.Functions.IdleAdd (GLib.Constants.PRIORITY_DEFAULT, () => {
+			RefreshObjectRows ();
+			return false;
+		});
 	}
 
 	// Keep each layer's object sub-rows in sync with its ShapeObjects/TextObjects after edits.

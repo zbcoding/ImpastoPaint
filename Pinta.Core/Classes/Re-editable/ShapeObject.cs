@@ -45,6 +45,7 @@ public sealed class ShapeArrow
 public sealed class ShapeObject
 {
 	public ShapeObjectType ShapeType { get; set; }
+	public string Name { get; set; } = "";
 	public List<ShapeControlPoint> ControlPoints { get; } = [];
 	public bool AntiAliasing { get; set; } = true;
 	public bool Closed { get; set; }
@@ -68,6 +69,7 @@ public sealed class ShapeObject
 	{
 		ShapeObject clone = new () {
 			ShapeType = ShapeType,
+			Name = Name,
 			AntiAliasing = AntiAliasing,
 			Closed = Closed,
 			OutlineColor = OutlineColor,

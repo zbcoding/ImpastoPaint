@@ -76,7 +76,7 @@ public sealed partial class LayersListViewItem
 	public string Label {
 		get {
 			if (ShapeObject is not null)
-				return ShapeTypeName (ShapeObject.ShapeType);
+				return string.IsNullOrEmpty (ShapeObject.Name) ? ShapeTypeName (ShapeObject.ShapeType) : ShapeObject.Name;
 			if (TextObject is not null)
 				return Translations.GetString ("Text");
 			return UserLayer?.Name ?? string.Empty;

@@ -1155,9 +1155,17 @@ public sealed class TextTool : BaseTool
 
 	private void HandleRightClick (Document document, ToolMouseEventArgs e)
 	{
-		// A right click allows you to move a text object around
+		// A right click allows you to move a text object around.
 
-		//Commit any active edit first.
+		// If we're editing an object and clicked on it, move it in place without committing — the same
+		// as a left-drag on its border. Committing first would (in Raster mode) bake the text and leave
+		// an un-editable overlay, so the object being typed must be manipulated directly.
+		if (is_editing && current_text_object is not null && GetHitZone (current_text_object, e.PointDouble) != HitZone.None) {
+			BeginManipulation (document, current_text_object, CurrentUserLayer, TextManipulation.Move, e.PointDouble);
+			return;
+		}
+
+		//Otherwise commit any active edit first, then pick up whatever object is under the cursor.
 		if (is_editing)
 			CommitCurrentText ();
 

@@ -189,6 +189,7 @@ public sealed partial class LayersListViewItemWidget
 	private Gtk.DrawingArea item_thumbnail;
 	private Gtk.Label item_label;
 	private Gtk.CheckButton visible_button;
+	private Gtk.Image rasterized_icon;
 
 	public static LayersListViewItemWidget New ()
 		=> NewWithProperties ([]);
@@ -196,6 +197,7 @@ public sealed partial class LayersListViewItemWidget
 	[MemberNotNull (nameof (item_thumbnail))]
 	[MemberNotNull (nameof (item_label))]
 	[MemberNotNull (nameof (visible_button))]
+	[MemberNotNull (nameof (rasterized_icon))]
 	partial void Initialize ()
 	{
 		Gtk.DrawingArea itemThumbnail = Gtk.DrawingArea.New ();
@@ -212,6 +214,11 @@ public sealed partial class LayersListViewItemWidget
 		visibleButton.Halign = Gtk.Align.End;
 		visibleButton.Hexpand = false;
 		visibleButton.OnToggled += (_, _) => item?.HandleVisibilityToggled (visibleButton.Active);
+
+		// Monochrome checkmark shown on rasterized (finalized) object rows. Hidden otherwise.
+		Gtk.Image rasterizedIcon = Gtk.Image.NewFromIconName (Resources.StandardIcons.ObjectSelect);
+		rasterizedIcon.Halign = Gtk.Align.End;
+		rasterizedIcon.Visible = false;
 
 		Gtk.GestureClick menuGesture = Gtk.GestureClick.New ();
 		menuGesture.SetButton (Gdk.Constants.BUTTON_SECONDARY);
@@ -244,6 +251,7 @@ public sealed partial class LayersListViewItemWidget
 
 		Append (visibleButton);
 		Append (itemLabel);
+		Append (rasterizedIcon);
 		Append (itemThumbnail);
 
 		// --- References to keep
@@ -251,6 +259,7 @@ public sealed partial class LayersListViewItemWidget
 		item_thumbnail = itemThumbnail;
 		item_label = itemLabel;
 		visible_button = visibleButton;
+		rasterized_icon = rasterizedIcon;
 	}
 
 	private void MenuGesture_OnPressed (
@@ -380,15 +389,16 @@ public sealed partial class LayersListViewItemWidget
 
 		if (isObject) {
 			// Rasterized shapes are baked into the layer's pixels and no longer editable; mark them
-			// with a lock and explain in the tooltip. Editable object rows have no tooltip.
-			if (item.ShapeObject?.Rasterized == true) {
-				item_label.SetText (item.Label + "  \U0001F512");
-				SetTooltipText (Translations.GetString ("Rasterized: baked into the layer's pixels. No longer editable as an object."));
-			} else {
-				SetTooltipText (null);
-			}
+			// with a monochrome checkmark and explain in the tooltip. Editable object rows have no tooltip.
+			bool rasterized = item.ShapeObject?.Rasterized == true;
+			rasterized_icon.Visible = rasterized;
+			SetTooltipText (rasterized
+				? Translations.GetString ("Rasterized: baked into the layer's pixels. No longer editable as an object.")
+				: null);
 			return;
 		}
+
+		rasterized_icon.Visible = false;
 
 		visible_button.SetActive (item.Visible);
 		SetTooltipText (item.TooltipText);

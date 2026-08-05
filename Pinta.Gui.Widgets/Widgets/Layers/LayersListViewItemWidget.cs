@@ -70,12 +70,13 @@ public sealed partial class LayersListViewItem
 		return item;
 	}
 
-	public static LayersListViewItem NewTextObject (Document doc, UserLayer userLayer, TextObject text)
+	public static LayersListViewItem NewTextObject (Document doc, UserLayer userLayer, TextObject text, int index)
 	{
 		LayersListViewItem item = NewWithProperties ([]);
 		item.document = doc;
 		item.UserLayer = userLayer;
 		item.TextObject = text;
+		item.ObjectIndex = index;
 		return item;
 	}
 

@@ -19,6 +19,14 @@ public static class LayerObjectSelection
 	public static void RequestShapeSelect (UserLayer layer, int shapeIndex)
 		=> ShapeSelectRequested?.Invoke (layer, shapeIndex);
 
+	/// <summary>Fired with the object's layer and its index in <see cref="UserLayer.TextObjects"/>.
+	/// The Text tool fulfills it: activate itself, make the layer current, and start editing the
+	/// object so its handles show — the text counterpart of <see cref="ShapeSelectRequested"/>.</summary>
+	public static event Action<UserLayer, int>? TextSelectRequested;
+
+	public static void RequestTextSelect (UserLayer layer, int textIndex)
+		=> TextSelectRequested?.Invoke (layer, textIndex);
+
 	/// <summary>
 	/// Fired when a layer's <see cref="UserLayer.ShapeObjects"/> were swapped from outside the
 	/// shape tool (e.g. rasterize/undo). The active shape edit engine rebuilds its live engines

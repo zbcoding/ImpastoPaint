@@ -164,6 +164,41 @@ public sealed class TextTool : BaseTool
 		layout = new TextLayout (chromeService);
 
 		DefaultCursor = GdkExtensions.CursorFromName (Pinta.Resources.StandardCursors.Text);
+
+		// Fulfill "select this text object" requests from the layers dock (clicking a text sub-row),
+		// mirroring the shape tool's ShapeSelectRequested handling.
+		LayerObjectSelection.TextSelectRequested += HandleTextSelectRequested;
+	}
+
+	// Activates the Text tool, makes the object's layer current, and starts editing it so its handles
+	// show — as if the user had clicked into it on the canvas. Called via the Core bridge when a text
+	// object sub-row is clicked in the layers dock.
+	private void HandleTextSelectRequested (UserLayer layer, int textIndex)
+	{
+		if (!workspace.HasOpenDocuments)
+			return;
+
+		var layers = workspace.ActiveDocument.Layers;
+		int layerIndex = layers.IndexOf (layer);
+		if (layerIndex < 0 || textIndex < 0 || textIndex >= layer.TextObjects.Count)
+			return;
+
+		// Commit any in-progress edit (on whatever the current object is) before switching.
+		if (is_editing)
+			CommitCurrentText ();
+
+		if (PintaCore.Tools.CurrentTool != this)
+			PintaCore.Tools.SetCurrentTool (this);
+
+		if (layers.CurrentUserLayerIndex != layerIndex)
+			layers.SetCurrentUserLayer (layerIndex);
+
+		// Re-validate: committing above may have dropped an empty object and shifted indices.
+		if (textIndex >= layer.TextObjects.Count)
+			return;
+
+		StartEditing (layer.TextObjects[textIndex]);
+		RedrawText (true);
 	}
 
 	#region ToolBar
@@ -996,17 +1031,21 @@ public sealed class TextTool : BaseTool
 		// text cursor or to manipulate (move/rotate/resize) it. Manipulation can happen
 		// without leaving text-entry mode, so an already-positioned object can still be
 		// nudged around while the text input cursor is active.
-		if (is_editing && current_text_object is not null && current_text_object.TextBounds.Contains (pt)) {
+		// Use the padded interaction zone (which includes the resize handles that sit outside the raw
+		// text bounds) — not TextBounds — so clicking a corner handle manipulates the object being
+		// edited instead of falling through to the commit path below (which, in Raster mode, would
+		// bake the text before it could be resized).
+		if (is_editing && current_text_object is not null) {
 			TextObject editing = current_text_object;
+			HitZone zone = GetHitZone (editing, e.PointDouble);
 
-			//Rotate on the border/interior while holding the rotate modifier.
-			if (IsClickBindingPressed (KeyboardShortcutManager.TextRotate, e)) {
+			//Rotate on the object while holding the rotate modifier.
+			if (zone != HitZone.None && IsClickBindingPressed (KeyboardShortcutManager.TextRotate, e)) {
 				BeginManipulation (document, editing, CurrentUserLayer, TextManipulation.Rotate, e.PointDouble);
 				return;
 			}
 
-			//Corner / border clicks manipulate; interior clicks place the text cursor.
-			HitZone zone = GetHitZone (editing, e.PointDouble);
+			//Corner clicks resize; border clicks move; interior clicks place the text cursor.
 			if (zone == HitZone.Resize) {
 				BeginManipulation (document, editing, CurrentUserLayer, TextManipulation.Resize, e.PointDouble, FindCorner (editing, e.PointDouble));
 				return;
@@ -1015,14 +1054,17 @@ public sealed class TextTool : BaseTool
 				BeginManipulation (document, editing, CurrentUserLayer, TextManipulation.Move, e.PointDouble);
 				return;
 			}
+			if (zone == HitZone.Interior) {
+				TextPosition p = CurrentTextLayout.PointToTextPosition (pt);
+				CurrentTextEngine.SetCursorPosition (p, true);
 
-			TextPosition p = CurrentTextLayout.PointToTextPosition (pt);
-			CurrentTextEngine.SetCursorPosition (p, true);
+				//Redraw the text with the new cursor position.
+				RedrawText (true);
+				return;
+			}
 
-			//Redraw the text with the new cursor position.
-			RedrawText (true);
-
-			return;
+			// zone == None: the click is outside the object being edited — fall through to commit it
+			// and start/select something else.
 		}
 
 		// Commit the previous edit (if any) before starting something new.

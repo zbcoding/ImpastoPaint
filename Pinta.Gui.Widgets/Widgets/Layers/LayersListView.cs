@@ -123,8 +123,8 @@ public sealed partial class LayersListView
 			return;
 
 		store.RemoveMultiple (0, store.GetNItems ());
-		foreach (TextObject text in layer.TextObjects)
-			store.Append (LayersListViewItem.NewTextObject (active_document, layer, text));
+		for (int i = 0; i < layer.TextObjects.Count; ++i)
+			store.Append (LayersListViewItem.NewTextObject (active_document, layer, layer.TextObjects[i], i));
 		// Skip Rasterize-on-finalize shapes: they are transient and fuse the moment you move on;
 		// showing them as a sub-node that then vanishes is confusing. Index i stays the position
 		// in ShapeObjects so click-to-select still maps correctly.
@@ -197,6 +197,9 @@ public sealed partial class LayersListView
 			// Select by stored index, not by reference: Store() rebuilds ShapeObjects on every persist.
 			if (item.ShapeObject is not null)
 				LayerObjectSelection.RequestShapeSelect (layer, item.ObjectIndex);
+			// Clicking a text object row activates the Text tool and starts editing it (shows its handles).
+			else if (item.TextObject is not null)
+				LayerObjectSelection.RequestTextSelect (layer, item.ObjectIndex);
 		} finally {
 			changing_selection = false;
 		}

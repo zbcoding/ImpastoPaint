@@ -241,6 +241,10 @@ public abstract class BaseEditEngine
 	{
 		// Fulfill "select this shape object" requests from the layers dock (Pinta.Gui.Widgets).
 		LayerObjectSelection.ShapeSelectRequested += HandleShapeSelectRequested;
+
+		// Rebuild live engines when a layer's ShapeObjects were swapped outside the tool
+		// (rasterize-on-cut and its undo/redo, raised from Pinta.Core).
+		LayerObjectSelection.ShapeReloadRequested += ReloadLayerShapes;
 	}
 
 	// Selects the shape at shapeIndex on the given layer and shows its control points, as if the

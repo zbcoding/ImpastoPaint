@@ -116,6 +116,35 @@ internal sealed class ShapeObjectTest
 		return scene;
 	}
 
+	[Test]
+	public void RasterizeObjectsBakesObjectSurfacesIntoBaseRaster ()
+	{
+		ImageSurface baseSurface = CairoExtensions.CreateImageSurface (Format.Argb32, 4, 4);
+		UserLayer layer = new (baseSurface);
+
+		// Simulate the object-layer invariant: a shape object with its rendered pixels sitting in the
+		// ShapeLayer surface (not the base raster). RasterizeObjects must fold those pixels down.
+		layer.ShapeObjects.Add (new ShapeObject { ShapeType = ShapeObjectType.Ellipse });
+		using (Context g = new (layer.ShapeLayer.Layer.Surface)) {
+			g.SetSourceColor (new Color (1, 0, 0, 1));
+			g.Rectangle (0, 0, 4, 4);
+			g.Fill ();
+		}
+
+		Assert.That (layer.Surface.GetColorBgra (new PointI (1, 1)).A, Is.EqualTo (0), "base raster starts empty");
+
+		bool baked = layer.RasterizeObjects ();
+
+		Assert.Multiple (() => {
+			Assert.That (baked, Is.True);
+			Assert.That (layer.ShapeObjects, Is.Empty, "objects dropped");
+			Assert.That (layer.Surface.GetColorBgra (new PointI (1, 1)).A, Is.EqualTo (255), "pixels now in base raster");
+			Assert.That (layer.ShapeLayer.Layer.Surface.GetColorBgra (new PointI (1, 1)).A, Is.EqualTo (0), "object surface cleared");
+		});
+
+		Assert.That (layer.RasterizeObjects (), Is.False, "no-op when there are no objects");
+	}
+
 	private static void AssertScenesEqual (IReadOnlyList<ShapeObject> expected, IReadOnlyList<ShapeObject> actual)
 	{
 		Assert.That (actual, Has.Count.EqualTo (expected.Count));

@@ -156,6 +156,31 @@ public sealed class UserLayer : Layer
 	}
 
 	/// <summary>
+	/// Bakes this layer's live editable objects (shapes + text) into its base raster and drops them
+	/// as objects. The object surfaces already equal the render of the object lists (the object-layer
+	/// invariant), so baking is just compositing those surfaces onto the base raster. Called before a
+	/// destructive raster op (cut/erase) so it actually touches the objects' pixels. Returns true if
+	/// anything was baked.
+	/// </summary>
+	public bool RasterizeObjects ()
+	{
+		if (ShapeObjects.Count == 0 && TextObjects.Count == 0)
+			return false;
+
+		using Context g = new (Surface);
+		foreach (ReEditableLayer rel in ReEditableLayers) {
+			if (!rel.IsLayerSetup)
+				continue;
+			rel.Layer.Draw (g);
+			rel.Layer.Surface.Clear ();
+		}
+
+		ShapeObjects.Clear ();
+		TextObjects.Clear ();
+		return true;
+	}
+
+	/// <summary>
 	/// Returns a list of the layers to paint for this top-level layer.
 	/// This includes the primary layer and any active re-editable layers.
 	/// </summary>

@@ -387,6 +387,12 @@ public sealed class EditActions
 
 		tools.Commit ();
 
+		// Object-mode shapes/text live in the layer's object surfaces, not its base raster, so a
+		// raster erase/cut would miss them entirely. Bake the layer's live objects into the base
+		// raster first (its own undoable step), then the op below hits real pixels. This also covers
+		// Cut, which routes through here after copying.
+		RasterizeLiveObjects (doc);
+
 		ImageSurface old = doc.Layers.CurrentUserLayer.Surface.Clone ();
 
 		using Context g = new (doc.Layers.CurrentUserLayer.Surface);
@@ -405,6 +411,39 @@ public sealed class EditActions
 				_ => new SimpleHistoryItem (Resources.Icons.EditSelectionErase, Translations.GetString ("Erase Selection"), old, doc.Layers.CurrentUserLayerIndex),
 			}
 		);
+	}
+
+	// Bakes the current layer's live Object-mode shapes/text into its base raster as its own undoable
+	// step, so a following destructive raster op touches their pixels. ponytail: bakes all of the
+	// layer's live objects, not only those intersecting the selection — predictable and fixes the cut
+	// bug; narrow to intersection-only if selective rasterize is ever wanted. Fill/effects/flatten hit
+	// the same object-miss gap; wire them to this helper when needed.
+	private void RasterizeLiveObjects (Document doc)
+	{
+		UserLayer layer = doc.Layers.CurrentUserLayer;
+		if (layer.ShapeObjects.Count == 0 && layer.TextObjects.Count == 0)
+			return;
+
+		ImageSurface baseBefore = layer.Surface.Clone ();
+		ImageSurface shapeBefore = layer.ShapeLayer.Layer.Surface.Clone ();
+		ImageSurface textBefore = layer.TextLayer.Layer.Surface.Clone ();
+		var shapesBefore = ShapeObject.CloneAll (layer.ShapeObjects);
+		var textBefore2 = TextObject.CloneAll (layer.TextObjects);
+
+		if (!layer.RasterizeObjects ())
+			return;
+
+		doc.History.PushNewItem (new RasterizeObjectsHistoryItem (
+			workspace,
+			Resources.Icons.ImageFlatten,
+			Translations.GetString ("Rasterize Objects"),
+			baseBefore, shapeBefore, textBefore,
+			shapesBefore, textBefore2, layer));
+
+		// Rebuild the shape edit engine's live engines from the (now empty) object list so the active
+		// layer stops compositing the baked shapes a second time.
+		LayerObjectSelection.RequestShapeReload (layer);
+		doc.Workspace.Invalidate ();
 	}
 
 	private void HandlePintaCoreActionsEditDeselectActivated (object sender, EventArgs e)

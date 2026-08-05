@@ -16,4 +16,14 @@ public static class LayerObjectSelection
 
 	public static void RequestShapeSelect (UserLayer layer, int shapeIndex)
 		=> ShapeSelectRequested?.Invoke (layer, shapeIndex);
+
+	/// <summary>
+	/// Fired when a layer's <see cref="UserLayer.ShapeObjects"/> were swapped from outside the
+	/// shape tool (e.g. rasterize/undo). The active shape edit engine rebuilds its live engines
+	/// from the restored object list so it does not composite stale engines over the surface.
+	/// </summary>
+	public static event Action<UserLayer>? ShapeReloadRequested;
+
+	public static void RequestShapeReload (UserLayer layer)
+		=> ShapeReloadRequested?.Invoke (layer);
 }

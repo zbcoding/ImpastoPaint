@@ -69,6 +69,14 @@ public sealed class UserLayer : Layer
 	public List<ShapeObject> ShapeObjects { get; } = [];
 
 	/// <summary>
+	/// Shapes in Rasterize-on-finalize mode are transient — they fuse into the base raster the
+	/// moment you move on and must never show as a persistent sub-node. Only Object-mode shapes
+	/// (and any text) count as sub-layer objects the layers dock shows.
+	/// </summary>
+	public bool HasObjectSubNodes
+		=> TextObjects.Count > 0 || ShapeObjects.Exists (s => !s.RasterizeOnFinalize);
+
+	/// <summary>
 	/// Creates a raster fallback for editable shape overlays. It is used by ORA
 	/// import before the shape tool has hydrated its engines.
 	/// </summary>

@@ -30,6 +30,17 @@ public static class TextObjectRenderer
 		}
 	}
 
+	/// <summary>Renders a single non-empty text object onto the given surface.</summary>
+	public static void Render (
+		ImageSurface surface,
+		TextObject obj,
+		IChromeService chrome,
+		bool antialias)
+	{
+		if (!obj.IsEmpty)
+			RenderObject (surface, obj, chrome, antialias);
+	}
+
 	private static void RenderObject (
 		ImageSurface surface,
 		TextObject obj,

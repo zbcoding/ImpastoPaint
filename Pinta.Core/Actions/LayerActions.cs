@@ -25,6 +25,8 @@
 // THE SOFTWARE.
 
 using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Pinta.Core;
 
@@ -41,6 +43,7 @@ public sealed class LayerActions
 	public Command MoveLayerUp { get; }
 	public Command MoveLayerDown { get; }
 	public Command Properties { get; }
+	public Command RasterizeAllObjects { get; }
 
 	private readonly ChromeManager chrome;
 	private readonly ImageConverterManager image_formats;
@@ -127,6 +130,12 @@ public sealed class LayerActions
 			Resources.Icons.LayerProperties,
 			shortcuts: ["F2"]);
 
+		RasterizeAllObjects = new Command (
+			"rasterizeallobjects",
+			Translations.GetString ("Rasterize All Objects"),
+			null,
+			Resources.Icons.ImageFlatten);
+
 		this.chrome = chrome;
 		image_formats = imageFormats;
 		recent_files = recentFiles;
@@ -150,6 +159,8 @@ public sealed class LayerActions
 
 			Properties,
 
+			RasterizeAllObjects,
+
 			MoveLayerDown,
 			MoveLayerUp]);
 	}
@@ -165,6 +176,7 @@ public sealed class LayerActions
 		FlipHorizontal.Activated += HandlePintaCoreActionsLayersFlipHorizontalActivated;
 		FlipVertical.Activated += HandlePintaCoreActionsLayersFlipVerticalActivated;
 		ImportFromFile.Activated += HandlePintaCoreActionsLayersImportFromFileActivated;
+		RasterizeAllObjects.Activated += HandleRasterizeAllObjectsActivated;
 
 		workspace.LayerAdded += EnableOrDisableLayerActions;
 		workspace.LayerRemoved += EnableOrDisableLayerActions;
@@ -172,6 +184,28 @@ public sealed class LayerActions
 		workspace.ActiveDocumentChanged += EnableOrDisableLayerActions;
 
 		EnableOrDisableLayerActions (null, EventArgs.Empty);
+	}
+
+	// Bakes every live editable object on the current layer into its base raster (after confirmation),
+	// dropping them as objects. Wired to the layers dock right-click menu (shown only for layers that
+	// have objects). Object-mode shapes/text elsewhere are the point of this: it fuses them all at once.
+	private void HandleRasterizeAllObjectsActivated (object sender, EventArgs e)
+	{
+		Document doc = workspace.ActiveDocument;
+
+		tools.Commit ();
+
+		UserLayer layer = doc.Layers.CurrentUserLayer;
+		List<int> shapeIndices = [.. Enumerable.Range (0, layer.ShapeObjects.Count)];
+		List<int> textIndices = [.. Enumerable.Range (0, layer.TextObjects.Count)];
+		if (shapeIndices.Count == 0 && textIndices.Count == 0)
+			return;
+
+		var labels = ObjectRasterizer.Describe (layer, shapeIndices, textIndices).ToList ();
+		if (!ObjectRasterizer.Confirm (chrome, labels))
+			return;
+
+		ObjectRasterizer.RasterizeSubset (doc, workspace, chrome, layer, shapeIndices, textIndices);
 	}
 
 	private void EnableOrDisableLayerActions (object? sender, EventArgs e)

@@ -388,10 +388,11 @@ public sealed class EditActions
 		tools.Commit ();
 
 		// Object-mode shapes/text live in the layer's object surfaces, not its base raster, so a
-		// raster erase/cut would miss them entirely. Bake the layer's live objects into the base
-		// raster first (its own undoable step), then the op below hits real pixels. This also covers
-		// Cut, which routes through here after copying.
-		RasterizeLiveObjects (doc);
+		// raster erase/cut would miss them entirely. Bake only the objects the selection overlaps into
+		// the base raster first (its own undoable step), after asking the user. Objects the selection
+		// doesn't touch stay editable. Cancelling the prompt aborts the whole op. Covers Cut too.
+		if (!RasterizeSelectionObjects (doc))
+			return;
 
 		ImageSurface old = doc.Layers.CurrentUserLayer.Surface.Clone ();
 
@@ -413,37 +414,30 @@ public sealed class EditActions
 		);
 	}
 
-	// Bakes the current layer's live Object-mode shapes/text into its base raster as its own undoable
-	// step, so a following destructive raster op touches their pixels. ponytail: bakes all of the
-	// layer's live objects, not only those intersecting the selection — predictable and fixes the cut
-	// bug; narrow to intersection-only if selective rasterize is ever wanted. Fill/effects/flatten hit
-	// the same object-miss gap; wire them to this helper when needed.
-	private void RasterizeLiveObjects (Document doc)
+	// Rasterizes only the live Object-mode shapes/text that the selection overlaps, so a following
+	// destructive raster op (cut/erase) touches their pixels while objects elsewhere on the layer stay
+	// editable. Prompts the user first, listing what will be baked. Returns false only if the user
+	// cancels the prompt (the caller must then abort the op); true when there was nothing to rasterize
+	// or the bake was confirmed and done.
+	private bool RasterizeSelectionObjects (Document doc)
 	{
 		UserLayer layer = doc.Layers.CurrentUserLayer;
 		if (layer.ShapeObjects.Count == 0 && layer.TextObjects.Count == 0)
-			return;
+			return true;
 
-		ImageSurface baseBefore = layer.Surface.Clone ();
-		ImageSurface shapeBefore = layer.ShapeLayer.Layer.Surface.Clone ();
-		ImageSurface textBefore = layer.TextLayer.Layer.Surface.Clone ();
-		var shapesBefore = ShapeObject.CloneAll (layer.ShapeObjects);
-		var textBefore2 = TextObject.CloneAll (layer.TextObjects);
+		ObjectRasterizer.FindIntersecting (
+			layer, doc.Selection.GetBounds (),
+			out List<int> shapeIndices, out List<int> textIndices);
 
-		if (!layer.RasterizeObjects ())
-			return;
+		if (shapeIndices.Count == 0 && textIndices.Count == 0)
+			return true; // selection misses every object; nothing to bake.
 
-		doc.History.PushNewItem (new RasterizeObjectsHistoryItem (
-			workspace,
-			Resources.Icons.ImageFlatten,
-			Translations.GetString ("Rasterize Objects"),
-			baseBefore, shapeBefore, textBefore,
-			shapesBefore, textBefore2, layer));
+		var labels = ObjectRasterizer.Describe (layer, shapeIndices, textIndices).ToList ();
+		if (!ObjectRasterizer.Confirm (chrome, labels))
+			return false;
 
-		// Rebuild the shape edit engine's live engines from the (now empty) object list so the active
-		// layer stops compositing the baked shapes a second time.
-		LayerObjectSelection.RequestShapeReload (layer);
-		doc.Workspace.Invalidate ();
+		ObjectRasterizer.RasterizeSubset (doc, workspace, chrome, layer, shapeIndices, textIndices);
+		return true;
 	}
 
 	private void HandlePintaCoreActionsEditDeselectActivated (object sender, EventArgs e)

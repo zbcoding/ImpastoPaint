@@ -110,4 +110,27 @@ public sealed class ShapeObject
 
 	public static List<ShapeObject> CloneAll (IReadOnlyList<ShapeObject> objects)
 		=> [.. objects.Select (o => o.Clone ())];
+
+	/// <summary>
+	/// Approximate on-canvas bounds from the control-point positions, padded by the stroke width.
+	/// Used only to decide whether a selection overlaps this shape (rasterize-on-touch), so a rough
+	/// bounding box that errs slightly large is fine. ponytail: control-point bbox + brush pad.
+	/// </summary>
+	public RectangleD GetApproximateBounds ()
+	{
+		if (ControlPoints.Count == 0)
+			return RectangleD.Zero;
+
+		double minX = double.MaxValue, minY = double.MaxValue;
+		double maxX = double.MinValue, maxY = double.MinValue;
+		foreach (ShapeControlPoint p in ControlPoints) {
+			minX = System.Math.Min (minX, p.Position.X);
+			minY = System.Math.Min (minY, p.Position.Y);
+			maxX = System.Math.Max (maxX, p.Position.X);
+			maxY = System.Math.Max (maxY, p.Position.Y);
+		}
+
+		double pad = BrushWidth / 2.0 + 1;
+		return new (minX - pad, minY - pad, (maxX - minX) + 2 * pad, (maxY - minY) + 2 * pad);
+	}
 }

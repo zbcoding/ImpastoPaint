@@ -105,7 +105,7 @@ public sealed partial class LayersListView
 			return null;
 
 		UserLayer layer = item.UserLayer;
-		if (layer.ShapeObjects.Count == 0 && layer.TextObjects.Count == 0)
+		if (!layer.HasObjectSubNodes)
 			return null;
 
 		if (!child_models.TryGetValue (layer, out Gio.ListStore? store)) {
@@ -125,8 +125,12 @@ public sealed partial class LayersListView
 		store.RemoveMultiple (0, store.GetNItems ());
 		foreach (TextObject text in layer.TextObjects)
 			store.Append (LayersListViewItem.NewTextObject (active_document, layer, text));
+		// Skip Rasterize-on-finalize shapes: they are transient and fuse the moment you move on;
+		// showing them as a sub-node that then vanishes is confusing. Index i stays the position
+		// in ShapeObjects so click-to-select still maps correctly.
 		for (int i = 0; i < layer.ShapeObjects.Count; ++i)
-			store.Append (LayersListViewItem.NewShapeObject (active_document, layer, layer.ShapeObjects[i], i));
+			if (!layer.ShapeObjects[i].RasterizeOnFinalize)
+				store.Append (LayersListViewItem.NewShapeObject (active_document, layer, layer.ShapeObjects[i], i));
 	}
 
 	private static void HandleFactorySetup (
@@ -294,7 +298,7 @@ public sealed partial class LayersListView
 			if (list_model.GetObject (i) is not LayersListViewItem item || item.UserLayer is not { } layer)
 				continue;
 
-			bool hasObjects = layer.ShapeObjects.Count > 0 || layer.TextObjects.Count > 0;
+			bool hasObjects = layer.HasObjectSubNodes;
 			bool hadStore = child_models.ContainsKey (layer);
 
 			if (hasObjects) {

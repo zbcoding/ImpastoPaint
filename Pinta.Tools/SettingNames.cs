@@ -20,6 +20,7 @@ internal static class SettingNames
 	internal const string TEXT_OUTLINE_WIDTH = "text-outline-width";
 	internal const string TEXT_JOIN = "text-join";
 	internal const string TEXT_MODE = "text-mode";
+	internal const string TEXT_RASTERIZE_MODE = "text-rasterize-mode";
 
 	internal const string RECOLOR_TOLERANCE = "recolor-tolerance";
 

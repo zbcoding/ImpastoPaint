@@ -245,6 +245,14 @@ public abstract class BaseEditEngine
 		// Rebuild live engines when a layer's ShapeObjects were swapped outside the tool
 		// (rasterize-on-cut and its undo/redo, raised from Pinta.Core).
 		LayerObjectSelection.ShapeReloadRequested += ReloadLayerShapes;
+
+		// Lend the shape renderer to Core's selective rasterize (Core owns the bake, but the shape
+		// renderer lives here). Renders the chosen shapes onto the given surface (e.g. a base raster).
+		LayerObjectSelection.ShapeSubsetRenderer = (surface, layer, indices) => {
+			foreach (int i in indices)
+				if (i >= 0 && i < layer.ShapeObjects.Count)
+					ShapeObjectRenderer.Render (surface, layer, layer.ShapeObjects[i]);
+		};
 	}
 
 	// Selects the shape at shapeIndex on the given layer and shows its control points, as if the

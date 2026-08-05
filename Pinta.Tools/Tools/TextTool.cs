@@ -171,6 +171,8 @@ public sealed class TextTool : BaseTool
 	private Gtk.Label font_label = null!;
 	private Gtk.FontDialogButton font_button = null!;
 	private ToolBarDropDownButton text_mode_btn = null!;
+	private ToolBarDropDownButton rasterize_mode_btn = null!;
+	private Gtk.Label rasterize_mode_label = null!;
 	private ToolBarDropDownButton variant_btn = null!;
 	private Gtk.SpinButton font_size = null!;
 	private ToolBarDropDownButton weight_btn = null!;
@@ -209,6 +211,25 @@ public sealed class TextTool : BaseTool
 		}
 
 		tb.Append (text_mode_btn);
+
+		if (rasterize_mode_label == null) {
+			string modeText = Translations.GetString ("Mode");
+			rasterize_mode_label = Gtk.Label.New ($" {modeText}: ");
+		}
+		tb.Append (rasterize_mode_label);
+
+		if (rasterize_mode_btn == null) {
+			rasterize_mode_btn = ToolBarDropDownButton.New ();
+			rasterize_mode_btn.AddItem (Translations.GetString ("Object — editable later"), Pinta.Resources.Icons.LayerProperties, false,
+				Translations.GetString ("Stays a live, re-editable text object. Cutting, erasing, or filtering across it will rasterize it first."));
+			rasterize_mode_btn.AddItem (Translations.GetString ("Raster — fuses to layer"), Pinta.Resources.Icons.LayerMergeDown, true,
+				Translations.GetString ("Painted into the active layer's pixels on commit. Immediately cut/move/erase like any artwork, but not editable later."));
+
+			rasterize_mode_btn.SelectedIndex = Settings.GetSetting (SettingNames.TEXT_RASTERIZE_MODE, false) ? 1 : 0;
+			rasterize_mode_btn.SelectedItemChanged += (_, _) =>
+				Settings.PutSetting (SettingNames.TEXT_RASTERIZE_MODE, RasterizeText);
+		}
+		tb.Append (rasterize_mode_btn);
 
 		tb.Append (GtkExtensions.CreateToolBarSeparator ());
 
@@ -693,6 +714,10 @@ public sealed class TextTool : BaseTool
 
 	//Whether the toolbar is set to create area (flow) text rather than point text.
 	private bool AreaMode => text_mode_btn?.SelectedIndex == 1;
+
+	//Whether new text fuses into the layer's raster on commit (Raster mode) rather than
+	//staying a live, re-editable object (Object mode). Read at commit time.
+	private bool RasterizeText => rasterize_mode_btn?.SelectedItem.GetTagOrDefault (false) ?? false;
 
 	private void HandleTextModeChanged (object? sender, EventArgs e)
 	{
@@ -1807,9 +1832,11 @@ public sealed class TextTool : BaseTool
 
 		im_context.SetClientWidget (null);
 
+		TextObject committed = current_text_object;
+
 		// A fresh object that never received text is simply dropped.
-		if (current_text_object.IsEmpty)
-			layer.TextObjects.Remove (current_text_object);
+		if (committed.IsEmpty)
+			layer.TextObjects.Remove (committed);
 
 		//Re-render the layer's TextLayer so the history item captures the committed state.
 		//CurrentUserLayer already equals `layer` in the common case, where the usual
@@ -1825,6 +1852,18 @@ public sealed class TextTool : BaseTool
 		PushTextHistoryItem (layer);
 
 		EndEditingSession ();
+
+		// Raster mode: fuse the just-committed text into the layer's base raster and drop it as an
+		// object (mirrors the shape tool's Raster mode). Its own history step, right after the commit,
+		// so one undo brings the editable text back and another removes it. Skipped for empty (dropped)
+		// text. No confirmation prompt — the mode was chosen deliberately.
+		if (RasterizeText && !committed.IsEmpty) {
+			int index = layer.TextObjects.IndexOf (committed);
+			if (index >= 0)
+				ObjectRasterizer.RasterizeSubset (
+					workspace.ActiveDocument, workspace, chrome, layer,
+					shapeIndices: [], textIndices: [index]);
+		}
 	}
 
 	private void HandleLayerCloned ()

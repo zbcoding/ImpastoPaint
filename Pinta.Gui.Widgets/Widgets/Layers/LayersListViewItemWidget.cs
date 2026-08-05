@@ -297,6 +297,14 @@ public sealed partial class LayersListViewItemWidget
 		Gio.Menu menu = Gio.Menu.New ();
 		menu.AppendSection (null, operationsSection);
 		menu.AppendSection (null, flipSection);
+
+		// Only offer "Rasterize All Objects" for layers that actually hold editable objects.
+		if (item.UserLayer.HasObjectSubNodes) {
+			Gio.Menu objectsSection = Gio.Menu.New ();
+			objectsSection.AppendItem (actions.RasterizeAllObjects.CreateMenuItem ());
+			menu.AppendSection (null, objectsSection);
+		}
+
 		menu.AppendSection (null, propertiesSection);
 
 		Gtk.PopoverMenu popover = Gtk.PopoverMenu.NewFromModel (menu);

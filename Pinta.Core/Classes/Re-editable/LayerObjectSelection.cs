@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using Cairo;
 
 namespace Pinta.Core;
 
@@ -26,4 +28,14 @@ public static class LayerObjectSelection
 
 	public static void RequestShapeReload (UserLayer layer)
 		=> ShapeReloadRequested?.Invoke (layer);
+
+	/// <summary>
+	/// Renders specific shapes (by index in <see cref="UserLayer.ShapeObjects"/>) of a layer onto an
+	/// arbitrary surface. Set by Pinta.Tools (which owns the shape renderer); Core calls it to bake a
+	/// subset of shapes into a layer's base raster during selective rasterize.
+	/// </summary>
+	public static Action<ImageSurface, UserLayer, IReadOnlyList<int>>? ShapeSubsetRenderer;
+
+	public static void RenderShapeSubset (ImageSurface surface, UserLayer layer, IReadOnlyList<int> shapeIndices)
+		=> ShapeSubsetRenderer?.Invoke (surface, layer, shapeIndices);
 }

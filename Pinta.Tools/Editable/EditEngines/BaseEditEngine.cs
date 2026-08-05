@@ -642,8 +642,13 @@ public abstract class BaseEditEngine
 
 	public virtual void HandleCommit ()
 	{
-		if (workspace.HasOpenDocuments)
+		if (workspace.HasOpenDocuments) {
+			// "Move on" fuse point: committing the tool (layer switch, layer op, menu action, etc.)
+			// bakes any Raster-mode shapes into the current layer. Runs while this layer is still
+			// current (DoCommit fires before the layer index changes), so they fuse onto the right one.
+			FinalizeAllShapes ();
 			PersistShapeObjects (workspace.ActiveDocument.Layers.CurrentUserLayer);
+		}
 	}
 
 	public virtual bool HandleBeforeUndo ()
@@ -1157,6 +1162,11 @@ public abstract class BaseEditEngine
 				//This doesn't matter, other than the fact that it gets set to a value in order for the code to build.
 				prevSelPoint = new PointD (0d, 0d);
 			}
+
+			// "Move on" fuse point: starting a new shape bakes any completed Raster-mode shapes. A
+			// raster shape is editable only while it is the one being drawn; once you begin another it
+			// becomes pixels (never lingers as a sub-node). No-op if none are Raster-mode.
+			FinalizeAllShapes ();
 
 			//Create a new ShapesHistoryItem so that the creation of a new shape can be undone.
 			doc.History.PushNewItem (new ShapesHistoryItem (this, owner.Icon, ShapeName + " " + Translations.GetString ("Added"),

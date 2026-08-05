@@ -202,7 +202,12 @@ public sealed partial class LayersListView
 		Gtk.ListView sender,
 		Gtk.ListView.ActivateSignalArgs args)
 	{
-		// Double-click opens Layer Properties (rename is via right-click menu, so DnD is not hindered).
+		// Double-click opens Layer Properties — but only for a layer row. Object sub-rows are already
+		// selected on single-click (HandleSelectionChanged); they have no properties dialog yet, so a
+		// double-click on one must NOT open (and thereby rename via) the parent layer's properties.
+		if (ItemAt (args.Position)?.IsObjectRow == true)
+			return;
+
 		PintaCore.Actions.Layers.Properties.Activate ();
 	}
 

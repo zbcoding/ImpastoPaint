@@ -2003,15 +2003,13 @@ public abstract class BaseEditEngine
 				undoSurface, doc.Layers.CurrentUserLayer, previousSelectedPointIndex, prev_selected_shape_index, true));
 		}
 
-		// Rasterized shapes keep a non-editable record: persist the finalized shapes, mark them
-		// Rasterized (their pixels now live in the base raster), and redraw the object surface — which
-		// skips Rasterized objects, so the baked pixels aren't composited twice. They stay in the layers
-		// dock as finalized records. The history item pushed above captured the pre-finalize editable
-		// objects, so undo restores them and removes the baked pixels.
+		// Rasterized mode: the shapes are now baked into the layer's base raster, so drop them as
+		// objects entirely — no sub-node in the layers dock, indistinguishable from paint, and
+		// immediately cut/copy/erase/effect-able. This is the whole point of Rasterized vs Object.
+		// The ShapesHistoryItem pushed above snapshotted the pre-finalize editable objects, so undo
+		// restores them (re-editable) and removes the baked pixels.
 		UserLayer layer = doc.Layers.CurrentUserLayer;
-		PersistShapeObjects (layer);
-		foreach (ShapeObject obj in layer.ShapeObjects)
-			obj.Rasterized = true;
+		layer.ShapeObjects.Clear ();
 		RedrawShapeLayerSurface (layer);
 
 		if (totalDirty.HasValue) {

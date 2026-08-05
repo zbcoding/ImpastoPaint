@@ -1952,6 +1952,11 @@ public abstract class BaseEditEngine
 			return;
 		}
 
+		// Invalidate the currently-drawn control-point handles before dropping their engines, so a
+		// history swap that removes shapes doesn't leave stale blue dots painted on the canvas.
+		foreach (ShapeEngine engine in SEngines)
+			PintaCore.Workspace.Invalidate (MoveHandle.UnionInvalidateRects (engine.ControlPointHandles));
+
 		SEngines.Clear ();
 		foreach (ShapeObject source in layer.ShapeObjects)
 			if (!source.Rasterized)

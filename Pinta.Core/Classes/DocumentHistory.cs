@@ -56,10 +56,24 @@ public sealed class DocumentHistory
 
 	public int Pointer { get; private set; } = -1;
 
+	/// <summary>
+	/// True while an Undo()/Redo() is applying a history item. An item's Undo/Redo can fire layer
+	/// events (e.g. AddLayer's DeleteLayer → SelectedLayerChanged) that make a tool commit/finalize
+	/// and try to PushNewItem — which would wipe the redo stack we're navigating and desync the
+	/// pointer (crash: AddLayerHistoryItem.Undo indexing a removed layer). Guarded below.
+	/// </summary>
+	public bool IsPerformingUndoRedo { get; private set; }
+
 	public IEnumerable<BaseHistoryItem> Items => history;
 
 	public void PushNewItem (BaseHistoryItem newItem)
 	{
+		// A tool reacting to a layer event fired mid-undo/redo must not mutate the stack we are
+		// navigating. Its view rebuild (surfaces/engines are derived state) is harmless; the stray
+		// history item is what corrupts the pointer, so drop it.
+		if (IsPerformingUndoRedo)
+			return;
+
 		// Remove all old redos starting from the end of the list
 		for (var i = history.Count - 1; i >= 0; i--) {
 			var item = history[i];
@@ -86,7 +100,12 @@ public sealed class DocumentHistory
 			throw new InvalidOperationException ("Undo stack is empty");
 
 		var item = history[Pointer];
-		item.Undo ();
+		IsPerformingUndoRedo = true;
+		try {
+			item.Undo ();
+		} finally {
+			IsPerformingUndoRedo = false;
+		}
 		item.State = HistoryItemState.Redo;
 
 		if (item.CausesDirty)
@@ -108,7 +127,12 @@ public sealed class DocumentHistory
 		Pointer++;
 
 		var item = history[Pointer];
-		item.Redo ();
+		IsPerformingUndoRedo = true;
+		try {
+			item.Redo ();
+		} finally {
+			IsPerformingUndoRedo = false;
+		}
 		item.State = HistoryItemState.Undo;
 
 		if (Pointer == clean_pointer)

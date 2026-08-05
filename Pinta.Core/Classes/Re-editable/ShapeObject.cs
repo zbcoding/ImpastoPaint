@@ -47,6 +47,13 @@ public sealed class ShapeObject
 	public ShapeObjectType ShapeType { get; set; }
 	public string Name { get; set; } = "";
 	/// <summary>
+	/// Per-shape mode intent, stamped from the tool's Object/Raster toggle when the shape is drawn.
+	/// When true, this shape fuses into the layer's base raster on the next commit (and is then dropped
+	/// as an object); when false it stays a live editable object. Per-shape so mixing modes on one
+	/// layer and committing does not rasterize the Object-mode shapes.
+	/// </summary>
+	public bool RasterizeOnFinalize { get; set; }
+	/// <summary>
 	/// True once the shape has been baked into the layer's base raster (Rasterized mode). Its pixels
 	/// live in the base layer, so it is no longer rendered into the object surface nor rebuilt as a
 	/// live editing engine — it is kept only as a (non-editable) record shown in the layers dock.
@@ -77,6 +84,7 @@ public sealed class ShapeObject
 			ShapeType = ShapeType,
 			Name = Name,
 			Rasterized = Rasterized,
+			RasterizeOnFinalize = RasterizeOnFinalize,
 			AntiAliasing = AntiAliasing,
 			Closed = Closed,
 			OutlineColor = OutlineColor,

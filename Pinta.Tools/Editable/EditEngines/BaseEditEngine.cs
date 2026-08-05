@@ -618,16 +618,12 @@ public abstract class BaseEditEngine
 		StorePreviousSettings ();
 
 		if (workspace.HasOpenDocuments) {
-			if (rasterize_shapes) {
-				// Rasterized mode: switching away commits the shapes into the layer's base raster.
-				FinalizeAllShapes ();
-			} else {
-				// Object mode: keep the raster overlay separate from UserLayer.Surface. Shape engines
-				// stay re-editable even while a non-shape tool is active.
-				// ToolManager has not assigned the new tool yet, so do not switch tools while
-				// redrawing. A shape on another tool would otherwise re-enter deactivation.
-				DrawAllShapes (preventSwitchBack: false, switchTools: false);
-			}
+			// Bake any Raster-mode shapes into the layer's base raster (per-shape; no-op if none).
+			FinalizeAllShapes ();
+			// Object-mode shapes stay re-editable: keep the raster overlay separate from
+			// UserLayer.Surface. ToolManager has not assigned the new tool yet, so do not switch
+			// tools while redrawing (a shape on another tool would re-enter deactivation).
+			DrawAllShapes (preventSwitchBack: false, switchTools: false);
 			PersistShapeObjects (workspace.ActiveDocument.Layers.CurrentUserLayer);
 		}
 
@@ -1169,6 +1165,9 @@ public abstract class BaseEditEngine
 			//Create the shape, add its starting points, and add it to SEngines.
 			ShapeEngine newEngine = CreateShape (ctrlKey, clicked_control_point, prevSelPoint);
 			newEngine.Name = NextDefaultShapeName (DefaultObjectName);
+			// Stamp the current Object/Raster toggle onto the shape so its mode is remembered
+			// per-shape; a later commit only rasterizes the shapes drawn in Raster mode.
+			newEngine.RasterizeOnFinalize = rasterize_shapes;
 			SEngines.Add (newEngine);
 
 			//Select the new shape.
@@ -1944,11 +1943,9 @@ public abstract class BaseEditEngine
 
 	private void CommitShapeEditing ()
 	{
-		if (rasterize_shapes) {
-			// Rasterized mode: bake the shapes into the layer's base raster and drop the objects.
-			FinalizeAllShapes ();
-			return;
-		}
+		// Bake any Raster-mode shapes into the base raster (per-shape; no-op if none), then keep the
+		// Object-mode shapes live and editable.
+		FinalizeAllShapes ();
 
 		SelectedPointIndex = -1;
 		SelectedShapeIndex = -1;
@@ -1958,66 +1955,61 @@ public abstract class BaseEditEngine
 	}
 
 	/// <summary>
-	/// Go through every editable shape not yet finalized and finalize it.
+	/// Bake the shapes drawn in Raster mode into the layer's base raster and drop them as objects.
+	/// Per-shape: only engines with <see cref="ShapeEngine.RasterizeOnFinalize"/> are fused;
+	/// Object-mode shapes on the same layer stay live and editable. No-op if none are Raster-mode.
 	/// </summary>
 	protected void FinalizeAllShapes ()
 	{
-		//Finalize every editable shape not yet finalized.
-
 		if (SEngines.Count == 0)
 			return;
 
+		List<ShapeEngine> rasterEngines = SEngines.Where (e => e.RasterizeOnFinalize).ToList ();
+		if (rasterEngines.Count == 0)
+			return;
+
 		Document doc = workspace.ActiveDocument;
+		UserLayer layer = doc.Layers.CurrentUserLayer;
 
-		ImageSurface undoSurface = doc.Layers.CurrentUserLayer.Surface.Clone ();
-
+		ImageSurface undoSurface = layer.Surface.Clone ();
 		int previousSelectedPointIndex = SelectedPointIndex;
 
 		RectangleD? totalDirty = null;
 
-		//Finalize all of the shapes.
-		for (SelectedShapeIndex = 0; SelectedShapeIndex < SEngines.Count; ++SelectedShapeIndex) {
-			//Get a reference to each shape's corresponding tool.
-			ShapeTool? correspondingTool = GetCorrespondingTool (SEngines[SelectedShapeIndex].ShapeType);
-
+		// Bake each Raster-mode shape into the base raster via its corresponding tool's engine.
+		foreach (ShapeEngine engine in rasterEngines) {
+			ShapeTool? correspondingTool = GetCorrespondingTool (engine.ShapeType);
 			if (correspondingTool == null)
 				continue;
 
-			//Finalize the now active shape using its corresponding tool's EditEngine.
-
 			BaseEditEngine correspondingEngine = correspondingTool.EditEngine;
-
-			correspondingEngine.SelectedShapeIndex = SelectedShapeIndex;
-
+			correspondingEngine.SelectedShapeIndex = SEngines.IndexOf (engine);
 			correspondingEngine.BeforeDraw ();
 
-			//Draw the current shape with the corresponding tool's EditEngine.
-			RectangleD dirty = correspondingEngine.DrawFinalized (SEngines[SelectedShapeIndex], false, false);
+			RectangleD dirty = correspondingEngine.DrawFinalized (engine, false, false);
 			totalDirty = totalDirty?.Union (dirty) ?? dirty;
 		}
 
-		//Make sure that the undo surface isn't null.
-		if (undoSurface != null) {
-			//Create a new ShapesHistoryItem so that the finalization of the shapes can be undone.
-			doc.History.PushNewItem (new ShapesHistoryItem (this, owner.Icon, Translations.GetString ("Finalized"),
-				undoSurface, doc.Layers.CurrentUserLayer, previousSelectedPointIndex, prev_selected_shape_index, true));
-		}
+		// Snapshot BEFORE dropping the baked shapes: the history item persists every live engine into
+		// ShapeObjects and clones it, so undo restores the raster shapes as editable and removes the
+		// baked pixels (base-raster diff). Object-mode shapes are untouched by all of this.
+		doc.History.PushNewItem (new ShapesHistoryItem (this, owner.Icon, Translations.GetString ("Finalized"),
+			undoSurface, layer, previousSelectedPointIndex, prev_selected_shape_index, true));
 
-		// Rasterized mode: the shapes are now baked into the layer's base raster, so drop them as
-		// objects entirely — no sub-node in the layers dock, indistinguishable from paint, and
-		// immediately cut/copy/erase/effect-able. This is the whole point of Rasterized vs Object.
-		// The ShapesHistoryItem pushed above snapshotted the pre-finalize editable objects, so undo
-		// restores them (re-editable) and removes the baked pixels.
-		UserLayer layer = doc.Layers.CurrentUserLayer;
-		layer.ShapeObjects.Clear ();
+		// Drop the now-baked Raster shapes from the live engines, then rebuild the object list + object
+		// surface from the remaining Object-mode engines. The baked shapes are gone as objects (plain
+		// pixels now); the Object-mode ones keep their editable sub-nodes.
+		foreach (ShapeEngine engine in rasterEngines)
+			SEngines.Remove (engine);
+
+		PersistShapeObjects (layer);
 		RedrawShapeLayerSurface (layer);
 
-		if (totalDirty.HasValue) {
+		if (totalDirty.HasValue)
 			InvalidateAfterDraw (totalDirty.Value);
-		}
 
-		//Clear out all of the data.
-		ResetShapes ();
+		SelectedPointIndex = -1;
+		SelectedShapeIndex = -1;
 	}
 
 	/// <summary>

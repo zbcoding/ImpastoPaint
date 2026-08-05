@@ -43,6 +43,7 @@ public static class ShapeEngineCollection
 		};
 
 		engine.Name = source.Name;
+		engine.RasterizeOnFinalize = source.RasterizeOnFinalize;
 		engine.DashPattern = source.DashPattern;
 		engine.DashSpacing = source.DashSpacing;
 		engine.FillStyle = source.FillStyle;
@@ -65,6 +66,7 @@ public static class ShapeEngineCollection
 		ShapeObject result = new () {
 			ShapeType = (ShapeObjectType) engine.ShapeType,
 			Name = engine.Name,
+			RasterizeOnFinalize = engine.RasterizeOnFinalize,
 			AntiAliasing = engine.AntiAliasing,
 			Closed = engine.Closed,
 			OutlineColor = engine.OutlineColor,
@@ -193,6 +195,11 @@ public abstract class ShapeEngine
 	// ShapeObject round-trip so it survives persist/reload. Shown in the layers dock.
 	public string Name { get; internal set; } = "";
 
+	// Per-shape Object/Raster mode intent, stamped from the tool toggle at creation. When true this
+	// shape bakes into the base raster on the next commit; false stays editable. Carried through the
+	// ShapeObject round-trip so mode is remembered per shape, not globally.
+	public bool RasterizeOnFinalize { get; internal set; }
+
 	public LineCap LineCap { get; set; }
 	public UserLayer ParentLayer => parent_layer ?? DrawingLayer.ParentLayer;
 
@@ -239,6 +246,7 @@ public abstract class ShapeEngine
 		DrawingLayer = src.DrawingLayer;
 		DrawingLayer.TryRemoveLayer (); // See note in the primary constructor.
 		Name = src.Name;
+		RasterizeOnFinalize = src.RasterizeOnFinalize;
 		ShapeType = src.ShapeType;
 		AntiAliasing = src.AntiAliasing;
 		Closed = src.Closed;
@@ -321,6 +329,7 @@ public abstract class ShapeEngine
 
 		// Don't clone the GeneratedPoints or OrganizedPoints, as they will be calculated.
 		clone.Name = Name;
+		clone.RasterizeOnFinalize = RasterizeOnFinalize;
 		clone.ControlPoints = ControlPoints.Select (i => i.Clone ()).ToList ();
 		clone.DashPattern = DashPattern;
 		clone.DashSpacing = DashSpacing;

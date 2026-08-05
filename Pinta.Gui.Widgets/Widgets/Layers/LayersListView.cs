@@ -125,8 +125,8 @@ public sealed partial class LayersListView
 		store.RemoveMultiple (0, store.GetNItems ());
 		foreach (TextObject text in layer.TextObjects)
 			store.Append (LayersListViewItem.NewTextObject (active_document, layer, text));
-		foreach (ShapeObject shape in layer.ShapeObjects)
-			store.Append (LayersListViewItem.NewShapeObject (active_document, layer, shape));
+		for (int i = 0; i < layer.ShapeObjects.Count; ++i)
+			store.Append (LayersListViewItem.NewShapeObject (active_document, layer, layer.ShapeObjects[i], i));
 	}
 
 	private static void HandleFactorySetup (
@@ -190,11 +190,9 @@ public sealed partial class LayersListView
 				active_document.Layers.SetCurrentUserLayer (doc_idx);
 
 			// Clicking a shape object row selects that shape in the editor and shows its control points.
-			if (item.ShapeObject is { } shape) {
-				int shape_idx = layer.ShapeObjects.IndexOf (shape);
-				if (shape_idx >= 0)
-					LayerObjectSelection.RequestShapeSelect (layer, shape_idx);
-			}
+			// Select by stored index, not by reference: Store() rebuilds ShapeObjects on every persist.
+			if (item.ShapeObject is not null)
+				LayerObjectSelection.RequestShapeSelect (layer, item.ObjectIndex);
 		} finally {
 			changing_selection = false;
 		}

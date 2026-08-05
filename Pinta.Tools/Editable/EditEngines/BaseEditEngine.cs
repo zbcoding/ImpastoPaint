@@ -271,6 +271,11 @@ public abstract class BaseEditEngine
 		engine.SelectedShapeIndex = shapeIndex;
 		engine.SelectedPointIndex = 0; // a valid point index makes the shape "selected" and shows its control dots
 		engine.DrawActiveShape (true, false, true, false, false);
+
+		// Show control points only for the selected shape. Reset the flag first so the hide re-runs
+		// even if another shape was already isolated (the guard would otherwise no-op).
+		engine.other_shapes_points_hidden = false;
+		engine.SetOtherShapesControlPointsHidden (true);
 	}
 
 	#region ToolbarEventHandlers

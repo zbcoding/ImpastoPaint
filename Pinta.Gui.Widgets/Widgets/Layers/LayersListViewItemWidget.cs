@@ -47,6 +47,11 @@ public sealed partial class LayersListViewItem
 	public TextObject? TextObject { get; private set; }
 	public bool IsObjectRow => ShapeObject is not null || TextObject is not null;
 
+	// Index of this object within its layer's ShapeObjects/TextObjects list. Used to select the shape
+	// by position rather than by reference, because ShapeEngineCollection.Store rebuilds ShapeObjects
+	// with new instances on every persist (a held reference goes stale, but the ordering is stable).
+	public int ObjectIndex { get; private set; }
+
 	public static LayersListViewItem New (Document doc, UserLayer userLayer)
 	{
 		LayersListViewItem item = NewWithProperties ([]);
@@ -55,12 +60,13 @@ public sealed partial class LayersListViewItem
 		return item;
 	}
 
-	public static LayersListViewItem NewShapeObject (Document doc, UserLayer userLayer, ShapeObject shape)
+	public static LayersListViewItem NewShapeObject (Document doc, UserLayer userLayer, ShapeObject shape, int index)
 	{
 		LayersListViewItem item = NewWithProperties ([]);
 		item.document = doc;
 		item.UserLayer = userLayer;
 		item.ShapeObject = shape;
+		item.ObjectIndex = index;
 		return item;
 	}
 
@@ -85,7 +91,7 @@ public sealed partial class LayersListViewItem
 
 	private static string ShapeTypeName (ShapeObjectType type) => type switch {
 		ShapeObjectType.Ellipse => Translations.GetString ("Ellipse"),
-		ShapeObjectType.RoundedLineSeries => Translations.GetString ("Rounded Shape"),
+		ShapeObjectType.RoundedLineSeries => Translations.GetString ("Rounded Rectangle"),
 		ShapeObjectType.Triangle => Translations.GetString ("Triangle"),
 		ShapeObjectType.OpenLineCurveSeries => Translations.GetString ("Line/Curve"),
 		_ => Translations.GetString ("Shape"),

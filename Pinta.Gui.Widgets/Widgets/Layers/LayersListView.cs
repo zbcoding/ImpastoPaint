@@ -290,15 +290,26 @@ public sealed partial class LayersListView
 				continue;
 
 			bool hasObjects = layer.ShapeObjects.Count > 0 || layer.TextObjects.Count > 0;
-			bool hasStore = child_models.TryGetValue (layer, out Gio.ListStore? store);
+			bool hadStore = child_models.ContainsKey (layer);
 
-			if (hasObjects && hasStore) {
-				PopulateChildModel (store!, layer);
-			} else if (hasObjects != hasStore) {
-				// Expandability changed (first object added, or last one removed): replace the root
-				// row so the TreeListModel re-runs the create func for it.
-				if (!hasObjects)
-					child_models.Remove (layer);
+			if (hasObjects) {
+				// Ensure the child store exists and is fully populated *before* touching the root row,
+				// so when the tree asks for children (via the create func) it gets a ready model.
+				if (!child_models.TryGetValue (layer, out Gio.ListStore? store)) {
+					store = Gio.ListStore.New (LayersListViewItem.GetGType ());
+					child_models[layer] = store;
+				}
+				PopulateChildModel (store, layer);
+
+				// Expandability just turned on (first object added): replace the root row so the
+				// TreeListModel re-runs the create func and picks up the now-populated child model.
+				if (!hadStore) {
+					list_model.Remove (i);
+					list_model.Insert (i, LayersListViewItem.New (active_document, layer));
+				}
+			} else if (hadStore) {
+				// Last object removed: drop the child model and replace the row so it's no longer expandable.
+				child_models.Remove (layer);
 				list_model.Remove (i);
 				list_model.Insert (i, LayersListViewItem.New (active_document, layer));
 			}

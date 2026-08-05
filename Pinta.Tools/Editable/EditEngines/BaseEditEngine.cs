@@ -257,18 +257,28 @@ public abstract class BaseEditEngine
 		if (layerIndex < 0 || shapeIndex < 0 || shapeIndex >= layer.ShapeObjects.Count)
 			return;
 
+		ShapeObject target = layer.ShapeObjects[shapeIndex];
+		if (target.Rasterized)
+			return; // baked into the layer's pixels; there is no editable engine to select
+
 		if (layers.CurrentUserLayerIndex != layerIndex)
 			layers.SetCurrentUserLayer (layerIndex);
 
+		// SEngines skips rasterized objects, so map the ShapeObjects index to the engine index.
+		int engineIndex = 0;
+		for (int i = 0; i < shapeIndex; ++i)
+			if (!layer.ShapeObjects[i].Rasterized)
+				++engineIndex;
+
 		// ShapeObjectType and ShapeTypes share ordering (they are cast to each other elsewhere).
-		ShapeTypes shapeType = (ShapeTypes) layer.ShapeObjects[shapeIndex].ShapeType;
+		ShapeTypes shapeType = (ShapeTypes) target.ShapeType;
 		ActivateCorrespondingTool (shapeType, true);
 
 		BaseEditEngine? engine = GetCorrespondingTool (shapeType)?.EditEngine;
-		if (engine is null || shapeIndex >= SEngines.Count)
+		if (engine is null || engineIndex >= SEngines.Count)
 			return;
 
-		engine.SelectedShapeIndex = shapeIndex;
+		engine.SelectedShapeIndex = engineIndex;
 		engine.SelectedPointIndex = 0; // a valid point index makes the shape "selected" and shows its control dots
 		engine.DrawActiveShape (true, false, true, false, false);
 
@@ -1855,9 +1865,11 @@ public abstract class BaseEditEngine
 		// Rebuild the live editing engines for the now-active layer from its object list,
 		// and render them into its ShapeLayer surface. The active layer now composites
 		// solely through this shared surface (per-shape overlays are retired), so the
-		// same geometry never renders twice.
+		// same geometry never renders twice. Rasterized objects are records only (baked into
+		// the base raster), so they are not rebuilt as editable engines.
 		foreach (ShapeObject source in layer.ShapeObjects)
-			SEngines.Add (ShapeEngineCollection.Create (layer, source));
+			if (!source.Rasterized)
+				SEngines.Add (ShapeEngineCollection.Create (layer, source));
 
 		RedrawShapeLayerSurface (layer);
 	}
@@ -1921,7 +1933,8 @@ public abstract class BaseEditEngine
 
 		SEngines.Clear ();
 		foreach (ShapeObject source in layer.ShapeObjects)
-			SEngines.Add (ShapeEngineCollection.Create (layer, source));
+			if (!source.Rasterized)
+				SEngines.Add (ShapeEngineCollection.Create (layer, source));
 		runtime_layer = layer;
 	}
 
@@ -1986,11 +1999,15 @@ public abstract class BaseEditEngine
 				undoSurface, doc.Layers.CurrentUserLayer, previousSelectedPointIndex, prev_selected_shape_index, true));
 		}
 
-		// Rasterized shapes keep no editable object: drop them from the layer and clear the object
-		// surface so the baked pixels aren't composited twice (base raster + ShapeLayer). The history
-		// item pushed above already captured these objects, so undo restores them and removes the pixels.
+		// Rasterized shapes keep a non-editable record: persist the finalized shapes, mark them
+		// Rasterized (their pixels now live in the base raster), and redraw the object surface — which
+		// skips Rasterized objects, so the baked pixels aren't composited twice. They stay in the layers
+		// dock as finalized records. The history item pushed above captured the pre-finalize editable
+		// objects, so undo restores them and removes the baked pixels.
 		UserLayer layer = doc.Layers.CurrentUserLayer;
-		layer.ShapeObjects.Clear ();
+		PersistShapeObjects (layer);
+		foreach (ShapeObject obj in layer.ShapeObjects)
+			obj.Rasterized = true;
 		RedrawShapeLayerSurface (layer);
 
 		if (totalDirty.HasValue) {

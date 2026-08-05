@@ -46,6 +46,12 @@ public sealed class ShapeObject
 {
 	public ShapeObjectType ShapeType { get; set; }
 	public string Name { get; set; } = "";
+	/// <summary>
+	/// True once the shape has been baked into the layer's base raster (Rasterized mode). Its pixels
+	/// live in the base layer, so it is no longer rendered into the object surface nor rebuilt as a
+	/// live editing engine — it is kept only as a (non-editable) record shown in the layers dock.
+	/// </summary>
+	public bool Rasterized { get; set; }
 	public List<ShapeControlPoint> ControlPoints { get; } = [];
 	public bool AntiAliasing { get; set; } = true;
 	public bool Closed { get; set; }
@@ -70,6 +76,7 @@ public sealed class ShapeObject
 		ShapeObject clone = new () {
 			ShapeType = ShapeType,
 			Name = Name,
+			Rasterized = Rasterized,
 			AntiAliasing = AntiAliasing,
 			Closed = Closed,
 			OutlineColor = OutlineColor,

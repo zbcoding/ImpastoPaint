@@ -379,7 +379,14 @@ public sealed partial class LayersListViewItemWidget
 		item_thumbnail.SetVisible (!isObject);
 
 		if (isObject) {
-			SetTooltipText (null);
+			// Rasterized shapes are baked into the layer's pixels and no longer editable; mark them
+			// with a lock and explain in the tooltip. Editable object rows have no tooltip.
+			if (item.ShapeObject?.Rasterized == true) {
+				item_label.SetText (item.Label + "  \U0001F512");
+				SetTooltipText (Translations.GetString ("Rasterized: baked into the layer's pixels. No longer editable as an object."));
+			} else {
+				SetTooltipText (null);
+			}
 			return;
 		}
 

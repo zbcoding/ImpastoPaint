@@ -188,6 +188,13 @@ public sealed partial class LayersListView
 			int doc_idx = active_document.Layers.IndexOf (layer);
 			if (doc_idx >= 0 && active_document.Layers.CurrentUserLayerIndex != doc_idx)
 				active_document.Layers.SetCurrentUserLayer (doc_idx);
+
+			// Clicking a shape object row selects that shape in the editor and shows its control points.
+			if (item.ShapeObject is { } shape) {
+				int shape_idx = layer.ShapeObjects.IndexOf (shape);
+				if (shape_idx >= 0)
+					LayerObjectSelection.RequestShapeSelect (layer, shape_idx);
+			}
 		} finally {
 			changing_selection = false;
 		}

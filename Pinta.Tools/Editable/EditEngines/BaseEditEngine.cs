@@ -237,6 +237,42 @@ public abstract class BaseEditEngine
 	//Stores the editable shape data.
 	public static Collection<ShapeEngine> SEngines = [];
 
+	static BaseEditEngine ()
+	{
+		// Fulfill "select this shape object" requests from the layers dock (Pinta.Gui.Widgets).
+		LayerObjectSelection.ShapeSelectRequested += HandleShapeSelectRequested;
+	}
+
+	// Selects the shape at shapeIndex on the given layer and shows its control points, as if the
+	// user had clicked into it on the canvas. Called via the Core bridge when an object sub-row is
+	// clicked. Order matters: make the layer current, then activate the shape's tool (which
+	// (re)populates SEngines from that layer), then select and redraw.
+	private static void HandleShapeSelectRequested (UserLayer layer, int shapeIndex)
+	{
+		if (!PintaCore.Workspace.HasOpenDocuments)
+			return;
+
+		var layers = PintaCore.Workspace.ActiveDocument.Layers;
+		int layerIndex = layers.IndexOf (layer);
+		if (layerIndex < 0 || shapeIndex < 0 || shapeIndex >= layer.ShapeObjects.Count)
+			return;
+
+		if (layers.CurrentUserLayerIndex != layerIndex)
+			layers.SetCurrentUserLayer (layerIndex);
+
+		// ShapeObjectType and ShapeTypes share ordering (they are cast to each other elsewhere).
+		ShapeTypes shapeType = (ShapeTypes) layer.ShapeObjects[shapeIndex].ShapeType;
+		ActivateCorrespondingTool (shapeType, true);
+
+		BaseEditEngine? engine = GetCorrespondingTool (shapeType)?.EditEngine;
+		if (engine is null || shapeIndex >= SEngines.Count)
+			return;
+
+		engine.SelectedShapeIndex = shapeIndex;
+		engine.SelectedPointIndex = 0; // a valid point index makes the shape "selected" and shows its control dots
+		engine.DrawActiveShape (true, false, true, false, false);
+	}
+
 	#region ToolbarEventHandlers
 
 	protected virtual void BrushMinusButtonClickedEvent (object? o, EventArgs args)

@@ -442,6 +442,11 @@ public sealed class EditActions
 
 		tools.Commit ();
 
+		// Clearing the selection fuses any Object-mode shape drawn clipped partly outside it. Ask the
+		// user before that happens; cancelling aborts the deselect and leaves the selection intact.
+		if (!ConfirmDeselectRasterize (doc))
+			return;
+
 		SelectionHistoryItem hist = new (
 			workspace,
 			Resources.Icons.EditSelectionNone,
@@ -457,6 +462,25 @@ public sealed class EditActions
 		// Now that the selection is gone, let the shape tool fuse any shape that was drawn clipped to
 		// it (so it doesn't linger as an object with an invisible clip boundary). Its own history step.
 		LayerObjectSelection.RaiseSelectionCleared ();
+	}
+
+	// True unless the user cancels a prompt about objects that deselecting would rasterize. After
+	// tools.Commit() the active layer's ShapeObjects are persisted and every other layer's list is
+	// already current, so they match exactly what the selection-clear fuse step will bake — no dialog
+	// when there is nothing to fuse.
+	private bool ConfirmDeselectRasterize (Document doc)
+	{
+		List<string> labels = [];
+		foreach (UserLayer layer in doc.Layers.UserLayers) {
+			List<int> shapeIndices = ObjectRasterizer.FindClippedShapesOnDeselect (layer);
+			if (shapeIndices.Count > 0)
+				labels.AddRange (ObjectRasterizer.Describe (layer, shapeIndices, []));
+		}
+
+		if (labels.Count == 0)
+			return true;
+
+		return ObjectRasterizer.Confirm (chrome, labels);
 	}
 
 	// Escape (double-tap) clears the current editing state no matter which tool is active.

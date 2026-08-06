@@ -273,18 +273,18 @@ public abstract class BaseEditEngine
 			// Make the layer's object list reflect its live editing engines before reading it.
 			PersistShapeObjectsIfLive (layer);
 
-			List<int> toRasterize = [];
+			// Free the clip on shapes that lie fully inside it (no visible clip; keep editable), then
+			// fuse the genuinely-clipped ones — the same set the deselect confirmation reports (Core).
 			bool droppedClip = false;
 			for (int i = 0; i < layer.ShapeObjects.Count; ++i) {
 				ShapeObject s = layer.ShapeObjects[i];
-				if (s.Clip is null)
-					continue;
-				if (ClipContainsShape (s))
-					{ s.Clip = null; droppedClip = true; } // no visible clip; free it, keep editable
-				else
-					toRasterize.Add (i);                    // genuinely clipped; fuse it to pixels
+				if (s.Clip is not null && ObjectRasterizer.ClipContainsShape (s)) {
+					s.Clip = null;
+					droppedClip = true;
+				}
 			}
 
+			List<int> toRasterize = ObjectRasterizer.FindClippedShapesOnDeselect (layer);
 			if (toRasterize.Count > 0)
 				// Bakes the clipped pixels and reloads the layer's live engines from what remains.
 				ObjectRasterizer.RasterizeSubset (
@@ -293,17 +293,6 @@ public abstract class BaseEditEngine
 				// Only clips were dropped (no bake): resync live engines so a later move can't re-clip.
 				ReloadLayerShapes (layer);
 		}
-	}
-
-	// True when the shape lies entirely within its frozen clip, so clipping has no visible effect.
-	// ponytail: bbox test — exact for rectangular selections (the common case). A non-rectangular
-	// clip whose bbox contains the shape but whose region does not could wrongly drop the clip and
-	// reveal hidden pixels; upgrade to a region-containment test if lasso-clipped shapes matter.
-	private static bool ClipContainsShape (ShapeObject s)
-	{
-		RectangleD b = s.GetApproximateBounds ();
-		RectangleD c = s.Clip!.GetBounds ();
-		return c.X <= b.X && c.Y <= b.Y && c.Right >= b.Right && c.Bottom >= b.Bottom;
 	}
 
 	// Selects the shape at shapeIndex on the given layer and shows its control points, as if the

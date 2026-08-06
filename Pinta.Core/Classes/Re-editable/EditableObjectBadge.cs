@@ -1,16 +1,15 @@
 using System;
 using Cairo;
-using Pinta.Core;
 
-namespace Pinta.Tools;
+namespace Pinta.Core;
 
 /// <summary>
 /// Draws the small "Obj." badge that marks a live, re-editable shape/text object. Used as a
 /// semi-transparent grey on-canvas affordance (drawn on the tool overlay layer, never baked into
 /// artwork) positioned at the lower-left of a text field / below the leftmost corner of a shape.
-/// The layers dock shows the same mark via the object-editable-symbolic icon.
+/// The layers dock draws the same badge on object sub-node rows so both places share one look.
 /// </summary>
-internal static class EditableObjectBadge
+public static class EditableObjectBadge
 {
 	public const double Width = 26;
 	public const double Height = 14;

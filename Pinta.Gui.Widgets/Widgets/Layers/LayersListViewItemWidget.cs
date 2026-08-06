@@ -191,7 +191,7 @@ public sealed partial class LayersListViewItemWidget
 	private Gtk.Label item_label;
 	private Gtk.CheckButton visible_button;
 	private Gtk.Image rasterized_icon;
-	private Gtk.Image object_icon;
+	private Gtk.DrawingArea object_badge;
 
 	public static LayersListViewItemWidget New ()
 		=> NewWithProperties ([]);
@@ -200,7 +200,7 @@ public sealed partial class LayersListViewItemWidget
 	[MemberNotNull (nameof (item_label))]
 	[MemberNotNull (nameof (visible_button))]
 	[MemberNotNull (nameof (rasterized_icon))]
-	[MemberNotNull (nameof (object_icon))]
+	[MemberNotNull (nameof (object_badge))]
 	partial void Initialize ()
 	{
 		Gtk.DrawingArea itemThumbnail = Gtk.DrawingArea.New ();
@@ -223,10 +223,15 @@ public sealed partial class LayersListViewItemWidget
 		rasterizedIcon.Halign = Gtk.Align.End;
 		rasterizedIcon.Visible = false;
 
-		// Leading badge ("O" in a rounded square) marking a live, re-editable shape/text object row.
-		Gtk.Image objectIcon = Gtk.Image.NewFromIconName (Pinta.Resources.Icons.ObjectEditable);
-		objectIcon.Halign = Gtk.Align.Start;
-		objectIcon.Visible = false;
+		// Leading badge marking a live, re-editable shape/text object row. Drawn with the
+		// same Cairo "Obj." badge as the canvas (not an icon-theme image), so it can't fall
+		// back to a bare square when the theme SVG text doesn't render.
+		Gtk.DrawingArea objectBadge = Gtk.DrawingArea.New ();
+		objectBadge.SetDrawFunc ((area, context, width, height) => DrawObjectBadge (context, width, height));
+		objectBadge.WidthRequest = (int) EditableObjectBadge.Width;
+		objectBadge.HeightRequest = (int) EditableObjectBadge.Height;
+		objectBadge.Halign = Gtk.Align.Start;
+		objectBadge.Visible = false;
 
 		Gtk.GestureClick menuGesture = Gtk.GestureClick.New ();
 		menuGesture.SetButton (Gdk.Constants.BUTTON_SECONDARY);
@@ -258,7 +263,7 @@ public sealed partial class LayersListViewItemWidget
 		SetOrientation (Gtk.Orientation.Horizontal);
 
 		Append (visibleButton);
-		Append (objectIcon);
+		Append (objectBadge);
 		Append (itemLabel);
 		Append (rasterizedIcon);
 		Append (itemThumbnail);
@@ -269,7 +274,7 @@ public sealed partial class LayersListViewItemWidget
 		item_label = itemLabel;
 		visible_button = visibleButton;
 		rasterized_icon = rasterizedIcon;
-		object_icon = objectIcon;
+		object_badge = objectBadge;
 	}
 
 	private void MenuGesture_OnPressed (
@@ -410,7 +415,8 @@ public sealed partial class LayersListViewItemWidget
 			// with a monochrome checkmark. Editable object rows instead get the "editable object" badge.
 			bool rasterized = item.ShapeObject?.Rasterized == true;
 			rasterized_icon.Visible = rasterized;
-			object_icon.Visible = !rasterized;
+			object_badge.Visible = !rasterized;
+			object_badge.QueueDraw ();
 			SetTooltipText (rasterized
 				? Translations.GetString ("Rasterized: baked into the layer's pixels. No longer editable as an object.")
 				: Translations.GetString ("Re-editable object: a live shape or text you can keep editing until you rasterize it."));
@@ -418,13 +424,29 @@ public sealed partial class LayersListViewItemWidget
 		}
 
 		rasterized_icon.Visible = false;
-		object_icon.Visible = false;
+		object_badge.Visible = false;
 
 		visible_button.SetActive (item.Visible);
 		SetTooltipText (item.TooltipText);
 
 		thumbnail_surface = null;
 		item_thumbnail.QueueDraw ();
+	}
+
+	/// <summary>
+	/// Draws the "Obj." badge at (0,0) of the object-badge drawing area, scaled to fit.
+	/// </summary>
+	private static void DrawObjectBadge (Context g, int width, int height)
+	{
+		// Scale the badge down from its natural 26x14 to fit the allocated area, so it reads at the
+		// same visual size as other 16px dock markers rather than dominating the row.
+		double scale = Math.Min (width / EditableObjectBadge.Width, height / EditableObjectBadge.Height);
+		if (scale <= 0 || double.IsNaN (scale))
+			scale = 1;
+		g.Save ();
+		g.Scale (scale, scale);
+		EditableObjectBadge.Draw (g, new PointD (0, 0), new Color (0.2, 0.2, 0.2, 1.0));
+		g.Restore ();
 	}
 
 	private void DrawThumbnail (

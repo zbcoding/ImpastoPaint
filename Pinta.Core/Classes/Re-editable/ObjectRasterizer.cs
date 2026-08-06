@@ -45,6 +45,35 @@ public static class ObjectRasterizer
 	private static bool Overlaps (in RectangleD a, in RectangleD b)
 		=> a.Left < b.Right && a.Right > b.Left && a.Top < b.Bottom && a.Bottom > b.Top;
 
+	/// <summary>
+	/// Indices of the Object-mode shapes on <paramref name="layer"/> that a deselect would fuse into
+	/// its base raster: shapes drawn with a frozen selection clip that lies partly outside that clip
+	/// (i.e. genuinely clipped). Shapes fully inside their clip stay editable (deselect just drops the
+	/// clip); shapes with no clip are unaffected. Shared by the deselect confirmation prompt (Core) and
+	/// the actual fuse step on selection-clear (Pinta.Tools) so they always agree.
+	/// </summary>
+	public static List<int> FindClippedShapesOnDeselect (UserLayer layer)
+	{
+		List<int> result = [];
+		for (int i = 0; i < layer.ShapeObjects.Count; ++i) {
+			ShapeObject s = layer.ShapeObjects[i];
+			if (s.Clip is not null && !ClipContainsShape (s))
+				result.Add (i);
+		}
+		return result;
+	}
+
+	// True when the shape lies entirely within its frozen clip, so clipping has no visible effect.
+	// ponytail: bbox test — exact for rectangular selections (the common case). A non-rectangular
+	// clip whose bbox contains the shape but whose region does not could wrongly drop the clip and
+	// reveal hidden pixels; upgrade to a region-containment test if lasso-clipped shapes matter.
+	public static bool ClipContainsShape (ShapeObject s)
+	{
+		RectangleD b = s.GetApproximateBounds ();
+		RectangleD c = s.Clip!.GetBounds ();
+		return c.X <= b.X && c.Y <= b.Y && c.Right >= b.Right && c.Bottom >= b.Bottom;
+	}
+
 	/// <summary>Display labels for the given objects, mirroring the layers dock naming.</summary>
 	public static IEnumerable<string> Describe (
 		UserLayer layer,

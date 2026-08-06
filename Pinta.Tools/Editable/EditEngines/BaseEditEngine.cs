@@ -384,6 +384,7 @@ public abstract class BaseEditEngine
 	private readonly IToolService tools;
 	private readonly IPaletteService palette;
 	private readonly IWorkspaceService workspace;
+	private readonly SystemManager system_manager;
 	private static UserLayer? runtime_layer;
 
 	public BaseEditEngine (
@@ -393,6 +394,7 @@ public abstract class BaseEditEngine
 		tools = services.GetService<IToolService> ();
 		palette = services.GetService<IPaletteService> ();
 		workspace = services.GetService<IWorkspaceService> ();
+		system_manager = services.GetService<SystemManager> ();
 
 		owner = passedOwner;
 
@@ -1848,9 +1850,14 @@ public abstract class BaseEditEngine
 				hovering_control_point = hover_handle.ContainsPoint (current_window_point);
 				if (hovering_control_point) {
 					hover_handle.Active = hover_handle.Selected = true;
+					string ctrl = system_manager.CtrlLabel ();
+					string tension = PintaCore.Shortcuts.GetToolBinding (KeyboardShortcutManager.ShapeChangeTension).ToLabel ();
 					hover_handle.TooltipText =
 						$"{(int) Math.Round (closestControlPoint.Position.X)}, {(int) Math.Round (closestControlPoint.Position.Y)}\n"
-						+ Translations.GetString ("Shift-drag to snap the adjacent segment to a 15° angle.");
+						+ Translations.GetString ("Shift-drag to snap the adjacent segment to a 15° angle.") + "\n"
+						+ Translations.GetString ("Right click and drag to move the whole shape.") + "\n"
+						// Translators: {0} is the tension modifier key (e.g. 'Ctrl'). {1} is 'Ctrl', or the platform-specific key such as 'Command'.
+						+ Translations.GetString ("Hold {0} while right dragging to change tension; {1} click to start a new shape here.", tension, ctrl);
 				}
 			}
 

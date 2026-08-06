@@ -44,6 +44,7 @@ public static class ShapeEngineCollection
 
 		engine.Name = source.Name;
 		engine.RasterizeOnFinalize = source.RasterizeOnFinalize;
+		engine.Clip = source.Clip;
 		engine.DashPattern = source.DashPattern;
 		engine.DashSpacing = source.DashSpacing;
 		engine.FillStyle = source.FillStyle;
@@ -67,6 +68,7 @@ public static class ShapeEngineCollection
 			ShapeType = (ShapeObjectType) engine.ShapeType,
 			Name = engine.Name,
 			RasterizeOnFinalize = engine.RasterizeOnFinalize,
+			Clip = engine.Clip,
 			AntiAliasing = engine.AntiAliasing,
 			Closed = engine.Closed,
 			OutlineColor = engine.OutlineColor,
@@ -200,6 +202,11 @@ public abstract class ShapeEngine
 	// ShapeObject round-trip so mode is remembered per shape, not globally.
 	public bool RasterizeOnFinalize { get; internal set; }
 
+	// The selection the shape was drawn under, frozen at creation (null = no active selection). Every
+	// render clips to this so the shape keeps its drawn-inside-a-selection appearance across reloads and
+	// selection changes. Carried through the ShapeObject round-trip. Shared, never mutated.
+	public DocumentSelection? Clip { get; internal set; }
+
 	public LineCap LineCap { get; set; }
 	public UserLayer ParentLayer => parent_layer ?? DrawingLayer.ParentLayer;
 
@@ -247,6 +254,7 @@ public abstract class ShapeEngine
 		DrawingLayer.TryRemoveLayer (); // See note in the primary constructor.
 		Name = src.Name;
 		RasterizeOnFinalize = src.RasterizeOnFinalize;
+		Clip = src.Clip;
 		ShapeType = src.ShapeType;
 		AntiAliasing = src.AntiAliasing;
 		Closed = src.Closed;

@@ -261,8 +261,13 @@ public sealed class TextTool : BaseTool
 				Translations.GetString ("Painted into the active layer's pixels on commit. Immediately cut/move/erase like any artwork, but not editable later."));
 
 			rasterize_mode_btn.SelectedIndex = Settings.GetSetting (SettingNames.TEXT_RASTERIZE_MODE, false) ? 1 : 0;
-			rasterize_mode_btn.SelectedItemChanged += (_, _) =>
+			rasterize_mode_btn.SelectedItemChanged += (_, _) => {
 				Settings.PutSetting (SettingNames.TEXT_RASTERIZE_MODE, RasterizeText);
+				//A mid-edit mode toggle applies to the object being edited, so its clip and
+				//commit-time fuse follow the newly chosen mode.
+				if (current_text_object != null)
+					current_text_object.RasterizeOnFinalize = RasterizeText;
+			};
 		}
 		tb.Append (rasterize_mode_btn);
 
@@ -1132,7 +1137,7 @@ public sealed class TextTool : BaseTool
 			return;
 
 		// Start editing at the cursor location as a brand new text object.
-		TextObject newObject = new (new TextEngine ());
+		TextObject newObject = new (new TextEngine ()) { RasterizeOnFinalize = RasterizeText };
 		current_text_object = newObject;
 		click_point = pt;
 		UpdateFont ();
@@ -1901,18 +1906,22 @@ public sealed class TextTool : BaseTool
 
 		PushTextHistoryItem (layer);
 
+		// Capture the frozen editing selection before EndEditingSession clears it, so the
+		// Raster-mode bake below clips to the same region the preview did.
+		DocumentSelection? rasterClip = selection;
+
 		EndEditingSession ();
 
 		// Raster mode: fuse the just-committed text into the layer's base raster and drop it as an
 		// object (mirrors the shape tool's Raster mode). Its own history step, right after the commit,
 		// so one undo brings the editable text back and another removes it. Skipped for empty (dropped)
 		// text. No confirmation prompt — the mode was chosen deliberately.
-		if (RasterizeText && !committed.IsEmpty) {
+		if (committed.RasterizeOnFinalize && !committed.IsEmpty) {
 			int index = layer.TextObjects.IndexOf (committed);
 			if (index >= 0)
 				ObjectRasterizer.RasterizeSubset (
 					workspace.ActiveDocument, workspace, chrome, layer,
-					shapeIndices: [], textIndices: [index]);
+					shapeIndices: [], textIndices: [index], textClip: rasterClip);
 		}
 	}
 
@@ -2149,9 +2158,17 @@ public sealed class TextTool : BaseTool
 				g.FillRectangle (rect.ToDouble (), c);
 		}
 
-		//Clip only the active object to the editing selection.
-		if (isActive)
-			selection?.Clip (g);
+		//Clip Raster-mode text to the editing selection on every render — preview and the
+		//final commit render alike — so the portion outside the selection is never drawn and
+		//never bakes in (it stays invisible through finalize, in real time as you type/resize,
+		//not one render behind). Keyed off the object's mode plus a live selection rather than
+		//isActive: the commit path redraws with isActive:false but before EndEditingSession
+		//clears `selection`. Object-mode text lives on its own sub-layer and is never clipped,
+		//so it stays visible while editing and when re-selected from the dock even if it lies
+		//outside the leftover selection.
+		bool clipToSelection = obj.RasterizeOnFinalize && selection != null;
+		if (clipToSelection)
+			selection!.Clip (g);
 
 		g.MoveTo (engine.Origin.X, engine.Origin.Y);
 
@@ -2160,7 +2177,7 @@ public sealed class TextTool : BaseTool
 		//Fill in background
 		if (backgroundFill) {
 			using Context g2 = new (surf);
-			if (isActive)
+			if (clipToSelection)
 				selection?.Clip (g2);
 			ApplyRotation (g2, obj);
 			g2.FillRectangle (layout.GetLayoutBounds ().ToDouble (), engine.SecondaryColor);

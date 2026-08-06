@@ -31,6 +31,13 @@ public sealed class TextObject
 	//The rotation of the text, in degrees, counter-clockwise. 0 is unrotated.
 	public double Rotation { get; set; } = 0;
 
+	//Whether this object fuses into the layer's raster on commit (Raster mode) rather
+	//than staying a live, re-editable object (Object mode). Stored per object, mirroring
+	//ShapeObject.RasterizeOnFinalize, so the clip-to-selection and commit-time fuse both
+	//key off the object's own mode instead of the toolbar's live selection. Not persisted:
+	//raster objects fuse away immediately, so a saved/loaded text object is always Object mode.
+	public bool RasterizeOnFinalize { get; set; }
+
 	public TextObject (TextEngine engine)
 	{
 		Engine = engine;
@@ -47,6 +54,7 @@ public sealed class TextObject
 			OutlineWidth = OutlineWidth,
 			LineJoin = LineJoin,
 			Rotation = Rotation,
+			RasterizeOnFinalize = RasterizeOnFinalize,
 		};
 
 	public static List<TextObject> CloneAll (IReadOnlyList<TextObject> objects)

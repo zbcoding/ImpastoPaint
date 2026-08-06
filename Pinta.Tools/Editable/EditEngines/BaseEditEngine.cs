@@ -1186,6 +1186,9 @@ public abstract class BaseEditEngine
 			// Stamp the current Object/Raster toggle onto the shape so its mode is remembered
 			// per-shape; a later commit only rasterizes the shapes drawn in Raster mode.
 			newEngine.RasterizeOnFinalize = rasterize_shapes;
+			// Freeze the current selection onto the shape (null when the whole image is selected) so it
+			// stays clipped to it on every later render, not re-clipped to whatever selection is live.
+			newEngine.Clip = SelectionIsWholeImage (doc) ? null : doc.Selection.Clone ();
 			SEngines.Add (newEngine);
 
 			//Select the new shape.
@@ -1596,15 +1599,28 @@ public abstract class BaseEditEngine
 	/// so this has no handle side effects and can be called for every shape when rebuilding the
 	/// shared ShapeLayer surface.
 	/// </summary>
+	/// <summary>
+	/// True when the document's selection covers the whole image (i.e. there is no real partial
+	/// selection). Used to decide whether a newly drawn shape needs a frozen clip at all.
+	/// </summary>
+	private static bool SelectionIsWholeImage (Document doc)
+	{
+		RectangleD b = doc.Selection.GetBounds ();
+		Size img = doc.ImageSize;
+		return b.X <= 0 && b.Y <= 0 && b.Right >= img.Width && b.Bottom >= img.Height;
+	}
+
 	protected RectangleD DrawShapeGeometry (ShapeEngine engine, ImageSurface surface)
 	{
-		Document doc = workspace.ActiveDocument;
-
 		using Context g = new (surface);
 
-		g.AppendPath (doc.Selection.SelectionPath);
-		g.FillRule = FillRule.EvenOdd;
-		g.Clip ();
+		// Clip to the shape's own frozen selection (stamped at creation), not the live doc.Selection, so a
+		// shape drawn inside a selection keeps its clip on every redraw even after the selection changes.
+		if (engine.Clip is not null) {
+			g.AppendPath (engine.Clip.SelectionPath);
+			g.FillRule = FillRule.EvenOdd;
+			g.Clip ();
+		}
 
 		g.Antialias = engine.AntiAliasing ? Antialias.Subpixel : Antialias.None;
 

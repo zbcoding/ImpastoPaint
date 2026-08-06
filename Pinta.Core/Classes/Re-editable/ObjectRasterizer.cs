@@ -108,7 +108,8 @@ public static class ObjectRasterizer
 		IChromeService chrome,
 		UserLayer layer,
 		IReadOnlyList<int> shapeIndices,
-		IReadOnlyList<int> textIndices)
+		IReadOnlyList<int> textIndices,
+		DocumentSelection? textClip = null)
 	{
 		if (shapeIndices.Count == 0 && textIndices.Count == 0)
 			return false;
@@ -123,8 +124,10 @@ public static class ObjectRasterizer
 		// Bake the chosen objects onto the base raster (shapes via the Tools renderer seam, text via
 		// the Core text renderer) BEFORE removing them from the lists — the renderers read by index.
 		LayerObjectSelection.RenderShapeSubset (layer.Surface, layer, shapeIndices);
+		// textClip is set by the text tool's Raster-mode commit so the baked pixels match the clipped
+		// preview; the generic Cut/Erase and "Rasterize All" callers pass null (bake the full object).
 		foreach (int i in textIndices)
-			TextObjectRenderer.Render (layer.Surface, layer.TextObjects[i], chrome, antialias: true);
+			TextObjectRenderer.Render (layer.Surface, layer.TextObjects[i], chrome, antialias: true, clip: textClip);
 
 		// Drop the baked objects (descending index so earlier removals don't shift later ones).
 		foreach (int i in shapeIndices.OrderByDescending (i => i))
@@ -134,8 +137,12 @@ public static class ObjectRasterizer
 
 		// Re-render the object surfaces from what remains so the baked pixels aren't composited twice.
 		// Shapes: the Tools seam redraws the ShapeLayer surface and rebuilds the live editing engines.
+		// Only when shapes were actually baked — an empty subset (e.g. a text-only rasterize) must not
+		// trigger a reload, which re-composites the remaining editable shapes UNCLIPPED and would redraw
+		// any drawn-inside-a-selection shape in full.
 		// Text: redraw the TextLayer surface here in Core from the remaining objects.
-		LayerObjectSelection.RequestShapeReload (layer);
+		if (shapeIndices.Count > 0)
+			LayerObjectSelection.RequestShapeReload (layer);
 		layer.TextLayer.Layer.Surface.Clear ();
 		TextObjectRenderer.RenderAll (layer.TextLayer.Layer.Surface, layer.TextObjects, chrome, antialias: true);
 

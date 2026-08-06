@@ -53,7 +53,9 @@ public sealed class MoveSelectedTool : BaseTransformTool
 		"\nUse arrow keys to move selected content by a single pixel.",
 		system_manager.CtrlLabel ());
 
-	public override Gdk.Cursor DefaultCursor => Gdk.Cursor.NewFromTexture (Resources.GetIcon (Pinta.Resources.Icons.ToolMoveCursor), 0, 0, null);
+	// Rendered at 2x the default 16px and with a centered hotspot so the enlarged
+	// four-way cross still points at the pixel under the cursor.
+	public override Gdk.Cursor DefaultCursor => Gdk.Cursor.NewFromTexture (Resources.GetIcon (Pinta.Resources.Icons.ToolMoveCursor, 32), 16, 16, null);
 	public override Gdk.Key ShortcutKey => new (Gdk.Constants.KEY_M);
 	public override int Priority => 5;
 

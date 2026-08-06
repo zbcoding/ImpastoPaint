@@ -59,6 +59,13 @@ public sealed class ShapeObject
 	/// live editing engine — it is kept only as a (non-editable) record shown in the layers dock.
 	/// </summary>
 	public bool Rasterized { get; set; }
+	/// <summary>
+	/// The selection the shape was drawn under, frozen at creation, or null if it was drawn with no
+	/// active selection. Every render (live edit, reload, bake) clips to this so a shape drawn inside a
+	/// selection keeps its clipped appearance permanently, instead of re-clipping to the live selection
+	/// (which would redraw it in full once the selection changed or was cleared). Shared, never mutated.
+	/// </summary>
+	public DocumentSelection? Clip { get; set; }
 	public List<ShapeControlPoint> ControlPoints { get; } = [];
 	public bool AntiAliasing { get; set; } = true;
 	public bool Closed { get; set; }
@@ -85,6 +92,7 @@ public sealed class ShapeObject
 			Name = Name,
 			Rasterized = Rasterized,
 			RasterizeOnFinalize = RasterizeOnFinalize,
+			Clip = Clip, // frozen selection, never mutated — safe to share
 			AntiAliasing = AntiAliasing,
 			Closed = Closed,
 			OutlineColor = OutlineColor,

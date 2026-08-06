@@ -30,22 +30,28 @@ public static class TextObjectRenderer
 		}
 	}
 
-	/// <summary>Renders a single non-empty text object onto the given surface.</summary>
+	/// <summary>
+	/// Renders a single non-empty text object onto the given surface. When <paramref name="clip"/>
+	/// is given, drawing is clipped to it — used when baking Raster-mode text so the portion
+	/// outside the editing selection is not written (matching the on-canvas preview).
+	/// </summary>
 	public static void Render (
 		ImageSurface surface,
 		TextObject obj,
 		IChromeService chrome,
-		bool antialias)
+		bool antialias,
+		DocumentSelection? clip = null)
 	{
 		if (!obj.IsEmpty)
-			RenderObject (surface, obj, chrome, antialias);
+			RenderObject (surface, obj, chrome, antialias, clip);
 	}
 
 	private static void RenderObject (
 		ImageSurface surface,
 		TextObject obj,
 		IChromeService chrome,
-		bool antialias)
+		bool antialias,
+		DocumentSelection? clip = null)
 	{
 		TextEngine engine = obj.Engine;
 		TextLayout layout = new (chrome) {
@@ -74,12 +80,15 @@ public static class TextObjectRenderer
 		g.Save ();
 		PangoCairo.Functions.ContextSetFontOptions (chrome.MainWindow.GetPangoContext (), options);
 
+		clip?.Clip (g);
+
 		g.MoveTo (engine.Origin.X, engine.Origin.Y);
 		g.SetSourceColor (engine.PrimaryColor);
 
 		//Fill in background
 		if (backgroundFill) {
 			using Context g2 = new (surface);
+			clip?.Clip (g2);
 			g2.FillRectangle (layout.GetLayoutBounds ().ToDouble (), engine.SecondaryColor);
 		}
 

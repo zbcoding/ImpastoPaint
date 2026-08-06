@@ -5,7 +5,8 @@ namespace Pinta.Tools;
 
 /// <summary>
 /// Renders <see cref="ShapeObject"/>s onto a surface as a pure function of the object
-/// list (no control points, no selection clip). This is the shape-side counterpart of
+/// list (no control points; each shape clips to its own frozen draw-time selection, if
+/// any, via <see cref="ShapeObject.Clip"/>). This is the shape-side counterpart of
 /// <see cref="TextObjectRenderer"/>: it lets a layer's <c>ShapeLayer</c> surface be
 /// rebuilt from <c>ShapeObjects</c> anywhere, which is what keeps shapes on a
 /// non-active layer visible instead of desyncing into a white rectangle.
@@ -39,6 +40,14 @@ public static class ShapeObjectRenderer
 			return;
 
 		using Context g = new (surface);
+
+		// Reproduce the shape's frozen draw-time selection clip (null = drawn with no selection) so a
+		// reload renders the same clipped pixels the live edit engine did, instead of the full shape.
+		if (source.Clip is not null) {
+			g.AppendPath (source.Clip.SelectionPath);
+			g.FillRule = FillRule.EvenOdd;
+			g.Clip ();
+		}
 
 		g.Antialias = source.AntiAliasing ? Antialias.Subpixel : Antialias.None;
 

@@ -1652,6 +1652,13 @@ public sealed class TextTool : BaseTool
 			}
 		}
 
+		// Keyguard: while editing text, never let a bare key fall through unhandled to the global key
+		// handler, which would treat it as a toolbox shortcut and switch tools mid-type (e.g. typing "e"
+		// jumping to the Ellipse tool). Modifier combos are already returned above — Alt exits early and
+		// unrecognized Ctrl combos return false — so those legitimate global shortcuts still pass through.
+		if (is_editing && !keyHandled)
+			return true;
+
 		return keyHandled;
 	}
 
@@ -2304,6 +2311,17 @@ public sealed class TextTool : BaseTool
 				g.Stroke ();
 			}
 			g.Restore ();
+
+			// "Obj." editable-object badge at the field's lower-left corner (skipped for Raster-mode
+			// text, which isn't a persistent object). Positioned just below the lowest-left corner.
+			if (!obj.RasterizeOnFinalize) {
+				double minX = corners[0].X, maxY = corners[0].Y;
+				foreach (PointD c in corners) {
+					minX = Math.Min (minX, c.X);
+					maxY = Math.Max (maxY, c.Y);
+				}
+				EditableObjectBadge.Draw (g, new PointD (minX, maxY + 3), EditableObjectBadge.CanvasColor);
+			}
 		}
 
 		g.Restore ();

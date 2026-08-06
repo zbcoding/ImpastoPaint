@@ -290,6 +290,11 @@ public sealed class ImageActions
 		if (rect.Width <= 0 || rect.Height <= 0)
 			return;
 
+		// Bake live objects to pixels first (their own history steps) so the crop acts on plain raster —
+		// vector shapes/text would otherwise keep their old coords and snap back after the crop.
+		tools.Commit ();
+		ObjectRasterizer.RasterizeAllLayersForResize (doc, workspace, PintaCore.Chrome);
+
 		ResizeHistoryItem hist = new (workspace, doc.ImageSize) {
 			Icon = Resources.Icons.ImageCrop,
 			Text = Translations.GetString ("Crop to Selection"),

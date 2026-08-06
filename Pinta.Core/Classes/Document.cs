@@ -330,6 +330,12 @@ public sealed class Document
 
 		tools.Commit ();
 
+		// Bake live objects to pixels first (own history steps) so the resize acts on plain raster —
+		// vector shapes/text keep their old coords and would snap back otherwise. Skipped when part of a
+		// larger compound action (e.g. paste enlarging the canvas), which must not fragment its history.
+		if (compoundAction is null)
+			ObjectRasterizer.RasterizeAllLayersForResize (this, workspace, PintaCore.Chrome);
+
 		ResizeHistoryItem hist = new (workspace, ImageSize) {
 			Icon = Resources.Icons.ImageResizeCanvas,
 			Text = Translations.GetString ("Resize Canvas"),
@@ -364,6 +370,10 @@ public sealed class Document
 			return;
 
 		tools.Commit ();
+
+		// Bake live objects to pixels first (own history steps) so the scale acts on plain raster —
+		// vector shapes/text keep their old coords and would snap back otherwise.
+		ObjectRasterizer.RasterizeAllLayersForResize (this, workspace, PintaCore.Chrome);
 
 		ResizeHistoryItem hist = new (workspace, ImageSize);
 

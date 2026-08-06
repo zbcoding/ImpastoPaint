@@ -156,4 +156,25 @@ public static class ObjectRasterizer
 		workspace.Invalidate ();
 		return true;
 	}
+
+	/// <summary>
+	/// Bakes every layer's live objects into its base raster before a coordinate-changing op (crop /
+	/// canvas resize / image resize). Those ops only transform raster pixels, but an object's geometry
+	/// is vector control points the resize never touches — so an un-baked object would snap back to its
+	/// old placement on the next redraw (and a partial-clip shape would keep an invisible clip boundary).
+	/// Each layer's bake is its own undoable step, pushed before the resize's own history item, matching
+	/// the design's "resize that must bake auto-rasterizes first." No-op for layers without objects.
+	/// No confirmation prompt: resize/crop is a deliberate, undoable action.
+	/// </summary>
+	public static void RasterizeAllLayersForResize (
+		Document doc,
+		IWorkspaceService workspace,
+		IChromeService chrome)
+	{
+		foreach (UserLayer layer in doc.Layers.UserLayers) {
+			List<int> shapeIndices = [.. Enumerable.Range (0, layer.ShapeObjects.Count)];
+			List<int> textIndices = [.. Enumerable.Range (0, layer.TextObjects.Count)];
+			RasterizeSubset (doc, workspace, chrome, layer, shapeIndices, textIndices);
+		}
+	}
 }

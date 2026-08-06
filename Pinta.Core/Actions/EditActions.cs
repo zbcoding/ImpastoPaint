@@ -457,6 +457,10 @@ public sealed class EditActions
 
 		doc.History.PushNewItem (hist);
 		doc.Workspace.Invalidate ();
+
+		// Now that the selection is gone, let the shape tool fuse any shape that was drawn clipped to
+		// it (so it doesn't linger as an object with an invisible clip boundary). Its own history step.
+		LayerObjectSelection.RaiseSelectionCleared ();
 	}
 
 	// Escape only deselects while a selection tool is active, and only on the

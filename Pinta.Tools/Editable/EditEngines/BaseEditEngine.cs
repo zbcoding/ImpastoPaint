@@ -253,6 +253,57 @@ public abstract class BaseEditEngine
 				if (i >= 0 && i < layer.ShapeObjects.Count)
 					ShapeObjectRenderer.Render (surface, layer, layer.ShapeObjects[i]);
 		};
+
+		// When the selection is cleared, bake any shape drawn clipped to it (Pinta.Core).
+		LayerObjectSelection.SelectionCleared += HandleSelectionCleared;
+	}
+
+	// Deselect just cleared the selection. Any Object-mode shape that was drawn clipped to that
+	// selection would otherwise keep an invisible clip boundary, editable but partly hidden. Bake the
+	// actually-clipped ones into their layer's raster (their frozen Clip renders the same visible pixels
+	// the preview did); shapes lying fully inside their clip just drop it and stay fully editable.
+	private static void HandleSelectionCleared ()
+	{
+		if (!PintaCore.Workspace.HasOpenDocuments)
+			return;
+
+		Document doc = PintaCore.Workspace.ActiveDocument;
+
+		foreach (UserLayer layer in doc.Layers.UserLayers) {
+			// Make the layer's object list reflect its live editing engines before reading it.
+			PersistShapeObjectsIfLive (layer);
+
+			List<int> toRasterize = [];
+			bool droppedClip = false;
+			for (int i = 0; i < layer.ShapeObjects.Count; ++i) {
+				ShapeObject s = layer.ShapeObjects[i];
+				if (s.Clip is null)
+					continue;
+				if (ClipContainsShape (s))
+					{ s.Clip = null; droppedClip = true; } // no visible clip; free it, keep editable
+				else
+					toRasterize.Add (i);                    // genuinely clipped; fuse it to pixels
+			}
+
+			if (toRasterize.Count > 0)
+				// Bakes the clipped pixels and reloads the layer's live engines from what remains.
+				ObjectRasterizer.RasterizeSubset (
+					doc, PintaCore.Workspace, PintaCore.Chrome, layer, toRasterize, textIndices: []);
+			else if (droppedClip)
+				// Only clips were dropped (no bake): resync live engines so a later move can't re-clip.
+				ReloadLayerShapes (layer);
+		}
+	}
+
+	// True when the shape lies entirely within its frozen clip, so clipping has no visible effect.
+	// ponytail: bbox test — exact for rectangular selections (the common case). A non-rectangular
+	// clip whose bbox contains the shape but whose region does not could wrongly drop the clip and
+	// reveal hidden pixels; upgrade to a region-containment test if lasso-clipped shapes matter.
+	private static bool ClipContainsShape (ShapeObject s)
+	{
+		RectangleD b = s.GetApproximateBounds ();
+		RectangleD c = s.Clip!.GetBounds ();
+		return c.X <= b.X && c.Y <= b.Y && c.Right >= b.Right && c.Bottom >= b.Bottom;
 	}
 
 	// Selects the shape at shapeIndex on the given layer and shows its control points, as if the

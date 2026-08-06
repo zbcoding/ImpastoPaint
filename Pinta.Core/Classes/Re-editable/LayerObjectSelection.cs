@@ -46,4 +46,16 @@ public static class LayerObjectSelection
 
 	public static void RenderShapeSubset (ImageSurface surface, UserLayer layer, IReadOnlyList<int> shapeIndices)
 		=> ShapeSubsetRenderer?.Invoke (surface, layer, shapeIndices);
+
+	/// <summary>
+	/// Fired when the user clears the selection (Deselect). The shape tool bakes any shape that was
+	/// drawn clipped to that selection (its frozen <see cref="ShapeObject.Clip"/>) into the layer's
+	/// raster — so a partially-clipped shape becomes plain pixels instead of an editable object that
+	/// keeps an invisible clip boundary. Shapes lying fully inside their clip just drop it and stay
+	/// editable.
+	/// </summary>
+	public static event Action? SelectionCleared;
+
+	public static void RaiseSelectionCleared ()
+		=> SelectionCleared?.Invoke ();
 }

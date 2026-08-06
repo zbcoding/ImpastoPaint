@@ -1513,14 +1513,15 @@ public abstract class BaseEditEngine
 	/// <summary>
 	/// Draws the "Obj." editable-object badge below the leftmost control point of every live, editable
 	/// (non-Raster) shape, onto the tool overlay layer (never baked into artwork) — the shape-side
-	/// counterpart of the Text tool's on-canvas badge. Cleared by <see cref="HandleDeactivated"/>.
+	/// counterpart of the Text tool's on-canvas badge. Cleared by <see cref="HandleDeactivated"/>; also
+	/// re-invoked by <see cref="ReloadLayerShapes"/> so a shape rasterized away loses its badge at once.
 	/// </summary>
-	private void DrawShapeBadges ()
+	private static void DrawShapeBadges ()
 	{
-		if (!workspace.HasOpenDocuments)
+		if (!PintaCore.Workspace.HasOpenDocuments)
 			return;
 
-		Document doc = workspace.ActiveDocument;
+		Document doc = PintaCore.Workspace.ActiveDocument;
 		Layer toolLayer = doc.Layers.ToolLayer;
 		toolLayer.Clear ();
 
@@ -2064,6 +2065,12 @@ public abstract class BaseEditEngine
 			if (!source.Rasterized)
 				SEngines.Add (ShapeEngineCollection.Create (layer, source));
 		runtime_layer = layer;
+
+		// SEngines changed (e.g. a shape was fused by deselecting the selection it was clipped to).
+		// Re-draw the "Obj." badge overlay so a now-rasterized shape's badge disappears immediately
+		// instead of lingering. Only while a shape tool is editing, since badges only show there.
+		if (PintaCore.Tools.CurrentTool is ShapeTool)
+			DrawShapeBadges ();
 	}
 
 	private void CommitShapeEditing ()

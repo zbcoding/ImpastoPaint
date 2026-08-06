@@ -445,7 +445,8 @@ public sealed partial class LayersListViewItemWidget
 			scale = 1;
 		g.Save ();
 		g.Scale (scale, scale);
-		EditableObjectBadge.Draw (g, new PointD (0, 0), new Color (0.2, 0.2, 0.2, 1.0));
+		// Monochrome white so the badge stands out against the dock's grey row background.
+		EditableObjectBadge.Draw (g, new PointD (0, 0), new Color (1.0, 1.0, 1.0, 1.0));
 		g.Restore ();
 	}
 

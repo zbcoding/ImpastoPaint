@@ -302,7 +302,6 @@ public sealed partial class LayersListView
 				continue;
 
 			bool hasObjects = layer.HasObjectSubNodes;
-			bool hadStore = child_models.ContainsKey (layer);
 
 			if (hasObjects) {
 				// Ensure the child store exists and is fully populated *before* touching the root row,
@@ -311,15 +310,20 @@ public sealed partial class LayersListView
 					store = Gio.ListStore.New (LayersListViewItem.GetGType ());
 					child_models[layer] = store;
 				}
-				PopulateChildModel (store, layer);
 
-				// Expandability just turned on (first object added): replace the root row so the
-				// TreeListModel re-runs the create func and picks up the now-populated child model.
-				if (!hadStore) {
+				uint prevCount = store.GetNItems ();
+				PopulateChildModel (store, layer);
+				uint newCount = store.GetNItems ();
+
+				// The sub-node set changed size (an object was created, or rasterized/removed). Force the
+				// TreeListModel to re-run the child create func by replacing the root row, so a just-fused
+				// object's row (and its "Obj." badge) is dropped immediately rather than lingering until a
+				// later render. Content-only edits (point moves, same count) stay in place to keep expand state.
+				if (prevCount != newCount) {
 					list_model.Remove (i);
 					list_model.Insert (i, LayersListViewItem.New (active_document, layer));
 				}
-			} else if (hadStore) {
+			} else if (child_models.ContainsKey (layer)) {
 				// Last object removed: drop the child model and replace the row so it's no longer expandable.
 				child_models.Remove (layer);
 				list_model.Remove (i);

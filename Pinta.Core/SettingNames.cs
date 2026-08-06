@@ -12,6 +12,9 @@ internal static class SettingNames
 
 	internal const string SELECTION_COMBINE_MODE = "selection-combine-mode";
 
+	// Impasto: skip the "Rasterize Objects?" confirmation dialog. Mirrors Pinta.SettingNames.
+	internal const string SKIP_RASTERIZE_OBJECTS_DIALOG = "skip-rasterize-objects-dialog";
+
 	internal const string SHOW_CANVAS_GRID = "show-canvas-grid";
 	internal const string CANVAS_GRID_WIDTH = "canvas-grid-width";
 	internal const string CANVAS_GRID_HEIGHT = "canvas-grid-height";

@@ -32,6 +32,7 @@ using System.IO.Compression;
 using System.Linq;
 using System.Xml;
 using Cairo;
+using ClipperLib;
 using GdkPixbuf;
 
 namespace Pinta.Core;
@@ -346,6 +347,23 @@ public sealed class OraFormat : IImageImporter, IImageExporter
 			writer.WriteEndElement ();
 		}
 
+		// The frozen draw-time selection clip (integer polygon rings). Persisting it keeps a
+		// partially-clipped shape looking clipped after save/reopen instead of rendering in full.
+		if (shape.Clip is not null) {
+			writer.WriteStartElement ("clip");
+			foreach (List<IntPoint> polygon in shape.Clip.SelectionPolygons) {
+				writer.WriteStartElement ("poly");
+				foreach (IntPoint pt in polygon) {
+					writer.WriteStartElement ("pt");
+					writer.WriteAttributeString ("x", pt.X.ToString ());
+					writer.WriteAttributeString ("y", pt.Y.ToString ());
+					writer.WriteEndElement ();
+				}
+				writer.WriteEndElement ();
+			}
+			writer.WriteEndElement ();
+		}
+
 		writer.WriteEndElement ();
 	}
 
@@ -424,10 +442,35 @@ public sealed class OraFormat : IImageImporter, IImageExporter
 					Tension = double.Parse (GetAttribute (pointElement, "tension", "0"), GetFormat ()),
 				});
 
+			shape.Clip = ReadClip (element);
+
 			return shape;
 		} catch {
 			return null;
 		}
+	}
+
+	// Rebuilds a shape's frozen selection clip from its <clip> element, or null if it had none.
+	private static DocumentSelection? ReadClip (XmlElement shapeElement)
+	{
+		XmlNodeList clipNodes = shapeElement.GetElementsByTagName ("clip");
+		if (clipNodes.Count == 0)
+			return null;
+
+		List<List<IntPoint>> polygons = [];
+		foreach (XmlElement polyElement in ((XmlElement) clipNodes[0]!).GetElementsByTagName ("poly")) {
+			List<IntPoint> polygon = [];
+			foreach (XmlElement ptElement in polyElement.GetElementsByTagName ("pt"))
+				polygon.Add (new IntPoint (
+					long.Parse (GetAttribute (ptElement, "x", "0")),
+					long.Parse (GetAttribute (ptElement, "y", "0"))));
+			polygons.Add (polygon);
+		}
+
+		if (polygons.Count == 0)
+			return null;
+
+		return new DocumentSelection { SelectionPolygons = polygons };
 	}
 
 	private static void ReadArrow (XmlElement shape, string name, ShapeArrow arrow)

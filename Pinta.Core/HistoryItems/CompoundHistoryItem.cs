@@ -33,6 +33,7 @@ public class CompoundHistoryItem : BaseHistoryItem
 {
 	protected List<BaseHistoryItem> history_stack = [];
 	private List<ImageSurface>? snapshots;
+	private List<(ReEditableLayer layer, ImageSurface snapshot)>? sublayer_snapshots;
 
 	public CompoundHistoryItem () : base ()
 	{
@@ -70,8 +71,12 @@ public class CompoundHistoryItem : BaseHistoryItem
 	public void StartSnapshotOfImage ()
 	{
 		snapshots = [];
+		sublayer_snapshots = [];
 		foreach (UserLayer item in PintaCore.Workspace.ActiveDocument.Layers.UserLayers) {
 			snapshots.Add (item.Surface.Clone ());
+			foreach (ReEditableLayer rel in item.ReEditableLayers)
+				if (rel.IsLayerSetup)
+					sublayer_snapshots.Add ((rel, rel.Layer.Surface.Clone ()));
 		}
 	}
 
@@ -81,5 +86,40 @@ public class CompoundHistoryItem : BaseHistoryItem
 			history_stack.Add (new SimpleHistoryItem (string.Empty, string.Empty, snapshots[i], i));
 		}
 		snapshots.Clear ();
+
+		// The base surfaces above are index-addressable via doc.Layers, but the re-editable
+		// Shape/Text sublayer surfaces are resized alongside the base and aren't. Without restoring
+		// them, undoing a whole-image resize leaves the sublayer surfaces at the new size while the
+		// base returns to the old size; a bundled object-bake un-apply then indexes past the smaller
+		// sublayer surface and crashes (object-layer BUG 1).
+		foreach (var (layer, snapshot) in sublayer_snapshots!) // NRT - Set in StartSnapshotOfImage
+			history_stack.Add (new ReEditableSurfaceHistoryItem (layer, snapshot));
+		sublayer_snapshots.Clear ();
+	}
+
+	// Swaps a re-editable sublayer's surface with a stored snapshot. Full-surface swap (not a diff):
+	// these sublayer surfaces are near-empty after a bake, so the memory cost is negligible.
+	// ponytail: full swap; switch to SurfaceDiff if a resize with large unbaked sublayer content shows up.
+	private sealed class ReEditableSurfaceHistoryItem : BaseHistoryItem
+	{
+		private readonly ReEditableLayer layer;
+		private ImageSurface surface;
+
+		public ReEditableSurfaceHistoryItem (ReEditableLayer layer, ImageSurface snapshot)
+			: base (string.Empty, string.Empty)
+		{
+			this.layer = layer;
+			surface = snapshot;
+		}
+
+		public override void Undo () => Swap ();
+		public override void Redo () => Swap ();
+
+		private void Swap ()
+		{
+			ImageSurface current = layer.Layer.Surface;
+			layer.Layer.Surface = surface;
+			surface = current;
+		}
 	}
 }

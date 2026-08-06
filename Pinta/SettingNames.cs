@@ -38,6 +38,8 @@ internal static class SettingNames
 	// Impasto: wrap the tool settings onto extra rows when the window is too narrow,
 	// instead of scrolling them horizontally.
 	internal const string TOOL_SETTINGS_WRAP_ROWS = "tool-settings-wrap-rows";
+	// Impasto: skip the "Rasterize Objects?" confirmation dialog. Mirrors Pinta.Core.SettingNames.
+	internal const string SKIP_RASTERIZE_OBJECTS_DIALOG = "skip-rasterize-objects-dialog";
 	internal const string COLORS_FLOATING = "colors-floating";
 	// Impasto: add a third row of darker colors to the default palette.
 	internal const string EXTENDED_PALETTE_ROWS = "extended-palette-rows";

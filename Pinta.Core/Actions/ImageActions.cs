@@ -190,12 +190,16 @@ public sealed class ImageActions
 
 		tools.Commit ();
 
-		// Bake live objects to pixels first (own history steps) so the rotation acts on plain raster —
-		// objects' vector geometry / SEngines / text origins aren't rotated and would otherwise revert.
-		ObjectRasterizer.RasterizeAllLayersForResize (doc, workspace, PintaCore.Chrome);
+		// Bake live objects to pixels first so the rotation acts on plain raster — objects' vector
+		// geometry / SEngines / text origins aren't rotated and would otherwise revert. The bakes and
+		// the rotation are bundled into one compound history item so a single undo reverts everything.
+		CompoundHistoryItem group = new (Resources.Icons.ImageRotate90CCW, Translations.GetString ("Rotate 90° Counter-Clockwise"));
+		if (!ObjectRasterizer.RasterizeAllLayersForResize (doc, workspace, PintaCore.Chrome, group))
+			return;
 
 		doc.RotateImageCCW ();
-		doc.History.PushNewItem (new InvertHistoryItem (InvertType.Rotate90CCW));
+		group.Push (new InvertHistoryItem (InvertType.Rotate90CCW));
+		doc.History.PushNewItem (group);
 	}
 
 	private void HandlePintaCoreActionsImageRotateCWActivated (object sender, EventArgs e)
@@ -204,10 +208,13 @@ public sealed class ImageActions
 
 		tools.Commit ();
 
-		ObjectRasterizer.RasterizeAllLayersForResize (doc, workspace, PintaCore.Chrome);
+		CompoundHistoryItem group = new (Resources.Icons.ImageRotate90CW, Translations.GetString ("Rotate 90° Clockwise"));
+		if (!ObjectRasterizer.RasterizeAllLayersForResize (doc, workspace, PintaCore.Chrome, group))
+			return;
 
 		doc.RotateImageCW ();
-		doc.History.PushNewItem (new InvertHistoryItem (InvertType.Rotate90CW));
+		group.Push (new InvertHistoryItem (InvertType.Rotate90CW));
+		doc.History.PushNewItem (group);
 	}
 
 	private void HandlePintaCoreActionsImageFlattenActivated (object sender, EventArgs e)
@@ -216,20 +223,21 @@ public sealed class ImageActions
 
 		tools.Commit ();
 
-		// Bake live objects to pixels first (own history steps) so flatten sees a single raster per
-		// layer — otherwise the bottom layer keeps its object lists/surfaces, double-compositing the
-		// flattened pixels and leaving orphaned editable objects.
-		ObjectRasterizer.RasterizeAllLayersForResize (doc, workspace, PintaCore.Chrome);
+		CompoundHistoryItem hist = new (
+			Resources.Icons.ImageFlatten,
+			Translations.GetString ("Flatten"));
+
+		// Bake live objects to pixels first (into this compound so one undo restores them) so flatten
+		// sees a single raster per layer — otherwise the bottom layer keeps its object lists/surfaces,
+		// double-compositing the flattened pixels and leaving orphaned editable objects.
+		if (!ObjectRasterizer.RasterizeAllLayersForResize (doc, workspace, PintaCore.Chrome, hist))
+			return;
 
 		ImageSurface oldBottomSurface =
 			doc.Layers
 			.UserLayers[0]
 			.Surface
 			.Clone ();
-
-		CompoundHistoryItem hist = new (
-			Resources.Icons.ImageFlatten,
-			Translations.GetString ("Flatten"));
 
 		for (int i = doc.Layers.UserLayers.Count - 1; i >= 1; i--)
 			hist.Push (new DeleteLayerHistoryItem (string.Empty, string.Empty, doc.Layers.UserLayers[i], i));
@@ -247,10 +255,14 @@ public sealed class ImageActions
 
 		tools.Commit ();
 
-		ObjectRasterizer.RasterizeAllLayersForResize (doc, workspace, PintaCore.Chrome);
+		// Bake live objects into this compound so a single undo reverts both the bake and the rotation.
+		CompoundHistoryItem group = new (Resources.Icons.ImageRotate180, Translations.GetString ("Rotate 180°"));
+		if (!ObjectRasterizer.RasterizeAllLayersForResize (doc, workspace, PintaCore.Chrome, group))
+			return;
 
 		doc.RotateImage180 ();
-		doc.History.PushNewItem (new InvertHistoryItem (InvertType.Rotate180));
+		group.Push (new InvertHistoryItem (InvertType.Rotate180));
+		doc.History.PushNewItem (group);
 	}
 
 	private void HandlePintaCoreActionsImageFlipVerticalActivated (object sender, EventArgs e)
@@ -259,10 +271,13 @@ public sealed class ImageActions
 
 		tools.Commit ();
 
-		ObjectRasterizer.RasterizeAllLayersForResize (doc, workspace, PintaCore.Chrome);
+		CompoundHistoryItem group = new (Resources.Icons.ImageFlipVertical, Translations.GetString ("Flip Vertical"));
+		if (!ObjectRasterizer.RasterizeAllLayersForResize (doc, workspace, PintaCore.Chrome, group))
+			return;
 
 		doc.FlipImageVertical ();
-		doc.History.PushNewItem (new InvertHistoryItem (InvertType.FlipVertical));
+		group.Push (new InvertHistoryItem (InvertType.FlipVertical));
+		doc.History.PushNewItem (group);
 	}
 
 	private void HandlePintaCoreActionsImageFlipHorizontalActivated (object sender, EventArgs e)
@@ -271,10 +286,13 @@ public sealed class ImageActions
 
 		tools.Commit ();
 
-		ObjectRasterizer.RasterizeAllLayersForResize (doc, workspace, PintaCore.Chrome);
+		CompoundHistoryItem group = new (Resources.Icons.ImageFlipHorizontal, Translations.GetString ("Flip Horizontal"));
+		if (!ObjectRasterizer.RasterizeAllLayersForResize (doc, workspace, PintaCore.Chrome, group))
+			return;
 
 		doc.FlipImageHorizontal ();
-		doc.History.PushNewItem (new InvertHistoryItem (InvertType.FlipHorizontal));
+		group.Push (new InvertHistoryItem (InvertType.FlipHorizontal));
+		doc.History.PushNewItem (group);
 	}
 
 	private void HandlePintaCoreActionsImageCropToSelectionActivated (object sender, EventArgs e)
@@ -307,10 +325,13 @@ public sealed class ImageActions
 		if (rect.Width <= 0 || rect.Height <= 0)
 			return;
 
-		// Bake live objects to pixels first (their own history steps) so the crop acts on plain raster —
-		// vector shapes/text would otherwise keep their old coords and snap back after the crop.
+		// Bake live objects to pixels first so the crop acts on plain raster — vector shapes/text would
+		// otherwise keep their old coords and snap back after the crop. The bakes and the crop are
+		// bundled into one compound history item so a single undo reverts everything.
 		tools.Commit ();
-		ObjectRasterizer.RasterizeAllLayersForResize (doc, workspace, PintaCore.Chrome);
+		CompoundHistoryItem bakeGroup = new (Resources.Icons.ImageCrop, Translations.GetString ("Crop to Selection"));
+		if (!ObjectRasterizer.RasterizeAllLayersForResize (doc, workspace, PintaCore.Chrome, bakeGroup))
+			return;
 
 		ResizeHistoryItem hist = new (workspace, doc.ImageSize) {
 			Icon = Resources.Icons.ImageCrop,
@@ -331,7 +352,8 @@ public sealed class ImageActions
 
 		hist.FinishSnapshotOfImage ();
 
-		doc.History.PushNewItem (hist);
+		bakeGroup.Push (hist);
+		doc.History.PushNewItem (bakeGroup);
 		doc.ResetSelectionPaths ();
 
 		doc.Workspace.Invalidate ();

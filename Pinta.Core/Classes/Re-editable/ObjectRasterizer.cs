@@ -13,6 +13,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Cairo;
+using ClipperLib;
 
 namespace Pinta.Core;
 
@@ -64,14 +65,32 @@ public static class ObjectRasterizer
 	}
 
 	// True when the shape lies entirely within its frozen clip, so clipping has no visible effect.
-	// ponytail: bbox test — exact for rectangular selections (the common case). A non-rectangular
-	// clip whose bbox contains the shape but whose region does not could wrongly drop the clip and
-	// reveal hidden pixels; upgrade to a region-containment test if lasso-clipped shapes matter.
+	// Uses the clip's actual region (not its bounding box): the shape's bounding box is subtracted
+	// from the selection polygons, and an empty difference means every pixel of the box — and so the
+	// shape — falls inside the region. This is correct for non-rectangular (lasso) clips, where a
+	// bbox-vs-bbox test would wrongly report containment when the region cuts through the shape.
+	// The box over-approximates the shape, so the answer is conservative: a "not contained" verdict
+	// may bake a shape that was in fact fully inside, which only costs editability, never reveals
+	// hidden pixels.
 	public static bool ClipContainsShape (ShapeObject s)
 	{
 		RectangleD b = s.GetApproximateBounds ();
-		RectangleD c = s.Clip!.GetBounds ();
-		return c.X <= b.X && c.Y <= b.Y && c.Right >= b.Right && c.Bottom >= b.Bottom;
+
+		List<IntPoint> box = [
+			new ((long) b.X, (long) b.Y),
+			new ((long) b.Right, (long) b.Y),
+			new ((long) b.Right, (long) b.Bottom),
+			new ((long) b.X, (long) b.Bottom),
+		];
+
+		Clipper clipper = new ();
+		clipper.AddPath (box, PolyType.ptSubject, true);
+		clipper.AddPaths (s.Clip!.SelectionPolygons, PolyType.ptClip, true);
+
+		List<List<IntPoint>> difference = [];
+		clipper.Execute (ClipType.ctDifference, difference);
+
+		return difference.Count == 0;
 	}
 
 	/// <summary>Display labels for the given objects, mirroring the layers dock naming.</summary>
@@ -103,6 +122,10 @@ public static class ObjectRasterizer
 	/// </summary>
 	public static bool Confirm (IChromeService chrome, IReadOnlyList<string> labels)
 	{
+		// Opt-out: users who know the operations rasterize objects can silence the prompt (Settings → UI).
+		if (PintaCore.Settings.GetSetting (SettingNames.SKIP_RASTERIZE_OBJECTS_DIALOG, false))
+			return true;
+
 		const int max_listed = 12;
 		string list = string.Join ("\n", labels.Take (max_listed).Select (l => "• " + l));
 		if (labels.Count > max_listed)
@@ -138,7 +161,8 @@ public static class ObjectRasterizer
 		UserLayer layer,
 		IReadOnlyList<int> shapeIndices,
 		IReadOnlyList<int> textIndices,
-		DocumentSelection? textClip = null)
+		DocumentSelection? textClip = null,
+		CompoundHistoryItem? historyGroup = null)
 	{
 		if (shapeIndices.Count == 0 && textIndices.Count == 0)
 			return false;
@@ -175,12 +199,19 @@ public static class ObjectRasterizer
 		layer.TextLayer.Layer.Surface.Clear ();
 		TextObjectRenderer.RenderAll (layer.TextLayer.Layer.Surface, layer.TextObjects, chrome, antialias: true);
 
-		doc.History.PushNewItem (new RasterizeObjectsHistoryItem (
+		RasterizeObjectsHistoryItem item = new (
 			workspace,
 			Resources.Icons.ImageFlatten,
 			Translations.GetString ("Rasterize Objects"),
 			baseBefore, shapeBefore, textBefore,
-			shapesBefore, textObjBefore, layer));
+			shapesBefore, textObjBefore, layer);
+
+		// When part of a larger action (e.g. a resize), the bake is recorded into that action's
+		// compound item so the whole thing undoes in one step; otherwise it's its own history step.
+		if (historyGroup is not null)
+			historyGroup.Push (item);
+		else
+			doc.History.PushNewItem (item);
 
 		workspace.Invalidate ();
 		return true;
@@ -193,17 +224,31 @@ public static class ObjectRasterizer
 	/// old placement on the next redraw (and a partial-clip shape would keep an invisible clip boundary).
 	/// Each layer's bake is its own undoable step, pushed before the resize's own history item, matching
 	/// the design's "resize that must bake auto-rasterizes first." No-op for layers without objects.
-	/// No confirmation prompt: resize/crop is a deliberate, undoable action.
+	/// Prompts the user to confirm (these ops make editable objects permanent pixels); returns false if
+	/// they cancel, in which case nothing is baked and the caller must abort its op. Returns true when
+	/// there was nothing to bake (no prompt shown).
 	/// </summary>
-	public static void RasterizeAllLayersForResize (
+	public static bool RasterizeAllLayersForResize (
 		Document doc,
 		IWorkspaceService workspace,
-		IChromeService chrome)
+		IChromeService chrome,
+		CompoundHistoryItem? historyGroup = null)
 	{
+		List<string> labels = [];
+		foreach (UserLayer layer in doc.Layers.UserLayers)
+			labels.AddRange (Describe (
+				layer,
+				[.. Enumerable.Range (0, layer.ShapeObjects.Count)],
+				[.. Enumerable.Range (0, layer.TextObjects.Count)]));
+
+		if (labels.Count > 0 && !Confirm (chrome, labels))
+			return false;
+
 		foreach (UserLayer layer in doc.Layers.UserLayers) {
 			List<int> shapeIndices = [.. Enumerable.Range (0, layer.ShapeObjects.Count)];
 			List<int> textIndices = [.. Enumerable.Range (0, layer.TextObjects.Count)];
-			RasterizeSubset (doc, workspace, chrome, layer, shapeIndices, textIndices);
+			RasterizeSubset (doc, workspace, chrome, layer, shapeIndices, textIndices, historyGroup: historyGroup);
 		}
+		return true;
 	}
 }

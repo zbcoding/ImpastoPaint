@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Cairo;
 using NUnit.Framework;
@@ -116,9 +117,22 @@ internal sealed class ShapeObjectTest
 		return scene;
 	}
 
+	// Skips the test (rather than failing it) when the native cairo-graphics library isn't present,
+	// so a machine without it doesn't turn the whole suite red and hide real regressions.
+	private static void RequireCairo ()
+	{
+		try {
+			using ImageSurface _ = CairoExtensions.CreateImageSurface (Format.Argb32, 1, 1);
+		} catch (DllNotFoundException e) {
+			Assert.Ignore ($"Native cairo-graphics unavailable: {e.Message}");
+		}
+	}
+
 	[Test]
 	public void RasterizeObjectsBakesObjectSurfacesIntoBaseRaster ()
 	{
+		RequireCairo ();
+
 		ImageSurface baseSurface = CairoExtensions.CreateImageSurface (Format.Argb32, 4, 4);
 		UserLayer layer = new (baseSurface);
 
@@ -143,6 +157,46 @@ internal sealed class ShapeObjectTest
 		});
 
 		Assert.That (layer.RasterizeObjects (), Is.False, "no-op when there are no objects");
+	}
+
+	// RasterizeObjects folds down *every* object surface (shapes AND text) and clears both lists —
+	// the whole-layer bake behind "Rasterize All Objects" and the resize/crop pre-bake. Covers the
+	// text path, which the shape-only test above does not.
+	[Test]
+	public void RasterizeObjectsBakesShapeAndTextSurfacesAndClearsBothLists ()
+	{
+		RequireCairo ();
+
+		ImageSurface baseSurface = CairoExtensions.CreateImageSurface (Format.Argb32, 4, 4);
+		UserLayer layer = new (baseSurface);
+
+		layer.ShapeObjects.Add (new ShapeObject { ShapeType = ShapeObjectType.Ellipse });
+		layer.TextObjects.Add (new TextObject (new TextEngine ()));
+
+		// Paint the shape into its object surface (left half) and the text into its own (right half),
+		// so a correct bake leaves both regions opaque in the base raster.
+		using (Context g = new (layer.ShapeLayer.Layer.Surface)) {
+			g.SetSourceColor (new Color (1, 0, 0, 1));
+			g.Rectangle (0, 0, 2, 4);
+			g.Fill ();
+		}
+		using (Context g = new (layer.TextLayer.Layer.Surface)) {
+			g.SetSourceColor (new Color (0, 0, 1, 1));
+			g.Rectangle (2, 0, 2, 4);
+			g.Fill ();
+		}
+
+		bool baked = layer.RasterizeObjects ();
+
+		Assert.Multiple (() => {
+			Assert.That (baked, Is.True);
+			Assert.That (layer.ShapeObjects, Is.Empty, "shape objects dropped");
+			Assert.That (layer.TextObjects, Is.Empty, "text objects dropped");
+			Assert.That (layer.Surface.GetColorBgra (new PointI (0, 1)).A, Is.EqualTo (255), "shape pixels baked");
+			Assert.That (layer.Surface.GetColorBgra (new PointI (3, 1)).A, Is.EqualTo (255), "text pixels baked");
+			Assert.That (layer.ShapeLayer.Layer.Surface.GetColorBgra (new PointI (0, 1)).A, Is.EqualTo (0), "shape surface cleared");
+			Assert.That (layer.TextLayer.Layer.Surface.GetColorBgra (new PointI (3, 1)).A, Is.EqualTo (0), "text surface cleared");
+		});
 	}
 
 	private static void AssertScenesEqual (IReadOnlyList<ShapeObject> expected, IReadOnlyList<ShapeObject> actual)

@@ -21,8 +21,7 @@ public static class ShapeObjectRenderer
 	{
 		surface.Clear ();
 		foreach (ShapeObject source in layer.ShapeObjects)
-			if (!source.Rasterized) // rasterized shapes live in the base raster; don't composite them twice
-				Render (surface, layer, source);
+			Render (surface, layer, source);
 	}
 
 	/// <summary>

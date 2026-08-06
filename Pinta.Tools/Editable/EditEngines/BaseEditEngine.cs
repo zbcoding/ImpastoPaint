@@ -262,7 +262,7 @@ public abstract class BaseEditEngine
 	// selection would otherwise keep an invisible clip boundary, editable but partly hidden. Bake the
 	// actually-clipped ones into their layer's raster (their frozen Clip renders the same visible pixels
 	// the preview did); shapes lying fully inside their clip just drop it and stay fully editable.
-	private static void HandleSelectionCleared ()
+	private static void HandleSelectionCleared (CompoundHistoryItem historyGroup)
 	{
 		if (!PintaCore.Workspace.HasOpenDocuments)
 			return;
@@ -287,8 +287,9 @@ public abstract class BaseEditEngine
 			List<int> toRasterize = ObjectRasterizer.FindClippedShapesOnDeselect (layer);
 			if (toRasterize.Count > 0)
 				// Bakes the clipped pixels and reloads the layer's live engines from what remains.
+				// Recorded into the Deselect's compound so the whole thing undoes in one step.
 				ObjectRasterizer.RasterizeSubset (
-					doc, PintaCore.Workspace, PintaCore.Chrome, layer, toRasterize, textIndices: []);
+					doc, PintaCore.Workspace, PintaCore.Chrome, layer, toRasterize, textIndices: [], historyGroup: historyGroup);
 			else if (droppedClip)
 				// Only clips were dropped (no bake): resync live engines so a later move can't re-clip.
 				ReloadLayerShapes (layer);
@@ -310,17 +311,12 @@ public abstract class BaseEditEngine
 			return;
 
 		ShapeObject target = layer.ShapeObjects[shapeIndex];
-		if (target.Rasterized)
-			return; // baked into the layer's pixels; there is no editable engine to select
 
 		if (layers.CurrentUserLayerIndex != layerIndex)
 			layers.SetCurrentUserLayer (layerIndex);
 
-		// SEngines skips rasterized objects, so map the ShapeObjects index to the engine index.
-		int engineIndex = 0;
-		for (int i = 0; i < shapeIndex; ++i)
-			if (!layer.ShapeObjects[i].Rasterized)
-				++engineIndex;
+		// SEngines mirrors ShapeObjects one-for-one, so the object index is the engine index.
+		int engineIndex = shapeIndex;
 
 		// ShapeObjectType and ShapeTypes share ordering (they are cast to each other elsewhere).
 		ShapeTypes shapeType = (ShapeTypes) target.ShapeType;
@@ -1989,11 +1985,9 @@ public abstract class BaseEditEngine
 		// Rebuild the live editing engines for the now-active layer from its object list,
 		// and render them into its ShapeLayer surface. The active layer now composites
 		// solely through this shared surface (per-shape overlays are retired), so the
-		// same geometry never renders twice. Rasterized objects are records only (baked into
-		// the base raster), so they are not rebuilt as editable engines.
+		// same geometry never renders twice.
 		foreach (ShapeObject source in layer.ShapeObjects)
-			if (!source.Rasterized)
-				SEngines.Add (ShapeEngineCollection.Create (layer, source));
+			SEngines.Add (ShapeEngineCollection.Create (layer, source));
 
 		RedrawShapeLayerSurface (layer);
 	}
@@ -2062,8 +2056,7 @@ public abstract class BaseEditEngine
 
 		SEngines.Clear ();
 		foreach (ShapeObject source in layer.ShapeObjects)
-			if (!source.Rasterized)
-				SEngines.Add (ShapeEngineCollection.Create (layer, source));
+			SEngines.Add (ShapeEngineCollection.Create (layer, source));
 		runtime_layer = layer;
 
 		// SEngines changed (e.g. a shape was fused by deselecting the selection it was clipped to).

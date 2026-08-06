@@ -297,6 +297,7 @@ public sealed partial class LayersListView
 		foreach (UserLayer stale in child_models.Keys.Where (l => active_document.Layers.IndexOf (l) < 0).ToList ())
 			child_models.Remove (stale);
 
+		bool replacedRow = false;
 		for (uint i = 0; i < list_model.GetNItems (); ++i) {
 			if (list_model.GetObject (i) is not LayersListViewItem item || item.UserLayer is not { } layer)
 				continue;
@@ -322,14 +323,24 @@ public sealed partial class LayersListView
 				if (prevCount != newCount) {
 					list_model.Remove (i);
 					list_model.Insert (i, LayersListViewItem.New (active_document, layer));
+					replacedRow = true;
 				}
 			} else if (child_models.ContainsKey (layer)) {
 				// Last object removed: drop the child model and replace the row so it's no longer expandable.
 				child_models.Remove (layer);
 				list_model.Remove (i);
 				list_model.Insert (i, LayersListViewItem.New (active_document, layer));
+				replacedRow = true;
 			}
 		}
+
+		// Replacing a root row makes the SingleSelection drop its selection (often snapping the dock
+		// highlight to another layer), even though the document's current layer is unchanged — e.g.
+		// drawing the first shape on a new layer leaves the highlight on Background. Re-sync the dock
+		// selection to the current layer; the handler no-ops if selection already sits on it or one of
+		// its object rows. (object-layer BUG 2)
+		if (replacedRow)
+			HandleSelectedLayerChanged (this, EventArgs.Empty);
 	}
 
 	// Selects the row for a layer (the layer's own row, not one of its object rows).

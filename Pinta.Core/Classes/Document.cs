@@ -330,11 +330,15 @@ public sealed class Document
 
 		tools.Commit ();
 
-		// Bake live objects to pixels first (own history steps) so the resize acts on plain raster —
-		// vector shapes/text keep their old coords and would snap back otherwise. Skipped when part of a
-		// larger compound action (e.g. paste enlarging the canvas), which must not fragment its history.
-		if (compoundAction is null)
-			ObjectRasterizer.RasterizeAllLayersForResize (this, workspace, PintaCore.Chrome);
+		// Bake live objects to pixels first so the resize acts on plain raster — vector shapes/text keep
+		// their old coords and would snap back otherwise. The bakes and the resize are bundled into one
+		// compound history item so a single undo reverts everything. Skipped when part of a larger
+		// compound action (e.g. paste enlarging the canvas), which owns its own history.
+		CompoundHistoryItem? bakeGroup = compoundAction is null
+			? new CompoundHistoryItem (Resources.Icons.ImageResizeCanvas, Translations.GetString ("Resize Canvas"))
+			: null;
+		if (bakeGroup is not null && !ObjectRasterizer.RasterizeAllLayersForResize (this, workspace, PintaCore.Chrome, bakeGroup))
+			return;
 
 		ResizeHistoryItem hist = new (workspace, ImageSize) {
 			Icon = Resources.Icons.ImageResizeCanvas,
@@ -354,8 +358,10 @@ public sealed class Document
 
 		if (compoundAction is not null)
 			compoundAction.Push (hist);
-		else
-			Workspace.History.PushNewItem (hist);
+		else {
+			bakeGroup!.Push (hist);
+			Workspace.History.PushNewItem (bakeGroup);
+		}
 
 		ResetSelectionPaths ();
 
@@ -371,9 +377,12 @@ public sealed class Document
 
 		tools.Commit ();
 
-		// Bake live objects to pixels first (own history steps) so the scale acts on plain raster —
-		// vector shapes/text keep their old coords and would snap back otherwise.
-		ObjectRasterizer.RasterizeAllLayersForResize (this, workspace, PintaCore.Chrome);
+		// Bake live objects to pixels first so the scale acts on plain raster — vector shapes/text keep
+		// their old coords and would snap back otherwise. The bakes and the resize are bundled into one
+		// compound history item so a single undo reverts everything.
+		CompoundHistoryItem bakeGroup = new (Resources.Icons.ImageResize, Translations.GetString ("Resize Image"));
+		if (!ObjectRasterizer.RasterizeAllLayersForResize (this, workspace, PintaCore.Chrome, bakeGroup))
+			return;
 
 		ResizeHistoryItem hist = new (workspace, ImageSize);
 
@@ -388,7 +397,8 @@ public sealed class Document
 
 		hist.FinishSnapshotOfImage ();
 
-		Workspace.History.PushNewItem (hist);
+		bakeGroup.Push (hist);
+		Workspace.History.PushNewItem (bakeGroup);
 
 		ResetSelectionPaths ();
 

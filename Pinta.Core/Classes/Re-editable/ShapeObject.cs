@@ -54,12 +54,6 @@ public sealed class ShapeObject
 	/// </summary>
 	public bool RasterizeOnFinalize { get; set; }
 	/// <summary>
-	/// True once the shape has been baked into the layer's base raster (Rasterized mode). Its pixels
-	/// live in the base layer, so it is no longer rendered into the object surface nor rebuilt as a
-	/// live editing engine — it is kept only as a (non-editable) record shown in the layers dock.
-	/// </summary>
-	public bool Rasterized { get; set; }
-	/// <summary>
 	/// The selection the shape was drawn under, frozen at creation, or null if it was drawn with no
 	/// active selection. Every render (live edit, reload, bake) clips to this so a shape drawn inside a
 	/// selection keeps its clipped appearance permanently, instead of re-clipping to the live selection
@@ -90,7 +84,6 @@ public sealed class ShapeObject
 		ShapeObject clone = new () {
 			ShapeType = ShapeType,
 			Name = Name,
-			Rasterized = Rasterized,
 			RasterizeOnFinalize = RasterizeOnFinalize,
 			Clip = Clip, // frozen selection, never mutated — safe to share
 			AntiAliasing = AntiAliasing,

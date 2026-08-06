@@ -53,9 +53,11 @@ public static class LayerObjectSelection
 	/// raster — so a partially-clipped shape becomes plain pixels instead of an editable object that
 	/// keeps an invisible clip boundary. Shapes lying fully inside their clip just drop it and stay
 	/// editable.
+	/// The bakes are pushed into <paramref name="historyGroup"/> (the Deselect's own compound history
+	/// item) so a single undo restores both the selection and the editable clipped shapes.
 	/// </summary>
-	public static event Action? SelectionCleared;
+	public static event Action<CompoundHistoryItem>? SelectionCleared;
 
-	public static void RaiseSelectionCleared ()
-		=> SelectionCleared?.Invoke ();
+	public static void RaiseSelectionCleared (CompoundHistoryItem historyGroup)
+		=> SelectionCleared?.Invoke (historyGroup);
 }

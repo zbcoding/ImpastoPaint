@@ -447,6 +447,12 @@ public sealed class EditActions
 		if (!ConfirmDeselectRasterize (doc))
 			return;
 
+		// Bundle the deselect and any clipped-shape bakes into one compound so a single undo restores
+		// both the selection and the editable shapes (instead of one step per baked layer).
+		CompoundHistoryItem group = new (
+			Resources.Icons.EditSelectionNone,
+			Translations.GetString ("Deselect"));
+
 		SelectionHistoryItem hist = new (
 			workspace,
 			Resources.Icons.EditSelectionNone,
@@ -456,12 +462,15 @@ public sealed class EditActions
 
 		doc.ResetSelectionPaths ();
 
-		doc.History.PushNewItem (hist);
+		group.Push (hist);
 		doc.Workspace.Invalidate ();
 
 		// Now that the selection is gone, let the shape tool fuse any shape that was drawn clipped to
-		// it (so it doesn't linger as an object with an invisible clip boundary). Its own history step.
-		LayerObjectSelection.RaiseSelectionCleared ();
+		// it (so it doesn't linger as an object with an invisible clip boundary). The fuse steps go
+		// into the same compound, which is then pushed as one history item.
+		LayerObjectSelection.RaiseSelectionCleared (group);
+
+		doc.History.PushNewItem (group);
 	}
 
 	// True unless the user cancels a prompt about objects that deselecting would rasterize. After

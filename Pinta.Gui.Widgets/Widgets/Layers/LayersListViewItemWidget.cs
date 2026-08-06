@@ -190,7 +190,6 @@ public sealed partial class LayersListViewItemWidget
 	private Gtk.DrawingArea item_thumbnail;
 	private Gtk.Label item_label;
 	private Gtk.CheckButton visible_button;
-	private Gtk.Image rasterized_icon;
 	private Gtk.DrawingArea object_badge;
 
 	public static LayersListViewItemWidget New ()
@@ -199,7 +198,6 @@ public sealed partial class LayersListViewItemWidget
 	[MemberNotNull (nameof (item_thumbnail))]
 	[MemberNotNull (nameof (item_label))]
 	[MemberNotNull (nameof (visible_button))]
-	[MemberNotNull (nameof (rasterized_icon))]
 	[MemberNotNull (nameof (object_badge))]
 	partial void Initialize ()
 	{
@@ -217,11 +215,6 @@ public sealed partial class LayersListViewItemWidget
 		visibleButton.Halign = Gtk.Align.End;
 		visibleButton.Hexpand = false;
 		visibleButton.OnToggled += (_, _) => item?.HandleVisibilityToggled (visibleButton.Active);
-
-		// Monochrome checkmark shown on rasterized (finalized) object rows. Hidden otherwise.
-		Gtk.Image rasterizedIcon = Gtk.Image.NewFromIconName (Resources.StandardIcons.ObjectSelect);
-		rasterizedIcon.Halign = Gtk.Align.End;
-		rasterizedIcon.Visible = false;
 
 		// Leading badge marking a live, re-editable shape/text object row. Drawn with the
 		// same Cairo "Obj." badge as the canvas (not an icon-theme image), so it can't fall
@@ -265,7 +258,6 @@ public sealed partial class LayersListViewItemWidget
 		Append (visibleButton);
 		Append (objectBadge);
 		Append (itemLabel);
-		Append (rasterizedIcon);
 		Append (itemThumbnail);
 
 		// --- References to keep
@@ -273,7 +265,6 @@ public sealed partial class LayersListViewItemWidget
 		item_thumbnail = itemThumbnail;
 		item_label = itemLabel;
 		visible_button = visibleButton;
-		rasterized_icon = rasterizedIcon;
 		object_badge = objectBadge;
 	}
 
@@ -411,19 +402,14 @@ public sealed partial class LayersListViewItemWidget
 		item_thumbnail.SetVisible (!isObject);
 
 		if (isObject) {
-			// Rasterized shapes are baked into the layer's pixels and no longer editable; mark them
-			// with a monochrome checkmark. Editable object rows instead get the "editable object" badge.
-			bool rasterized = item.ShapeObject?.Rasterized == true;
-			rasterized_icon.Visible = rasterized;
-			object_badge.Visible = !rasterized;
+			// Object rows are always live/editable (rasterizing drops the object entirely), so they
+			// always get the "editable object" badge.
+			object_badge.Visible = true;
 			object_badge.QueueDraw ();
-			SetTooltipText (rasterized
-				? Translations.GetString ("Rasterized: baked into the layer's pixels. No longer editable as an object.")
-				: Translations.GetString ("Re-editable object: a live shape or text you can keep editing until you rasterize it."));
+			SetTooltipText (Translations.GetString ("Re-editable object: a live shape or text you can keep editing until you rasterize it."));
 			return;
 		}
 
-		rasterized_icon.Visible = false;
 		object_badge.Visible = false;
 
 		visible_button.SetActive (item.Visible);

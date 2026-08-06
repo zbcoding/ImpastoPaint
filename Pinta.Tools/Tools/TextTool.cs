@@ -260,6 +260,12 @@ public sealed class TextTool : BaseTool
 			rasterize_mode_btn.AddItem (Translations.GetString ("Raster — fuses to layer"), Pinta.Resources.Icons.LayerMergeDown, true,
 				Translations.GetString ("Painted into the active layer's pixels on commit. Immediately cut/move/erase like any artwork, but not editable later."));
 
+			// Don't let the dropdown hold keyboard focus (like every other widget on this toolbar): the
+			// Text tool types with the keyboard, and a focused DropDown treats Space as "open the menu",
+			// so typing a space after clicking this control would re-trigger it instead of inserting a
+			// space. CanFocus=false keeps it click/pointer-usable while keeping the keyboard on the text.
+			rasterize_mode_btn.CanFocus = false;
+
 			rasterize_mode_btn.SelectedIndex = Settings.GetSetting (SettingNames.TEXT_RASTERIZE_MODE, false) ? 1 : 0;
 			rasterize_mode_btn.SelectedItemChanged += (_, _) => {
 				Settings.PutSetting (SettingNames.TEXT_RASTERIZE_MODE, RasterizeText);
@@ -893,6 +899,15 @@ public sealed class TextTool : BaseTool
 		RedrawText (false);
 	}
 
+	// An undo/redo swaps the text objects + their TextLayer surface, but not the ToolLayer overlay
+	// (the dashed re-edit rects + blue handle dots). Rebuild the overlay from the current object list
+	// so handles for a text object that doesn't exist at this history step no longer linger on canvas.
+	private void HandleHistoryChanged (object? sender, EventArgs e)
+	{
+		if (workspace.HasOpenDocuments)
+			DrawTextRectangles ();
+	}
+
 	protected override void OnAntialiasingChanged ()
 	{
 		UpdateFont ();
@@ -954,6 +969,14 @@ public sealed class TextTool : BaseTool
 		workspace.LayerRemoved += HandleSelectedLayerChanged;
 		workspace.SelectedLayerChanged += HandleSelectedLayerChanged;
 
+		// The re-edit overlay (dashed rects + blue handle dots) lives on the ToolLayer, which history
+		// undo/redo does NOT swap — so a step that removes a text object would leave its handles behind.
+		// Refresh the overlay from the current object list on every undo/redo while we're the active tool.
+		if (document is not null) {
+			document.History.ActionUndone += HandleHistoryChanged;
+			document.History.ActionRedone += HandleHistoryChanged;
+		}
+
 		// We always start off not in edit mode
 		is_editing = false;
 		UpdateConfirmButtonVisibility ();
@@ -978,6 +1001,11 @@ public sealed class TextTool : BaseTool
 		workspace.LayerAdded -= HandleSelectedLayerChanged;
 		workspace.LayerRemoved -= HandleSelectedLayerChanged;
 		workspace.SelectedLayerChanged -= HandleSelectedLayerChanged;
+
+		if (document is not null) {
+			document.History.ActionUndone -= HandleHistoryChanged;
+			document.History.ActionRedone -= HandleHistoryChanged;
+		}
 
 		CommitCurrentText ();
 

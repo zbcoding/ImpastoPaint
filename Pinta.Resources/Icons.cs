@@ -212,6 +212,8 @@ public static class Icons
 	public const string LayerMergeDown = "layers-merge-down";
 	public const string LayerNew = "layers-add-layer";
 	public const string LayerProperties = "document-properties-symbolic";
+	// Badge on layers-dock rows for a live, re-editable shape/text object (an "O" in a rounded square).
+	public const string ObjectEditable = "object-editable-symbolic";
 	public const string LayerRotateZoom = "layers-rotate-zoom-symbolic";
 	// Bidirectional rotate cursor for the transform tools' Alt-drag rotation.
 	// Non-symbolic so the white halo + black stroke are preserved (symbolic recolors to single color).

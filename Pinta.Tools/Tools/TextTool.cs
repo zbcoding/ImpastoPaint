@@ -242,7 +242,12 @@ public sealed class TextTool : BaseTool
 				Translations.GetString ("Area text: the text flows to fit a box. Drag a corner to resize the box and re-wrap the text."));
 
 			text_mode_btn.SelectedIndex = Settings.GetSetting (SettingNames.TEXT_MODE, 0);
-			text_mode_btn.SelectedItemChanged += HandleTextModeChanged;
+
+			//Point/Area only sets the mode for the NEXT object — AreaMode is read at creation, it
+			//never re-flows the object currently being edited (same rule as the Object/Raster "Mode"
+			//toggle below). CanFocus=false keeps the keyboard on the text input as a dropdown item is
+			//chosen, instead of letting Space re-open the menu.
+			text_mode_btn.CanFocus = false;
 		}
 
 		tb.Append (text_mode_btn);
@@ -267,13 +272,12 @@ public sealed class TextTool : BaseTool
 			rasterize_mode_btn.CanFocus = false;
 
 			rasterize_mode_btn.SelectedIndex = Settings.GetSetting (SettingNames.TEXT_RASTERIZE_MODE, false) ? 1 : 0;
-			rasterize_mode_btn.SelectedItemChanged += (_, _) => {
+			//The toggle only sets the mode for the NEXT object created (stamped at creation, like the
+			//shape tool). It never re-stamps the object currently being edited: switching to Raster
+			//mid-edit must not suddenly rasterize a text object you're still typing (it stays the Object
+			//it was made as). Mirrors shapes, and keeps the keyboard on the text input while toggling.
+			rasterize_mode_btn.SelectedItemChanged += (_, _) =>
 				Settings.PutSetting (SettingNames.TEXT_RASTERIZE_MODE, RasterizeText);
-				//A mid-edit mode toggle applies to the object being edited, so its clip and
-				//commit-time fuse follow the newly chosen mode.
-				if (current_text_object != null)
-					current_text_object.RasterizeOnFinalize = RasterizeText;
-			};
 		}
 		tb.Append (rasterize_mode_btn);
 
@@ -764,22 +768,6 @@ public sealed class TextTool : BaseTool
 	//Whether new text fuses into the layer's raster on commit (Raster mode) rather than
 	//staying a live, re-editable object (Object mode). Read at commit time.
 	private bool RasterizeText => rasterize_mode_btn?.SelectedItem.GetTagOrDefault (false) ?? false;
-
-	private void HandleTextModeChanged (object? sender, EventArgs e)
-	{
-		//Convert the object currently being edited to match the new mode. Objects that
-		//aren't being edited keep whatever mode they were created with.
-		if (!is_editing || current_text_object is null)
-			return;
-
-		TextEngine engine = current_text_object.Engine;
-		if (AreaMode)
-			engine.WrapWidth = Math.Max (MinAreaWidth, current_text_object.TextBounds.Width);
-		else
-			engine.WrapWidth = 0;
-
-		RedrawText (true);
-	}
 
 	private void HandleVariantButtonChanged (object? sender, EventArgs e)
 	{

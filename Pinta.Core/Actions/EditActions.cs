@@ -60,10 +60,6 @@ public sealed class EditActions
 	private Gio.File? last_palette_dir = null;
 	private Document? active_document = null;
 
-	// Only fire Escape-deselect while a selection tool is active, so Escape
-	// stays free for other tools. Credit: Sam-Gledhill, PR #2205.
-	private static readonly string[] selection_tools = ["Pinta.Tools.EllipseSelectTool", "Pinta.Tools.RectangleSelectTool", "Pinta.Tools.LassoSelectTool", "Pinta.Tools.ScissorsSelectTool"];
-
 	// Escape must be double-tapped to deselect, so a single stray Escape doesn't
 	// discard a selection. Window falls back to 400ms if GTK's own double-click
 	// interval isn't available.
@@ -463,14 +459,14 @@ public sealed class EditActions
 		LayerObjectSelection.RaiseSelectionCleared ();
 	}
 
-	// Escape only deselects while a selection tool is active, and only on the
-	// second press within a short window (double-tap), so a single stray
-	// Escape leaves the selection intact. Credit: Sam-Gledhill, PR #2205.
+	// Escape (double-tap) clears the current editing state no matter which tool is active.
+	// It first finalizes any in-progress shape or text edit through the active tool's commit
+	// (baking a half-drawn Raster-mode shape or half-typed text onto the layer, and persisting
+	// an Object-mode shape/text as an editable object), then clears any visible selection, so
+	// a selection still outlined after switching to another tool can still be dismissed. A
+	// single stray Escape leaves everything intact. Credit: Sam-Gledhill, PR #2205.
 	private void HandlePintaCoreActionsEditDeselectSelectionActivated (object sender, EventArgs e)
 	{
-		if (!selection_tools.Contains (tools.CurrentTool?.ToString ()))
-			return;
-
 		DateTime now = DateTime.UtcNow;
 		int double_click_ms = Gtk.Settings.GetDefault ()?.GtkDoubleClickTime ?? DEFAULT_DOUBLE_ESCAPE_MS;
 
@@ -485,7 +481,16 @@ public sealed class EditActions
 
 		last_escape_time = null;
 
-		HandlePintaCoreActionsEditDeselectActivated (sender, e);
+		Document? doc = workspace.ActiveDocumentOrDefault;
+		if (doc is null)
+			return;
+
+		// Commit any in-progress shape/text edit (Object or raster) so it finalizes cleanly.
+		tools.Commit ();
+
+		// Deselect whatever selection is still outlined, whatever tool is now active.
+		if (doc.Selection.Visible)
+			HandlePintaCoreActionsEditDeselectActivated (sender, e);
 	}
 
 	private void HandlerPintaCoreActionsEditCopyActivated (object sender, EventArgs e)

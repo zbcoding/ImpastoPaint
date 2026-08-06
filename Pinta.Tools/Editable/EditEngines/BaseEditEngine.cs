@@ -686,6 +686,12 @@ public abstract class BaseEditEngine
 			PersistShapeObjects (workspace.ActiveDocument.Layers.CurrentUserLayer);
 		}
 
+		// Clear the "Obj." badge overlay so it doesn't linger once another tool is active.
+		if (workspace.HasOpenDocuments) {
+			workspace.ActiveDocument.Layers.ToolLayer.Hidden = true;
+			workspace.ActiveDocument.Layers.ToolLayer.Clear ();
+		}
+
 		palette.PrimaryColorChanged -= Palette_PrimaryColorChanged;
 		palette.SecondaryColorChanged -= Palette_SecondaryColorChanged;
 	}
@@ -1511,6 +1517,46 @@ public abstract class BaseEditEngine
 
 		InvalidateAfterDraw (dirty);
 		PersistShapeObjects (workspace.ActiveDocument.Layers.CurrentUserLayer);
+
+		DrawShapeBadges ();
+	}
+
+	/// <summary>
+	/// Draws the "Obj." editable-object badge below the leftmost control point of every live, editable
+	/// (non-Raster) shape, onto the tool overlay layer (never baked into artwork) — the shape-side
+	/// counterpart of the Text tool's on-canvas badge. Cleared by <see cref="HandleDeactivated"/>.
+	/// </summary>
+	private void DrawShapeBadges ()
+	{
+		if (!workspace.HasOpenDocuments)
+			return;
+
+		Document doc = workspace.ActiveDocument;
+		Layer toolLayer = doc.Layers.ToolLayer;
+		toolLayer.Clear ();
+
+		bool any = false;
+		using (Context g = new (toolLayer.Surface)) {
+			g.Save ();
+			g.Translate (.5, .5);
+			foreach (ShapeEngine engine in SEngines) {
+				if (engine.RasterizeOnFinalize || engine.ControlPoints.Count == 0)
+					continue;
+
+				// Leftmost control point (for a curved ellipse this is its leftmost corner).
+				ControlPoint leftmost = engine.ControlPoints[0];
+				foreach (ControlPoint cp in engine.ControlPoints)
+					if (cp.Position.X < leftmost.Position.X)
+						leftmost = cp;
+
+				EditableObjectBadge.Draw (g, new PointD (leftmost.Position.X, leftmost.Position.Y + 6), EditableObjectBadge.CanvasColor);
+				any = true;
+			}
+			g.Restore ();
+		}
+
+		toolLayer.Hidden = !any;
+		doc.Workspace.Invalidate ();
 	}
 
 	/// <summary>

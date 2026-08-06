@@ -1097,8 +1097,13 @@ public abstract class BaseEditEngine
 
 		is_drawing = true;
 
-		//Right clicking changes tension.
-		changing_tension = e.MouseButton != MouseButton.Left;
+		bool rightButton = e.MouseButton == MouseButton.Right;
+
+		// A plain right click drags the whole shape (mirroring the Text tool). Only while holding
+		// the tension modifier (default Ctrl) does a right-drag on a control point change its tension.
+		KeyGesture tensionGesture = PintaCore.Shortcuts.GetToolBinding (KeyboardShortcutManager.ShapeChangeTension);
+		bool tension_modifier_down = IsSwitchGesturePressed (tensionGesture, e.State);
+		changing_tension = rightButton && tension_modifier_down;
 
 		bool ctrlKey = e.IsControlPressed;
 
@@ -1140,6 +1145,23 @@ public abstract class BaseEditEngine
 		}
 
 		clicked_without_modifying = clicked_control_point;
+
+		// A plain right click drags the whole shape (mirroring the Text tool), whether it lands on a
+		// control point or on the shape's edge. Right-clicking with the tension modifier held instead
+		// changes a control point's tension (changing_tension above). A right click into empty space
+		// does nothing.
+		if (rightButton && !changing_tension) {
+			int hitShapeIndex = clicked_control_point ? closestCPShapeIndex : (clicked_generated_point ? closestShapeIndex : -1);
+			if (hitShapeIndex >= 0) {
+				SelectedShapeIndex = hitShapeIndex;
+				moving_whole_shape = true;
+				last_shape_move_point = current_point;
+				clicked_without_modifying = true;
+			}
+
+			DrawActiveShape (false, false, true, shiftKey, false, e.IsControlPressed);
+			return;
+		}
 
 		if (!changing_tension && clicked_generated_point) {
 			//Determine if the currently active tool matches the clicked on shape's corresponding tool, and if not, switch to it.

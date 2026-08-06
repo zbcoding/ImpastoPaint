@@ -47,20 +47,28 @@ public abstract class ShapeTool : BaseTool
 	public virtual BaseEditEngine.ShapeTypes ShapeType => BaseEditEngine.ShapeTypes.ClosedLineCurveSeries;
 	public override bool IsEditableShapeTool => true;
 
-	public override string StatusBarText =>
-			// Translators: {0} is 'Ctrl', or a platform-specific key such as 'Command' on macOS.
-			Translations.GetString ("Left click to draw a shape with the primary color." +
-			    "\nLeft click on a shape to add a control point." +
-			    "\nLeft click on a control point and drag to move it." +
-			    "\nRight click on a control point and drag to change its tension." +
-			    "\nHold Shift to snap to angles." +
-			    "\nUse arrow keys to move the selected control point." +
-			    "\nPress {0} + left/right arrows to select control points by order." +
-			    "\nPress Delete to delete the selected control point." +
-			    "\nPress Space to add a new control point at the mouse position." +
-			    "\nHold {0} while pressing Space to create the control point at the exact same position." +
-			    "\nHold {0} while left clicking on a control point to create a new shape at the exact same position." +
-			    "\nPress Enter to finalize the shape.", system_manager.CtrlLabel ());
+	public override string StatusBarText {
+		get {
+			string ctrl = system_manager.CtrlLabel ();
+			string tension = PintaCore.Shortcuts.GetToolBinding (KeyboardShortcutManager.ShapeChangeTension).ToLabel ();
+			return
+				// Translators: {0} is 'Ctrl', or a platform-specific key such as 'Command' on macOS. {1} is the tension modifier key.
+				Translations.GetString ("Left click to draw a shape with the primary color." +
+					"\nLeft click on a shape to add a control point." +
+					"\nLeft click on a control point and drag to move it." +
+					"\nRight click on a shape and drag to move the whole shape." +
+					"\nHold {1} while right clicking on a control point and drag to change its tension." +
+					"\nHold Shift to snap to angles." +
+					"\nUse arrow keys to move the selected control point." +
+					"\nPress {0} + left/right arrows to select control points by order." +
+					"\nPress Delete to delete the selected control point." +
+					"\nPress Space to add a new control point at the mouse position." +
+					"\nHold {0} while pressing Space to create the control point at the exact same position." +
+					"\nHold {0} to hide other shapes' control points and clear the way; " +
+					"{0}-click a control point to start a new shape at that exact spot." +
+					"\nPress Enter to finalize the shape.", ctrl, tension);
+		}
+	}
 
 	protected override void OnBuildToolBar (Gtk.Box tb)
 	{

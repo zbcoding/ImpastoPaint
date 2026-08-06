@@ -566,6 +566,7 @@ internal sealed class MainWindow
 		colors_wheel_popover.Autohide = true;
 		colors_wheel_popover.Position = Gtk.PositionType.Top;
 		colors_wheel_popover.SetParent (colors_palette);
+		colors_wheel_popover.Child = colors_popover_box;
 		colors_palette.ColorWheelClicked += (_, _) => {
 			RebuildColorPopoverSections ();
 			RectangleD r = colors_palette.ColorWheelButtonRect;

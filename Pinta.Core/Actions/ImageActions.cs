@@ -190,6 +190,10 @@ public sealed class ImageActions
 
 		tools.Commit ();
 
+		// Bake live objects to pixels first (own history steps) so the rotation acts on plain raster —
+		// objects' vector geometry / SEngines / text origins aren't rotated and would otherwise revert.
+		ObjectRasterizer.RasterizeAllLayersForResize (doc, workspace, PintaCore.Chrome);
+
 		doc.RotateImageCCW ();
 		doc.History.PushNewItem (new InvertHistoryItem (InvertType.Rotate90CCW));
 	}
@@ -200,6 +204,8 @@ public sealed class ImageActions
 
 		tools.Commit ();
 
+		ObjectRasterizer.RasterizeAllLayersForResize (doc, workspace, PintaCore.Chrome);
+
 		doc.RotateImageCW ();
 		doc.History.PushNewItem (new InvertHistoryItem (InvertType.Rotate90CW));
 	}
@@ -209,6 +215,11 @@ public sealed class ImageActions
 		Document doc = workspace.ActiveDocument;
 
 		tools.Commit ();
+
+		// Bake live objects to pixels first (own history steps) so flatten sees a single raster per
+		// layer — otherwise the bottom layer keeps its object lists/surfaces, double-compositing the
+		// flattened pixels and leaving orphaned editable objects.
+		ObjectRasterizer.RasterizeAllLayersForResize (doc, workspace, PintaCore.Chrome);
 
 		ImageSurface oldBottomSurface =
 			doc.Layers
@@ -236,6 +247,8 @@ public sealed class ImageActions
 
 		tools.Commit ();
 
+		ObjectRasterizer.RasterizeAllLayersForResize (doc, workspace, PintaCore.Chrome);
+
 		doc.RotateImage180 ();
 		doc.History.PushNewItem (new InvertHistoryItem (InvertType.Rotate180));
 	}
@@ -246,6 +259,8 @@ public sealed class ImageActions
 
 		tools.Commit ();
 
+		ObjectRasterizer.RasterizeAllLayersForResize (doc, workspace, PintaCore.Chrome);
+
 		doc.FlipImageVertical ();
 		doc.History.PushNewItem (new InvertHistoryItem (InvertType.FlipVertical));
 	}
@@ -255,6 +270,8 @@ public sealed class ImageActions
 		Document doc = workspace.ActiveDocument;
 
 		tools.Commit ();
+
+		ObjectRasterizer.RasterizeAllLayersForResize (doc, workspace, PintaCore.Chrome);
 
 		doc.FlipImageHorizontal ();
 		doc.History.PushNewItem (new InvertHistoryItem (InvertType.FlipHorizontal));

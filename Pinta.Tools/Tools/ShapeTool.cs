@@ -50,7 +50,7 @@ public abstract class ShapeTool : BaseTool
 	public override string StatusBarText {
 		get {
 			string ctrl = system_manager.CtrlLabel ();
-			string tension = PintaCore.Shortcuts.GetToolBinding (KeyboardShortcutManager.ShapeChangeTension).ToLabel ();
+			string tension = PintaCore.Shortcuts.GetToolBinding (KeyboardShortcutManager.ShapeChangeTension).ModifierKeyLabel (system_manager);
 			return
 				// Translators: {0} is 'Ctrl', or a platform-specific key such as 'Command' on macOS. {1} is the tension modifier key.
 				Translations.GetString ("Left click to draw a shape with the primary color." +
@@ -64,8 +64,8 @@ public abstract class ShapeTool : BaseTool
 					"\nPress Delete to delete the selected control point." +
 					"\nPress Space to add a new control point at the mouse position." +
 					"\nHold {0} while pressing Space to create the control point at the exact same position." +
-					"\nHold {0} to hide other shapes' control points and clear the way; " +
-					"{0}-click a control point to start a new shape at that exact spot." +
+					"\nHold {0} to hide other shapes' control points and clear the way." +
+					"\n{0} + click a control point to start a new shape at that exact spot." +
 					"\nPress Enter to finalize the shape.", ctrl, tension);
 		}
 	}

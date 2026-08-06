@@ -1851,13 +1851,13 @@ public abstract class BaseEditEngine
 				if (hovering_control_point) {
 					hover_handle.Active = hover_handle.Selected = true;
 					string ctrl = system_manager.CtrlLabel ();
-					string tension = PintaCore.Shortcuts.GetToolBinding (KeyboardShortcutManager.ShapeChangeTension).ToLabel ();
+					string tension = PintaCore.Shortcuts.GetToolBinding (KeyboardShortcutManager.ShapeChangeTension).ModifierKeyLabel (system_manager);
 					hover_handle.TooltipText =
 						$"{(int) Math.Round (closestControlPoint.Position.X)}, {(int) Math.Round (closestControlPoint.Position.Y)}\n"
-						+ Translations.GetString ("Shift-drag to snap the adjacent segment to a 15° angle.") + "\n"
-						+ Translations.GetString ("Right click and drag to move the whole shape.") + "\n"
-						// Translators: {0} is the tension modifier key (e.g. 'Ctrl'). {1} is 'Ctrl', or the platform-specific key such as 'Command'.
-						+ Translations.GetString ("Hold {0} while right dragging to change tension; {1} click to start a new shape here.", tension, ctrl);
+						+ Translations.GetString ("Shift-drag: snap the adjacent segment to a 15° angle.") + "\n"
+						+ Translations.GetString ("Right click + drag: move the whole shape.") + "\n"
+						+ Translations.GetString ("{0} + right drag: change tension.", tension) + "\n"
+						+ Translations.GetString ("{0} + click: start a new shape here.", ctrl);
 				}
 			}
 

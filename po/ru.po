@@ -4,7 +4,6 @@
 # This file is distributed under the same license as the Pinta package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
-#, fuzzy
 # PO translation metadata:
 # Translations must include a descriptive translator note.
 # AI-generated translations are tagged.
@@ -13,11 +12,12 @@
 #   #. AI-generated translation; human review requested.
 #   msgid "..."
 #   msgstr "..."
+#, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-05-15 00:45+0000\n"
+"POT-Creation-Date: 2026-08-06 01:08-0500\n"
 "PO-Revision-Date: 2026-05-26 05:11+0000\n"
 "Last-Translator: Сергей <asvmail.as@gmail.com>\n"
 "Language-Team: Russian <https://hosted.weblate.org/projects/pinta/pinta/ru/"
@@ -30,9 +30,8 @@ msgstr ""
 "n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
 "X-Generator: Weblate 2026.6.dev0\n"
 "X-Launchpad-Export-Date: 2023-12-18 03:00+0000\n"
-"Content-Type: text/plain; charset=UTF-8\n"
 
-#: ../Pinta.Gui.Addins/InstallDialog.cs:268
+#: ../Pinta.Gui.Addins/InstallDialog.cs:284
 msgid " (in user directory)"
 msgstr " (в пользовательский каталог)"
 
@@ -45,37 +44,41 @@ msgstr " Режим выделения: "
 msgid "..."
 msgstr "..."
 
-#: ../Pinta.Tools/Tools/ColorPickerTool.cs:236
+#: ../Pinta.Tools/Tools/ColorPickerTool.cs:247
 msgid "3 x 3 Region"
 msgstr "Область 3 на 3"
 
-#: ../Pinta.Tools/Tools/ColorPickerTool.cs:237
+#: ../Pinta.Tools/Tools/ColorPickerTool.cs:248
 msgid "5 x 5 Region"
 msgstr "Область 5 на 5"
 
-#: ../Pinta.Tools/Tools/ColorPickerTool.cs:238
+#: ../Pinta.Tools/Tools/ColorPickerTool.cs:249
 msgid "7 x 7 Region"
 msgstr "Область 7 на 7"
 
-#: ../Pinta.Tools/Tools/ColorPickerTool.cs:239
+#: ../Pinta.Tools/Tools/ColorPickerTool.cs:250
 msgid "9 x 9 Region"
 msgstr "Область 9 на 9"
 
-#: ../Pinta/MainWindow.cs:401
+#: ../Pinta/MainWindow.cs:420
 msgid "A_dd-ins"
 msgstr "_Дополнения"
 
-#: ../Pinta.Core/Actions/AppActions.cs:42
+#: ../Pinta.Core/Actions/AppActions.cs:43
 msgid "About"
 msgstr "О приложении"
 
-#: ../Pinta/Actions/Help/AboutDialogAction.cs:64
+#: ../Pinta/Actions/Help/AboutDialogAction.cs:66
 msgid "About Pinta"
 msgstr "О приложении Pinta"
 
-#: ../Pinta.Core/Actions/LayerActions.cs:61
-#: ../Pinta.Core/Actions/LayerActions.cs:398
-#: ../Pinta/Actions/Edit/PasteAction.cs:173
+#: ../Pinta.Tools/Tools/SmartPatchTool.cs:442
+msgid "Accuracy"
+msgstr ""
+
+#: ../Pinta/Actions/Edit/PasteAction.cs:175
+#: ../Pinta.Core/Actions/LayerActions.cs:64
+#: ../Pinta.Core/Actions/LayerActions.cs:432
 msgid "Add New Layer"
 msgstr "Добавить слой"
 
@@ -83,44 +86,61 @@ msgstr "Добавить слой"
 msgid "Add Noise"
 msgstr "Добавить шум"
 
+#: ../Pinta.Core/Managers/KeyboardShortcutManager.cs:276
+msgid "Add control point at exact same position"
+msgstr ""
+
+#: ../Pinta.Core/Managers/KeyboardShortcutManager.cs:270
+msgid "Add control point at mouse position"
+msgstr ""
+
 #: ../Pinta.Core/Actions/AddinActions.cs:40
 msgid "Add-in Manager..."
 msgstr "Менеджер дополнений..."
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:852
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:1226
 msgid "Added"
 msgstr "Добавлено"
 
-#: ../Pinta/MainWindow.cs:451
+#: ../Pinta/Dialogs/PreferencesDialog.cs:172
+msgid ""
+"Adds a darker shade of each color beneath the standard palette. The status "
+"bar grows taller to fit the extra row."
+msgstr ""
+
+#: ../Pinta/Actions/Help/KeyboardShortcutsDialogAction.cs:181
+#: ../Pinta/MainWindow.cs:476
 msgid "Adjustments"
 msgstr "Коррекция"
 
-#: ../Pinta.Tools/Tools/ColorPickerTool.cs:207
+#: ../Pinta.Tools/Tools/ColorPickerTool.cs:209
 msgid "After select"
 msgstr "После выбора"
 
-#: ../Pinta.Effects/Dialogs/Effects.AlignmentDialog.cs:72
+#: ../Pinta.Effects/Dialogs/Effects.AlignmentDialog.cs:76
 #: ../Pinta.Effects/Effects/AlignObjectEffect.cs:12
 msgid "Align Object"
 msgstr "Выровнять объект"
 
 #. Translators: 'All Petite Caps' refers to the font-variant text property
-#: ../Pinta.Tools/Tools/TextTool.cs:208
+#: ../Pinta.Tools/Dialogs/TextPropertiesDialog.cs:259
+#: ../Pinta.Tools/Tools/TextTool.cs:348
 msgid "All Petite Caps"
 msgstr "Все малая капитель"
 
 #. Translators: 'All Small Caps' refers to the font-variant text property
-#: ../Pinta.Tools/Tools/TextTool.cs:196
+#: ../Pinta.Tools/Dialogs/TextPropertiesDialog.cs:257
+#: ../Pinta.Tools/Tools/TextTool.cs:334
 msgid "All Small Caps"
 msgstr "Все малые заглавные"
 
-#: ../Pinta.Core/Actions/EditActions.cs:585
-#: ../Pinta.Gui.Addins/AddinManagerDialog.cs:285
-#: ../Pinta/Actions/File/OpenDocumentAction.cs:102
+#: ../Pinta/Actions/File/OpenDocumentAction.cs:140
+#: ../Pinta.Core/Actions/EditActions.cs:712
+#: ../Pinta.Gui.Addins/AddinManagerDialog.cs:302
 msgid "All files"
 msgstr "Все файлы"
 
-#: ../Pinta.Gui.Widgets/Widgets/ColorPickerSlider.cs:340
+#: ../Pinta.Gui.Widgets/Widgets/ColorPickerSlider.cs:364
 msgid "Alpha"
 msgstr "Альфа"
 
@@ -141,6 +161,8 @@ msgstr "Количество"
 msgid "Anchor:"
 msgstr "Якорь:"
 
+#: ../Pinta/Actions/Layers/RotateZoomLayerAction.cs:145
+#: ../Pinta/Dialogs/CanvasGridSettingsDialog.cs:72
 #: ../Pinta.Effects/Effects/EdgeDetectEffect.cs:81
 #: ../Pinta.Effects/Effects/EmbossEffect.cs:120
 #: ../Pinta.Effects/Effects/JuliaFractalEffect.cs:169
@@ -149,23 +171,35 @@ msgstr "Якорь:"
 #: ../Pinta.Effects/Effects/RadialBlurEffect.cs:136
 #: ../Pinta.Effects/Effects/ReliefEffect.cs:77
 #: ../Pinta.Tools/Brushes/SlashBrush.cs:53
-#: ../Pinta.Tools/Editable/EditEngines/ArrowedEditEngine.cs:310
-#: ../Pinta/Actions/Layers/RotateZoomLayerAction.cs:145
-#: ../Pinta/Dialogs/CanvasGridSettingsDialog.cs:52
+#: ../Pinta.Tools/Editable/EditEngines/ArrowedEditEngine.cs:313
 msgid "Angle"
 msgstr "Угол"
+
+#: ../Pinta.Tools/Editable/EditEngines/ArrowedEditEngine.cs:321
+msgid "Angle, in degrees, between the arrowhead's wings and the line."
+msgstr "Угол в градусах между крыльями наконечника стрелки и линией."
 
 #: ../Pinta.Effects/Effects/TwistEffect.cs:225
 msgid "Antialias"
 msgstr "Сглаживание"
 
-#: ../Pinta.Core/Classes/BaseTool.cs:359
+#: ../Pinta.Core/Classes/BaseTool.cs:404
 msgid "Antialiasing Off"
 msgstr "Выключить сглаживание"
 
-#: ../Pinta.Core/Classes/BaseTool.cs:358
+#: ../Pinta.Core/Classes/BaseTool.cs:403
 msgid "Antialiasing On"
 msgstr "Включить сглаживание"
+
+#: ../Pinta.Tools/Tools/TextTool.cs:241
+msgid "Area"
+msgstr ""
+
+#: ../Pinta.Tools/Tools/TextTool.cs:242
+msgid ""
+"Area text: the text flows to fit a box. Drag a corner to resize the box and "
+"re-wrap the text."
+msgstr ""
 
 #: ../Pinta.Tools/Editable/EditEngines/ArrowedEditEngine.cs:262
 msgid "Arrow"
@@ -182,7 +216,7 @@ msgstr "Художественные"
 msgid "Atkinson"
 msgstr "Аткинсона"
 
-#: ../Pinta.Effects/Dialogs/Effects.LevelsDialog.cs:260
+#: ../Pinta.Effects/Dialogs/Effects.LevelsDialog.cs:271
 msgid "Auto"
 msgstr "Автоматически"
 
@@ -194,38 +228,60 @@ msgstr "Автокадрирование"
 msgid "Auto Level"
 msgstr "Автокоррекция"
 
-#: ../Pinta.Gui.Addins/AddinInfoView.cs:227
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:439
+msgid ""
+"Automatically connects the last point back to the first, closing the shape "
+"(e.g. a rectangle)."
+msgstr ""
+
+#: ../Pinta.Gui.Addins/AddinInfoView.cs:251
 #, csharp-format
 msgid "Available in repository: {0}"
 msgstr "Доступно в репозитории: {0}"
+
+#: ../Pinta.Tools/Tools/ColorPickerTool.cs:247
+msgid "Average the colors in a 3 x 3 area around the pointer."
+msgstr "Усреднять цвета в области 3 × 3 вокруг указателя."
+
+#: ../Pinta.Tools/Tools/ColorPickerTool.cs:248
+msgid "Average the colors in a 5 x 5 area around the pointer."
+msgstr "Усреднять цвета в области 5 × 5 вокруг указателя."
+
+#: ../Pinta.Tools/Tools/ColorPickerTool.cs:249
+msgid "Average the colors in a 7 x 7 area around the pointer."
+msgstr "Усреднять цвета в области 7 × 7 вокруг указателя."
+
+#: ../Pinta.Tools/Tools/ColorPickerTool.cs:250
+msgid "Average the colors in a 9 x 9 area around the pointer."
+msgstr "Усреднять цвета в области 9 × 9 вокруг указателя."
 
 #: ../Pinta.Core/Managers/WorkspaceManager.cs:131
 msgid "Background"
 msgstr "Фон"
 
-#: ../Pinta/Dialogs/NewImageDialog.cs:127
+#: ../Pinta/Dialogs/NewImageDialog.cs:118
 msgid "Background Color"
 msgstr "Дополнительный цвет"
 
-#: ../Pinta/Dialogs/NewImageDialog.cs:302
+#: ../Pinta/Dialogs/NewImageDialog.cs:322
 msgid "Background:"
 msgstr "Фон:"
 
-#: ../Pinta/Actions/Help/AboutDialogAction.cs:94
-msgid "Based on the work of Paint.NET:"
-msgstr "Основано на Paint.NET:"
+#: ../Pinta/Dialogs/PreferencesDialog.cs:248
+msgid "Backup"
+msgstr ""
 
 #. Translators: Gradient with the colors of the flag of Italy: red, white, and green
 #: ../Pinta.Effects/Utilities/GradientHelper.cs:23
 msgid "Beautiful Italy"
 msgstr "Прекрасная Италия"
 
-#: ../Pinta.Core/Actions/ViewActions.cs:86
+#: ../Pinta.Core/Actions/ViewActions.cs:90
 msgid "Best Fit"
 msgstr "Уместить в окне"
 
 #. Translators: 'Bevel Join' refers to the Cairo.LineJoin property
-#: ../Pinta.Tools/Tools/TextTool.cs:469
+#: ../Pinta.Tools/Tools/TextTool.cs:614
 msgid "Bevel Join"
 msgstr "Скошенное соединение"
 
@@ -239,13 +295,18 @@ msgstr "Билинейная"
 msgid "Black and White"
 msgstr "Чёрно-белое"
 
-#: ../Pinta/Dialogs/LayerPropertiesDialog.cs:82
+#: ../Pinta/Dialogs/LayerPropertiesDialog.cs:73
 msgid "Blend Mode"
 msgstr "Режим наложения"
 
-#: ../Pinta.Effects/Dialogs/Effects.LevelsDialog.cs:114
-#: ../Pinta.Effects/Dialogs/Effects.PosterizeDialog.cs:62
-#: ../Pinta.Gui.Widgets/Widgets/ColorPickerSlider.cs:339
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:109
+#, csharp-format
+msgid "Blend Mode: {0}"
+msgstr ""
+
+#: ../Pinta.Effects/Dialogs/Effects.LevelsDialog.cs:121
+#: ../Pinta.Effects/Dialogs/Effects.PosterizeDialog.cs:66
+#: ../Pinta.Gui.Widgets/Widgets/ColorPickerSlider.cs:363
 msgid "Blue"
 msgstr "Синий"
 
@@ -254,7 +315,7 @@ msgid "Blue "
 msgstr "Синий "
 
 #: ../Pinta.Effects/Effects/FragmentEffect.cs:33
-#: ../Pinta.Effects/Effects/GaussianBlurEffect.cs:28
+#: ../Pinta.Effects/Effects/GaussianBlurEffect.cs:32
 #: ../Pinta.Effects/Effects/MotionBlurEffect.cs:33
 #: ../Pinta.Effects/Effects/RadialBlurEffect.cs:27
 #: ../Pinta.Effects/Effects/UnfocusEffect.cs:27
@@ -263,7 +324,7 @@ msgid "Blurs"
 msgstr "Размытие"
 
 #. Translators: 'Bold' (700) refers to the font-weight text property
-#: ../Pinta.Tools/Tools/TextTool.cs:308
+#: ../Pinta.Tools/Tools/TextTool.cs:444
 msgid "Bold"
 msgstr "Жирный"
 
@@ -273,24 +334,30 @@ msgid "Bonfire"
 msgstr "Костёр"
 
 #. Translators: 'Book' (380) refers to the font-weight text property
-#: ../Pinta.Tools/Tools/TextTool.cs:284
+#: ../Pinta.Tools/Tools/TextTool.cs:420
 msgid "Book"
 msgstr "Книжный"
 
-#: ../Pinta.Effects/Dialogs/Effects.AlignmentDialog.cs:35
+#: ../Pinta.Tools/Tools/TextTool.cs:337
+msgid ""
+"Both upper and lower case letters are replaced with smaller capital letters."
+msgstr ""
+
+#: ../Pinta.Effects/Dialogs/Effects.AlignmentDialog.cs:40
 msgid "Bottom Center"
 msgstr "Центрировать по нижнему краю"
 
-#: ../Pinta.Effects/Dialogs/Effects.AlignmentDialog.cs:34
+#: ../Pinta.Effects/Dialogs/Effects.AlignmentDialog.cs:39
 msgid "Bottom Left"
 msgstr "По нижнему краю влево"
 
-#: ../Pinta.Effects/Dialogs/Effects.AlignmentDialog.cs:36
+#: ../Pinta.Effects/Dialogs/Effects.AlignmentDialog.cs:41
 msgid "Bottom Right"
 msgstr "По нижнему краю вправо"
 
 #: ../Pinta.Effects/Adjustments/BrightnessContrastEffect.cs:86
 #: ../Pinta.Effects/Effects/GlowEffect.cs:79
+#: ../Pinta.Gui.Widgets/Widgets/ColorWheelWidget.cs:72
 msgid "Brightness"
 msgstr "Яркость"
 
@@ -302,7 +369,12 @@ msgstr "Яркость / Контраст"
 msgid "Brush Size"
 msgstr "Размер кисти"
 
-#: ../Pinta.Tools/Tools/BaseBrushTool.cs:129
+#: ../Pinta.Core/Managers/KeyboardShortcutManager.cs:213
+#: ../Pinta.Core/Managers/KeyboardShortcutManager.cs:219
+msgid "Brush Tools"
+msgstr ""
+
+#: ../Pinta.Tools/Tools/BaseBrushTool.cs:141
 msgid "Brush width"
 msgstr "Толщина кисти"
 
@@ -315,34 +387,46 @@ msgstr "Выпуклость"
 msgid "Burkes"
 msgstr "Беркса"
 
-#: ../Pinta/Dialogs/ResizeCanvasDialog.cs:120
-#: ../Pinta/Dialogs/ResizeImageDialog.cs:89
+#: ../Pinta/Dialogs/ResizeCanvasDialog.cs:121
+#: ../Pinta/Dialogs/ResizeImageDialog.cs:90
 msgid "By absolute size:"
 msgstr "Абсолютный размер:"
 
-#: ../Pinta/Dialogs/ResizeCanvasDialog.cs:113
-#: ../Pinta/Dialogs/ResizeImageDialog.cs:82
+#: ../Pinta/Dialogs/ResizeCanvasDialog.cs:114
+#: ../Pinta/Dialogs/ResizeImageDialog.cs:83
 msgid "By percentage:"
 msgstr "В процентах:"
 
-#: ../Pinta.Core/Actions/EditActions.cs:522
-#: ../Pinta.Gui.Addins/InstallDialog.cs:118
-#: ../Pinta.Gui.Widgets/Widgets/ColorPickerDialog.cs:392
-#: ../Pinta/Actions/File/SaveDocumentImplementationAction.cs:96
+#: ../Pinta/Actions/File/SaveDocumentImplementationAction.cs:97
+#: ../Pinta/Actions/Help/KeyboardShortcutsDialogAction.cs:108
+#: ../Pinta/Actions/Help/KeyboardShortcutsDialogAction.cs:121
+#: ../Pinta.Core/Actions/EditActions.cs:649
+#: ../Pinta/Dialogs/PreferencesDialog.cs:348
+#: ../Pinta.Gui.Addins/InstallDialog.cs:126
+#: ../Pinta.Gui.Widgets/Widgets/ColorPickerDialog.cs:496
+#: ../Pinta.Tools/Dialogs/TextPropertiesDialog.cs:273
 msgid "Cancel"
 msgstr "Отменить"
 
-#: ../Pinta/Pads/CanvasPad.cs:41
+#: ../Pinta.Core/Managers/KeyboardShortcutManager.cs:68
+msgid "Cancel selection"
+msgstr ""
+
+#: ../Pinta/Dialogs/PreferencesDialog.cs:245 ../Pinta/Pads/CanvasPad.cs:41
 msgid "Canvas"
 msgstr "Холст"
 
-#: ../Pinta/Dialogs/CanvasGridSettingsDialog.cs:106
+#: ../Pinta/Dialogs/CanvasGridSettingsDialog.cs:122
 msgid "Canvas Grid Settings"
 msgstr "Настройки сетки холста"
 
-#: ../Pinta.Core/Actions/ViewActions.cs:125
+#: ../Pinta.Core/Actions/ViewActions.cs:129
 msgid "Canvas Grid..."
 msgstr "Сетка холста..."
+
+#: ../Pinta/Dialogs/PreferencesDialog.cs:126
+msgid "Canvas surround color:"
+msgstr ""
 
 #: ../Pinta.Effects/Effects/CellsEffect.cs:176
 msgid "Cell Radius"
@@ -356,15 +440,16 @@ msgstr "Размер ячейки"
 msgid "Cells"
 msgstr "Ячейки"
 
-#: ../Pinta.Effects/Dialogs/Effects.AlignmentDialog.cs:32
+#: ../Pinta.Effects/Dialogs/Effects.AlignmentDialog.cs:37
 msgid "Center"
 msgstr "Центрировать"
 
-#: ../Pinta.Tools/Tools/TextTool.cs:380
+#: ../Pinta.Tools/Dialogs/TextPropertiesDialog.cs:229
+#: ../Pinta.Tools/Tools/TextTool.cs:513
 msgid "Center Align"
 msgstr "По центру"
 
-#: ../Pinta.Effects/Dialogs/Effects.AlignmentDialog.cs:31
+#: ../Pinta.Effects/Dialogs/Effects.AlignmentDialog.cs:36
 msgid "Center Left"
 msgstr "По центру влево"
 
@@ -374,7 +459,7 @@ msgstr "По центру влево"
 msgid "Center Offset"
 msgstr "Смещение центра"
 
-#: ../Pinta.Effects/Dialogs/Effects.AlignmentDialog.cs:33
+#: ../Pinta.Effects/Dialogs/Effects.AlignmentDialog.cs:38
 msgid "Center Right"
 msgstr "По центру вправо"
 
@@ -382,23 +467,23 @@ msgstr "По центру вправо"
 msgid "Centered"
 msgstr "Центрирование"
 
-#: ../Pinta.Core/Actions/ViewActions.cs:228
+#: ../Pinta.Core/Actions/ViewActions.cs:260
 msgid "Centimeters"
 msgstr "Сантиметры"
 
-#: ../Pinta.Tools/Tools/BaseBrushTool.cs:47
+#: ../Pinta.Tools/Tools/BaseBrushTool.cs:148
 msgid "Change brush width."
 msgstr "Изменить ширину кисти."
 
-#: ../Pinta.Tools/Tools/TextTool.cs:243
+#: ../Pinta.Tools/Tools/TextTool.cs:698
 msgid "Change font size."
 msgstr "Изменить размер шрифта."
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:370
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:139
 msgid "Change outline width."
 msgstr "Изменить ширину контура."
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:300
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:465
 msgid "Changed Shape Type"
 msgstr "Изменённая форма"
 
@@ -407,18 +492,23 @@ msgstr "Изменённая форма"
 msgid "Cherry Blossom"
 msgstr "Цветущая вишня"
 
-#: ../Pinta.Effects/Dialogs/Effects.LevelsDialog.cs:639
-#: ../Pinta.Gui.Widgets/Dialogs/SimpleEffectDialog.cs:356
+#: ../Pinta/Dialogs/PreferencesDialog.cs:328
+#: ../Pinta.Effects/Dialogs/Effects.LevelsDialog.cs:666
+#: ../Pinta.Gui.Widgets/Dialogs/SimpleEffectDialog.cs:366
 msgid "Choose Color"
 msgstr "Выберите цвет"
 
-#: ../Pinta.Gui.Widgets/Widgets/StatusBarColorPaletteWidget.cs:369
+#: ../Pinta.Gui.Widgets/Widgets/StatusBarColorPaletteWidget.cs:848
 msgid "Choose Colors"
 msgstr "Выберите цвета"
 
-#: ../Pinta.Gui.Widgets/Widgets/StatusBarColorPaletteWidget.cs:153
+#: ../Pinta.Gui.Widgets/Widgets/StatusBarColorPaletteWidget.cs:267
 msgid "Choose Palette Color"
 msgstr "Выберите цвет палитры"
+
+#: ../Pinta/Dialogs/PreferencesDialog.cs:106
+msgid "Choose color..."
+msgstr ""
 
 #: ../Pinta.Tools/Brushes/CircleBrush.cs:36
 msgid "Circles"
@@ -432,6 +522,10 @@ msgstr "Круговое"
 #: ../Pinta.Effects/Classes/EdgeBehavior.cs:7
 msgid "Clamp"
 msgstr "Зажим"
+
+#: ../Pinta.Gui.Widgets/Widgets/ToolBoxWidget.cs:497
+msgid "Clear pinned tools"
+msgstr ""
 
 #: ../Pinta.Tools/Tools/RectangleSelectTool.cs:42
 msgid ""
@@ -451,7 +545,7 @@ msgstr ""
 "выделение.\n"
 "Удерживайте Shift, чтобы ограничиться кругом."
 
-#: ../Pinta.Tools/Tools/GradientTool.cs:62
+#: ../Pinta.Tools/Tools/GradientTool.cs:63
 msgid ""
 "Click and drag to draw gradient from primary to secondary color.\n"
 "Right click to reverse.\n"
@@ -466,12 +560,22 @@ msgstr ""
 msgid "Click and drag to navigate image."
 msgstr "Нажмите левую кнопку мыши и тяните для навигации по изображению."
 
-#: ../Pinta.Gui.Widgets/Widgets/StatusBarColorPaletteWidget.cs:345
+#: ../Pinta.Tools/Tools/ScissorsSelectTool.cs:17
+msgid ""
+"Click to place control points on edges.\n"
+"Press Enter to finish the selection.\n"
+"Press Backspace to delete the last point.\n"
+"Hold Shift while clicking to place an anchor without snapping."
+msgstr ""
+
+#: ../Pinta.Gui.Widgets/Widgets/StatusBarColorPaletteWidget.cs:812
+#: ../Pinta/MainWindow.cs:823
 msgid "Click to reset primary and secondary color."
 msgstr "Щёлкните для сброса основного и дополнительного цветов."
 
-#: ../Pinta.Gui.Widgets/Widgets/ColorPickerDialog.cs:582
-#: ../Pinta.Gui.Widgets/Widgets/StatusBarColorPaletteWidget.cs:333
+#: ../Pinta.Gui.Widgets/Widgets/ColorPickerDialog.cs:608
+#: ../Pinta.Gui.Widgets/Widgets/ColorPickerPanel.cs:114
+#: ../Pinta.Gui.Widgets/Widgets/StatusBarColorPaletteWidget.cs:800
 msgid "Click to select primary color."
 msgstr "Щёлкните, чтобы выбрать основной цвет."
 
@@ -483,33 +587,43 @@ msgstr ""
 "Нажмите, чтобы выбрать область похожего цвета.\n"
 "Для использования глобального режима удерживайте нажатой клавишу Shift."
 
-#: ../Pinta.Gui.Widgets/Widgets/ColorPickerDialog.cs:587
-#: ../Pinta.Gui.Widgets/Widgets/StatusBarColorPaletteWidget.cs:337
+#: ../Pinta.Gui.Widgets/Widgets/ColorPickerDialog.cs:613
+#: ../Pinta.Gui.Widgets/Widgets/ColorPickerPanel.cs:122
+#: ../Pinta.Gui.Widgets/Widgets/StatusBarColorPaletteWidget.cs:804
 msgid "Click to select secondary color."
 msgstr "Щёлкните, чтобы выбрать дополнительный цвет."
 
-#: ../Pinta.Gui.Widgets/Widgets/ColorPickerDialog.cs:424
-#: ../Pinta.Gui.Widgets/Widgets/StatusBarColorPaletteWidget.cs:340
+#: ../Pinta.Gui.Widgets/Widgets/ColorPickerDialog.cs:365
+#: ../Pinta.Gui.Widgets/Widgets/ColorPickerPanel.cs:128
+#: ../Pinta.Gui.Widgets/Widgets/StatusBarColorPaletteWidget.cs:807
+#: ../Pinta/MainWindow.cs:814
 msgid "Click to switch between primary and secondary color."
 msgstr "Щёлкните, чтобы переключиться между основным и дополнительным цветом."
 
-#: ../Pinta/Dialogs/NewImageDialog.cs:353
-#: ../Pinta/Dialogs/NewImageDialog.cs:410
-#: ../Pinta/Dialogs/NewImageDialog.cs:429
-#: ../Pinta/Dialogs/NewImageDialog.cs:525
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:519
+msgid ""
+"Clicking a segment while editing inserts a control point to smoothly curve "
+"it."
+msgstr ""
+
+#: ../Pinta/Dialogs/NewImageDialog.cs:373
+#: ../Pinta/Dialogs/NewImageDialog.cs:430
+#: ../Pinta/Dialogs/NewImageDialog.cs:449
+#: ../Pinta/Dialogs/NewImageDialog.cs:545
+#: ../Pinta/Dialogs/PreferencesDialog.cs:246
 msgid "Clipboard"
 msgstr "Буфер обмена"
 
-#: ../Pinta.Tools/Tools/CloneStampTool.cs:55
+#: ../Pinta.Tools/Tools/CloneStampTool.cs:66
 msgid "Clone Stamp"
 msgstr "Штамп клонирования"
 
-#: ../Pinta.Core/Actions/FileActions.cs:81
-#: ../Pinta.Gui.Addins/InstallDialog.cs:327
+#: ../Pinta.Core/Actions/FileActions.cs:84
+#: ../Pinta.Gui.Addins/InstallDialog.cs:343
 msgid "Close"
 msgstr "Закрыть"
 
-#: ../Pinta.Core/Actions/WindowActions.cs:51
+#: ../Pinta.Core/Actions/WindowActions.cs:52
 msgid "Close All"
 msgstr "Закрыть все"
 
@@ -517,7 +631,7 @@ msgstr "Закрыть все"
 msgid "Closed Curve Shape"
 msgstr "Закрытая кривая"
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:275
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:439
 msgid "Closed Line/Curve Series"
 msgstr "Закрыть линию/Закончить серию кривых"
 
@@ -531,7 +645,7 @@ msgstr "Грубость"
 
 #: ../Pinta.Core/Algorithms/PixelOps/UserBlendOps.cs:43
 #: ../Pinta.Effects/Effects/DitheringEffect.cs:23
-#: ../Pinta.Gui.Widgets/Widgets/StatusBarColorPaletteWidget.cs:312
+#: ../Pinta.Gui.Widgets/Widgets/StatusBarColorPaletteWidget.cs:767
 msgid "Color"
 msgstr "Цветность"
 
@@ -547,7 +661,7 @@ msgstr "Осветление основы"
 msgid "Color Gradient"
 msgstr "Цветовой градиент"
 
-#: ../Pinta.Tools/Tools/GradientTool.cs:328
+#: ../Pinta.Tools/Tools/GradientTool.cs:331
 msgid "Color Mode"
 msgstr "Цветовой режим"
 
@@ -563,7 +677,7 @@ msgstr "Цветовой диапазон"
 msgid "Color Saturation"
 msgstr "Насыщенность цвета"
 
-#: ../Pinta.Core/Actions/ViewActions.cs:254
+#: ../Pinta.Core/Actions/ViewActions.cs:288
 #: ../Pinta.Effects/Effects/CellsEffect.cs:183
 #: ../Pinta.Effects/Effects/CloudsEffect.cs:148
 #: ../Pinta.Effects/Effects/JuliaFractalEffect.cs:158
@@ -590,7 +704,11 @@ msgstr "Сортировать цвета"
 msgid "Coloring"
 msgstr "Окрашивание"
 
-#: ../Pinta.Tools/Tools/GradientTool.cs:298
+#: ../Pinta.Core/Actions/ViewActions.cs:160 ../Pinta/MainWindow.cs:632
+msgid "Colors"
+msgstr ""
+
+#: ../Pinta.Tools/Tools/GradientTool.cs:301
 msgid "Conical Gradient"
 msgstr "Конический градиент"
 
@@ -598,7 +716,7 @@ msgstr "Конический градиент"
 msgid "Contents"
 msgstr "Содержание"
 
-#: ../Pinta.Tools/Tools/FloodTool.cs:131
+#: ../Pinta.Tools/Tools/FloodTool.cs:139
 msgid "Contiguous"
 msgstr "Смежные области"
 
@@ -607,17 +725,25 @@ msgstr "Смежные области"
 msgid "Contrast"
 msgstr "Контраст"
 
-#: ../Pinta.Core/Actions/EditActions.cs:92
+#: ../Pinta.Core/Actions/EditActions.cs:104
 msgid "Copy"
 msgstr "Копировать"
 
-#: ../Pinta.Core/Actions/EditActions.cs:99
+#: ../Pinta.Core/Actions/EditActions.cs:111
 msgid "Copy Merged"
 msgstr "Скопировать выделенное"
 
-#: ../Pinta/Actions/Help/AboutDialogAction.cs:81
+#: ../Pinta.Core/Managers/KeyboardShortcutManager.cs:171
+msgid "Copy text"
+msgstr ""
+
+#: ../Pinta/Actions/Help/AboutDialogAction.cs:104
 msgid "Copyright"
 msgstr "Авторское право"
+
+#: ../Pinta.Tools/Editable/EditEngines/RoundedLineEditEngine.cs:93
+msgid "Corner-rounding radius, in pixels, applied at each point of the shape."
+msgstr "Радиус скругления углов в пикселях, применяемый к каждой точке фигуры."
 
 #. Translators: Gradient with the colors of blue and pink cotton candy
 #: ../Pinta.Effects/Utilities/GradientHelper.cs:39
@@ -625,7 +751,7 @@ msgid "Cotton Candy"
 msgstr "Сахарная вата"
 
 #. Translators: {0} is the name of a layer, and {1} is the path to a .ora file.
-#: ../Pinta.Core/ImageFormats/OraFormat.cs:125
+#: ../Pinta.Core/ImageFormats/OraFormat.cs:131
 #, csharp-format
 msgid "Could not import layer \"{0}\" from {1}"
 msgstr "Не удалось импортировать слой «{0}» из {1}"
@@ -641,8 +767,12 @@ msgstr "Не удалось открыть файл: {0}"
 msgid "Coverage"
 msgstr "Покрытие"
 
+#: ../Pinta.Core/Managers/KeyboardShortcutManager.cs:318
+msgid "Create new shape at selected control point"
+msgstr ""
+
 #: ../Pinta.Core/Actions/ImageActions.cs:56
-#: ../Pinta.Core/Actions/ImageActions.cs:295
+#: ../Pinta.Core/Actions/ImageActions.cs:317
 msgid "Crop to Selection"
 msgstr "Кадрировать по выделенному"
 
@@ -654,25 +784,33 @@ msgstr "Текущая палитра"
 msgid "Curved"
 msgstr "Искривление"
 
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:520
+msgid "Curved Segments Off"
+msgstr "Скругление сегментов выключено"
+
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:519
+msgid "Curved Segments On"
+msgstr "Скругление сегментов включено"
+
 #: ../Pinta.Effects/Adjustments/CurvesEffect.cs:27
-#: ../Pinta.Effects/Dialogs/Effects.CurvesDialog.cs:138
+#: ../Pinta.Effects/Dialogs/Effects.CurvesDialog.cs:137
 msgid "Curves"
 msgstr "Кривые"
 
-#: ../Pinta/Dialogs/NewImageDialog.cs:355
-#: ../Pinta/Dialogs/NewImageDialog.cs:410
-#: ../Pinta/Dialogs/NewImageDialog.cs:431
-#: ../Pinta/Dialogs/NewImageDialog.cs:525
+#: ../Pinta/Dialogs/NewImageDialog.cs:375
+#: ../Pinta/Dialogs/NewImageDialog.cs:430
+#: ../Pinta/Dialogs/NewImageDialog.cs:451
+#: ../Pinta/Dialogs/NewImageDialog.cs:545
 msgid "Custom"
 msgstr "Пользовательский"
 
-#: ../Pinta.Core/Actions/EditActions.cs:85
-#: ../Pinta.Core/Actions/EditActions.cs:368
+#: ../Pinta.Core/Actions/EditActions.cs:97
+#: ../Pinta.Core/Actions/EditActions.cs:407
 msgid "Cut"
 msgstr "Вырезать"
 
 #. Translators: This refers to using a dark variant of the color scheme.
-#: ../Pinta.Core/Actions/ViewActions.cs:251
+#: ../Pinta.Core/Actions/ViewActions.cs:285
 msgid "Dark"
 msgstr "Тёмная"
 
@@ -680,21 +818,45 @@ msgstr "Тёмная"
 msgid "Darken"
 msgstr "Простое затемнение"
 
-#: ../Pinta.Tools/Dashes/DashPatternBox.cs:59
+#: ../Pinta.Tools/Dashes/DashPatternBox.cs:64
 msgid "Dash"
 msgstr "Штриховка"
 
+#: ../Pinta.Core/Managers/KeyboardShortcutManager.cs:214
+msgid "Decrease brush width"
+msgstr ""
+
+#: ../Pinta.Core/Managers/KeyboardShortcutManager.cs:177
+msgid "Decrease font size"
+msgstr ""
+
 #. Translators: This refers to using the system's default color scheme.
-#: ../Pinta.Core/Actions/ViewActions.cs:247
+#: ../Pinta.Core/Actions/ViewActions.cs:281
 msgid "Default"
 msgstr "По умолчанию"
 
-#: ../Pinta.Core/Actions/LayerActions.cs:68
-#: ../Pinta.Core/Actions/LayerActions.cs:380
+#: ../Pinta/Dialogs/PreferencesDialog.cs:114
+msgid "Default canvas size (on application open):"
+msgstr ""
+
+#: ../Pinta.Core/Actions/LayerActions.cs:71
+#: ../Pinta.Core/Actions/LayerActions.cs:414
 msgid "Delete Layer"
 msgstr "Удалить слой"
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:690
+#: ../Pinta.Core/Managers/KeyboardShortcutManager.cs:87
+msgid "Delete character left of cursor"
+msgstr ""
+
+#: ../Pinta.Core/Managers/KeyboardShortcutManager.cs:93
+msgid "Delete character right of cursor"
+msgstr ""
+
+#: ../Pinta.Core/Managers/KeyboardShortcutManager.cs:264
+msgid "Delete selected control point"
+msgstr ""
+
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:1035
 msgid "Deleted"
 msgstr "Удалено"
 
@@ -703,13 +865,18 @@ msgstr "Удалено"
 msgid "Dents"
 msgstr "Вмятины"
 
-#: ../Pinta.Core/Actions/EditActions.cs:383
+#: ../Pinta.Core/Actions/EditActions.cs:453
 msgid "Deselect"
 msgstr "Сбросить выделение"
 
-#: ../Pinta.Core/Actions/EditActions.cs:163
+#: ../Pinta.Core/Actions/EditActions.cs:175
+#: ../Pinta.Core/Actions/EditActions.cs:182
 msgid "Deselect All"
 msgstr "Снять выделение"
+
+#: ../Pinta/Actions/Help/KeyboardShortcutsDialogAction.cs:175
+msgid "Deselect All (Quick, ×2)"
+msgstr ""
 
 #: ../Pinta/Dialogs/ErrorDialog.cs:66
 msgid "Details"
@@ -743,22 +910,71 @@ msgstr "Искажения"
 msgid "Dithering"
 msgstr "Дизеринг"
 
-#: ../Pinta.Tools/Tools/ColorPickerTool.cs:216
+#: ../Pinta.Tools/Tools/ColorPickerTool.cs:227
 msgid "Do not switch tool"
 msgstr "Не переключайте инструмент"
 
-#: ../Pinta.Gui.Addins/AddinInfoView.cs:221
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:111
+msgid "Double-click for Layer Properties"
+msgstr ""
+
+#: ../Pinta.Gui.Addins/AddinInfoView.cs:245
 #, csharp-format
 msgid "Download size: {0}"
 msgstr "Размер загрузки: {0}"
 
-#: ../Pinta.Core/Actions/LayerActions.cs:75
-#: ../Pinta.Core/Actions/LayerActions.cs:367
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:112
+msgid "Drag and drop to reorder"
+msgstr ""
+
+#: ../Pinta.Tools/Tools/TextTool.cs:2625
+msgid "Drag corner to resize (changes font size)"
+msgstr ""
+
+#: ../Pinta.Tools/Tools/TextTool.cs:2624
+msgid "Drag corner to resize the text box"
+msgstr ""
+
+#. Translators: hint shown when hovering a selection resize handle. Now lists shortcuts vertically.
+#: ../Pinta.Tools/Tools/BaseTransformTool.cs:790
+msgid ""
+"Drag to resize\n"
+"Shift: keep aspect ratio\n"
+"Ctrl+drag: scale from center\n"
+"Alt-drag: rotate"
+msgstr ""
+
+#: ../Pinta.Tools/Tools/TextTool.cs:559
+msgid "Draw only the outline of the text, using the secondary color."
+msgstr "Рисовать только контур текста вторичным цветом."
+
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:555
+#: ../Pinta.Tools/Tools/FreeformShapeTool.cs:226
+msgid "Draw only the shape's outline, using the primary color."
+msgstr "Рисовать только контур фигуры основным цветом."
+
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:438
+msgid "Draws a line or curve with a start and an end point."
+msgstr "Рисует линию или кривую с начальной и конечной точками."
+
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:442
+msgid "Draws a triangle."
+msgstr ""
+
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:440
+msgid "Draws an ellipse or circle."
+msgstr "Рисует эллипс или окружность."
+
+#: ../Pinta.Core/Actions/LayerActions.cs:78
+#: ../Pinta.Core/Actions/LayerActions.cs:401
 msgid "Duplicate Layer"
 msgstr "Дублировать слой"
 
-#: ../xdg/com.github.PintaProject.Pinta.desktop.in.h:2
-#: ../Pinta/Actions/Help/AboutDialogAction.cs:69
+#: ../Pinta/Actions/Help/KeyboardShortcutsDialogAction.cs:388
+msgid "Duplicated"
+msgstr ""
+
+#: ../Pinta/Actions/Help/AboutDialogAction.cs:73
 msgid "Easily create and edit images"
 msgstr "Простое создание и редактирование изображений"
 
@@ -773,11 +989,20 @@ msgstr "Поведение для краёв"
 msgid "Edge Detect"
 msgstr "Определение краёв"
 
-#: ../Pinta/MainWindow.cs:399
+#: ../Pinta.Tools/Tools/ScissorsSelectTool.cs:47
+msgid "Edge tolerance"
+msgstr ""
+
+#: ../Pinta/Actions/Help/KeyboardShortcutsDialogAction.cs:178
+msgid "Edit"
+msgstr ""
+
+#: ../Pinta/MainWindow.cs:418
 msgid "Effe_cts"
 msgstr "_Эффекты"
 
-#: ../Pinta/MainWindow.cs:446
+#: ../Pinta/Actions/Help/KeyboardShortcutsDialogAction.cs:182
+#: ../Pinta/MainWindow.cs:471
 msgid "Effects"
 msgstr "Эффекты"
 
@@ -786,7 +1011,8 @@ msgstr "Эффекты"
 msgid "Electric"
 msgstr "Электричество"
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:276
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:94
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:440
 #: ../Pinta.Tools/Editable/EditEngines/EllipseEditEngine.cs:36
 #: ../Pinta.Tools/Tools/EllipseTool.cs:43
 msgid "Ellipse"
@@ -806,8 +1032,8 @@ msgstr ""
 "Включить дополнительное журналирование или отслеживание изменения действий "
 "для проведения отладки приложения"
 
-#: ../Pinta.Core/Actions/EditActions.cs:128
-#: ../Pinta.Core/Actions/EditActions.cs:369
+#: ../Pinta.Core/Actions/EditActions.cs:140
+#: ../Pinta.Core/Actions/EditActions.cs:408
 msgid "Erase Selection"
 msgstr "Удалить выделение"
 
@@ -815,7 +1041,7 @@ msgstr "Удалить выделение"
 msgid "Eraser"
 msgstr "Ластик"
 
-#: ../Pinta.Core/ImageFormats/OraFormat.cs:126
+#: ../Pinta.Core/ImageFormats/OraFormat.cs:132
 msgid "Error"
 msgstr "Ошибка"
 
@@ -828,11 +1054,23 @@ msgid "Exclude (-) (Right Click)"
 msgstr "Отсоединить (-) (Правая кнопка мыши)"
 
 #. Translators: This refers to expanding the canvas size when pasting a larger image.
-#: ../Pinta/Actions/Edit/PasteAction.cs:226
+#: ../Pinta/Actions/Edit/PasteAction.cs:228
 msgid "Expand"
 msgstr "Расширить"
 
-#: ../Pinta.Gui.Addins/AddinManagerDialog.cs:277
+#: ../Pinta/Dialogs/PreferencesDialog.cs:347
+msgid "Export"
+msgstr ""
+
+#: ../Pinta/Dialogs/PreferencesDialog.cs:344
+msgid "Export Settings"
+msgstr ""
+
+#: ../Pinta/Dialogs/PreferencesDialog.cs:231
+msgid "Export Settings..."
+msgstr ""
+
+#: ../Pinta.Gui.Addins/AddinManagerDialog.cs:294
 msgid "Extension packages"
 msgstr "Пакеты расширений"
 
@@ -841,15 +1079,20 @@ msgstr "Пакеты расширений"
 msgid "Factor"
 msgstr "Фактор"
 
-#: ../Pinta/Actions/File/NewScreenshotAction.cs:85
+#: ../Pinta/Actions/File/NewScreenshotAction.cs:86
 msgid "Failed to access XDG Desktop Portals"
 msgstr "Не удалось получить доступ к XDG Desktop Portals"
 
-#: ../Pinta/MainWindow.cs:324
+#: ../Pinta/Dialogs/PreferencesDialog.cs:371
+#, csharp-format
+msgid "Failed to export settings: {0}"
+msgstr ""
+
+#: ../Pinta/MainWindow.cs:341
 msgid "Failed to initialize add-in"
 msgstr "Не удалось инициализировать дополнение"
 
-#: ../Pinta.Gui.Addins/InstallDialog.cs:199
+#: ../Pinta.Gui.Addins/InstallDialog.cs:215
 msgid "Failed to load extension package"
 msgstr "Не удалось загрузить пакет расширения"
 
@@ -857,12 +1100,17 @@ msgstr "Не удалось загрузить пакет расширения"
 msgid "Failed to open image"
 msgstr "Не удалось открыть изображение"
 
-#: ../Pinta/Actions/File/SaveDocumentImplementationAction.cs:234
+#: ../Pinta/Dialogs/PreferencesDialog.cs:398
+#, csharp-format
+msgid "Failed to read settings file: {0}"
+msgstr ""
+
+#: ../Pinta/Actions/File/SaveDocumentImplementationAction.cs:244
 msgid "Failed to save image"
 msgstr "Не удалось сохранить изображение"
 
-#: ../Pinta/Actions/File/NewScreenshotAction.cs:84
-#: ../Pinta/Actions/File/NewScreenshotAction.cs:109
+#: ../Pinta/Actions/File/NewScreenshotAction.cs:85
+#: ../Pinta/Actions/File/NewScreenshotAction.cs:110
 msgid "Failed to take screenshot"
 msgstr "Не удалось сделать снимок экрана"
 
@@ -874,6 +1122,10 @@ msgstr "Растушёвка краёв холста"
 msgid "Feather Object"
 msgstr "Растушёвка объекта"
 
+#: ../Pinta/Actions/Help/KeyboardShortcutsDialogAction.cs:170
+msgid "File"
+msgstr ""
+
 #: ../Pinta.Core/Actions/HelpActions.cs:59
 msgid "File a Bug"
 msgstr "Сообщить о неполадке"
@@ -882,7 +1134,7 @@ msgstr "Сообщить о неполадке"
 msgid "Files to open"
 msgstr "Файлы для открытия"
 
-#: ../Pinta.Tools/Tools/TextTool.cs:418
+#: ../Pinta.Tools/Tools/TextTool.cs:560
 msgid "Fill Background"
 msgstr "Заливка фона"
 
@@ -890,29 +1142,74 @@ msgstr "Заливка фона"
 msgid "Fill Object Background"
 msgstr "Заливка фона объекта"
 
-#: ../Pinta.Core/Actions/EditActions.cs:135
-#: ../Pinta.Core/Actions/EditActions.cs:321
+#: ../Pinta.Core/Actions/EditActions.cs:147
+#: ../Pinta.Core/Actions/EditActions.cs:353
 msgid "Fill Selection"
 msgstr "Заполнить выделение"
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:337
-#: ../Pinta.Tools/Tools/FreeformShapeTool.cs:226
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:556
+#: ../Pinta.Tools/Tools/FreeformShapeTool.cs:227
 msgid "Fill Shape"
 msgstr "Залить фигуру"
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:327
-#: ../Pinta.Tools/Tools/FreeformShapeTool.cs:219
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:546
+#: ../Pinta.Tools/Tools/FreeformShapeTool.cs:220
 msgid "Fill Style"
 msgstr "Стиль заполнения"
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:338
-#: ../Pinta.Tools/Tools/FreeformShapeTool.cs:227
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:557
+#: ../Pinta.Tools/Tools/FreeformShapeTool.cs:228
 msgid "Fill and Outline Shape"
 msgstr "Залить и обвести фигуру"
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:1117
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:1403
-#: ../Pinta.Tools/Tools/GradientTool.cs:186
+#: ../Pinta.Tools/Tools/FloodTool.cs:140
+msgid ""
+"Fill every matching pixel in the image, even disconnected regions. Hold "
+"Shift to use this mode temporarily."
+msgstr ""
+
+#: ../Pinta.Tools/Tools/FloodTool.cs:139
+msgid ""
+"Fill only the connected region of similar color touching the click point."
+msgstr ""
+
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:557
+#: ../Pinta.Tools/Tools/FreeformShapeTool.cs:228
+msgid ""
+"Fill the interior with the secondary color and outline it with the primary "
+"color."
+msgstr ""
+
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:556
+#: ../Pinta.Tools/Tools/FreeformShapeTool.cs:227
+msgid "Fill the shape's interior with the secondary color, no outline."
+msgstr "Заливать внутреннюю часть фигуры вторичным цветом без контура."
+
+#: ../Pinta.Tools/Tools/TextTool.cs:558
+msgid ""
+"Fill the text with the primary color and outline it with the secondary color."
+msgstr ""
+
+#: ../Pinta.Tools/Tools/TextTool.cs:557
+msgid "Fill the text with the primary color."
+msgstr "Заливать текст основным цветом."
+
+#: ../Pinta.Tools/Tools/TextTool.cs:560
+msgid "Fill the text's bounding box with the secondary color, behind the text."
+msgstr ""
+"Заливать ограничивающий прямоугольник текста вторичным цветом позади текста."
+
+#: ../Pinta.Core/Managers/KeyboardShortcutManager.cs:251
+msgid "Finalize gradient"
+msgstr ""
+
+#: ../Pinta.Core/Managers/KeyboardShortcutManager.cs:258
+msgid "Finalize shape"
+msgstr ""
+
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:1595
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:2128
+#: ../Pinta.Tools/Tools/GradientTool.cs:189
 msgid "Finalized"
 msgstr "Закончен"
 
@@ -920,18 +1217,36 @@ msgstr "Закончен"
 msgid "Finish Pixels"
 msgstr "Завершить пиксели"
 
+#: ../Pinta.Core/Managers/KeyboardShortcutManager.cs:56
+msgid "Finish selection"
+msgstr ""
+
+#: ../Pinta.Core/Extensions/Gtk/GtkExtensions.Widget.cs:168
+#: ../Pinta.Tools/Tools/LassoSelectTool.cs:580
+msgid "Finish selection (Enter)"
+msgstr ""
+
+#: ../Pinta.Tools/Tools/TextTool.cs:690
+#, csharp-format
+msgid "Finish typing ({0})"
+msgstr "Завершить ввод текста ({0})"
+
+#: ../Pinta/Actions/File/SaveDocumentImplementationAction.cs:284
 #: ../Pinta.Core/Actions/ImageActions.cs:117
-#: ../Pinta.Core/Actions/ImageActions.cs:221
-#: ../Pinta/Actions/File/SaveDocumentImplementationAction.cs:274
+#: ../Pinta.Core/Actions/ImageActions.cs:232
 msgid "Flatten"
 msgstr "Объединить слои"
 
-#: ../Pinta/Actions/File/SaveDocumentImplementationAction.cs:270
+#: ../Pinta.Tools/Tools/TextTool.cs:617
+msgid "Flattened, squared-off corners on the outline."
+msgstr "Срезанные, плоские углы контура."
+
+#: ../Pinta/Actions/File/SaveDocumentImplementationAction.cs:280
 msgid "Flattening the image will merge all layers into a single layer."
 msgstr "Сведение изображения объединит все слои в один."
 
 #: ../Pinta.Core/Actions/ImageActions.cs:84
-#: ../Pinta.Core/Actions/LayerActions.cs:95
+#: ../Pinta.Core/Actions/LayerActions.cs:98
 msgid "Flip Horizontal"
 msgstr "Отразить по горизонтали"
 
@@ -952,9 +1267,18 @@ msgid "Flip Layer Vertical"
 msgstr "Отразить слой по вертикали"
 
 #: ../Pinta.Core/Actions/ImageActions.cs:90
-#: ../Pinta.Core/Actions/LayerActions.cs:101
+#: ../Pinta.Core/Actions/LayerActions.cs:104
 msgid "Flip Vertical"
 msgstr "Отразить по вертикали"
+
+#: ../Pinta.Core/Actions/ViewActions.cs:166
+#: ../Pinta.Gui.Widgets/Widgets/StatusBarColorPaletteWidget.cs:780
+msgid "Float Colors"
+msgstr ""
+
+#: ../Pinta.Docking/DockItem.cs:189
+msgid "Float as window"
+msgstr ""
 
 #: ../Pinta.Tools/Tools/FloodTool.cs:121
 msgid "Flood Mode"
@@ -970,7 +1294,7 @@ msgstr "Флойда-Стейнберга"
 msgid "Floyd-Steinberg Lite"
 msgstr "Флойда-Стейнберга (лайт)"
 
-#: ../Pinta.Tools/Tools/TextTool.cs:149
+#: ../Pinta.Tools/Tools/TextTool.cs:287
 msgid "Font"
 msgstr "Шрифт"
 
@@ -982,11 +1306,11 @@ msgstr "Фрагмент"
 msgid "Fragments"
 msgstr "Фрагменты"
 
-#: ../Pinta.Tools/Tools/LassoSelectTool.cs:220
+#: ../Pinta.Tools/Tools/LassoSelectTool.cs:619
 msgid "Freeform"
 msgstr "Свободное"
 
-#: ../Pinta.Tools/Tools/FreeformShapeTool.cs:48
+#: ../Pinta.Tools/Tools/FreeformShapeTool.cs:49
 msgid "Freeform Shape"
 msgstr "Произвольная фигура"
 
@@ -994,19 +1318,23 @@ msgstr "Произвольная фигура"
 msgid "Frosted Glass"
 msgstr "Матовое стекло"
 
-#: ../Pinta.Core/Actions/ViewActions.cs:165
+#: ../Pinta.Core/Actions/ViewActions.cs:188
 msgid "Fullscreen"
 msgstr "Во весь экран"
 
-#: ../Pinta.Gui.Addins/AddinManagerDialog.cs:86
+#: ../Pinta.Gui.Addins/AddinManagerDialog.cs:103
 msgid "Gallery"
 msgstr "Галерея"
 
-#: ../Pinta.Effects/Effects/GaussianBlurEffect.cs:24
+#: ../Pinta.Effects/Effects/GaussianBlurEffect.cs:28
 msgid "Gaussian Blur"
 msgstr "Размывание Гаусса"
 
-#: ../Pinta.Tools/Tools/FloodTool.cs:132
+#: ../Pinta.Core/Managers/KeyboardShortcutManager.cs:226
+msgid "General"
+msgstr ""
+
+#: ../Pinta.Tools/Tools/FloodTool.cs:140
 msgid "Global"
 msgstr "Глобальная"
 
@@ -1014,23 +1342,27 @@ msgstr "Глобальная"
 msgid "Glow"
 msgstr "Свечение"
 
-#: ../Pinta.Tools/Tools/GradientTool.cs:60
-#: ../Pinta.Tools/Tools/GradientTool.cs:288
+#: ../Pinta.Tools/Tools/GradientTool.cs:61
+#: ../Pinta.Tools/Tools/GradientTool.cs:291
 msgid "Gradient"
 msgstr "Градиент"
 
-#: ../Pinta.Tools/Tools/GradientTool.cs:127
+#: ../Pinta.Tools/Tools/GradientTool.cs:128
 msgid "Gradient Created"
 msgstr "Градиент создан"
 
-#: ../Pinta.Tools/Tools/GradientTool.cs:128
+#: ../Pinta.Tools/Tools/GradientTool.cs:129
 msgid "Gradient Modified"
 msgstr "Градиент изменён"
 
+#: ../Pinta.Core/Managers/KeyboardShortcutManager.cs:250
+msgid "Gradient Tool"
+msgstr ""
+
 #: ../Pinta.Effects/Dialogs/Effects.CurvesDialog.cs:90
-#: ../Pinta.Effects/Dialogs/Effects.LevelsDialog.cs:111
-#: ../Pinta.Effects/Dialogs/Effects.PosterizeDialog.cs:61
-#: ../Pinta.Gui.Widgets/Widgets/ColorPickerSlider.cs:338
+#: ../Pinta.Effects/Dialogs/Effects.LevelsDialog.cs:117
+#: ../Pinta.Effects/Dialogs/Effects.PosterizeDialog.cs:65
+#: ../Pinta.Gui.Widgets/Widgets/ColorPickerSlider.cs:362
 msgid "Green"
 msgstr "Зелёный"
 
@@ -1042,26 +1374,46 @@ msgstr "Сетка"
 msgid "Hard Light"
 msgstr "Жёсткий свет"
 
+#: ../Pinta.Tools/Tools/HealingBrushTool.cs:537
+msgid "Heal"
+msgstr ""
+
+#: ../Pinta.Tools/Tools/HealingBrushTool.cs:84
+msgid "Healing Brush"
+msgstr ""
+
 #. Translators: 'Heavy' (900) refers to the font-weight text property
-#: ../Pinta.Tools/Tools/TextTool.cs:320
+#: ../Pinta.Tools/Tools/TextTool.cs:456
 msgid "Heavy"
 msgstr "Тяжёлый"
 
-#: ../Pinta/Dialogs/CanvasGridSettingsDialog.cs:82
-#: ../Pinta/Dialogs/NewImageDialog.cs:328
-#: ../Pinta/Dialogs/ResizeCanvasDialog.cs:81
+#: ../Pinta/Dialogs/CanvasGridSettingsDialog.cs:99
+#: ../Pinta/Dialogs/NewImageDialog.cs:348
+#: ../Pinta/Dialogs/PreferencesDialog.cs:121
+#: ../Pinta/Dialogs/ResizeCanvasDialog.cs:87
 #: ../Pinta/Dialogs/ResizeImageDialog.cs:126
 msgid "Height:"
 msgstr "Высота:"
 
-#: ../Pinta.Gui.Widgets/Widgets/ColorPickerDialog.cs:313
+#: ../Pinta/Actions/Help/KeyboardShortcutsDialogAction.cs:184
+msgid "Help"
+msgstr ""
+
+#: ../Pinta.Gui.Widgets/Widgets/ColorPickerDialog.cs:302
+#: ../Pinta.Gui.Widgets/Widgets/ColorPickerPanel.cs:233
 msgid "Hex"
 msgstr "Шестнадц."
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:100
-#: ../Pinta/Actions/Layers/LayerPropertiesAction.cs:113
+#: ../Pinta/Actions/Layers/LayerPropertiesAction.cs:121
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:160
 msgid "Hide Layer"
 msgstr "Скрыть слой"
+
+#: ../Pinta.Tools/Tools/FloodTool.cs:127
+msgid ""
+"Higher tolerance includes more colors similar to the clicked pixel in the "
+"fill."
+msgstr ""
 
 #: ../Pinta.Effects/Effects/RedEyeRemoveEffect.cs:58
 msgid "Hint: For best results, first use selection tools to select each eye."
@@ -1069,9 +1421,19 @@ msgstr ""
 "Подсказка: для наилучшего результата сначала выделите каждый глаз "
 "инструментами выделения."
 
-#: ../Pinta/Pads/HistoryPad.cs:50
+#: ../Pinta/Pads/HistoryPad.cs:49
 msgid "History"
 msgstr "История"
+
+#: ../Pinta.Tools/Tools/HealingBrushTool.cs:475
+#, csharp-format
+msgid "Hold {0} and click to set a source area first."
+msgstr ""
+
+#: ../Pinta.Tools/Tools/CloneStampTool.cs:230
+#, csharp-format
+msgid "Hold {0} and click to set an origin point first."
+msgstr ""
 
 #. Translators: Horizontal color sorting with blue (B) as the leading term
 #: ../Pinta.Effects/Effects/VoronoiDiagramEffect.cs:237
@@ -1090,11 +1452,12 @@ msgstr "По горизонтали, от красного (R)"
 
 #: ../Pinta.Core/Algorithms/PixelOps/UserBlendOps.cs:45
 #: ../Pinta.Effects/Adjustments/HueSaturationEffect.cs:61
-#: ../Pinta.Gui.Widgets/Widgets/ColorPickerSlider.cs:333
+#: ../Pinta.Gui.Widgets/Widgets/ColorPickerSlider.cs:357
 msgid "Hue"
 msgstr "Тон"
 
-#: ../Pinta.Gui.Widgets/Widgets/ColorPickerDialog.cs:209
+#: ../Pinta.Gui.Widgets/Widgets/ColorPickerDialog.cs:208
+#: ../Pinta.Gui.Widgets/Widgets/ColorPickerPanel.cs:165
 msgid "Hue & Sat"
 msgstr "Тон & Насыщ."
 
@@ -1102,58 +1465,120 @@ msgstr "Тон & Насыщ."
 msgid "Hue / Saturation"
 msgstr "Тон / Насыщенность"
 
-#: ../Pinta/Actions/File/SaveDocumentImplementationAction.cs:226
+#: ../Pinta/Actions/File/SaveDocumentImplementationAction.cs:236
 msgid "ICO files can not be larger than 255 x 255 pixels."
 msgstr "Изображение в файле ICO не может быть больше, чем 255x255 пикселей."
 
+#. Translators: Explains the "Show selection brightness in preview" checkbox.
+#. AI-generated translation; human review requested.
 #: ../Pinta.Gui.Widgets/Widgets/ColorPickerDialog.cs:193
-msgid "If enabled, the Value component is applied to the color wheel."
-msgstr ""
-"Если этот параметр включён, к цветовому кругу будет применён компонент "
-"«Значение»."
+#: ../Pinta.Gui.Widgets/Widgets/ColorPickerPanel.cs:175
+msgid ""
+"If enabled, the hue/saturation surface is drawn at your current selection's "
+"brightness; otherwise it is shown at full brightness."
+msgstr "Если включено, поверхность тон/насыщенность отображается с яркостью текущего выделения; в противном случае — с полной яркостью."
 
 #: ../Pinta/Actions/File/CloseDocumentAction.cs:75
 msgid "If you don't save, all changes will be permanently lost."
 msgstr "Если вы не сохраните изменения, они будут потеряны безвозвратно."
 
-#: ../Pinta.Tools/Tools/ColorPickerTool.cs:254 ../Pinta/MainWindow.cs:456
+#: ../Pinta/Actions/Help/KeyboardShortcutsDialogAction.cs:180
+#: ../Pinta/MainWindow.cs:481 ../Pinta.Tools/Tools/ColorPickerTool.cs:265
 msgid "Image"
 msgstr "Изображение"
 
-#: ../xdg/com.github.PintaProject.Pinta.desktop.in.h:3
-msgid "Image Editor"
-msgstr "Графический редактор"
+#: ../Pinta/Dialogs/QualityDialog.cs:48
+msgid "Image Quality"
+msgstr ""
 
-#: ../Pinta.Core/Actions/ViewActions.cs:112
+#: ../Pinta.Core/Actions/ViewActions.cs:116
 msgid "Image Tabs"
 msgstr "Вкладки"
 
-#: ../Pinta/Actions/Edit/PasteAction.cs:206
+#: ../Pinta/Actions/Edit/PasteAction.cs:208
 msgid "Image cannot be pasted"
 msgstr "Изображение не может быть вставлено"
 
-#: ../Pinta.Core/Actions/LayerActions.cs:211
-#: ../Pinta/Actions/File/OpenDocumentAction.cs:111
+#: ../Pinta/Actions/File/OpenDocumentAction.cs:149
+#: ../Pinta.Core/Actions/LayerActions.cs:245
 msgid "Image files"
 msgstr "Файлы изображений"
 
-#: ../Pinta/Actions/Edit/PasteAction.cs:213
+#: ../Pinta/Actions/Edit/PasteAction.cs:215
 msgid "Image larger than canvas"
 msgstr "Изображение больше, чем размер холста"
 
-#: ../Pinta/Actions/File/SaveDocumentImplementationAction.cs:225
+#: ../Pinta/Actions/File/SaveDocumentImplementationAction.cs:235
 msgid "Image too large"
 msgstr "Изображение слишком большое"
 
-#: ../Pinta.Core/Actions/LayerActions.cs:258
+#: ../xdg/com.github.Impasto.Impasto.desktop.in.h:1
+#: ../Pinta/Actions/Help/AboutDialogAction.cs:67 ../Pinta/Main.cs:71
+#: ../Pinta/MainWindow.cs:68
+msgid "Impasto"
+msgstr ""
+
+#: ../xdg/com.github.Impasto.Impasto.desktop.in.h:4
+msgid "Impasto Paint"
+msgstr ""
+
+#: ../Pinta/Actions/Help/AboutDialogAction.cs:120
+msgid "Impasto contributions - Copyright by the Impasto contributors"
+msgstr ""
+
+#: ../xdg/com.github.Impasto.Impasto.metainfo.xml.in.h:2
+msgid "Impasto is a fork of Pinta."
+msgstr ""
+
+#: ../xdg/com.github.Impasto.Impasto.metainfo.xml.in.h:1
+msgid ""
+"Impasto is a paint and image editing application with a wide range of "
+"drawing tools, including freehand, rectangles, circles and lines. It has "
+"over 35 effects to apply to your images, and unlimited layers to help "
+"organize your creativity."
+msgstr ""
+
+#: ../Pinta.Core/Managers/WorkspaceManager.cs:441
+msgid "Impasto supports the following file formats:"
+msgstr ""
+
+#: ../Pinta/Dialogs/PreferencesDialog.cs:453
+msgid "Import"
+msgstr ""
+
+#: ../Pinta.Core/Actions/LayerActions.cs:292
 msgid "Import From File"
 msgstr "Импорт из файла"
 
-#: ../Pinta.Core/Actions/LayerActions.cs:89
+#: ../Pinta/Dialogs/PreferencesDialog.cs:449
+msgid "Import Keyboard Shortcuts?"
+msgstr ""
+
+#: ../Pinta/Dialogs/PreferencesDialog.cs:385
+msgid "Import Settings"
+msgstr ""
+
+#: ../Pinta/Dialogs/PreferencesDialog.cs:233
+msgid "Import Settings..."
+msgstr ""
+
+#: ../Pinta.Core/Actions/LayerActions.cs:92
 msgid "Import from File..."
 msgstr "Импорт из файла..."
 
-#: ../Pinta.Tools/Tools/LassoSelectTool.cs:57
+#: ../Pinta/Dialogs/PreferencesDialog.cs:436
+#, csharp-format
+msgid ""
+"Imported {0} setting(s); {1} entry(ies) were skipped (unrecognized or "
+"invalid). {2} Restart Impasto for all changes to fully take effect."
+msgstr ""
+
+#: ../Pinta.Tools/Tools/LassoSelectTool.cs:622
+msgid ""
+"In Freeform mode, click and drag to draw the outline for a selection area."
+msgstr ""
+
+#: ../Pinta.Tools/Tools/LassoSelectTool.cs:78
 msgid ""
 "In Freeform mode, click and drag to draw the outline for a selection area.\n"
 "\n"
@@ -1169,9 +1594,24 @@ msgstr ""
 "Нажмите Enter, чтобы завершить действие.\n"
 "Нажмите Backspace, чтобы удалить последнюю точку."
 
-#: ../Pinta.Core/Actions/ViewActions.cs:227
+#: ../Pinta.Tools/Tools/LassoSelectTool.cs:628
+msgid ""
+"In Polygon mode, click and drag to add a new point to the selection.\n"
+"Press Enter to finish the selection.\n"
+"Press Backspace to delete the last point."
+msgstr ""
+
+#: ../Pinta.Core/Actions/ViewActions.cs:259
 msgid "Inches"
 msgstr "Дюймы"
+
+#: ../Pinta.Core/Managers/KeyboardShortcutManager.cs:220
+msgid "Increase brush width"
+msgstr ""
+
+#: ../Pinta.Core/Managers/KeyboardShortcutManager.cs:183
+msgid "Increase font size"
+msgstr ""
 
 #: ../Pinta.Effects/Effects/InkSketchEffect.cs:146
 msgid "Ink Outline"
@@ -1181,32 +1621,36 @@ msgstr "Чернильный контур"
 msgid "Ink Sketch"
 msgstr "Набросок чернилами"
 
-#: ../Pinta.Effects/Dialogs/Effects.LevelsDialog.cs:275
+#: ../Pinta.Effects/Dialogs/Effects.LevelsDialog.cs:286
 msgid "Input"
 msgstr "Вход"
 
-#: ../Pinta.Effects/Dialogs/Effects.LevelsDialog.cs:274
+#: ../Pinta.Effects/Dialogs/Effects.LevelsDialog.cs:285
 msgid "Input Histogram"
 msgstr "Гистограмма входа"
 
-#: ../Pinta.Gui.Addins/InstallDialog.cs:121
-#: ../Pinta.Gui.Addins/InstallDialog.cs:247
+#: ../Pinta.Core/Managers/KeyboardShortcutManager.cs:81
+msgid "Insert new line"
+msgstr ""
+
+#: ../Pinta.Gui.Addins/InstallDialog.cs:129
+#: ../Pinta.Gui.Addins/InstallDialog.cs:263
 msgid "Install"
 msgstr "Установить"
 
-#: ../Pinta.Gui.Addins/AddinManagerDialog.cs:251
+#: ../Pinta.Gui.Addins/AddinManagerDialog.cs:268
 msgid "Install Extension Package"
 msgstr "Установить расширение"
 
-#: ../Pinta.Gui.Addins/AddinManagerDialog.cs:110
+#: ../Pinta.Gui.Addins/AddinManagerDialog.cs:127
 msgid "Install from file..."
 msgstr "Установить из файла..."
 
-#: ../Pinta.Gui.Addins/AddinInfoView.cs:167
+#: ../Pinta.Gui.Addins/AddinInfoView.cs:191
 msgid "Install..."
 msgstr "Установка..."
 
-#: ../Pinta.Gui.Addins/AddinManagerDialog.cs:87
+#: ../Pinta.Gui.Addins/AddinManagerDialog.cs:104
 msgid "Installed"
 msgstr "Установлено"
 
@@ -1227,18 +1671,15 @@ msgstr "Пересечение ({0} + Левая кнопка мыши)"
 msgid "Invert Colors"
 msgstr "Обратить цвета"
 
-#: ../Pinta.Core/Actions/EditActions.cs:142
-#: ../Pinta.Core/Actions/EditActions.cs:607
+#: ../Pinta.Core/Actions/EditActions.cs:154
+#: ../Pinta.Core/Actions/EditActions.cs:734
 msgid "Invert Selection"
 msgstr "Обратить выделение"
 
-#: ../Pinta.Tools/Tools/TextTool.cs:340
+#: ../Pinta.Tools/Dialogs/TextPropertiesDialog.cs:198
+#: ../Pinta.Tools/Tools/TextTool.cs:476
 msgid "Italic"
 msgstr "Курсивный"
-
-#: ../Pinta/Dialogs/JpegCompressionDialog.cs:46
-msgid "JPEG Quality"
-msgstr "Качество JPEG"
 
 #. Translators: Image dithering matrix named after J. F. Jarvis, C. N. Judice, and W. H. Ninke
 #: ../Pinta.Effects/Classes/ErrorDiffusionMatrix.cs:36
@@ -1249,32 +1690,64 @@ msgstr "Джарвиса-Джудиса-Нинке"
 msgid "Julia Fractal"
 msgstr "Фрактал Жюлиа"
 
-#: ../Pinta/Dialogs/NewImageDialog.cs:295
+#: ../Pinta.Tools/Dialogs/TextPropertiesDialog.cs:245
+#: ../Pinta.Tools/Tools/TextTool.cs:535
+msgid "Justify"
+msgstr ""
+
+#: ../Pinta/Dialogs/PreferencesDialog.cs:452
+msgid "Keep Mine"
+msgstr ""
+
+#: ../Pinta.Tools/Tools/ColorPickerTool.cs:227
+msgid "Keep using the Color Picker after a color is chosen."
+msgstr "Продолжать использовать «Пипетку» после выбора цвета."
+
+#: ../Pinta/Actions/Help/KeyboardShortcutsDialogAction.cs:100
+#: ../Pinta.Core/Actions/AppActions.cs:48
+msgid "Keyboard Shortcuts"
+msgstr ""
+
+#: ../Pinta/Dialogs/PreferencesDialog.cs:432
+msgid "Keyboard shortcuts were imported, replacing your current ones."
+msgstr ""
+
+#: ../Pinta/Dialogs/PreferencesDialog.cs:433
+msgid "Keyboard shortcuts were left unchanged."
+msgstr ""
+
+#: ../Pinta/Dialogs/NewImageDialog.cs:315
 msgid "Landscape"
 msgstr "Альбомная"
 
-#: ../Pinta.Tools/Tools/LassoSelectTool.cs:213
+#: ../Pinta.Core/Managers/KeyboardShortcutManager.cs:55
+#: ../Pinta.Core/Managers/KeyboardShortcutManager.cs:61
+#: ../Pinta.Core/Managers/KeyboardShortcutManager.cs:67
+msgid "Lasso / Scissors Select"
+msgstr ""
+
+#: ../Pinta.Tools/Tools/LassoSelectTool.cs:556
 msgid "Lasso Mode"
 msgstr "Режим лассо"
 
-#: ../Pinta.Tools/Tools/LassoSelectTool.cs:55
+#: ../Pinta.Tools/Tools/LassoSelectTool.cs:75
 msgid "Lasso Select"
 msgstr "Выделение лассо"
 
-#: ../Pinta.Tools/Tools/ColorPickerTool.cs:253
+#: ../Pinta.Tools/Tools/ColorPickerTool.cs:264
 msgid "Layer"
 msgstr "Слой"
 
-#: ../Pinta/Actions/Layers/LayerPropertiesAction.cs:101
+#: ../Pinta/Actions/Layers/LayerPropertiesAction.cs:109
 msgid "Layer Opacity"
 msgstr "Непрозрачность слоя"
 
-#: ../Pinta/Actions/Layers/LayerPropertiesAction.cs:119
-#: ../Pinta/Dialogs/LayerPropertiesDialog.cs:136
+#: ../Pinta/Actions/Layers/LayerPropertiesAction.cs:127
+#: ../Pinta/Dialogs/LayerPropertiesDialog.cs:119
 msgid "Layer Properties"
 msgstr "Свойства слоя"
 
-#: ../Pinta.Core/Actions/LayerActions.cs:125
+#: ../Pinta.Core/Actions/LayerActions.cs:128
 msgid "Layer Properties..."
 msgstr "Параметры слоя..."
 
@@ -1284,11 +1757,13 @@ msgstr "Параметры слоя..."
 msgid "Layer {0}"
 msgstr "Слой {0}"
 
+#: ../Pinta/Actions/Help/KeyboardShortcutsDialogAction.cs:169
 #: ../Pinta/Pads/LayersPad.cs:49
 msgid "Layers"
 msgstr "Слои"
 
-#: ../Pinta.Tools/Tools/TextTool.cs:368
+#: ../Pinta.Tools/Dialogs/TextPropertiesDialog.cs:221
+#: ../Pinta.Tools/Tools/TextTool.cs:502
 msgid "Left Align"
 msgstr "По левому краю"
 
@@ -1329,7 +1804,7 @@ msgstr ""
 "пиксель."
 
 #. Translators: {0} is 'Ctrl', or a platform-specific key such as 'Command' on macOS.
-#: ../Pinta.Tools/Tools/ShapeTool.cs:50
+#: ../Pinta.Tools/Tools/ShapeTool.cs:52
 #, csharp-format
 msgid ""
 "Left click to draw a shape with the primary color.\n"
@@ -1366,7 +1841,7 @@ msgstr ""
 "создать новую форму в том же месте.\n"
 "Нажмите Enter, чтобы завершить форму."
 
-#: ../Pinta.Tools/Tools/PencilTool.cs:51
+#: ../Pinta.Tools/Tools/PencilTool.cs:52
 msgid ""
 "Left click to draw freeform one-pixel wide lines with the primary color.\n"
 "Right click to use the secondary color."
@@ -1375,8 +1850,8 @@ msgstr ""
 "формы шириной в один пиксель.\n"
 "Нажмите правую кнопку мыши для использования дополнительного цвета."
 
-#: ../Pinta.Tools/Tools/FreeformShapeTool.cs:50
-#: ../Pinta.Tools/Tools/PaintBrushTool.cs:81
+#: ../Pinta.Tools/Tools/FreeformShapeTool.cs:51
+#: ../Pinta.Tools/Tools/PaintBrushTool.cs:82
 msgid ""
 "Left click to draw with primary color, right click to draw with secondary "
 "color."
@@ -1391,7 +1866,7 @@ msgstr ""
 "Нажатие левой кнопки мыши стирает до прозрачного фона, правой кнопки - "
 "закрашивает дополнительным цветом. "
 
-#: ../Pinta.Tools/Tools/PaintBucketTool.cs:47
+#: ../Pinta.Tools/Tools/PaintBucketTool.cs:48
 msgid ""
 "Left click to fill a region with the primary color, right click to fill with "
 "the secondary color.\n"
@@ -1401,15 +1876,13 @@ msgstr ""
 "правой кнопки — дополнительным.\n"
 "Для использования глобального режима удерживайте нажатой клавишу Shift."
 
-#: ../Pinta.Tools/Tools/TextTool.cs:95
+#: ../Pinta.Tools/Tools/TextTool.cs:141
 msgid ""
 "Left click to place cursor, then type desired text. Text color is primary "
-"color."
+"color. Ctrl+click to re-edit existing text."
 msgstr ""
-"Щёлкните левой кнопкой мыши, чтобы поместить курсор, затем наберите нужный "
-"текст. Текст раскрашивается основным цветом."
 
-#: ../Pinta.Tools/Tools/RecolorTool.cs:58
+#: ../Pinta.Tools/Tools/RecolorTool.cs:59
 msgid ""
 "Left click to replace the secondary color with the primary color.\n"
 "Right click to reverse."
@@ -1418,14 +1891,20 @@ msgstr ""
 "основной цвет.\n"
 "Щёлкните правой кнопкой мыши, чтобы вернуть обратно."
 
-#: ../Pinta.Gui.Widgets/Widgets/StatusBarColorPaletteWidget.cs:328
+#: ../Pinta.Tools/Tools/ColorPickerTool.cs:59
+msgid ""
+"Left click to set primary color.\n"
+"Right click to set secondary color."
+msgstr ""
+
+#: ../Pinta.Gui.Widgets/Widgets/StatusBarColorPaletteWidget.cs:795
 msgid "Left click to set primary color. Right click to set secondary color."
 msgstr ""
 "Щёлкните левой кнопкой мыши для задания основного цвета. Щёлкните правой "
 "кнопкой для задания дополнительного цвета."
 
 #. Translators: {0} is 'Ctrl', or a platform-specific key such as 'Command' on macOS.
-#: ../Pinta.Gui.Widgets/Widgets/StatusBarColorPaletteWidget.cs:320
+#: ../Pinta.Gui.Widgets/Widgets/StatusBarColorPaletteWidget.cs:787
 #, csharp-format
 msgid ""
 "Left click to set primary color. Right click to set secondary color. Middle "
@@ -1445,26 +1924,30 @@ msgstr ""
 "Щёлкните правой кнопкой мыши для уменьшения.\n"
 "Нажмите и перетащите, чтобы увеличить по выделению."
 
-#: ../Pinta.Tools/Editable/EditEngines/ArrowedEditEngine.cs:331
+#: ../Pinta.Tools/Editable/EditEngines/ArrowedEditEngine.cs:335
 msgid "Length"
 msgstr "Длина"
+
+#: ../Pinta.Tools/Editable/EditEngines/ArrowedEditEngine.cs:343
+msgid "Length of the arrowhead's wings; does not change the line's length."
+msgstr "Длина крыльев наконечника стрелки; не изменяет длину линии."
+
+#: ../Pinta.Tools/Editable/EditEngines/ArrowedEditEngine.cs:299
+msgid "Length of the arrowhead, in pixels."
+msgstr "Длина наконечника стрелки в пикселях."
 
 #: ../Pinta.Effects/Adjustments/LevelsEffect.cs:23
 msgid "Levels"
 msgstr "Уровни"
 
-#: ../Pinta.Effects/Dialogs/Effects.LevelsDialog.cs:245
+#: ../Pinta.Effects/Dialogs/Effects.LevelsDialog.cs:261
 msgid "Levels Adjustment"
 msgstr "Коррекция уровней"
 
-#: ../Pinta/Actions/Help/AboutDialogAction.cs:90
-msgid "License"
-msgstr "Лицензия"
-
 #. Translators: This refers to using a light variant of the color scheme.
 #. Translators: 'Light' (300) refers to the font-weight text property
-#: ../Pinta.Core/Actions/ViewActions.cs:249
-#: ../Pinta.Tools/Tools/TextTool.cs:272
+#: ../Pinta.Core/Actions/ViewActions.cs:283
+#: ../Pinta.Tools/Tools/TextTool.cs:408
 msgid "Light"
 msgstr "Светлая"
 
@@ -1480,46 +1963,73 @@ msgstr "Освещение"
 msgid "Lightness"
 msgstr "Яркость"
 
+#: ../Pinta.Tools/Tools/TextTool.cs:351
+msgid "Like All Small Caps, but the substituted capitals are slightly smaller."
+msgstr ""
+"Как «Все малые прописные», но заменяющие прописные буквы немного меньше."
+
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:441
+msgid "Like Closed Line/Curve Series, but with rounded corners at each point."
+msgstr ""
+"Как «Замкнутая ломаная/кривая», но со скруглёнными углами в каждой точке."
+
+#: ../Pinta.Tools/Tools/TextTool.cs:344
+msgid "Like Small Caps, but the substituted capitals are slightly smaller."
+msgstr "Как «Малые прописные», но заменяющие прописные буквы немного меньше."
+
 #. Translators: Gradient with a citrusy vibe that starts out white, goes through light yellow, several shades of green, and then transparent, blending with the background
 #: ../Pinta.Effects/Utilities/GradientHelper.cs:47
 msgid "Lime Lemon"
 msgstr "Лайм-лимон"
 
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:97
 #: ../Pinta.Tools/Tools/LineCurveTool.cs:42
 msgid "Line/Curve"
 msgstr "Линии/кривые"
 
-#: ../Pinta.Tools/Tools/GradientTool.cs:296
+#: ../Pinta.Tools/Tools/GradientTool.cs:299
 msgid "Linear Diamond Gradient"
 msgstr "Линейный ромбовидный градиент"
 
-#: ../Pinta.Tools/Tools/GradientTool.cs:294
+#: ../Pinta.Tools/Tools/GradientTool.cs:297
 msgid "Linear Gradient"
 msgstr "Линейный градиент"
 
-#: ../Pinta.Tools/Tools/GradientTool.cs:295
+#: ../Pinta.Tools/Tools/GradientTool.cs:298
 msgid "Linear Reflected Gradient"
 msgstr "Линейный отражённый градиент"
 
-#: ../Pinta.Effects/Dialogs/Effects.PosterizeDialog.cs:83
+#: ../Pinta.Effects/Dialogs/Effects.PosterizeDialog.cs:94
 msgid "Linked"
 msgstr "Синхронизировать"
 
+#: ../Pinta.Tools/Tools/TextTool.cs:330
+msgid "Lower case letters are replaced with smaller capital letters."
+msgstr "Строчные буквы заменяются уменьшенными прописными."
+
 #: ../Pinta.Core/Algorithms/PixelOps/UserBlendOps.cs:44
-#: ../Pinta.Effects/Dialogs/Effects.CurvesDialog.cs:177
+#: ../Pinta.Effects/Dialogs/Effects.CurvesDialog.cs:176
 msgid "Luminosity"
 msgstr "Светлота"
+
+#: ../Pinta/Actions/Help/AboutDialogAction.cs:124
+msgid "MIT License - Impasto"
+msgstr ""
+
+#: ../Pinta/Actions/Help/AboutDialogAction.cs:128
+msgid "MIT License - Pinta Project"
+msgstr ""
 
 #: ../Pinta.Tools/Tools/MagicWandTool.cs:54
 msgid "Magic Wand Select"
 msgstr "Волшебная палочка"
 
-#: ../Pinta/MainWindow.cs:441
+#: ../Pinta/MainWindow.cs:466
 msgid "Main Menu"
 msgstr "Главное меню"
 
-#: ../Pinta/Dialogs/ResizeCanvasDialog.cs:110
-#: ../Pinta/Dialogs/ResizeImageDialog.cs:71
+#: ../Pinta/Dialogs/ResizeCanvasDialog.cs:112
+#: ../Pinta/Dialogs/ResizeImageDialog.cs:75
 msgid "Maintain aspect ratio"
 msgstr "Соблюдать соотношение сторон"
 
@@ -1532,6 +2042,10 @@ msgstr "Фрактал Мандельброта"
 msgid "Martian Lava"
 msgstr "Марсианская лава"
 
+#: ../Pinta.Docking/DockItem.cs:164
+msgid "Maximize to side menu"
+msgstr ""
+
 #: ../Pinta.Tools/Brushes/SplatterBrush.cs:65
 msgid "Maximum Size"
 msgstr "Максимальный размер"
@@ -1541,37 +2055,53 @@ msgid "Median"
 msgstr "Медиана"
 
 #. Translators: 'Medium' (500) refers to the font-weight text property
-#: ../Pinta.Tools/Tools/TextTool.cs:296
+#: ../Pinta.Tools/Tools/TextTool.cs:432
 msgid "Medium"
 msgstr "Умеренный"
 
-#: ../Pinta.Core/Actions/ViewActions.cs:131
+#: ../Pinta.Core/Actions/ViewActions.cs:142
 msgid "Menu Bar"
 msgstr "Панель меню"
 
-#: ../Pinta.Core/Actions/LayerActions.cs:82
-#: ../Pinta.Core/Actions/LayerActions.cs:333
+#: ../Pinta.Core/Actions/LayerActions.cs:85
+#: ../Pinta.Core/Actions/LayerActions.cs:367
 msgid "Merge Layer Down"
 msgstr "Объединить с нижележащим"
+
+#: ../Pinta.Docking/DockItem.cs:156
+msgid "Minimize to icon"
+msgstr ""
 
 #: ../Pinta.Tools/Brushes/SplatterBrush.cs:56
 msgid "Minimum Size"
 msgstr "Минимальный размер"
 
+#: ../Pinta.Tools/Tools/GradientTool.cs:298
+msgid "Mirrors the linear transition on both sides of the start point."
+msgstr "Отражает линейный переход по обе стороны от начальной точки."
+
 #. Translators: 'Miter Join' refers to the Cairo.LineJoin property
-#: ../Pinta.Tools/Tools/TextTool.cs:457
+#: ../Pinta.Tools/Tools/TextTool.cs:600
 msgid "Miter Join"
 msgstr "Угловое соединение"
 
-#: ../Pinta.Tools/Tools/GradientTool.cs:322
+#: ../Pinta.Tools/Tools/TextTool.cs:358
+msgid ""
+"Mixes small capital letters for upper case with normal lower case letters."
+msgstr ""
+
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:483
+#: ../Pinta.Tools/Tools/GradientTool.cs:325
+#: ../Pinta.Tools/Tools/TextTool.cs:256
 msgid "Mode"
 msgstr "Режим"
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:934
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:1313
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:1343
 msgid "Modified"
 msgstr "Изменён"
 
-#: ../Pinta.Gui.Addins/AddinInfoView.cs:159
+#: ../Pinta.Gui.Addins/AddinInfoView.cs:183
 msgid "More Information..."
 msgstr "Дополнительные сведения..."
 
@@ -1579,13 +2109,17 @@ msgstr "Дополнительные сведения..."
 msgid "Motion Blur"
 msgstr "Размытие в движении"
 
-#: ../Pinta.Core/Actions/LayerActions.cs:119
-#: ../Pinta.Core/Actions/LayerActions.cs:314
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:368
+msgid "Move Layer"
+msgstr ""
+
+#: ../Pinta.Core/Actions/LayerActions.cs:122
+#: ../Pinta.Core/Actions/LayerActions.cs:348
 msgid "Move Layer Down"
 msgstr "Переместить слой вниз"
 
-#: ../Pinta.Core/Actions/LayerActions.cs:113
-#: ../Pinta.Core/Actions/LayerActions.cs:298
+#: ../Pinta.Core/Actions/LayerActions.cs:116
+#: ../Pinta.Core/Actions/LayerActions.cs:332
 msgid "Move Layer Up"
 msgstr "Переместить слой вверх"
 
@@ -1597,11 +2131,51 @@ msgstr "Переместить выбранные пиксели"
 msgid "Move Selection"
 msgstr "Переместить выделение"
 
+#: ../Pinta.Core/Managers/KeyboardShortcutManager.cs:117
+msgid "Move cursor down"
+msgstr ""
+
+#: ../Pinta.Core/Managers/KeyboardShortcutManager.cs:99
+msgid "Move cursor left"
+msgstr ""
+
+#: ../Pinta.Core/Managers/KeyboardShortcutManager.cs:105
+msgid "Move cursor right"
+msgstr ""
+
+#: ../Pinta.Core/Managers/KeyboardShortcutManager.cs:129
+msgid "Move cursor to line end"
+msgstr ""
+
+#: ../Pinta.Core/Managers/KeyboardShortcutManager.cs:123
+msgid "Move cursor to line start"
+msgstr ""
+
+#: ../Pinta.Core/Managers/KeyboardShortcutManager.cs:111
+msgid "Move cursor up"
+msgstr ""
+
+#: ../Pinta.Core/Managers/KeyboardShortcutManager.cs:300
+msgid "Move selected control point down"
+msgstr ""
+
+#: ../Pinta.Core/Managers/KeyboardShortcutManager.cs:282
+msgid "Move selected control point left"
+msgstr ""
+
+#: ../Pinta.Core/Managers/KeyboardShortcutManager.cs:288
+msgid "Move selected control point right"
+msgstr ""
+
+#: ../Pinta.Core/Managers/KeyboardShortcutManager.cs:294
+msgid "Move selected control point up"
+msgstr ""
+
 #: ../Pinta.Core/Algorithms/PixelOps/UserBlendOps.cs:32
 msgid "Multiply"
 msgstr "Умножение"
 
-#: ../Pinta/Dialogs/LayerPropertiesDialog.cs:67
+#: ../Pinta/Dialogs/LayerPropertiesDialog.cs:61
 msgid "Name:"
 msgstr "Название:"
 
@@ -1609,28 +2183,28 @@ msgstr "Название:"
 msgid "Nearest Neighbor"
 msgstr "Ближайший сосед"
 
-#: ../Pinta.Core/Actions/FileActions.cs:63
+#: ../Pinta.Core/Actions/FileActions.cs:66
 msgid "New"
 msgstr "Создать"
 
 #: ../Pinta.Core/Managers/WorkspaceManager.cs:139
-#: ../Pinta/Dialogs/NewImageDialog.cs:232
+#: ../Pinta/Dialogs/NewImageDialog.cs:194
 msgid "New Image"
 msgstr "Новое изображение"
 
-#: ../Pinta.Core/Actions/FileActions.cs:67
+#: ../Pinta.Core/Actions/FileActions.cs:70
 msgid "New Screenshot..."
 msgstr "Новый снимок экрана..."
 
-#: ../Pinta/Actions/Edit/ResizePaletteAction.cs:71
+#: ../Pinta/Actions/Edit/ResizePaletteAction.cs:73
 msgid "New palette size:"
 msgstr "Новый размер палитры:"
 
-#: ../Pinta.Core/Actions/FileActions.cs:59
+#: ../Pinta.Core/Actions/FileActions.cs:62
 msgid "New..."
 msgstr "Создать..."
 
-#: ../Pinta.Gui.Addins/AddinListView.cs:55
+#: ../Pinta.Gui.Addins/AddinListView.cs:60
 msgid "No Items Found"
 msgstr "Ничего не найдено"
 
@@ -1640,26 +2214,122 @@ msgstr "Ничего не найдено"
 msgid "Noise"
 msgstr "Шум"
 
+#: ../Pinta/Actions/Help/KeyboardShortcutsDialogAction.cs:48
+#: ../Pinta.Core/Classes/KeyGesture.cs:31 ../Pinta.Tools/Tools/TextTool.cs:1439
+msgid "None"
+msgstr "Нет"
+
 #. Translators: 'Normal' refers to the font-variant text property
 #. Translators: 'Normal' (400) refers to the font-weight text property
 #: ../Pinta.Core/Algorithms/PixelOps/UserBlendOps.cs:31
 #: ../Pinta.Tools/Brushes/PlainBrush.cs:41
-#: ../Pinta.Tools/Tools/EraserTool.cs:336 ../Pinta.Tools/Tools/TextTool.cs:184
-#: ../Pinta.Tools/Tools/TextTool.cs:290 ../Pinta.Tools/Tools/TextTool.cs:415
+#: ../Pinta.Tools/Dialogs/TextPropertiesDialog.cs:255
+#: ../Pinta.Tools/Tools/EraserTool.cs:336 ../Pinta.Tools/Tools/TextTool.cs:320
+#: ../Pinta.Tools/Tools/TextTool.cs:426 ../Pinta.Tools/Tools/TextTool.cs:557
 msgid "Normal"
 msgstr "Обычный"
 
-#: ../Pinta.Core/Classes/BaseTool.cs:341
+#: ../Pinta.Core/Classes/BaseTool.cs:386
 msgid "Normal Blending"
 msgstr "Нормальное наложение"
 
-#: ../Pinta.Core/Actions/ViewActions.cs:99
+#: ../Pinta.Core/Actions/ViewActions.cs:103
 msgid "Normal Size"
 msgstr "Исходный размер"
 
-#: ../Pinta.Tools/Tools/TextTool.cs:416
+#: ../Pinta.Tools/Tools/TextTool.cs:558
 msgid "Normal and Outline"
 msgstr "Обычный и контур"
+
+#: ../Pinta.Tools/Tools/BaseTransformTool.cs:830
+msgid "Nudge 10% of canvas: Ctrl+Arrow keys"
+msgstr ""
+
+#: ../Pinta.Tools/Tools/BaseTransformTool.cs:829
+msgid "Nudge 10px: Shift+Arrow keys"
+msgstr ""
+
+#: ../Pinta.Tools/Tools/BaseTransformTool.cs:831
+msgid "Nudge 20% of canvas: Ctrl+Shift+Arrow keys"
+msgstr ""
+
+#: ../Pinta.Core/Managers/KeyboardShortcutManager.cs:374
+msgid "Nudge selection down (10px)"
+msgstr ""
+
+#: ../Pinta.Core/Managers/KeyboardShortcutManager.cs:350
+msgid "Nudge selection down (1px)"
+msgstr ""
+
+#: ../Pinta.Core/Managers/KeyboardShortcutManager.cs:422
+msgid "Nudge selection down (20% canvas)"
+msgstr ""
+
+#: ../Pinta.Core/Managers/KeyboardShortcutManager.cs:398
+msgid "Nudge selection down (5% canvas)"
+msgstr ""
+
+#: ../Pinta.Core/Managers/KeyboardShortcutManager.cs:356
+msgid "Nudge selection left (10px)"
+msgstr ""
+
+#: ../Pinta.Core/Managers/KeyboardShortcutManager.cs:332
+msgid "Nudge selection left (1px)"
+msgstr ""
+
+#: ../Pinta.Core/Managers/KeyboardShortcutManager.cs:404
+msgid "Nudge selection left (20% canvas)"
+msgstr ""
+
+#: ../Pinta.Core/Managers/KeyboardShortcutManager.cs:380
+msgid "Nudge selection left (5% canvas)"
+msgstr ""
+
+#: ../Pinta.Core/Managers/KeyboardShortcutManager.cs:362
+msgid "Nudge selection right (10px)"
+msgstr ""
+
+#: ../Pinta.Core/Managers/KeyboardShortcutManager.cs:338
+msgid "Nudge selection right (1px)"
+msgstr ""
+
+#: ../Pinta.Core/Managers/KeyboardShortcutManager.cs:410
+msgid "Nudge selection right (20% canvas)"
+msgstr ""
+
+#: ../Pinta.Core/Managers/KeyboardShortcutManager.cs:386
+msgid "Nudge selection right (5% canvas)"
+msgstr ""
+
+#: ../Pinta.Core/Managers/KeyboardShortcutManager.cs:368
+msgid "Nudge selection up (10px)"
+msgstr ""
+
+#: ../Pinta.Core/Managers/KeyboardShortcutManager.cs:344
+msgid "Nudge selection up (1px)"
+msgstr ""
+
+#: ../Pinta.Core/Managers/KeyboardShortcutManager.cs:416
+msgid "Nudge selection up (20% canvas)"
+msgstr ""
+
+#: ../Pinta.Core/Managers/KeyboardShortcutManager.cs:392
+msgid "Nudge selection up (5% canvas)"
+msgstr ""
+
+#: ../Pinta.Tools/Tools/BaseTransformTool.cs:629
+#, csharp-format
+msgid "Nudge {0} ({1}): {2}"
+msgstr ""
+
+#: ../Pinta.Tools/Tools/BaseTransformTool.cs:628
+#, csharp-format
+msgid "Nudge {0}: {1}"
+msgstr ""
+
+#: ../Pinta.Tools/Tools/BaseTransformTool.cs:828
+msgid "Nudge: Arrow keys"
+msgstr ""
 
 #: ../Pinta.Effects/Effects/CellsEffect.cs:172
 #: ../Pinta.Effects/Effects/VoronoiDiagramEffect.cs:187
@@ -1670,7 +2340,10 @@ msgstr "Количество локусов"
 msgid "Number of threads to use for rendering"
 msgstr "Количество потоков, используемых для отрисовки"
 
-#: ../Pinta.Gui.Widgets/Widgets/ColorPickerDialog.cs:387
+#: ../Pinta/Actions/Help/KeyboardShortcutsDialogAction.cs:124
+#: ../Pinta/Dialogs/PreferencesDialog.cs:489
+#: ../Pinta.Gui.Widgets/Widgets/ColorPickerDialog.cs:491
+#: ../Pinta.Tools/Dialogs/TextPropertiesDialog.cs:276
 msgid "OK"
 msgstr "OK"
 
@@ -1680,17 +2353,22 @@ msgstr "OK"
 msgid "Object"
 msgstr "Объект"
 
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:492
+#: ../Pinta.Tools/Tools/TextTool.cs:263
+msgid "Object — editable later"
+msgstr ""
+
+#: ../Pinta/Dialogs/OffsetSelectionDialog.cs:60
 #: ../Pinta.Effects/Effects/BulgeEffect.cs:120
 #: ../Pinta.Effects/Effects/RadialBlurEffect.cs:139
 #: ../Pinta.Effects/Effects/VignetteEffect.cs:133
 #: ../Pinta.Effects/Effects/ZoomBlurEffect.cs:140
-#: ../Pinta/Dialogs/OffsetSelectionDialog.cs:54
 msgid "Offset"
 msgstr "Смещение"
 
-#: ../Pinta.Core/Actions/EditActions.cs:149
 #: ../Pinta/Actions/Edit/OffsetSelectionAction.cs:79
-#: ../Pinta/Dialogs/OffsetSelectionDialog.cs:44
+#: ../Pinta.Core/Actions/EditActions.cs:161
+#: ../Pinta/Dialogs/OffsetSelectionDialog.cs:52
 msgid "Offset Selection"
 msgstr "Смещение выделения"
 
@@ -1698,11 +2376,16 @@ msgstr "Смещение выделения"
 msgid "Oil Painting"
 msgstr "Масляные краски"
 
-#: ../Pinta/Dialogs/LayerPropertiesDialog.cs:98
+#: ../Pinta/Dialogs/LayerPropertiesDialog.cs:85
 msgid "Opacity:"
 msgstr "Непрозрачность:"
 
-#: ../Pinta.Core/Actions/FileActions.cs:77
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:110
+#, csharp-format
+msgid "Opacity: {0}%"
+msgstr ""
+
+#: ../Pinta.Core/Actions/FileActions.cs:80
 msgid "Open"
 msgstr "Открыть"
 
@@ -1714,25 +2397,33 @@ msgstr "Открытая кривая"
 msgid "Open Image"
 msgstr "Открыть изображение"
 
-#: ../Pinta.Core/Actions/LayerActions.cs:229
-#: ../Pinta/Actions/File/OpenDocumentAction.cs:73
+#: ../Pinta/Actions/File/OpenDocumentAction.cs:111
+#: ../Pinta.Core/Actions/LayerActions.cs:263
 msgid "Open Image File"
 msgstr "Открыть файл изображения"
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:274
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:438
 msgid "Open Line/Curve Series"
 msgstr "Группа открытых геометрических фигур/кривых"
 
-#: ../Pinta.Core/Actions/EditActions.cs:487
+#: ../Pinta.Core/Actions/EditActions.cs:614
 msgid "Open Palette File"
 msgstr "Открыть файл палитры"
 
-#: ../Pinta.Core/Actions/EditActions.cs:170
-#: ../Pinta.Core/Actions/FileActions.cs:73
+#: ../Pinta.Core/Actions/FileActions.cs:128
+msgid "Open Recent"
+msgstr "Открыть недавние"
+
+#: ../Pinta.Core/Managers/KeyboardShortcutManager.cs:195
+msgid "Open text properties"
+msgstr ""
+
+#: ../Pinta.Core/Actions/EditActions.cs:189
+#: ../Pinta.Core/Actions/FileActions.cs:76
 msgid "Open..."
 msgstr "Открыть..."
 
-#: ../Pinta/Dialogs/NewImageDialog.cs:311
+#: ../Pinta/Dialogs/NewImageDialog.cs:331
 msgid "Orientation:"
 msgstr "Ориентация:"
 
@@ -1740,7 +2431,7 @@ msgstr "Ориентация:"
 msgid "Original"
 msgstr "Исходный"
 
-#: ../Pinta.Tools/Tools/TextTool.cs:417
+#: ../Pinta.Tools/Tools/TextTool.cs:559
 msgid "Outline"
 msgstr "Контур"
 
@@ -1756,21 +2447,21 @@ msgstr "Контур по краю"
 msgid "Outline Object"
 msgstr "Контур объекта"
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:336
-#: ../Pinta.Tools/Tools/FreeformShapeTool.cs:225
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:555
+#: ../Pinta.Tools/Tools/FreeformShapeTool.cs:226
 msgid "Outline Shape"
 msgstr "Контур фигуры"
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:353
-#: ../Pinta.Tools/Tools/TextTool.cs:431
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:572
+#: ../Pinta.Tools/Tools/TextTool.cs:573
 msgid "Outline width"
 msgstr "Ширина контура"
 
-#: ../Pinta.Effects/Dialogs/Effects.LevelsDialog.cs:276
+#: ../Pinta.Effects/Dialogs/Effects.LevelsDialog.cs:287
 msgid "Output"
 msgstr "Выход"
 
-#: ../Pinta.Effects/Dialogs/Effects.LevelsDialog.cs:277
+#: ../Pinta.Effects/Dialogs/Effects.LevelsDialog.cs:288
 msgid "Output Histogram"
 msgstr "Гистограмма выхода"
 
@@ -1778,19 +2469,53 @@ msgstr "Гистограмма выхода"
 msgid "Overlay"
 msgstr "Перекрытие"
 
-#: ../Pinta.Core/Classes/BaseTool.cs:342
+#: ../Pinta.Core/Classes/BaseTool.cs:387
 msgid "Overwrite"
 msgstr "Перезаписать"
 
-#: ../Pinta.Tools/Tools/PaintBucketTool.cs:44
+#: ../xdg/com.github.Impasto.Impasto.desktop.in.h:3
+msgid "Paint & Image Editor"
+msgstr ""
+
+#: ../Pinta.Tools/Tools/PaintBucketTool.cs:45
 msgid "Paint Bucket"
 msgstr "Заливка"
 
-#: ../Pinta.Tools/Tools/PaintBrushTool.cs:79
+#: ../Pinta.Tools/Tools/SmartPatchTool.cs:78
+#, csharp-format
+msgid ""
+"Paint over area to remove. Brush defines mask. On release, surrounding "
+"texture is synthesized to fill it.\n"
+"{0}: bigger brush\n"
+"{1}: smaller brush"
+msgstr ""
+
+#: ../xdg/com.github.Impasto.Impasto.desktop.in.h:2
+msgid "Paint, create and edit images"
+msgstr ""
+
+#: ../Pinta/Actions/Help/AboutDialogAction.cs:90
+#: ../Pinta/Actions/Help/AboutDialogAction.cs:136
+msgid "Paint.NET Reference License"
+msgstr ""
+
+#: ../Pinta.Tools/Tools/PaintBrushTool.cs:80
 msgid "Paintbrush"
 msgstr "Кисть"
 
-#: ../Pinta.Core/Actions/EditActions.cs:236
+#: ../Pinta.Tools/Tools/TextTool.cs:266
+msgid ""
+"Painted into the active layer's pixels on commit. Immediately cut/move/erase "
+"like any artwork, but not editable later."
+msgstr ""
+
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:495
+msgid ""
+"Painted into the layer's pixels on commit. Immediately cut/move/erase like "
+"any artwork, but not editable later."
+msgstr ""
+
+#: ../Pinta.Core/Actions/EditActions.cs:261
 #: ../Pinta.Effects/Effects/DitheringEffect.cs:177
 msgid "Palette"
 msgstr "Палитра"
@@ -1799,31 +2524,58 @@ msgstr "Палитра"
 msgid "Palette Source"
 msgstr "Источник палитры"
 
-#: ../Pinta.Core/Actions/EditActions.cs:568
+#: ../Pinta.Core/Actions/EditActions.cs:695
 msgid "Palette files"
 msgstr "Файлы палитры"
 
-#: ../Pinta.Tools/Tools/PanTool.cs:40
+#: ../Pinta/Dialogs/PreferencesDialog.cs:185
+msgid "Palette size:"
+msgstr ""
+
 #: ../Pinta/Actions/Layers/RotateZoomLayerAction.cs:148
+#: ../Pinta.Tools/Tools/PanTool.cs:40
 msgid "Pan"
 msgstr "Перемещение"
 
-#: ../Pinta.Core/Actions/EditActions.cs:106
+#: ../Pinta/Actions/Edit/PasteAction.cs:120
+#: ../Pinta.Core/Actions/EditActions.cs:118
 #: ../Pinta.Core/HistoryItems/PasteHistoryItem.cs:38
-#: ../Pinta/Actions/Edit/PasteAction.cs:118
 msgid "Paste"
 msgstr "Вставить"
 
-#: ../Pinta.Core/Actions/EditActions.cs:121
+#: ../Pinta.Core/Actions/EditActions.cs:125
+msgid "Paste Alternate"
+msgstr ""
+
+#: ../Pinta.Core/Actions/EditActions.cs:133
 msgid "Paste Into New Image"
 msgstr "Вставить как новое изображение"
 
-#: ../Pinta.Core/Actions/EditActions.cs:113
-#: ../Pinta/Actions/Edit/PasteAction.cs:118
+#: ../Pinta/Actions/Edit/PasteAction.cs:120
 msgid "Paste Into New Layer"
 msgstr "Вставить как новый слой"
 
-#: ../Pinta.Tools/Tools/PencilTool.cs:48
+#: ../Pinta/Dialogs/PreferencesDialog.cs:137
+msgid "Paste external images onto a new layer by default"
+msgstr ""
+
+#: ../Pinta.Core/Managers/KeyboardShortcutManager.cs:165
+msgid "Paste text"
+msgstr ""
+
+#: ../Pinta/MainWindow.cs:458
+msgid "Paste to Active Layer"
+msgstr ""
+
+#: ../Pinta/MainWindow.cs:459
+msgid "Paste to New Layer"
+msgstr ""
+
+#: ../Pinta.Tools/Tools/SmartPatchTool.cs:440
+msgid "Patch size"
+msgstr ""
+
+#: ../Pinta.Tools/Tools/PencilTool.cs:49
 msgid "Pencil"
 msgstr "Карандаш"
 
@@ -1840,7 +2592,8 @@ msgid "Percentile"
 msgstr "Процент"
 
 #. Translators: 'Petite Caps' refers to the font-variant text property
-#: ../Pinta.Tools/Tools/TextTool.cs:202
+#: ../Pinta.Tools/Dialogs/TextPropertiesDialog.cs:258
+#: ../Pinta.Tools/Tools/TextTool.cs:341
 msgid "Petite Caps"
 msgstr "Малая капитель"
 
@@ -1857,11 +2610,13 @@ msgstr "Снимок"
 msgid "Phyllotaxis"
 msgstr "Филлотаксис"
 
-#: ../xdg/com.github.PintaProject.Pinta.desktop.in.h:1
-#: ../Pinta/Actions/Help/AboutDialogAction.cs:65 ../Pinta/Main.cs:71
-#: ../Pinta/MainWindow.cs:57
-msgid "Pinta"
-msgstr "Pinta"
+#: ../Pinta.Gui.Widgets/Widgets/ToolBoxWidget.cs:469
+msgid "Pin this item"
+msgstr ""
+
+#: ../Pinta.Gui.Widgets/Widgets/ToolBoxWidget.cs:116
+msgid "Pinned items"
+msgstr ""
 
 #: ../Pinta/AddinSetupService.cs:66
 msgid "Pinta Community Addins - Cross-Platform"
@@ -1871,36 +2626,19 @@ msgstr "Дополнения сообщества Pinta — кросс-плат�
 msgid "Pinta Community Addins - Platform-Specific"
 msgstr "Дополнения сообщества Pinta — зависящие от операционной системы"
 
-#: ../xdg/com.github.PintaProject.Pinta.desktop.in.h:4
-msgid "Pinta Image Editor"
-msgstr "Редактор изображений Pinta"
+#: ../Pinta/Actions/Help/AboutDialogAction.cs:121
+msgid ""
+"Pinta Project contributions - Copyright (c) 2010-2026 by the Pinta Project "
+"contributors"
+msgstr ""
 
 #: ../Pinta.Core/Actions/HelpActions.cs:53
 msgid "Pinta Website"
 msgstr "Веб-сайт Pinta"
 
-#: ../Pinta/Actions/File/SaveDocumentImplementationAction.cs:207
+#: ../Pinta/Actions/File/SaveDocumentImplementationAction.cs:217
 msgid "Pinta does not support saving images in this file format."
 msgstr "Pinta не поддерживает сохранение изображений в этом формате."
-
-#: ../xdg/com.github.PintaProject.Pinta.metainfo.xml.in.h:1
-msgid ""
-"Pinta is a image editing, drawing and painting application with a simple yet "
-"powerful interface. Pinta has a wide range of drawing tools, including: "
-"freehand, rectangles, circles and lines. It also has over 35 effects to "
-"apply to your images, and also has the ability to create unlimited layers to "
-"help organize your creativity."
-msgstr ""
-"Pinta - это приложение для редактирования изображений, рисования и "
-"раскрашивания с простым, но мощным интерфейсом. Pinta имеет широкий набор "
-"инструментов для рисования, в том числе: рисование от руки, прямоугольники, "
-"круги и линии. Также редактор имеет более 35 эффектов для применения к вашим "
-"изображениям, а также имеет возможность создавать неограниченное количество "
-"слоев, чтобы помочь организовать ваше творчество."
-
-#: ../Pinta.Core/Managers/WorkspaceManager.cs:441
-msgid "Pinta supports the following file formats:"
-msgstr "Pinta поддерживает следующие форматы файлов:"
 
 #: ../Pinta.Core/Extensions/OtherExtensions.cs:167
 msgid "Pinta supports the following palette formats:"
@@ -1910,7 +2648,7 @@ msgstr "Pinta поддерживает следующие форматы пал�
 msgid "Pixelate"
 msgstr "Пикселизация"
 
-#: ../Pinta.Core/Actions/ViewActions.cs:226
+#: ../Pinta.Core/Actions/ViewActions.cs:258
 msgid "Pixels"
 msgstr "Пиксели"
 
@@ -1919,12 +2657,22 @@ msgstr "Пиксели"
 msgid "Piña Colada"
 msgstr "Пина Колада"
 
+#: ../Pinta/Actions/Edit/PreferencesAction.cs:84
+msgid "Please restart Impasto for the toolbox layout change to take effect."
+msgstr ""
+"Пожалуйста, перезапустите Impasto, чтобы изменение макета панели "
+"инструментов вступило в силу."
+
 #: ../Pinta/Actions/View/MenuBarToggledAction.cs:40
 msgid "Please restart Pinta for the changes to take effect."
 msgstr "Пожалуйста, перезапустите Pinta, чтобы изменения вступили в силу."
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:620
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:823
+#: ../Pinta.Tools/Tools/TextTool.cs:239
+msgid "Point"
+msgstr ""
+
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:965
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:1163
 msgid "Point Added"
 msgstr "Точка добавлена"
 
@@ -1938,7 +2686,7 @@ msgstr "Расположение точек"
 msgid "Point Color"
 msgstr "Цвет точек"
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:671
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:1016
 msgid "Point Deleted"
 msgstr "Точка удалена"
 
@@ -1947,15 +2695,25 @@ msgstr "Точка удалена"
 msgid "Point Size"
 msgstr "Размер точек"
 
+#: ../Pinta.Tools/Tools/TextTool.cs:240
+msgid ""
+"Point text: the text grows to its natural width and only wraps where you "
+"press Enter."
+msgstr ""
+
 #: ../Pinta.Effects/Effects/PolarInversionEffect.cs:26
 msgid "Polar Inversion"
 msgstr "Полярная инверсия"
 
-#: ../Pinta.Tools/Tools/LassoSelectTool.cs:221
+#: ../Pinta.Tools/Tools/LassoSelectTool.cs:625
 msgid "Polygon"
 msgstr "Многоугольник"
 
-#: ../Pinta/Dialogs/NewImageDialog.cs:291
+#: ../Pinta/Dialogs/PreferencesDialog.cs:160
+msgid "Popover hints:"
+msgstr "Всплывающие подсказки:"
+
+#: ../Pinta/Dialogs/NewImageDialog.cs:311
 msgid "Portrait"
 msgstr "Книжная"
 
@@ -1964,7 +2722,7 @@ msgid "Position"
 msgstr "Положение"
 
 #: ../Pinta.Effects/Adjustments/PosterizeEffect.cs:25
-#: ../Pinta.Effects/Dialogs/Effects.PosterizeDialog.cs:51
+#: ../Pinta.Effects/Dialogs/Effects.PosterizeDialog.cs:54
 msgid "Posterize"
 msgstr "Постеризовать"
 
@@ -1973,7 +2731,7 @@ msgid "Power"
 msgstr "Мощность"
 
 #. Translators: This refers to preserving the current canvas size when pasting a larger image.
-#: ../Pinta/Actions/Edit/PasteAction.cs:224
+#: ../Pinta/Actions/Edit/PasteAction.cs:226
 msgid "Preserve"
 msgstr "Оставить"
 
@@ -1985,41 +2743,51 @@ msgstr "Предустановленный градиент"
 msgid "Preset Palettes"
 msgstr "Готовые палитры"
 
-#: ../Pinta/Dialogs/NewImageDialog.cs:336
+#: ../Pinta/Dialogs/NewImageDialog.cs:356
 msgid "Preset:"
 msgstr "Предустановка:"
 
-#: ../Pinta.Tools/Tools/BaseBrushTool.cs:49
+#: ../Pinta/Actions/Help/KeyboardShortcutsDialogAction.cs:177
+msgid ""
+"Press Escape twice quickly to deselect. Reference only — not independently "
+"rebindable."
+msgstr ""
+
+#: ../Pinta/Actions/Help/KeyboardShortcutsDialogAction.cs:440
+msgid "Press keys…"
+msgstr ""
+
+#: ../Pinta.Tools/Tools/BaseBrushTool.cs:150
 #, csharp-format
 msgid "Press {0} to decrease brush width"
 msgstr "Нажмите {0}, чтобы уменьшить ширину кисти"
 
-#: ../Pinta.Tools/Tools/TextTool.cs:245
+#: ../Pinta.Tools/Tools/TextTool.cs:700
 #, csharp-format
 msgid "Press {0} to decrease font size"
 msgstr "Нажмите {0}, чтобы уменьшить размер шрифта"
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:372
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:141
 #, csharp-format
 msgid "Press {0} to decrease outline width"
 msgstr "Нажмите {0}, чтобы уменьшить ширину контура"
 
-#: ../Pinta.Tools/Tools/BaseBrushTool.cs:50
+#: ../Pinta.Tools/Tools/BaseBrushTool.cs:151
 #, csharp-format
 msgid "Press {0} to increase brush width"
 msgstr "Нажмите {0}, чтобы увеличить ширину кисти"
 
-#: ../Pinta.Tools/Tools/TextTool.cs:246
+#: ../Pinta.Tools/Tools/TextTool.cs:701
 #, csharp-format
 msgid "Press {0} to increase font size"
 msgstr "Нажмите {0}, чтобы увеличить размер шрифта"
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:373
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:142
 #, csharp-format
 msgid "Press {0} to increase outline width"
 msgstr "Нажмите {0}, чтобы увеличить ширину контура"
 
-#: ../Pinta/Dialogs/NewImageDialog.cs:190
+#: ../Pinta/Dialogs/NewImageDialog.cs:169
 msgid "Preview"
 msgstr "Предварительный просмотр"
 
@@ -2027,7 +2795,7 @@ msgstr "Предварительный просмотр"
 msgid "Primary"
 msgstr "Основной"
 
-#: ../Pinta.Core/Actions/FileActions.cs:102
+#: ../Pinta.Core/Actions/FileActions.cs:105
 msgid "Print"
 msgstr "Печать"
 
@@ -2041,15 +2809,24 @@ msgstr "Печать"
 msgid "Quality"
 msgstr "Качество"
 
-#: ../Pinta/Dialogs/JpegCompressionDialog.cs:37
+#: ../Pinta/Dialogs/QualityDialog.cs:40
 msgid "Quality: "
 msgstr "Качество: "
 
-#: ../Pinta.Core/Actions/AppActions.cs:47
+#: ../Pinta.Gui.Widgets/Widgets/ColorPickerPanel.cs:92
+#: ../Pinta.Gui.Widgets/Widgets/StatusBarColorPaletteWidget.cs:774
+msgid "Quick colors"
+msgstr ""
+
+#: ../Pinta.Core/Managers/ActionManager.cs:153
+msgid "Quick deselect: Esc (×2)"
+msgstr ""
+
+#: ../Pinta.Core/Actions/AppActions.cs:54
 msgid "Quit"
 msgstr "Выход"
 
-#: ../Pinta.Effects/Dialogs/Effects.CurvesDialog.cs:176
+#: ../Pinta.Effects/Dialogs/Effects.CurvesDialog.cs:175
 msgid "RGB"
 msgstr "RGB"
 
@@ -2057,12 +2834,12 @@ msgstr "RGB"
 msgid "Radial Blur"
 msgstr "Радиальное размытие"
 
-#: ../Pinta.Tools/Tools/GradientTool.cs:297
+#: ../Pinta.Tools/Tools/GradientTool.cs:300
 msgid "Radial Gradient"
 msgstr "Радиальный градиент"
 
 #: ../Pinta.Effects/Effects/FeatherEffect.cs:167
-#: ../Pinta.Effects/Effects/GaussianBlurEffect.cs:247
+#: ../Pinta.Effects/Effects/GaussianBlurEffect.cs:284
 #: ../Pinta.Effects/Effects/GlowEffect.cs:75
 #: ../Pinta.Effects/Effects/MedianEffect.cs:59
 #: ../Pinta.Effects/Effects/OutlineObjectEffect.cs:204
@@ -2108,14 +2885,44 @@ msgstr "Начальный уровень случайного шума"
 msgid "Random Point Locations"
 msgstr "Случайные местоположения точек"
 
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:494
+#: ../Pinta.Tools/Tools/TextTool.cs:265
+msgid "Raster — fuses to layer"
+msgstr ""
+
+#: ../Pinta.Core/Actions/LayerActions.cs:135
+msgid "Rasterize All Objects"
+msgstr ""
+
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:421
+msgid ""
+"Rasterized: baked into the layer's pixels. No longer editable as an object."
+msgstr ""
+
+#: ../Pinta.Core/Managers/KeyboardShortcutManager.cs:189
+msgid "Re-edit existing text"
+msgstr ""
+
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:422
+msgid ""
+"Re-editable object: a live shape or text you can keep editing until you "
+"rasterize it."
+msgstr ""
+
 #: ../Pinta.Effects/Effects/DitheringEffect.cs:165
 msgid "Recently Used Colors"
 msgstr "Недавние цвета"
 
-#: ../Pinta.Tools/Tools/RecolorTool.cs:55
+#: ../Pinta.Gui.Widgets/Widgets/ColorPickerPanel.cs:86
+#: ../Pinta.Gui.Widgets/Widgets/StatusBarColorPaletteWidget.cs:771
+msgid "Recently picked colors"
+msgstr ""
+
+#: ../Pinta.Tools/Tools/RecolorTool.cs:56
 msgid "Recolor"
 msgstr "Перекрашивание"
 
+#: ../Pinta.Tools/Editable/EditEngines/RectangleEditEngine.cs:40
 #: ../Pinta.Tools/Tools/RectangleTool.cs:42
 msgid "Rectangle"
 msgstr "Прямоугольник"
@@ -2124,9 +2931,9 @@ msgstr "Прямоугольник"
 msgid "Rectangle Select"
 msgstr "Прямоугольное выделение"
 
-#: ../Pinta.Effects/Dialogs/Effects.LevelsDialog.cs:108
-#: ../Pinta.Effects/Dialogs/Effects.PosterizeDialog.cs:60
-#: ../Pinta.Gui.Widgets/Widgets/ColorPickerSlider.cs:337
+#: ../Pinta.Effects/Dialogs/Effects.LevelsDialog.cs:113
+#: ../Pinta.Effects/Dialogs/Effects.PosterizeDialog.cs:64
+#: ../Pinta.Gui.Widgets/Widgets/ColorPickerSlider.cs:361
 msgid "Red"
 msgstr "Красный"
 
@@ -2138,7 +2945,7 @@ msgstr "Красный  "
 msgid "Red Eye Removal"
 msgstr "Удаление красных глаз"
 
-#: ../Pinta.Core/Actions/EditActions.cs:78
+#: ../Pinta.Core/Actions/EditActions.cs:90
 msgid "Redo"
 msgstr "Вернуть"
 
@@ -2154,21 +2961,30 @@ msgstr "Отражение"
 msgid "Refraction"
 msgstr "Преломление"
 
-#: ../Pinta.Gui.Addins/AddinManagerDialog.cs:102
+#: ../Pinta.Gui.Addins/AddinManagerDialog.cs:119
 msgid "Refresh"
 msgstr "Обновить"
 
-#: ../Pinta/Actions/Help/AboutDialogAction.cs:91
-msgid "Released under the MIT X11 License."
-msgstr "Распространяется под лицензией MIT X11."
+#: ../Pinta.Tools/Tools/TextTool.cs:323
+msgid "Regular upper and lower case letters."
+msgstr "Обычные прописные и строчные буквы."
 
 #: ../Pinta.Effects/Effects/ReliefEffect.cs:40
 msgid "Relief"
 msgstr "Рельеф"
 
-#: ../Pinta/Actions/Layers/LayerPropertiesAction.cs:107
+#: ../Pinta.Core/Extensions/Gtk/GtkExtensions.Widget.cs:180
+#: ../Pinta.Tools/Tools/LassoSelectTool.cs:562
+msgid "Remove last point (Backspace)"
+msgstr ""
+
+#: ../Pinta/Actions/Layers/LayerPropertiesAction.cs:115
 msgid "Rename Layer"
 msgstr "Переименовать слой"
+
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:309
+msgid "Rename Layer..."
+msgstr ""
 
 #: ../Pinta.Effects/Effects/CellsEffect.cs:25
 #: ../Pinta.Effects/Effects/CloudsEffect.cs:32
@@ -2190,31 +3006,49 @@ msgstr "Заменить"
 msgid "Report Bug..."
 msgstr "Сообщить об ошибке..."
 
-#: ../Pinta/Dialogs/ResizeImageDialog.cs:142
+#: ../Pinta/Dialogs/ResizeImageDialog.cs:141
 msgid "Resampling:"
 msgstr "Передискретизация:"
 
-#: ../Pinta.Gui.Widgets/Dialogs/SimpleEffectDialog.cs:643
+#: ../Pinta.Gui.Widgets/Dialogs/SimpleEffectDialog.cs:652
 msgid "Reseed"
 msgstr "Переделать"
 
-#: ../Pinta.Effects/Dialogs/Effects.CurvesDialog.cs:211
-#: ../Pinta.Effects/Dialogs/Effects.LevelsDialog.cs:263
-#: ../Pinta.Gui.Widgets/Widgets/ColorPickerDialog.cs:375
+#: ../Pinta/Actions/Help/KeyboardShortcutsDialogAction.cs:108
+#: ../Pinta.Effects/Dialogs/Effects.CurvesDialog.cs:207
+#: ../Pinta.Effects/Dialogs/Effects.LevelsDialog.cs:274
+#: ../Pinta.Gui.Widgets/Widgets/ColorPickerDialog.cs:479
 msgid "Reset"
 msgstr "Сброс"
 
-#: ../Pinta.Core/Actions/EditActions.cs:182
+#: ../Pinta/Actions/Help/KeyboardShortcutsDialogAction.cs:106
+msgid "Reset All Keyboard Shortcuts?"
+msgstr ""
+
+#: ../Pinta/Actions/Help/KeyboardShortcutsDialogAction.cs:103
+msgid "Reset All to Defaults"
+msgstr ""
+
+#: ../Pinta.Core/Actions/EditActions.cs:201
 msgid "Reset to Default"
 msgstr "Сбросить установки"
 
-#: ../Pinta/Dialogs/ResizeCanvasDialog.cs:93
-#: ../Pinta/Dialogs/ResizeImageDialog.cs:78
+#: ../Pinta/Actions/Help/KeyboardShortcutsDialogAction.cs:446
+#: ../Pinta/Dialogs/PreferencesDialog.cs:511
+msgid "Reset to default"
+msgstr ""
+
+#: ../Pinta/Dialogs/ResizeCanvasDialog.cs:97
+#: ../Pinta/Dialogs/ResizeImageDialog.cs:80
 msgid "Reset to image size"
 msgstr "Сбросить до исходного размера изображения"
 
-#: ../Pinta.Core/Classes/Document.cs:327
-#: ../Pinta/Dialogs/ResizeCanvasDialog.cs:214
+#: ../Pinta/MainWindow.cs:601
+msgid "Reset window"
+msgstr ""
+
+#: ../Pinta.Core/Classes/Document.cs:341
+#: ../Pinta/Dialogs/ResizeCanvasDialog.cs:213
 msgid "Resize Canvas"
 msgstr "Изменить размер холста"
 
@@ -2223,7 +3057,7 @@ msgid "Resize Canvas..."
 msgstr "Изменить размер холста..."
 
 #: ../Pinta.Core/HistoryItems/ResizeHistoryItem.cs:39
-#: ../Pinta/Dialogs/ResizeImageDialog.cs:155
+#: ../Pinta/Dialogs/ResizeImageDialog.cs:154
 msgid "Resize Image"
 msgstr "Масштабировать изображение"
 
@@ -2231,13 +3065,25 @@ msgstr "Масштабировать изображение"
 msgid "Resize Image..."
 msgstr "Изменить размер изображения..."
 
-#: ../Pinta/Actions/Edit/ResizePaletteAction.cs:69
+#: ../Pinta/Actions/Edit/ResizePaletteAction.cs:71
 msgid "Resize Palette"
 msgstr "Изменить размер палитры"
+
+#: ../Pinta.Core/Managers/KeyboardShortcutManager.cs:201
+msgid "Resize text (drag corner, changes font size)"
+msgstr ""
+
+#: ../Pinta/Actions/Edit/PreferencesAction.cs:83
+msgid "Restart Impasto"
+msgstr "Перезапустить Impasto"
 
 #: ../Pinta/Actions/View/MenuBarToggledAction.cs:39
 msgid "Restart Pinta"
 msgstr "Перезапустить Pinta"
+
+#: ../Pinta.Tools/Tools/ColorPickerTool.cs:228
+msgid "Return to the tool that was active before the Color Picker."
+msgstr "Вернуться к инструменту, который был активен до «Пипетки»."
 
 #: ../Pinta.Effects/Effects/CellsEffect.cs:191
 #: ../Pinta.Effects/Effects/CloudsEffect.cs:156
@@ -2251,16 +3097,21 @@ msgstr "Обратная цветовая схема"
 msgid "Reverse Color Sorting"
 msgstr "Сортировка цветов в обратном порядке"
 
-#: ../Pinta.Tools/Tools/TextTool.cs:392
+#: ../Pinta.Tools/Dialogs/TextPropertiesDialog.cs:237
+#: ../Pinta.Tools/Tools/TextTool.cs:524
 msgid "Right Align"
 msgstr "По правому краю"
+
+#: ../Pinta.Tools/Tools/TextTool.cs:2618
+msgid "Right click to move"
+msgstr ""
 
 #: ../Pinta/Actions/Layers/RotateZoomLayerAction.cs:70
 #: ../Pinta/Actions/Layers/RotateZoomLayerAction.cs:136
 msgid "Rotate / Zoom Layer"
 msgstr "Повернуть / Увеличить слой"
 
-#: ../Pinta.Core/Actions/LayerActions.cs:107
+#: ../Pinta.Core/Actions/LayerActions.cs:110
 msgid "Rotate / Zoom Layer..."
 msgstr "Повернуть / Увеличить слой..."
 
@@ -2279,21 +3130,29 @@ msgstr "Повернуть на 90° по часовой стрелке"
 msgid "Rotate 90° Counter-Clockwise"
 msgstr "Повернуть на 90° против часовой стрелки"
 
+#: ../Pinta.Core/Managers/KeyboardShortcutManager.cs:207
+msgid "Rotate text"
+msgstr ""
+
 #: ../Pinta.Effects/Effects/FragmentEffect.cs:132
 #: ../Pinta.Effects/Effects/TileEffect.cs:222
 msgid "Rotation"
 msgstr "Поворот"
+
+#: ../Pinta.Tools/Dialogs/TextPropertiesDialog.cs:167
+msgid "Rotation: "
+msgstr ""
 
 #: ../Pinta.Effects/Effects/DentsEffect.cs:143
 msgid "Roughness"
 msgstr "Шероховатость"
 
 #. Translators: 'Round Join' refers to the Cairo.LineJoin property
-#: ../Pinta.Tools/Tools/TextTool.cs:463
+#: ../Pinta.Tools/Tools/TextTool.cs:607
 msgid "Round Join"
 msgstr "Скруглённое соединение"
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:277
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:441
 msgid "Rounded Line Series"
 msgstr "Группа скругленных линий"
 
@@ -2301,32 +3160,42 @@ msgstr "Группа скругленных линий"
 msgid "Rounded Line Shape"
 msgstr "Скруглённая линия"
 
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:95
 #: ../Pinta.Tools/Tools/RoundedRectangleTool.cs:43
 msgid "Rounded Rectangle"
 msgstr "Скруглённый прямоугольник"
 
-#: ../Pinta.Core/Actions/ViewActions.cs:231
+#: ../Pinta.Tools/Tools/TextTool.cs:610
+msgid "Rounded corners on the outline."
+msgstr "Скруглённые углы контура."
+
+#: ../Pinta.Core/Actions/ViewActions.cs:263
 msgid "Ruler Units"
 msgstr "Единицы измерения"
 
-#: ../Pinta.Core/Actions/ViewActions.cs:149
+#: ../Pinta.Core/Actions/ViewActions.cs:172
 msgid "Rulers"
 msgstr "Линейки"
 
-#: ../Pinta.Tools/Tools/ColorPickerTool.cs:208
+#: ../Pinta.Tools/Tools/ColorPickerTool.cs:264
+msgid "Sample from the current layer only."
+msgstr "Считывать цвет только с текущего слоя."
+
+#: ../Pinta.Tools/Tools/ColorPickerTool.cs:246
+msgid "Sample the exact color of the pixel under the pointer."
+msgstr "Считывать точный цвет пикселя под указателем."
+
+#: ../Pinta.Tools/Tools/ColorPickerTool.cs:210
 msgid "Sampling"
 msgstr "Выборка"
 
-#: ../Pinta.Tools/Tools/ColorPickerTool.cs:215
-msgid "Source"
-msgstr "Источник"
-
 #. Translators: this is an abbreviation for "Saturation"
-#: ../Pinta.Gui.Widgets/Widgets/ColorPickerSlider.cs:335
+#: ../Pinta.Gui.Widgets/Widgets/ColorPickerSlider.cs:359
 msgid "Sat"
 msgstr "Насыщ."
 
-#: ../Pinta.Gui.Widgets/Widgets/ColorPickerDialog.cs:199
+#: ../Pinta.Gui.Widgets/Widgets/ColorPickerDialog.cs:198
+#: ../Pinta.Gui.Widgets/Widgets/ColorPickerPanel.cs:169
 msgid "Sat & Value"
 msgstr "Насыщ. & Значение"
 
@@ -2339,26 +3208,26 @@ msgstr "Насыщенность"
 msgid "Saturation Percentage"
 msgstr "Насыщенность в процентах"
 
-#: ../Pinta.Core/Actions/EditActions.cs:521
-#: ../Pinta.Core/Actions/FileActions.cs:88
-#: ../Pinta/Actions/File/SaveDocumentImplementationAction.cs:95
+#: ../Pinta/Actions/File/SaveDocumentImplementationAction.cs:96
+#: ../Pinta.Core/Actions/EditActions.cs:648
+#: ../Pinta.Core/Actions/FileActions.cs:91
 msgid "Save"
 msgstr "Сохранить"
 
-#: ../Pinta.Core/Actions/WindowActions.cs:44
+#: ../Pinta.Core/Actions/WindowActions.cs:45
 msgid "Save All"
 msgstr "Сохранить все"
 
-#: ../Pinta.Core/Actions/EditActions.cs:176
-#: ../Pinta.Core/Actions/FileActions.cs:95
+#: ../Pinta.Core/Actions/EditActions.cs:195
+#: ../Pinta.Core/Actions/FileActions.cs:98
 msgid "Save As..."
 msgstr "Сохранить как..."
 
-#: ../Pinta/Actions/File/SaveDocumentImplementationAction.cs:92
+#: ../Pinta/Actions/File/SaveDocumentImplementationAction.cs:93
 msgid "Save Image File"
 msgstr "Сохранить файл изображения"
 
-#: ../Pinta.Core/Actions/EditActions.cs:518
+#: ../Pinta.Core/Actions/EditActions.cs:645
 msgid "Save Palette File"
 msgstr "Сохранить файл палитры"
 
@@ -2367,39 +3236,79 @@ msgstr "Сохранить файл палитры"
 msgid "Save changes to image \"{0}\" before closing?"
 msgstr "Сохранить изменения в изображении «{0}» перед закрытием?"
 
+#: ../Pinta/Dialogs/PreferencesDialog.cs:238
+msgid ""
+"Save your settings and preferences to a file, or load them from a previously "
+"exported file."
+msgstr ""
+
 #: ../Pinta.Effects/Effects/CloudsEffect.cs:134
 #: ../Pinta.Effects/Effects/DentsEffect.cs:135
 msgid "Scale"
 msgstr "Масштаб"
 
+#: ../Pinta.Tools/Tools/ScissorsSelectTool.cs:14
+msgid "Scissors Select"
+msgstr ""
+
 #: ../Pinta.Core/Algorithms/PixelOps/UserBlendOps.cs:39
 msgid "Screen"
 msgstr "Экран"
+
+#: ../Pinta/Actions/Help/KeyboardShortcutsDialogAction.cs:139
+msgid "Search by name or key with quotes like \"ctrl-A\""
+msgstr ""
 
 #: ../Pinta.Effects/Classes/EdgeBehavior.cs:19
 msgid "Secondary"
 msgstr "Дополнительный"
 
-#: ../Pinta.Core/Actions/EditActions.cs:156
-#: ../Pinta.Core/Actions/EditActions.cs:337
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:520
+msgid ""
+"Segments stay straight; clicking a segment does not insert curve control "
+"points."
+msgstr ""
+
+#: ../Pinta.Core/Actions/EditActions.cs:168
+#: ../Pinta.Core/Actions/EditActions.cs:369
 msgid "Select All"
 msgstr "Выделить всё"
+
+#: ../Pinta.Core/Managers/KeyboardShortcutManager.cs:159
+msgid "Select all text"
+msgstr ""
+
+#: ../Pinta.Core/Managers/KeyboardShortcutManager.cs:312
+msgid "Select next control point"
+msgstr ""
+
+#: ../Pinta.Core/Managers/KeyboardShortcutManager.cs:306
+msgid "Select previous control point"
+msgstr ""
 
 #: ../Pinta.Effects/Utilities/GradientHelper.cs:13
 msgid "Selected Colors"
 msgstr "Выбранные цвета"
+
+#: ../Pinta.Tools/Tools/ColorPickerTool.cs:265
+msgid ""
+"Selects the color in view. Sample from the composited image, including all "
+"visible layers."
+msgstr ""
+"Выбирает цвет в представлении. Считывать цвет с итогового изображения, "
+"включая все видимые слои."
 
 #: ../Pinta.Tools/Tools/ColorPickerTool.cs:59
 msgid "Selects the color on the current layer and current selected area."
 msgstr ""
 
 #. Translators: 'Semibold' (600) refers to the font-weight text property
-#: ../Pinta.Tools/Tools/TextTool.cs:302
+#: ../Pinta.Tools/Tools/TextTool.cs:438
 msgid "Semibold"
 msgstr "Полужирный"
 
 #. Translators: 'Semilight' (350) refers to the font-weight text property
-#: ../Pinta.Tools/Tools/TextTool.cs:278
+#: ../Pinta.Tools/Tools/TextTool.cs:414
 msgid "Semilight"
 msgstr "Полулёгкий"
 
@@ -2407,11 +3316,42 @@ msgstr "Полулёгкий"
 msgid "Sepia"
 msgstr "Сепия"
 
-#: ../Pinta.Core/Actions/EditActions.cs:188
+#: ../Pinta.Core/Actions/EditActions.cs:207
 msgid "Set Number of Colors"
 msgstr "Установить количество цветов"
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:265
+#: ../Pinta/Dialogs/PreferencesDialog.cs:251
+#: ../Pinta/Dialogs/PreferencesDialog.cs:488
+msgid "Settings"
+msgstr ""
+
+#: ../Pinta/Dialogs/PreferencesDialog.cs:378
+msgid "Settings files"
+msgstr ""
+
+#: ../Pinta.Core/Actions/EditActions.cs:213
+msgid "Settings..."
+msgstr ""
+
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:98
+msgid "Shape"
+msgstr ""
+
+#: ../Pinta.Core/Managers/KeyboardShortcutManager.cs:257
+#: ../Pinta.Core/Managers/KeyboardShortcutManager.cs:263
+#: ../Pinta.Core/Managers/KeyboardShortcutManager.cs:269
+#: ../Pinta.Core/Managers/KeyboardShortcutManager.cs:275
+#: ../Pinta.Core/Managers/KeyboardShortcutManager.cs:281
+#: ../Pinta.Core/Managers/KeyboardShortcutManager.cs:287
+#: ../Pinta.Core/Managers/KeyboardShortcutManager.cs:293
+#: ../Pinta.Core/Managers/KeyboardShortcutManager.cs:299
+#: ../Pinta.Core/Managers/KeyboardShortcutManager.cs:305
+#: ../Pinta.Core/Managers/KeyboardShortcutManager.cs:311
+#: ../Pinta.Core/Managers/KeyboardShortcutManager.cs:317
+msgid "Shape Tools"
+msgstr ""
+
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:429
 msgid "Shape Type"
 msgstr "Форма"
 
@@ -2419,37 +3359,46 @@ msgstr "Форма"
 msgid "Sharp Edges"
 msgstr "Острые края"
 
+#: ../Pinta.Tools/Tools/TextTool.cs:603
+msgid "Sharp, pointed corners on the outline."
+msgstr "Острые, заострённые углы контура."
+
 #: ../Pinta.Effects/Effects/SharpenEffect.cs:23
 msgid "Sharpen"
 msgstr "Добавить резкость"
 
-#: ../Pinta.Core/Extensions/Gtk/GtkExtensions.Widget.cs:111
-#: ../Pinta.Gui.Widgets/Widgets/ColorPickerDialog.cs:425
-#: ../Pinta.Gui.Widgets/Widgets/StatusBarColorPaletteWidget.cs:341
-#: ../Pinta.Gui.Widgets/Widgets/ToolBoxWidget.cs:44
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:1835
+msgid "Shift-drag to snap the adjacent segment to a 15° angle."
+msgstr ""
+
+#: ../Pinta.Core/Extensions/Gtk/GtkExtensions.Widget.cs:106
+#: ../Pinta.Gui.Widgets/Widgets/ColorPickerDialog.cs:366
+#: ../Pinta.Gui.Widgets/Widgets/StatusBarColorPaletteWidget.cs:808
+#: ../Pinta.Gui.Widgets/Widgets/ToolBoxWidget.cs:194
 msgid "Shortcut key"
 msgstr "Горячая клавиша"
 
-#: ../Pinta.Core/Extensions/Gtk/GtkExtensions.Widget.cs:112
+#: ../Pinta.Core/Extensions/Gtk/GtkExtensions.Widget.cs:107
 msgid "Shortcut keys"
 msgstr "Горячие клавиши"
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:371
-#: ../Pinta.Tools/Tools/BaseBrushTool.cs:48
-#: ../Pinta.Tools/Tools/TextTool.cs:244
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:140
+#: ../Pinta.Tools/Tools/BaseBrushTool.cs:149
+#: ../Pinta.Tools/Tools/TextTool.cs:699
 msgid "Shortcut keys:"
 msgstr "Горячие клавиши:"
 
-#: ../Pinta/Dialogs/CanvasGridSettingsDialog.cs:56
+#: ../Pinta/Dialogs/CanvasGridSettingsDialog.cs:75
 msgid "Show Axonometric Grid"
 msgstr "Показать аксонометрическую сетку"
 
-#: ../Pinta/Dialogs/CanvasGridSettingsDialog.cs:32
+#: ../Pinta.Core/Actions/ViewActions.cs:135
+#: ../Pinta/Dialogs/CanvasGridSettingsDialog.cs:54
 msgid "Show Grid"
 msgstr "Показать сетку"
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:100
-#: ../Pinta/Actions/Layers/LayerPropertiesAction.cs:113
+#: ../Pinta/Actions/Layers/LayerPropertiesAction.cs:121
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:160
 msgid "Show Layer"
 msgstr "Показать слой"
 
@@ -2458,11 +3407,42 @@ msgstr "Показать слой"
 msgid "Show Points"
 msgstr "Показывать точки"
 
-#: ../Pinta.Gui.Widgets/Widgets/ColorPickerDialog.cs:192
-msgid "Show Value"
-msgstr "Показать значение"
+#: ../Pinta/Dialogs/PreferencesDialog.cs:171
+msgid "Show a third row of darker colors in the palette"
+msgstr ""
 
-#: ../Pinta.Core/Actions/ViewActions.cs:243
+#: ../Pinta.Tools/Editable/EditEngines/ArrowedEditEngine.cs:283
+msgid "Show an arrowhead at the end point."
+msgstr "Показывать наконечник стрелки в конечной точке."
+
+#: ../Pinta.Tools/Editable/EditEngines/ArrowedEditEngine.cs:270
+msgid "Show an arrowhead at the start point."
+msgstr "Показывать наконечник стрелки в начальной точке."
+
+#: ../Pinta.Gui.Widgets/Widgets/StatusBarColorPaletteWidget.cs:777
+msgid "Show color wheel"
+msgstr ""
+
+#: ../Pinta/Dialogs/PreferencesDialog.cs:217
+msgid "Show cursor position in the status bar"
+msgstr ""
+
+#: ../Pinta/Dialogs/PreferencesDialog.cs:224
+msgid "Show image size and aspect ratio in the status bar"
+msgstr ""
+
+#: ../Pinta/Dialogs/PreferencesDialog.cs:209
+msgid "Show quick access toolbar"
+msgstr ""
+
+#. Translators: Checkbox that draws the hue/saturation color surface at the current selection's brightness when on.
+#. AI-generated translation; human review requested.
+#: ../Pinta.Gui.Widgets/Widgets/ColorPickerDialog.cs:191
+#: ../Pinta.Gui.Widgets/Widgets/ColorPickerPanel.cs:172
+msgid "Show selection brightness in preview"
+msgstr "Показывать яркость выделения в предпросмотре"
+
+#: ../Pinta.Core/Actions/ViewActions.cs:277
 msgid "Show/Hide"
 msgstr "Показать/Скрыть"
 
@@ -2476,22 +3456,31 @@ msgstr "Сьерры"
 msgid "Sierra Lite"
 msgstr "Сьерры (лайт)"
 
-#: ../Pinta.Tools/Tools/ColorPickerTool.cs:235
+#: ../Pinta.Tools/Tools/ColorPickerTool.cs:246
 msgid "Single Pixel"
 msgstr "Один пиксель"
 
-#: ../Pinta.Tools/Editable/EditEngines/ArrowedEditEngine.cs:289
+#: ../Pinta.Tools/Editable/EditEngines/ArrowedEditEngine.cs:291
 msgid "Size"
 msgstr "Размер"
+
+#: ../Pinta.Tools/Dialogs/TextPropertiesDialog.cs:156
+msgid "Size: "
+msgstr ""
 
 #: ../Pinta.Tools/Brushes/SlashBrush.cs:36
 msgid "Slash"
 msgstr "Косая черта"
 
 #. Translators: 'Small Caps' refers to the font-variant text property
-#: ../Pinta.Tools/Tools/TextTool.cs:190
+#: ../Pinta.Tools/Dialogs/TextPropertiesDialog.cs:256
+#: ../Pinta.Tools/Tools/TextTool.cs:327
 msgid "Small Caps"
 msgstr "Малые заглавные"
+
+#: ../Pinta.Tools/Tools/SmartPatchTool.cs:75
+msgid "Smart Patch"
+msgstr ""
 
 #: ../Pinta.Tools/Tools/EraserTool.cs:336
 msgid "Smooth"
@@ -2509,6 +3498,14 @@ msgstr "Смягчить портрет"
 msgid "Softness"
 msgstr "Мягкость"
 
+#: ../Pinta.Tools/Tools/ColorPickerTool.cs:214
+msgid "Source"
+msgstr "Источник"
+
+#: ../Pinta.Tools/Dashes/DashPatternBox.cs:103
+msgid "Spacing"
+msgstr ""
+
 #: ../Pinta.Tools/Brushes/SplatterBrush.cs:37
 msgid "Splatter"
 msgstr "Брызги"
@@ -2517,9 +3514,25 @@ msgstr "Брызги"
 msgid "Squares"
 msgstr "Квадраты"
 
-#: ../Pinta.Core/Actions/ViewActions.cs:137
+#: ../Pinta.Core/Actions/ViewActions.cs:148
 msgid "Status Bar"
 msgstr "Строка состояния"
+
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:493
+msgid ""
+"Stays a live, re-editable shape. Cutting, erasing, or filtering across it "
+"will rasterize it first."
+msgstr ""
+
+#: ../Pinta.Tools/Tools/TextTool.cs:264
+msgid ""
+"Stays a live, re-editable text object. Cutting, erasing, or filtering across "
+"it will rasterize it first."
+msgstr ""
+
+#: ../Pinta.Core/Managers/KeyboardShortcutManager.cs:75
+msgid "Stop editing / Finalize text"
+msgstr ""
 
 #: ../Pinta.Effects/Effects/ReduceNoiseEffect.cs:88
 #: ../Pinta.Effects/Effects/VignetteEffect.cs:142
@@ -2538,57 +3551,111 @@ msgstr "Штуки"
 msgid "Stylize"
 msgstr "Стилизация"
 
-#: ../Pinta.Tools/Tools/ColorPickerTool.cs:218
+#: ../Pinta.Core/Managers/KeyboardShortcutManager.cs:227
+msgid "Swap primary and secondary colors"
+msgstr ""
+
+#: ../Pinta.Core/Managers/KeyboardShortcutManager.cs:324
+msgid "Switch between right and equilateral triangle while drawing"
+msgstr ""
+
+#: ../Pinta.Tools/Tools/ColorPickerTool.cs:229
 msgid "Switch to Pencil tool"
 msgstr "Переключиться на инструмент \"Карандаш\""
 
-#: ../Pinta.Tools/Tools/ColorPickerTool.cs:217
+#: ../Pinta.Core/Managers/KeyboardShortcutManager.cs:244
+#, csharp-format
+msgid "Switch to document {0}"
+msgstr ""
+
+#: ../Pinta.Tools/Tools/ColorPickerTool.cs:228
 msgid "Switch to previous tool"
 msgstr "Переключиться на предыдущий инструмент"
 
-#: ../Pinta.Tools/Tools/TextTool.cs:80
+#: ../Pinta.Tools/Tools/ColorPickerTool.cs:229
+msgid "Switch to the Pencil tool, ready to draw with the picked color."
+msgstr ""
+"Переключиться на инструмент «Карандаш», готовый рисовать выбранным цветом."
+
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:88
+#: ../Pinta.Tools/Tools/TextTool.cs:129
 msgid "Text"
 msgstr "Текст"
 
-#: ../Pinta.Tools/Tools/TextTool.cs:83
-msgid "Text - Finalize"
-msgstr "Текст - Завершить"
+#: ../Pinta.Tools/Dialogs/TextPropertiesDialog.cs:58
+msgid "Text Properties"
+msgstr ""
 
-#: ../Pinta.Tools/Tools/TextTool.cs:406
+#: ../Pinta.Tools/Tools/TextTool.cs:548
 msgid "Text Style"
 msgstr "Стиль текста"
 
+#: ../Pinta.Core/Managers/KeyboardShortcutManager.cs:74
+#: ../Pinta.Core/Managers/KeyboardShortcutManager.cs:80
+#: ../Pinta.Core/Managers/KeyboardShortcutManager.cs:86
+#: ../Pinta.Core/Managers/KeyboardShortcutManager.cs:92
+#: ../Pinta.Core/Managers/KeyboardShortcutManager.cs:98
+#: ../Pinta.Core/Managers/KeyboardShortcutManager.cs:104
+#: ../Pinta.Core/Managers/KeyboardShortcutManager.cs:110
+#: ../Pinta.Core/Managers/KeyboardShortcutManager.cs:116
+#: ../Pinta.Core/Managers/KeyboardShortcutManager.cs:122
+#: ../Pinta.Core/Managers/KeyboardShortcutManager.cs:128
+#: ../Pinta.Core/Managers/KeyboardShortcutManager.cs:134
+#: ../Pinta.Core/Managers/KeyboardShortcutManager.cs:140
+#: ../Pinta.Core/Managers/KeyboardShortcutManager.cs:146
+#: ../Pinta.Core/Managers/KeyboardShortcutManager.cs:152
+#: ../Pinta.Core/Managers/KeyboardShortcutManager.cs:158
+#: ../Pinta.Core/Managers/KeyboardShortcutManager.cs:164
+#: ../Pinta.Core/Managers/KeyboardShortcutManager.cs:170
+#: ../Pinta.Core/Managers/KeyboardShortcutManager.cs:176
+#: ../Pinta.Core/Managers/KeyboardShortcutManager.cs:182
+#: ../Pinta.Core/Managers/KeyboardShortcutManager.cs:188
+#: ../Pinta.Core/Managers/KeyboardShortcutManager.cs:194
+#: ../Pinta.Core/Managers/KeyboardShortcutManager.cs:200
+#: ../Pinta.Core/Managers/KeyboardShortcutManager.cs:206
+msgid "Text Tool"
+msgstr ""
+
+#: ../Pinta.Tools/Tools/TextTool.cs:686
+#, csharp-format
+msgid "Text properties ({0})"
+msgstr ""
+
 #. Translators: {0} is the name of an add-in.
-#: ../Pinta/MainWindow.cs:321
+#: ../Pinta/MainWindow.cs:338
 #, csharp-format
 msgid "The '{0}' add-in may not be compatible with this version of Pinta"
 msgstr "Дополнение «{0}» может быть несовместимо с данной версией Pinta"
 
-#: ../Pinta/Actions/Edit/PasteAction.cs:207
+#: ../Pinta/Actions/Edit/PasteAction.cs:209
 msgid "The clipboard does not contain an image."
 msgstr "Буфер обмена не содержит изображение."
 
-#: ../Pinta.Gui.Addins/InstallDialog.cs:200
+#: ../Pinta/Dialogs/PreferencesDialog.cs:430
+msgid "The file had no keyboard shortcuts to import."
+msgstr ""
+
+#: ../Pinta.Gui.Addins/InstallDialog.cs:216
 msgid "The file may be an invalid or corrupt extension package"
 msgstr "Этот файл может быть недопустимым или повреждённым пакетом расширения"
 
-#: ../Pinta.Gui.Addins/InstallDialog.cs:79
+#: ../Pinta.Gui.Addins/InstallDialog.cs:89
 msgid "The following dependencies could not be resolved:"
 msgstr "Следующие зависимости не удалось удовлетворить:"
 
-#: ../Pinta.Gui.Addins/InstallDialog.cs:72
+#: ../Pinta.Gui.Addins/InstallDialog.cs:82
 msgid "The following packages need to be uninstalled:"
 msgstr "Следующие пакеты будут удалены:"
 
-#: ../Pinta.Gui.Addins/InstallDialog.cs:66
+#: ../Pinta.Gui.Addins/InstallDialog.cs:76
 msgid "The following packages will be installed:"
 msgstr "Будут установлены следующие пакеты:"
 
-#: ../Pinta.Gui.Addins/InstallDialog.cs:229
+#: ../Pinta.Gui.Addins/InstallDialog.cs:245
 msgid "The following packages will be uninstalled:"
 msgstr "Следующие пакеты будут удалены:"
 
-#: ../Pinta/Actions/Edit/PasteAction.cs:214
+#: ../Pinta/Actions/Edit/PasteAction.cs:216
 msgid ""
 "The image being pasted is larger than the canvas. What would you like to do "
 "to the canvas size?"
@@ -2596,15 +3663,21 @@ msgstr ""
 "Вставляемое изображение превышает размеры холста. Что бы вы хотели сделать с "
 "габаритами холста?"
 
-#: ../Pinta.Gui.Addins/InstallDialog.cs:352
+#: ../Pinta.Gui.Addins/InstallDialog.cs:368
 msgid "The installation failed!"
 msgstr "Установка закончилась неудачей!"
 
-#: ../Pinta.Gui.Addins/InstallDialog.cs:353
+#: ../Pinta.Gui.Addins/InstallDialog.cs:369
 msgid "The installation has completed with warnings."
 msgstr "Установка завершилась с предупреждениями."
 
-#: ../Pinta.Gui.Addins/InstallDialog.cs:52
+#: ../Pinta/Dialogs/PreferencesDialog.cs:210
+msgid ""
+"The row of icon buttons below the menu bar (New, Open, Save, Undo, Redo, "
+"Cut, Copy, Paste, and so on)."
+msgstr ""
+
+#: ../Pinta.Gui.Addins/InstallDialog.cs:62
 msgid ""
 "The selected extension packages can't be installed because there are "
 "dependency conflicts."
@@ -2612,15 +3685,15 @@ msgstr ""
 "Выбранные пакеты расширений не могут быть установлены из-за конфликтов "
 "зависимостей."
 
-#: ../Pinta.Gui.Addins/InstallDialog.cs:359
+#: ../Pinta.Gui.Addins/InstallDialog.cs:375
 msgid "The uninstallation failed!"
 msgstr "Удаление закончилось неудачей!"
 
-#: ../Pinta.Gui.Addins/InstallDialog.cs:360
+#: ../Pinta.Gui.Addins/InstallDialog.cs:376
 msgid "The uninstallation has completed with warnings."
 msgstr "Удаление завершилось с предупреждениями."
 
-#: ../Pinta.Gui.Addins/InstallDialog.cs:241
+#: ../Pinta.Gui.Addins/InstallDialog.cs:257
 msgid ""
 "There are other extension packages that depend on the previous ones which "
 "will also be uninstalled:"
@@ -2632,14 +3705,39 @@ msgstr ""
 msgid "Thickness"
 msgstr "Толщина"
 
+#: ../Pinta.Tools/Tools/TextTool.cs:585
+msgid "Thickness of the text outline, in pixels."
+msgstr "Толщина контура текста в пикселях."
+
 #. Translators: 'Thin' (100) refers to the font-weight text property
-#: ../Pinta.Tools/Tools/TextTool.cs:260
+#: ../Pinta.Tools/Tools/TextTool.cs:396
 msgid "Thin"
 msgstr "Тонкий"
 
-#: ../Pinta/Actions/File/SaveDocumentImplementationAction.cs:269
+#: ../Pinta/Actions/Help/AboutDialogAction.cs:85
+#: ../Pinta/Actions/Help/AboutDialogAction.cs:113
+#: ../Pinta/Actions/Help/AboutDialogAction.cs:132
+msgid "Third-Party Notices"
+msgstr ""
+
+#: ../Pinta/Dialogs/PreferencesDialog.cs:403
+msgid "This does not look like a valid settings file."
+msgstr ""
+
+#: ../Pinta/Dialogs/PreferencesDialog.cs:450
+msgid ""
+"This file also contains keyboard shortcut overrides. Importing them will "
+"overwrite your current keyboard-shortcuts.json."
+msgstr ""
+
+#: ../Pinta/Actions/File/SaveDocumentImplementationAction.cs:279
 msgid "This format does not support layers. Flatten image?"
 msgstr "Этот формат не поддерживает слои. Свести изображение?"
+
+#: ../Pinta/Actions/Help/KeyboardShortcutsDialogAction.cs:107
+msgid ""
+"This resets every command, tool, and tool binding shortcut to its default."
+msgstr ""
 
 #: ../Pinta.Effects/Effects/TileEffect.cs:28
 msgid "Tile Reflection"
@@ -2658,43 +3756,72 @@ msgid "Tip: Right-click to remove control points."
 msgstr "Подсказка: Нажмите правую кнопку мыши, чтобы убрать контрольные точки."
 
 #. Translators: 'Title Caps' refers to the font-variant text property
-#: ../Pinta.Tools/Tools/TextTool.cs:220
+#: ../Pinta.Tools/Dialogs/TextPropertiesDialog.cs:261
+#: ../Pinta.Tools/Tools/TextTool.cs:362
 msgid "Title Caps"
 msgstr "Заголовочный регистр"
+
+#: ../Pinta.Core/Managers/KeyboardShortcutManager.cs:147
+msgid "Toggle bold"
+msgstr ""
+
+#: ../Pinta.Core/Managers/KeyboardShortcutManager.cs:141
+msgid "Toggle italic"
+msgstr ""
+
+#: ../Pinta.Core/Managers/KeyboardShortcutManager.cs:153
+msgid "Toggle underline"
+msgstr ""
 
 #: ../Pinta.Effects/Effects/FeatherEffect.cs:171
 #: ../Pinta.Effects/Effects/OutlineObjectEffect.cs:208
 #: ../Pinta.Effects/Effects/RedEyeRemoveEffect.cs:53
 #: ../Pinta.Tools/Tools/FloodTool.cs:122
-#: ../Pinta.Tools/Tools/RecolorTool.cs:196
+#: ../Pinta.Tools/Tools/RecolorTool.cs:197
 msgid "Tolerance"
 msgstr "Чувствительность"
 
-#: ../Pinta.Core/Managers/ToolManager.cs:351
+#: ../Pinta.Core/Managers/ToolManager.cs:535
 msgid "Tool"
 msgstr "Инструмент"
 
-#: ../Pinta.Core/Actions/ViewActions.cs:143
+#: ../Pinta.Core/Actions/ViewActions.cs:154
 msgid "Tool Box"
 msgstr "Инструменты"
 
-#: ../Pinta.Core/Actions/ViewActions.cs:118
+#: ../Pinta/Actions/Help/KeyboardShortcutsDialogAction.cs:167
+msgid "Tool Specific"
+msgstr ""
+
+#: ../Pinta.Core/Actions/ViewActions.cs:122
 msgid "Tool Windows"
 msgstr "Инструментальные окна"
 
-#: ../Pinta.Core/Actions/ViewActions.cs:106
+#: ../Pinta.Core/Actions/ViewActions.cs:110
 msgid "Toolbar"
 msgstr "Панель инструментов"
 
-#: ../Pinta.Effects/Dialogs/Effects.AlignmentDialog.cs:29
+#: ../Pinta/Actions/Help/KeyboardShortcutsDialogAction.cs:163
+msgid "Tools"
+msgstr "Инструменты"
+
+#: ../Pinta/Dialogs/PreferencesDialog.cs:194
+msgid ""
+"Tools fill one column instead of the sectioned 2-column grid, overflowing "
+"into another column once it runs out of vertical space. Requires a restart."
+msgstr ""
+"Инструменты заполняют один узкий столбец и переходят в следующий, когда "
+"заканчивается вертикальное пространство. Требуется перезапуск."
+
+#: ../Pinta.Effects/Dialogs/Effects.AlignmentDialog.cs:34
 msgid "Top Center"
 msgstr "Центрировать по верхнему краю"
 
-#: ../Pinta.Effects/Dialogs/Effects.AlignmentDialog.cs:28
+#: ../Pinta.Effects/Dialogs/Effects.AlignmentDialog.cs:33
 msgid "Top Left"
 msgstr "По верхнему краю влево"
 
-#: ../Pinta.Effects/Dialogs/Effects.AlignmentDialog.cs:30
+#: ../Pinta.Effects/Dialogs/Effects.AlignmentDialog.cs:35
 msgid "Top Right"
 msgstr "По верхнему краю вправо"
 
@@ -2702,18 +3829,70 @@ msgstr "По верхнему краю вправо"
 msgid "Transfer Map"
 msgstr "Канал"
 
+#: ../Pinta.Core/Managers/KeyboardShortcutManager.cs:331
+#: ../Pinta.Core/Managers/KeyboardShortcutManager.cs:337
+#: ../Pinta.Core/Managers/KeyboardShortcutManager.cs:343
+#: ../Pinta.Core/Managers/KeyboardShortcutManager.cs:349
+#: ../Pinta.Core/Managers/KeyboardShortcutManager.cs:355
+#: ../Pinta.Core/Managers/KeyboardShortcutManager.cs:361
+#: ../Pinta.Core/Managers/KeyboardShortcutManager.cs:367
+#: ../Pinta.Core/Managers/KeyboardShortcutManager.cs:373
+#: ../Pinta.Core/Managers/KeyboardShortcutManager.cs:379
+#: ../Pinta.Core/Managers/KeyboardShortcutManager.cs:385
+#: ../Pinta.Core/Managers/KeyboardShortcutManager.cs:391
+#: ../Pinta.Core/Managers/KeyboardShortcutManager.cs:397
+#: ../Pinta.Core/Managers/KeyboardShortcutManager.cs:403
+#: ../Pinta.Core/Managers/KeyboardShortcutManager.cs:409
+#: ../Pinta.Core/Managers/KeyboardShortcutManager.cs:415
+#: ../Pinta.Core/Managers/KeyboardShortcutManager.cs:421
+msgid "Transform Tools"
+msgstr ""
+
+#: ../Pinta.Tools/Tools/GradientTool.cs:331
+msgid "Transition between the primary and secondary colors."
+msgstr "Переход между основным и вторичным цветами."
+
+#: ../Pinta.Tools/Tools/GradientTool.cs:332
+msgid "Transition the primary color from opaque to transparent."
+msgstr "Переход основного цвета от непрозрачного к прозрачному."
+
+#: ../Pinta.Tools/Tools/GradientTool.cs:297
+msgid "Transitions colors in a straight line between the two endpoints."
+msgstr "Переход цветов по прямой линии между двумя конечными точками."
+
+#: ../Pinta.Tools/Tools/GradientTool.cs:301
+msgid "Transitions colors in a sweep around the start point."
+msgstr "Переход цветов по дуге вокруг начальной точки."
+
+#: ../Pinta.Tools/Tools/GradientTool.cs:300
+msgid "Transitions colors outward from the start point in a circle."
+msgstr "Переход цветов от начальной точки наружу по кругу."
+
+#: ../Pinta.Tools/Tools/GradientTool.cs:299
+msgid "Transitions colors outward from the start point in a diamond shape."
+msgstr "Переход цветов от начальной точки наружу в форме ромба."
+
 #: ../Pinta.Core/Actions/HelpActions.cs:65
 msgid "Translate This Application"
 msgstr "Перевести это приложение"
 
-#: ../Pinta.Tools/Tools/GradientTool.cs:329
+#: ../Pinta.Tools/Tools/GradientTool.cs:332
 msgid "Transparency Mode"
 msgstr "Прозрачный режим"
 
+#: ../Pinta/Dialogs/NewImageDialog.cs:128
 #: ../Pinta.Effects/Classes/EdgeBehavior.cs:22
-#: ../Pinta/Dialogs/NewImageDialog.cs:137
 msgid "Transparent"
 msgstr "Прозрачный"
+
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:96
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:442
+msgid "Triangle"
+msgstr ""
+
+#: ../Pinta.Core/Managers/KeyboardShortcutManager.cs:323
+msgid "Triangle Tool"
+msgstr ""
 
 #: ../Pinta.Effects/Effects/DentsEffect.cs:147
 msgid "Turbulence"
@@ -2729,48 +3908,62 @@ msgid "Two-Row Sierra"
 msgstr "Двухрядный алгоритм Сьерры"
 
 #: ../Pinta.Tools/Tools/EraserTool.cs:332
-#: ../Pinta.Tools/Tools/PaintBrushTool.cs:228
+#: ../Pinta.Tools/Tools/PaintBrushTool.cs:229
 msgid "Type"
 msgstr "Тип"
 
+#: ../Pinta/Dialogs/PreferencesDialog.cs:247
+msgid "UI"
+msgstr "Интерфейс"
+
 #. Translators: 'Ultrabold' (800) refers to the font-weight text property
-#: ../Pinta.Tools/Tools/TextTool.cs:314
+#: ../Pinta.Tools/Tools/TextTool.cs:450
 msgid "Ultrabold"
 msgstr "Ультражирный"
 
 #. Translators: 'Ultraheavy' (1000) refers to the font-weight text property
-#: ../Pinta.Tools/Tools/TextTool.cs:326
+#: ../Pinta.Tools/Tools/TextTool.cs:462
 msgid "Ultraheavy"
 msgstr "Ультратяжёлый"
 
 #. Translators: 'Ultralight' (200) refers to the font-weight text property
-#: ../Pinta.Tools/Tools/TextTool.cs:266
+#: ../Pinta.Tools/Tools/TextTool.cs:402
 msgid "Ultralight"
 msgstr "Сверхлёгкий"
 
-#: ../Pinta.Tools/Tools/TextTool.cs:352
+#: ../Pinta.Tools/Dialogs/TextPropertiesDialog.cs:206
+#: ../Pinta.Tools/Tools/TextTool.cs:487
 msgid "Underline"
 msgstr "Подчёркнутый"
 
-#: ../Pinta.Core/Actions/EditActions.cs:71
+#: ../Pinta.Core/Actions/EditActions.cs:83
 msgid "Undo"
 msgstr "Отменить"
+
+#: ../Pinta.Core/Managers/KeyboardShortcutManager.cs:62
+msgid "Undo last point"
+msgstr ""
+
+#: ../Pinta.Core/Managers/KeyboardShortcutManager.cs:135
+msgid "Undo last text edit"
+msgstr ""
 
 #: ../Pinta.Effects/Effects/UnfocusEffect.cs:23
 msgid "Unfocus"
 msgstr "Расфокусировка"
 
 #. Translators: 'Unicase' refers to the font-variant text property
-#: ../Pinta.Tools/Tools/TextTool.cs:214
+#: ../Pinta.Tools/Dialogs/TextPropertiesDialog.cs:260
+#: ../Pinta.Tools/Tools/TextTool.cs:355
 msgid "Unicase"
 msgstr "С унифицированной высотой букв"
 
-#: ../Pinta.Gui.Addins/InstallDialog.cs:216
-#: ../Pinta.Gui.Addins/InstallDialog.cs:217
+#: ../Pinta.Gui.Addins/InstallDialog.cs:232
+#: ../Pinta.Gui.Addins/InstallDialog.cs:233
 msgid "Uninstall"
 msgstr "Удаление"
 
-#: ../Pinta.Gui.Addins/AddinInfoView.cs:185
+#: ../Pinta.Gui.Addins/AddinInfoView.cs:209
 msgid "Uninstall..."
 msgstr "Удалить..."
 
@@ -2779,6 +3972,10 @@ msgstr "Удалить..."
 #, csharp-format
 msgid "Union (+) ({0} + Left Click)"
 msgstr "Соединить (+) ({0} + Левая кнопка мыши)"
+
+#: ../Pinta.Gui.Widgets/Widgets/ToolBoxWidget.cs:468
+msgid "Unpin this item"
+msgstr ""
 
 #: ../Pinta.Core/Classes/Document.cs:102
 #, csharp-format
@@ -2789,15 +3986,15 @@ msgstr "Несохранённое изображение {0}"
 msgid "Unsupported file format"
 msgstr "Неподдерживаемый формат файла"
 
-#: ../Pinta.Core/Actions/EditActions.cs:510
+#: ../Pinta.Core/Actions/EditActions.cs:637
 msgid "Unsupported palette format"
 msgstr "Неподдерживаемый формат палитры"
 
-#: ../Pinta.Gui.Addins/AddinInfoView.cs:176
+#: ../Pinta.Gui.Addins/AddinInfoView.cs:200
 msgid "Update..."
 msgstr "Обновить..."
 
-#: ../Pinta.Gui.Addins/AddinManagerDialog.cs:88
+#: ../Pinta.Gui.Addins/AddinManagerDialog.cs:105
 msgid "Updates"
 msgstr "Обновления"
 
@@ -2810,15 +4007,20 @@ msgstr ""
 "изображений и малых углов. Используйте высокое качество для финального "
 "варианта, больших изображений и больших углов."
 
-#: ../Pinta/Actions/Help/AboutDialogAction.cs:98
-msgid "Using some icons from:"
-msgstr "Использованы некоторые значки из:"
+#: ../Pinta/Dialogs/PreferencesDialog.cs:193
+msgid "Use thin column toolbox layout"
+msgstr "Использовать узкоколоночный макет панели инструментов"
 
-#: ../Pinta.Gui.Widgets/Widgets/ColorPickerSlider.cs:336
+#: ../Pinta.Tools/Tools/TextTool.cs:365
+msgid "Uses title-specific capital letter forms where available."
+msgstr ""
+"Использует специальные заголовочные формы прописных букв, если они доступны."
+
+#: ../Pinta.Gui.Widgets/Widgets/ColorPickerSlider.cs:360
 msgid "Value"
 msgstr "Значение"
 
-#: ../Pinta.Gui.Addins/AddinInfoView.cs:214
+#: ../Pinta.Gui.Addins/AddinInfoView.cs:238
 #, csharp-format
 msgid "Version: {0}"
 msgstr "Версия: {0}"
@@ -2838,7 +4040,8 @@ msgstr "По вертикали, от зелёного (G)"
 msgid "Vertical red (R)"
 msgstr "По вертикали, от красного (R)"
 
-#: ../Pinta/MainWindow.cs:461
+#: ../Pinta/Actions/Help/KeyboardShortcutsDialogAction.cs:179
+#: ../Pinta/MainWindow.cs:486
 msgid "View"
 msgstr "Вид"
 
@@ -2847,7 +4050,7 @@ msgstr "Вид"
 msgid "Vignette"
 msgstr "Виньетирование"
 
-#: ../Pinta/Dialogs/LayerPropertiesDialog.cs:78
+#: ../Pinta/Dialogs/LayerPropertiesDialog.cs:70
 msgid "Visible"
 msgstr "Видимый"
 
@@ -2859,28 +4062,41 @@ msgstr "Диаграмма Вороного"
 msgid "Warmth"
 msgstr "Теплота"
 
-#: ../Pinta/Dialogs/NewImageDialog.cs:118
+#: ../Pinta/Dialogs/PreferencesDialog.cs:202
+msgid ""
+"When the window is too narrow for all of the current tool's settings, they "
+"continue on another row instead of scrolling horizontally."
+msgstr ""
+
+#: ../Pinta/Dialogs/NewImageDialog.cs:109
 msgid "White"
 msgstr "Белый"
 
-#: ../Pinta/Dialogs/CanvasGridSettingsDialog.cs:78
-#: ../Pinta/Dialogs/CanvasGridSettingsDialog.cs:88
-#: ../Pinta/Dialogs/NewImageDialog.cs:320
-#: ../Pinta/Dialogs/ResizeCanvasDialog.cs:73
+#: ../Pinta/Dialogs/CanvasGridSettingsDialog.cs:95
+#: ../Pinta/Dialogs/CanvasGridSettingsDialog.cs:105
+#: ../Pinta/Dialogs/NewImageDialog.cs:340
+#: ../Pinta/Dialogs/PreferencesDialog.cs:116
+#: ../Pinta/Dialogs/ResizeCanvasDialog.cs:80
 #: ../Pinta/Dialogs/ResizeImageDialog.cs:123
 msgid "Width:"
 msgstr "Ширина:"
 
-#: ../Pinta.Core/Actions/ViewActions.cs:208
-#: ../Pinta.Core/Actions/ViewActions.cs:396
+#: ../Pinta/Actions/Help/KeyboardShortcutsDialogAction.cs:183
+#: ../Pinta.Core/Actions/ViewActions.cs:239
+#: ../Pinta.Core/Actions/ViewActions.cs:433
 #: ../Pinta.Core/Classes/DocumentWorkspace.cs:357
 #: ../Pinta.Core/Classes/DocumentWorkspace.cs:366
+#: ../Pinta.Core/Managers/KeyboardShortcutManager.cs:243
 msgid "Window"
 msgstr "Окно"
 
 #: ../Pinta.Effects/Classes/EdgeBehavior.cs:10
 msgid "Wrap"
 msgstr "Заворачивать"
+
+#: ../Pinta/Dialogs/PreferencesDialog.cs:201
+msgid "Wrap tool settings onto extra rows"
+msgstr ""
 
 #: ../Pinta.Core/Algorithms/PixelOps/UserBlendOps.cs:40
 msgid "Xor"
@@ -2899,7 +4115,7 @@ msgid "You do not have access to '{0}'."
 msgstr "У вас нет доступа к '{0}'."
 
 #. Translators: {0} is the name of a file that the user does not have write permission for.
-#: ../Pinta/Actions/File/SaveDocumentImplementationAction.cs:237
+#: ../Pinta/Actions/File/SaveDocumentImplementationAction.cs:247
 #, csharp-format
 msgid ""
 "You do not have access to modify '{0}'. The file or folder may be read-only."
@@ -2907,10 +4123,10 @@ msgstr ""
 "У вас нет доступа для изменения '{0}'. Файл или папка могут быть доступны "
 "только для чтения."
 
+#: ../Pinta/Actions/Layers/RotateZoomLayerAction.cs:151
 #: ../Pinta.Effects/Effects/JuliaFractalEffect.cs:151
 #: ../Pinta.Effects/Effects/MandelbrotFractalEffect.cs:164
 #: ../Pinta.Tools/Tools/ZoomTool.cs:56
-#: ../Pinta/Actions/Layers/RotateZoomLayerAction.cs:151
 msgid "Zoom"
 msgstr "Масштабирование"
 
@@ -2918,28 +4134,28 @@ msgstr "Масштабирование"
 msgid "Zoom Blur"
 msgstr "Размытие с увеличением"
 
-#: ../Pinta.Core/Actions/ViewActions.cs:72
+#: ../Pinta.Core/Actions/ViewActions.cs:76
 msgid "Zoom In"
 msgstr "Крупнее"
 
-#: ../Pinta.Core/Actions/ViewActions.cs:79
+#: ../Pinta.Core/Actions/ViewActions.cs:83
 msgid "Zoom Out"
 msgstr "Мельче"
 
-#: ../Pinta.Core/Actions/ViewActions.cs:93
+#: ../Pinta.Core/Actions/ViewActions.cs:97
 msgid "Zoom to Selection"
 msgstr "По размеру выделения"
 
-#: ../Pinta/MainWindow.cs:398
+#: ../Pinta/MainWindow.cs:417
 msgid "_Adjustments"
 msgstr "_Коррекция"
 
-#: ../Pinta.Core/Extensions/Gtk/GtkExtensions.Widget.cs:220
-#: ../Pinta.Core/Extensions/Gtk/GtkExtensions.Widget.cs:222
-#: ../Pinta/Actions/Edit/PasteAction.cs:222
+#: ../Pinta/Actions/Edit/PasteAction.cs:224
 #: ../Pinta/Actions/File/CloseDocumentAction.cs:83
-#: ../Pinta/Actions/File/SaveDocumentImplementationAction.cs:273
-#: ../Pinta/Dialogs/ProgressDialog.cs:68
+#: ../Pinta/Actions/File/SaveDocumentImplementationAction.cs:283
+#: ../Pinta.Core/Extensions/Gtk/GtkExtensions.Widget.cs:250
+#: ../Pinta.Core/Extensions/Gtk/GtkExtensions.Widget.cs:252
+#: ../Pinta/Dialogs/ProgressDialog.cs:71
 msgid "_Cancel"
 msgstr "_Отменить"
 
@@ -2947,26 +4163,26 @@ msgstr "_Отменить"
 msgid "_Discard"
 msgstr "_Не сохранять"
 
-#: ../Pinta/MainWindow.cs:394
+#: ../Pinta/MainWindow.cs:413
 msgid "_Edit"
 msgstr "_Правка"
 
-#: ../Pinta/MainWindow.cs:393
+#: ../Pinta/MainWindow.cs:412
 msgid "_File"
 msgstr "_Файл"
 
-#: ../Pinta/MainWindow.cs:403
+#: ../Pinta/MainWindow.cs:422
 msgid "_Help"
 msgstr "_Справка"
 
-#: ../Pinta/MainWindow.cs:397
+#: ../Pinta/MainWindow.cs:416
 msgid "_Image"
 msgstr "_Изображение"
 
-#: ../Pinta.Core/Extensions/Gtk/GtkExtensions.Widget.cs:219
-#: ../Pinta.Core/Extensions/Gtk/GtkExtensions.Widget.cs:223
-#: ../Pinta.Gui.Addins/InstallDialog.cs:204 ../Pinta/Dialogs/ErrorDialog.cs:44
-#: ../Pinta/Dialogs/ErrorDialog.cs:73
+#: ../Pinta.Core/Extensions/Gtk/GtkExtensions.Widget.cs:249
+#: ../Pinta.Core/Extensions/Gtk/GtkExtensions.Widget.cs:253
+#: ../Pinta/Dialogs/ErrorDialog.cs:44 ../Pinta/Dialogs/ErrorDialog.cs:73
+#: ../Pinta.Gui.Addins/InstallDialog.cs:220
 msgid "_OK"
 msgstr "_ОК"
 
@@ -2974,34 +4190,40 @@ msgstr "_ОК"
 msgid "_Save"
 msgstr "_Сохранить"
 
-#: ../Pinta/MainWindow.cs:396
+#: ../Pinta/MainWindow.cs:415
 msgid "_View"
 msgstr "_Вид"
 
-#: ../Pinta/MainWindow.cs:402
+#: ../Pinta/MainWindow.cs:421
 msgid "_Window"
 msgstr "_Окно"
 
-#: ../Pinta/Actions/Help/AboutDialogAction.cs:82
+#: ../Pinta/Actions/Help/AboutDialogAction.cs:105
 msgid "by Pinta contributors"
 msgstr "разработчики Pinta"
 
-#: ../xdg/com.github.PintaProject.Pinta.desktop.in.h:5
+#: ../xdg/com.github.Impasto.Impasto.desktop.in.h:5
 msgid "draw;drawing;paint;painting;graphics;raster;2d;"
 msgstr "draw;drawing;paint;painting;graphics;raster;2d;рисовать;рисунок;пейнт;живопись;графика;растр;"
 
-#: ../Pinta/Dialogs/CanvasGridSettingsDialog.cs:80
-#: ../Pinta/Dialogs/CanvasGridSettingsDialog.cs:84
-#: ../Pinta/Dialogs/CanvasGridSettingsDialog.cs:90
-#: ../Pinta/Dialogs/NewImageDialog.cs:272
-#: ../Pinta/Dialogs/ResizeCanvasDialog.cs:104
-#: ../Pinta/Dialogs/ResizeCanvasDialog.cs:108
-#: ../Pinta/Dialogs/ResizeImageDialog.cs:136
-#: ../Pinta/Dialogs/ResizeImageDialog.cs:140
+#: ../Pinta.Core/ImageFormats/PdnFormat.cs:136
+msgid "name"
+msgstr ""
+
+#: ../Pinta/Dialogs/CanvasGridSettingsDialog.cs:97
+#: ../Pinta/Dialogs/CanvasGridSettingsDialog.cs:101
+#: ../Pinta/Dialogs/CanvasGridSettingsDialog.cs:107
+#: ../Pinta/Dialogs/NewImageDialog.cs:288
+#: ../Pinta/Dialogs/PreferencesDialog.cs:118
+#: ../Pinta/Dialogs/PreferencesDialog.cs:123
+#: ../Pinta/Dialogs/ResizeCanvasDialog.cs:106
+#: ../Pinta/Dialogs/ResizeCanvasDialog.cs:110
+#: ../Pinta/Dialogs/ResizeImageDialog.cs:135
+#: ../Pinta/Dialogs/ResizeImageDialog.cs:139
 msgid "pixels"
 msgstr "пикселей"
 
-#: ../Pinta/Actions/Help/AboutDialogAction.cs:73
+#: ../Pinta/Actions/Help/AboutDialogAction.cs:96
 msgid "translator-credits"
 msgstr ""
 "Launchpad Contributions:\n"
@@ -3037,20 +4259,45 @@ msgstr ""
 "  Дмитрий https://launchpad.net/~dimon4ezz\n"
 "  ☠Jay ZDLin☠ https://launchpad.net/~black-buddha666"
 
+#: ../Pinta/Actions/Help/KeyboardShortcutsDialogAction.cs:238
+#, csharp-format
+msgid "{0} (Alternate {1})"
+msgstr ""
+
+#: ../Pinta/Actions/Help/KeyboardShortcutsDialogAction.cs:237
+#, csharp-format
+msgid "{0} (Alternate)"
+msgstr ""
+
 #. Translators: {0} is 'Ctrl', or a platform-specific key such as 'Command' on macOS.
-#: ../Pinta.Tools/Tools/CloneStampTool.cs:58
+#: ../Pinta.Tools/Tools/CloneStampTool.cs:69
 #, csharp-format
 msgid "{0} + left click to set origin, left click to paint."
 msgstr ""
 "{0} + щелчок левой кнопкой мыши для установки основы, левой кнопкой мыши "
 "рисовать."
 
-#. Translators: this is the auto-generated name for a duplicated layer.
-#. {0} is the name of the source layer. Example: "Layer 3 copy".
-#: ../Pinta.Core/Classes/DocumentLayers.cs:205
+#: ../Pinta.Tools/Tools/HealingBrushTool.cs:87
+#, csharp-format
+msgid ""
+"{0} + left click to set source, left click drag to heal. Tooltip: blends "
+"texture from source with destination color."
+msgstr ""
+
+#: ../Pinta.Core/Classes/DocumentLayers.cs:249
 #, csharp-format
 msgid "{0} copy"
 msgstr "{0} копия"
+
+#: ../Pinta.Core/Classes/DocumentLayers.cs:251
+#, csharp-format
+msgid "{0} copy (1)"
+msgstr ""
+
+#: ../Pinta.Core/Classes/DocumentLayers.cs:252
+#, csharp-format
+msgid "{0} copy ({1})"
+msgstr ""
 
 #: ../Pinta.Core/ImageFormats/FormatDescriptor.cs:122
 #, csharp-format
@@ -3063,73 +4310,118 @@ msgstr "Изображение {0} ({1})"
 msgid "{0} palette ({1})"
 msgstr "{0} палитра ({1})"
 
+#: ../Pinta.Tools/Tools/TextTool.cs:2616
+#, csharp-format
+msgid "{0} to edit"
+msgstr ""
+
+#: ../Pinta.Tools/Tools/TextTool.cs:2617
+#, csharp-format
+msgid "{0} to open text properties"
+msgstr ""
+
+#: ../Pinta.Tools/Tools/TextTool.cs:2626
+#, csharp-format
+msgid "{0} to rotate"
+msgstr ""
+
 #. Translators: This specifies the format of the zoom percentage choices
 #. in the toolbar.
-#: ../Pinta.Core/Actions/ViewActions.cs:377
+#: ../Pinta.Core/Actions/ViewActions.cs:414
 #, csharp-format
 msgid "{0}%"
 msgstr "{0}%"
 
-#. Translators: This mode shows every contextual popover hint in the UI.
-#. AI-generated translation; human review requested.
-msgid "All"
-msgstr "Все"
+#~ msgid "Based on the work of Paint.NET:"
+#~ msgstr "Основано на Paint.NET:"
 
-#. Translators: This mode shows only contextual hints tied to a specific tool.
-#. AI-generated translation; human review requested.
-msgid "Essential"
-msgstr "Основные"
+#~ msgid "If enabled, the Value component is applied to the color wheel."
+#~ msgstr ""
+#~ "Если этот параметр включён, к цветовому кругу будет применён компонент "
+#~ "«Значение»."
 
-#. Translators: This mode disables contextual popover hints in the UI.
-#. AI-generated translation; human review requested.
-msgid "None"
-msgstr "Нет"
+#~ msgid "Image Editor"
+#~ msgstr "Графический редактор"
 
-#. Translators: Tooltip explaining the All popover-hint mode.
-#. AI-generated translation; human review requested.
-msgid "Show all UI popover hints."
-msgstr "Показывать все всплывающие подсказки интерфейса."
+#~ msgid "JPEG Quality"
+#~ msgstr "Качество JPEG"
 
-#. Translators: Tooltip explaining the Essential popover-hint mode.
-#. AI-generated translation; human review requested.
-msgid "Show only essential tool hints."
-msgstr "Показывать только основные подсказки инструментов."
+#~ msgid ""
+#~ "Left click to place cursor, then type desired text. Text color is primary "
+#~ "color."
+#~ msgstr ""
+#~ "Щёлкните левой кнопкой мыши, чтобы поместить курсор, затем наберите "
+#~ "нужный текст. Текст раскрашивается основным цветом."
 
-#. Translators: Tooltip explaining the None popover-hint mode.
-#. AI-generated translation; human review requested.
-msgid "Hide all UI popover hints."
-msgstr "Скрывать все всплывающие подсказки интерфейса."
+#~ msgid "License"
+#~ msgstr "Лицензия"
 
-#. Translators: Describes the three available popover-hint display modes.
-#. AI-generated translation; human review requested.
-msgid ""
-"All: show all UI hints. Essential: show only specific tool hints. None: turn "
-"off UI popover hints."
-msgstr ""
-"Все: показывать все подсказки интерфейса. Основные: показывать только "
-"подсказки определённых инструментов. Нет: отключить всплывающие подсказки "
-"интерфейса."
+#~ msgid "Pinta"
+#~ msgstr "Pinta"
 
-#. Translators: Label for the popover-hint mode setting.
-#. AI-generated translation; human review requested.
-msgid "Popover hints:"
-msgstr "Всплывающие подсказки:"
+#~ msgid "Pinta Image Editor"
+#~ msgstr "Редактор изображений Pinta"
 
-#. Translators: Preferences tab containing user-interface settings.
-#. AI-generated translation; human review requested.
-msgid "UI"
-msgstr "Интерфейс"
+#~ msgid ""
+#~ "Pinta is a image editing, drawing and painting application with a simple "
+#~ "yet powerful interface. Pinta has a wide range of drawing tools, "
+#~ "including: freehand, rectangles, circles and lines. It also has over 35 "
+#~ "effects to apply to your images, and also has the ability to create "
+#~ "unlimited layers to help organize your creativity."
+#~ msgstr ""
+#~ "Pinta - это приложение для редактирования изображений, рисования и "
+#~ "раскрашивания с простым, но мощным интерфейсом. Pinta имеет широкий набор "
+#~ "инструментов для рисования, в том числе: рисование от руки, "
+#~ "прямоугольники, круги и линии. Также редактор имеет более 35 эффектов для "
+#~ "применения к вашим изображениям, а также имеет возможность создавать "
+#~ "неограниченное количество слоев, чтобы помочь организовать ваше "
+#~ "творчество."
 
-#. Translators: Confirmation title shown before resetting UI preferences.
-#. AI-generated translation; human review requested.
-msgid "Reset UI Settings?"
-msgstr "Сбросить настройки интерфейса?"
+#~ msgid "Pinta supports the following file formats:"
+#~ msgstr "Pinta поддерживает следующие форматы файлов:"
 
-#. Translators: Explains that resetting UI preferences restores all popover hints.
-#. AI-generated translation; human review requested.
-msgid "This resets popover hints to show all UI hints."
-msgstr ""
-"Это сбросит всплывающие подсказки, чтобы показывать все подсказки интерфейса."
+#~ msgid "Released under the MIT X11 License."
+#~ msgstr "Распространяется под лицензией MIT X11."
+
+#~ msgid "Show Value"
+#~ msgstr "Показать значение"
+
+#~ msgid "Text - Finalize"
+#~ msgstr "Текст - Завершить"
+
+#~ msgid "Using some icons from:"
+#~ msgstr "Использованы некоторые значки из:"
+
+#~ msgid "All"
+#~ msgstr "Все"
+
+#~ msgid "Essential"
+#~ msgstr "Основные"
+
+#~ msgid "Show all UI popover hints."
+#~ msgstr "Показывать все всплывающие подсказки интерфейса."
+
+#~ msgid "Show only essential tool hints."
+#~ msgstr "Показывать только основные подсказки инструментов."
+
+#~ msgid "Hide all UI popover hints."
+#~ msgstr "Скрывать все всплывающие подсказки интерфейса."
+
+#~ msgid ""
+#~ "All: show all UI hints. Essential: show only specific tool hints. None: "
+#~ "turn off UI popover hints."
+#~ msgstr ""
+#~ "Все: показывать все подсказки интерфейса. Основные: показывать только "
+#~ "подсказки определённых инструментов. Нет: отключить всплывающие подсказки "
+#~ "интерфейса."
+
+#~ msgid "Reset UI Settings?"
+#~ msgstr "Сбросить настройки интерфейса?"
+
+#~ msgid "This resets popover hints to show all UI hints."
+#~ msgstr ""
+#~ "Это сбросит всплывающие подсказки, чтобы показывать все подсказки "
+#~ "интерфейса."
 
 #, csharp-format
 #~ msgid "Press {0} to decrease brush size"
@@ -3537,9 +4829,6 @@ msgstr ""
 #~ msgid "Report Bug...."
 #~ msgstr "Сообщить об ошибке..."
 
-#~ msgid "Open Recent"
-#~ msgstr "Открыть недавние"
-
 #~ msgid "Hide"
 #~ msgstr "Скрыть"
 
@@ -3591,9 +4880,6 @@ msgstr ""
 
 #~ msgid "Undock"
 #~ msgstr "Отделить"
-
-#~ msgid "Tools"
-#~ msgstr "Инструменты"
 
 #~ msgid "Copy Version Info"
 #~ msgstr "Копировать информацию о версии"
@@ -3672,246 +4958,5 @@ msgstr ""
 #~ msgid "Show this message and exit."
 #~ msgstr "Показать это сообщение и выйти."
 
-#. Translators: Tooltip for the checkbox showing/hiding the arrowhead at the start of a line or curve.
-#. AI-generated translation; human review requested.
-msgid "Show an arrowhead at the start point."
-msgstr "Показывать наконечник стрелки в начальной точке."
-
-#. Translators: Tooltip for the checkbox showing/hiding the arrowhead at the end of a line or curve.
-#. AI-generated translation; human review requested.
-msgid "Show an arrowhead at the end point."
-msgstr "Показывать наконечник стрелки в конечной точке."
-
-#. Translators: Tooltip for the arrowhead size spin button.
-#. AI-generated translation; human review requested.
-msgid "Length of the arrowhead, in pixels."
-msgstr "Длина наконечника стрелки в пикселях."
-
-#. Translators: Tooltip for the arrowhead angle spin button.
-#. AI-generated translation; human review requested.
-msgid "Angle, in degrees, between the arrowhead's wings and the line."
-msgstr "Угол в градусах между крыльями наконечника стрелки и линией."
-
-#. Translators: Tooltip for the arrowhead wing-length spin button.
-#. AI-generated translation; human review requested.
-msgid "Length of the arrowhead's wings; does not change the line's length."
-msgstr "Длина крыльев наконечника стрелки; не изменяет длину линии."
-
-#. Translators: Item hint for the Open Line/Curve Series shape type.
-#. AI-generated translation; human review requested.
-msgid "Draws a line or curve with a start and an end point."
-msgstr "Рисует линию или кривую с начальной и конечной точками."
-
-#. Translators: Item hint for the Ellipse shape type.
-#. AI-generated translation; human review requested.
-msgid "Draws an ellipse or circle."
-msgstr "Рисует эллипс или окружность."
-
-#. Translators: Item hint for the Rounded Line Series shape type.
-#. AI-generated translation; human review requested.
-msgid "Like Closed Line/Curve Series, but with rounded corners at each point."
-msgstr "Как «Замкнутая ломаная/кривая», но со скруглёнными углами в каждой точке."
-
-#. Translators: Item hint explaining the Curved Segments On option for shape tools.
-#. AI-generated translation; human review requested.
-msgid "Curved Segments On"
-msgstr "Скругление сегментов включено"
-
-#. Translators: Item hint explaining the Curved Segments Off option for shape tools.
-#. AI-generated translation; human review requested.
-msgid "Curved Segments Off"
-msgstr "Скругление сегментов выключено"
-
-#. Translators: Item hint for the Outline Shape fill style.
-#. AI-generated translation; human review requested.
-msgid "Draw only the shape's outline, using the primary color."
-msgstr "Рисовать только контур фигуры основным цветом."
-
-#. Translators: Item hint for the Fill Shape fill style.
-#. AI-generated translation; human review requested.
-msgid "Fill the shape's interior with the secondary color, no outline."
-msgstr "Заливать внутреннюю часть фигуры вторичным цветом без контура."
-
-#. Translators: Tooltip for the corner radius spin button on rounded shapes.
-#. AI-generated translation; human review requested.
-msgid "Corner-rounding radius, in pixels, applied at each point of the shape."
-msgstr "Радиус скругления углов в пикселях, применяемый к каждой точке фигуры."
-
-#. Translators: Item hint for the Color Picker's "Do not switch tool" option.
-#. AI-generated translation; human review requested.
-msgid "Keep using the Color Picker after a color is chosen."
-msgstr "Продолжать использовать «Пипетку» после выбора цвета."
-
-#. Translators: Item hint for the Color Picker's "Switch to previous tool" option.
-#. AI-generated translation; human review requested.
-msgid "Return to the tool that was active before the Color Picker."
-msgstr "Вернуться к инструменту, который был активен до «Пипетки»."
-
-#. Translators: Item hint for the Color Picker's "Switch to Pencil tool" option.
-#. AI-generated translation; human review requested.
-msgid "Switch to the Pencil tool, ready to draw with the picked color."
-msgstr "Переключиться на инструмент «Карандаш», готовый рисовать выбранным цветом."
-
-#. Translators: Item hint for the Color Picker's Single Pixel sample size.
-#. AI-generated translation; human review requested.
-msgid "Sample the exact color of the pixel under the pointer."
-msgstr "Считывать точный цвет пикселя под указателем."
-
-#. Translators: Item hint for the Color Picker's 3 x 3 Region sample size.
-#. AI-generated translation; human review requested.
-msgid "Average the colors in a 3 x 3 area around the pointer."
-msgstr "Усреднять цвета в области 3 × 3 вокруг указателя."
-
-#. Translators: Item hint for the Color Picker's 5 x 5 Region sample size.
-#. AI-generated translation; human review requested.
-msgid "Average the colors in a 5 x 5 area around the pointer."
-msgstr "Усреднять цвета в области 5 × 5 вокруг указателя."
-
-#. Translators: Item hint for the Color Picker's 7 x 7 Region sample size.
-#. AI-generated translation; human review requested.
-msgid "Average the colors in a 7 x 7 area around the pointer."
-msgstr "Усреднять цвета в области 7 × 7 вокруг указателя."
-
-#. Translators: Item hint for the Color Picker's 9 x 9 Region sample size.
-#. AI-generated translation; human review requested.
-msgid "Average the colors in a 9 x 9 area around the pointer."
-msgstr "Усреднять цвета в области 9 × 9 вокруг указателя."
-
-#. Translators: Item hint for the Color Picker's Layer sample scope.
-#. AI-generated translation; human review requested.
-msgid "Sample from the current layer only."
-msgstr "Считывать цвет только с текущего слоя."
-
-#. Translators: Item hint for the Color Picker's Image sample scope.
-#: ../Pinta.Tools/Tools/ColorPickerTool.cs:266
-msgid ""
-"Selects the color in view. Sample from the composited image, including all "
-"visible layers."
-msgstr ""
-"Выбирает цвет в представлении. Считывать цвет с итогового изображения, "
-"включая все видимые слои."
-
-#. Translators: Item hint for the Linear Gradient type.
-#. AI-generated translation; human review requested.
-msgid "Transitions colors in a straight line between the two endpoints."
-msgstr "Переход цветов по прямой линии между двумя конечными точками."
-
-#. Translators: Item hint for the Linear Reflected Gradient type.
-#. AI-generated translation; human review requested.
-msgid "Mirrors the linear transition on both sides of the start point."
-msgstr "Отражает линейный переход по обе стороны от начальной точки."
-
-#. Translators: Item hint for the Linear Diamond Gradient type.
-#. AI-generated translation; human review requested.
-msgid "Transitions colors outward from the start point in a diamond shape."
-msgstr "Переход цветов от начальной точки наружу в форме ромба."
-
-#. Translators: Item hint for the Radial Gradient type.
-#. AI-generated translation; human review requested.
-msgid "Transitions colors outward from the start point in a circle."
-msgstr "Переход цветов от начальной точки наружу по кругу."
-
-#. Translators: Item hint for the Conical Gradient type.
-#. AI-generated translation; human review requested.
-msgid "Transitions colors in a sweep around the start point."
-msgstr "Переход цветов по дуге вокруг начальной точки."
-
-#. Translators: Item hint for the Gradient tool's Color Mode.
-#. AI-generated translation; human review requested.
-msgid "Transition between the primary and secondary colors."
-msgstr "Переход между основным и вторичным цветами."
-
-#. Translators: Item hint for the Gradient tool's Transparency Mode.
-#. AI-generated translation; human review requested.
-msgid "Transition the primary color from opaque to transparent."
-msgstr "Переход основного цвета от непрозрачного к прозрачному."
-
-#. Translators: Item hint for the Normal font-variant option.
-#. AI-generated translation; human review requested.
-msgid "Regular upper and lower case letters."
-msgstr "Обычные прописные и строчные буквы."
-
-#. Translators: Item hint for the Small Caps font-variant option.
-#. AI-generated translation; human review requested.
-msgid "Lower case letters are replaced with smaller capital letters."
-msgstr "Строчные буквы заменяются уменьшенными прописными."
-
-#. Translators: Item hint for the Petite Caps font-variant option.
-#. AI-generated translation; human review requested.
-msgid "Like Small Caps, but the substituted capitals are slightly smaller."
-msgstr "Как «Малые прописные», но заменяющие прописные буквы немного меньше."
-
-#. Translators: Item hint for the All Petite Caps font-variant option.
-#. AI-generated translation; human review requested.
-msgid "Like All Small Caps, but the substituted capitals are slightly smaller."
-msgstr "Как «Все малые прописные», но заменяющие прописные буквы немного меньше."
-
-#. Translators: Item hint for the Title Caps font-variant option.
-#. AI-generated translation; human review requested.
-msgid "Uses title-specific capital letter forms where available."
-msgstr "Использует специальные заголовочные формы прописных букв, если они доступны."
-
-#. Translators: Item hint for the Normal text style.
-#. AI-generated translation; human review requested.
-msgid "Fill the text with the primary color."
-msgstr "Заливать текст основным цветом."
-
-#. Translators: Item hint for the Outline text style.
-#. AI-generated translation; human review requested.
-msgid "Draw only the outline of the text, using the secondary color."
-msgstr "Рисовать только контур текста вторичным цветом."
-
-#. Translators: Item hint for the Fill Background text style.
-#. AI-generated translation; human review requested.
-msgid "Fill the text's bounding box with the secondary color, behind the text."
-msgstr "Заливать ограничивающий прямоугольник текста вторичным цветом позади текста."
-
-#. Translators: Tooltip for the text outline width spin button.
-#. AI-generated translation; human review requested.
-msgid "Thickness of the text outline, in pixels."
-msgstr "Толщина контура текста в пикселях."
-
-#. Translators: Item hint for the Miter Join line join option.
-#. AI-generated translation; human review requested.
-msgid "Sharp, pointed corners on the outline."
-msgstr "Острые, заострённые углы контура."
-
-#. Translators: Item hint for the Round Join line join option.
-#. AI-generated translation; human review requested.
-msgid "Rounded corners on the outline."
-msgstr "Скруглённые углы контура."
-
-#. Translators: Item hint for the Bevel Join line join option.
-#. AI-generated translation; human review requested.
-msgid "Flattened, squared-off corners on the outline."
-msgstr "Срезанные, плоские углы контура."
-
-#. Translators: Tooltip shown while editing re-editable text, hints at the key to finish.
-#. AI-generated translation; human review requested.
-msgid "Finish typing ({0})"
-msgstr "Завершить ввод текста ({0})"
-
-#. Translators: Tooltip shown over a re-editable text object, hints at the gesture to edit it.
-#. AI-generated translation; human review requested.
-msgid "Ctrl+Click to edit"
-msgstr "Ctrl+клик для редактирования"
-
-#. Translators: Checkbox label: switches the toolbox to a layout that fills one thin column before wrapping into more.
-#. AI-generated translation; human review requested.
-msgid "Use thin column toolbox layout"
-msgstr "Использовать узкоколоночный макет панели инструментов"
-
-#. Translators: Tooltip explaining the thin-column toolbox layout option.
-#. AI-generated translation; human review requested.
-msgid "Tools fill one column instead of the sectioned 2-column grid, overflowing into another column once it runs out of vertical space. Requires a restart."
-msgstr "Инструменты заполняют один узкий столбец и переходят в следующий, когда заканчивается вертикальное пространство. Требуется перезапуск."
-
-#. Translators: Restart prompt dialog title, shown after changing the toolbox layout setting.
-#. AI-generated translation; human review requested.
-msgid "Restart Impasto"
-msgstr "Перезапустить Impasto"
-
-#. Translators: Restart prompt body explaining why a restart is needed after changing the toolbox layout.
-#. AI-generated translation; human review requested.
-msgid "Please restart Impasto for the toolbox layout change to take effect."
-msgstr "Пожалуйста, перезапустите Impasto, чтобы изменение макета панели инструментов вступило в силу."
+#~ msgid "Ctrl+Click to edit"
+#~ msgstr "Ctrl+клик для редактирования"

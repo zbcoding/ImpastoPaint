@@ -188,9 +188,9 @@ public sealed partial class ColorPickerDialog
 
 		// Show Value toggle for hue sat picker surface
 
-		Gtk.CheckButton pickerSurfaceOptionDrawValue = Gtk.CheckButton.NewWithLabel (Translations.GetString ("Show Value"));
+		Gtk.CheckButton pickerSurfaceOptionDrawValue = Gtk.CheckButton.NewWithLabel (Translations.GetString ("Show selection brightness in preview"));
 		pickerSurfaceOptionDrawValue.Active = true;
-		pickerSurfaceOptionDrawValue.TooltipText = Translations.GetString ("If enabled, the Value component is applied to the color wheel.");
+		pickerSurfaceOptionDrawValue.TooltipText = Translations.GetString ("If enabled, the hue/saturation surface is drawn at your current selection's brightness; otherwise it is shown at full brightness.");
 		pickerSurfaceOptionDrawValue.FocusOnClick = false;
 		pickerSurfaceOptionDrawValue.SetVisible (DEFAULT_PICKER_SURFACE_TYPE == ColorSurfaceType.HueAndSat);
 		pickerSurfaceOptionDrawValue.OnToggled += (o, e) => UpdateView ();

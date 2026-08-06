@@ -169,10 +169,10 @@ public sealed partial class ColorPickerPanel
 		Gtk.ToggleButton satValToggle = Gtk.ToggleButton.NewWithLabel (Translations.GetString ("Sat & Value"));
 		satValToggle.FocusOnClick = false;
 
-		show_value_check = Gtk.CheckButton.NewWithLabel (Translations.GetString ("Show Value"));
+		show_value_check = Gtk.CheckButton.NewWithLabel (Translations.GetString ("Show selection brightness in preview"));
 		show_value_check.Active = true;
 		show_value_check.FocusOnClick = false;
-		show_value_check.TooltipText = Translations.GetString ("If enabled, the Value component is applied to the color wheel.");
+		show_value_check.TooltipText = Translations.GetString ("If enabled, the hue/saturation surface is drawn at your current selection's brightness; otherwise it is shown at full brightness.");
 
 		hueSatToggle.OnToggled += (_, _) => {
 			if (!hueSatToggle.Active) return;

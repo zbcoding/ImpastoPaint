@@ -354,7 +354,7 @@ Pinta.Gui.Widgets/Widgets/ColorPanelWidget.cs
 Pinta.Gui.Widgets/Widgets/ColorPick.cs
 Pinta.Gui.Widgets/Widgets/ColorPickerDialog.cs
 Pinta.Gui.Widgets/Widgets/ColorPickerSlider.cs
-Pinta.Gui.Widgets/Widgets/ColorSlidersWidget.cs
+Pinta.Gui.Widgets/Widgets/ColorPickerPanel.cs
 Pinta.Gui.Widgets/Widgets/ColorWheelWidget.cs
 Pinta.Gui.Widgets/Widgets/ComboBoxWidget.cs
 Pinta.Gui.Widgets/Widgets/HistogramWidget.cs

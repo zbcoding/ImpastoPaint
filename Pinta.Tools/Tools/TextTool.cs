@@ -204,7 +204,7 @@ public sealed class TextTool : BaseTool
 	#region ToolBar
 	// NRT - Created by OnBuildToolBar
 	private Gtk.Label font_label = null!;
-	private Gtk.FontDialogButton font_button = null!;
+	private FontFamilyDropDown font_button = null!;
 	private ToolBarDropDownButton text_mode_btn = null!;
 	private ToolBarDropDownButton rasterize_mode_btn = null!;
 	private Gtk.Label rasterize_mode_label = null!;
@@ -291,24 +291,14 @@ public sealed class TextTool : BaseTool
 		tb.Append (font_label);
 
 		if (font_button == null) {
-			Gtk.FontDialog fontDialog = Gtk.FontDialog.New ();
-			fontDialog.Modal = true;
-
-			font_button = Gtk.FontDialogButton.New (fontDialog);
-			font_button.UseSize = false;
-			font_button.UseFont = true;
-			font_button.CanFocus = false;
-			font_button.Level = Gtk.FontLevel.Family;
-			font_button.FontDesc = Pango.FontDescription.FromString (
+			font_button = new FontFamilyDropDown (Pango.FontDescription.FromString (
 				Settings.GetSetting (SettingNames.TEXT_FONT,
-					Gtk.Settings.GetDefault ()!.GtkFontName!));
-
-			Gtk.FontDialogButton.FontDescPropertyDefinition.Notify (font_button, (_, _) => {
-				HandleFontChanged ();
-			});
+					Gtk.Settings.GetDefault ()!.GtkFontName!)));
+			font_button.Widget.CanFocus = false;
+			font_button.FontChanged += (_, _) => HandleFontChanged ();
 		}
 
-		tb.Append (font_button);
+		tb.Append (font_button.Widget);
 
 		tb.Append (GtkExtensions.CreateToolBarSeparator ());
 
@@ -2100,6 +2090,15 @@ public sealed class TextTool : BaseTool
 		workspace.Invalidate (cursorBounds);
 
 		old_cursor_bounds = cursorBounds;
+
+		//Keep the font-dropdown row preview showing a snippet of what's being typed. Only
+		//update while there's an object with text; don't clear it when editing state drops
+		//(e.g. focus moves to the dropdown), so the sample is still there when the popup opens.
+		if (font_button is not null && current_text_object is not null) {
+			string text = current_text_object.Engine.ToString ();
+			if (text.Length > 0)
+				font_button.SampleText = text;
+		}
 
 		//Draw the re-edit rectangles as a tool-layer overlay so they never get saved.
 		DrawTextRectangles ();

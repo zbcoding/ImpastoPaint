@@ -26,7 +26,7 @@ internal sealed class TextPropertiesDialog : IDisposable
 	private bool finishing;
 
 	#pragma warning disable CS8618 // NRT - initialized by BuildUi
-	private Gtk.FontDialogButton font_button;
+	private FontFamilyDropDown font_button;
 	private Gtk.SpinButton font_size;
 	private ToolBarDropDownButton variant_btn;
 	private ToolBarDropDownButton weight_btn;
@@ -132,17 +132,10 @@ internal sealed class TextPropertiesDialog : IDisposable
 		Pango.FontDescription font = engine.Font;
 
 		// --- Font family ---
-		Gtk.FontDialog fontDialog = Gtk.FontDialog.New ();
-		fontDialog.Modal = true;
-
-		font_button = Gtk.FontDialogButton.New (fontDialog);
-		font_button.UseSize = false;
-		font_button.UseFont = true;
-		font_button.CanFocus = false;
-		font_button.Level = Gtk.FontLevel.Family;
-		font_button.FontDesc = font;
-		Gtk.FontDialogButton.FontDescPropertyDefinition.Notify (font_button, (_, _) => Apply ());
-		content.Append (font_button);
+		font_button = new FontFamilyDropDown (font);
+		font_button.Widget.CanFocus = false;
+		font_button.FontChanged += (_, _) => Apply ();
+		content.Append (font_button.Widget);
 
 		Gtk.Box row = Gtk.Box.New (Gtk.Orientation.Horizontal, 6);
 

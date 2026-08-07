@@ -93,7 +93,12 @@ public sealed class TgaExporter : IImageExporter
 	{
 		using ImageSurface flattenedImage = document.GetFlattenedImage (); // Assumes the surface is in ARGB32 format
 		using GioStream file_stream = new (file.Replace ());
-		using BinaryWriter writer = new (file_stream);
+		Export (flattenedImage, file_stream);
+	}
+
+	public void Export (ImageSurface flattenedImage, Stream outputStream)
+	{
+		using BinaryWriter writer = new (outputStream);
 
 		TgaHeader header = new (
 			idLength: (byte) (ImageIdField.Length + 1),
@@ -120,5 +125,12 @@ public sealed class TgaExporter : IImageExporter
 		for (int y = flattenedImage.Height - 1; y >= 0; y--)
 			writer.Write (data.Slice (flattenedImage.Stride * y, flattenedImage.Stride));
 
+		// TGA 2.0 footer. Without it, strict readers (Qt/KImageFormats, hence
+		// GNOME/KDE viewers like gwenview) fail to recognize the file as a TGA.
+		writer.Write (0u);                // extension area offset (none)
+		writer.Write (0u);                // developer directory offset (none)
+		writer.Write ("TRUEVISION-XFILE"u8); // signature
+		writer.Write ((byte) '.');
+		writer.Write ((byte) 0);
 	}
 }

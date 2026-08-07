@@ -44,11 +44,20 @@ public sealed class ImageConverterManager
 
 	private static IEnumerable<FormatDescriptor> GetInitialFormats ()
 	{
-		// All the formats supported by Gdk
+		// All the formats supported by Gdk. Some systems register the same
+		// format under more than one loader (e.g. glycin alongside the classic
+		// gdk-pixbuf loaders), so dedupe by name to avoid duplicate filters
+		// (bmp, tga...) in the file picker.
+		HashSet<string> seen = new (StringComparer.OrdinalIgnoreCase);
 		foreach (var format in GdkPixbufExtensions.GetFormats ()) {
+			string? name = format.GetName ();
+
 			// AVIF is handled by our own importer/exporter below, so that saving
 			// works even though gdk-pixbuf's AVIF loader is read-only.
-			if (format.GetName ()?.Equals ("avif", StringComparison.OrdinalIgnoreCase) == true)
+			if (name?.Equals ("avif", StringComparison.OrdinalIgnoreCase) == true)
+				continue;
+
+			if (name is not null && !seen.Add (name))
 				continue;
 
 			yield return CreateFormatDescriptor (format);
@@ -194,6 +203,28 @@ public sealed class ImageConverterManager
 	{
 		string extension = Path.GetExtension (file);
 		return GetFormatByExtension (extension);
+	}
+
+	/// <summary>
+	/// Finds the format for the file dialog filter the user selected, or null if
+	/// none matches. Portal-based pickers (KDE/GNOME) hand back a different
+	/// <see cref="Gtk.FileFilter"/> instance than the one we added, renamed to
+	/// "&lt;our name&gt; (ext, ext...)", so we match by object identity first and
+	/// then by name prefix.
+	/// </summary>
+	public static FormatDescriptor? ResolveSelectedFormat (
+		Gtk.FileFilter? selected,
+		IReadOnlyDictionary<Gtk.FileFilter, FormatDescriptor> filetypes)
+	{
+		if (selected is null)
+			return null;
+
+		if (filetypes.TryGetValue (selected, out FormatDescriptor? byIdentity))
+			return byIdentity;
+
+		return filetypes.Values.FirstOrDefault (
+			f => selected.Name is not null && f.Filter.Name is not null
+				&& selected.Name.StartsWith (f.Filter.Name, StringComparison.Ordinal));
 	}
 
 	/// <summary>

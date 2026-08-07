@@ -1451,8 +1451,8 @@ msgid "Hue / Saturation"
 msgstr "Hue / Versadiging"
 
 #: ../Pinta/Actions/File/SaveDocumentImplementationAction.cs:236
-msgid "ICO files can not be larger than 255 x 255 pixels."
-msgstr "ICO lêers kan nie groter as 255 x 255 pixels."
+msgid "ICO files can not be larger than 256 x 256 pixels."
+msgstr "ICO lêers kan nie groter as 256 x 256 pixels."
 
 #: ../Pinta.Gui.Widgets/Widgets/ColorPickerDialog.cs:193
 #: ../Pinta.Gui.Widgets/Widgets/ColorPickerPanel.cs:175

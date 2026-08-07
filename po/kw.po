@@ -1462,8 +1462,8 @@ msgid "Hue / Saturation"
 msgstr "Liw / Seubans"
 
 #: ../Pinta/Actions/File/SaveDocumentImplementationAction.cs:236
-msgid "ICO files can not be larger than 255 x 255 pixels."
-msgstr "Restrennow ICO na bos moy bras ages pyskels 255 x 255."
+msgid "ICO files can not be larger than 256 x 256 pixels."
+msgstr "Restrennow ICO na bos moy bras ages pyskels 256 x 256."
 
 #: ../Pinta.Gui.Widgets/Widgets/ColorPickerDialog.cs:193
 #: ../Pinta.Gui.Widgets/Widgets/ColorPickerPanel.cs:175

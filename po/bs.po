@@ -1451,7 +1451,7 @@ msgid "Hue / Saturation"
 msgstr "Nijansa / Zasićenje"
 
 #: ../Pinta/Actions/File/SaveDocumentImplementationAction.cs:236
-msgid "ICO files can not be larger than 255 x 255 pixels."
+msgid "ICO files can not be larger than 256 x 256 pixels."
 msgstr ""
 
 #: ../Pinta.Gui.Widgets/Widgets/ColorPickerDialog.cs:193

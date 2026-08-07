@@ -1460,8 +1460,8 @@ msgid "Hue / Saturation"
 msgstr "Nuanță / Saturație"
 
 #: ../Pinta/Actions/File/SaveDocumentImplementationAction.cs:236
-msgid "ICO files can not be larger than 255 x 255 pixels."
-msgstr "Fișierele cu extensia ICO nu pot fi mai mare de 255 x 255 pixeli."
+msgid "ICO files can not be larger than 256 x 256 pixels."
+msgstr "Fișierele cu extensia ICO nu pot fi mai mare de 256 x 256 pixeli."
 
 #: ../Pinta.Gui.Widgets/Widgets/ColorPickerDialog.cs:193
 #: ../Pinta.Gui.Widgets/Widgets/ColorPickerPanel.cs:175

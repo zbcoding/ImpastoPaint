@@ -1460,8 +1460,8 @@ msgid "Hue / Saturation"
 msgstr "Nyans / Mättnad"
 
 #: ../Pinta/Actions/File/SaveDocumentImplementationAction.cs:236
-msgid "ICO files can not be larger than 255 x 255 pixels."
-msgstr "ICO-filer kan inte vara större än 255 x 255 pixlar."
+msgid "ICO files can not be larger than 256 x 256 pixels."
+msgstr "ICO-filer kan inte vara större än 256 x 256 pixlar."
 
 #: ../Pinta.Gui.Widgets/Widgets/ColorPickerDialog.cs:193
 #: ../Pinta.Gui.Widgets/Widgets/ColorPickerPanel.cs:175

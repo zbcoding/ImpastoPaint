@@ -1462,7 +1462,7 @@ msgid "Hue / Saturation"
 msgstr "Відтінок / Насиченість"
 
 #: ../Pinta/Actions/File/SaveDocumentImplementationAction.cs:236
-msgid "ICO files can not be larger than 255 x 255 pixels."
+msgid "ICO files can not be larger than 256 x 256 pixels."
 msgstr "Файли ICO не можуть бути більші ніж 255х255 пікселів."
 
 #: ../Pinta.Gui.Widgets/Widgets/ColorPickerDialog.cs:193

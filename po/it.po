@@ -1464,8 +1464,8 @@ msgid "Hue / Saturation"
 msgstr "Tonalità / Saturazione"
 
 #: ../Pinta/Actions/File/SaveDocumentImplementationAction.cs:236
-msgid "ICO files can not be larger than 255 x 255 pixels."
-msgstr "I file ICO non possono essere più grandi di 255 x 255 pixel."
+msgid "ICO files can not be larger than 256 x 256 pixels."
+msgstr "I file ICO non possono essere più grandi di 256 x 256 pixel."
 
 #. Translators: Explains the "Show selection brightness in preview" checkbox.
 #. AI-generated translation; human review requested.

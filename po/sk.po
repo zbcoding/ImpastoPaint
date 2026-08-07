@@ -1451,8 +1451,8 @@ msgid "Hue / Saturation"
 msgstr "Odtieň / sýtosť"
 
 #: ../Pinta/Actions/File/SaveDocumentImplementationAction.cs:236
-msgid "ICO files can not be larger than 255 x 255 pixels."
-msgstr "ICO súbory nesmú byť väčšie ako 255 x 255 pixelov."
+msgid "ICO files can not be larger than 256 x 256 pixels."
+msgstr "ICO súbory nesmú byť väčšie ako 256 x 256 pixelov."
 
 #: ../Pinta.Gui.Widgets/Widgets/ColorPickerDialog.cs:193
 #: ../Pinta.Gui.Widgets/Widgets/ColorPickerPanel.cs:175

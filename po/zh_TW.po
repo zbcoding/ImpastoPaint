@@ -1456,7 +1456,7 @@ msgid "Hue / Saturation"
 msgstr "色調 / 飽和度"
 
 #: ../Pinta/Actions/File/SaveDocumentImplementationAction.cs:236
-msgid "ICO files can not be larger than 255 x 255 pixels."
+msgid "ICO files can not be larger than 256 x 256 pixels."
 msgstr "圖示檔不能大於 255 × 255 像素。"
 
 #: ../Pinta.Gui.Widgets/Widgets/ColorPickerDialog.cs:193

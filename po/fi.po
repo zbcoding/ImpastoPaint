@@ -1452,7 +1452,7 @@ msgid "Hue / Saturation"
 msgstr "Sävy / Värikylläisyys"
 
 #: ../Pinta/Actions/File/SaveDocumentImplementationAction.cs:236
-msgid "ICO files can not be larger than 255 x 255 pixels."
+msgid "ICO files can not be larger than 256 x 256 pixels."
 msgstr "ICO-tiedostot voivat olla korkeintaan 255x255 pikselin kokoisia"
 
 #: ../Pinta.Gui.Widgets/Widgets/ColorPickerDialog.cs:193

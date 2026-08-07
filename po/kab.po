@@ -1452,8 +1452,8 @@ msgid "Hue / Saturation"
 msgstr "Ini / Tawant"
 
 #: ../Pinta/Actions/File/SaveDocumentImplementationAction.cs:236
-msgid "ICO files can not be larger than 255 x 255 pixels."
-msgstr "Ifuyla ICO ur zmiren ara ad ɛeddin 255 x 255 n ipiksilen."
+msgid "ICO files can not be larger than 256 x 256 pixels."
+msgstr "Ifuyla ICO ur zmiren ara ad ɛeddin 256 x 256 n ipiksilen."
 
 #: ../Pinta.Gui.Widgets/Widgets/ColorPickerDialog.cs:193
 #: ../Pinta.Gui.Widgets/Widgets/ColorPickerPanel.cs:175

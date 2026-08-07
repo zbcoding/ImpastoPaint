@@ -1465,8 +1465,8 @@ msgid "Hue / Saturation"
 msgstr "Ton / Doygunluk"
 
 #: ../Pinta/Actions/File/SaveDocumentImplementationAction.cs:236
-msgid "ICO files can not be larger than 255 x 255 pixels."
-msgstr "ICO dosyası 255 x 255 pikselden büyük olamaz."
+msgid "ICO files can not be larger than 256 x 256 pixels."
+msgstr "ICO dosyası 256 x 256 pikselden büyük olamaz."
 
 #: ../Pinta.Gui.Widgets/Widgets/ColorPickerDialog.cs:193
 #: ../Pinta.Gui.Widgets/Widgets/ColorPickerPanel.cs:175

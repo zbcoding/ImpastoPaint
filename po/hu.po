@@ -1458,7 +1458,7 @@ msgid "Hue / Saturation"
 msgstr "Árnyalat/telítettség"
 
 #: ../Pinta/Actions/File/SaveDocumentImplementationAction.cs:236
-msgid "ICO files can not be larger than 255 x 255 pixels."
+msgid "ICO files can not be larger than 256 x 256 pixels."
 msgstr "Az ICO-fájlok nem lehetnek nagyobbak 255x255 képpontnál."
 
 #: ../Pinta.Gui.Widgets/Widgets/ColorPickerDialog.cs:193

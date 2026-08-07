@@ -1460,7 +1460,7 @@ msgid "Hue / Saturation"
 msgstr "درجة اللون / الإشباع"
 
 #: ../Pinta/Actions/File/SaveDocumentImplementationAction.cs:236
-msgid "ICO files can not be larger than 255 x 255 pixels."
+msgid "ICO files can not be larger than 256 x 256 pixels."
 msgstr "ملفات ICO لا يمكن أن تكون أكبر من 255 × 255 بكسل."
 
 #: ../Pinta.Gui.Widgets/Widgets/ColorPickerDialog.cs:193

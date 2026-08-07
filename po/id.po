@@ -1467,8 +1467,8 @@ msgid "Hue / Saturation"
 msgstr "Warna / Kepekatan"
 
 #: ../Pinta/Actions/File/SaveDocumentImplementationAction.cs:236
-msgid "ICO files can not be larger than 255 x 255 pixels."
-msgstr "Berkas ICO tidak boleh lebih besar dari 255 x 255 piksel."
+msgid "ICO files can not be larger than 256 x 256 pixels."
+msgstr "Berkas ICO tidak boleh lebih besar dari 256 x 256 piksel."
 
 #: ../Pinta.Gui.Widgets/Widgets/ColorPickerDialog.cs:193
 #: ../Pinta.Gui.Widgets/Widgets/ColorPickerPanel.cs:175

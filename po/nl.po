@@ -1463,7 +1463,7 @@ msgid "Hue / Saturation"
 msgstr "Tint/Verzadiging"
 
 #: ../Pinta/Actions/File/SaveDocumentImplementationAction.cs:236
-msgid "ICO files can not be larger than 255 x 255 pixels."
+msgid "ICO files can not be larger than 256 x 256 pixels."
 msgstr "ICO-bestanden mogen niet groter zijn dan 255 × 255 pixels."
 
 #. Translators: Explains the "Show selection brightness in preview" checkbox.

@@ -1457,8 +1457,8 @@ msgid "Hue / Saturation"
 msgstr "색조 / 채도"
 
 #: ../Pinta/Actions/File/SaveDocumentImplementationAction.cs:236
-msgid "ICO files can not be larger than 255 x 255 pixels."
-msgstr "ICO 파일은 255 x 255 픽셀을 초과할 수 없습니다."
+msgid "ICO files can not be larger than 256 x 256 pixels."
+msgstr "ICO 파일은 256 x 256 픽셀을 초과할 수 없습니다."
 
 #. Translators: Explains the "Show selection brightness in preview" checkbox.
 #. AI-generated translation; human review requested.

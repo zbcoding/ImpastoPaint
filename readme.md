@@ -55,11 +55,23 @@ For building on the command line:
 
 ## Getting help / contributing:
 
+Contributions are welcome. In short:
+
+- **Code** — Contributing to the free edition (MIT-licensed) is encouraged; a
+  contribution received as a PR to the free edition may also be used in the
+  Premium edition of Impasto.
+- **AI coding tools** — welcome. Be able to explain the code you submit and
+  adapt it to the project's architecture; AI-assisted code may draw extra
+  review before it's merged.
+- **Translations** — contributed as pull requests: AI-drafted in new `.po`
+  files, then edited and proofread by a language speaker.
+
+The full guide, including the git/PR workflow, is in `CONTRIBUTING.md`.
+
 - You can report [bugs/issues](https://github.com/zbcoding/Impasto/issues).
 - You can make [suggestions](https://github.com/zbcoding/Impasto/discussions).
 - You can fork the project on [GitHub](https://github.com/zbcoding/Impasto).
-- For details on notable changes of each release, take a look at `CHANGELOG.md` in the repo.
-- For details on patching, take a look at `patch-guidelines.md` in the repo.
+- Notable changes of each release are recorded in `CHANGELOG.md`.
 
 ## Privacy policy
 

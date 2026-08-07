@@ -237,7 +237,7 @@ Impasto must stay rebasable against upstream Pinta: `git fetch upstream && git r
 ## Key Files & Folders
 
 - `IMPASTO.md` — Development log, known issues, deferred work, and rebase constraints
-- `patch-guidelines.md` — How to contribute patches to this fork
+- `CONTRIBUTING.md` — How to contribute code and translations to this fork
 - `Pinta.sln` — Solution file (open in VS or build via dotnet CLI)
 - `Makefile.am` — Autotools build recipe (used for distribution tarballs)
 - `tests/Pinta.Core.Tests/` — Core engine unit tests

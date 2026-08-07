@@ -152,10 +152,9 @@ internal sealed class SaveDocumentImplmentationAction : IActionHandler
 			// to assume they just didn't update the dropdown and really want png
 			FormatDescriptor? format = image_formats.GetFormatByFile (displayName);
 			if (format is null) {
-				if (fcd.Filter is not null)
-					format = filetypes[fcd.Filter];
-				else // Somehow, no file filter was selected...
-					format = image_formats.GetDefaultSaveFormat ();
+				// Fall back to the selected file filter, then to the default format.
+				format = ImageConverterManager.ResolveSelectedFormat (fcd.Filter, filetypes)
+					?? image_formats.GetDefaultSaveFormat ();
 			}
 
 			// If the entered name has no extension at all, append the extension of
@@ -220,7 +219,8 @@ internal sealed class SaveDocumentImplmentationAction : IActionHandler
 			await chrome.ShowMessageDialog (
 				parent,
 				Translations.GetString ("Pinta does not support saving images in this file format."),
-				file.GetDisplayName ());
+				// Use this instead of file.GetDisplayName() in case file was not created.
+				file.GetParent ()!.GetRelativePath (file)!);
 
 			return false;
 		}
@@ -235,10 +235,17 @@ internal sealed class SaveDocumentImplmentationAction : IActionHandler
 		try {
 			format.Exporter.Export (document, file, parent);
 
-		} catch (GLib.GException e) when (e.Message == "Image too large to be saved as ICO") {
+		// glycin rejects oversized ICOs with "...the image width must be `1..=256`, instead width 800 was provided";
+		// older GdkPixbuf said "Image too large to be saved as ICO". Match both.
+		} catch (GLib.GException e) when (e.Message == "Image too large to be saved as ICO"
+			|| (e.Message.Contains ("the image width must be") || e.Message.Contains ("the image height must be"))) {
 
 			string primary = Translations.GetString ("Image too large");
-			string secondary = Translations.GetString ("ICO files can not be larger than 255 x 255 pixels.");
+			string secondary = Translations.GetString ("ICO files can not be larger than 256 x 256 pixels.");
+
+			// file.Replace() already truncated/created the target before the export
+			// threw, leaving an empty/partial file on disk. Remove it.
+			try { file.Delete (null); } catch (GLib.GException) { }
 
 			await chrome.ShowMessageDialog (parent, primary, secondary);
 

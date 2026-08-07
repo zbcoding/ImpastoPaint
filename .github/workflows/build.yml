@@ -209,3 +209,22 @@ jobs:
         name: "Pinta-signed-${{matrix.build.dotnet_rid}}.exe"
         path: ./signed-artifacts/Pinta.exe
         if-no-files-found: error
+
+  # Keep only the 2 most recent artifacts per name to stay under storage quota.
+  prune-artifacts:
+    needs: build-ubuntu
+    if: always() && github.event_name != 'pull_request'
+    runs-on: ubuntu-24.04
+    permissions:
+      actions: write
+    steps:
+    - name: Delete all but newest 2 artifacts per name
+      env:
+        GH_TOKEN: ${{ github.token }}
+        REPO: ${{ github.repository }}
+      run: |
+        gh api "repos/$REPO/actions/artifacts?per_page=100" --paginate \
+          --jq '.artifacts | group_by(.name)[] | sort_by(.created_at) | reverse | .[2:][] | .id' \
+        | while read -r id; do
+            [ -n "$id" ] && gh api -X DELETE "repos/$REPO/actions/artifacts/$id"
+          done

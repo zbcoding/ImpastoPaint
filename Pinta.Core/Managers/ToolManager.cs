@@ -375,20 +375,30 @@ public sealed class ToolManager : IEnumerable<BaseTool>, IToolService
 		tool.DoDeactivated (workspace_manager.ActiveDocumentOrDefault, newTool);
 	}
 
+	// Issue #1334: effect dialogs are non-modal so they don't dim the canvas.
+	// The trade-off is that nothing else blocks canvas edits, so lock tool
+	// input while a live preview is running instead of relying on modality.
+	// ponytail: gates painting only; layer/tool panel switches still get through.
 	public void DoMouseDown (Document document, ToolMouseEventArgs args)
 	{
+		if (PintaCore.LivePreview.IsEnabled)
+			return;
 		if (!TryMouseDownPanOverride (document, args))
 			CurrentTool?.DoMouseDown (document, args);
 	}
 
 	public void DoMouseMove (Document document, ToolMouseEventArgs args)
 	{
+		if (PintaCore.LivePreview.IsEnabled)
+			return;
 		if (!TryMouseMovePanOverride (document, args))
 			CurrentTool?.DoMouseMove (document, args);
 	}
 
 	public void DoMouseUp (Document document, ToolMouseEventArgs args)
 	{
+		if (PintaCore.LivePreview.IsEnabled)
+			return;
 		if (!TryMouseUpPanOverride (document, args))
 			CurrentTool?.DoMouseUp (document, args);
 	}

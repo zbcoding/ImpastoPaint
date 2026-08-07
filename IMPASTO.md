@@ -88,6 +88,10 @@ full 4×3 grid.
   means a second toggle group; the wart is cheaper.
 - Bug and support URLs still point at PintaProject — `AboutDialogAction.cs:74-75`,
   `HelpActions.cs:113`. Fix once this repo exists.
+- Translations are detached from the upstream Weblate instance: the in-app Help→Translate
+  item is removed, and `.po` headers no longer point at Pinta's hosted-weblate team URLs
+  (the gettext `.po` format itself is kept). Re-add a Translate entry and repoint
+  `Language-Team` once a local/Impasto hosting decision is made.
 - Installed binary is still named `pinta`; the `.desktop` `Exec` matches it. Rename the
   binary and the autotools packaging together or not at all.
 - Icon artwork is still Pinta's. MIT, fine to ship, but swap it before any release.

@@ -4,7 +4,6 @@
 <a href='https://flathub.org/apps/com.github.PintaProject.Pinta'><img width='200' alt='Get it on Flathub' src='https://flathub.org/api/badge?locale=en'/></a>
 [![Get it from the Snap Store](https://snapcraft.io/static/images/badges/en/snap-store-black.svg)](https://snapcraft.io/pinta)
 
-[![Translation status](https://hosted.weblate.org/widget/pinta/pinta/287x66-grey.png)](https://hosted.weblate.org/engage/pinta/)
 [![Build Status](https://github.com/PintaProject/Pinta/workflows/Build/badge.svg)](https://github.com/PintaProject/Pinta/actions)
 
 Copyright (C) 2010 Jonathan Pobst <monkey AT jpobst DOT com>
@@ -87,7 +86,6 @@ Follow the instructions of the corresponding [pinta-virtual-dev-environment](htt
 - You can get [technical help](https://github.com/PintaProject/Pinta/discussions).
 - You can report [bugs/issues](https://github.com/PintaProject/Pinta/issues).
 - You can make [suggestions](https://github.com/PintaProject/Pinta/discussions/categories/ideas).
-- You can help [translate Pinta to your native language](https://hosted.weblate.org/engage/pinta/).
 - You can fork the project on [Github](https://github.com/PintaProject/Pinta).
 - You can get help in #pinta on irc.gnome.org.
 - For details on notable changes of each release, take a look at the [CHANGELOG](https://github.com/PintaProject/Pinta/blob/master/CHANGELOG.md).

@@ -33,7 +33,6 @@ public sealed class HelpActions
 	public Command Contents { get; }
 	public Command Website { get; }
 	public Command Bugs { get; }
-	public Command Translate { get; }
 
 	private readonly SystemManager system;
 	private readonly AppActions app;
@@ -60,12 +59,6 @@ public sealed class HelpActions
 			null,
 			Resources.Icons.HelpBug);
 
-		Translate = new Command (
-			"translate",
-			Translations.GetString ("Translate This Application"),
-			null,
-			Resources.Icons.HelpTranslate);
-
 		this.system = system;
 		this.app = app;
 	}
@@ -80,13 +73,11 @@ public sealed class HelpActions
 
 		menu.AppendItem (Website.CreateMenuItem ());
 		menu.AppendItem (Bugs.CreateMenuItem ());
-		menu.AppendItem (Translate.CreateMenuItem ());
 
 		application.AddCommands ([
 			Contents,
 			Website,
-			Bugs,
-			Translate]);
+			Bugs]);
 
 		// This is part of the application menu on macOS.
 		if (system.OperatingSystem != OS.Mac) {
@@ -105,7 +96,6 @@ public sealed class HelpActions
 		Contents.Activated += DisplayHelp;
 		Website.Activated += Website_Activated;
 		Bugs.Activated += Bugs_Activated;
-		Translate.Activated += Translate_Activated;
 	}
 
 	private async void Bugs_Activated (object sender, EventArgs e)
@@ -116,11 +106,6 @@ public sealed class HelpActions
 	private async void DisplayHelp (object sender, EventArgs e)
 	{
 		await system.LaunchUri ("https://pinta-project.com/user-guide");
-	}
-
-	private async void Translate_Activated (object sender, EventArgs e)
-	{
-		await system.LaunchUri ("https://hosted.weblate.org/engage/pinta/");
 	}
 
 	private async void Website_Activated (object sender, EventArgs e)

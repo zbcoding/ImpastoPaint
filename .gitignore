@@ -2,7 +2,11 @@
 .env*
 
 AGENTS.md
+CLAUDE.md
 .claude/settings.local.json
+
+/graphify-out/
+**/graphify-out/
 
 *.lock
 *.pidb
@@ -45,5 +49,4 @@ xdg/pinta.appdata.xml
 .vs
 .vscode
 
-/graphify-out/
-**/graphify-out/
+

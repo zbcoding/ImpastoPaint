@@ -6,10 +6,12 @@
 #
 # PO translation metadata:
 # Translations must include a descriptive translator note.
-# AI-generated translations are tagged.
+# AI-generated translations are tagged with a `#, fuzzy` flag so Weblate
+# treats them as needing editing (unfinished) until a human reviews them.
 # Required entry order:
 #   #. Translators: Describe what this string does for translators.
 #   #. AI-generated translation; human review requested.
+#   #, fuzzy
 #   msgid "..."
 #   msgstr "..."
 #, fuzzy

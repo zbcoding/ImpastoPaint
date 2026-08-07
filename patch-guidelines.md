@@ -53,6 +53,39 @@ on Launchpad and add your name to the credits as a contributor, and you
 get a lovely warm feeling inside from helping make the world a better
 place!
 
+#### Contributing Translations
+
+Translations are welcome, and the recommended way to contribute one is to
+open a pull request with a translation file. Translation files (`.po`) live
+in `po/`, one per language (e.g. `po/de.po`), with `po/messages.pot` as the
+source template.
+
+Using AI to generate the initial translation is encouraged — it's the fastest
+way to cover a whole language — but treat the output as a draft, not a
+finished translation. If you are a speaker of the language, edit and
+proofread your assisted translation before submitting, so it reads naturally
+instead of literally.
+
+The workflow for AI-assisted entries:
+
+- New or updated strings go in your language's `.po` file under `po/`.
+- Every AI-generated entry must be marked so it is easy to spot and review.
+  Add a translator note and the fuzzy flag above the `msgid`:
+
+      #. Translators: Describe what this string does for translators.
+      #. AI-generated translation; human review requested.
+      #, fuzzy
+      msgid "..."
+      msgstr "..."
+
+  The `#, fuzzy` flag marks the string as needing editing until a human
+  reviews it.
+- Keep placeholders intact and mind your language's plural forms; see the
+  existing `po/` files for the expected format.
+- Once you have proofread and are confident in a string, remove the
+  `#, fuzzy` flag (and the AI-generated note) so it counts as a
+  human-reviewed translation.
+
 
 Questions on this process can be asked (as always) through the methods
 described in `readme.md`

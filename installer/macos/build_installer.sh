@@ -40,7 +40,7 @@ run_codesign()
 
 mkdir -p ${MAC_APP_BIN_DIR} ${MAC_APP_RESOURCE_DIR} ${MAC_APP_SHARE_DIR}
 
-dotnet publish ../../Pinta/Pinta.csproj -p:PublishDir=${MAC_APP_BIN_DIR} -p:BuildTranslations=true -c Release -r $runtimeid --self-contained true
+dotnet publish ../../Impasto/Impasto.csproj -p:PublishDir=${MAC_APP_BIN_DIR} -p:BuildTranslations=true -c Release -r $runtimeid --self-contained true
 
 # Remove stuff we don't need.
 rm ${MAC_APP_BIN_DIR}/*.pdb

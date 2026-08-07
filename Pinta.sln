@@ -2,7 +2,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.30225.117
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Pinta", "Pinta\Pinta.csproj", "{E00F5D85-87B7-4A7A-8F0F-39EF763DFFD0}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Impasto", "Impasto\Impasto.csproj", "{E00F5D85-87B7-4A7A-8F0F-39EF763DFFD0}"
 	ProjectSection(ProjectDependencies) = postProject
 		{71A1C3E0-7343-48FE-BD9A-508929136E92} = {71A1C3E0-7343-48FE-BD9A-508929136E92}
 		{526152F2-2829-4AA6-B2F2-232579858A77} = {526152F2-2829-4AA6-B2F2-232579858A77}

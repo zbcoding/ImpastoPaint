@@ -131,7 +131,7 @@ These are real projects, not tasks. Don't let them into scope casually.
 
 ```sh
 dotnet build Pinta.sln
-dotnet run --project Pinta          # add --no-build if nothing changed
+dotnet run --project Impasto          # add --no-build if nothing changed
 ```
 
 Needs .NET 10 and GTK 4. Verified on GTK 4.22, Wayland/KDE.

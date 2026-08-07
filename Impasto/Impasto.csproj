@@ -1,6 +1,9 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
+    <!-- ponytail: folder renamed to Impasto so `dotnet run` targets Impasto; assembly stays Pinta so installers/.pc/launchers/namespace don't cascade. Rename these for a full binary rebrand. -->
+    <AssemblyName>Pinta</AssemblyName>
+    <RootNamespace>Pinta</RootNamespace>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <ApplicationIcon>Pinta.ico</ApplicationIcon>
     <OutputPath>..\build\bin</OutputPath>

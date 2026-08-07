@@ -53,7 +53,7 @@ bold shapes filling the 24×24 canvas:
 1. Edit/write the `.svg` directly under `scalable/actions/`.
 2. `dotnet build` — no gresource/pack step needed, the file is read from disk
    at runtime.
-3. `dotnet run --project Pinta` and actually look at it in the toolbox at
+3. `dotnet run --project Impasto` and actually look at it in the toolbox at
    real size. A `Read`-tool view of the SVG source tells you nothing about
    how it reads at 32px — check the real render before calling it done.
 4. Commit the icon change as its own `jj` commit (`jj split -r @ <path> -m

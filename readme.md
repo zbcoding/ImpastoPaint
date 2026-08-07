@@ -24,7 +24,7 @@ For building on the command line:
 - Build:
   - `dotnet build`
 - Run:
-  - `dotnet run --project Pinta`
+  - `dotnet run --project Impasto`
 
 ## Building on macOS
 
@@ -35,7 +35,7 @@ For building on the command line:
 - Build:
   - `dotnet build`
 - Run:
-  - `dotnet run --project Pinta`
+  - `dotnet run --project Impasto`
 
 ## Building on Linux
 
@@ -46,7 +46,7 @@ For building on the command line:
   - Optional dependencies: `webp-pixbuf-loader`
 - Build (option 1, for development and testing):
   - `dotnet build`
-  - `dotnet run --project Pinta`
+  - `dotnet run --project Impasto`
 - Build (option 2, for installation):
   - `./autogen.sh`
     - If building from a tarball, run `./configure` instead.

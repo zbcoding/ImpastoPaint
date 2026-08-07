@@ -9,7 +9,7 @@ Bias: caution over speed on non-trivial work. Use judgment on trivial tasks.
 `main` is the shared trunk, kept checked out in the primary repo directory
 (`/home/yumeko/DataDisk/Code/ImpastoPaint`). Never commit directly onto `main`, never work
 from a detached HEAD, and never do task edits in the primary checkout — it stays on `main` so
-`dotnet run --project Pinta` there always tests the landed tip.
+`dotnet run --project Impasto` there always tests the landed tip.
 
 **One worktree per agent per task.** Multiple agents can edit the same files for different
 features at once, each isolated in its own checkout on its own branch:
@@ -165,7 +165,7 @@ If `semble` is not on `$PATH`, use `uvx --from "semble[mcp]" semble` in its plac
 # Development build and run
 
 dotnet build
-dotnet run --project Pinta
+dotnet run --project Impasto
 
 # Alternative: using Make
 make build
@@ -185,8 +185,8 @@ dotnet format
 ```
 
 On **macOS**, set `DYLD_LIBRARY_PATH` before running:
-- Apple Silicon: `DYLD_LIBRARY_PATH=/opt/homebrew/lib dotnet run --project Pinta`
-- Intel: `DYLD_LIBRARY_PATH=/usr/local/lib dotnet run --project Pinta`
+- Apple Silicon: `DYLD_LIBRARY_PATH=/opt/homebrew/lib dotnet run --project Impasto`
+- Intel: `DYLD_LIBRARY_PATH=/usr/local/lib dotnet run --project Impasto`
 
 ## Architecture
 
@@ -249,7 +249,7 @@ Impasto must stay rebasable against upstream Pinta: `git fetch upstream && git r
 2. **Check formatting**: `dotnet format --no-restore --verify-no-changes` (or run `dotnet format` to fix)
 3. **Keep diffs rebase-friendly**: Small, focused changes; don't touch naming or file structures
 4. **Avoid renaming** — If a refactor needs naming changes, coordinate with upstream first or defer it
-5. **Test the app** — Start with `dotnet run --project Pinta` and verify the feature in the UI
+5. **Test the app** — Start with `dotnet run --project Impasto` and verify the feature in the UI
 6. **Update IMPASTO.md** if adding user-visible features, known issues, or deferred work
 7. **Keep commit messages generic** — Use "reference implementation" rather than trademarked names
 
@@ -297,4 +297,4 @@ Fix for issue similar to Pinta issue #123 by: John Doe <emailjohn@example.com>
 
 
 
-Unless noted, focus more on feature addition, less on time consuming verification and checking, because I'm checking the software as features are added by running dotnet run --project Pinta 
+Unless noted, focus more on feature addition, less on time consuming verification and checking, because I'm checking the software as features are added by running dotnet run --project Impasto 

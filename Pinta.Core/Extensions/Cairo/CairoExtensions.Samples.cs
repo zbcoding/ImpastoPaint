@@ -349,7 +349,10 @@ partial class CairoExtensions
 				byte* row = dest + (long) y * rgb.Rowstride;
 				int srcIndex = y * width;
 				for (int x = 0; x < width; x++) {
-					ColorBgra c = sourceData[srcIndex + x];
+					// Cairo surfaces are premultiplied; un-premultiply so the color isn't
+					// dimmed toward black on pixels with alpha < 255 (matches the RGBA path's
+					// PixbufGetFromSurface, which un-premultiplies too).
+					ColorBgra c = sourceData[srcIndex + x].ToStraightAlpha ();
 					row[x * 3 + 0] = c.R;
 					row[x * 3 + 1] = c.G;
 					row[x * 3 + 2] = c.B;

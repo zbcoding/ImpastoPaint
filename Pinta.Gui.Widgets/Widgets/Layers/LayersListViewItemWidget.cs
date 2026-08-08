@@ -245,17 +245,14 @@ public sealed partial class LayersListViewItem
 	}
 
 	/// <summary>
-	/// Moves the object one step through its layer's object list — its z-order, since the list is
-	/// rendered in order. <paramref name="delta"/> is +1 to raise, -1 to lower.
+	/// Moves the object to <paramref name="index"/> in its layer's object list — its z-order, since
+	/// the list is rendered in order. Driven by dragging the row onto another object row.
 	/// </summary>
-	// ponytail: steps one list position, which for shapes may be a transient rasterize-on-finalize
-	// shape the dock doesn't show. Those fuse away the moment you move on, so it self-corrects.
-	public void MoveObject (int delta)
+	public void MoveObjectTo (int index)
 	{
 		if (UserLayer is null || document is null || !IsObjectRow)
 			return;
 
-		int target = ObjectIndex + delta;
 		bool isText = TextObject is not null;
 
 		ObjectReorderHistoryItem historyItem = new (
@@ -266,9 +263,9 @@ public sealed partial class LayersListViewItem
 			UserLayer,
 			isText,
 			ObjectIndex,
-			target);
+			index);
 
-		if (!UserLayer.MoveObject (isText, ObjectIndex, target))
+		if (!UserLayer.MoveObject (isText, ObjectIndex, index))
 			return;
 
 		Pinta.Core.ObjectOpacity.RefreshLayer (PintaCore.Workspace, PintaCore.Chrome, UserLayer);
@@ -276,16 +273,13 @@ public sealed partial class LayersListViewItem
 		LayerObjectSelection.RaiseObjectsChanged ();
 	}
 
-	/// <summary>Whether the object can still move in the given direction (+1 raise / -1 lower).</summary>
-	public bool CanMoveObject (int delta)
-	{
-		if (UserLayer is null || !IsObjectRow)
-			return false;
-
-		int count = TextObject is not null ? UserLayer.TextObjects.Count : UserLayer.ShapeObjects.Count;
-		int target = ObjectIndex + delta;
-		return target >= 0 && target < count;
-	}
+	/// <summary>Whether this row and <paramref name="other"/> are objects of the same kind on the
+	/// same layer — the only case where one can be dragged onto the other to reorder.</summary>
+	public bool IsReorderablePeer (LayersListViewItem other)
+		=> IsObjectRow
+			&& other.IsObjectRow
+			&& ReferenceEquals (UserLayer, other.UserLayer)
+			&& (TextObject is not null) == (other.TextObject is not null);
 
 	/// <summary>
 	/// Pushes an already-applied per-object property change as one undoable step. The value is set
@@ -477,9 +471,9 @@ public sealed partial class LayersListViewItemWidget
 		popover.Popup ();
 	}
 
-	// Right-clicking an object sub-row opens its little editor: rename, z-order, and opacity. A
-	// popover of plain widgets rather than a Gio.Menu, since these need entry/slider controls and
-	// would otherwise each have to be registered as an application action.
+	// Right-clicking an object sub-row opens its little editor: rename and opacity (z-order is drag
+	// and drop). A popover of plain widgets rather than a Gio.Menu, since these need entry/slider
+	// controls and would otherwise each have to be registered as an application action.
 	private void ShowObjectPopover (LayersListViewItem row)
 	{
 		Gtk.Box box = Gtk.Box.New (Gtk.Orientation.Vertical, 6);
@@ -499,19 +493,6 @@ public sealed partial class LayersListViewItemWidget
 		nameBox.Append (Gtk.Label.New (Translations.GetString ("Name:")));
 		nameBox.Append (nameEntry);
 		box.Append (nameBox);
-
-		// --- Z-order within the layer's object list.
-		Gtk.Button raise = Gtk.Button.NewWithLabel (Translations.GetString ("Raise"));
-		Gtk.Button lower = Gtk.Button.NewWithLabel (Translations.GetString ("Lower"));
-		raise.Sensitive = row.CanMoveObject (1);
-		lower.Sensitive = row.CanMoveObject (-1);
-		raise.OnClicked += (_, _) => { popover.Popdown (); row.MoveObject (1); };
-		lower.OnClicked += (_, _) => { popover.Popdown (); row.MoveObject (-1); };
-
-		Gtk.Box orderBox = Gtk.Box.New (Gtk.Orientation.Horizontal, 6);
-		orderBox.Append (raise);
-		orderBox.Append (lower);
-		box.Append (orderBox);
 
 		// --- Opacity. The drag updates the canvas live; a single history item is pushed when the
 		// popover closes, so one undo restores the value the drag started from.
@@ -536,13 +517,17 @@ public sealed partial class LayersListViewItemWidget
 			row.RenameObject (nameEntry.GetText ());
 		};
 		popover.Popup ();
+
+		// The main window forwards key presses to the window's focus widget before its own tool
+		// shortcuts get a look; without focus here, typing a name would switch tools instead.
+		nameEntry.GrabFocus ();
 	}
 
 	private Gdk.ContentProvider? DragSource_OnPrepare (
 		Gtk.DragSource _,
 		Gtk.DragSource.PrepareSignalArgs args)
 	{
-		if (!IsLayerRow (item))
+		if (!IsBoundRow (item))
 			return null;
 
 		return Gdk.ContentProvider.NewForValue (new GObject.Value ((GObject.Object) item));
@@ -552,10 +537,48 @@ public sealed partial class LayersListViewItemWidget
 		Gtk.DropTarget _,
 		Gtk.DropTarget.DropSignalArgs args)
 	{
-		if (!IsLayerRow (item))
+		if (!IsBoundRow (item))
 			return false;
 
-		if (args.Value.GetObject () is not LayersListViewItem source || !IsLayerRow (source))
+		if (args.Value.GetObject () is not LayersListViewItem source || !IsBoundRow (source))
+			return false;
+
+		// Rows are dropped above when the pointer is in the upper half of the target, below otherwise.
+		bool dropAbove = args.Y < GetHeight () / 2.0;
+
+		if (item.IsObjectRow || source.IsObjectRow)
+			return DropObjectRow (source, dropAbove);
+
+		return DropLayerRow (source, dropAbove);
+	}
+
+	// Reordering an object sub-node within its layer's object list (its z-order). Only objects of
+	// the same kind on the same layer can be reordered against each other: shapes and text live in
+	// separate lists rendered into separate surfaces, and moving an object between layers would be
+	// a different operation (its geometry belongs to the layer it was drawn on).
+	private bool DropObjectRow (LayersListViewItem source, bool dropAbove)
+	{
+		if (item is null || !source.IsReorderablePeer (item))
+			return false;
+
+		int from = source.ObjectIndex;
+
+		// Object rows are listed in list order (unlike layer rows, which are drawn top-first), so
+		// "above" means the target's own index.
+		int insert = dropAbove ? item.ObjectIndex : item.ObjectIndex + 1;
+		if (from < insert)
+			insert--; // removing the source first shifts everything after it down.
+
+		if (insert == from)
+			return false;
+
+		source.MoveObjectTo (insert);
+		return true;
+	}
+
+	private bool DropLayerRow (LayersListViewItem source, bool dropAbove)
+	{
+		if (!IsLayerRow (item) || !IsLayerRow (source))
 			return false;
 
 		Document doc = PintaCore.Workspace.ActiveDocument;
@@ -566,7 +589,6 @@ public sealed partial class LayersListViewItemWidget
 
 		// Rows are drawn top-first (higher doc index = higher up). Dropping on the
 		// upper half of the target lands above it (higher doc index), lower half below.
-		bool dropAbove = args.Y < GetHeight () / 2.0;
 		int insert = dropAbove ? target + 1 : target;
 		if (from < insert)
 			insert--; // removing the source first shifts everything above it down.
@@ -627,7 +649,8 @@ public sealed partial class LayersListViewItemWidget
 			object_badge.Visible = true;
 			object_badge.QueueDraw ();
 			SetTooltipText (Translations.GetString ("Re-editable object: a live shape or text you can keep editing until you rasterize it.")
-				+ "\n" + Translations.GetString ("Right-click to rename, reorder, or set opacity"));
+				+ "\n" + Translations.GetString ("Right-click to rename or set opacity") + "\n"
+				+ Translations.GetString ("Drag and drop to reorder"));
 			return;
 		}
 

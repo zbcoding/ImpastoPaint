@@ -213,6 +213,14 @@ public static class ObjectRasterizer
 		else
 			doc.History.PushNewItem (item);
 
+		// The baked objects' on-canvas editing chrome (the text tool's dashed re-edit rectangles,
+		// handle dots and "Obj." badges) lives on the tool layer, which nothing else here touches —
+		// clear it so it doesn't hover over pixels that are no longer objects. The active tool
+		// redraws its own overlay on the next edit. ponytail: clear from Core rather than adding a
+		// per-tool seam; the tool layer is transient chrome by definition.
+		doc.Layers.ToolLayer.Clear ();
+		LayerObjectSelection.RaiseObjectsChanged ();
+
 		workspace.Invalidate ();
 		return true;
 	}

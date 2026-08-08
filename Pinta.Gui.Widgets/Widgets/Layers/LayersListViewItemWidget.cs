@@ -627,31 +627,27 @@ public sealed partial class LayersListViewItemWidget
 		opacityBox.Append (scale);
 		box.Append (opacityBox);
 
-		// --- The full settings window (name, visibility, and everything else about this object).
-		Gtk.Button propertiesButton = Gtk.Button.NewWithLabel (Translations.GetString ("Properties..."));
-		propertiesButton.OnClicked += (_, _) => {
-			popover.Popdown ();
-			ObjectPropertiesDialog.Show (PintaCore.Chrome.MainWindow, row);
-		};
-		box.Append (propertiesButton);
+		// --- The operations, below a separator: the settings above act on the object in place, these
+		// three take you elsewhere or end the object's life, which is the split the layer row's menu
+		// draws with its own section lines.
+		box.Append (Gtk.Separator.New (Gtk.Orientation.Horizontal));
 
-		// --- Rasterize just this object, and delete it. Both end the object's life, so they close the
-		// popover first; the OnClosed handler below skips its property history when the object is gone.
-		Gtk.Button rasterizeButton = Gtk.Button.NewWithLabel (Translations.GetString ("Rasterize"));
-		rasterizeButton.SetTooltipText (Translations.GetString ("Bake this object into the layer's pixels; it stops being editable."));
-		rasterizeButton.OnClicked += (_, _) => {
-			popover.Popdown ();
-			row.RasterizeObject ();
-		};
-		box.Append (rasterizeButton);
+		// Each closes the popover first; the OnClosed handler below skips its property history when the
+		// object is gone.
+		box.Append (MenuOption (
+			Translations.GetString ("Rasterize"),
+			Translations.GetString ("Bake this object into the layer's pixels; it stops being editable."),
+			() => { popover.Popdown (); row.RasterizeObject (); }));
 
-		Gtk.Button deleteButton = Gtk.Button.NewWithLabel (Translations.GetString ("Delete"));
-		deleteButton.AddCssClass ("destructive-action");
-		deleteButton.OnClicked += (_, _) => {
-			popover.Popdown ();
-			row.DeleteObject ();
-		};
-		box.Append (deleteButton);
+		box.Append (MenuOption (
+			Translations.GetString ("Properties..."),
+			null,
+			() => { popover.Popdown (); ObjectPropertiesDialog.Show (PintaCore.Chrome.MainWindow, row); }));
+
+		box.Append (MenuOption (
+			Translations.GetString ("Delete"),
+			null,
+			() => { popover.Popdown (); row.DeleteObject (); }));
 
 		popover.SetChild (box);
 		popover.SetParent (this);
@@ -667,6 +663,30 @@ public sealed partial class LayersListViewItemWidget
 				row.PushObjectBlendModeHistory (beforeBlend);
 		};
 		popover.Popup ();
+	}
+
+	// One row of the object popover's operations section, styled to read as a menu option rather than a
+	// button: flat (no frame) and left-aligned full width, which is what a Gio.Menu item looks like.
+	// ponytail: plain widgets, not a real Gtk.PopoverMenu — that needs every item registered as a
+	// GAction, and the settings above would each have to be a "custom" menu item anyway. Swap to a
+	// PopoverMenu if these operations ever need keyboard accelerators or to appear in the main menus.
+	private static Gtk.Button MenuOption (string label, string? tooltip, System.Action onActivated)
+	{
+		Gtk.Button button = Gtk.Button.NewWithLabel (label);
+		button.AddCssClass ("flat");
+		button.SetHasFrame (false);
+
+		if (button.GetChild () is Gtk.Label buttonLabel) {
+			buttonLabel.Halign = Gtk.Align.Start;
+			buttonLabel.Xalign = 0;
+		}
+
+		if (tooltip is not null)
+			button.SetTooltipText (tooltip);
+
+		button.OnClicked += (_, _) => onActivated ();
+
+		return button;
 	}
 
 	private Gdk.ContentProvider? DragSource_OnPrepare (

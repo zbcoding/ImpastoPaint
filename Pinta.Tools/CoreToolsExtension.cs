@@ -72,10 +72,7 @@ public sealed class CoreToolsExtension : IExtension
 		PintaCore.Tools.AddTool (new EllipseTool (services));
 		PintaCore.Tools.AddTool (new TriangleTool (services));
 		PintaCore.Tools.AddTool (new FreeformShapeTool (services));
-		PintaCore.Tools.AddTool (new CloneStampTool (services));
-		PintaCore.Tools.AddTool (new HealingBrushTool (services));
 		PintaCore.Tools.AddTool (new RecolorTool (services));
-		PintaCore.Tools.AddTool (new SmartPatchTool (services));
 	}
 
 	public void Uninitialize ()
@@ -108,10 +105,7 @@ public sealed class CoreToolsExtension : IExtension
 		PintaCore.Tools.RemoveInstanceOfTool<EllipseTool> ();
 		PintaCore.Tools.RemoveInstanceOfTool<TriangleTool> ();
 		PintaCore.Tools.RemoveInstanceOfTool<FreeformShapeTool> ();
-		PintaCore.Tools.RemoveInstanceOfTool<CloneStampTool> ();
-		PintaCore.Tools.RemoveInstanceOfTool<HealingBrushTool> ();
 		PintaCore.Tools.RemoveInstanceOfTool<RecolorTool> ();
-		PintaCore.Tools.RemoveInstanceOfTool<SmartPatchTool> ();
 	}
 	#endregion
 }

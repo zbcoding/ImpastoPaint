@@ -78,10 +78,7 @@ public static class ObjectOpacity
 	/// <summary>
 	/// Re-renders a layer's unified object surface (<see cref="UserLayer.ObjectLayer"/>) from its
 	/// z-ordered object list (the object-layer invariant) after an object property changed, then
-	/// invalidates. Renders every object — shape or text — in z-order into the one surface, so each
-	/// one's blend mode composites against everything beneath it regardless of kind. Text renders
-	/// here in Core; shapes go through the Tools seam (which also rebuilds the live editing engines
-	/// so the active layer picks up the new values).
+	/// invalidates, and asks the active shape engine to resync its live editing engines.
 	/// </summary>
 	public static void RefreshLayer (IWorkspaceService workspace, IChromeService chrome, UserLayer layer)
 	{
@@ -89,8 +86,27 @@ public static class ObjectOpacity
 		workspace.Invalidate ();
 	}
 
-	/// <summary>Rebuilds the unified object surface without invalidating; callers that redraw themselves use this.</summary>
+	/// <summary>
+	/// Rebuilds the unified object surface (render + live-engine reload) without invalidating;
+	/// callers that redraw themselves use this.
+	/// </summary>
 	public static void RefreshLayerNoInvalidate (IChromeService chrome, UserLayer layer)
+	{
+		RenderLayerObjects (chrome, layer);
+
+		// Resync the active shape engine's live edits to the rebuilt surface — beware: the engine's
+		// reload path calls back into RenderLayerObjects, so it must not loop (see RenderLayerObjects).
+		LayerObjectSelection.RequestShapeReload (layer);
+	}
+
+	/// <summary>
+	/// Clears the unified object surface and redraws every object — shape or text — in z-order, so
+	/// each one's blend mode composites against everything beneath it regardless of kind. Text
+	/// renders here in Core; shapes go through the Tools seam. This is the render-only core: it does
+	/// NOT resync the live editing engines, so <see cref="RedrawShapeLayerSurface"/> can call into it
+	/// without recursing (the engine's reload would otherwise call right back here).
+	/// </summary>
+	public static void RenderLayerObjects (IChromeService chrome, UserLayer layer)
 	{
 		ImageSurface surface = layer.ObjectLayer.Layer.Surface;
 		surface.Clear ();
@@ -100,8 +116,6 @@ public static class ObjectOpacity
 			else if (obj is TextObject text)
 				TextObjectRenderer.Render (surface, text, chrome, antialias: true);
 		}
-
-		LayerObjectSelection.RequestShapeReload (layer);
 	}
 
 	/// <summary>Clones a unified object list, preserving kind and order.</summary>

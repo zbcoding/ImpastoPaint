@@ -2054,10 +2054,12 @@ public abstract class BaseEditEngine
 
 	/// <summary>
 	/// Rebuilds a layer's unified object surface from its full object list (shapes + text), maintaining
-	/// the invariant that the object surface equals the render of the object list.
+	/// the invariant that the object surface equals the render of the object list. Render-only: it does
+	/// NOT resync the live engines (see <see cref="ReloadLayerShapes"/>), which is what keeps the reload
+	/// call chain from recursing.
 	/// </summary>
 	public static void RedrawShapeLayerSurface (UserLayer layer)
-		=> ObjectOpacity.RefreshLayerNoInvalidate (PintaCore.Chrome, layer);
+		=> ObjectOpacity.RenderLayerObjects (PintaCore.Chrome, layer);
 
 	public static void PersistShapeObjects (UserLayer layer)
 		=> ShapeEngineCollection.Store (layer, SEngines);

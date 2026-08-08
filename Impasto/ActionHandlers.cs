@@ -46,7 +46,7 @@ public sealed class ActionHandlers
 		ToolManager tools = PintaCore.Tools;
 		PaletteManager palette = PintaCore.Palette;
 		CanvasGridManager canvasGrid = PintaCore.CanvasGrid;
-		string applicationVersion = PintaCore.ApplicationVersion;
+		string applicationVersion = PintaCore.DisplayVersion;
 
 		action_handlers = [
 			// File

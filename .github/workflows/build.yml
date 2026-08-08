@@ -14,7 +14,7 @@ on:
 
 env:
   DOTNET_VERSION: 10.0.x
-  PINTA_VERSION: 3.2
+  PINTA_VERSION: 0.0.1
 
 jobs:
   build-ubuntu:

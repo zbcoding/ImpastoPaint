@@ -1,5 +1,5 @@
 #define ProductName "Pinta"
-#define ProductVersion "3.2"
+#define ProductVersion "0.0.1"
 
 ; The architecture can be configured on the command line to build the arm64 or x64 installer
 #ifndef ProductArch

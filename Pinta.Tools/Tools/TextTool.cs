@@ -2167,11 +2167,9 @@ public sealed class TextTool : BaseTool
 		TextEngine engine = obj.Engine;
 		layout.Engine = engine;
 
-		//Fill style index matches the text tool's style dropdown:
-		//0 Normal, 1 Normal and Outline, 2 Outline, 3 Fill Background.
-		bool strokeText = obj.FillStyle >= 1 && obj.FillStyle != 3;
-		bool fillText = obj.FillStyle <= 1 || obj.FillStyle == 3;
-		bool backgroundFill = obj.FillStyle == 3;
+		bool strokeText = obj.StrokesText;
+		bool fillText = obj.FillsText;
+		bool backgroundFill = obj.FillsBackground;
 
 		using Context g = new (surf);
 

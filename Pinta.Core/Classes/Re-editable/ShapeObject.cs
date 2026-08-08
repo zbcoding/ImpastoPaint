@@ -42,7 +42,7 @@ public sealed class ShapeArrow
 /// <summary>
 /// Serializable, tool-independent state for one editable shape.
 /// </summary>
-public sealed class ShapeObject
+public sealed class ShapeObject : ILayerObject
 {
 	public ShapeObjectType ShapeType { get; set; }
 	public string Name { get; set; } = "";

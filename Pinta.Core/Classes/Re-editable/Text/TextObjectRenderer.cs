@@ -66,12 +66,9 @@ public static class TextObjectRenderer
 			Engine = engine,
 		};
 
-		//Fill style index matches the text tool's style dropdown:
-		//0 Normal, 1 Normal and Outline, 2 Outline, 3 Fill Background.
-		int fillStyle = obj.FillStyle;
-		bool strokeText = fillStyle >= 1 && fillStyle != 3;
-		bool fillText = fillStyle <= 1 || fillStyle == 3;
-		bool backgroundFill = fillStyle == 3;
+		bool strokeText = obj.StrokesText;
+		bool fillText = obj.FillsText;
+		bool backgroundFill = obj.FillsBackground;
 
 		using Context g = new (surface);
 

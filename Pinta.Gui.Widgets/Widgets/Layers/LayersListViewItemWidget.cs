@@ -168,20 +168,16 @@ public sealed partial class LayersListViewItem
 	}
 
 	/// <summary>
-	/// Current opacity (0..1) of the object this row represents. Read by index, not through the held
-	/// object reference, which goes stale when the shape store is rebuilt on persist.
+	/// The live object this row stands for, resolved by index rather than through the held reference
+	/// (which goes stale when the object lists are rebuilt on persist). Null when this is a layer row
+	/// or the object is gone (e.g. rasterized).
 	/// </summary>
-	public double ObjectOpacity {
-		get {
-			if (UserLayer is null)
-				return 1.0;
-			if (ShapeObject is not null && ObjectIndex < UserLayer.ShapeObjects.Count)
-				return UserLayer.ShapeObjects[ObjectIndex].Opacity;
-			if (TextObject is not null && ObjectIndex < UserLayer.TextObjects.Count)
-				return UserLayer.TextObjects[ObjectIndex].Opacity;
-			return 1.0;
-		}
-	}
+	private ILayerObject? LiveObject
+		=> IsObjectRow ? UserLayer?.FindObject (TextObject is not null, ObjectIndex) : null;
+
+	/// <summary>Current opacity (0..1) of the object this row represents.</summary>
+	public double ObjectOpacity
+		=> LiveObject?.Opacity ?? 1.0;
 
 	/// <summary>
 	/// Applies an opacity to this row's object and re-renders, with no history item — used for the
@@ -190,16 +186,10 @@ public sealed partial class LayersListViewItem
 	/// </summary>
 	public void SetObjectOpacity (double opacity)
 	{
-		if (UserLayer is null)
+		if (UserLayer is null || LiveObject is not { } obj)
 			return;
 
-		if (ShapeObject is not null && ObjectIndex < UserLayer.ShapeObjects.Count)
-			UserLayer.ShapeObjects[ObjectIndex].Opacity = opacity;
-		else if (TextObject is not null && ObjectIndex < UserLayer.TextObjects.Count)
-			UserLayer.TextObjects[ObjectIndex].Opacity = opacity;
-		else
-			return;
-
+		obj.Opacity = opacity;
 		Pinta.Core.ObjectOpacity.RefreshLayer (PintaCore.Workspace, PintaCore.Chrome, UserLayer);
 	}
 
@@ -321,11 +311,19 @@ public sealed partial class LayersListViewItemWidget
 		object_badge = objectBadge;
 	}
 
+	// A row is "bound" when it is showing a layer of an open document. Layer-only operations
+	// (context menu, drag/drop reorder) additionally exclude object sub-rows.
+	private static bool IsBoundRow ([NotNullWhen (true)] LayersListViewItem? row)
+		=> row?.UserLayer is not null && PintaCore.Workspace.HasOpenDocuments;
+
+	private static bool IsLayerRow ([NotNullWhen (true)] LayersListViewItem? row)
+		=> IsBoundRow (row) && !row.IsObjectRow;
+
 	private void MenuGesture_OnPressed (
 		Gtk.GestureClick _,
 		Gtk.GestureClick.PressedSignalArgs args)
 	{
-		if (item is null || item.UserLayer is null || !PintaCore.Workspace.HasOpenDocuments)
+		if (!IsBoundRow (item))
 			return;
 
 		// Object sub-rows get their own tiny menu: for now, just per-object opacity.
@@ -409,7 +407,7 @@ public sealed partial class LayersListViewItemWidget
 		Gtk.DragSource _,
 		Gtk.DragSource.PrepareSignalArgs args)
 	{
-		if (item is null || item.UserLayer is null || item.IsObjectRow)
+		if (!IsLayerRow (item))
 			return null;
 
 		return Gdk.ContentProvider.NewForValue (new GObject.Value ((GObject.Object) item));
@@ -419,10 +417,10 @@ public sealed partial class LayersListViewItemWidget
 		Gtk.DropTarget _,
 		Gtk.DropTarget.DropSignalArgs args)
 	{
-		if (item is null || item.UserLayer is null || item.IsObjectRow || !PintaCore.Workspace.HasOpenDocuments)
+		if (!IsLayerRow (item))
 			return false;
 
-		if (args.Value.GetObject () is not LayersListViewItem source || source.UserLayer is null || source.IsObjectRow)
+		if (args.Value.GetObject () is not LayersListViewItem source || !IsLayerRow (source))
 			return false;
 
 		Document doc = PintaCore.Workspace.ActiveDocument;

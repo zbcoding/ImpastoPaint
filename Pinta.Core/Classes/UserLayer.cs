@@ -73,6 +73,16 @@ public sealed class UserLayer : Layer
 	/// moment you move on and must never show as a persistent sub-node. Only Object-mode shapes
 	/// (and any text) count as sub-layer objects the layers dock shows.
 	/// </summary>
+	/// <summary>
+	/// The shape or text object at <paramref name="index"/>, or null if the index is stale (object
+	/// lists are rebuilt on persist, so callers hold positions rather than references).
+	/// </summary>
+	public ILayerObject? FindObject (bool isText, int index)
+	{
+		IReadOnlyList<ILayerObject> objects = isText ? TextObjects : ShapeObjects;
+		return index >= 0 && index < objects.Count ? objects[index] : null;
+	}
+
 	public bool HasObjectSubNodes
 		=> TextObjects.Count > 0 || ShapeObjects.Exists (s => !s.RasterizeOnFinalize);
 

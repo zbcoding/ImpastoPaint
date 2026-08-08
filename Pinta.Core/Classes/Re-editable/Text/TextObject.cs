@@ -12,7 +12,7 @@ namespace Pinta.Core;
 /// Extends the re-editable text engine originally built for Pinta by Andrew Davis
 /// (GSoC 2012/2013), per the request by prokoudine in Pinta issue #1337.
 /// </summary>
-public sealed class TextObject
+public sealed class TextObject : ILayerObject
 {
 	public TextEngine Engine { get; }
 
@@ -49,6 +49,12 @@ public sealed class TextObject
 
 	public bool IsEmpty
 		=> Engine.IsEmpty ();
+
+	//What FillStyle means when drawing, named once here instead of being re-derived from the
+	//dropdown index at every draw site (the text tool's live draw and TextObjectRenderer).
+	public bool StrokesText => FillStyle >= 1 && FillStyle != 3;
+	public bool FillsText => FillStyle <= 1 || FillStyle == 3;
+	public bool FillsBackground => FillStyle == 3;
 
 	public TextObject Clone ()
 		=> new (Engine.Clone ()) {

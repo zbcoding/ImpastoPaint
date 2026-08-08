@@ -9,6 +9,16 @@ using Cairo;
 
 namespace Pinta.Core;
 
+/// <summary>
+/// What every object sub-node (shape or text) has in common. Small on purpose: it exists so code
+/// that treats the two kinds alike — the layers dock's object rows today, per-object rename /
+/// visibility later — doesn't have to branch on which list the object came from.
+/// </summary>
+public interface ILayerObject
+{
+	double Opacity { get; set; }
+}
+
 public static class ObjectOpacity
 {
 	/// <summary>

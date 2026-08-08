@@ -302,43 +302,9 @@ public sealed partial class LayersListView
 			child_models.Remove (stale);
 
 		bool replacedRow = false;
-		for (uint i = 0; i < list_model.GetNItems (); ++i) {
-			if (list_model.GetObject (i) is not LayersListViewItem item || item.UserLayer is not { } layer)
-				continue;
-
-			bool hasObjects = layer.HasObjectSubNodes;
-
-			if (hasObjects) {
-				// A layer that had no child model yet was not expandable, so the tree must re-run the
-				// child create func — that needs the root row replaced. Once it has one, every later
-				// add/remove is an in-place store update: the row (and the user's expansion) survives,
-				// so adding a second/third object doesn't collapse the layer.
-				bool isFirstObject = !child_models.TryGetValue (layer, out Gio.ListStore? store);
-				if (isFirstObject) {
-					store = Gio.ListStore.New (LayersListViewItem.GetGType ());
-					child_models[layer] = store;
-				}
-
-				// Populate before touching the root row, so when the tree asks for children it gets a
-				// ready model.
-				PopulateChildModel (store!, layer);
-
-				if (isFirstObject) {
-					list_model.Remove (i);
-					LayersListViewItem replacement = LayersListViewItem.New (active_document, layer);
-					list_model.Insert (i, replacement);
-					replacedRow = true;
-					// Expand it so the object that just appeared is visible without a manual click.
-					ExpandRowFor (replacement);
-				}
-			} else if (child_models.ContainsKey (layer)) {
-				// Last object removed: drop the child model and replace the row so it's no longer expandable.
-				child_models.Remove (layer);
-				list_model.Remove (i);
-				list_model.Insert (i, LayersListViewItem.New (active_document, layer));
-				replacedRow = true;
-			}
-		}
+		for (uint i = 0; i < list_model.GetNItems (); ++i)
+			if (list_model.GetObject (i) is LayersListViewItem item && item.UserLayer is { } layer)
+				replacedRow |= RefreshRow (i, layer);
 
 		// Replacing a root row makes the SingleSelection drop its selection (often snapping the dock
 		// highlight to another layer), even though the document's current layer is unchanged — e.g.
@@ -347,6 +313,54 @@ public sealed partial class LayersListView
 		// its object rows. (object-layer BUG 2)
 		if (replacedRow)
 			HandleSelectedLayerChanged (this, EventArgs.Empty);
+	}
+
+	// Brings one layer's row and its object sub-rows up to date. Returns true if the root row had to
+	// be replaced (which loses the dock selection — see the caller).
+	private bool RefreshRow (uint position, UserLayer layer)
+	{
+		if (!layer.HasObjectSubNodes)
+			return DropChildModel (position, layer);
+
+		// A layer that had no child model yet was not expandable, so the tree must re-run the child
+		// create func — that needs the root row replaced. Once it has one, every later add/remove is
+		// an in-place store update: the row (and the user's expansion) survives, so adding a
+		// second/third object doesn't collapse the layer.
+		bool isFirstObject = !child_models.TryGetValue (layer, out Gio.ListStore? store);
+		if (isFirstObject) {
+			store = Gio.ListStore.New (LayersListViewItem.GetGType ());
+			child_models[layer] = store;
+		}
+
+		// Populate before touching the root row, so when the tree asks for children it gets a ready model.
+		PopulateChildModel (store!, layer);
+
+		if (!isFirstObject)
+			return false;
+
+		LayersListViewItem replacement = ReplaceRow (position, layer);
+		// Expand it so the object that just appeared is visible without a manual click.
+		ExpandRowFor (replacement);
+		return true;
+	}
+
+	// The layer holds no objects: drop its child model and replace the row so it stops being
+	// expandable. No-op (and no row replacement) if it never had one.
+	private bool DropChildModel (uint position, UserLayer layer)
+	{
+		if (!child_models.Remove (layer))
+			return false;
+
+		ReplaceRow (position, layer);
+		return true;
+	}
+
+	private LayersListViewItem ReplaceRow (uint position, UserLayer layer)
+	{
+		LayersListViewItem replacement = LayersListViewItem.New (active_document!, layer);
+		list_model.Remove (position);
+		list_model.Insert (position, replacement);
+		return replacement;
 	}
 
 	// Expands the tree row holding the given item, if it is currently in the tree.

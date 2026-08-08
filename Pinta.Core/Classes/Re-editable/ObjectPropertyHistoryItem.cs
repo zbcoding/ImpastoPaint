@@ -18,7 +18,6 @@ public sealed class ObjectPropertyHistoryItem<T> : BaseHistoryItem
 	private readonly IWorkspaceService workspace;
 	private readonly IChromeService chrome;
 	private readonly UserLayer layer;
-	private readonly bool is_text;
 	private readonly int index;
 	private readonly Func<ILayerObject, T> get;
 	private readonly Action<ILayerObject, T> set;
@@ -30,7 +29,6 @@ public sealed class ObjectPropertyHistoryItem<T> : BaseHistoryItem
 		string icon,
 		string text,
 		UserLayer layer,
-		bool isText,
 		int index,
 		Func<ILayerObject, T> get,
 		Action<ILayerObject, T> set,
@@ -40,7 +38,6 @@ public sealed class ObjectPropertyHistoryItem<T> : BaseHistoryItem
 		this.workspace = workspace;
 		this.chrome = chrome;
 		this.layer = layer;
-		is_text = isText;
 		this.index = index;
 		this.get = get;
 		this.set = set;
@@ -54,7 +51,7 @@ public sealed class ObjectPropertyHistoryItem<T> : BaseHistoryItem
 	{
 		// The object may be gone (e.g. rasterized) if history was stepped oddly; then there is
 		// nothing to swap.
-		if (layer.FindObject (is_text, index) is not { } obj)
+		if (layer.FindObjectAt (index) is not { } obj)
 			return;
 
 		T restore = stored_value;
@@ -74,7 +71,6 @@ public sealed class ObjectReorderHistoryItem : BaseHistoryItem
 	private readonly IWorkspaceService workspace;
 	private readonly IChromeService chrome;
 	private readonly UserLayer layer;
-	private readonly bool is_text;
 	private readonly int from;
 	private readonly int to;
 
@@ -84,7 +80,6 @@ public sealed class ObjectReorderHistoryItem : BaseHistoryItem
 		string icon,
 		string text,
 		UserLayer layer,
-		bool isText,
 		int from,
 		int to)
 		: base (icon, text)
@@ -92,7 +87,6 @@ public sealed class ObjectReorderHistoryItem : BaseHistoryItem
 		this.workspace = workspace;
 		this.chrome = chrome;
 		this.layer = layer;
-		is_text = isText;
 		this.from = from;
 		this.to = to;
 	}
@@ -102,7 +96,7 @@ public sealed class ObjectReorderHistoryItem : BaseHistoryItem
 
 	private void Move (int oldIndex, int newIndex)
 	{
-		if (!layer.MoveObject (is_text, oldIndex, newIndex))
+		if (!layer.MoveObjectAt (oldIndex, newIndex))
 			return;
 
 		ObjectOpacity.RefreshLayer (workspace, chrome, layer);

@@ -323,6 +323,7 @@ public sealed class OraFormat : IImageImporter, IImageExporter
 		writer.WriteAttributeString ("name", obj.Name);
 		writer.WriteAttributeString ("hidden", obj.Hidden ? "1" : "0");
 		writer.WriteAttributeString ("object-opacity", obj.Opacity.ToString (GetFormat ()));
+		writer.WriteAttributeString ("object-blend", ((int) obj.BlendMode).ToString ());
 	}
 
 	private static void ReadObjectCommon (XmlElement element, ILayerObject obj)
@@ -330,6 +331,7 @@ public sealed class OraFormat : IImageImporter, IImageExporter
 		obj.Name = GetAttribute (element, "name", "");
 		obj.Hidden = GetAttribute (element, "hidden", "0") == "1";
 		obj.Opacity = double.Parse (GetAttribute (element, "object-opacity", "1"), GetFormat ());
+		obj.BlendMode = (BlendMode) int.Parse (GetAttribute (element, "object-blend", "0"));
 	}
 
 	private static void WriteShapeObject (XmlTextWriter writer, ShapeObject shape)
@@ -411,7 +413,7 @@ public sealed class OraFormat : IImageImporter, IImageExporter
 			foreach (XmlElement shapeElement in layerElement.GetElementsByTagName ("shape")) {
 				ShapeObject? shape = ReadShapeObject (shapeElement);
 				if (shape is not null)
-					layer.ShapeObjects.Add (shape);
+					layer.AddShape (shape);
 			}
 
 			ZipArchiveEntry? imageEntry = zipfile.GetEntry ($"{SHAPE_IMAGE_PREFIX}{index}.png");
@@ -422,7 +424,7 @@ public sealed class OraFormat : IImageImporter, IImageExporter
 					input.CopyTo (output);
 
 				using Pixbuf overlay = Pixbuf.NewFromFile (temporaryFile)!;
-				using Context g = new (layer.ShapeLayer.Layer.Surface);
+				using Context g = new (layer.ObjectLayer.Layer.Surface);
 				g.DrawPixbuf (overlay, PointD.Zero);
 				try { File.Delete (temporaryFile); } catch { }
 			}
@@ -552,18 +554,13 @@ public sealed class OraFormat : IImageImporter, IImageExporter
 				if (obj is null)
 					continue;
 
-				layer.TextObjects.Add (obj);
+				layer.AddText (obj);
 			}
 
 			//Render the restored objects so they are visible before the text tool ever activates.
 			//Each object carries its own fill style, outline width, and line join.
-			if (layer.TextObjects.Count > 0) {
-				TextObjectRenderer.RenderAll (
-					layer.TextLayer.Layer.Surface,
-					layer.TextObjects,
-					PintaCore.Chrome,
-					antialias: true);
-			}
+			if (layer.TextObjects.Count > 0)
+				ObjectOpacity.RefreshLayerNoInvalidate (PintaCore.Chrome, layer);
 		}
 	}
 

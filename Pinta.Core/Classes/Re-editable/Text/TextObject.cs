@@ -48,6 +48,10 @@ public sealed class TextObject : ILayerObject
 	public bool Hidden { get; set; }
 	public string Name { get; set; } = "";
 
+	//How this text object blends with what is already on the layer's TextLayer surface. Mirrors the
+	//layer blend modes; Normal composites over. Picked from the object's row in the layers dock.
+	public BlendMode BlendMode { get; set; } = BlendMode.Normal;
+
 	public TextObject (TextEngine engine)
 	{
 		Engine = engine;
@@ -74,6 +78,7 @@ public sealed class TextObject : ILayerObject
 			Opacity = Opacity,
 			Hidden = Hidden,
 			Name = Name,
+			BlendMode = BlendMode,
 		};
 
 	public static List<TextObject> CloneAll (IReadOnlyList<TextObject> objects)

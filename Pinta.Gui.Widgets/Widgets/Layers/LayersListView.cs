@@ -127,14 +127,16 @@ public sealed partial class LayersListView
 			return;
 
 		store.RemoveMultiple (0, store.GetNItems ());
-		for (int i = 0; i < layer.TextObjects.Count; ++i)
-			store.Append (LayersListViewItem.NewTextObject (active_document, layer, layer.TextObjects[i], i));
-		// Skip Rasterize-on-finalize shapes: they are transient and fuse the moment you move on;
-		// showing them as a sub-node that then vanishes is confusing. Index i stays the position
-		// in ShapeObjects so click-to-select still maps correctly.
-		for (int i = 0; i < layer.ShapeObjects.Count; ++i)
-			if (!layer.ShapeObjects[i].RasterizeOnFinalize)
-				store.Append (LayersListViewItem.NewShapeObject (active_document, layer, layer.ShapeObjects[i], i));
+		// The unified z-ordered object list — shapes and text interleaved. Skip Rasterize-on-finalize
+		// shapes: they are transient and fuse the moment you move on; showing them as a sub-node that
+		// then vanishes is confusing. ObjectIndex is the position in layer.Objects so cross-kind DnD
+		// reorder (text under shapes) maps straight onto the list.
+		for (int i = 0; i < layer.Objects.Count; ++i) {
+			if (layer.Objects[i] is TextObject text)
+				store.Append (LayersListViewItem.NewTextObject (active_document, layer, text, i));
+			else if (layer.Objects[i] is ShapeObject shape && !shape.RasterizeOnFinalize)
+				store.Append (LayersListViewItem.NewShapeObject (active_document, layer, shape, i));
+		}
 	}
 
 	private static void HandleFactorySetup (
@@ -200,10 +202,10 @@ public sealed partial class LayersListView
 			// Clicking a shape object row selects that shape in the editor and shows its control points.
 			// Select by stored index, not by reference: Store() rebuilds ShapeObjects on every persist.
 			if (item.ShapeObject is not null)
-				LayerObjectSelection.RequestShapeSelect (layer, item.ObjectIndex);
+				LayerObjectSelection.RequestShapeSelect (layer, UserLayer.UserLayerIndexOfKind (layer, isText: false, item.ObjectIndex));
 			// Clicking a text object row activates the Text tool and starts editing it (shows its handles).
 			else if (item.TextObject is not null)
-				LayerObjectSelection.RequestTextSelect (layer, item.ObjectIndex);
+				LayerObjectSelection.RequestTextSelect (layer, UserLayer.UserLayerIndexOfKind (layer, isText: true, item.ObjectIndex));
 		} finally {
 			changing_selection = false;
 		}

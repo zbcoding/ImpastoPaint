@@ -78,7 +78,7 @@ public sealed class TextTool : BaseTool
 	//This is used to temporarily store the UserLayer's and TextLayer's previous ImageSurface states.
 	private ImageSurface? text_undo_surface;
 	private ImageSurface? user_undo_surface;
-	private IReadOnlyList<TextObject>? undo_text_objects;
+	private IReadOnlyList<ILayerObject>? undo_objects;
 	// The last pre-editing string, if pre-editing is active.
 	private string? preedit_string;
 	// The selection from when editing started. This ensures that text doesn't suddenly disappear/appear
@@ -1161,7 +1161,7 @@ public sealed class TextTool : BaseTool
 		UpdateFont ();
 		click_point = click_point with { Y = click_point.Y - (CurrentTextLayout.FontHeight / 2) };
 		newObject.Engine.Origin = click_point;
-		CurrentUserLayer.TextObjects.Add (newObject);
+		CurrentUserLayer.AddText (newObject);
 		// The object exists now but isn't pushed to history until commit, so tell the layers dock
 		// directly — otherwise its sub-node row only appears one history step later.
 		LayerObjectSelection.RaiseObjectsChanged ();
@@ -1919,7 +1919,7 @@ public sealed class TextTool : BaseTool
 
 		// A fresh object that never received text is simply dropped.
 		if (committed.IsEmpty) {
-			layer.TextObjects.Remove (committed);
+			layer.RemoveObject (committed);
 			LayerObjectSelection.RaiseObjectsChanged ();
 		}
 
@@ -1947,7 +1947,7 @@ public sealed class TextTool : BaseTool
 		// so one undo brings the editable text back and another removes it. Skipped for empty (dropped)
 		// text. No confirmation prompt — the mode was chosen deliberately.
 		if (committed.RasterizeOnFinalize && !committed.IsEmpty) {
-			int index = layer.TextObjects.IndexOf (committed);
+			int index = IndexOfTextObject (layer, committed);
 			if (index >= 0)
 				ObjectRasterizer.RasterizeSubset (
 					workspace.ActiveDocument, workspace, chrome, layer,
@@ -1968,25 +1968,25 @@ public sealed class TextTool : BaseTool
 	{
 		ignore_clone_finalizations = true;
 
-		//Store the previous state of the current UserLayer's and TextLayer's ImageSurfaces.
+		//Store the previous state of the current UserLayer's and ObjectLayer's ImageSurfaces.
 		user_undo_surface = CurrentUserLayer.Surface.Clone ();
-		text_undo_surface = CurrentUserLayer.TextLayer.Layer.Surface.Clone ();
+		text_undo_surface = CurrentUserLayer.ObjectLayer.Layer.Surface.Clone ();
 
 		ignore_clone_finalizations = false;
 
-		//Store the previous state of the text objects.
-		undo_text_objects = TextObject.CloneAll (CurrentUserLayer.TextObjects);
+		//Store the previous state of the unified objects.
+		undo_objects = ObjectOpacity.CloneAll (CurrentUserLayer.Objects);
 	}
 
 	private void PushTextHistoryItem (UserLayer? targetLayer = null)
 	{
-		if (!workspace.HasOpenDocuments || text_undo_surface is null || user_undo_surface is null || undo_text_objects is null)
+		if (!workspace.HasOpenDocuments || text_undo_surface is null || user_undo_surface is null || undo_objects is null)
 			return;
 
 		UserLayer layer = targetLayer ?? CurrentUserLayer;
 
 		// Nothing actually changed (e.g. the user clicked an object without editing it).
-		if (SurfaceDiff.Create (text_undo_surface, layer.TextLayer.Layer.Surface, force: true) == null)
+		if (SurfaceDiff.Create (text_undo_surface, layer.ObjectLayer.Layer.Surface, force: true) == null)
 			return;
 
 		Document doc = workspace.ActiveDocument;
@@ -2002,7 +2002,7 @@ public sealed class TextTool : BaseTool
 				Name,
 				text_undo_surface.Clone (),
 				user_undo_surface.Clone (),
-				undo_text_objects,
+				undo_objects,
 				layer
 			)
 		);
@@ -2011,14 +2011,23 @@ public sealed class TextTool : BaseTool
 		ignore_clone_finalizations = false;
 	}
 
-	private void EndEditingSession ()
+	// Index of a text object among the layer's text objects, or -1 if it is not present.
+	private static int IndexOfTextObject (UserLayer layer, TextObject target)
 	{
-		is_editing = false;
+		IReadOnlyList<TextObject> texts = layer.TextObjects;
+		for (int i = 0; i < texts.Count; ++i)
+			if (ReferenceEquals (texts[i], target))
+				return i;
+		return -1;
+	}
+
+	private void EndEditingSession ()
+	{		is_editing = false;
 		current_text_object = null;
 		editing_layer = null;
 		UpdateConfirmButtonVisibility ();
 
-		undo_text_objects = null;
+		undo_objects = null;
 		text_undo_surface = null;
 		user_undo_surface = null;
 		selection = null;
@@ -2078,8 +2087,11 @@ public sealed class TextTool : BaseTool
 		foreach (TextObject obj in userLayer.TextObjects)
 			InflateAndInvalidate (obj.PreviousTextBounds);
 
-		// Clear the TextLayer and redraw every object on it.
-		userLayer.TextLayer.Layer.Surface.Clear ();
+		// Clear the shared ObjectLayer surface and re-render the shape objects that share it, so
+		// redrawing text doesn't wipe shapes that sit beneath it on the same surface.
+		ImageSurface surface = userLayer.ObjectLayer.Layer.Surface;
+		surface.Clear ();
+		RedrawPersistedShapes (userLayer, surface);
 
 		RectangleI allBounds = RectangleI.Zero;
 		RectangleI cursorBounds = RectangleI.Zero;
@@ -2130,7 +2142,9 @@ public sealed class TextTool : BaseTool
 	/// </summary>
 	private void RedrawTextLayerSurface (UserLayer layer)
 	{
-		layer.TextLayer.Layer.Surface.Clear ();
+		ImageSurface surface = layer.ObjectLayer.Layer.Surface;
+		surface.Clear ();
+		RedrawPersistedShapes (layer, surface);
 
 		foreach (TextObject obj in layer.TextObjects) {
 			if (obj.IsEmpty)
@@ -2142,6 +2156,15 @@ public sealed class TextTool : BaseTool
 
 			DrawTextObject (layer, obj, isActive: false);
 		}
+	}
+
+	// Re-renders the layer's persisted shape objects onto the shared ObjectLayer surface, so a text
+	// redraw that clears the surface doesn't wipe the shapes sharing it. Uses the deferred Z.
+	private void RedrawPersistedShapes (UserLayer layer, ImageSurface surface)
+	{
+		foreach (ShapeObject shape in layer.ShapeObjects)
+			if (!shape.RasterizeOnFinalize)
+				LayerObjectSelection.RenderShape (surface, layer, shape);
 	}
 
 	/// <summary>
@@ -2158,7 +2181,7 @@ public sealed class TextTool : BaseTool
 	/// <param name="isActive">Whether this is the object being actively edited (draws cursor and selection).</param>
 	private void DrawTextObject (UserLayer layer, TextObject obj, bool isActive)
 		=> ObjectOpacity.Draw (
-			layer.TextLayer.Layer.Surface,
+			layer.ObjectLayer.Layer.Surface,
 			obj,
 			target => DrawTextObjectOpaque (target, obj, isActive));
 

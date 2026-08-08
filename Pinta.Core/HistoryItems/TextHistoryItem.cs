@@ -39,7 +39,7 @@ public sealed class TextHistoryItem : BaseHistoryItem
 	readonly SurfaceDiff? user_surface_diff;
 	ImageSurface? user_surface;
 
-	List<TextObject> text_objects;
+	List<ILayerObject> objects;
 
 	private readonly IWorkspaceService workspace;
 
@@ -48,17 +48,17 @@ public sealed class TextHistoryItem : BaseHistoryItem
 	/// </summary>
 	/// <param name="icon">The history item's icon.</param>
 	/// <param name="text">The history item's title.</param>
-	/// <param name="passedTextSurface">The stored TextLayer surface.</param>
+	/// <param name="passedObjectSurface">The stored ObjectLayer surface.</param>
 	/// <param name="passedUserSurface">The stored UserLayer surface.</param>
-	/// <param name="passedTextObjects">A snapshot of the text objects before the change.</param>
+	/// <param name="passedObjects">A snapshot of the unified objects before the change.</param>
 	/// <param name="passedUserLayer">The UserLayer being modified.</param>
 	public TextHistoryItem (
 		IWorkspaceService workspace,
 		string icon,
 		string text,
-		ImageSurface passedTextSurface,
+		ImageSurface passedObjectSurface,
 		ImageSurface passedUserSurface,
-		IReadOnlyList<TextObject> passedTextObjects,
+		IReadOnlyList<ILayerObject> passedObjects,
 		UserLayer passedUserLayer
 	)
 		: base (icon, text)
@@ -66,12 +66,12 @@ public sealed class TextHistoryItem : BaseHistoryItem
 		user_layer = passedUserLayer;
 
 		text_surface_diff = SurfaceDiff.Create (
-			original: passedTextSurface,
-			updated: user_layer.TextLayer.Layer.Surface,
+			original: passedObjectSurface,
+			updated: user_layer.ObjectLayer.Layer.Surface,
 			force: true);
 
 		if (text_surface_diff == null) {
-			text_surface = passedTextSurface;
+			text_surface = passedObjectSurface;
 		}
 
 		user_surface_diff = SurfaceDiff.Create (
@@ -83,7 +83,7 @@ public sealed class TextHistoryItem : BaseHistoryItem
 			user_surface = passedUserSurface;
 		}
 
-		text_objects = TextObject.CloneAll (passedTextObjects);
+		objects = ObjectOpacity.CloneAll (passedObjects);
 
 		this.workspace = workspace;
 	}
@@ -101,14 +101,14 @@ public sealed class TextHistoryItem : BaseHistoryItem
 	private void Swap ()
 	{
 		// Grab the original surface
-		ImageSurface surf = user_layer.TextLayer.Layer.Surface;
+		ImageSurface surf = user_layer.ObjectLayer.Layer.Surface;
 
 		if (text_surface_diff != null) {
 			text_surface_diff.ApplyAndSwap (surf);
 			workspace.Invalidate (text_surface_diff.GetBounds ());
 		} else {
 			// Undo to the "old" surface
-			user_layer.TextLayer.Layer.Surface = text_surface!; // NRT - Will be not-null if text_surface_diff is null
+			user_layer.ObjectLayer.Layer.Surface = text_surface!; // NRT - Will be not-null if text_surface_diff is null
 
 			// Store the original surface for Redo
 			text_surface = surf;
@@ -131,11 +131,11 @@ public sealed class TextHistoryItem : BaseHistoryItem
 		//Redraw everything since surfaces were swapped.
 		workspace.Invalidate ();
 
-		//Store the old text data temporarily, then swap in the stored snapshot.
-		List<TextObject> oldTextObjects = text_objects;
-		text_objects = TextObject.CloneAll (user_layer.TextObjects);
+		//Store the old object data temporarily, then swap in the stored snapshot.
+		List<ILayerObject> oldObjects = objects;
+		objects = ObjectOpacity.CloneAll (user_layer.Objects);
 
-		user_layer.TextObjects.Clear ();
-		user_layer.TextObjects.AddRange (oldTextObjects);
+		user_layer.Objects.Clear ();
+		user_layer.Objects.AddRange (oldObjects);
 	}
 }

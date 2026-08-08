@@ -167,15 +167,13 @@ public static class ObjectRasterizer
 		if (shapeIndices.Count == 0 && textIndices.Count == 0)
 			return false;
 
-		// Snapshot the full pre-bake state for undo (base + both object surfaces + both object lists).
+		// Snapshot the full pre-bake state for undo (base + the object surface + the object list).
 		ImageSurface baseBefore = layer.Surface.Clone ();
-		ImageSurface shapeBefore = layer.ShapeLayer.Layer.Surface.Clone ();
-		ImageSurface textBefore = layer.TextLayer.Layer.Surface.Clone ();
-		var shapesBefore = ShapeObject.CloneAll (layer.ShapeObjects);
-		var textObjBefore = TextObject.CloneAll (layer.TextObjects);
+		ImageSurface objectBefore = layer.ObjectLayer.Layer.Surface.Clone ();
+		var objectsBefore = ObjectOpacity.CloneAll (layer.Objects);
 
-		// Bake the chosen objects onto the base raster (shapes via the Tools renderer seam, text via
-		// the Core text renderer) BEFORE removing them from the lists — the renderers read by index.
+		// Bake the chosen objects onto the base raster BEFORE removing them from the list — the
+		// renderers read by index.
 		LayerObjectSelection.RenderShapeSubset (layer.Surface, layer, shapeIndices);
 		// textClip is set by the text tool's Raster-mode commit so the baked pixels match the clipped
 		// preview; the generic Cut/Erase and "Rasterize All" callers pass null (bake the full object).
@@ -184,27 +182,25 @@ public static class ObjectRasterizer
 
 		// Drop the baked objects (descending index so earlier removals don't shift later ones).
 		foreach (int i in shapeIndices.OrderByDescending (i => i))
-			layer.ShapeObjects.RemoveAt (i);
+			layer.RemoveObjectAtKind (isText: false, i);
 		foreach (int i in textIndices.OrderByDescending (i => i))
-			layer.TextObjects.RemoveAt (i);
+			layer.RemoveObjectAtKind (isText: true, i);
 
-		// Re-render the object surfaces from what remains so the baked pixels aren't composited twice.
-		// Shapes: the Tools seam redraws the ShapeLayer surface and rebuilds the live editing engines.
-		// Only when shapes were actually baked — an empty subset (e.g. a text-only rasterize) must not
-		// trigger a reload, which re-composites the remaining editable shapes UNCLIPPED and would redraw
-		// any drawn-inside-a-selection shape in full.
-		// Text: redraw the TextLayer surface here in Core from the remaining objects.
+		// Re-render the object surface from what remains so the baked pixels aren't composited twice.
+		// Shapes: the Tools seam rebuilds the live editing engines. Only when shapes were actually
+		// baked — an empty subset (e.g. a text-only rasterize) must not trigger a reload, which
+		// re-composites the remaining editable shapes UNCLIPPED and would redraw any drawn-inside-a-
+		// selection shape in full. The object surface is rebuilt from the remaining unified list.
 		if (shapeIndices.Count > 0)
 			LayerObjectSelection.RequestShapeReload (layer);
-		layer.TextLayer.Layer.Surface.Clear ();
-		TextObjectRenderer.RenderAll (layer.TextLayer.Layer.Surface, layer.TextObjects, chrome, antialias: true);
+		ObjectOpacity.RefreshLayerNoInvalidate (chrome, layer);
 
 		RasterizeObjectsHistoryItem item = new (
 			workspace,
 			Resources.Icons.ImageFlatten,
 			Translations.GetString ("Rasterize Objects"),
-			baseBefore, shapeBefore, textBefore,
-			shapesBefore, textObjBefore, layer);
+			baseBefore, objectBefore,
+			objectsBefore, layer);
 
 		// When part of a larger action (e.g. a resize), the bake is recorded into that action's
 		// compound item so the whole thing undoes in one step; otherwise it's its own history step.

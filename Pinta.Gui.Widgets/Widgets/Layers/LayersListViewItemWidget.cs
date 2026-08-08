@@ -178,7 +178,7 @@ public sealed partial class LayersListViewItem
 	/// or the object is gone (e.g. rasterized).
 	/// </summary>
 	private ILayerObject? LiveObject
-		=> IsObjectRow ? UserLayer?.FindObject (TextObject is not null, ObjectIndex) : null;
+		=> IsObjectRow ? UserLayer?.FindObjectAt (ObjectIndex) : null;
 
 	/// <summary>Current opacity (0..1) of the object this row represents.</summary>
 	public double ObjectOpacity
@@ -191,6 +191,10 @@ public sealed partial class LayersListViewItem
 	/// <summary>The object's user-given name, or empty when it still uses the type default.</summary>
 	public string ObjectName
 		=> LiveObject?.Name ?? string.Empty;
+
+	/// <summary>Current blend mode of the object this row represents.</summary>
+	public BlendMode ObjectBlendMode
+		=> LiveObject?.BlendMode ?? BlendMode.Normal;
 
 	/// <summary>
 	/// Applies an opacity to this row's object and re-renders, with no history item — used for the
@@ -212,6 +216,27 @@ public sealed partial class LayersListViewItem
 			o => o.Opacity,
 			(o, v) => o.Opacity = v,
 			previousOpacity);
+
+	/// <summary>
+	/// Applies a blend mode to this row's object and re-renders, with no history item — used for the
+	/// live dropdown in the popover. <see cref="PushObjectBlendModeHistory"/> records the change as
+	/// one undoable step once the popover closes.
+	/// </summary>
+	public void SetObjectBlendMode (BlendMode mode)
+	{
+		if (UserLayer is null || LiveObject is not { } obj || obj.BlendMode == mode)
+			return;
+
+		obj.BlendMode = mode;
+		Pinta.Core.ObjectOpacity.RefreshLayer (PintaCore.Workspace, PintaCore.Chrome, UserLayer);
+	}
+
+	public void PushObjectBlendModeHistory (BlendMode previousMode)
+		=> PushObjectProperty (
+			Translations.GetString ("Object Blend Mode"),
+			o => o.BlendMode,
+			(o, v) => o.BlendMode = v,
+			previousMode);
 
 	public void SetObjectHidden (bool hidden)
 	{
@@ -245,15 +270,14 @@ public sealed partial class LayersListViewItem
 	}
 
 	/// <summary>
-	/// Moves the object to <paramref name="index"/> in its layer's object list — its z-order, since
-	/// the list is rendered in order. Driven by dragging the row onto another object row.
+	/// Moves the object to <paramref name="index"/> in its layer's unified object list — its
+	/// z-order, since the list is rendered in order. Driven by dragging the row onto another object
+	/// row; works across kinds (a text can be dragged beneath a shape).
 	/// </summary>
 	public void MoveObjectTo (int index)
 	{
 		if (UserLayer is null || document is null || !IsObjectRow)
 			return;
-
-		bool isText = TextObject is not null;
 
 		ObjectReorderHistoryItem historyItem = new (
 			PintaCore.Workspace,
@@ -261,11 +285,10 @@ public sealed partial class LayersListViewItem
 			Resources.Icons.LayerProperties,
 			Translations.GetString ("Reorder Object"),
 			UserLayer,
-			isText,
 			ObjectIndex,
 			index);
 
-		if (!UserLayer.MoveObject (isText, ObjectIndex, index))
+		if (!UserLayer.MoveObjectAt (ObjectIndex, index))
 			return;
 
 		Pinta.Core.ObjectOpacity.RefreshLayer (PintaCore.Workspace, PintaCore.Chrome, UserLayer);
@@ -273,13 +296,12 @@ public sealed partial class LayersListViewItem
 		LayerObjectSelection.RaiseObjectsChanged ();
 	}
 
-	/// <summary>Whether this row and <paramref name="other"/> are objects of the same kind on the
-	/// same layer — the only case where one can be dragged onto the other to reorder.</summary>
+	/// <summary>Whether this row and <paramref name="other"/> are object rows on the same layer — the
+	/// only case where one can be dragged onto the other to reorder (cross-kind allowed).</summary>
 	public bool IsReorderablePeer (LayersListViewItem other)
 		=> IsObjectRow
 			&& other.IsObjectRow
-			&& ReferenceEquals (UserLayer, other.UserLayer)
-			&& (TextObject is not null) == (other.TextObject is not null);
+			&& ReferenceEquals (UserLayer, other.UserLayer);
 
 	/// <summary>
 	/// Pushes an already-applied per-object property change as one undoable step. The value is set
@@ -299,7 +321,6 @@ public sealed partial class LayersListViewItem
 				Resources.Icons.LayerProperties,
 				label,
 				UserLayer,
-				isText: TextObject is not null,
 				ObjectIndex,
 				get,
 				set,
@@ -494,6 +515,25 @@ public sealed partial class LayersListViewItemWidget
 		nameBox.Append (nameEntry);
 		box.Append (nameBox);
 
+		// --- Blend mode. Matches the layer properties dialog dropdown; a non-Normal mode composites
+		// the object against the pixels beneath it on the layer. One history item on close.
+		BlendMode beforeBlend = row.ObjectBlendMode;
+
+		Gtk.ComboBoxText blendCombo = Gtk.ComboBoxText.New ();
+		foreach (string blendName in UserBlendOps.GetAllBlendModeNames ())
+			blendCombo.AppendText (blendName);
+		blendCombo.Active = UserBlendOps.GetAllBlendModeNames ()
+			.ToList ().IndexOf (UserBlendOps.GetBlendModeName (beforeBlend));
+		blendCombo.OnChanged += (_, _) => {
+			if (blendCombo.GetActiveText () is { } name)
+				row.SetObjectBlendMode (UserBlendOps.GetBlendModeByName (name));
+		};
+
+		Gtk.Box blendBox = Gtk.Box.New (Gtk.Orientation.Horizontal, 6);
+		blendBox.Append (Gtk.Label.New (Translations.GetString ("Blend Mode:")));
+		blendBox.Append (blendCombo);
+		box.Append (blendBox);
+
 		// --- Opacity. The drag updates the canvas live; a single history item is pushed when the
 		// popover closes, so one undo restores the value the drag started from.
 		double beforeOpacity = row.ObjectOpacity;
@@ -514,13 +554,22 @@ public sealed partial class LayersListViewItemWidget
 		popover.OnClosed += (_, _) => {
 			if (row.ObjectOpacity != beforeOpacity)
 				row.PushObjectOpacityHistory (beforeOpacity);
+			if (row.ObjectBlendMode != beforeBlend)
+				row.PushObjectBlendModeHistory (beforeBlend);
 			row.RenameObject (nameEntry.GetText ());
 		};
 		popover.Popup ();
 
 		// The main window forwards key presses to the window's focus widget before its own tool
 		// shortcuts get a look; without focus here, typing a name would switch tools instead.
-		nameEntry.GrabFocus ();
+		// Grabbing focus right after Popup() — or even in OnMap — runs while the popover is still
+		// settling, so the grab is silently dropped. Defer to an idle callback, which runs after
+		// mapping (and the popover's own focus hand-off) has completed. Clicking the field works
+		// for the same reason: it happens once the popover has fully settled.
+		GLib.Functions.IdleAdd (GLib.Constants.PRIORITY_DEFAULT_IDLE, () => {
+			nameEntry.GrabFocus ();
+			return false;
+		});
 	}
 
 	private Gdk.ContentProvider? DragSource_OnPrepare (

@@ -110,10 +110,25 @@ public static class ShapeEngineCollection
 
 	public static void Store (UserLayer layer, IReadOnlyList<ShapeEngine> engines)
 	{
-		layer.ShapeObjects.Clear ();
-		foreach (ShapeEngine engine in engines)
-			if (engine.ParentLayer == layer)
-				layer.ShapeObjects.Add (engine.ToShapeObject ());
+		// Rebuild the layer's shape objects in place, preserving the position of each shape relative
+		// to the text objects it may be interleaved with (cross-kind z-order survives a persist).
+		var newShapes = engines.Where (e => e.ParentLayer == layer).Select (e => e.ToShapeObject ()).ToList ();
+
+		List<ILayerObject> rebuilt = [];
+		int shapeIdx = 0;
+		foreach (ILayerObject o in layer.Objects) {
+			if (o is ShapeObject) {
+				if (shapeIdx < newShapes.Count)
+					rebuilt.Add (newShapes[shapeIdx++]);
+			} else {
+				rebuilt.Add (o);
+			}
+		}
+		for (; shapeIdx < newShapes.Count; ++shapeIdx)
+			rebuilt.Add (newShapes[shapeIdx]);
+
+		layer.Objects.Clear ();
+		layer.Objects.AddRange (rebuilt);
 	}
 
 	private static Arrow ToArrow (ShapeArrow arrow)
@@ -218,6 +233,10 @@ public abstract class ShapeEngine : ILayerObject
 	// Per-shape visibility, carried through the ShapeObject round-trip. A hidden shape renders
 	// nothing but stays fully editable. See ObjectOpacity.Draw, the chokepoint that honors it.
 	public bool Hidden { get; set; }
+
+	// Per-shape blend mode, carried through the ShapeObject round-trip. How this shape mixes with
+	// what is already on the layer's shape surface. See ObjectOpacity.Draw.
+	public BlendMode BlendMode { get; set; } = BlendMode.Normal;
 
 	public LineCap LineCap { get; set; }
 	public UserLayer ParentLayer => parent_layer ?? DrawingLayer.ParentLayer;

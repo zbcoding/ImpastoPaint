@@ -71,6 +71,11 @@ public sealed class ShapeObject : ILayerObject
 	/// the object's row in the layers dock; the shape stays fully editable while hidden.
 	/// </summary>
 	public bool Hidden { get; set; }
+	/// <summary>
+	/// How this shape blends with what is already drawn on its layer's shape surface. Mirrors the
+	/// layer blend modes; Normal composites over. Picked from the object's row in the layers dock.
+	/// </summary>
+	public BlendMode BlendMode { get; set; } = BlendMode.Normal;
 	public List<ShapeControlPoint> ControlPoints { get; } = [];
 	public bool AntiAliasing { get; set; } = true;
 	public bool Closed { get; set; }
@@ -99,6 +104,7 @@ public sealed class ShapeObject : ILayerObject
 			Clip = Clip, // frozen selection, never mutated — safe to share
 			Opacity = Opacity,
 			Hidden = Hidden,
+			BlendMode = BlendMode,
 			AntiAliasing = AntiAliasing,
 			Closed = Closed,
 			OutlineColor = OutlineColor,

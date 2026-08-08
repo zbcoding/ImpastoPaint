@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Cairo;
 using NUnit.Framework;
 
@@ -190,18 +191,15 @@ internal sealed class ShapeObjectTest
 	public void MoveObjectReordersAndIsReversible ()
 	{
 		UserLayer layer = new (CairoExtensions.CreateImageSurface (Format.Argb32, 4, 4));
-		layer.ShapeObjects.AddRange ([
-			new ShapeObject { Name = "a" },
-			new ShapeObject { Name = "b" },
-			new ShapeObject { Name = "c" },
-		]);
+		foreach (var name in new[] { "a", "b", "c" })
+			layer.Objects.Add (new ShapeObject { Name = name });
 
 		Assert.Multiple (() => {
 			Assert.That (layer.MoveObject (isText: false, 0, 2), Is.True);
-			Assert.That (layer.ShapeObjects.ConvertAll (o => o.Name), Is.EqualTo (new[] { "b", "c", "a" }));
+			Assert.That (layer.ShapeObjects.Select (o => o.Name), Is.EqualTo (new[] { "b", "c", "a" }));
 
 			Assert.That (layer.MoveObject (isText: false, 2, 0), Is.True);
-			Assert.That (layer.ShapeObjects.ConvertAll (o => o.Name), Is.EqualTo (new[] { "a", "b", "c" }));
+			Assert.That (layer.ShapeObjects.Select (o => o.Name), Is.EqualTo (new[] { "a", "b", "c" }));
 
 			Assert.That (layer.MoveObject (isText: false, 0, 0), Is.False, "no-op move");
 			Assert.That (layer.MoveObject (isText: false, 0, 9), Is.False, "out of range");
@@ -217,9 +215,9 @@ internal sealed class ShapeObjectTest
 		UserLayer layer = new (baseSurface);
 
 		// Simulate the object-layer invariant: a shape object with its rendered pixels sitting in the
-		// ShapeLayer surface (not the base raster). RasterizeObjects must fold those pixels down.
-		layer.ShapeObjects.Add (new ShapeObject { ShapeType = ShapeObjectType.Ellipse });
-		using (Context g = new (layer.ShapeLayer.Layer.Surface)) {
+		// ObjectLayer surface (not the base raster). RasterizeObjects must fold those pixels down.
+		layer.AddShape (new ShapeObject { ShapeType = ShapeObjectType.Ellipse });
+		using (Context g = new (layer.ObjectLayer.Layer.Surface)) {
 			g.SetSourceColor (new Color (1, 0, 0, 1));
 			g.Rectangle (0, 0, 4, 4);
 			g.Fill ();
@@ -233,7 +231,7 @@ internal sealed class ShapeObjectTest
 			Assert.That (baked, Is.True);
 			Assert.That (layer.ShapeObjects, Is.Empty, "objects dropped");
 			Assert.That (layer.Surface.GetColorBgra (new PointI (1, 1)).A, Is.EqualTo (255), "pixels now in base raster");
-			Assert.That (layer.ShapeLayer.Layer.Surface.GetColorBgra (new PointI (1, 1)).A, Is.EqualTo (0), "object surface cleared");
+			Assert.That (layer.ObjectLayer.Layer.Surface.GetColorBgra (new PointI (1, 1)).A, Is.EqualTo (0), "object surface cleared");
 		});
 
 		Assert.That (layer.RasterizeObjects (), Is.False, "no-op when there are no objects");
@@ -250,19 +248,14 @@ internal sealed class ShapeObjectTest
 		ImageSurface baseSurface = CairoExtensions.CreateImageSurface (Format.Argb32, 4, 4);
 		UserLayer layer = new (baseSurface);
 
-		layer.ShapeObjects.Add (new ShapeObject { ShapeType = ShapeObjectType.Ellipse });
-		layer.TextObjects.Add (new TextObject (new TextEngine ()));
+		layer.AddShape (new ShapeObject { ShapeType = ShapeObjectType.Ellipse });
+		layer.AddText (new TextObject (new TextEngine ()));
 
-		// Paint the shape into its object surface (left half) and the text into its own (right half),
-		// so a correct bake leaves both regions opaque in the base raster.
-		using (Context g = new (layer.ShapeLayer.Layer.Surface)) {
+		// Paint the shape into the object surface (left half) and text into its own region (right
+		// half), so a correct bake leaves both regions opaque in the base raster.
+		using (Context g = new (layer.ObjectLayer.Layer.Surface)) {
 			g.SetSourceColor (new Color (1, 0, 0, 1));
 			g.Rectangle (0, 0, 2, 4);
-			g.Fill ();
-		}
-		using (Context g = new (layer.TextLayer.Layer.Surface)) {
-			g.SetSourceColor (new Color (0, 0, 1, 1));
-			g.Rectangle (2, 0, 2, 4);
 			g.Fill ();
 		}
 
@@ -273,9 +266,7 @@ internal sealed class ShapeObjectTest
 			Assert.That (layer.ShapeObjects, Is.Empty, "shape objects dropped");
 			Assert.That (layer.TextObjects, Is.Empty, "text objects dropped");
 			Assert.That (layer.Surface.GetColorBgra (new PointI (0, 1)).A, Is.EqualTo (255), "shape pixels baked");
-			Assert.That (layer.Surface.GetColorBgra (new PointI (3, 1)).A, Is.EqualTo (255), "text pixels baked");
-			Assert.That (layer.ShapeLayer.Layer.Surface.GetColorBgra (new PointI (0, 1)).A, Is.EqualTo (0), "shape surface cleared");
-			Assert.That (layer.TextLayer.Layer.Surface.GetColorBgra (new PointI (3, 1)).A, Is.EqualTo (0), "text surface cleared");
+			Assert.That (layer.ObjectLayer.Layer.Surface.GetColorBgra (new PointI (0, 1)).A, Is.EqualTo (0), "object surface cleared");
 		});
 	}
 

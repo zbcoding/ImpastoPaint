@@ -59,6 +59,15 @@ public static class LayerObjectSelection
 		=> ShapeSubsetRenderer?.Invoke (surface, layer, shapeIndices);
 
 	/// <summary>
+	/// Renders a single shape object onto a surface. Set by Pinta.Tools (which owns the shape
+	/// renderer); Core calls it to composite shapes into a layer's unified object surface.
+	/// </summary>
+	public static Action<ImageSurface, UserLayer, ShapeObject>? ShapeRenderer;
+
+	public static void RenderShape (ImageSurface surface, UserLayer layer, ShapeObject shape)
+		=> ShapeRenderer?.Invoke (surface, layer, shape);
+
+	/// <summary>
 	/// Fired when the user clears the selection (Deselect). The shape tool bakes any shape that was
 	/// drawn clipped to that selection (its frozen <see cref="ShapeObject.Clip"/>) into the layer's
 	/// raster — so a partially-clipped shape becomes plain pixels instead of an editable object that

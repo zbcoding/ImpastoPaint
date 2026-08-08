@@ -254,6 +254,10 @@ public abstract class BaseEditEngine
 					ShapeObjectRenderer.Render (surface, layer, layer.ShapeObjects[i]);
 		};
 
+		// Lend a single-shape renderer to Core's unified object-surface rebuild.
+		LayerObjectSelection.ShapeRenderer = (surface, layer, shape)
+			=> ShapeObjectRenderer.Render (surface, layer, shape);
+
 		// When the selection is cleared, bake any shape drawn clipped to it (Pinta.Core).
 		LayerObjectSelection.SelectionCleared += HandleSelectionCleared;
 	}
@@ -1644,16 +1648,23 @@ public abstract class BaseEditEngine
 	}
 
 	/// <summary>
-	/// Clears the active layer's shared ShapeLayer surface and re-renders every live shape's
-	/// geometry into it. This is how the object-layer system composites the active layer's shapes
-	/// now that per-shape overlays are retired. Returns the combined dirty rectangle.
+	/// Clears the active layer's shared ObjectLayer surface and re-renders every live shape's
+	/// geometry into it (plus the layer's text objects, which share the same surface in z-order so
+	/// a shape's blend mode composites against text beneath it). This is how the object-layer system
+	/// composites the active layer's objects now that per-shape overlays are retired.
+	/// Returns the combined dirty rectangle.
 	/// </summary>
 	// ponytail: O(total control points) per redraw; fine for typical shape counts. If a layer ever
 	// holds many complex shapes, redraw only the changed shape into a scratch + composite.
 	private RectangleD RedrawActiveLayerShapeSurface ()
 	{
-		ImageSurface surface = workspace.ActiveDocument.Layers.CurrentUserLayer.ShapeLayer.Layer.Surface;
+		UserLayer layer = workspace.ActiveDocument.Layers.CurrentUserLayer;
+		ImageSurface surface = layer.ObjectLayer.Layer.Surface;
 		surface.Clear ();
+
+		// Re-render text objects first (they may sit beneath or above shapes; the shape SEngines
+		// below draw live geometry and currently render on top).
+		TextObjectRenderer.RenderAll (surface, layer.TextObjects, PintaCore.Chrome, antialias: true);
 
 		RectangleD? totalDirty = null;
 		foreach (ShapeEngine engine in SEngines) {
@@ -2042,11 +2053,11 @@ public abstract class BaseEditEngine
 	}
 
 	/// <summary>
-	/// Rebuilds a layer's ShapeLayer surface from its ShapeObjects, maintaining the
-	/// invariant that the object surface equals the render of the object list.
+	/// Rebuilds a layer's unified object surface from its full object list (shapes + text), maintaining
+	/// the invariant that the object surface equals the render of the object list.
 	/// </summary>
 	public static void RedrawShapeLayerSurface (UserLayer layer)
-		=> ShapeObjectRenderer.RenderAll (layer.ShapeLayer.Layer.Surface, layer);
+		=> ObjectOpacity.RefreshLayerNoInvalidate (PintaCore.Chrome, layer);
 
 	public static void PersistShapeObjects (UserLayer layer)
 		=> ShapeEngineCollection.Store (layer, SEngines);

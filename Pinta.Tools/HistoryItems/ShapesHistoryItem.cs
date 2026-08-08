@@ -124,8 +124,7 @@ public sealed class ShapesHistoryItem : BaseHistoryItem
 		// Snapshot the current (live) object state, then swap in the stored state.
 		BaseEditEngine.PersistShapeObjectsIfLive (user_layer);
 		List<ShapeObject> live = ShapeObject.CloneAll (user_layer.ShapeObjects);
-		user_layer.ShapeObjects.Clear ();
-		user_layer.ShapeObjects.AddRange (shape_objects);
+		user_layer.ReplaceShapes (shape_objects);
 		shape_objects = live;
 
 		// Rebuild the object surface and (if active) the live editing engines from the restored objects.

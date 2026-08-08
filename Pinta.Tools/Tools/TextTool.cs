@@ -2087,26 +2087,38 @@ public sealed class TextTool : BaseTool
 		foreach (TextObject obj in userLayer.TextObjects)
 			InflateAndInvalidate (obj.PreviousTextBounds);
 
-		// Clear the shared ObjectLayer surface and re-render the shape objects that share it, so
-		// redrawing text doesn't wipe shapes that sit beneath it on the same surface.
+		// Clear the shared ObjectLayer surface and re-render every object on it in unified z-order, so
+		// redrawing text neither wipes the shapes sharing the surface nor restacks them. Drawing all
+		// shapes first and all text after would put every text above every shape, so merely clicking a
+		// text row — which lands here — would recomposite the layer differently from every other render
+		// path (ObjectOpacity.RenderLayerObjects) and change how a blended shape mixes with the text
+		// beneath it.
 		ImageSurface surface = userLayer.ObjectLayer.Layer.Surface;
 		surface.Clear ();
-		RedrawPersistedShapes (userLayer, surface);
 
 		RectangleI allBounds = RectangleI.Zero;
 		RectangleI cursorBounds = RectangleI.Zero;
 
-		foreach (TextObject obj in userLayer.TextObjects) {
-			// Skip empty objects, but keep rendering the caret for the one being typed into.
-			if (obj.IsEmpty && obj != current_text_object)
-				continue;
+		foreach (ILayerObject o in userLayer.Objects) {
+			switch (o) {
+				case ShapeObject shape:
+					if (!shape.RasterizeOnFinalize)
+						LayerObjectSelection.RenderShape (surface, userLayer, shape);
+					break;
 
-			RectangleI r = GetTextObjectBounds (obj);
-			obj.PreviousTextBounds = obj.TextBounds;
-			obj.TextBounds = r;
-			allBounds = allBounds.Union (r);
+				case TextObject obj:
+					// Skip empty objects, but keep rendering the caret for the one being typed into.
+					if (obj.IsEmpty && obj != current_text_object)
+						continue;
 
-			DrawTextObject (userLayer, obj, showCursor && obj == current_text_object);
+					RectangleI r = GetTextObjectBounds (obj);
+					obj.PreviousTextBounds = obj.TextBounds;
+					obj.TextBounds = r;
+					allBounds = allBounds.Union (r);
+
+					DrawTextObject (userLayer, obj, showCursor && obj == current_text_object);
+					break;
+			}
 		}
 
 		if (is_editing && current_text_object is not null) {
@@ -2144,27 +2156,27 @@ public sealed class TextTool : BaseTool
 	{
 		ImageSurface surface = layer.ObjectLayer.Layer.Surface;
 		surface.Clear ();
-		RedrawPersistedShapes (layer, surface);
 
-		foreach (TextObject obj in layer.TextObjects) {
-			if (obj.IsEmpty)
-				continue;
+		// Unified z-order, for the same reason as RedrawText.
+		foreach (ILayerObject o in layer.Objects) {
+			switch (o) {
+				case ShapeObject shape:
+					if (!shape.RasterizeOnFinalize)
+						LayerObjectSelection.RenderShape (surface, layer, shape);
+					break;
 
-			RectangleI r = GetTextObjectBounds (obj);
-			obj.PreviousTextBounds = obj.TextBounds;
-			obj.TextBounds = r;
+				case TextObject obj:
+					if (obj.IsEmpty)
+						continue;
 
-			DrawTextObject (layer, obj, isActive: false);
+					RectangleI r = GetTextObjectBounds (obj);
+					obj.PreviousTextBounds = obj.TextBounds;
+					obj.TextBounds = r;
+
+					DrawTextObject (layer, obj, isActive: false);
+					break;
+			}
 		}
-	}
-
-	// Re-renders the layer's persisted shape objects onto the shared ObjectLayer surface, so a text
-	// redraw that clears the surface doesn't wipe the shapes sharing it. Uses the deferred Z.
-	private void RedrawPersistedShapes (UserLayer layer, ImageSurface surface)
-	{
-		foreach (ShapeObject shape in layer.ShapeObjects)
-			if (!shape.RasterizeOnFinalize)
-				LayerObjectSelection.RenderShape (surface, layer, shape);
 	}
 
 	/// <summary>

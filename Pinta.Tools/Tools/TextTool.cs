@@ -1161,11 +1161,16 @@ public sealed class TextTool : BaseTool
 		UpdateFont ();
 		click_point = click_point with { Y = click_point.Y - (CurrentTextLayout.FontHeight / 2) };
 		newObject.Engine.Origin = click_point;
+		// Snapshot the object list *before* the new object joins it: StartEditing's own capture runs
+		// after the Add, so undoing the text creation would restore a list that still contains the
+		// object — an empty text sub-node left behind on the layer at every earlier history step.
+		IReadOnlyList<ILayerObject> objectsBeforeAdd = ObjectOpacity.CloneAll (CurrentUserLayer.Objects);
 		CurrentUserLayer.AddText (newObject);
 		// The object exists now but isn't pushed to history until commit, so tell the layers dock
 		// directly — otherwise its sub-node row only appears one history step later.
 		LayerObjectSelection.RaiseObjectsChanged ();
 		StartEditing (newObject);
+		undo_objects = objectsBeforeAdd;
 		if (AreaMode) {
 			//Draw-the-box-first: give it a provisional width and let the drag define the
 			//real one (OnMouseMove). A click / tiny drag falls back to DefaultAreaWidth on

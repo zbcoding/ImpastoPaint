@@ -425,6 +425,11 @@ public sealed partial class LayersListView
 		item.MoveObjectTo (target);
 		last_object_row = (layer, target);
 		RestoreObjectRowSelection ();
+
+		// The move's own refresh ran against the old index, and restoring the selection is silent, so
+		// tell the layer actions to re-probe: otherwise Move Up/Down keep the sensitivity they had
+		// before the move and the object can only be moved once.
+		LayerObjectSelection.RaiseObjectSelectionChanged ();
 		return true;
 	}
 

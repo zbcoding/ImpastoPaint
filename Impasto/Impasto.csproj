@@ -31,6 +31,7 @@
 
   <ItemGroup>
     <EmbeddedResource Include="..\license-mit.txt" Link="Resources\license-mit.txt" LogicalName="LICENSE-MIT.txt" />
+    <EmbeddedResource Include="..\license-mit-pinta.txt" Link="Resources\license-mit-pinta.txt" LogicalName="LICENSE-MIT-PINTA.txt" />
     <EmbeddedResource Include="..\license-pdn.txt" Link="Resources\license-pdn.txt" LogicalName="LICENSE-PDN.txt" />
     <EmbeddedResource Include="..\THIRD-PARTY-NOTICES.md" Link="Resources\THIRD-PARTY-NOTICES.md" LogicalName="THIRD-PARTY-NOTICES.md" />
     <EmbeddedResource Include="..\CONTRIBUTORS.md" Link="Resources\CONTRIBUTORS.md" LogicalName="CONTRIBUTORS.md" />

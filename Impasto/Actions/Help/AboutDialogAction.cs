@@ -63,13 +63,13 @@ internal sealed class AboutDialogAction : IActionHandler
 	{
 		using Adw.AboutWindow dialog = Adw.AboutWindow.New ();
 		dialog.TransientFor = chrome.MainWindow;
-		dialog.Title = Translations.GetString ("About Pinta");
+		dialog.Title = Translations.GetString ("About Impasto");
 		dialog.ApplicationName = Translations.GetString ("Impasto");
 		dialog.ApplicationIcon = Icons.Pinta;
 		dialog.Version = application_version;
 		dialog.DefaultWidth = 800;
 		dialog.DefaultHeight = 700;
-		dialog.Website = "https://www.pinta-project.com";
+		dialog.Website = "https://github.com/zbcoding/Impasto";
 		dialog.Comments = Translations.GetString ("Easily create and edit images");
 		dialog.Copyright = BuildCopyrightText ();
 		dialog.License = string.Empty;
@@ -77,7 +77,8 @@ internal sealed class AboutDialogAction : IActionHandler
 		// The Legal and Credits sections below are populated verbatim from the
 		// corresponding files (embedded as resources in Pinta.csproj). To update what
 		// users see in the app, edit these files — don't hardcode text here:
-		//   license-mit.txt        -> MIT License (the application license)
+		//   license-mit.txt        -> MIT License (the Impasto application license)
+		//   license-mit-pinta.txt  -> MIT License (upstream Pinta Project)
 		//   THIRD-PARTY-NOTICES.md  -> Third-Party Notices (icons + component licenses)
 		//   license-pdn.txt        -> Paint.NET reference license
 		//   CONTRIBUTORS.md         -> Credits (contributors)
@@ -92,18 +93,20 @@ internal sealed class AboutDialogAction : IActionHandler
 			Gtk.License.Custom,
 			EscapeMarkup (LoadEmbeddedText ("LICENSE-PDN.txt")));
 		ReplaceLegalSections (dialog);
-		dialog.Developers = LoadContributors (LoadEmbeddedText ("CONTRIBUTORS.md"));
+		dialog.AddCreditSection (
+			Translations.GetString ("Pinta Project code by"),
+			LoadContributors (LoadEmbeddedText ("CONTRIBUTORS.md")));
 		dialog.TranslatorCredits = Translations.GetString ("translator-credits");
-		dialog.IssueUrl = "https://github.com/PintaProject/Pinta/issues";
-		dialog.SupportUrl = "https://github.com/PintaProject/Pinta/discussions";
+		dialog.IssueUrl = "https://github.com/zbcoding/Impasto/issues";
+		dialog.SupportUrl = "https://github.com/zbcoding/Impasto/issues";
 		await dialog.PresentAsync ();
 	}
 
 	private static string BuildCopyrightText ()
 	{
 		string copyrightText = Translations.GetString ("Copyright");
-		string contributorsText = Translations.GetString ("by Pinta contributors");
-		return $"{copyrightText} (c) 2010-2026 {contributorsText}";
+		string contributorsText = Translations.GetString ("zbcoding — based on Pinta, (c) 2010-2026 the Pinta Project contributors");
+		return $"{copyrightText} (c) 2026 {contributorsText}";
 	}
 
 	private static void ReplaceLegalSections (Adw.AboutWindow dialog)
@@ -126,7 +129,7 @@ internal sealed class AboutDialogAction : IActionHandler
 		AppendLegalExpander (
 			legalBox,
 			Translations.GetString ("MIT License - Pinta Project"),
-			LoadEmbeddedText ("LICENSE-MIT.txt"));
+			LoadEmbeddedText ("LICENSE-MIT-PINTA.txt"));
 		AppendLegalExpander (
 			legalBox,
 			Translations.GetString ("Third-Party Notices"),

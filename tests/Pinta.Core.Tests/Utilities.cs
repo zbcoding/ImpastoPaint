@@ -14,6 +14,13 @@ internal static class Utilities
 		Gdk.Module.Initialize ();
 	}
 
+	/// <summary>
+	/// Runs the static constructor above, which loads the native libraries.
+	/// Tests that create a Cairo surface without going through any other helper
+	/// here need to call this first, or the p/invokes fail to resolve.
+	/// </summary>
+	internal static void EnsureNativeLibraries () { }
+
 	/// <returns>
 	/// <see langword="true"/> if the files with these file names
 	/// are byte-for-byte the same, <see langword="false"/> if not

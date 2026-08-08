@@ -116,14 +116,27 @@ public sealed class TgaExporter : IImageExporter
 
 		header.WriteTo (writer);
 
-		writer.Write (ImageIdField);
+		// Raw ASCII + NUL terminator. (BinaryWriter.Write(string) would emit a
+		// length prefix byte, and readers that treat the ID field as a C string
+		// then run past its end and shift the whole image by one byte.)
+		writer.Write (System.Text.Encoding.ASCII.GetBytes (ImageIdField));
+		writer.Write ((byte) 0);
 
-		Span<byte> data = flattenedImage.GetData ();
+		// Cairo's ARGB32 layout matches TGA's BGRA byte order, but Cairo is
+		// premultiplied and TGA is straight alpha, and TGA rows go bottom-up.
+		ReadOnlySpan<ColorBgra> data = flattenedImage.GetReadOnlyPixelData ();
+		int width = flattenedImage.Width;
+		Span<ColorBgra> row = new ColorBgra[width];
 
-		// It just so happens that the Cairo ARGB32 internal representation matches
-		// the TGA format, except vertically-flipped. In little-endian, of course.
-		for (int y = flattenedImage.Height - 1; y >= 0; y--)
-			writer.Write (data.Slice (flattenedImage.Stride * y, flattenedImage.Stride));
+		for (int y = flattenedImage.Height - 1; y >= 0; y--) {
+
+			ReadOnlySpan<ColorBgra> src = data.Slice (y * width, width);
+
+			for (int x = 0; x < width; x++)
+				row[x] = src[x].ToStraightAlpha ();
+
+			writer.Write (System.Runtime.InteropServices.MemoryMarshal.AsBytes (row));
+		}
 
 		// TGA 2.0 footer. Without it, strict readers (Qt/KImageFormats, hence
 		// GNOME/KDE viewers like gwenview) fail to recognize the file as a TGA.

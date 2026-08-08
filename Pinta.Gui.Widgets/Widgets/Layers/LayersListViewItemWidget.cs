@@ -590,19 +590,26 @@ public sealed partial class LayersListViewItemWidget
 		// the object against the pixels beneath it on the layer. One history item on close.
 		BlendMode beforeBlend = row.ObjectBlendMode;
 
-		Gtk.ComboBoxText blendCombo = Gtk.ComboBoxText.New ();
-		foreach (string blendName in UserBlendOps.GetAllBlendModeNames ())
-			blendCombo.AppendText (blendName);
-		blendCombo.Active = UserBlendOps.GetAllBlendModeNames ()
-			.ToList ().IndexOf (UserBlendOps.GetBlendModeName (beforeBlend));
-		blendCombo.OnChanged += (_, _) => {
-			if (blendCombo.GetActiveText () is { } name)
-				row.SetObjectBlendMode (UserBlendOps.GetBlendModeByName (name));
+		// A Gtk.DropDown rather than a Gtk.ComboBoxText: the combo's popup is a separate toplevel that
+		// takes its own grab, and once it closed, the surrounding popover never got its click-outside
+		// grab back — the popover could only be dismissed with Escape. DropDown's list is a nested
+		// popover, which GTK unwinds properly (and ComboBoxText is deprecated in GTK4 anyway).
+		string[] blendNames = [.. UserBlendOps.GetAllBlendModeNames ()];
+
+		Gtk.DropDown blendDropDown = Gtk.DropDown.NewFromStrings (blendNames);
+		blendDropDown.Selected = (uint) Math.Max (0, Array.IndexOf (blendNames, UserBlendOps.GetBlendModeName (beforeBlend)));
+		blendDropDown.OnNotify += (_, args) => {
+			if (args.Pspec.GetName () != "selected")
+				return;
+
+			uint selected = blendDropDown.Selected;
+			if (selected < blendNames.Length)
+				row.SetObjectBlendMode (UserBlendOps.GetBlendModeByName (blendNames[selected]));
 		};
 
 		Gtk.Box blendBox = Gtk.Box.New (Gtk.Orientation.Horizontal, 6);
 		blendBox.Append (Gtk.Label.New (Translations.GetString ("Blend Mode:")));
-		blendBox.Append (blendCombo);
+		blendBox.Append (blendDropDown);
 		box.Append (blendBox);
 
 		// --- Opacity. The drag updates the canvas live; a single history item is pushed when the

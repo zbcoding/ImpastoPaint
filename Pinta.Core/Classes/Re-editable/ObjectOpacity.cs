@@ -47,6 +47,21 @@ public static class ObjectOpacity
 	}
 
 	/// <summary>
+	/// Draws the object with its own opacity but **Normal** blend — used when baking an object into a
+	/// layer's base raster. The object's blend mode is a compositing effect that only makes sense
+	/// against its fellow objects on the layer's object surface; baking it onto the base raster must
+	/// produce the object's own pixels (fill/stroke), not re-blend them against the image beneath.
+	/// Skips hidden objects (they contribute nothing when rasterized).
+	/// </summary>
+	public static void DrawNormalForBake (ImageSurface target, ILayerObject obj, Action<ImageSurface> draw)
+	{
+		if (obj.Hidden)
+			return;
+
+		Draw (target, obj.Opacity, BlendMode.Normal, draw);
+	}
+
+	/// <summary>
 	/// Runs <paramref name="draw"/> against <paramref name="target"/>, faded to
 	/// <paramref name="opacity"/> with <paramref name="mode"/> blending. Normal at full opacity draws
 	/// straight into the target (no cost); anything else draws into a scratch surface first so the

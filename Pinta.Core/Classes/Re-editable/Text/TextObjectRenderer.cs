@@ -33,17 +33,21 @@ public static class TextObjectRenderer
 	/// <summary>
 	/// Renders a single non-empty text object onto the given surface. When <paramref name="clip"/>
 	/// is given, drawing is clipped to it — used when baking Raster-mode text so the portion
-	/// outside the editing selection is not written (matching the on-canvas preview).
+	/// outside the editing selection is not written (matching the on-canvas preview). When
+	/// <paramref name="bakeMode"/> is true the object is drawn with Normal blend (its own pixels) —
+	/// correct when compositing onto a base raster; the blend mode only composites against fellow
+	/// objects on the layer's object surface.
 	/// </summary>
 	public static void Render (
 		ImageSurface surface,
 		TextObject obj,
 		IChromeService chrome,
 		bool antialias,
-		DocumentSelection? clip = null)
+		DocumentSelection? clip = null,
+		bool bakeMode = false)
 	{
 		if (!obj.IsEmpty)
-			RenderObject (surface, obj, chrome, antialias, clip);
+			RenderObject (surface, obj, chrome, antialias, clip, bakeMode);
 	}
 
 	private static void RenderObject (
@@ -51,8 +55,14 @@ public static class TextObjectRenderer
 		TextObject obj,
 		IChromeService chrome,
 		bool antialias,
-		DocumentSelection? clip = null)
-		=> ObjectOpacity.Draw (surface, obj, target => RenderOpaque (target, obj, chrome, antialias, clip));
+		DocumentSelection? clip = null,
+		bool bakeMode = false)
+	{
+		if (bakeMode)
+			ObjectOpacity.DrawNormalForBake (surface, obj, target => RenderOpaque (target, obj, chrome, antialias, clip));
+		else
+			ObjectOpacity.Draw (surface, obj, target => RenderOpaque (target, obj, chrome, antialias, clip));
+	}
 
 	private static void RenderOpaque (
 		ImageSurface surface,

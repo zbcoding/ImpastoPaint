@@ -251,7 +251,7 @@ public abstract class BaseEditEngine
 		LayerObjectSelection.ShapeSubsetRenderer = (surface, layer, indices) => {
 			foreach (int i in indices)
 				if (i >= 0 && i < layer.ShapeObjects.Count)
-					ShapeObjectRenderer.Render (surface, layer, layer.ShapeObjects[i]);
+					ShapeObjectRenderer.Render (surface, layer, layer.ShapeObjects[i], bakeMode: true);
 		};
 
 		// Lend a single-shape renderer to Core's unified object-surface rebuild.

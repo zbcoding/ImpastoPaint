@@ -25,10 +25,18 @@ public static class ShapeObjectRenderer
 	}
 
 	/// <summary>
-	/// Draws a single shape's fill, stroke, and arrows onto the surface.
+	/// Draws a single shape's fill, stroke, and arrows onto the surface. When
+	/// <paramref name="bakeMode"/> is true the shape is drawn with Normal blend (its own pixels) —
+	/// correct when compositing onto a base raster; the blend mode only composites against fellow
+	/// objects on the layer's object surface.
 	/// </summary>
-	public static void Render (ImageSurface surface, UserLayer layer, ShapeObject source)
-		=> ObjectOpacity.Draw (surface, source, target => RenderOpaque (target, layer, source));
+	public static void Render (ImageSurface surface, UserLayer layer, ShapeObject source, bool bakeMode = false)
+	{
+		if (bakeMode)
+			ObjectOpacity.DrawNormalForBake (surface, source, target => RenderOpaque (target, layer, source));
+		else
+			ObjectOpacity.Draw (surface, source, target => RenderOpaque (target, layer, source));
+	}
 
 	private static void RenderOpaque (ImageSurface surface, UserLayer layer, ShapeObject source)
 	{

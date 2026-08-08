@@ -47,6 +47,7 @@ public static class ShapeEngineCollection
 		engine.Clip = source.Clip;
 		engine.Opacity = source.Opacity;
 		engine.Hidden = source.Hidden;
+		engine.BlendMode = source.BlendMode;
 		engine.DashPattern = source.DashPattern;
 		engine.DashSpacing = source.DashSpacing;
 		engine.FillStyle = source.FillStyle;
@@ -73,6 +74,7 @@ public static class ShapeEngineCollection
 			Clip = engine.Clip,
 			Opacity = engine.Opacity,
 			Hidden = engine.Hidden,
+			BlendMode = engine.BlendMode,
 			AntiAliasing = engine.AntiAliasing,
 			Closed = engine.Closed,
 			OutlineColor = engine.OutlineColor,
@@ -288,6 +290,7 @@ public abstract class ShapeEngine : ILayerObject
 		Clip = src.Clip;
 		Opacity = src.Opacity;
 		Hidden = src.Hidden;
+		BlendMode = src.BlendMode;
 		ShapeType = src.ShapeType;
 		AntiAliasing = src.AntiAliasing;
 		Closed = src.Closed;

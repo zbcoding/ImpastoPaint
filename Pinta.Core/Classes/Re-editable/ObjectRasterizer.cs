@@ -178,7 +178,7 @@ public static class ObjectRasterizer
 		// textClip is set by the text tool's Raster-mode commit so the baked pixels match the clipped
 		// preview; the generic Cut/Erase and "Rasterize All" callers pass null (bake the full object).
 		foreach (int i in textIndices)
-			TextObjectRenderer.Render (layer.Surface, layer.TextObjects[i], chrome, antialias: true, clip: textClip);
+			TextObjectRenderer.Render (layer.Surface, layer.TextObjects[i], chrome, antialias: true, clip: textClip, bakeMode: true);
 
 		// Drop the baked objects (descending index so earlier removals don't shift later ones).
 		foreach (int i in shapeIndices.OrderByDescending (i => i))

@@ -119,6 +119,10 @@ public sealed class RotateZoomLayerAction : IActionHandler
 
 		tools.Commit ();
 
+		// Only the raster is transformed here, so live objects must be baked first (or cancelled).
+		if (!ObjectRasterizer.RasterizeAllObjects (doc, workspace, chrome, doc.Layers.CurrentUserLayer))
+			return;
+
 		var old_surf = doc.Layers.CurrentUserLayer.Surface.Clone ();
 
 		var xform = ComputeMatrix (data);

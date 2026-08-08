@@ -180,6 +180,68 @@ public sealed partial class LayersListViewItem
 	private ILayerObject? LiveObject
 		=> IsObjectRow ? UserLayer?.FindObjectAt (ObjectIndex) : null;
 
+	/// <summary>Whether this row's object is still on its layer (false once it is deleted or baked).</summary>
+	public bool ObjectExists => LiveObject is not null;
+
+	/// <summary>
+	/// Bakes just this row's object into its layer's base raster (the per-object counterpart of the
+	/// layer menu's "Rasterize All Objects"), prompting first. The object stops being editable.
+	/// </summary>
+	public void RasterizeObject ()
+	{
+		if (document is null || UserLayer is null || LiveObject is not { } obj)
+			return;
+
+		bool isText = obj is TextObject;
+		int kindIndex = UserLayer.UserLayerIndexOfKind (UserLayer, isText, ObjectIndex);
+		if (kindIndex < 0)
+			return;
+
+		if (!ObjectRasterizer.Confirm (PintaCore.Chrome, [Label]))
+			return;
+
+		ObjectRasterizer.RasterizeSubset (
+			document,
+			PintaCore.Workspace,
+			PintaCore.Chrome,
+			UserLayer,
+			isText ? [] : [kindIndex],
+			isText ? [kindIndex] : []);
+	}
+
+	/// <summary>
+	/// Removes this row's object from its layer entirely, as one undoable step. Reuses the rasterize
+	/// history item, which is a plain swap of the base surface, the object surface and the object
+	/// list — exactly what a delete has to restore.
+	/// </summary>
+	public void DeleteObject ()
+	{
+		if (document is null || UserLayer is null || LiveObject is not { } obj)
+			return;
+
+		ImageSurface baseBefore = UserLayer.Surface.Clone ();
+		ImageSurface objectBefore = UserLayer.ObjectLayer.Layer.Surface.Clone ();
+		List<ILayerObject> objectsBefore = Pinta.Core.ObjectOpacity.CloneAll (UserLayer.Objects);
+
+		UserLayer.RemoveObject (obj);
+		Pinta.Core.ObjectOpacity.RefreshLayer (PintaCore.Workspace, PintaCore.Chrome, UserLayer);
+
+		document.History.PushNewItem (
+			new RasterizeObjectsHistoryItem (
+				PintaCore.Workspace,
+				Resources.Icons.LayerDelete,
+				Translations.GetString ("Delete Object"),
+				baseBefore,
+				objectBefore,
+				objectsBefore,
+				UserLayer));
+
+		// The object's on-canvas editing chrome (handles, re-edit rectangles) lives on the tool layer
+		// and would otherwise hover over an object that no longer exists.
+		document.Layers.ToolLayer.Clear ();
+		LayerObjectSelection.RaiseObjectsChanged ();
+	}
+
 	/// <summary>Current opacity (0..1) of the object this row represents.</summary>
 	public double ObjectOpacity
 		=> LiveObject?.Opacity ?? 1.0;
@@ -566,9 +628,32 @@ public sealed partial class LayersListViewItemWidget
 		};
 		box.Append (propertiesButton);
 
+		// --- Rasterize just this object, and delete it. Both end the object's life, so they close the
+		// popover first; the OnClosed handler below skips its property history when the object is gone.
+		Gtk.Button rasterizeButton = Gtk.Button.NewWithLabel (Translations.GetString ("Rasterize"));
+		rasterizeButton.SetTooltipText (Translations.GetString ("Bake this object into the layer's pixels; it stops being editable."));
+		rasterizeButton.OnClicked += (_, _) => {
+			popover.Popdown ();
+			row.RasterizeObject ();
+		};
+		box.Append (rasterizeButton);
+
+		Gtk.Button deleteButton = Gtk.Button.NewWithLabel (Translations.GetString ("Delete"));
+		deleteButton.AddCssClass ("destructive-action");
+		deleteButton.OnClicked += (_, _) => {
+			popover.Popdown ();
+			row.DeleteObject ();
+		};
+		box.Append (deleteButton);
+
 		popover.SetChild (box);
 		popover.SetParent (this);
 		popover.OnClosed += (_, _) => {
+			// Nothing to record once the object is gone — and reading its "current" opacity/blend would
+			// give the defaults, so an object that had been faded would push a bogus history item.
+			if (!row.ObjectExists)
+				return;
+
 			if (row.ObjectOpacity != beforeOpacity)
 				row.PushObjectOpacityHistory (beforeOpacity);
 			if (row.ObjectBlendMode != beforeBlend)

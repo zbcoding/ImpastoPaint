@@ -882,8 +882,16 @@ public sealed class TextTool : BaseTool
 	// so handles for a text object that doesn't exist at this history step no longer linger on canvas.
 	private void HandleHistoryChanged (object? sender, EventArgs e)
 	{
-		if (workspace.HasOpenDocuments)
-			DrawTextRectangles ();
+		if (!workspace.HasOpenDocuments)
+			return;
+
+		// The object being edited may have been removed by that step (e.g. "Rasterize All Objects"
+		// bakes it into the raster and drops it). Leaving the editing session pointed at a detached
+		// object keeps its handles and caret on canvas, so end the session first.
+		if (current_text_object is not null && editing_layer is not null && !editing_layer.TextObjects.Contains (current_text_object))
+			EndEditingSession ();
+
+		DrawTextRectangles ();
 	}
 
 	protected override void OnAntialiasingChanged ()
@@ -950,9 +958,12 @@ public sealed class TextTool : BaseTool
 		// The re-edit overlay (dashed rects + blue handle dots) lives on the ToolLayer, which history
 		// undo/redo does NOT swap — so a step that removes a text object would leave its handles behind.
 		// Refresh the overlay from the current object list on every undo/redo while we're the active tool.
+		// HistoryItemAdded matters too: an op pushed from outside the tool (e.g. "Rasterize All
+		// Objects" from the layers dock) removes text objects without going through RedrawText.
 		if (document is not null) {
 			document.History.ActionUndone += HandleHistoryChanged;
 			document.History.ActionRedone += HandleHistoryChanged;
+			document.History.HistoryItemAdded += HandleHistoryChanged;
 		}
 
 		// We always start off not in edit mode
@@ -983,6 +994,7 @@ public sealed class TextTool : BaseTool
 		if (document is not null) {
 			document.History.ActionUndone -= HandleHistoryChanged;
 			document.History.ActionRedone -= HandleHistoryChanged;
+			document.History.HistoryItemAdded -= HandleHistoryChanged;
 		}
 
 		CommitCurrentText ();

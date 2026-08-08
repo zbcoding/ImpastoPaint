@@ -117,7 +117,10 @@ public sealed partial class LayerPropertiesDialog
 		// --- Initialization (Gtk.Window)
 
 		Title = Translations.GetString ("Layer Properties");
-		Modal = true;
+
+		// Non-modal (like the effect dialogs) so the dialog floats over the canvas without dimming
+		// the whole window; TransientFor keeps it stacked with its parent.
+		Modal = false;
 		DefaultWidth = 349;
 		DefaultHeight = 224;
 		IconName = Resources.Icons.LayerProperties;

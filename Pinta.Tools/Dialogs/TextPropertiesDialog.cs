@@ -25,19 +25,18 @@ internal sealed class TextPropertiesDialog : IDisposable
 
 	private bool finishing;
 
-	#pragma warning disable CS8618 // NRT - initialized by BuildUi
-	private FontFamilyDropDown font_button;
-	private Gtk.SpinButton font_size;
-	private ToolBarDropDownButton variant_btn;
-	private ToolBarDropDownButton weight_btn;
-	private Gtk.ToggleButton italic_btn;
-	private Gtk.ToggleButton underscore_btn;
-	private Gtk.ToggleButton left_alignment_btn;
-	private Gtk.ToggleButton center_alignment_btn;
-	private Gtk.ToggleButton right_alignment_btn;
-	private Gtk.ToggleButton justify_alignment_btn;
-	private Gtk.SpinButton rotation_spin;
-	#pragma warning restore CS8618
+	// Initialized by BuildUi, called from the constructor.
+	private FontFamilyDropDown font_button = null!;
+	private Gtk.SpinButton font_size = null!;
+	private ToolBarDropDownButton variant_btn = null!;
+	private ToolBarDropDownButton weight_btn = null!;
+	private Gtk.ToggleButton italic_btn = null!;
+	private Gtk.ToggleButton underscore_btn = null!;
+	private Gtk.ToggleButton left_alignment_btn = null!;
+	private Gtk.ToggleButton center_alignment_btn = null!;
+	private Gtk.ToggleButton right_alignment_btn = null!;
+	private Gtk.ToggleButton justify_alignment_btn = null!;
+	private Gtk.SpinButton rotation_spin = null!;
 
 	public TextPropertiesDialog (Gtk.Window parent, TextObject textObject, Action onRedraw, Action onFinished)
 	{

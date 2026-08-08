@@ -469,7 +469,7 @@ public sealed partial class LayersListViewItemWidget
 		// Ensure this is the current layer before opening the menu, since the menu actions
 		// apply to the current layer.
 		if (doc.Layers.CurrentUserLayer != item.UserLayer)
-			doc.Layers.SetCurrentUserLayer (item.UserLayer);
+			doc.Layers.SetCurrentUserLayer (item.UserLayer!);
 
 		LayerActions actions = PintaCore.Actions.Layers;
 
@@ -495,7 +495,7 @@ public sealed partial class LayersListViewItemWidget
 		menu.AppendSection (null, flipSection);
 
 		// Only offer "Rasterize All Objects" for layers that actually hold editable objects.
-		if (item.UserLayer.HasObjectSubNodes) {
+		if (item.UserLayer!.HasObjectSubNodes) {
 			Gio.Menu objectsSection = Gio.Menu.New ();
 			objectsSection.AppendItem (actions.RasterizeAllObjects.CreateMenuItem ());
 			menu.AppendSection (null, objectsSection);
@@ -636,8 +636,8 @@ public sealed partial class LayersListViewItemWidget
 			return false;
 
 		Document doc = PintaCore.Workspace.ActiveDocument;
-		int from = doc.Layers.IndexOf (source.UserLayer);
-		int target = doc.Layers.IndexOf (item.UserLayer);
+		int from = doc.Layers.IndexOf (source.UserLayer!);
+		int target = doc.Layers.IndexOf (item.UserLayer!);
 		if (from < 0 || target < 0 || from == target)
 			return false;
 

@@ -133,7 +133,7 @@ public sealed class PdnFormat : IImageImporter
 			ClassRecord lpRec = bm.GetSerializationRecord ("Layer+properties") as ClassRecord
 				?? throw new InvalidDataException ($"Missing Layer+properties for layer {i}");
 
-			string name = lpRec.GetString ("name");
+			string name = lpRec.GetString ("name") ?? $"Layer {i}";
 			bool visible = lpRec.GetBoolean ("visible");
 			bool isBackground = false;
 			try { isBackground = lpRec.GetBoolean ("isBackground"); } catch { }
@@ -145,7 +145,7 @@ public sealed class PdnFormat : IImageImporter
 
 			// Try blendMode enum (LayerBlendMode) first – new files
 			try {
-				SerializationRecord blendModeRec = lpRec.GetSerializationRecord ("blendMode");
+				SerializationRecord? blendModeRec = lpRec.GetSerializationRecord ("blendMode");
 				if (blendModeRec is ClassRecord bmRec2) {
 					int v = bmRec2.GetInt32 ("value__");
 					blendMode = BlendTypeToBlendMode (v);

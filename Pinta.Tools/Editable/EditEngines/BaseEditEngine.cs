@@ -1156,6 +1156,10 @@ public abstract class BaseEditEngine
 				moving_whole_shape = true;
 				last_shape_move_point = current_point;
 				clicked_without_modifying = true;
+			} else {
+				// Right click missed the shape: don't let the drag fall through to the
+				// point-moving/tension code, which would deform the previously selected point.
+				is_drawing = false;
 			}
 
 			DrawActiveShape (false, false, true, shiftKey, false, e.IsControlPressed);

@@ -341,7 +341,8 @@ partial class CairoExtensions
 		// Some pixbuf encoders (e.g. glycin's JPEG) reject alpha-bearing pixbufs, so drop the
 		// alpha channel deterministically rather than relying on GDK inferring "no alpha" from
 		// a temporary RGB24 cairo surface (which some builds report back as Rgba8).
-		using GdkPixbuf.Pixbuf rgb = GdkPixbuf.Pixbuf.New (GdkPixbuf.Colorspace.Rgb, false, 8, width, height);
+		using GdkPixbuf.Pixbuf rgb = GdkPixbuf.Pixbuf.New (GdkPixbuf.Colorspace.Rgb, false, 8, width, height)
+			?? throw new InvalidOperationException ("Failed to allocate RGB pixbuf");
 		Span<ColorBgra> sourceData = sourceSurface.GetPixelData ();
 		unsafe {
 			byte* dest = (byte*) rgb.Pixels;

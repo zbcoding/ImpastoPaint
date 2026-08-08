@@ -233,6 +233,44 @@ internal sealed class MainWindow
 			canvasHasBeenShown = true;
 		};
 
+		// Impasto: while the zoom is "Window" the fit has to be recomputed as the window is
+		// resized - upstream fit once and never again, so shrinking the window left the canvas
+		// (and the scale-derived brush cursor) at its old size, with scrollbars appearing.
+		//
+		// The viewport's own size is what changed, and it shows up as the adjustments' page
+		// size. ::changed is not reliable here (a re-fit moves the adjustment too, so it can't
+		// be told apart from a resize); notify::page-size is the size itself.
+		//
+		// The re-fit runs on an idle below GTK's resize idle (GTK_PRIORITY_RESIZE, 110), since
+		// it measures the viewport's allocation: measuring first sees the pre-resize width,
+		// which oversizes the view and puts strokes left of the cursor.
+		bool refitQueued = false;
+		void QueueRefitToWindow ()
+		{
+			if (refitQueued || !canvasHasBeenShown || !PintaCore.Actions.View.ZoomToWindowActivated)
+				return;
+
+			refitQueued = true;
+			GLib.Functions.IdleAdd (
+				200,
+				() => {
+					refitQueued = false;
+					ZoomToWindow_Activated (view, EventArgs.Empty);
+					PintaCore.Workspace.Invalidate ();
+					return false;
+				}
+			);
+		}
+
+		void WatchPageSize (Gtk.Adjustment adjustment)
+			=> adjustment.OnNotify += (_, args) => {
+				if (args.Pspec.GetName () == "page-size")
+					QueueRefitToWindow ();
+			};
+
+		WatchPageSize (view.Hadjustment!);
+		WatchPageSize (view.Vadjustment!);
+
 		PintaCore.Actions.View.Rulers.Toggled += (active, _) => { canvas.RulersVisible = active; };
 		PintaCore.Actions.View.RulerMetric.OnActivate += (o, args) => {
 			PintaCore.Actions.View.RulerMetric.ChangeState (args.Parameter!);
@@ -877,11 +915,11 @@ internal sealed class MainWindow
 		Gtk.ScrolledWindow toolbox_scroll = Gtk.ScrolledWindow.New ();
 		toolbox_scroll.Child = toolbox;
 		toolbox_scroll.HscrollbarPolicy = Gtk.PolicyType.Never;
-		// Impasto: the thin column layout asks for a single column's width, so a short window
-		// leaves tools below the fold - scroll them into reach instead of clipping them.
-		toolbox_scroll.VscrollbarPolicy = PintaCore.Settings.GetSetting (SettingNames.TOOLBOX_CLASSIC_LAYOUT, false)
-			? Gtk.PolicyType.Automatic
-			: Gtk.PolicyType.Never;
+		// Impasto: a short window leaves tools below the fold - scroll them into reach instead
+		// of clipping them. Never was set here for the sectioned layout, which made the scroller
+		// demand the toolbox's full height; a window shorter than that squeezed the sections
+		// down to slivers instead of letting them scroll.
+		toolbox_scroll.VscrollbarPolicy = Gtk.PolicyType.Automatic;
 		// Impasto: a border around the toolbox so its icons read as tools, not as loose
 		// icons next to the canvas.
 		toolbox_scroll.HasFrame = true;

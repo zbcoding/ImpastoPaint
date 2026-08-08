@@ -46,6 +46,8 @@ public abstract class BaseTool
 
 	public const int DEFAULT_BRUSH_WIDTH = 2;
 
+	private double last_cursor_scale = 1;
+
 	protected BaseTool (IServiceProvider services)
 	{
 		Resources = services.GetService<IResourceService> ();
@@ -62,6 +64,18 @@ public abstract class BaseTool
 			if (IsActiveTool ()) {
 				SetCursor (DefaultCursor);
 			}
+		};
+		// Impasto: cursors that draw a brush/shape outline size it from the canvas scale
+		// (see GdkExtensions.CreateIconWithShape). Zoom-to-window changes that scale as the
+		// window is resized, so without this the outline keeps its old pixel size and grows
+		// relative to a shrinking canvas. Only rebuild when the scale actually moved - the
+		// resize fires this event continuously and each rebuild renders a texture.
+		workspace.ViewSizeChanged += (_, _) => {
+			double scale = workspace.GetScale ();
+			if (scale == last_cursor_scale || !IsActiveTool ())
+				return;
+			last_cursor_scale = scale;
+			SetCursor (DefaultCursor);
 		};
 		// Give tools a chance to save their settings on application quit
 		Settings.SaveSettingsBeforeQuit += (_, _)

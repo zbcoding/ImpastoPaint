@@ -331,6 +331,12 @@ public sealed class LayerActions
 		if (LayerObjectSelection.MoveSelectedObject?.Invoke (1, false) == true)
 			return;
 
+		// The button can be sensitive purely because an object row was selected, and that selection
+		// can be gone by the time the command runs (commit rebuilds the dock rows). Don't fall
+		// through into an impossible layer move.
+		if (doc.Layers.CurrentUserLayerIndex >= doc.Layers.UserLayers.Count - 1)
+			return;
+
 		SwapLayersHistoryItem hist = new (
 			Resources.StandardIcons.LayerMoveUp,
 			Translations.GetString ("Move Layer Up"),
@@ -348,6 +354,9 @@ public sealed class LayerActions
 		tools.Commit ();
 
 		if (LayerObjectSelection.MoveSelectedObject?.Invoke (-1, false) == true)
+			return;
+
+		if (doc.Layers.CurrentUserLayerIndex <= 0)
 			return;
 
 		SwapLayersHistoryItem hist = new (

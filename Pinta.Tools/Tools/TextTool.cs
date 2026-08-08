@@ -2140,10 +2140,15 @@ public sealed class TextTool : BaseTool
 	/// <param name="obj">The text object to draw.</param>
 	/// <param name="isActive">Whether this is the object being actively edited (draws cursor and selection).</param>
 	private void DrawTextObject (UserLayer layer, TextObject obj, bool isActive)
+		=> ObjectOpacity.Draw (
+			layer.TextLayer.Layer.Surface,
+			obj.Opacity,
+			target => DrawTextObjectOpaque (target, obj, isActive));
+
+	private void DrawTextObjectOpaque (ImageSurface surf, TextObject obj, bool isActive)
 	{
 		TextEngine engine = obj.Engine;
 		layout.Engine = engine;
-		ImageSurface surf = layer.TextLayer.Layer.Surface;
 
 		//Fill style index matches the text tool's style dropdown:
 		//0 Normal, 1 Normal and Outline, 2 Outline, 3 Fill Background.

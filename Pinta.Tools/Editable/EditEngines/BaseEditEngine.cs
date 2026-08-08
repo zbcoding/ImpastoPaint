@@ -1719,6 +1719,13 @@ public abstract class BaseEditEngine
 
 	protected RectangleD DrawShapeGeometry (ShapeEngine engine, ImageSurface surface)
 	{
+		RectangleD dirty = RectangleD.Zero;
+		ObjectOpacity.Draw (surface, engine.Opacity, target => dirty = DrawShapeGeometryOpaque (engine, target));
+		return dirty;
+	}
+
+	private RectangleD DrawShapeGeometryOpaque (ShapeEngine engine, ImageSurface surface)
+	{
 		using Context g = new (surface);
 
 		// Clip to the shape's own frozen selection (stamped at creation), not the live doc.Selection, so a

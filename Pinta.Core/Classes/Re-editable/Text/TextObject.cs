@@ -38,6 +38,10 @@ public sealed class TextObject
 	//raster objects fuse away immediately, so a saved/loaded text object is always Object mode.
 	public bool RasterizeOnFinalize { get; set; }
 
+	//Per-object opacity, 0..1 (1 = fully opaque), applied when the object is composited into the
+	//layer's TextLayer surface. Independent of the layer's own opacity. Mirrors ShapeObject.Opacity.
+	public double Opacity { get; set; } = 1.0;
+
 	public TextObject (TextEngine engine)
 	{
 		Engine = engine;
@@ -55,6 +59,7 @@ public sealed class TextObject
 			LineJoin = LineJoin,
 			Rotation = Rotation,
 			RasterizeOnFinalize = RasterizeOnFinalize,
+			Opacity = Opacity,
 		};
 
 	public static List<TextObject> CloneAll (IReadOnlyList<TextObject> objects)

@@ -28,6 +28,9 @@ public static class ShapeObjectRenderer
 	/// Draws a single shape's fill, stroke, and arrows onto the surface.
 	/// </summary>
 	public static void Render (ImageSurface surface, UserLayer layer, ShapeObject source)
+		=> ObjectOpacity.Draw (surface, source.Opacity, target => RenderOpaque (target, layer, source));
+
+	private static void RenderOpaque (ImageSurface surface, UserLayer layer, ShapeObject source)
 	{
 		ShapeEngine engine = ShapeEngineCollection.Create (layer, source);
 

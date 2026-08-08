@@ -128,6 +128,35 @@ internal sealed class ShapeObjectTest
 		}
 	}
 
+	// Per-object opacity: ObjectOpacity.Draw fades the object as a whole (via a scratch surface), so
+	// overlapping passes within one object don't compound, and full opacity keeps the direct path.
+	[Test]
+	public void ObjectOpacityDrawFadesTheWholeObject ()
+	{
+		RequireCairo ();
+
+		static void DrawTwoOverlappingOpaquePasses (ImageSurface s)
+		{
+			using Context g = new (s);
+			g.SetSourceColor (new Color (1, 0, 0, 1));
+			g.Rectangle (0, 0, 4, 4);
+			g.Fill ();
+			g.Rectangle (0, 0, 4, 4);
+			g.Fill ();
+		}
+
+		ImageSurface faded = CairoExtensions.CreateImageSurface (Format.Argb32, 4, 4);
+		ObjectOpacity.Draw (faded, 0.5, DrawTwoOverlappingOpaquePasses);
+
+		ImageSurface opaque = CairoExtensions.CreateImageSurface (Format.Argb32, 4, 4);
+		ObjectOpacity.Draw (opaque, 1.0, DrawTwoOverlappingOpaquePasses);
+
+		Assert.Multiple (() => {
+			Assert.That (faded.GetColorBgra (new PointI (1, 1)).A, Is.EqualTo (128).Within (2), "faded to ~50%, not compounded");
+			Assert.That (opaque.GetColorBgra (new PointI (1, 1)).A, Is.EqualTo (255), "full opacity unchanged");
+		});
+	}
+
 	[Test]
 	public void RasterizeObjectsBakesObjectSurfacesIntoBaseRaster ()
 	{

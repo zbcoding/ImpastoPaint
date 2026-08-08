@@ -167,6 +167,59 @@ public sealed partial class LayersListViewItem
 		historyItem.Redo ();
 	}
 
+	/// <summary>
+	/// Current opacity (0..1) of the object this row represents. Read by index, not through the held
+	/// object reference, which goes stale when the shape store is rebuilt on persist.
+	/// </summary>
+	public double ObjectOpacity {
+		get {
+			if (UserLayer is null)
+				return 1.0;
+			if (ShapeObject is not null && ObjectIndex < UserLayer.ShapeObjects.Count)
+				return UserLayer.ShapeObjects[ObjectIndex].Opacity;
+			if (TextObject is not null && ObjectIndex < UserLayer.TextObjects.Count)
+				return UserLayer.TextObjects[ObjectIndex].Opacity;
+			return 1.0;
+		}
+	}
+
+	/// <summary>
+	/// Applies an opacity to this row's object and re-renders, with no history item — used for the
+	/// live drag of the opacity slider. <see cref="PushObjectOpacityHistory"/> records the whole
+	/// drag as one undoable step once the slider is dismissed.
+	/// </summary>
+	public void SetObjectOpacity (double opacity)
+	{
+		if (UserLayer is null)
+			return;
+
+		if (ShapeObject is not null && ObjectIndex < UserLayer.ShapeObjects.Count)
+			UserLayer.ShapeObjects[ObjectIndex].Opacity = opacity;
+		else if (TextObject is not null && ObjectIndex < UserLayer.TextObjects.Count)
+			UserLayer.TextObjects[ObjectIndex].Opacity = opacity;
+		else
+			return;
+
+		Pinta.Core.ObjectOpacity.RefreshLayer (PintaCore.Workspace, PintaCore.Chrome, UserLayer);
+	}
+
+	public void PushObjectOpacityHistory (double previousOpacity)
+	{
+		if (UserLayer is null || document is null)
+			return;
+
+		document.History.PushNewItem (
+			new ObjectOpacityHistoryItem (
+				PintaCore.Workspace,
+				PintaCore.Chrome,
+				Resources.Icons.LayerProperties,
+				Translations.GetString ("Object Opacity"),
+				UserLayer,
+				isText: TextObject is not null,
+				ObjectIndex,
+				previousOpacity));
+	}
+
 	public event EventHandler? LayerModified;
 
 	/// <summary>
@@ -272,8 +325,14 @@ public sealed partial class LayersListViewItemWidget
 		Gtk.GestureClick _,
 		Gtk.GestureClick.PressedSignalArgs args)
 	{
-		if (item is null || item.UserLayer is null || item.IsObjectRow || !PintaCore.Workspace.HasOpenDocuments)
+		if (item is null || item.UserLayer is null || !PintaCore.Workspace.HasOpenDocuments)
 			return;
+
+		// Object sub-rows get their own tiny menu: for now, just per-object opacity.
+		if (item.IsObjectRow) {
+			ShowObjectOpacityPopover (item);
+			return;
+		}
 
 		Document doc = PintaCore.Workspace.ActiveDocument;
 		// Ensure this is the current layer before opening the menu, since the menu actions
@@ -315,6 +374,34 @@ public sealed partial class LayersListViewItemWidget
 
 		Gtk.PopoverMenu popover = Gtk.PopoverMenu.NewFromModel (menu);
 		popover.SetParent (this);
+		popover.Popup ();
+	}
+
+	// Right-clicking an object sub-row opens a slider for that object's own opacity. The drag updates
+	// the canvas live; a single history item is pushed when the popover closes, so one undo restores
+	// the value the drag started from.
+	private void ShowObjectOpacityPopover (LayersListViewItem row)
+	{
+		double before = row.ObjectOpacity;
+
+		Gtk.Scale scale = Gtk.Scale.NewWithRange (Gtk.Orientation.Horizontal, 0, 100, 1);
+		scale.WidthRequest = 150;
+		scale.DrawValue = true;
+		scale.SetValue (before * 100);
+		scale.OnValueChanged += (_, _) => row.SetObjectOpacity (scale.GetValue () / 100.0);
+
+		Gtk.Box box = Gtk.Box.New (Gtk.Orientation.Horizontal, 6);
+		box.SetAllMargins (6);
+		box.Append (Gtk.Label.New (Translations.GetString ("Opacity:")));
+		box.Append (scale);
+
+		Gtk.Popover popover = Gtk.Popover.New ();
+		popover.SetChild (box);
+		popover.SetParent (this);
+		popover.OnClosed += (_, _) => {
+			if (row.ObjectOpacity != before)
+				row.PushObjectOpacityHistory (before);
+		};
 		popover.Popup ();
 	}
 

@@ -60,6 +60,12 @@ public sealed class ShapeObject
 	/// (which would redraw it in full once the selection changed or was cleared). Shared, never mutated.
 	/// </summary>
 	public DocumentSelection? Clip { get; set; }
+	/// <summary>
+	/// Per-object opacity, 0..1 (1 = fully opaque). Applied when the object is composited into its
+	/// layer's object surface, so it is independent of the layer's own opacity and survives the
+	/// object round-trip. Editable from the object's row in the layers dock.
+	/// </summary>
+	public double Opacity { get; set; } = 1.0;
 	public List<ShapeControlPoint> ControlPoints { get; } = [];
 	public bool AntiAliasing { get; set; } = true;
 	public bool Closed { get; set; }
@@ -86,6 +92,7 @@ public sealed class ShapeObject
 			Name = Name,
 			RasterizeOnFinalize = RasterizeOnFinalize,
 			Clip = Clip, // frozen selection, never mutated — safe to share
+			Opacity = Opacity,
 			AntiAliasing = AntiAliasing,
 			Closed = Closed,
 			OutlineColor = OutlineColor,

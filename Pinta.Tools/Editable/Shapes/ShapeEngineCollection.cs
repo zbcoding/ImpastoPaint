@@ -45,6 +45,7 @@ public static class ShapeEngineCollection
 		engine.Name = source.Name;
 		engine.RasterizeOnFinalize = source.RasterizeOnFinalize;
 		engine.Clip = source.Clip;
+		engine.Opacity = source.Opacity;
 		engine.DashPattern = source.DashPattern;
 		engine.DashSpacing = source.DashSpacing;
 		engine.FillStyle = source.FillStyle;
@@ -69,6 +70,7 @@ public static class ShapeEngineCollection
 			Name = engine.Name,
 			RasterizeOnFinalize = engine.RasterizeOnFinalize,
 			Clip = engine.Clip,
+			Opacity = engine.Opacity,
 			AntiAliasing = engine.AntiAliasing,
 			Closed = engine.Closed,
 			OutlineColor = engine.OutlineColor,
@@ -207,6 +209,10 @@ public abstract class ShapeEngine
 	// selection changes. Carried through the ShapeObject round-trip. Shared, never mutated.
 	public DocumentSelection? Clip { get; internal set; }
 
+	// Per-shape opacity (0..1), carried through the ShapeObject round-trip. Applied when the shape is
+	// composited into the layer's shape surface. See ObjectOpacity.
+	public double Opacity { get; internal set; } = 1.0;
+
 	public LineCap LineCap { get; set; }
 	public UserLayer ParentLayer => parent_layer ?? DrawingLayer.ParentLayer;
 
@@ -255,6 +261,7 @@ public abstract class ShapeEngine
 		Name = src.Name;
 		RasterizeOnFinalize = src.RasterizeOnFinalize;
 		Clip = src.Clip;
+		Opacity = src.Opacity;
 		ShapeType = src.ShapeType;
 		AntiAliasing = src.AntiAliasing;
 		Closed = src.Closed;
@@ -338,6 +345,7 @@ public abstract class ShapeEngine
 		// Don't clone the GeneratedPoints or OrganizedPoints, as they will be calculated.
 		clone.Name = Name;
 		clone.RasterizeOnFinalize = RasterizeOnFinalize;
+		clone.Opacity = Opacity;
 		clone.ControlPoints = ControlPoints.Select (i => i.Clone ()).ToList ();
 		clone.DashPattern = DashPattern;
 		clone.DashSpacing = DashSpacing;

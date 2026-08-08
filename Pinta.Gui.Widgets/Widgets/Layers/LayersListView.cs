@@ -95,6 +95,10 @@ public sealed partial class LayersListView
 		// --- Other initialization (TODO: remove references to PintaCore)
 
 		PintaCore.Workspace.ActiveDocumentChanged += HandleActiveDocumentChanged;
+
+		// Object lists can change without a history push (the text tool creates its object on click
+		// and only pushes on commit), so refresh sub-rows on that seam too.
+		LayerObjectSelection.ObjectsChanged += RefreshObjectRows;
 	}
 
 	// Returns the (cached, live) child model of object rows for a layer row, or null for object rows
@@ -305,25 +309,27 @@ public sealed partial class LayersListView
 			bool hasObjects = layer.HasObjectSubNodes;
 
 			if (hasObjects) {
-				// Ensure the child store exists and is fully populated *before* touching the root row,
-				// so when the tree asks for children (via the create func) it gets a ready model.
-				if (!child_models.TryGetValue (layer, out Gio.ListStore? store)) {
+				// A layer that had no child model yet was not expandable, so the tree must re-run the
+				// child create func — that needs the root row replaced. Once it has one, every later
+				// add/remove is an in-place store update: the row (and the user's expansion) survives,
+				// so adding a second/third object doesn't collapse the layer.
+				bool isFirstObject = !child_models.TryGetValue (layer, out Gio.ListStore? store);
+				if (isFirstObject) {
 					store = Gio.ListStore.New (LayersListViewItem.GetGType ());
 					child_models[layer] = store;
 				}
 
-				uint prevCount = store.GetNItems ();
-				PopulateChildModel (store, layer);
-				uint newCount = store.GetNItems ();
+				// Populate before touching the root row, so when the tree asks for children it gets a
+				// ready model.
+				PopulateChildModel (store!, layer);
 
-				// The sub-node set changed size (an object was created, or rasterized/removed). Force the
-				// TreeListModel to re-run the child create func by replacing the root row, so a just-fused
-				// object's row (and its "Obj." badge) is dropped immediately rather than lingering until a
-				// later render. Content-only edits (point moves, same count) stay in place to keep expand state.
-				if (prevCount != newCount) {
+				if (isFirstObject) {
 					list_model.Remove (i);
-					list_model.Insert (i, LayersListViewItem.New (active_document, layer));
+					LayersListViewItem replacement = LayersListViewItem.New (active_document, layer);
+					list_model.Insert (i, replacement);
 					replacedRow = true;
+					// Expand it so the object that just appeared is visible without a manual click.
+					ExpandRowFor (replacement);
 				}
 			} else if (child_models.ContainsKey (layer)) {
 				// Last object removed: drop the child model and replace the row so it's no longer expandable.
@@ -341,6 +347,19 @@ public sealed partial class LayersListView
 		// its object rows. (object-layer BUG 2)
 		if (replacedRow)
 			HandleSelectedLayerChanged (this, EventArgs.Empty);
+	}
+
+	// Expands the tree row holding the given item, if it is currently in the tree.
+	private void ExpandRowFor (LayersListViewItem item)
+	{
+		uint n = tree_model.GetNItems ();
+		for (uint i = 0; i < n; ++i) {
+			Gtk.TreeListRow? row = tree_model.GetRow (i);
+			if (row?.GetItem () == item) {
+				row.SetExpanded (true);
+				return;
+			}
+		}
 	}
 
 	// Selects the row for a layer (the layer's own row, not one of its object rows).

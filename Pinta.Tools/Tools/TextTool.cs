@@ -1162,6 +1162,9 @@ public sealed class TextTool : BaseTool
 		click_point = click_point with { Y = click_point.Y - (CurrentTextLayout.FontHeight / 2) };
 		newObject.Engine.Origin = click_point;
 		CurrentUserLayer.TextObjects.Add (newObject);
+		// The object exists now but isn't pushed to history until commit, so tell the layers dock
+		// directly — otherwise its sub-node row only appears one history step later.
+		LayerObjectSelection.RaiseObjectsChanged ();
 		StartEditing (newObject);
 		if (AreaMode) {
 			//Draw-the-box-first: give it a provisional width and let the drag define the
@@ -1915,8 +1918,10 @@ public sealed class TextTool : BaseTool
 		TextObject committed = current_text_object;
 
 		// A fresh object that never received text is simply dropped.
-		if (committed.IsEmpty)
+		if (committed.IsEmpty) {
 			layer.TextObjects.Remove (committed);
+			LayerObjectSelection.RaiseObjectsChanged ();
+		}
 
 		//Re-render the layer's TextLayer so the history item captures the committed state.
 		//CurrentUserLayer already equals `layer` in the common case, where the usual

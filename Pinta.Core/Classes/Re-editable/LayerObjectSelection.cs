@@ -38,6 +38,17 @@ public static class LayerObjectSelection
 		=> ShapeReloadRequested?.Invoke (layer);
 
 	/// <summary>
+	/// Fired when a layer's object lists changed outside of a history push (e.g. the text tool
+	/// creating a new text object on click, which is only pushed to history on commit). The layers
+	/// dock refreshes its object sub-rows so the new object shows up right away instead of one
+	/// history step later.
+	/// </summary>
+	public static event Action? ObjectsChanged;
+
+	public static void RaiseObjectsChanged ()
+		=> ObjectsChanged?.Invoke ();
+
+	/// <summary>
 	/// Renders specific shapes (by index in <see cref="UserLayer.ShapeObjects"/>) of a layer onto an
 	/// arbitrary surface. Set by Pinta.Tools (which owns the shape renderer); Core calls it to bake a
 	/// subset of shapes into a layer's base raster during selective rasterize.

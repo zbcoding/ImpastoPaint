@@ -49,7 +49,7 @@ public sealed class HelpActions
 
 		Website = new Command (
 			"website",
-			Translations.GetString ("Pinta Website"),
+			Translations.GetString ("Impasto Website"),
 			null,
 			Resources.Icons.HelpWebsite);
 
@@ -100,16 +100,16 @@ public sealed class HelpActions
 
 	private async void Bugs_Activated (object sender, EventArgs e)
 	{
-		await system.LaunchUri ("https://github.com/PintaProject/Pinta/issues");
+		await system.LaunchUri ("https://github.com/zbcoding/Impasto/issues");
 	}
 
 	private async void DisplayHelp (object sender, EventArgs e)
 	{
-		await system.LaunchUri ("https://pinta-project.com/user-guide");
+		await system.LaunchUri ("https://github.com/zbcoding/Impasto");
 	}
 
 	private async void Website_Activated (object sender, EventArgs e)
 	{
-		await system.LaunchUri ("https://www.pinta-project.com");
+		await system.LaunchUri ("https://github.com/zbcoding/Impasto");
 	}
 }

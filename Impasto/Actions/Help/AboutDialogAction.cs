@@ -80,6 +80,7 @@ internal sealed class AboutDialogAction : IActionHandler
 		//   license-mit.txt        -> MIT License (the Impasto application license)
 		//   license-mit-pinta.txt  -> MIT License (upstream Pinta Project)
 		//   THIRD-PARTY-NOTICES.md  -> Third-Party Notices (icons + component licenses)
+		//   license-lgpl.txt       -> GNU LGPL/GPL texts (third-party libraries)
 		//   license-pdn.txt        -> Paint.NET reference license
 		//   CONTRIBUTORS.md         -> Credits (contributors)
 		dialog.AddLegalSection (
@@ -134,6 +135,10 @@ internal sealed class AboutDialogAction : IActionHandler
 			legalBox,
 			Translations.GetString ("Third-Party Notices"),
 			LoadEmbeddedText ("THIRD-PARTY-NOTICES.md"));
+		AppendLegalExpander (
+			legalBox,
+			Translations.GetString ("GNU LGPL Licenses"),
+			LoadEmbeddedText ("LICENSE-LGPL.txt"));
 		AppendLegalExpander (
 			legalBox,
 			Translations.GetString ("Paint.NET Reference License"),

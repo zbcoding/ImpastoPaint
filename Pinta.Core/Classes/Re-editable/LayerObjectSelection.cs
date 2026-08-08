@@ -49,6 +49,21 @@ public static class LayerObjectSelection
 		=> ObjectsChanged?.Invoke ();
 
 	/// <summary>
+	/// Set by the layers dock: moves the object of the currently selected object sub-row one step
+	/// up (+1) or down (-1) in z-order. With <c>probe</c> it only reports whether such a move is
+	/// possible, which is how Move Layer Up/Down decide their sensitivity. Returns false when the
+	/// selection is a plain layer row, so the layer move goes ahead as usual.
+	/// </summary>
+	public static Func<int, bool, bool>? MoveSelectedObject;
+
+	/// <summary>Raised by the dock when the selected row changes, so the layer actions can
+	/// re-evaluate whether Move Up/Down would move an object instead of a layer.</summary>
+	public static event Action? ObjectSelectionChanged;
+
+	public static void RaiseObjectSelectionChanged ()
+		=> ObjectSelectionChanged?.Invoke ();
+
+	/// <summary>
 	/// Renders a single shape object onto a surface. Set by Pinta.Tools (which owns the shape
 	/// renderer); Core calls it to composite shapes into a layer's unified object surface.
 	/// </summary>

@@ -209,6 +209,10 @@ public sealed class DocumentLayers
 		layer.Hidden = source.Hidden;
 		layer.Opacity = source.Opacity;
 
+		// Live objects (shapes/text) are part of the layer, so a duplicate gets its own copies.
+		// The caller re-renders the new layer's object surface from them.
+		layer.Objects.AddRange (ObjectOpacity.CloneAll (source.Objects));
+
 		user_layers.Insert (++CurrentUserLayerIndex, layer);
 
 		layer.PropertyChanged += RaiseLayerPropertyChangedEvent;

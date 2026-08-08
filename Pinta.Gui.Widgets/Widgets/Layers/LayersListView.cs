@@ -99,6 +99,9 @@ public sealed partial class LayersListView
 		// Object lists can change without a history push (the text tool creates its object on click
 		// and only pushes on commit), so refresh sub-rows on that seam too.
 		LayerObjectSelection.ObjectsChanged += RefreshObjectRows;
+
+		// Lets Move Layer Up/Down reorder the selected object sub-row instead of the layer.
+		LayerObjectSelection.MoveSelectedObject = MoveSelectedObjectRow;
 	}
 
 	// Returns the (cached, live) child model of object rows for a layer row, or null for object rows
@@ -213,6 +216,8 @@ public sealed partial class LayersListView
 				LayerObjectSelection.RequestTextSelect (layer, UserLayer.UserLayerIndexOfKind (layer, isText: true, item.ObjectIndex));
 		} finally {
 			changing_selection = false;
+			// Move Up/Down retarget between layer and object depending on what is selected.
+			LayerObjectSelection.RaiseObjectSelectionChanged ();
 		}
 	}
 
@@ -378,6 +383,42 @@ public sealed partial class LayersListView
 			Gtk.TreeListRow? row = tree_model.GetRow (i);
 			if (row?.GetItem () == item) {
 				row.SetExpanded (true);
+				return;
+			}
+		}
+	}
+
+	// Moves the selected object sub-row one step up (+1) or down (-1) in its layer's z-order, for
+	// the Move Layer Up/Down commands. With probe, only reports whether the move is possible.
+	// Returns false for a plain layer row, so the caller moves the layer instead.
+	// ponytail: steps by one position in layer.Objects, which may be a transient
+	// rasterize-on-finalize shape that has no row; skip those here if that ever shows up.
+	private bool MoveSelectedObjectRow (int direction, bool probe)
+	{
+		if (ItemAt (selection_model.Selected) is not { IsObjectRow: true } item || item.UserLayer is not { } layer)
+			return false;
+
+		int target = item.ObjectIndex + direction;
+		if (target < 0 || target >= layer.Objects.Count)
+			return false;
+
+		if (!probe) {
+			item.MoveObjectTo (target);
+			SelectObjectRow (layer, target);
+		}
+
+		return true;
+	}
+
+	// Selects a layer's object sub-row by its index in layer.Objects (used to keep the moved object
+	// selected after a reorder rebuilds the rows).
+	private void SelectObjectRow (UserLayer layer, int objectIndex)
+	{
+		uint n = tree_model.GetNItems ();
+		for (uint i = 0; i < n; ++i) {
+			LayersListViewItem? item = ItemAt (i);
+			if (item is not null && item.IsObjectRow && item.UserLayer == layer && item.ObjectIndex == objectIndex) {
+				selection_model.SelectItem (i, unselectRest: true);
 				return;
 			}
 		}

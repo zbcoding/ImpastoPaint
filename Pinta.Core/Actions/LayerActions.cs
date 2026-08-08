@@ -183,6 +183,7 @@ public sealed class LayerActions
 		workspace.SelectedLayerChanged += EnableOrDisableLayerActions;
 		workspace.ActiveDocumentChanged += EnableOrDisableLayerActions;
 		LayerObjectSelection.ObjectsChanged += () => EnableOrDisableLayerActions (null, EventArgs.Empty);
+		LayerObjectSelection.ObjectSelectionChanged += () => EnableOrDisableLayerActions (null, EventArgs.Empty);
 
 		EnableOrDisableLayerActions (null, EventArgs.Empty);
 	}
@@ -212,10 +213,15 @@ public sealed class LayerActions
 
 		bool canMergeDown = activeDoc?.Layers.CurrentUserLayerIndex > 0;
 		MergeLayerDown.Sensitive = canMergeDown;
-		MoveLayerDown.Sensitive = canMergeDown;
 
-		MoveLayerUp.Sensitive = activeDoc != null
-			&& activeDoc.Layers.CurrentUserLayerIndex < activeDoc.Layers.UserLayers.Count - 1;
+		// With an object sub-row selected, Move Up/Down reorders that object instead of the layer,
+		// so their sensitivity follows the object's room to move.
+		MoveLayerDown.Sensitive = canMergeDown
+			|| LayerObjectSelection.MoveSelectedObject?.Invoke (-1, true) == true;
+
+		MoveLayerUp.Sensitive = (activeDoc != null
+				&& activeDoc.Layers.CurrentUserLayerIndex < activeDoc.Layers.UserLayers.Count - 1)
+			|| LayerObjectSelection.MoveSelectedObject?.Invoke (1, true) == true;
 	}
 
 	private Gtk.FileFilter CreateImagesFileFilter ()
@@ -321,6 +327,10 @@ public sealed class LayerActions
 
 		tools.Commit ();
 
+		// An object sub-row is selected: move that object up in z-order, not the whole layer.
+		if (LayerObjectSelection.MoveSelectedObject?.Invoke (1, false) == true)
+			return;
+
 		SwapLayersHistoryItem hist = new (
 			Resources.StandardIcons.LayerMoveUp,
 			Translations.GetString ("Move Layer Up"),
@@ -336,6 +346,9 @@ public sealed class LayerActions
 		Document doc = workspace.ActiveDocument;
 
 		tools.Commit ();
+
+		if (LayerObjectSelection.MoveSelectedObject?.Invoke (-1, false) == true)
+			return;
 
 		SwapLayersHistoryItem hist = new (
 			Resources.StandardIcons.LayerMoveDown,
@@ -386,6 +399,12 @@ public sealed class LayerActions
 		tools.Commit ();
 
 		UserLayer l = doc.Layers.DuplicateCurrentLayer ();
+
+		// Paint the copied objects onto the new layer's object surface.
+		if (l.HasAnyObjects) {
+			ObjectOpacity.RefreshLayer (workspace, chrome, l);
+			LayerObjectSelection.RaiseObjectsChanged ();
+		}
 
 		// Make new layer the current layer
 		doc.Layers.SetCurrentUserLayer (l);

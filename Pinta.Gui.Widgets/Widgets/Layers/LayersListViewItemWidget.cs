@@ -590,27 +590,44 @@ public sealed partial class LayersListViewItemWidget
 		// the object against the pixels beneath it on the layer. One history item on close.
 		BlendMode beforeBlend = row.ObjectBlendMode;
 
-		// A Gtk.DropDown rather than a Gtk.ComboBoxText: the combo's popup is a separate toplevel that
-		// takes its own grab, and once it closed, the surrounding popover never got its click-outside
-		// grab back — the popover could only be dismissed with Escape. DropDown's list is a nested
-		// popover, which GTK unwinds properly (and ComboBoxText is deprecated in GTK4 anyway).
+		// An inline scrolling list, not a dropdown. Any control that opens its own popup — ComboBoxText
+		// (a separate toplevel) and DropDown (a nested popover) alike — takes a grab that this popover
+		// never gets back when the popup closes, leaving it dismissable only with Escape. A list that
+		// is simply part of the popover has no popup to take a grab, so click-outside keeps working.
 		string[] blendNames = [.. UserBlendOps.GetAllBlendModeNames ()];
 
-		Gtk.DropDown blendDropDown = Gtk.DropDown.NewFromStrings (blendNames);
-		blendDropDown.Selected = (uint) Math.Max (0, Array.IndexOf (blendNames, UserBlendOps.GetBlendModeName (beforeBlend)));
-		blendDropDown.OnNotify += (_, args) => {
-			if (args.Pspec.GetName () != "selected")
-				return;
+		Gtk.ListBox blendList = Gtk.ListBox.New ();
+		blendList.SelectionMode = Gtk.SelectionMode.Single;
+		foreach (string blendName in blendNames) {
+			Gtk.Label label = Gtk.Label.New (blendName);
+			label.Halign = Gtk.Align.Start;
+			label.Xalign = 0;
+			label.SetAllMargins (4);
+			blendList.Append (label);
+		}
 
-			uint selected = blendDropDown.Selected;
-			if (selected < blendNames.Length)
-				row.SetObjectBlendMode (UserBlendOps.GetBlendModeByName (blendNames[selected]));
+		int selectedBlend = Array.IndexOf (blendNames, UserBlendOps.GetBlendModeName (beforeBlend));
+		if (blendList.GetRowAtIndex (Math.Max (0, selectedBlend)) is { } selectedRow)
+			blendList.SelectRow (selectedRow);
+
+		blendList.OnRowActivated += (_, args) => {
+			int index = args.Row.GetIndex ();
+			if (index >= 0 && index < blendNames.Length)
+				row.SetObjectBlendMode (UserBlendOps.GetBlendModeByName (blendNames[index]));
 		};
 
-		Gtk.Box blendBox = Gtk.Box.New (Gtk.Orientation.Horizontal, 6);
-		blendBox.Append (Gtk.Label.New (Translations.GetString ("Blend Mode:")));
-		blendBox.Append (blendDropDown);
-		box.Append (blendBox);
+		// Tall enough to show a few modes at a time; the rest scroll. The list is the popover's bulk,
+		// so keep it from growing with the number of blend modes.
+		Gtk.ScrolledWindow blendScroll = Gtk.ScrolledWindow.New ();
+		blendScroll.SetPolicy (Gtk.PolicyType.Never, Gtk.PolicyType.Automatic);
+		blendScroll.HeightRequest = 140;
+		blendScroll.WidthRequest = 180;
+		blendScroll.SetChild (blendList);
+
+		Gtk.Label blendLabel = Gtk.Label.New (Translations.GetString ("Blend Mode:"));
+		blendLabel.Halign = Gtk.Align.Start;
+		box.Append (blendLabel);
+		box.Append (blendScroll);
 
 		// --- Opacity. The drag updates the canvas live; a single history item is pushed when the
 		// popover closes, so one undo restores the value the drag started from.

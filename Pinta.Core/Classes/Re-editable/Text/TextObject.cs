@@ -42,6 +42,12 @@ public sealed class TextObject : ILayerObject
 	//layer's TextLayer surface. Independent of the layer's own opacity. Mirrors ShapeObject.Opacity.
 	public double Opacity { get; set; } = 1.0;
 
+	//Hidden from every render path (so it also contributes nothing when rasterized), and the
+	//user-facing name shown on the object's row in the layers dock (empty = the default "Text").
+	//Both mirror ShapeObject and are edited from that row.
+	public bool Hidden { get; set; }
+	public string Name { get; set; } = "";
+
 	public TextObject (TextEngine engine)
 	{
 		Engine = engine;
@@ -66,6 +72,8 @@ public sealed class TextObject : ILayerObject
 			Rotation = Rotation,
 			RasterizeOnFinalize = RasterizeOnFinalize,
 			Opacity = Opacity,
+			Hidden = Hidden,
+			Name = Name,
 		};
 
 	public static List<TextObject> CloneAll (IReadOnlyList<TextObject> objects)

@@ -157,6 +157,57 @@ internal sealed class ShapeObjectTest
 		});
 	}
 
+	// Per-object visibility: the same ObjectOpacity.Draw chokepoint that fades an object skips a
+	// hidden one entirely, so no render path has to check Hidden itself.
+	[Test]
+	public void HiddenObjectDrawsNothing ()
+	{
+		RequireCairo ();
+
+		static void FillRed (ImageSurface s)
+		{
+			using Context g = new (s);
+			g.SetSourceColor (new Color (1, 0, 0, 1));
+			g.Rectangle (0, 0, 4, 4);
+			g.Fill ();
+		}
+
+		ImageSurface hidden = CairoExtensions.CreateImageSurface (Format.Argb32, 4, 4);
+		ObjectOpacity.Draw (hidden, new ShapeObject { Hidden = true }, FillRed);
+
+		ImageSurface shown = CairoExtensions.CreateImageSurface (Format.Argb32, 4, 4);
+		ObjectOpacity.Draw (shown, new ShapeObject (), FillRed);
+
+		Assert.Multiple (() => {
+			Assert.That (hidden.GetColorBgra (new PointI (1, 1)).A, Is.EqualTo (0), "hidden object draws nothing");
+			Assert.That (shown.GetColorBgra (new PointI (1, 1)).A, Is.EqualTo (255), "visible object draws");
+		});
+	}
+
+	// Per-object z-order: MoveObject repositions within the list, and moving back restores the
+	// original order (what ObjectReorderHistoryItem relies on for undo).
+	[Test]
+	public void MoveObjectReordersAndIsReversible ()
+	{
+		UserLayer layer = new (CairoExtensions.CreateImageSurface (Format.Argb32, 4, 4));
+		layer.ShapeObjects.AddRange ([
+			new ShapeObject { Name = "a" },
+			new ShapeObject { Name = "b" },
+			new ShapeObject { Name = "c" },
+		]);
+
+		Assert.Multiple (() => {
+			Assert.That (layer.MoveObject (isText: false, 0, 2), Is.True);
+			Assert.That (layer.ShapeObjects.ConvertAll (o => o.Name), Is.EqualTo (new[] { "b", "c", "a" }));
+
+			Assert.That (layer.MoveObject (isText: false, 2, 0), Is.True);
+			Assert.That (layer.ShapeObjects.ConvertAll (o => o.Name), Is.EqualTo (new[] { "a", "b", "c" }));
+
+			Assert.That (layer.MoveObject (isText: false, 0, 0), Is.False, "no-op move");
+			Assert.That (layer.MoveObject (isText: false, 0, 9), Is.False, "out of range");
+		});
+	}
+
 	[Test]
 	public void RasterizeObjectsBakesObjectSurfacesIntoBaseRaster ()
 	{

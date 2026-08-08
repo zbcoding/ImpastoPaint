@@ -2159,7 +2159,7 @@ public sealed class TextTool : BaseTool
 	private void DrawTextObject (UserLayer layer, TextObject obj, bool isActive)
 		=> ObjectOpacity.Draw (
 			layer.TextLayer.Layer.Surface,
-			obj.Opacity,
+			obj,
 			target => DrawTextObjectOpaque (target, obj, isActive));
 
 	private void DrawTextObjectOpaque (ImageSurface surf, TextObject obj, bool isActive)

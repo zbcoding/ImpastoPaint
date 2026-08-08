@@ -42,7 +42,7 @@ public sealed partial class LayersListViewItem
 	public UserLayer? UserLayer { get; private set; }
 
 	// When set, this row represents a re-editable object (shape or text) nested under UserLayer,
-	// rather than the layer itself. Object rows are read-only in this first pass (select only).
+	// rather than the layer itself. Object rows support select, show/hide, rename and reorder.
 	public ShapeObject? ShapeObject { get; private set; }
 	public TextObject? TextObject { get; private set; }
 	public bool IsObjectRow => ShapeObject is not null || TextObject is not null;
@@ -83,9 +83,9 @@ public sealed partial class LayersListViewItem
 	public string Label {
 		get {
 			if (ShapeObject is not null)
-				return string.IsNullOrEmpty (ShapeObject.Name) ? ShapeTypeName (ShapeObject.ShapeType) : ShapeObject.Name;
+				return string.IsNullOrEmpty (ObjectName) ? ShapeTypeName (ShapeObject.ShapeType) : ObjectName;
 			if (TextObject is not null)
-				return Translations.GetString ("Text");
+				return string.IsNullOrEmpty (ObjectName) ? Translations.GetString ("Text") : ObjectName;
 			return UserLayer?.Name ?? string.Empty;
 		}
 	}
@@ -98,7 +98,7 @@ public sealed partial class LayersListViewItem
 		_ => Translations.GetString ("Shape"),
 	};
 
-	public bool Visible => !UserLayer?.Hidden ?? false;
+	public bool Visible => IsObjectRow ? !ObjectHidden : !UserLayer?.Hidden ?? false;
 
 	public string TooltipText {
 		get {
@@ -150,6 +150,11 @@ public sealed partial class LayersListViewItem
 		if (Visible == visible)
 			return;
 
+		if (IsObjectRow) {
+			SetObjectHidden (!visible);
+			return;
+		}
+
 		Document doc = PintaCore.Workspace.ActiveDocument;
 
 		LayerProperties initial = new (UserLayer.Name, visible, UserLayer.Opacity, UserLayer.BlendMode);
@@ -179,6 +184,14 @@ public sealed partial class LayersListViewItem
 	public double ObjectOpacity
 		=> LiveObject?.Opacity ?? 1.0;
 
+	/// <summary>Whether the object this row represents is hidden from every render path.</summary>
+	public bool ObjectHidden
+		=> LiveObject?.Hidden ?? false;
+
+	/// <summary>The object's user-given name, or empty when it still uses the type default.</summary>
+	public string ObjectName
+		=> LiveObject?.Name ?? string.Empty;
+
 	/// <summary>
 	/// Applies an opacity to this row's object and re-renders, with no history item — used for the
 	/// live drag of the opacity slider. <see cref="PushObjectOpacityHistory"/> records the whole
@@ -194,20 +207,109 @@ public sealed partial class LayersListViewItem
 	}
 
 	public void PushObjectOpacityHistory (double previousOpacity)
+		=> PushObjectProperty (
+			Translations.GetString ("Object Opacity"),
+			o => o.Opacity,
+			(o, v) => o.Opacity = v,
+			previousOpacity);
+
+	public void SetObjectHidden (bool hidden)
+	{
+		if (LiveObject is not { } obj || obj.Hidden == hidden)
+			return;
+
+		bool before = obj.Hidden;
+		obj.Hidden = hidden;
+		PushObjectProperty (
+			hidden ? Translations.GetString ("Hide Object") : Translations.GetString ("Show Object"),
+			o => o.Hidden,
+			(o, v) => o.Hidden = v,
+			before);
+	}
+
+	public void RenameObject (string name)
+	{
+		if (LiveObject is not { } obj || obj.Name == name)
+			return;
+
+		string before = obj.Name;
+		obj.Name = name;
+		PushObjectProperty (
+			Translations.GetString ("Rename Object"),
+			o => o.Name,
+			(o, v) => o.Name = v,
+			before);
+
+		// The row label reads the object, so ask the dock to rebuild its object rows.
+		LayerObjectSelection.RaiseObjectsChanged ();
+	}
+
+	/// <summary>
+	/// Moves the object one step through its layer's object list — its z-order, since the list is
+	/// rendered in order. <paramref name="delta"/> is +1 to raise, -1 to lower.
+	/// </summary>
+	// ponytail: steps one list position, which for shapes may be a transient rasterize-on-finalize
+	// shape the dock doesn't show. Those fuse away the moment you move on, so it self-corrects.
+	public void MoveObject (int delta)
+	{
+		if (UserLayer is null || document is null || !IsObjectRow)
+			return;
+
+		int target = ObjectIndex + delta;
+		bool isText = TextObject is not null;
+
+		ObjectReorderHistoryItem historyItem = new (
+			PintaCore.Workspace,
+			PintaCore.Chrome,
+			Resources.Icons.LayerProperties,
+			Translations.GetString ("Reorder Object"),
+			UserLayer,
+			isText,
+			ObjectIndex,
+			target);
+
+		if (!UserLayer.MoveObject (isText, ObjectIndex, target))
+			return;
+
+		Pinta.Core.ObjectOpacity.RefreshLayer (PintaCore.Workspace, PintaCore.Chrome, UserLayer);
+		document.History.PushNewItem (historyItem);
+		LayerObjectSelection.RaiseObjectsChanged ();
+	}
+
+	/// <summary>Whether the object can still move in the given direction (+1 raise / -1 lower).</summary>
+	public bool CanMoveObject (int delta)
+	{
+		if (UserLayer is null || !IsObjectRow)
+			return false;
+
+		int count = TextObject is not null ? UserLayer.TextObjects.Count : UserLayer.ShapeObjects.Count;
+		int target = ObjectIndex + delta;
+		return target >= 0 && target < count;
+	}
+
+	/// <summary>
+	/// Pushes an already-applied per-object property change as one undoable step. The value is set
+	/// first (so the canvas updates immediately) and the item carries the value to go back to.
+	/// </summary>
+	private void PushObjectProperty<T> (string label, Func<ILayerObject, T> get, Action<ILayerObject, T> set, T previousValue)
 	{
 		if (UserLayer is null || document is null)
 			return;
 
+		Pinta.Core.ObjectOpacity.RefreshLayer (PintaCore.Workspace, PintaCore.Chrome, UserLayer);
+
 		document.History.PushNewItem (
-			new ObjectOpacityHistoryItem (
+			new ObjectPropertyHistoryItem<T> (
 				PintaCore.Workspace,
 				PintaCore.Chrome,
 				Resources.Icons.LayerProperties,
-				Translations.GetString ("Object Opacity"),
+				label,
 				UserLayer,
 				isText: TextObject is not null,
 				ObjectIndex,
-				previousOpacity));
+				get,
+				set,
+				previousValue));
 	}
 
 	public event EventHandler? LayerModified;
@@ -326,9 +428,9 @@ public sealed partial class LayersListViewItemWidget
 		if (!IsBoundRow (item))
 			return;
 
-		// Object sub-rows get their own tiny menu: for now, just per-object opacity.
+		// Object sub-rows get their own small editor popover instead of the layer menu.
 		if (item.IsObjectRow) {
-			ShowObjectOpacityPopover (item);
+			ShowObjectPopover (item);
 			return;
 		}
 
@@ -375,30 +477,63 @@ public sealed partial class LayersListViewItemWidget
 		popover.Popup ();
 	}
 
-	// Right-clicking an object sub-row opens a slider for that object's own opacity. The drag updates
-	// the canvas live; a single history item is pushed when the popover closes, so one undo restores
-	// the value the drag started from.
-	private void ShowObjectOpacityPopover (LayersListViewItem row)
+	// Right-clicking an object sub-row opens its little editor: rename, z-order, and opacity. A
+	// popover of plain widgets rather than a Gio.Menu, since these need entry/slider controls and
+	// would otherwise each have to be registered as an application action.
+	private void ShowObjectPopover (LayersListViewItem row)
 	{
-		double before = row.ObjectOpacity;
+		Gtk.Box box = Gtk.Box.New (Gtk.Orientation.Vertical, 6);
+		box.SetAllMargins (6);
+
+		Gtk.Popover popover = Gtk.Popover.New ();
+
+		// --- Rename. Applied on Enter or when the popover closes, so a single history step covers
+		// the whole edit rather than one per keystroke.
+		Gtk.Entry nameEntry = Gtk.Entry.New ();
+		nameEntry.WidthRequest = 150;
+		nameEntry.SetPlaceholderText (row.Label);
+		nameEntry.SetText (row.ObjectName);
+		nameEntry.OnActivate += (_, _) => popover.Popdown ();
+
+		Gtk.Box nameBox = Gtk.Box.New (Gtk.Orientation.Horizontal, 6);
+		nameBox.Append (Gtk.Label.New (Translations.GetString ("Name:")));
+		nameBox.Append (nameEntry);
+		box.Append (nameBox);
+
+		// --- Z-order within the layer's object list.
+		Gtk.Button raise = Gtk.Button.NewWithLabel (Translations.GetString ("Raise"));
+		Gtk.Button lower = Gtk.Button.NewWithLabel (Translations.GetString ("Lower"));
+		raise.Sensitive = row.CanMoveObject (1);
+		lower.Sensitive = row.CanMoveObject (-1);
+		raise.OnClicked += (_, _) => { popover.Popdown (); row.MoveObject (1); };
+		lower.OnClicked += (_, _) => { popover.Popdown (); row.MoveObject (-1); };
+
+		Gtk.Box orderBox = Gtk.Box.New (Gtk.Orientation.Horizontal, 6);
+		orderBox.Append (raise);
+		orderBox.Append (lower);
+		box.Append (orderBox);
+
+		// --- Opacity. The drag updates the canvas live; a single history item is pushed when the
+		// popover closes, so one undo restores the value the drag started from.
+		double beforeOpacity = row.ObjectOpacity;
 
 		Gtk.Scale scale = Gtk.Scale.NewWithRange (Gtk.Orientation.Horizontal, 0, 100, 1);
 		scale.WidthRequest = 150;
 		scale.DrawValue = true;
-		scale.SetValue (before * 100);
+		scale.SetValue (beforeOpacity * 100);
 		scale.OnValueChanged += (_, _) => row.SetObjectOpacity (scale.GetValue () / 100.0);
 
-		Gtk.Box box = Gtk.Box.New (Gtk.Orientation.Horizontal, 6);
-		box.SetAllMargins (6);
-		box.Append (Gtk.Label.New (Translations.GetString ("Opacity:")));
-		box.Append (scale);
+		Gtk.Box opacityBox = Gtk.Box.New (Gtk.Orientation.Horizontal, 6);
+		opacityBox.Append (Gtk.Label.New (Translations.GetString ("Opacity:")));
+		opacityBox.Append (scale);
+		box.Append (opacityBox);
 
-		Gtk.Popover popover = Gtk.Popover.New ();
 		popover.SetChild (box);
 		popover.SetParent (this);
 		popover.OnClosed += (_, _) => {
-			if (row.ObjectOpacity != before)
-				row.PushObjectOpacityHistory (before);
+			if (row.ObjectOpacity != beforeOpacity)
+				row.PushObjectOpacityHistory (beforeOpacity);
+			row.RenameObject (nameEntry.GetText ());
 		};
 		popover.Popup ();
 	}
@@ -480,24 +615,24 @@ public sealed partial class LayersListViewItemWidget
 
 		item_label.SetText (item.Label);
 
-		// Object rows (nested shapes/text) are read-only in this pass: no thumbnail, no visibility
-		// checkbox, no tooltip. The TreeExpander supplies their indentation.
+		// Object rows get no thumbnail (the TreeExpander supplies their indentation), but they do
+		// keep the visibility checkbox — it toggles the object's own Hidden flag.
 		bool isObject = item.IsObjectRow;
-		visible_button.SetVisible (!isObject);
 		item_thumbnail.SetVisible (!isObject);
+		visible_button.SetActive (item.Visible);
 
 		if (isObject) {
 			// Object rows are always live/editable (rasterizing drops the object entirely), so they
 			// always get the "editable object" badge.
 			object_badge.Visible = true;
 			object_badge.QueueDraw ();
-			SetTooltipText (Translations.GetString ("Re-editable object: a live shape or text you can keep editing until you rasterize it."));
+			SetTooltipText (Translations.GetString ("Re-editable object: a live shape or text you can keep editing until you rasterize it.")
+				+ "\n" + Translations.GetString ("Right-click to rename, reorder, or set opacity"));
 			return;
 		}
 
 		object_badge.Visible = false;
 
-		visible_button.SetActive (item.Visible);
 		SetTooltipText (item.TooltipText);
 
 		thumbnail_surface = null;

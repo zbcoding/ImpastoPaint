@@ -316,10 +316,27 @@ public sealed class OraFormat : IImageImporter, IImageExporter
 		ms.CopyTo (shapeStream);
 	}
 
+	// The per-object sub-node properties every object kind shares (see ILayerObject), written and
+	// read in one place so shapes and text can't drift apart on the round-trip.
+	private static void WriteObjectCommon (XmlTextWriter writer, ILayerObject obj)
+	{
+		writer.WriteAttributeString ("name", obj.Name);
+		writer.WriteAttributeString ("hidden", obj.Hidden ? "1" : "0");
+		writer.WriteAttributeString ("object-opacity", obj.Opacity.ToString (GetFormat ()));
+	}
+
+	private static void ReadObjectCommon (XmlElement element, ILayerObject obj)
+	{
+		obj.Name = GetAttribute (element, "name", "");
+		obj.Hidden = GetAttribute (element, "hidden", "0") == "1";
+		obj.Opacity = double.Parse (GetAttribute (element, "object-opacity", "1"), GetFormat ());
+	}
+
 	private static void WriteShapeObject (XmlTextWriter writer, ShapeObject shape)
 	{
 		writer.WriteStartElement ("shape");
 		writer.WriteAttributeString ("type", ((int) shape.ShapeType).ToString ());
+		WriteObjectCommon (writer, shape);
 		writer.WriteAttributeString ("antialias", shape.AntiAliasing ? "1" : "0");
 		writer.WriteAttributeString ("closed", shape.Closed ? "1" : "0");
 		writer.WriteAttributeString ("outline", shape.OutlineColor.ToHex (addAlpha: true));
@@ -434,6 +451,8 @@ public sealed class OraFormat : IImageImporter, IImageExporter
 				PartialEllipseRadiusY = double.Parse (GetAttribute (element, "partial-ry", "0"), GetFormat ()),
 			};
 
+			ReadObjectCommon (element, shape);
+
 			ReadArrow (element, "arrow1", shape.Arrow1);
 			ReadArrow (element, "arrow2", shape.Arrow2);
 			foreach (XmlElement pointElement in element.GetElementsByTagName ("point"))
@@ -490,6 +509,7 @@ public sealed class OraFormat : IImageImporter, IImageExporter
 	{
 		TextEngine engine = obj.Engine;
 
+		WriteObjectCommon (writer, obj);
 		writer.WriteAttributeString ("origin-x", engine.Origin.X.ToString ());
 		writer.WriteAttributeString ("origin-y", engine.Origin.Y.ToString ());
 		writer.WriteAttributeString ("bounds-x", obj.TextBounds.X.ToString ());
@@ -591,6 +611,8 @@ public sealed class OraFormat : IImageImporter, IImageExporter
 				OutlineWidth = int.Parse (GetAttribute (element, "outline", "2")),
 				LineJoin = (Cairo.LineJoin) int.Parse (GetAttribute (element, "join", "0")),
 			};
+
+			ReadObjectCommon (element, obj);
 
 			return obj;
 		} catch {

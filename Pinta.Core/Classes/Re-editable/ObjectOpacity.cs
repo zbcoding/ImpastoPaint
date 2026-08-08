@@ -17,10 +17,29 @@ namespace Pinta.Core;
 public interface ILayerObject
 {
 	double Opacity { get; set; }
+
+	/// <summary>Hidden objects are skipped by every render path (see <see cref="ObjectOpacity.Draw"/>).</summary>
+	bool Hidden { get; set; }
+
+	/// <summary>User-facing name shown on the object's row in the layers dock. Empty = use the default.</summary>
+	string Name { get; set; }
 }
 
 public static class ObjectOpacity
 {
+	/// <summary>
+	/// The per-object chokepoint every render path goes through: a hidden object draws nothing, and
+	/// a faded one is composited as a whole. Both per-object "effects" live here so no renderer has
+	/// to remember to check them.
+	/// </summary>
+	public static void Draw (ImageSurface target, ILayerObject obj, Action<ImageSurface> draw)
+	{
+		if (obj.Hidden)
+			return;
+
+		Draw (target, obj.Opacity, draw);
+	}
+
 	/// <summary>
 	/// Runs <paramref name="draw"/> against <paramref name="target"/>, faded to
 	/// <paramref name="opacity"/>. Full opacity draws straight into the target (no cost); anything
@@ -59,58 +78,5 @@ public static class ObjectOpacity
 		TextObjectRenderer.RenderAll (layer.TextLayer.Layer.Surface, layer.TextObjects, chrome, antialias: true);
 
 		workspace.Invalidate ();
-	}
-}
-
-/// <summary>
-/// Undoable change of one object's opacity. Only the scalar is stored — the object surface is a
-/// pure function of the object list, so undo/redo just swaps the value and re-renders.
-/// </summary>
-public sealed class ObjectOpacityHistoryItem : BaseHistoryItem
-{
-	private readonly IWorkspaceService workspace;
-	private readonly IChromeService chrome;
-	private readonly UserLayer layer;
-	private readonly bool is_text;
-	private readonly int index;
-	private double stored_opacity;
-
-	public ObjectOpacityHistoryItem (
-		IWorkspaceService workspace,
-		IChromeService chrome,
-		string icon,
-		string text,
-		UserLayer layer,
-		bool isText,
-		int index,
-		double previousOpacity)
-		: base (icon, text)
-	{
-		this.workspace = workspace;
-		this.chrome = chrome;
-		this.layer = layer;
-		is_text = isText;
-		this.index = index;
-		stored_opacity = previousOpacity;
-	}
-
-	public override void Undo () => Swap ();
-	public override void Redo () => Swap ();
-
-	private void Swap ()
-	{
-		// The object may be gone (e.g. rasterized) if history was stepped oddly; then there is
-		// nothing to swap.
-		if (is_text) {
-			if (index >= layer.TextObjects.Count)
-				return;
-			(stored_opacity, layer.TextObjects[index].Opacity) = (layer.TextObjects[index].Opacity, stored_opacity);
-		} else {
-			if (index >= layer.ShapeObjects.Count)
-				return;
-			(stored_opacity, layer.ShapeObjects[index].Opacity) = (layer.ShapeObjects[index].Opacity, stored_opacity);
-		}
-
-		ObjectOpacity.RefreshLayer (workspace, chrome, layer);
 	}
 }

@@ -83,6 +83,29 @@ public sealed class UserLayer : Layer
 		return index >= 0 && index < objects.Count ? objects[index] : null;
 	}
 
+	/// <summary>
+	/// Moves an object within its list, changing its z-order (the list is rendered in order).
+	/// Returns false when either index is stale or the move is a no-op.
+	/// </summary>
+	public bool MoveObject (bool isText, int from, int to)
+	{
+		if (isText)
+			return Move (TextObjects, from, to);
+
+		return Move (ShapeObjects, from, to);
+
+		static bool Move<T> (List<T> objects, int from, int to)
+		{
+			if (from == to || from < 0 || from >= objects.Count || to < 0 || to >= objects.Count)
+				return false;
+
+			T obj = objects[from];
+			objects.RemoveAt (from);
+			objects.Insert (to, obj);
+			return true;
+		}
+	}
+
 	public bool HasObjectSubNodes
 		=> TextObjects.Count > 0 || ShapeObjects.Exists (s => !s.RasterizeOnFinalize);
 

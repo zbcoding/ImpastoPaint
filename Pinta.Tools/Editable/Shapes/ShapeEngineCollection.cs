@@ -46,6 +46,7 @@ public static class ShapeEngineCollection
 		engine.RasterizeOnFinalize = source.RasterizeOnFinalize;
 		engine.Clip = source.Clip;
 		engine.Opacity = source.Opacity;
+		engine.Hidden = source.Hidden;
 		engine.DashPattern = source.DashPattern;
 		engine.DashSpacing = source.DashSpacing;
 		engine.FillStyle = source.FillStyle;
@@ -71,6 +72,7 @@ public static class ShapeEngineCollection
 			RasterizeOnFinalize = engine.RasterizeOnFinalize,
 			Clip = engine.Clip,
 			Opacity = engine.Opacity,
+			Hidden = engine.Hidden,
 			AntiAliasing = engine.AntiAliasing,
 			Closed = engine.Closed,
 			OutlineColor = engine.OutlineColor,
@@ -167,7 +169,7 @@ public static class ShapeEngineCollection
 	}
 }
 
-public abstract class ShapeEngine
+public abstract class ShapeEngine : ILayerObject
 {
 	//A collection of the original ControlPoints that the shape is based on and that the user interacts with.
 	public List<ControlPoint> ControlPoints { get; internal set; } = [];
@@ -197,7 +199,7 @@ public abstract class ShapeEngine
 
 	// User-facing default name (e.g. "Ellipse 1"), assigned at creation and carried through the
 	// ShapeObject round-trip so it survives persist/reload. Shown in the layers dock.
-	public string Name { get; internal set; } = "";
+	public string Name { get; set; } = "";
 
 	// Per-shape Object/Raster mode intent, stamped from the tool toggle at creation. When true this
 	// shape bakes into the base raster on the next commit; false stays editable. Carried through the
@@ -211,7 +213,11 @@ public abstract class ShapeEngine
 
 	// Per-shape opacity (0..1), carried through the ShapeObject round-trip. Applied when the shape is
 	// composited into the layer's shape surface. See ObjectOpacity.
-	public double Opacity { get; internal set; } = 1.0;
+	public double Opacity { get; set; } = 1.0;
+
+	// Per-shape visibility, carried through the ShapeObject round-trip. A hidden shape renders
+	// nothing but stays fully editable. See ObjectOpacity.Draw, the chokepoint that honors it.
+	public bool Hidden { get; set; }
 
 	public LineCap LineCap { get; set; }
 	public UserLayer ParentLayer => parent_layer ?? DrawingLayer.ParentLayer;
@@ -262,6 +268,7 @@ public abstract class ShapeEngine
 		RasterizeOnFinalize = src.RasterizeOnFinalize;
 		Clip = src.Clip;
 		Opacity = src.Opacity;
+		Hidden = src.Hidden;
 		ShapeType = src.ShapeType;
 		AntiAliasing = src.AntiAliasing;
 		Closed = src.Closed;
@@ -346,6 +353,7 @@ public abstract class ShapeEngine
 		clone.Name = Name;
 		clone.RasterizeOnFinalize = RasterizeOnFinalize;
 		clone.Opacity = Opacity;
+		clone.Hidden = Hidden;
 		clone.ControlPoints = ControlPoints.Select (i => i.Clone ()).ToList ();
 		clone.DashPattern = DashPattern;
 		clone.DashSpacing = DashSpacing;

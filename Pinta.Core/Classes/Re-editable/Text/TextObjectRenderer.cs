@@ -52,7 +52,7 @@ public static class TextObjectRenderer
 		IChromeService chrome,
 		bool antialias,
 		DocumentSelection? clip = null)
-		=> ObjectOpacity.Draw (surface, obj.Opacity, target => RenderOpaque (target, obj, chrome, antialias, clip));
+		=> ObjectOpacity.Draw (surface, obj, target => RenderOpaque (target, obj, chrome, antialias, clip));
 
 	private static void RenderOpaque (
 		ImageSurface surface,

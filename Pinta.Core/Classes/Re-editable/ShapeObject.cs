@@ -66,6 +66,11 @@ public sealed class ShapeObject : ILayerObject
 	/// object round-trip. Editable from the object's row in the layers dock.
 	/// </summary>
 	public double Opacity { get; set; } = 1.0;
+	/// <summary>
+	/// Hidden from every render path (so it also contributes nothing when rasterized). Toggled from
+	/// the object's row in the layers dock; the shape stays fully editable while hidden.
+	/// </summary>
+	public bool Hidden { get; set; }
 	public List<ShapeControlPoint> ControlPoints { get; } = [];
 	public bool AntiAliasing { get; set; } = true;
 	public bool Closed { get; set; }
@@ -93,6 +98,7 @@ public sealed class ShapeObject : ILayerObject
 			RasterizeOnFinalize = RasterizeOnFinalize,
 			Clip = Clip, // frozen selection, never mutated — safe to share
 			Opacity = Opacity,
+			Hidden = Hidden,
 			AntiAliasing = AntiAliasing,
 			Closed = Closed,
 			OutlineColor = OutlineColor,

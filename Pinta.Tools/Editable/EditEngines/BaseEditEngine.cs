@@ -1720,7 +1720,7 @@ public abstract class BaseEditEngine
 	protected RectangleD DrawShapeGeometry (ShapeEngine engine, ImageSurface surface)
 	{
 		RectangleD dirty = RectangleD.Zero;
-		ObjectOpacity.Draw (surface, engine.Opacity, target => dirty = DrawShapeGeometryOpaque (engine, target));
+		ObjectOpacity.Draw (surface, engine, target => dirty = DrawShapeGeometryOpaque (engine, target));
 		return dirty;
 	}
 

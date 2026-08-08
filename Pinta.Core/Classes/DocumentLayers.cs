@@ -362,8 +362,17 @@ public sealed class DocumentLayers
 		UserLayer dest = user_layers[CurrentUserLayerIndex - 1];
 
 		// Blend the layers
-		using Context g = new (dest.Surface);
-		source.Draw (g);
+		using (Context g = new (dest.Surface))
+			source.Draw (g);
+
+		// Live objects come down with the layer instead of silently vanishing: the source's objects
+		// land on top of the destination's, so both layers' sub-rows survive the merge in z-order.
+		// Copies, not the originals, so the deleted source layer still holds its own objects for undo.
+		// ponytail: object surfaces always composite above a layer's base raster, so a merged-down
+		// object now draws over source base pixels that used to cover it. Rasterize first if that
+		// stacking matters.
+		if (source.HasAnyObjects)
+			dest.Objects.AddRange (ObjectOpacity.CloneAll (source.Objects));
 
 		DeleteCurrentLayer ();
 	}

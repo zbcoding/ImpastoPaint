@@ -305,6 +305,11 @@ public sealed class LayerActions
 
 		tools.Commit ();
 
+		// Flipping only mirrors raster pixels, so live objects must become pixels first (or the user
+		// cancels and nothing happens).
+		if (!ObjectRasterizer.RasterizeAllObjects (doc, workspace, chrome, doc.Layers.CurrentUserLayer))
+			return;
+
 		doc.Layers.CurrentUserLayer.FlipVertical ();
 		doc.Workspace.Invalidate ();
 		doc.History.PushNewItem (new InvertHistoryItem (InvertType.FlipLayerVertical, doc.Layers.CurrentUserLayerIndex));
@@ -315,6 +320,9 @@ public sealed class LayerActions
 		Document doc = workspace.ActiveDocument;
 
 		tools.Commit ();
+
+		if (!ObjectRasterizer.RasterizeAllObjects (doc, workspace, chrome, doc.Layers.CurrentUserLayer))
+			return;
 
 		doc.Layers.CurrentUserLayer.FlipHorizontal ();
 		doc.Workspace.Invalidate ();
@@ -376,7 +384,11 @@ public sealed class LayerActions
 		tools.Commit ();
 
 		int bottomLayerIndex = doc.Layers.CurrentUserLayerIndex - 1;
-		Cairo.ImageSurface oldBottomSurface = doc.Layers.UserLayers[bottomLayerIndex].Surface.Clone ();
+		UserLayer bottomLayer = doc.Layers.UserLayers[bottomLayerIndex];
+		Cairo.ImageSurface oldBottomSurface = bottomLayer.Surface.Clone ();
+		Cairo.ImageSurface oldBottomObjectSurface = bottomLayer.ObjectLayer.Layer.Surface.Clone ();
+		var oldBottomObjects = ObjectOpacity.CloneAll (bottomLayer.Objects);
+		bool mergedObjects = doc.Layers.CurrentUserLayer.HasAnyObjects;
 
 		CompoundHistoryItem hist = new (
 			Resources.Icons.LayerMergeDown,
@@ -390,11 +402,28 @@ public sealed class LayerActions
 
 		doc.Layers.MergeCurrentLayerDown ();
 
-		SimpleHistoryItem h2 = new (
-			string.Empty,
-			string.Empty,
-			oldBottomSurface,
-			bottomLayerIndex);
+		// The objects that came down need painting into the destination's object surface.
+		if (mergedObjects) {
+			ObjectOpacity.RefreshLayer (workspace, chrome, bottomLayer);
+			LayerObjectSelection.RaiseObjectsChanged ();
+		}
+
+		// The bottom layer's object list and object surface changed too, so undo has to restore all
+		// three (base raster included) — a plain surface swap would leave the merged objects behind.
+		BaseHistoryItem h2 = mergedObjects
+			? new RasterizeObjectsHistoryItem (
+				workspace,
+				string.Empty,
+				string.Empty,
+				oldBottomSurface,
+				oldBottomObjectSurface,
+				oldBottomObjects,
+				bottomLayer)
+			: new SimpleHistoryItem (
+				string.Empty,
+				string.Empty,
+				oldBottomSurface,
+				bottomLayerIndex);
 		hist.Push (h1);
 		hist.Push (h2);
 

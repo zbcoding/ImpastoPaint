@@ -47,6 +47,12 @@ public sealed partial class LayersListView
 	// (returning the same instance from the create func lets the tree update live).
 	private readonly Dictionary<UserLayer, Gio.ListStore> child_models = [];
 
+	// The object sub-row the user last selected, as (layer, index in layer.Objects). Remembered
+	// separately from the GTK selection because the row rebuilds that follow a tool commit drop the
+	// selection: clicking a text row starts a text edit, and committing that edit before Move
+	// Up/Down runs would otherwise leave the command with nothing selected to move.
+	private (UserLayer Layer, int Index)? last_object_row;
+
 	public static new LayersListView New ()
 		=> NewWithProperties ([]);
 
@@ -203,6 +209,8 @@ public sealed partial class LayersListView
 			if (item?.UserLayer is not { } layer)
 				return;
 
+			last_object_row = item.IsObjectRow ? (layer, item.ObjectIndex) : null;
+
 			int doc_idx = active_document.Layers.IndexOf (layer);
 			if (doc_idx >= 0 && active_document.Layers.CurrentUserLayerIndex != doc_idx)
 				active_document.Layers.SetCurrentUserLayer (doc_idx);
@@ -325,6 +333,11 @@ public sealed partial class LayersListView
 		// its object rows. (object-layer BUG 2)
 		if (replacedRow)
 			HandleSelectedLayerChanged (this, EventArgs.Empty);
+
+		// Repopulating a child model replaces the sub-row objects, so a selected object row loses its
+		// highlight even when its object is still there (e.g. the text tool re-rendering while you
+		// edit). Put it back.
+		RestoreObjectRowSelection ();
 	}
 
 	// Brings one layer's row and its object sub-rows up to date. Returns true if the root row had to
@@ -395,32 +408,61 @@ public sealed partial class LayersListView
 	// rasterize-on-finalize shape that has no row; skip those here if that ever shows up.
 	private bool MoveSelectedObjectRow (int direction, bool probe)
 	{
-		if (ItemAt (selection_model.Selected) is not { IsObjectRow: true } item || item.UserLayer is not { } layer)
+		if (active_document is null || last_object_row is not { } sel)
 			return false;
 
-		int target = item.ObjectIndex + direction;
-		if (target < 0 || target >= layer.Objects.Count)
+		UserLayer layer = sel.Layer;
+		int target = sel.Index + direction;
+		if (active_document.Layers.IndexOf (layer) < 0 || sel.Index >= layer.Objects.Count || target < 0 || target >= layer.Objects.Count)
 			return false;
 
-		if (!probe) {
-			item.MoveObjectTo (target);
-			SelectObjectRow (layer, target);
-		}
+		if (probe)
+			return true;
 
+		if (FindObjectItem (layer, sel.Index) is not { } item)
+			return false;
+
+		item.MoveObjectTo (target);
+		last_object_row = (layer, target);
+		RestoreObjectRowSelection ();
 		return true;
 	}
 
-	// Selects a layer's object sub-row by its index in layer.Objects (used to keep the moved object
-	// selected after a reorder rebuilds the rows).
-	private void SelectObjectRow (UserLayer layer, int objectIndex)
+	// The row item for an object, looked up in the layer's child model so it is found whether or not
+	// the layer is currently expanded in the tree.
+	private LayersListViewItem? FindObjectItem (UserLayer layer, int objectIndex)
 	{
+		if (!child_models.TryGetValue (layer, out Gio.ListStore? store))
+			return null;
+
+		for (uint i = 0; i < store.GetNItems (); ++i)
+			if (store.GetObject (i) is LayersListViewItem item && item.ObjectIndex == objectIndex)
+				return item;
+
+		return null;
+	}
+
+	// Puts the dock highlight back on the remembered object sub-row after a rebuild replaced the row
+	// objects. Silent: re-selecting must not re-fire the click behaviour (activating the tool and
+	// restarting the edit), which would feed back into another rebuild.
+	private void RestoreObjectRowSelection ()
+	{
+		if (last_object_row is not { } sel)
+			return;
+
 		uint n = tree_model.GetNItems ();
 		for (uint i = 0; i < n; ++i) {
 			LayersListViewItem? item = ItemAt (i);
-			if (item is not null && item.IsObjectRow && item.UserLayer == layer && item.ObjectIndex == objectIndex) {
+			if (item is null || !item.IsObjectRow || item.UserLayer != sel.Layer || item.ObjectIndex != sel.Index)
+				continue;
+
+			try {
+				changing_selection = true;
 				selection_model.SelectItem (i, unselectRest: true);
-				return;
+			} finally {
+				changing_selection = false;
 			}
+			return;
 		}
 	}
 

@@ -746,11 +746,11 @@ public sealed partial class LayersListViewItemWidget
 
 		int from = source.ObjectIndex;
 
-		// Object rows are listed in list order (unlike layer rows, which are drawn top-first), so
-		// "above" means the target's own index.
-		int insert = dropAbove ? item.ObjectIndex : item.ObjectIndex + 1;
+		// Object rows are drawn top-first, exactly like layer rows: a higher index in layer.Objects is
+		// higher up the list. Dropping on the upper half of the target lands above it (higher index).
+		int insert = dropAbove ? item.ObjectIndex + 1 : item.ObjectIndex;
 		if (from < insert)
-			insert--; // removing the source first shifts everything after it down.
+			insert--; // removing the source first shifts everything above it down.
 
 		if (insert == from)
 			return false;

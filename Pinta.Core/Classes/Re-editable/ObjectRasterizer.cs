@@ -242,21 +242,48 @@ public static class ObjectRasterizer
 		IChromeService chrome,
 		CompoundHistoryItem? historyGroup = null)
 	{
-		List<string> labels = [];
-		foreach (UserLayer layer in doc.Layers.UserLayers)
-			labels.AddRange (Describe (
-				layer,
-				[.. Enumerable.Range (0, layer.ShapeObjects.Count)],
-				[.. Enumerable.Range (0, layer.TextObjects.Count)]));
+		List<string> labels = [.. doc.Layers.UserLayers.SelectMany (DescribeAll)];
 
 		if (labels.Count > 0 && !Confirm (chrome, labels))
 			return false;
 
-		foreach (UserLayer layer in doc.Layers.UserLayers) {
-			List<int> shapeIndices = [.. Enumerable.Range (0, layer.ShapeObjects.Count)];
-			List<int> textIndices = [.. Enumerable.Range (0, layer.TextObjects.Count)];
-			RasterizeSubset (doc, workspace, chrome, layer, shapeIndices, textIndices, historyGroup: historyGroup);
-		}
+		foreach (UserLayer layer in doc.Layers.UserLayers)
+			RasterizeAllObjects (doc, workspace, chrome, layer, confirm: false, historyGroup: historyGroup);
+
 		return true;
 	}
+
+	/// <summary>
+	/// Bakes every live object on <paramref name="layer"/>, prompting first unless the caller already
+	/// confirmed (<paramref name="confirm"/> false). Returns false only if the user cancels, in which
+	/// case nothing was baked; true when there was nothing to bake or the bake happened.
+	/// </summary>
+	public static bool RasterizeAllObjects (
+		Document doc,
+		IWorkspaceService workspace,
+		IChromeService chrome,
+		UserLayer layer,
+		bool confirm = true,
+		CompoundHistoryItem? historyGroup = null)
+	{
+		if (!layer.HasAnyObjects)
+			return true;
+
+		if (confirm && !Confirm (chrome, [.. DescribeAll (layer)]))
+			return false;
+
+		RasterizeSubset (
+			doc, workspace, chrome, layer,
+			[.. Enumerable.Range (0, layer.ShapeObjects.Count)],
+			[.. Enumerable.Range (0, layer.TextObjects.Count)],
+			historyGroup: historyGroup);
+
+		return true;
+	}
+
+	private static IEnumerable<string> DescribeAll (UserLayer layer)
+		=> Describe (
+			layer,
+			[.. Enumerable.Range (0, layer.ShapeObjects.Count)],
+			[.. Enumerable.Range (0, layer.TextObjects.Count)]);
 }

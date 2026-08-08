@@ -87,6 +87,12 @@ public sealed class UserLayer : Layer
 		=> TextObjects.Count > 0 || ShapeObjects.Exists (s => !s.RasterizeOnFinalize);
 
 	/// <summary>
+	/// Any live object at all, including transient rasterize-on-finalize shapes — the test for "is
+	/// there anything to bake", as opposed to <see cref="HasObjectSubNodes"/>'s "anything to show".
+	/// </summary>
+	public bool HasAnyObjects => ShapeObjects.Count > 0 || TextObjects.Count > 0;
+
+	/// <summary>
 	/// Creates a raster fallback for editable shape overlays. It is used by ORA
 	/// import before the shape tool has hydrated its engines.
 	/// </summary>
@@ -182,7 +188,7 @@ public sealed class UserLayer : Layer
 	/// </summary>
 	public bool RasterizeObjects ()
 	{
-		if (ShapeObjects.Count == 0 && TextObjects.Count == 0)
+		if (!HasAnyObjects)
 			return false;
 
 		using Context g = new (Surface);

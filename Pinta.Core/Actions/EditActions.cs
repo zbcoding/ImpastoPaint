@@ -418,7 +418,7 @@ public sealed class EditActions
 	private bool RasterizeSelectionObjects (Document doc)
 	{
 		UserLayer layer = doc.Layers.CurrentUserLayer;
-		if (layer.ShapeObjects.Count == 0 && layer.TextObjects.Count == 0)
+		if (!layer.HasAnyObjects)
 			return true;
 
 		ObjectRasterizer.FindIntersecting (

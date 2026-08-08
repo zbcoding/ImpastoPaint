@@ -242,7 +242,9 @@ public sealed class ImageActions
 		for (int i = doc.Layers.UserLayers.Count - 1; i >= 1; i--)
 			hist.Push (new DeleteLayerHistoryItem (string.Empty, string.Empty, doc.Layers.UserLayers[i], i));
 
-		doc.Layers.FlattenLayers ();
+		// With a single layer the rasterize above was the whole job; FlattenLayers throws below 2 layers.
+		if (doc.Layers.UserLayers.Count > 1)
+			doc.Layers.FlattenLayers ();
 
 		hist.Push (new SimpleHistoryItem (string.Empty, string.Empty, oldBottomSurface, 0));
 

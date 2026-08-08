@@ -182,6 +182,7 @@ public sealed class LayerActions
 		workspace.LayerRemoved += EnableOrDisableLayerActions;
 		workspace.SelectedLayerChanged += EnableOrDisableLayerActions;
 		workspace.ActiveDocumentChanged += EnableOrDisableLayerActions;
+		LayerObjectSelection.ObjectsChanged += () => EnableOrDisableLayerActions (null, EventArgs.Empty);
 
 		EnableOrDisableLayerActions (null, EventArgs.Empty);
 	}
@@ -195,17 +196,7 @@ public sealed class LayerActions
 
 		tools.Commit ();
 
-		UserLayer layer = doc.Layers.CurrentUserLayer;
-		List<int> shapeIndices = [.. Enumerable.Range (0, layer.ShapeObjects.Count)];
-		List<int> textIndices = [.. Enumerable.Range (0, layer.TextObjects.Count)];
-		if (shapeIndices.Count == 0 && textIndices.Count == 0)
-			return;
-
-		var labels = ObjectRasterizer.Describe (layer, shapeIndices, textIndices).ToList ();
-		if (!ObjectRasterizer.Confirm (chrome, labels))
-			return;
-
-		ObjectRasterizer.RasterizeSubset (doc, workspace, chrome, layer, shapeIndices, textIndices);
+		ObjectRasterizer.RasterizeAllObjects (doc, workspace, chrome, doc.Layers.CurrentUserLayer);
 	}
 
 	private void EnableOrDisableLayerActions (object? sender, EventArgs e)
@@ -214,7 +205,10 @@ public sealed class LayerActions
 
 		bool hasMultipleLayers = activeDoc?.Layers.UserLayers.Count > 1;
 		DeleteLayer.Sensitive = hasMultipleLayers;
-		image.Flatten.Sensitive = hasMultipleLayers;
+
+		// A single layer still has something to flatten if it holds live shape/text objects to bake.
+		bool hasLiveObjects = activeDoc?.Layers.UserLayers.Any (l => l.HasObjectSubNodes) ?? false;
+		image.Flatten.Sensitive = hasMultipleLayers || hasLiveObjects;
 
 		bool canMergeDown = activeDoc?.Layers.CurrentUserLayerIndex > 0;
 		MergeLayerDown.Sensitive = canMergeDown;

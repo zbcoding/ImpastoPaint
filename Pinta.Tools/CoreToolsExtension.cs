@@ -57,8 +57,8 @@ public sealed class CoreToolsExtension : IExtension
 		PintaCore.Tools.AddTool (new RectangleSelectTool (services));
 		PintaCore.Tools.AddTool (new EllipseSelectTool (services));
 		PintaCore.Tools.AddTool (new LassoSelectTool (services));
-		PintaCore.Tools.AddTool (new ScissorsSelectTool (services));
 		PintaCore.Tools.AddTool (new MagicWandTool (services));
+		PintaCore.Tools.AddTool (new CloneStampTool (services));
 		PintaCore.Tools.AddTool (new PaintBrushTool (services));
 		PintaCore.Tools.AddTool (new PencilTool (services));
 		PintaCore.Tools.AddTool (new EraserTool (services));
@@ -72,10 +72,7 @@ public sealed class CoreToolsExtension : IExtension
 		PintaCore.Tools.AddTool (new EllipseTool (services));
 		PintaCore.Tools.AddTool (new TriangleTool (services));
 		PintaCore.Tools.AddTool (new FreeformShapeTool (services));
-		PintaCore.Tools.AddTool (new CloneStampTool (services));
-		PintaCore.Tools.AddTool (new HealingBrushTool (services));
 		PintaCore.Tools.AddTool (new RecolorTool (services));
-		PintaCore.Tools.AddTool (new SmartPatchTool (services));
 	}
 
 	public void Uninitialize ()
@@ -93,8 +90,8 @@ public sealed class CoreToolsExtension : IExtension
 		PintaCore.Tools.RemoveInstanceOfTool<RectangleSelectTool> ();
 		PintaCore.Tools.RemoveInstanceOfTool<EllipseSelectTool> ();
 		PintaCore.Tools.RemoveInstanceOfTool<LassoSelectTool> ();
-		PintaCore.Tools.RemoveInstanceOfTool<ScissorsSelectTool> ();
 		PintaCore.Tools.RemoveInstanceOfTool<MagicWandTool> ();
+		PintaCore.Tools.RemoveInstanceOfTool<CloneStampTool> ();
 		PintaCore.Tools.RemoveInstanceOfTool<PaintBrushTool> ();
 		PintaCore.Tools.RemoveInstanceOfTool<PencilTool> ();
 		PintaCore.Tools.RemoveInstanceOfTool<EraserTool> ();
@@ -108,10 +105,7 @@ public sealed class CoreToolsExtension : IExtension
 		PintaCore.Tools.RemoveInstanceOfTool<EllipseTool> ();
 		PintaCore.Tools.RemoveInstanceOfTool<TriangleTool> ();
 		PintaCore.Tools.RemoveInstanceOfTool<FreeformShapeTool> ();
-		PintaCore.Tools.RemoveInstanceOfTool<CloneStampTool> ();
-		PintaCore.Tools.RemoveInstanceOfTool<HealingBrushTool> ();
 		PintaCore.Tools.RemoveInstanceOfTool<RecolorTool> ();
-		PintaCore.Tools.RemoveInstanceOfTool<SmartPatchTool> ();
 	}
 	#endregion
 }

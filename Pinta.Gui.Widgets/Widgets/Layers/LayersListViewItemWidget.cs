@@ -244,13 +244,29 @@ public sealed partial class LayersListViewItem
 			return;
 
 		bool before = obj.Hidden;
+		SetObjectHiddenLive (hidden);
+		PushObjectHiddenHistory (before);
+	}
+
+	/// <summary>
+	/// Applies visibility to this row's object and re-renders, with no history item — the object
+	/// properties dialog's live checkbox, which records one step when the dialog is accepted.
+	/// </summary>
+	public void SetObjectHiddenLive (bool hidden)
+	{
+		if (UserLayer is null || LiveObject is not { } obj || obj.Hidden == hidden)
+			return;
+
 		obj.Hidden = hidden;
-		PushObjectProperty (
-			hidden ? Translations.GetString ("Hide Object") : Translations.GetString ("Show Object"),
+		Pinta.Core.ObjectOpacity.RefreshLayer (PintaCore.Workspace, PintaCore.Chrome, UserLayer);
+	}
+
+	public void PushObjectHiddenHistory (bool previousHidden)
+		=> PushObjectProperty (
+			previousHidden ? Translations.GetString ("Show Object") : Translations.GetString ("Hide Object"),
 			o => o.Hidden,
 			(o, v) => o.Hidden = v,
-			before);
-	}
+			previousHidden);
 
 	public void RenameObject (string name)
 	{
@@ -492,28 +508,21 @@ public sealed partial class LayersListViewItemWidget
 		popover.Popup ();
 	}
 
-	// Right-clicking an object sub-row opens its little editor: rename and opacity (z-order is drag
-	// and drop). A popover of plain widgets rather than a Gio.Menu, since these need entry/slider
-	// controls and would otherwise each have to be registered as an application action.
+	// Right-clicking an object sub-row opens its quick editor: blend mode and opacity (z-order is drag
+	// and drop). A popover of plain widgets rather than a Gio.Menu, since these need slider controls
+	// and would otherwise each have to be registered as an application action.
+	//
+	// Deliberately holds no text entry: an entry inside the popover has to grab keyboard focus (the
+	// main window forwards key presses to the focus widget before its tool shortcuts, so without the
+	// grab, typing switches tools) — and that grab also stopped a click outside from dismissing the
+	// popover. Renaming, and every other per-object setting, lives in the object properties window
+	// reached from the button at the bottom.
 	private void ShowObjectPopover (LayersListViewItem row)
 	{
 		Gtk.Box box = Gtk.Box.New (Gtk.Orientation.Vertical, 6);
 		box.SetAllMargins (6);
 
 		Gtk.Popover popover = Gtk.Popover.New ();
-
-		// --- Rename. Applied on Enter or when the popover closes, so a single history step covers
-		// the whole edit rather than one per keystroke.
-		Gtk.Entry nameEntry = Gtk.Entry.New ();
-		nameEntry.WidthRequest = 150;
-		nameEntry.SetPlaceholderText (row.Label);
-		nameEntry.SetText (row.ObjectName);
-		nameEntry.OnActivate += (_, _) => popover.Popdown ();
-
-		Gtk.Box nameBox = Gtk.Box.New (Gtk.Orientation.Horizontal, 6);
-		nameBox.Append (Gtk.Label.New (Translations.GetString ("Name:")));
-		nameBox.Append (nameEntry);
-		box.Append (nameBox);
 
 		// --- Blend mode. Matches the layer properties dialog dropdown; a non-Normal mode composites
 		// the object against the pixels beneath it on the layer. One history item on close.
@@ -549,6 +558,14 @@ public sealed partial class LayersListViewItemWidget
 		opacityBox.Append (scale);
 		box.Append (opacityBox);
 
+		// --- The full settings window (name, visibility, and everything else about this object).
+		Gtk.Button propertiesButton = Gtk.Button.NewWithLabel (Translations.GetString ("Properties..."));
+		propertiesButton.OnClicked += (_, _) => {
+			popover.Popdown ();
+			ObjectPropertiesDialog.Show (PintaCore.Chrome.MainWindow, row);
+		};
+		box.Append (propertiesButton);
+
 		popover.SetChild (box);
 		popover.SetParent (this);
 		popover.OnClosed += (_, _) => {
@@ -556,20 +573,8 @@ public sealed partial class LayersListViewItemWidget
 				row.PushObjectOpacityHistory (beforeOpacity);
 			if (row.ObjectBlendMode != beforeBlend)
 				row.PushObjectBlendModeHistory (beforeBlend);
-			row.RenameObject (nameEntry.GetText ());
 		};
 		popover.Popup ();
-
-		// The main window forwards key presses to the window's focus widget before its own tool
-		// shortcuts get a look; without focus here, typing a name would switch tools instead.
-		// Grabbing focus right after Popup() — or even in OnMap — runs while the popover is still
-		// settling, so the grab is silently dropped. Defer to an idle callback, which runs after
-		// mapping (and the popover's own focus hand-off) has completed. Clicking the field works
-		// for the same reason: it happens once the popover has fully settled.
-		GLib.Functions.IdleAdd (GLib.Constants.PRIORITY_DEFAULT_IDLE, () => {
-			nameEntry.GrabFocus ();
-			return false;
-		});
 	}
 
 	private Gdk.ContentProvider? DragSource_OnPrepare (
@@ -698,7 +703,7 @@ public sealed partial class LayersListViewItemWidget
 			object_badge.Visible = true;
 			object_badge.QueueDraw ();
 			SetTooltipText (Translations.GetString ("Re-editable object: a live shape or text you can keep editing until you rasterize it.")
-				+ "\n" + Translations.GetString ("Right-click to rename or set opacity") + "\n"
+				+ "\n" + Translations.GetString ("Right-click to set blend mode and opacity, or open its properties") + "\n"
 				+ Translations.GetString ("Drag and drop to reorder"));
 			return;
 		}

@@ -174,11 +174,34 @@ public static class ObjectRasterizer
 
 		// Bake the chosen objects onto the base raster BEFORE removing them from the list — the
 		// renderers read by index.
-		LayerObjectSelection.RenderShapeSubset (layer.Surface, layer, shapeIndices);
+		//
+		// The subset is composited as a *group*: rendered in unified z-order into one scratch surface
+		// with each object's own blend mode applied (exactly as RenderLayerObjects does), then painted
+		// onto the base raster with Normal. Baking each object straight onto the base would either
+		// re-blend it against the image beneath (wrong colour) or drop the blend entirely (a Multiply
+		// text over a shape would bake as its raw colour) — both change how the pixels look the moment
+		// a selection cut rasterizes a text and the shape it overlaps.
 		// textClip is set by the text tool's Raster-mode commit so the baked pixels match the clipped
 		// preview; the generic Cut/Erase and "Rasterize All" callers pass null (bake the full object).
-		foreach (int i in textIndices)
-			TextObjectRenderer.Render (layer.Surface, layer.TextObjects[i], chrome, antialias: true, clip: textClip, bakeMode: true);
+		ImageSurface baked = CairoExtensions.CreateImageSurface (Format.Argb32, layer.Surface.Width, layer.Surface.Height);
+		int shapeSeen = 0;
+		int textSeen = 0;
+		foreach (ILayerObject o in layer.Objects) {
+			if (o is ShapeObject shape) {
+				if (shapeIndices.Contains (shapeSeen))
+					LayerObjectSelection.RenderShape (baked, layer, shape);
+				shapeSeen++;
+			} else if (o is TextObject text) {
+				if (textIndices.Contains (textSeen))
+					TextObjectRenderer.Render (baked, text, chrome, antialias: true, clip: textClip);
+				textSeen++;
+			}
+		}
+
+		using (Context g = new (layer.Surface)) {
+			g.SetSourceSurface (baked, 0, 0);
+			g.Paint ();
+		}
 
 		// Drop the baked objects (descending index so earlier removals don't shift later ones).
 		foreach (int i in shapeIndices.OrderByDescending (i => i))

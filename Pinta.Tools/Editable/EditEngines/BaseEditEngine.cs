@@ -246,15 +246,8 @@ public abstract class BaseEditEngine
 		// (rasterize-on-cut and its undo/redo, raised from Pinta.Core).
 		LayerObjectSelection.ShapeReloadRequested += ReloadLayerShapes;
 
-		// Lend the shape renderer to Core's selective rasterize (Core owns the bake, but the shape
-		// renderer lives here). Renders the chosen shapes onto the given surface (e.g. a base raster).
-		LayerObjectSelection.ShapeSubsetRenderer = (surface, layer, indices) => {
-			foreach (int i in indices)
-				if (i >= 0 && i < layer.ShapeObjects.Count)
-					ShapeObjectRenderer.Render (surface, layer, layer.ShapeObjects[i], bakeMode: true);
-		};
-
-		// Lend a single-shape renderer to Core's unified object-surface rebuild.
+		// Lend a single-shape renderer to Core's unified object-surface rebuild (and to its selective
+		// rasterize, which composites the baked subset through the same path).
 		LayerObjectSelection.ShapeRenderer = (surface, layer, shape)
 			=> ShapeObjectRenderer.Render (surface, layer, shape);
 
@@ -1662,14 +1655,31 @@ public abstract class BaseEditEngine
 		ImageSurface surface = layer.ObjectLayer.Layer.Surface;
 		surface.Clear ();
 
-		// Re-render text objects first (they may sit beneath or above shapes; the shape SEngines
-		// below draw live geometry and currently render on top).
-		TextObjectRenderer.RenderAll (surface, layer.TextObjects, PintaCore.Chrome, antialias: true);
-
+		// Walk the layer's unified object list in z-order, drawing each object where it actually sits:
+		// text through its renderer, shapes through their *live* editing engine (SEngines is in shape
+		// z-order, so the n-th ShapeObject is SEngines[n]). Drawing all text first and all shapes after
+		// would pin text beneath every shape, so a drag-reorder that put text on top looked right until
+		// the next shape-tool redraw silently flipped it back — and with it the blend between the two.
 		RectangleD? totalDirty = null;
-		foreach (ShapeEngine engine in SEngines) {
-			RectangleD dirty = DrawShapeGeometry (engine, surface);
-			totalDirty = totalDirty?.Union (dirty) ?? dirty;
+		int shapeIndex = 0;
+		foreach (ILayerObject obj in layer.Objects) {
+			switch (obj) {
+				case ShapeObject shape:
+					if (shapeIndex < SEngines.Count) {
+						RectangleD dirty = DrawShapeGeometry (SEngines[shapeIndex], surface);
+						totalDirty = totalDirty?.Union (dirty) ?? dirty;
+					} else {
+						// No live engine yet (the list gained a shape the tool hasn't bound); render
+						// from the stored object so it still composites in the right place.
+						ShapeObjectRenderer.Render (surface, layer, shape);
+					}
+					shapeIndex++;
+					break;
+
+				case TextObject text:
+					TextObjectRenderer.Render (surface, text, PintaCore.Chrome, antialias: true);
+					break;
+			}
 		}
 
 		return totalDirty ?? RectangleD.Zero;

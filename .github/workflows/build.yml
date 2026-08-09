@@ -75,7 +75,7 @@ jobs:
     - name: Upload Installer
       uses: actions/upload-artifact@v7
       with:
-        name: Pinta-linux-dotnet-${{matrix.dotnet_version}}.zip
+        name: Impasto-linux-dotnet-${{matrix.dotnet_version}}.zip
         path: ${{env.BUILD_DIR}}/pinta-${{env.PINTA_VERSION}}.zip
         if-no-files-found: error
 
@@ -128,7 +128,7 @@ jobs:
       if: github.event_name != 'pull_request' && secrets.MAC_CERTS_BASE64 != ''
       uses: actions/upload-artifact@v7
       with:
-        name: "Pinta-${{matrix.build.dotnet_rid}}.dmg"
+        name: "Impasto-${{matrix.build.dotnet_rid}}.dmg"
         path: installer/macos/Pinta.dmg
         if-no-files-found: error
 
@@ -178,7 +178,7 @@ jobs:
       id: upload-unsigned-installer
       uses: actions/upload-artifact@v7
       with:
-        name: "Pinta-${{matrix.build.dotnet_rid}}.exe"
+        name: "Impasto-${{matrix.build.dotnet_rid}}.exe"
         path: installer/windows/Pinta.exe
         if-no-files-found: error
 
@@ -201,7 +201,7 @@ jobs:
       id: upload-signed-installer
       uses: actions/upload-artifact@v7
       with:
-        name: "Pinta-signed-${{matrix.build.dotnet_rid}}.exe"
+        name: "Impasto-signed-${{matrix.build.dotnet_rid}}.exe"
         path: ./signed-artifacts/Pinta.exe
         if-no-files-found: error
 

@@ -1238,14 +1238,14 @@ public sealed class TextTool : BaseTool
 				start_pointer_angle = AngleDeg (mouse, GetRotationPivot (obj));
 				break;
 			case TextManipulation.Resize: {
-				layout.Engine = obj.Engine;
-				resize_start_fontsize = PangoExtensions.UnitsToPixels (obj.Engine.Font.GetSize ());
-				RectangleD pr = GetPaddedLocalRect (obj);
-				PointD[] localCorners = GetLocalPaddedCorners (pr);
-				resize_start_corner_dist = Math.Max (1, Distance (localCorners[corner], GetRotationPivot (obj)));
-				resize_start_wrapwidth = obj.Engine.WrapWidth;
-				break;
-			}
+					layout.Engine = obj.Engine;
+					resize_start_fontsize = PangoExtensions.UnitsToPixels (obj.Engine.Font.GetSize ());
+					RectangleD pr = GetPaddedLocalRect (obj);
+					PointD[] localCorners = GetLocalPaddedCorners (pr);
+					resize_start_corner_dist = Math.Max (1, Distance (localCorners[corner], GetRotationPivot (obj)));
+					resize_start_wrapwidth = obj.Engine.WrapWidth;
+					break;
+				}
 		}
 
 		//Change the cursor to indicate that the text is being manipulated.
@@ -1275,61 +1275,61 @@ public sealed class TextTool : BaseTool
 
 			switch (manipulation) {
 				case TextManipulation.Move: {
-					PointD delta = new (
-						e.PointDouble.X - start_mouse_xy.X,
-						e.PointDouble.Y - start_mouse_xy.Y);
+						PointD delta = new (
+							e.PointDouble.X - start_mouse_xy.X,
+							e.PointDouble.Y - start_mouse_xy.Y);
 
-					obj.Engine.Origin = new PointI (
-						(int) (start_click_point.X + delta.X),
-						(int) (start_click_point.Y + delta.Y));
-					break;
-				}
-
-				case TextManipulation.Rotate: {
-					double curAngle = AngleDeg (e.PointDouble, GetRotationPivot (obj));
-					obj.Rotation = NormalizeRotation (start_rotation_angle - (curAngle - start_pointer_angle));
-					break;
-				}
-
-				case TextManipulation.Resize: {
-					PointD pivot = GetRotationPivot (obj);
-					PointD lp = RotatePoint (e.PointDouble, pivot, -RotationRadians (obj));
-					double ratio = Distance (lp, pivot) / resize_start_corner_dist;
-
-					// Area (flow) text: resize the box and re-wrap the text instead of
-					// scaling the font. ponytail: reuses the corner-distance ratio, so the
-					// box scales diagonally like the font handle rather than pure-horizontal.
-					if (resize_start_wrapwidth > 0) {
-						int newWidth = Math.Max (MinAreaWidth, (int) Math.Round (resize_start_wrapwidth * ratio));
-						if (newWidth == obj.Engine.WrapWidth)
-							return;
-						obj.Engine.WrapWidth = newWidth;
+						obj.Engine.Origin = new PointI (
+							(int) (start_click_point.X + delta.X),
+							(int) (start_click_point.Y + delta.Y));
 						break;
 					}
 
-					int newSize = Math.Max (1, (int) Math.Round (resize_start_fontsize * ratio));
-
-					// A full re-layout of every text object is expensive with lots of text.
-					// Integer sizes mean many consecutive drag pixels map to the same size
-					// (especially at small fonts), so skip the relayout when nothing changed.
-					if (newSize == PangoExtensions.UnitsToPixels (obj.Engine.Font.GetSize ()))
-						return;
-
-					//Reflect the new size in the toolbar's font size control in realtime.
-					if (font_size is not null) {
-						is_updating_font_size = true;
-						try {
-							font_size.Adjustment!.Value = newSize;
-						} finally {
-							is_updating_font_size = false;
-						}
+				case TextManipulation.Rotate: {
+						double curAngle = AngleDeg (e.PointDouble, GetRotationPivot (obj));
+						obj.Rotation = NormalizeRotation (start_rotation_angle - (curAngle - start_pointer_angle));
+						break;
 					}
 
-					Pango.FontDescription font = obj.Engine.Font.Copy ()!;
-					font.SetSize (PangoExtensions.UnitsFromPixels (newSize));
-					obj.Engine.SetFont (font, obj.Engine.Alignment, obj.Engine.Underline);
-					break;
-				}
+				case TextManipulation.Resize: {
+						PointD pivot = GetRotationPivot (obj);
+						PointD lp = RotatePoint (e.PointDouble, pivot, -RotationRadians (obj));
+						double ratio = Distance (lp, pivot) / resize_start_corner_dist;
+
+						// Area (flow) text: resize the box and re-wrap the text instead of
+						// scaling the font. ponytail: reuses the corner-distance ratio, so the
+						// box scales diagonally like the font handle rather than pure-horizontal.
+						if (resize_start_wrapwidth > 0) {
+							int newWidth = Math.Max (MinAreaWidth, (int) Math.Round (resize_start_wrapwidth * ratio));
+							if (newWidth == obj.Engine.WrapWidth)
+								return;
+							obj.Engine.WrapWidth = newWidth;
+							break;
+						}
+
+						int newSize = Math.Max (1, (int) Math.Round (resize_start_fontsize * ratio));
+
+						// A full re-layout of every text object is expensive with lots of text.
+						// Integer sizes mean many consecutive drag pixels map to the same size
+						// (especially at small fonts), so skip the relayout when nothing changed.
+						if (newSize == PangoExtensions.UnitsToPixels (obj.Engine.Font.GetSize ()))
+							return;
+
+						//Reflect the new size in the toolbar's font size control in realtime.
+						if (font_size is not null) {
+							is_updating_font_size = true;
+							try {
+								font_size.Adjustment!.Value = newSize;
+							} finally {
+								is_updating_font_size = false;
+							}
+						}
+
+						Pango.FontDescription font = obj.Engine.Font.Copy ()!;
+						font.SetSize (PangoExtensions.UnitsFromPixels (newSize));
+						obj.Engine.SetFont (font, obj.Engine.Alignment, obj.Engine.Underline);
+						break;
+					}
 			}
 
 			RedrawText (false);
@@ -2027,7 +2027,8 @@ public sealed class TextTool : BaseTool
 	}
 
 	private void EndEditingSession ()
-	{		is_editing = false;
+	{
+		is_editing = false;
 		current_text_object = null;
 		editing_layer = null;
 		UpdateConfirmButtonVisibility ();

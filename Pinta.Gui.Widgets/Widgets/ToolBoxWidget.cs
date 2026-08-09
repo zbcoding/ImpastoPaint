@@ -42,7 +42,7 @@ public sealed partial class ToolBoxWidget
 	}
 
 	private ToolManager tools = null!; // NRT - set in factory method
-	// Stores the button corresponding to each tool. Tools in the same stack share a button.
+					   // Stores the button corresponding to each tool. Tools in the same stack share a button.
 	private readonly Dictionary<BaseTool, Gtk.ToggleButton> tool_buttons = new ();
 	private readonly Dictionary<int[], ToolStack> tool_stacks = new ();
 	// Dummy ToggleButton to use for grouping together the tools' buttons.

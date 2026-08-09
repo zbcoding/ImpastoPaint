@@ -235,8 +235,8 @@ internal sealed class SaveDocumentImplmentationAction : IActionHandler
 		try {
 			format.Exporter.Export (document, file, parent);
 
-		// glycin rejects oversized ICOs with "...the image width must be `1..=256`, instead width 800 was provided";
-		// older GdkPixbuf said "Image too large to be saved as ICO". Match both.
+			// glycin rejects oversized ICOs with "...the image width must be `1..=256`, instead width 800 was provided";
+			// older GdkPixbuf said "Image too large to be saved as ICO". Match both.
 		} catch (GLib.GException e) when (e.Message == "Image too large to be saved as ICO"
 			|| (e.Message.Contains ("the image width must be") || e.Message.Contains ("the image height must be"))) {
 

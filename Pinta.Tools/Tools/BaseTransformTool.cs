@@ -241,167 +241,167 @@ public abstract class BaseTransformTool : BaseTool
 
 				switch (active.Value) {
 					case HandlePoint.Left: {
-						double oppX = source_rect.X + srcW;
-						if (fromCenter) {
-							double cdx0 = source_rect.X - srcCenter.X;
-							double cdx1 = mouse.X - srcCenter.X;
-							double sx = cdx0 != 0 ? cdx1 / cdx0 : 1;
-							double w = Math.Abs (cdx1) * 2;
-							double h = srcH;
-							double sy = 1;
-							if (keepAspect && srcW > 0) {
-								h = w * srcH / srcW;
-								sy = Math.Abs (sx);
+							double oppX = source_rect.X + srcW;
+							if (fromCenter) {
+								double cdx0 = source_rect.X - srcCenter.X;
+								double cdx1 = mouse.X - srcCenter.X;
+								double sx = cdx0 != 0 ? cdx1 / cdx0 : 1;
+								double w = Math.Abs (cdx1) * 2;
+								double h = srcH;
+								double sy = 1;
+								if (keepAspect && srcW > 0) {
+									h = w * srcH / srcW;
+									sy = Math.Abs (sx);
+								}
+								edgeRect = new RectangleD (srcCenter.X - w / 2, srcCenter.Y - h / 2, w, h);
+								edgeAnchor = srcCenter;
+								edgeTransform.Translate (edgeAnchor.X, edgeAnchor.Y);
+								edgeTransform.Scale (sx, sy);
+								edgeTransform.Translate (-edgeAnchor.X, -edgeAnchor.Y);
+							} else {
+								double dx0 = source_rect.X - oppX;
+								double dx1 = mouse.X - oppX;
+								double sx = dx0 != 0 ? dx1 / dx0 : 1;
+								double w = Math.Abs (dx1);
+								double h = srcH;
+								double sy = 1;
+								if (keepAspect && srcW > 0) {
+									h = w * srcH / srcW;
+									sy = Math.Abs (sx);
+								}
+								double rx = Math.Min (oppX, mouse.X);
+								double ry = keepAspect ? srcCenter.Y - h / 2 : source_rect.Y;
+								edgeRect = new RectangleD (rx, ry, w, h);
+								edgeAnchor = new PointD (oppX, srcCenter.Y);
+								edgeTransform.Translate (edgeAnchor.X, edgeAnchor.Y);
+								edgeTransform.Scale (sx, sy);
+								edgeTransform.Translate (-edgeAnchor.X, -edgeAnchor.Y);
 							}
-							edgeRect = new RectangleD (srcCenter.X - w / 2, srcCenter.Y - h / 2, w, h);
-							edgeAnchor = srcCenter;
-							edgeTransform.Translate (edgeAnchor.X, edgeAnchor.Y);
-							edgeTransform.Scale (sx, sy);
-							edgeTransform.Translate (-edgeAnchor.X, -edgeAnchor.Y);
-						} else {
-							double dx0 = source_rect.X - oppX;
-							double dx1 = mouse.X - oppX;
-							double sx = dx0 != 0 ? dx1 / dx0 : 1;
-							double w = Math.Abs (dx1);
-							double h = srcH;
-							double sy = 1;
-							if (keepAspect && srcW > 0) {
-								h = w * srcH / srcW;
-								sy = Math.Abs (sx);
-							}
-							double rx = Math.Min (oppX, mouse.X);
-							double ry = keepAspect ? srcCenter.Y - h / 2 : source_rect.Y;
-							edgeRect = new RectangleD (rx, ry, w, h);
-							edgeAnchor = new PointD (oppX, srcCenter.Y);
-							edgeTransform.Translate (edgeAnchor.X, edgeAnchor.Y);
-							edgeTransform.Scale (sx, sy);
-							edgeTransform.Translate (-edgeAnchor.X, -edgeAnchor.Y);
+							break;
 						}
-						break;
-					}
 					case HandlePoint.Right: {
-						double oppX = source_rect.X;
-						if (fromCenter) {
-							double cdx0 = source_rect.X + srcW - srcCenter.X;
-							double cdx1 = mouse.X - srcCenter.X;
-							double sx = cdx0 != 0 ? cdx1 / cdx0 : 1;
-							double w = Math.Abs (cdx1) * 2;
-							double h = srcH;
-							double sy = 1;
-							if (keepAspect && srcW > 0) {
-								h = w * srcH / srcW;
-								sy = Math.Abs (sx);
+							double oppX = source_rect.X;
+							if (fromCenter) {
+								double cdx0 = source_rect.X + srcW - srcCenter.X;
+								double cdx1 = mouse.X - srcCenter.X;
+								double sx = cdx0 != 0 ? cdx1 / cdx0 : 1;
+								double w = Math.Abs (cdx1) * 2;
+								double h = srcH;
+								double sy = 1;
+								if (keepAspect && srcW > 0) {
+									h = w * srcH / srcW;
+									sy = Math.Abs (sx);
+								}
+								edgeRect = new RectangleD (srcCenter.X - w / 2, srcCenter.Y - h / 2, w, h);
+								edgeAnchor = srcCenter;
+								edgeTransform.Translate (edgeAnchor.X, edgeAnchor.Y);
+								edgeTransform.Scale (sx, sy);
+								edgeTransform.Translate (-edgeAnchor.X, -edgeAnchor.Y);
+							} else {
+								double dx0 = srcW;
+								double dx1 = mouse.X - oppX;
+								double sx = dx0 != 0 ? dx1 / dx0 : 1;
+								double w = Math.Abs (dx1);
+								double h = srcH;
+								double sy = 1;
+								if (keepAspect && srcW > 0) {
+									h = w * srcH / srcW;
+									sy = Math.Abs (sx);
+								}
+								double rx = Math.Min (oppX, mouse.X);
+								double ry = keepAspect ? srcCenter.Y - h / 2 : source_rect.Y;
+								edgeRect = new RectangleD (rx, ry, w, h);
+								edgeAnchor = new PointD (oppX, srcCenter.Y);
+								edgeTransform.Translate (edgeAnchor.X, edgeAnchor.Y);
+								edgeTransform.Scale (sx, sy);
+								edgeTransform.Translate (-edgeAnchor.X, -edgeAnchor.Y);
 							}
-							edgeRect = new RectangleD (srcCenter.X - w / 2, srcCenter.Y - h / 2, w, h);
-							edgeAnchor = srcCenter;
-							edgeTransform.Translate (edgeAnchor.X, edgeAnchor.Y);
-							edgeTransform.Scale (sx, sy);
-							edgeTransform.Translate (-edgeAnchor.X, -edgeAnchor.Y);
-						} else {
-							double dx0 = srcW;
-							double dx1 = mouse.X - oppX;
-							double sx = dx0 != 0 ? dx1 / dx0 : 1;
-							double w = Math.Abs (dx1);
-							double h = srcH;
-							double sy = 1;
-							if (keepAspect && srcW > 0) {
-								h = w * srcH / srcW;
-								sy = Math.Abs (sx);
-							}
-							double rx = Math.Min (oppX, mouse.X);
-							double ry = keepAspect ? srcCenter.Y - h / 2 : source_rect.Y;
-							edgeRect = new RectangleD (rx, ry, w, h);
-							edgeAnchor = new PointD (oppX, srcCenter.Y);
-							edgeTransform.Translate (edgeAnchor.X, edgeAnchor.Y);
-							edgeTransform.Scale (sx, sy);
-							edgeTransform.Translate (-edgeAnchor.X, -edgeAnchor.Y);
+							break;
 						}
-						break;
-					}
 					case HandlePoint.Up: {
-						double oppY = source_rect.Y + srcH;
-						if (fromCenter) {
-							double cdy0 = source_rect.Y - srcCenter.Y;
-							double cdy1 = mouse.Y - srcCenter.Y;
-							double sy = cdy0 != 0 ? cdy1 / cdy0 : 1;
-							double h = Math.Abs (cdy1) * 2;
-							double w = srcW;
-							double sx = 1;
-							if (keepAspect && srcH > 0) {
-								w = h * srcW / srcH;
-								sx = Math.Abs (sy);
+							double oppY = source_rect.Y + srcH;
+							if (fromCenter) {
+								double cdy0 = source_rect.Y - srcCenter.Y;
+								double cdy1 = mouse.Y - srcCenter.Y;
+								double sy = cdy0 != 0 ? cdy1 / cdy0 : 1;
+								double h = Math.Abs (cdy1) * 2;
+								double w = srcW;
+								double sx = 1;
+								if (keepAspect && srcH > 0) {
+									w = h * srcW / srcH;
+									sx = Math.Abs (sy);
+								}
+								edgeRect = new RectangleD (srcCenter.X - w / 2, srcCenter.Y - h / 2, w, h);
+								edgeAnchor = srcCenter;
+								edgeTransform.Translate (edgeAnchor.X, edgeAnchor.Y);
+								edgeTransform.Scale (sx, sy);
+								edgeTransform.Translate (-edgeAnchor.X, -edgeAnchor.Y);
+							} else {
+								double dy0 = source_rect.Y - oppY;
+								double dy1 = mouse.Y - oppY;
+								double sy = dy0 != 0 ? dy1 / dy0 : 1;
+								double h = Math.Abs (dy1);
+								double w = srcW;
+								double sx = 1;
+								if (keepAspect && srcH > 0) {
+									w = h * srcW / srcH;
+									sx = Math.Abs (sy);
+								}
+								double ry = Math.Min (oppY, mouse.Y);
+								double rx = keepAspect ? srcCenter.X - w / 2 : source_rect.X;
+								edgeRect = new RectangleD (rx, ry, w, h);
+								edgeAnchor = new PointD (srcCenter.X, oppY);
+								edgeTransform.Translate (edgeAnchor.X, edgeAnchor.Y);
+								edgeTransform.Scale (sx, sy);
+								edgeTransform.Translate (-edgeAnchor.X, -edgeAnchor.Y);
 							}
-							edgeRect = new RectangleD (srcCenter.X - w / 2, srcCenter.Y - h / 2, w, h);
-							edgeAnchor = srcCenter;
-							edgeTransform.Translate (edgeAnchor.X, edgeAnchor.Y);
-							edgeTransform.Scale (sx, sy);
-							edgeTransform.Translate (-edgeAnchor.X, -edgeAnchor.Y);
-						} else {
-							double dy0 = source_rect.Y - oppY;
-							double dy1 = mouse.Y - oppY;
-							double sy = dy0 != 0 ? dy1 / dy0 : 1;
-							double h = Math.Abs (dy1);
-							double w = srcW;
-							double sx = 1;
-							if (keepAspect && srcH > 0) {
-								w = h * srcW / srcH;
-								sx = Math.Abs (sy);
-							}
-							double ry = Math.Min (oppY, mouse.Y);
-							double rx = keepAspect ? srcCenter.X - w / 2 : source_rect.X;
-							edgeRect = new RectangleD (rx, ry, w, h);
-							edgeAnchor = new PointD (srcCenter.X, oppY);
-							edgeTransform.Translate (edgeAnchor.X, edgeAnchor.Y);
-							edgeTransform.Scale (sx, sy);
-							edgeTransform.Translate (-edgeAnchor.X, -edgeAnchor.Y);
+							break;
 						}
-						break;
-					}
 					case HandlePoint.Down: {
-						double oppY = source_rect.Y;
-						if (fromCenter) {
-							double cdy0 = source_rect.Y + srcH - srcCenter.Y;
-							double cdy1 = mouse.Y - srcCenter.Y;
-							double sy = cdy0 != 0 ? cdy1 / cdy0 : 1;
-							double h = Math.Abs (cdy1) * 2;
-							double w = srcW;
-							double sx = 1;
-							if (keepAspect && srcH > 0) {
-								w = h * srcW / srcH;
-								sx = Math.Abs (sy);
+							double oppY = source_rect.Y;
+							if (fromCenter) {
+								double cdy0 = source_rect.Y + srcH - srcCenter.Y;
+								double cdy1 = mouse.Y - srcCenter.Y;
+								double sy = cdy0 != 0 ? cdy1 / cdy0 : 1;
+								double h = Math.Abs (cdy1) * 2;
+								double w = srcW;
+								double sx = 1;
+								if (keepAspect && srcH > 0) {
+									w = h * srcW / srcH;
+									sx = Math.Abs (sy);
+								}
+								edgeRect = new RectangleD (srcCenter.X - w / 2, srcCenter.Y - h / 2, w, h);
+								edgeAnchor = srcCenter;
+								edgeTransform.Translate (edgeAnchor.X, edgeAnchor.Y);
+								edgeTransform.Scale (sx, sy);
+								edgeTransform.Translate (-edgeAnchor.X, -edgeAnchor.Y);
+							} else {
+								double dy0 = srcH;
+								double dy1 = mouse.Y - oppY;
+								double sy = dy0 != 0 ? dy1 / dy0 : 1;
+								double h = Math.Abs (dy1);
+								double w = srcW;
+								double sx = 1;
+								if (keepAspect && srcH > 0) {
+									w = h * srcW / srcH;
+									sx = Math.Abs (sy);
+								}
+								double ry = Math.Min (oppY, mouse.Y);
+								double rx = keepAspect ? srcCenter.X - w / 2 : source_rect.X;
+								edgeRect = new RectangleD (rx, ry, w, h);
+								edgeAnchor = new PointD (srcCenter.X, oppY);
+								edgeTransform.Translate (edgeAnchor.X, edgeAnchor.Y);
+								edgeTransform.Scale (sx, sy);
+								edgeTransform.Translate (-edgeAnchor.X, -edgeAnchor.Y);
 							}
-							edgeRect = new RectangleD (srcCenter.X - w / 2, srcCenter.Y - h / 2, w, h);
-							edgeAnchor = srcCenter;
-							edgeTransform.Translate (edgeAnchor.X, edgeAnchor.Y);
-							edgeTransform.Scale (sx, sy);
-							edgeTransform.Translate (-edgeAnchor.X, -edgeAnchor.Y);
-						} else {
-							double dy0 = srcH;
-							double dy1 = mouse.Y - oppY;
-							double sy = dy0 != 0 ? dy1 / dy0 : 1;
-							double h = Math.Abs (dy1);
-							double w = srcW;
-							double sx = 1;
-							if (keepAspect && srcH > 0) {
-								w = h * srcW / srcH;
-								sx = Math.Abs (sy);
-							}
-							double ry = Math.Min (oppY, mouse.Y);
-							double rx = keepAspect ? srcCenter.X - w / 2 : source_rect.X;
-							edgeRect = new RectangleD (rx, ry, w, h);
-							edgeAnchor = new PointD (srcCenter.X, oppY);
-							edgeTransform.Translate (edgeAnchor.X, edgeAnchor.Y);
-							edgeTransform.Scale (sx, sy);
-							edgeTransform.Translate (-edgeAnchor.X, -edgeAnchor.Y);
+							break;
 						}
-						break;
-					}
 					default: {
-						// Unreachable (all 8 HandlePoints handled above); kept as a guard.
-						RectangleD to = ComputeEdgeRect (source_rect, ref_rect, active.Value, keepAspect, fromCenter);
-						ApplyRefScale (document, ComputeScaleTransform (source_rect, to));
-						return;
-					}
+							// Unreachable (all 8 HandlePoints handled above); kept as a guard.
+							RectangleD to = ComputeEdgeRect (source_rect, ref_rect, active.Value, keepAspect, fromCenter);
+							ApplyRefScale (document, ComputeScaleTransform (source_rect, to));
+							return;
+						}
 				}
 
 				_ = edgeRect; // grips are placed via the oriented frame, not this rect

@@ -511,7 +511,7 @@ public sealed partial class LayersListView
 		ArgumentNullException.ThrowIfNull (active_document);
 
 		int count = active_document.Layers.Count (); // count after removal
-		// e.Index is the doc index that was removed.
+							     // e.Index is the doc index that was removed.
 		int modelIndex = count - e.Index;
 		// Clamp to valid range; if out of range, ignore (move is handled via Added+Removed pair).
 		if (modelIndex < 0 || modelIndex >= (int) list_model.GetNItems ())

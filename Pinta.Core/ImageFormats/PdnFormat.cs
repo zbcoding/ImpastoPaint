@@ -15,10 +15,10 @@
 
 using System;
 using System.Collections.Generic;
+using System.Formats.Nrbf;
 using System.IO;
 using System.IO.Compression;
 using System.Text;
-using System.Formats.Nrbf;
 using Cairo;
 
 namespace Pinta.Core;

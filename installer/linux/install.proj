@@ -32,10 +32,10 @@
 
   <!-- Install everything for Pinta -->
   <Target Name="Install">
-    <Copy SourceFiles="@(BinFile)" DestinationFolder="$(InstallLibDir)/pinta" />
+    <Copy SourceFiles="@(BinFile)" DestinationFolder="$(InstallLibDir)/impasto" />
     <MakeDir Directories="$(InstallBinDir)" />
-    <Copy SourceFiles="$(SourceDir)/xdg/pinta.1" DestinationFolder="$(InstallManDir)/man1" />
-    <Exec Command='gzip -f "$(InstallManDir)/man1/pinta.1"' />
+    <Copy SourceFiles="$(SourceDir)/xdg/impasto.1" DestinationFolder="$(InstallManDir)/man1" />
+    <Exec Command='gzip -f "$(InstallManDir)/man1/impasto.1"' />
     <Copy SourceFiles="$(SourceDir)/xdg/com.github.zbcoding.Impasto.metainfo.xml" DestinationFolder="$(InstallDataRootDir)/metainfo" />
     <Copy SourceFiles="$(SourceDir)/xdg/com.github.zbcoding.Impasto.desktop" DestinationFolder="$(InstallDataRootDir)/applications" />
     <Copy SourceFiles="@(Icon)" DestinationFolder="$(InstallDataRootDir)/icons/%(Icon.RecursiveDir)" />
@@ -44,11 +44,11 @@
 
   <!-- Uninstall everything for Pinta -->
   <Target Name="Uninstall">
-    <Exec Command='rm -rf "$(InstallLibDir)/pinta"' />
-    <Delete Files="$(InstallBinDir)/pinta" />
+    <Exec Command='rm -rf "$(InstallLibDir)/impasto"' />
+    <Delete Files="$(InstallBinDir)/impasto" />
     <Delete Files="$(InstallLocaleDir)/%(Translation.Code)/LC_MESSAGES/impasto.mo" />
-    <Delete Files="$(InstallManDir)/man1/pinta.1" />
-    <Delete Files="$(InstallManDir)/man1/pinta.1.gz" />
+    <Delete Files="$(InstallManDir)/man1/impasto.1" />
+    <Delete Files="$(InstallManDir)/man1/impasto.1.gz" />
     <Delete Files="$(InstallDataRootDir)/metainfo/com.github.zbcoding.Impasto.metainfo.xml" />
     <Delete Files="$(InstallDataRootDir)/applications/com.github.zbcoding.Impasto.desktop" />
     <Delete Files="$(InstallDataRootDir)/icons/%(Icon.RecursiveDir)/%(Icon.Filename)%(Icon.Extension)" />

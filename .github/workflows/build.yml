@@ -14,7 +14,7 @@ on:
 
 env:
   DOTNET_VERSION: 10.0.x
-  PINTA_VERSION: 0.0.1
+  IMPASTO_VERSION: 0.0.1
 
 jobs:
   build-ubuntu:
@@ -36,7 +36,7 @@ jobs:
 
     steps:
     - name: Set environment variables
-      run: echo "BUILD_DIR=${{runner.temp}}/pinta-${{env.PINTA_VERSION}}" >> $GITHUB_ENV
+      run: echo "BUILD_DIR=${{runner.temp}}/impasto-${{env.IMPASTO_VERSION}}" >> $GITHUB_ENV
     - uses: actions/checkout@v7
     - name: Setup .NET
       uses: actions/setup-dotnet@v5
@@ -51,14 +51,14 @@ jobs:
         ./autogen.sh
         make dist
         mkdir ${{env.BUILD_DIR}}
-        tar -xzf pinta-${{env.PINTA_VERSION}}.tar.gz -C ${{runner.temp}}
+        tar -xzf impasto-${{env.IMPASTO_VERSION}}.tar.gz -C ${{runner.temp}}
     - name: Create temporary global.json
       if: matrix.dotnet_version == '11.0.x'
       run: mv .github/workflows/dotnet11.global.json ${{env.BUILD_DIR}}/global.json
     - name: Build
       working-directory: ${{env.BUILD_DIR}}
       run: |
-        ./configure --prefix ${{runner.temp}}/pinta-install
+        ./configure --prefix ${{runner.temp}}/impasto-install
         make build
     - name: Test
       working-directory: ${{env.BUILD_DIR}}
@@ -76,7 +76,7 @@ jobs:
       uses: actions/upload-artifact@v7
       with:
         name: Impasto-linux-dotnet-${{matrix.dotnet_version}}.zip
-        path: ${{env.BUILD_DIR}}/pinta-${{env.PINTA_VERSION}}.zip
+        path: ${{env.BUILD_DIR}}/impasto-${{env.IMPASTO_VERSION}}.zip
         if-no-files-found: error
 
   build-flatpak:
@@ -166,7 +166,7 @@ jobs:
       uses: actions/upload-artifact@v7
       with:
         name: "Impasto-${{matrix.build.dotnet_rid}}.dmg"
-        path: installer/macos/Pinta.dmg
+        path: installer/macos/Impasto.dmg
         if-no-files-found: error
 
   build-windows:

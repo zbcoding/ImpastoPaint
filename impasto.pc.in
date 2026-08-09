@@ -1,0 +1,9 @@
+Name: impasto
+Description: Impasto
+Version: @VERSION@
+
+prefix=@prefix@
+exec_prefix=@exec_prefix@
+libdir=@libdir@
+
+Libs: -r:@libdir@/impasto/Impasto.dll -r:@libdir@/impasto/Pinta.Core.dll -r:@libdir@/impasto/Pinta.Effects.dll -r:@libdir@/impasto/Pinta.Widgets.dll -r:@libdir@/impasto/Pinta.Resources.dll -r:@libdir@/impasto/Pinta.Tools.dll

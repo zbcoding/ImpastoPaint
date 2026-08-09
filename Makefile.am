@@ -101,7 +101,7 @@ cleanobj:
 # target: install - Installs Pinta.
 install-exec-local: publish
 	$(DOTNET_CMD) msbuild installer/linux/install.proj -target:Install $(PINTA_INSTALL_OPTS)
-	$(INSTALL_SCRIPT) installer/linux/pinta $(DESTDIR)$(bindir)/$(PACKAGE)
+	$(INSTALL_SCRIPT) installer/linux/impasto $(DESTDIR)$(bindir)/$(PACKAGE)
 
 # target: uninstall - Uninstalls Pinta.
 uninstall-hook:
@@ -113,7 +113,7 @@ releasezip:
 	cd $(abs_srcdir)/release && zip -r ../$(RELEASE_FILE).zip * -x "*.pdb"
 
 EXTRA_DIST = Impasto Pinta.Core Pinta.Docking Pinta.Effects Pinta.Gui.Addins Pinta.Gui.Widgets Pinta.Resources Pinta.Tools po xdg tests license-mit.txt \
-           license-pdn.txt Pinta.sln pinta.pc.in readme.md intltool-extract.in \
+           license-pdn.txt Pinta.sln impasto.pc.in readme.md intltool-extract.in \
            intltool-merge.in intltool-update.in installer/addins installer/linux/install.proj properties Directory.Build.props Directory.Packages.props
 
 CLEANFILES = intltool-extract \

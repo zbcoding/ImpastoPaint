@@ -4,9 +4,8 @@ _Name=Impasto
 _Comment=Paint, create and edit images
 _GenericName=Paint & Image Editor
 _X-GNOME-FullName=Impasto Paint
-# ponytail: `pinta` is the autotools launcher script name; the assembly itself is Impasto.
-TryExec=pinta
-Exec=pinta %F
+TryExec=impasto
+Exec=impasto %F
 Icon=com.github.zbcoding.Impasto
 StartupNotify=false
 StartupWMClass=Impasto

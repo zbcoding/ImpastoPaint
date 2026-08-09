@@ -8,7 +8,7 @@ appdata_in_files = com.github.zbcoding.Impasto.metainfo.xml.in
 appdata_DATA = $(appdata_in_files:.xml.in=.xml)
 @INTLTOOL_XML_RULE@
 
-man_MANS = pinta.1
+man_MANS = impasto.1
 
 EXTRA_DIST =                                   \
        $(desktop_in_files)                     \

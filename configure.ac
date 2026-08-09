@@ -1,5 +1,5 @@
 dnl Process this file with autoconf to produce a configure script.
-AC_INIT([pinta], [0.0.1])
+AC_INIT([impasto], [0.0.1])
 AM_INIT_AUTOMAKE([tar-ustar foreign])
 
 AC_PROG_INSTALL
@@ -44,16 +44,14 @@ AC_DEFINE_UNQUOTED(GETTEXT_PACKAGE, "$GETTEXT_PACKAGE")
 ALL_LINGUAS="af ar ast az be bg bn br bs ca cs da de dv el en_AU en_CA en_GB eo es et eu fa fi fil fo fr ga gl he hi hr hu hy id ie it ja ka kab kk kn ko kw la lt lv ms my nb nl nn oc pl pt pt_BR ro ru si sk sl sq sr sv ta th tr uk ur vi zh_CN zh_HK zh_TW"
 AM_GLIB_GNU_GETTEXT
 
-pintalocaledir='${prefix}/${DATADIRNAME}/locale'
-AC_SUBST(pintalocaledir)
 
 PKG_CHECK_MODULES([ADW_1], [libadwaita-1 >= 1.8])
 PKG_CHECK_MODULES([GTK], [gtk4 >= 4.18])
 
 AC_CONFIG_FILES([
 Makefile
-installer/linux/pinta
-pinta.pc
+installer/linux/impasto
+impasto.pc
 po/Makefile.in
 xdg/Makefile
 ])

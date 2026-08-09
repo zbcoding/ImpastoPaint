@@ -24,7 +24,7 @@ if [ "$runtimeid" != "osx-x64" ] && [ "$runtimeid" != "osx-arm64" ]; then
     exit 1
 fi
 
-MAC_APP_DIR="$PWD/package/Pinta.app"
+MAC_APP_DIR="$PWD/package/Impasto.app"
 MAC_APP_BIN_DIR="${MAC_APP_DIR}/Contents/MacOS/"
 MAC_APP_RESOURCE_DIR="${MAC_APP_DIR}/Contents/Resources/"
 MAC_APP_SHARE_DIR="${MAC_APP_RESOURCE_DIR}/share"
@@ -58,7 +58,7 @@ cp impasto.icns ${MAC_APP_DIR}/Contents/Resources
 echo "Bundling GTK..."
 ./bundle_gtk.py --runtime $runtimeid --resource_dir ${MAC_APP_RESOURCE_DIR}
 # Add the GTK lib dir to the library search path (for dlopen()), as an alternative to $DYLD_LIBRARY_PATH.
-install_name_tool -add_rpath "@executable_path/../Resources/lib" ${MAC_APP_BIN_DIR}/Pinta
+install_name_tool -add_rpath "@executable_path/../Resources/lib" ${MAC_APP_BIN_DIR}/Impasto
 
 # Generate the icon theme cache.
 ${GTK_UPDATE_ICON_CACHE} ${MAC_APP_SHARE_DIR}/icons/hicolor
@@ -81,17 +81,17 @@ fi
 # Create the .dmg image, and include a link to drag the app into /Applications
 echo "Creating dmg..."
 ln -s /Applications package/Applications
-hdiutil create -quiet -srcFolder package -volname "Pinta Installer" -o Pinta.dmg
+hdiutil create -quiet -srcFolder package -volname "Impasto Installer" -o Impasto.dmg
 
 if [ "$skip_signing" = "false" ]; then
     # Sign the .dmg image
-    run_codesign Pinta.dmg
+    run_codesign Impasto.dmg
 
     # Notarize
     echo "Notarizing..."
-    xcrun notarytool submit --wait --apple-id=cameronwhite91@gmail.com --password ${MAC_DEV_PASSWORD} --team-id D5G6C56TBH Pinta.dmg
+    xcrun notarytool submit --wait --apple-id=cameronwhite91@gmail.com --password ${MAC_DEV_PASSWORD} --team-id D5G6C56TBH Impasto.dmg
 
     # Staple the result to the dmg
     echo "Stapling..."
-    xcrun stapler staple Pinta.dmg
+    xcrun stapler staple Impasto.dmg
 fi

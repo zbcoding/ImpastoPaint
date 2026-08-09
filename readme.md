@@ -1,10 +1,7 @@
 # Impasto
 
-[![Build Status](https://github.com/zbcoding/ImpastoPaint/workflows/Build/badge.svg)](https://github.com/zbcoding/ImpastoPaint/actions)
-
-Impasto is a fork of [Pinta](https://github.com/PintaProject/Pinta) — a GTK clone of
-[Paint.NET](https://www.getpaint.net/) — that adopts Paint.NET's interface. It runs on
-Linux, Windows, and macOS.
+Impasto is a painting and image editing application.
+It runs on Linux, Windows, and macOS.
 
 ![Shapes and text as editable objects, with per-object history](docs/screenshots/impasto-object-layers.png)
 
@@ -13,7 +10,16 @@ Linux, Windows, and macOS.
 Impasto is licensed under the MIT License (see `license-mit.txt`). Third-party
 attributions, notices, and license texts are in `THIRD-PARTY-NOTICES.md`.
 
-## Building on Windows
+## Relationship to Pinta
+
+Impasto is a new and separate project. It started from the MIT-licensed source of
+[Pinta](https://github.com/PintaProject/Pinta) — a GTK application itself inspired by
+[Paint.NET™](https://www.getpaint.net/) 
+Pinta's contributors are listed in the Impasto application.
+Impasto is not maintained by the Pinta project or the same contributors.
+
+<details>
+<summary><h2>Building on Windows</h2></summary>
 
 First, install the required GTK-related dependencies:
 - Install [MSYS2](https://www.msys2.org)
@@ -30,7 +36,10 @@ For building on the command line:
 - Run:
   - `dotnet run --project Impasto`
 
-## Building on macOS
+</details>
+
+<details>
+<summary><h2>Building on macOS</h2></summary>
 
 - Install .NET 10 and GTK4
   - `brew install dotnet-sdk libadwaita adwaita-icon-theme gettext webp-pixbuf-loader`
@@ -41,7 +50,10 @@ For building on the command line:
 - Run:
   - `dotnet run --project Impasto`
 
-## Building on Linux
+</details>
+
+<details>
+<summary><h2>Building on Linux</h2></summary>
 
 - Install [.NET 10](https://dotnet.microsoft.com/) following the instructions for your Linux distribution.
 - Install other dependencies (instructions are for Ubuntu 22.10, but should be similar for other distros):
@@ -57,20 +69,22 @@ For building on the command line:
     - Add the `--prefix=<install directory>` argument to install to a directory other than `/usr/local`.
   - `make install`
 
+</details>
+
 ## Getting help / contributing:
 
 Contributions are welcome. In short:
 
 - **Code** — Contributing to the free edition (MIT-licensed) is encouraged; a
   contribution received as a PR to the free edition may also be used in the
-  Premium edition of Impasto.
+  Premium edition of Impasto or used in any other software that has the MIT license.
 - **AI coding tools** — welcome. Be able to explain the code you submit and
   adapt it to the project's architecture; AI-assisted code may draw extra
   review before it's merged.
 - **Translations** — contributed as pull requests: AI-drafted in new `.po`
   files, then edited and proofread by a language speaker.
 
-The full guide, including the git/PR workflow, is in `CONTRIBUTING.md`.
+Before contributing, read the full guide, including the git/PR workflow, in `CONTRIBUTING.md`.
 
 - You can report [bugs/issues](https://github.com/zbcoding/ImpastoPaint/issues).
 - You can make [suggestions](https://github.com/zbcoding/ImpastoPaint/discussions).
@@ -79,5 +93,4 @@ The full guide, including the git/PR workflow, is in `CONTRIBUTING.md`.
 
 ## Privacy policy
 
-This program will not transfer any information to other networked systems unless
-specifically requested by the user or the person installing or operating it.
+This program does not transfer any information to other networked systems unless modified or requested by the user or the person installing or operating it.

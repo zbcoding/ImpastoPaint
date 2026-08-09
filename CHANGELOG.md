@@ -1,9 +1,58 @@
 # Change Log
-All notable changes to this project (beginning with version 1.7) will be documented in this file.
 
-## [Unreleased](https://github.com/PintaProject/Pinta/compare/3.1...HEAD)
+All notable changes to this project will be documented in this file.
 
-Thanks to the following contributors who worked on this release:
+Impasto is a fork of the [Pinta Project](https://github.com/PintaProject/Pinta).
+Everything below the "Pinta Project history" heading, plus the "Inherited from Pinta"
+entries, is upstream Pinta work; the Impasto sections cover changes made in this fork.
+
+## Impasto - [Unreleased](https://github.com/zbcoding/Impasto/commits/main)
+
+### Added
+
+- Renamed the application to Impasto. Added Impasto to the About dialog, license sections and issue/support links
+- Shapes and text are now editable sub-layer objects: each layer lists its objects, which can be shown/hidden, renamed, reordered by drag and drop, blended, given per-object opacity, rasterized or deleted individually
+- Layers can be duplicated together with their objects, and object sub-rows can be moved between positions
+- The scissors (smart) selection, healing brush and smart patch tools moved into a premium add-in; freeform and polygon lasso remain part of the free Lasso Select tool
+- The About dialog legal section now uses expandable license and notice panels with independent scrolling
+- The Text Tool now offers a Point/Area mode: Area (flow) text wraps to fit a box that can be resized by dragging a corner, in addition to the existing point text
+- The Text Tool now supports justified alignment, which stretches line spacing to fill the area box
+- The splatter brush now allows the minimum and maximum splatter size to be configured separately from the brush width
+- The floating Colors window now shows a persistent live color picker (wheel/square surface, sliders, hex entry, swap display, and recent/quick swatches) instead of the docked color bar
+- The floating Colors panel and color-wheel popover's quick/recent swatch grids now wrap into extra rows instead of growing wider or clipping
+- Preferences now has a Palette size control alongside the existing extended-palette-rows checkbox, and the palette resize dialogs now step by the current row count so every column stays full
+- Preferences now has a "Show quick access toolbar" checkbox to hide the main icon toolbar row, on by default
+- The Deselect toolbar button's tooltip now mentions the quick double-tap Escape shortcut ("Esc (×2)")
+- The Keyboard Shortcuts dialog now shows a reference-only "Deselect All (Quick, ×2)" row documenting the double-tap Escape gesture
+
+### Changed
+
+- Updated dependencies to require libadwaita 1.8+
+- Deselecting via the Escape key now requires a double-tap, so a single stray Escape press no longer clears the selection
+- The Keyboard Shortcuts dialog now shows a separate, independently rebindable row for each of a command's shortcuts (e.g. "Deselect All" and "Deselect All (Alternate)") instead of only exposing the first one
+
+### Fixed
+
+- Fixed pressing Escape twice no longer being restricted to the selection tools: it now deselects any still-outlined selection regardless of the active tool, and first finalizes an in-progress Shape or Text edit (Object or raster) so a half-drawn shape or half-typed text is committed
+- Fixed the floating Colors panel crashing on launch with a stack overflow, caused by the hex entry's change handler re-entering `ApplyColor`/`RedrawAll` before the reentrancy guard was set
+- Fixed a crash when clicking around the History panel to jump between states non-linearly, caused by the selection handler re-entering itself while undoing/redoing
+- Fixed the Text Tool lagging while drag-resizing a large amount of text, by skipping the re-layout when the rounded font size has not actually changed
+- Fixed editable shapes reverting to their original position after rotating or flipping the image or layer, because the vector control points were not transformed along with the raster
+- Fixed a potential UI freeze when pasting into the Text Tool, caused by blocking the GTK thread on the clipboard read
+- Fixed undo/redo operating on the active document instead of the one the history item belongs to, so undoing while a different tab is focused no longer corrupts the wrong document
+- Fixed status-bar labels reserving space after being disabled in Settings, and made image size/aspect ratio yield before cursor position at the fully expanded color-section boundary without re-expanding folded color sections during a narrowing resize.
+- Fixed the status bar collapsing erratically as the window narrows: the cursor position and image size chips now slide out to the right under the zoom controls in a fixed order, the color swatch grids shrink before either section folds into the color wheel popover, and the color wheel / float colors buttons no longer drift across the swatches.
+- Fixed saving a file without a file extension when a format is chosen from the Save As dialog's type dropdown, without mangling filenames that already have an (unrecognized) extension
+- Fixed AVIF export being unavailable on Windows due to a native library name mismatch, and added the missing `libavif` dependency to the Windows and macOS build workflows
+- Fixed a persisted AVIF default save format being selected even when libavif is unavailable, which could crash Save As
+- Fixed objects not being baked into the layer when merging, flattening or applying a Layer menu transform
+- Fixed TGA export writing incorrect colors, and JPEG export using freed memory
+- Fixed the canvas not re-fitting to the window on resize, and the toolbox not scrolling
+- Fixed the layer properties dialog dimming the screen, and a stack overflow when drawing a shape after object unification
+
+## Inherited from Pinta - [Unreleased](https://github.com/PintaProject/Pinta/compare/3.1...HEAD)
+
+Thanks to the following upstream contributors who worked on this release:
 - @cameronwhite
 - @Lehonti
 - @spaghetti22
@@ -22,11 +71,8 @@ Thanks to the following contributors who worked on this release:
 - @radialserial
 
 ### Added
-- The About dialog legal section now uses expandable license and notice panels with independent scrolling
-- The Text Tool now offers a Point/Area mode: Area (flow) text wraps to fit a box that can be resized by dragging a corner, in addition to the existing point text
-- The Text Tool now supports justified alignment, which stretches line spacing to fill the area box
-- The splatter brush now allows the minimum and maximum splatter size to be configured separately from the brush width
-- Impasto can now save images as AVIF (#2185)
+
+- Pinta can now save images as AVIF (#2185)
 - Added a new "Slash" brush type (#1974)
 - The status bar color palette now supports Ctrl+clicking to edit a color, in addition to middle clicking (#1436)
 - The Resize Image and Resize Canvas dialogs now remember their settings (#1869, #1972)
@@ -44,17 +90,11 @@ Thanks to the following contributors who worked on this release:
 - The text tool now keeps text as re-editable objects per layer, so it can be re-edited later with Ctrl+click and moved with right-drag (#1337)
 - Shape tools now keep shapes as re-editable objects per layer, including geometry, style, arrows, rounded corners, and specialized shape state (#1405)
 - Brush-family tools now support Alt+Mouse Scroll to change brush size (#1883)
-- The floating Colors window now shows a persistent live color picker (wheel/square surface, sliders, hex entry, swap display, and recent/quick swatches) instead of the docked color bar
-- The floating Colors panel and color-wheel popover's quick/recent swatch grids now wrap into extra rows instead of growing wider or clipping
-- Preferences now has a Palette size control alongside the existing extended-palette-rows checkbox, and the palette resize dialogs now step by the current row count so every column stays full
-- Preferences now has a "Show quick access toolbar" checkbox to hide the main icon toolbar row, on by default
-- The Deselect toolbar button's tooltip now mentions the quick double-tap Escape shortcut ("Esc (×2)")
-- The Keyboard Shortcuts dialog now shows a reference-only "Deselect All (Quick, ×2)" row documenting the double-tap Escape gesture
 
 ### Changed
+
 - Effect dialogs no longer dim the canvas during live previews (#1334, reported by @prokoudine)
 - Upgraded the minimum required .NET version to 10.0 (#2081)
-- Updated dependencies to require libadwaita 1.8+
 - Migrated to the Tmds.DBus.Protocol library for compile-time code generation (#2199)
 - Effect dialogs now hide options that are not currently relevant (#1960)
 - Fixed several minor UX issues in the color dialog (#1795)
@@ -67,23 +107,10 @@ Thanks to the following contributors who worked on this release:
 - Adjusted layout of toolbar options in the shape tools to improve usability (#2012, #2019, #2039, #2107)
 - Added new icons for several effects and menu buttons (#2102)
 - Menu buttons now display popout nested menus instead of sliding menus (#2131)
-- Deselecting via the Escape key now requires a double-tap, so a single stray Escape press no longer clears the selection
-- The Keyboard Shortcuts dialog now shows a separate, independently rebindable row for each of a command's shortcuts (e.g. "Deselect All" and "Deselect All (Alternate)") instead of only exposing the first one
 
 ### Fixed
-- Fixed pressing Escape twice no longer being restricted to the selection tools: it now deselects any still-outlined selection regardless of the active tool, and first finalizes an in-progress Shape or Text edit (Object or raster) so a half-drawn shape or half-typed text is committed
-- Fixed the floating Colors panel crashing on launch with a stack overflow, caused by the hex entry's change handler re-entering `ApplyColor`/`RedrawAll` before the reentrancy guard was set
-- Fixed a crash when clicking around the History panel to jump between states non-linearly, caused by the selection handler re-entering itself while undoing/redoing
-- Fixed the Text Tool lagging while drag-resizing a large amount of text, by skipping the re-layout when the rounded font size has not actually changed
-- Fixed editable shapes reverting to their original position after rotating or flipping the image or layer, because the vector control points were not transformed along with the raster
-- Fixed a potential UI freeze when pasting into the Text Tool, caused by blocking the GTK thread on the clipboard read
-- Fixed undo/redo operating on the active document instead of the one the history item belongs to, so undoing while a different tab is focused no longer corrupts the wrong document
-- Fixed status-bar labels reserving space after being disabled in Settings, and made image size/aspect ratio yield before cursor position at the fully expanded color-section boundary without re-expanding folded color sections during a narrowing resize.
-- Fixed the status bar collapsing erratically as the window narrows: the cursor position and image size chips now slide out to the right under the zoom controls in a fixed order, the color swatch grids shrink before either section folds into the color wheel popover, and the color wheel / float colors buttons no longer drift across the swatches.
+
 - Fixed saving images as JPEG on some systems where the image loader reports an alpha channel even when the pixbuf has none, which caused "encoder does not support the color type Rgba8" errors (#1774, #2238)
-- Fixed saving a file without a file extension when a format is chosen from the Save As dialog's type dropdown, without mangling filenames that already have an (unrecognized) extension
-- Fixed AVIF export being unavailable on Windows due to a native library name mismatch, and added the missing `libavif` dependency to the Windows and macOS build workflows
-- Fixed a persisted AVIF default save format being selected even when libavif is unavailable, which could crash Save As
 - Fixed a bug where duplicate submenus could be produced by add-ins with effect categories that were not translated (#1933, #1935)
 - The layers and history panels now scroll automatically to the selected item after any updates (#1867, #1828)
 - Fixed a bug where toolbox buttons other than the active tool could be highlighted in certain situations (#1369, #2099)
@@ -93,6 +120,10 @@ Thanks to the following contributors who worked on this release:
 - Fixed issues with overlay scrollbars intercepting clicks on selection handles (#2200, #2201)
 - Fixed occasional errors after reordering layers and later undoing (#2214, #2139)
 - The desktop file now lists MIME types for additional image formats, so they can be opened from the file manager's right-click menu: WebP (#2185, reported by @Qronikarz, suggested fix by @cameronwhite), HEIC (#653, reported by @voltagex), JPEG XL (#2206, reported by @david2000hun1), QOI (#2033, reported by @Lehonti), Farbfeld (#2036, contributed by @Lehonti), ICO (#1786, reported by @Stephan-P), and PDN (#950, reported by @lammel-hub)
+
+# Pinta Project history
+
+Releases below were made by the Pinta Project before the Impasto fork.
 
 ## [3.1.2](https://github.com/PintaProject/Pinta/release/tag/3.1.2) - 2026/03/29
 

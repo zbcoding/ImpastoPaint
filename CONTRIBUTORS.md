@@ -1,19 +1,26 @@
 # Contributors
 
+## Impasto Contributors
+
+- zbcoding — [@zbcoding](https://github.com/zbcoding)
+
+## Pinta Contributors
+
 <!--
     NOTE FOR EDITORS: This file is embedded into the application and feeds the
     "Credits" (Contributors) section of the About dialog
-    (Pinta/Actions/Help/AboutDialogAction.cs). Each "- Name" bullet here appears as
-    a contributor in the app's credits. The upstream Pinta contributors are listed
-    first and are always present; add any Impasto contributors below them as they
-    join. Whatever you add here is reflected in the app.
+    (Impasto/Actions/Help/AboutDialogAction.cs). Each "- Name" bullet here appears as
+    a contributor in the app's credits, in the order it appears in this file.
+    Add Impasto contributors under "Impasto Contributors"; the upstream Pinta
+    contributors below are always present. Whatever you add here is reflected in
+    the app.
 -->
 
 Impasto is an independent fork of the Pinta Project. The project would not exist
 without the work of the many people who have contributed to Pinta over the years.
 This list mirrors the credits shown in the application's About dialog.
 
-## Current active contributors
+### Pinta - Current active contributors
 
 - badcel — [@badcel](https://github.com/badcel)
 - bplaat — [@bplaat](https://github.com/bplaat)
@@ -52,7 +59,7 @@ This list mirrors the credits shown in the application's About dialog.
 - Zekiah-A — [@Zekiah-A](https://github.com/Zekiah-A)
 - zWolfrost — [@zWolfrost](https://github.com/zWolfrost)
 
-## Past contributors
+### Pinta - Past contributors
 
 - A. Karon — [@akaro2424](https://github.com/akaro2424)
 - Aaron Bockover

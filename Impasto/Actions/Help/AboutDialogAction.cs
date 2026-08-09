@@ -95,6 +95,9 @@ internal sealed class AboutDialogAction : IActionHandler
 			EscapeMarkup (LoadEmbeddedText ("LICENSE-PDN.txt")));
 		ReplaceLegalSections (dialog);
 		dialog.AddCreditSection (
+			Translations.GetString ("Impasto by"),
+			["zbcoding"]);
+		dialog.AddCreditSection (
 			Translations.GetString ("Pinta Project code by"),
 			LoadContributors (LoadEmbeddedText ("CONTRIBUTORS.md")));
 		dialog.TranslatorCredits = Translations.GetString ("translator-credits");
@@ -225,8 +228,20 @@ internal sealed class AboutDialogAction : IActionHandler
 		if (string.IsNullOrEmpty (markdown))
 			return contributors.ToArray ();
 
+		// Only the "## Pinta Contributors" section feeds this list; the Impasto
+		// contributors are credited in their own section of the About dialog.
+		bool inPintaSection = false;
+
 		foreach (string rawLine in markdown.Split ('\n')) {
 			string line = rawLine.Trim ();
+			if (line.StartsWith ("## ", StringComparison.Ordinal)) {
+				inPintaSection = line.Contains ("Pinta", StringComparison.Ordinal);
+				continue;
+			}
+
+			if (!inPintaSection)
+				continue;
+
 			if (!line.StartsWith ("- ", StringComparison.Ordinal))
 				continue;
 

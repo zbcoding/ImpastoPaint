@@ -60,43 +60,22 @@ The workflow for AI-assisted entries:
 
 ## Submitting changes
 
-To contribute code, make your changes available as a pull request on
-GitHub. Using Git is an important part of contributing; GitHub's
-documentation is a good starting point, and
-[Pro Git](http://progit.org/book/) goes deeper.
+### Bug fixes and issues
 
-#### Claiming an issue to work on
+PRs to fix issues are great. Be sure to check the issue comments, in case someone else is working on a bug fix too, at the
+[issue tracker](https://github.com/zbcoding/Impasto/issues).
 
-If you plan to work on an issue registered in the
-[issue tracker](https://github.com/zbcoding/Impasto/issues), go to the
-relevant issue, make sure no one else is already working on it, then leave
-a comment saying that you are working on it.
-
-#### Creating a fork
+### Creating a fork
 
 Create a GitHub account if you haven't got one (use your full name, so we
 have something to put in the credits), then fork the
 [Impasto repository](https://github.com/zbcoding/Impasto) and pull the
 code down to your local machine.
 
-#### Writing, compiling, and testing code
+### Writing, compiling, and testing code
 
-Make whatever changes are necessary to the source code, but please don't
-attempt to clean up existing code. We're only interested in functional
-changes; mixing in cosmetic changes makes it very hard to see what has
-actually changed. Build the code according to the [building
-instructions](readme.md) and test it to make sure it does what it's
-supposed to and nothing it isn't.
-
-Follow the architecture and conventions in `AGENTS.md`, and run the checks
-it describes (build, tests, `dotnet format`) before submitting.
-
-#### Committing and opening a pull request
-
-Commit your changes to your fork with a clear commit message and a short
-description. Then open a pull request against the Impasto repository from
-your fork. Maintainers will review and test your solution; if it is good
-it will be merged, and you'll be added to the credits as a contributor.
-
-Questions on this process can be asked through the methods described in
-`readme.md`.
+Small, testable, readable changes are better than large, sprawling changes.
+Changes made in commits should be explained in pull request summaries.
+If you make a new feature or cosmetic change, merging the code is harder.
+Consider making your code change optional by adding a user setting, especially for UI or cosmetic changes.
+Build and test the application with your code changes before submitting a PR, please.

@@ -323,6 +323,13 @@ internal sealed class FileFormatTests
 	// where GTK can't initialize (e.g. a headless CI without a display).
 	static bool TryInitGtk ()
 	{
+		// ponytail: gtk_init aborts the process rather than throwing when there
+		// is no display, so check for one first instead of catching.
+		if (!OperatingSystem.IsWindows () && !OperatingSystem.IsMacOS ()
+		    && string.IsNullOrEmpty (Environment.GetEnvironmentVariable ("DISPLAY"))
+		    && string.IsNullOrEmpty (Environment.GetEnvironmentVariable ("WAYLAND_DISPLAY")))
+			return false;
+
 		try {
 			Gtk.Module.Initialize ();
 			return true;

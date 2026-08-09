@@ -25,7 +25,7 @@ OutputBaseFilename={#ProductName}
 OutputDir=installer\windows
 ; Allow installing for all users or only the current user
 PrivilegesRequiredOverridesAllowed=dialog
-SetupIconFile=installer\windows\Pinta.ico
+SetupIconFile=installer\windows\Impasto.ico
 SolidCompression=yes
 SourceDir=..\..\
 UninstallDisplayIcon={app}\bin\{#ProductName}.exe

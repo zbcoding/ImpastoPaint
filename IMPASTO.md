@@ -94,7 +94,10 @@ full 4×3 grid.
   `Language-Team` once a local/Impasto hosting decision is made.
 - Installed binary is still named `pinta`; the `.desktop` `Exec` matches it. Rename the
   binary and the autotools packaging together or not at all.
-- Icon artwork is still Pinta's. MIT, fine to ship, but swap it before any release.
+- The `.ico`/`.icns` files are renamed to `Impasto.*` and the icon artwork is now
+  Impasto's own (a palette + impasto "I"), replacing Pinta's. The hicolor app icons
+  resolve under dotnet run from `build/bin/icons`; the window icon only refreshes after a
+  rebuild.
 
 ## Next up
 

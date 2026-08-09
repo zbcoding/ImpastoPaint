@@ -5,7 +5,7 @@
     <AssemblyName>Pinta</AssemblyName>
     <RootNamespace>Pinta</RootNamespace>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <ApplicationIcon>Pinta.ico</ApplicationIcon>
+    <ApplicationIcon>Impasto.ico</ApplicationIcon>
     <OutputPath>..\build\bin</OutputPath>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
 

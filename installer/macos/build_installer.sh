@@ -52,7 +52,7 @@ mv ${MAC_APP_BIN_DIR}/icons ${MAC_APP_SHARE_DIR}/icons
 cp hicolor.index.theme ${MAC_APP_SHARE_DIR}/icons/hicolor/index.theme
 
 cp Info.plist ${MAC_APP_DIR}/Contents
-cp pinta.icns ${MAC_APP_DIR}/Contents/Resources
+cp impasto.icns ${MAC_APP_DIR}/Contents/Resources
 
 # Install the GTK dependencies.
 echo "Bundling GTK..."

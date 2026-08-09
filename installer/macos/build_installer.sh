@@ -1,26 +1,15 @@
 #!/bin/sh
 set -e
 
-# Parse command line arguments
-skip_signing=false
-runtimeid=""
-
-for arg in "$@"; do
-    case $arg in
-        --skip-signing)
-            skip_signing=true
-            shift
-            ;;
-        *)
-            runtimeid=$arg
-            shift
-            ;;
-    esac
-done
+# ponytail: this fork has no Apple Developer ID, so the build is always
+# unsigned and un-notarized - Gatekeeper needs a right-click > Open on first
+# launch. Re-add codesign/notarytool here if the project ever gets its own
+# certificate; do not reuse upstream Pinta's identity.
+runtimeid=$1
 
 if [ "$runtimeid" != "osx-x64" ] && [ "$runtimeid" != "osx-arm64" ]; then
     echo "Invalid runtime identifier (should be osx-x64 or osx-arm64)"
-    echo "Usage: ./build_installer.sh [--skip-signing] runtimeid"
+    echo "Usage: ./build_installer.sh runtimeid"
     exit 1
 fi
 
@@ -30,13 +19,6 @@ MAC_APP_RESOURCE_DIR="${MAC_APP_DIR}/Contents/Resources/"
 MAC_APP_SHARE_DIR="${MAC_APP_RESOURCE_DIR}/share"
 
 GTK_UPDATE_ICON_CACHE="$(brew --prefix gtk4)/bin/gtk4-update-icon-cache -f"
-
-run_codesign()
-{
-    file=$1
-    echo ${file}
-    codesign --deep --force --timestamp --options runtime --sign "Developer ID Application: Cameron White (D5G6C56TBH)" --entitlements entitlements.plist ${file}
-}
 
 mkdir -p ${MAC_APP_BIN_DIR} ${MAC_APP_RESOURCE_DIR} ${MAC_APP_SHARE_DIR}
 
@@ -66,32 +48,7 @@ ${GTK_UPDATE_ICON_CACHE} ${MAC_APP_SHARE_DIR}/icons/Adwaita
 
 touch ${MAC_APP_DIR}
 
-if [ "$skip_signing" = "false" ]; then
-    # Sign the GTK binaries.
-    echo "Signing..."
-    for lib in `find ${MAC_APP_RESOURCE_DIR} -name \*.dylib -or -name \*.so`
-    do
-        run_codesign ${lib}
-    done
-
-    # Sign the main executable and .NET stuff.
-    run_codesign ${MAC_APP_DIR}
-fi
-
 # Create the .dmg image, and include a link to drag the app into /Applications
 echo "Creating dmg..."
 ln -s /Applications package/Applications
 hdiutil create -quiet -srcFolder package -volname "Impasto Installer" -o Impasto.dmg
-
-if [ "$skip_signing" = "false" ]; then
-    # Sign the .dmg image
-    run_codesign Impasto.dmg
-
-    # Notarize
-    echo "Notarizing..."
-    xcrun notarytool submit --wait --apple-id=cameronwhite91@gmail.com --password ${MAC_DEV_PASSWORD} --team-id D5G6C56TBH Impasto.dmg
-
-    # Staple the result to the dmg
-    echo "Stapling..."
-    xcrun stapler staple Impasto.dmg
-fi

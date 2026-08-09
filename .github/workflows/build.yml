@@ -11,7 +11,6 @@ on:
 
 env:
   DOTNET_VERSION: 10.0.x
-  IMPASTO_VERSION: 0.0.1
 
 jobs:
   build-ubuntu:
@@ -32,9 +31,14 @@ jobs:
       GTK_LIBS: undefined
 
     steps:
-    - name: Set environment variables
-      run: echo "BUILD_DIR=${{runner.temp}}/impasto-${{env.IMPASTO_VERSION}}" >> $GITHUB_ENV
     - uses: actions/checkout@v7
+    # configure.ac is the single source of truth for the version, and it's what
+    # names the release zip - so read it from there rather than duplicating it.
+    - name: Set environment variables
+      run: |
+        version=$(sed -n 's/^AC_INIT(\[impasto\], \[\(.*\)\])/\1/p' configure.ac)
+        echo "IMPASTO_VERSION=$version" >> $GITHUB_ENV
+        echo "BUILD_DIR=${{runner.temp}}/impasto-$version" >> $GITHUB_ENV
     - name: Setup .NET
       uses: actions/setup-dotnet@v5
       with:
@@ -123,11 +127,6 @@ jobs:
 
     runs-on: ${{matrix.build.runner}}
 
-    env:
-      # Publish secrets into env so they can be checked in step `if` conditions,
-      # which don't allow the `secrets` context directly.
-      MAC_CERTS_BASE64: ${{ secrets.MAC_CERTS_BASE64 }}
-
     steps:
     - uses: actions/checkout@v7
     - name: Setup .NET
@@ -147,27 +146,19 @@ jobs:
         DYLD_LIBRARY_PATH: ${{matrix.build.lib_path}}
       run: dotnet test Pinta.sln -c Release
 
-    # ponytail: skip signing when the certs aren't configured on this repo.
-    - name: Add Cert to Keychain
-      if: github.event_name != 'pull_request' && env.MAC_CERTS_BASE64 != ''
-      uses: apple-actions/import-codesign-certs@v7
-      with:
-        p12-file-base64: ${{ secrets.MAC_CERTS_BASE64 }}
-        p12-password: ${{ secrets.MAC_CERTS_PASSWORD }}
-
+    # ponytail: this fork has no Apple Developer ID, so the dmg is always
+    # unsigned - Gatekeeper needs a right-click > Open on first launch.
     - name: Build Installer
-      if: github.event_name != 'pull_request' && env.MAC_CERTS_BASE64 != ''
-      env:
-        MAC_DEV_PASSWORD: ${{ secrets.MAC_DEV_PASSWORD }}
+      if: github.event_name != 'pull_request'
       run: |
         cd installer/macos
         ./build_installer.sh ${{matrix.build.dotnet_rid}}
 
     - name: Upload Installer
-      if: github.event_name != 'pull_request' && env.MAC_CERTS_BASE64 != ''
+      if: github.event_name != 'pull_request'
       uses: actions/upload-artifact@v7
       with:
-        name: "Impasto-${{matrix.build.dotnet_rid}}.dmg"
+        name: "Impasto-${{matrix.build.dotnet_rid}}-unsigned.dmg"
         path: installer/macos/Impasto.dmg
         if-no-files-found: error
 
@@ -183,11 +174,6 @@ jobs:
     defaults:
       run:
         shell: msys2 {0}
-
-    env:
-      # Publish secret into env so it can be checked in step `if` conditions,
-      # which don't allow the `secrets` context directly.
-      SIGNPATH_API_TOKEN: ${{ secrets.SIGNPATH_API_TOKEN }}
 
     steps:
     - uses: actions/checkout@v7
@@ -219,34 +205,10 @@ jobs:
         iscc -DProductArch="${{matrix.build.setup_arch}}" installer/windows/installer.iss
 
     - name: Upload Installer
-      id: upload-unsigned-installer
       uses: actions/upload-artifact@v7
       with:
         name: "Impasto-${{matrix.build.dotnet_rid}}.exe"
         path: installer/windows/Impasto.exe
-        if-no-files-found: error
-
-    # Only enable signing for tagged releases.
-    - name: Sign Installer
-      if: startsWith( github.ref, 'refs/tags/' ) && env.SIGNPATH_API_TOKEN != ''
-      uses: signpath/github-action-submit-signing-request@v2
-      with:
-        api-token: '${{ secrets.SIGNPATH_API_TOKEN }}'
-        organization-id: "fb6d32c7-2808-4358-b9eb-f7482eb8c0a5"
-        project-slug: Pinta
-        signing-policy-slug: release-signing
-        artifact-configuration-slug: Zipped_Exe
-        github-artifact-id: '${{ steps.upload-unsigned-installer.outputs.artifact-id }}'
-        wait-for-completion: true
-        output-artifact-directory: './signed-artifacts'
-
-    - name: Upload Signed Installer
-      if: startsWith( github.ref, 'refs/tags/' ) && env.SIGNPATH_API_TOKEN != ''
-      id: upload-signed-installer
-      uses: actions/upload-artifact@v7
-      with:
-        name: "Impasto-signed-${{matrix.build.dotnet_rid}}.exe"
-        path: ./signed-artifacts/Impasto.exe
         if-no-files-found: error
 
   # On a v* tag, publish the built artifacts as a GitHub release.

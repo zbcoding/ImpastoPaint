@@ -50,3 +50,10 @@ xdg/com.github.zbcoding.Impasto.metainfo.xml
 .vscode
 
 
+
+# flatpak build outputs
+impasto-linux-x64.zip
+.flatpak-builder/
+flatpak-build/
+repo/
+*.flatpak

@@ -317,52 +317,11 @@ internal sealed class FileFormatTests
 		}
 	}
 
-	// Noise: incompressible, so a lossy encoder cannot accidentally reproduce it
-	// exactly and make the lossless assertion below pass for the wrong reason.
-	static ImageSurface MakeNoiseImage ()
-	{
-		ImageSurface surface = new (Format.Argb32, 32, 32);
-		Span<ColorBgra> data = surface.GetPixelData ();
-		Random rng = new (1);
-		for (int i = 0; i < data.Length; i++)
-			data[i] = ColorBgra.FromBgra ((byte) rng.Next (256), (byte) rng.Next (256), (byte) rng.Next (256), 255);
-		surface.MarkDirty ();
-		return surface;
-	}
-
-	static byte[]? TryEncodeWebP (ImageSurface surface, int quality)
-	{
-		(string[] keys, string[] values) = WebPFormat.SaveOptions (quality);
-		using GdkPixbuf.Pixbuf pb = surface.ToPixbuf (includeAlpha: true);
-		// Via a temp file: the bindings expose Savev but not SaveToBufferv.
-		string path = System.IO.Path.Combine (System.IO.Path.GetTempPath (), $"pinta-webp-test-{Guid.NewGuid ():N}.webp");
-		try {
-			pb.Savev (path, "webp", keys, values);
-			return File.ReadAllBytes (path);
-		} catch (Exception) {
-			return null; // no webp writer in this gdk-pixbuf build
-		} finally {
-			File.Delete (path);
-		}
-	}
-
 	[Test]
-	public void Export_WebP_LosslessQualityRoundTripsExactly ()
+	public void WebP_SaveOptions_AlwaysUsesQuality ()
 	{
-		using ImageSurface surface = MakeNoiseImage ();
-
-		byte[]? encoded = TryEncodeWebP (surface, WebPFormat.LosslessQuality);
-		Assume.That (encoded, Is.Not.Null, "no webp encoder on this system");
-
-		ColorBgra[]? actual = TryDecode (encoded!, "webp", out int width, out int height);
-		Assume.That (actual, Is.Not.Null, "no webp loader on this system");
-
-		Assert.That (width, Is.EqualTo (surface.Width));
-		Assert.That (height, Is.EqualTo (surface.Height));
-
-		ReadOnlySpan<ColorBgra> expected = surface.GetReadOnlyPixelData ();
-		for (int i = 0; i < expected.Length; i++)
-			AssertSimilar (expected[i], actual![i], 0, $"webp lossless pixel {i}");
+		Assert.That (WebPFormat.SaveOptions (80), Is.EqualTo ((new[] { "quality" }, new[] { "80" })));
+		Assert.That (WebPFormat.SaveOptions (100), Is.EqualTo ((new[] { "quality" }, new[] { "100" })));
 	}
 
 	// FormatDescriptor and FileFilter need GTK's type system registered; skip

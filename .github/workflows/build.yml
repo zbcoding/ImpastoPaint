@@ -80,9 +80,6 @@ jobs:
         if-no-files-found: error
 
   build-macos:
-    # Temporarily disabled; Linux is the only active build target.
-    if: ${{ false }}
-
     # Build for both intel and arm64
     strategy:
       matrix:
@@ -111,15 +108,16 @@ jobs:
         DYLD_LIBRARY_PATH: ${{matrix.build.lib_path}}
       run: dotnet test Pinta.sln -c Release
 
+    # ponytail: skip signing when the certs aren't configured on this repo.
     - name: Add Cert to Keychain
-      if: github.event_name != 'pull_request'
+      if: github.event_name != 'pull_request' && secrets.MAC_CERTS_BASE64 != ''
       uses: apple-actions/import-codesign-certs@v7
       with:
         p12-file-base64: ${{ secrets.MAC_CERTS_BASE64 }}
         p12-password: ${{ secrets.MAC_CERTS_PASSWORD }}
 
     - name: Build Installer
-      if: github.event_name != 'pull_request'
+      if: github.event_name != 'pull_request' && secrets.MAC_CERTS_BASE64 != ''
       env:
         MAC_DEV_PASSWORD: ${{ secrets.MAC_DEV_PASSWORD }}
       run: |
@@ -127,7 +125,7 @@ jobs:
         ./build_installer.sh ${{matrix.build.dotnet_rid}}
 
     - name: Upload Installer
-      if: github.event_name != 'pull_request'
+      if: github.event_name != 'pull_request' && secrets.MAC_CERTS_BASE64 != ''
       uses: actions/upload-artifact@v7
       with:
         name: "Pinta-${{matrix.build.dotnet_rid}}.dmg"
@@ -135,9 +133,6 @@ jobs:
         if-no-files-found: error
 
   build-windows:
-    # Temporarily disabled; Linux is the only active build target.
-    if: ${{ false }}
-
     # Build for both x64 and arm64
     strategy:
       matrix:
@@ -189,7 +184,7 @@ jobs:
 
     # Only enable signing for tagged releases.
     - name: Sign Installer
-      if: startsWith( github.ref, 'refs/tags/' )
+      if: startsWith( github.ref, 'refs/tags/' ) && secrets.SIGNPATH_API_TOKEN != ''
       uses: signpath/github-action-submit-signing-request@v2
       with:
         api-token: '${{ secrets.SIGNPATH_API_TOKEN }}'
@@ -202,13 +197,33 @@ jobs:
         output-artifact-directory: './signed-artifacts'
 
     - name: Upload Signed Installer
-      if: startsWith( github.ref, 'refs/tags/' )
+      if: startsWith( github.ref, 'refs/tags/' ) && secrets.SIGNPATH_API_TOKEN != ''
       id: upload-signed-installer
       uses: actions/upload-artifact@v7
       with:
         name: "Pinta-signed-${{matrix.build.dotnet_rid}}.exe"
         path: ./signed-artifacts/Pinta.exe
         if-no-files-found: error
+
+  # On a v* tag, publish the built artifacts as a GitHub release.
+  release:
+    needs: [build-ubuntu, build-macos, build-windows]
+    if: startsWith(github.ref, 'refs/tags/v')
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: write
+    steps:
+    - uses: actions/download-artifact@v6
+      with:
+        path: artifacts
+    - name: Flatten (artifact dir names are already the filenames)
+      run: |
+        mkdir out
+        for d in artifacts/*/; do mv "$d"* "out/$(basename "$d")"; done
+    - name: Create release
+      env:
+        GH_TOKEN: ${{ github.token }}
+      run: gh release create "$GITHUB_REF_NAME" out/* --generate-notes --repo "$GITHUB_REPOSITORY"
 
   # Keep only the 2 most recent artifacts per name to stay under storage quota.
   prune-artifacts:

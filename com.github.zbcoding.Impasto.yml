@@ -3,6 +3,8 @@ runtime: org.gnome.Platform
 runtime-version: '50'
 sdk: org.gnome.Sdk
 command: impasto
+# Flathub's convention; without it bundles land on the flatpak-builder default, "master".
+branch: stable
 
 # ponytail: this packages the self-contained linux-x64 publish output rather than
 # compiling from source inside the sandbox. flatpak-builder runs offline, so a source

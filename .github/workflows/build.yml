@@ -108,7 +108,7 @@ jobs:
       run: |
         flatpak-builder --repo=repo --force-clean --disable-rofiles-fuse \
           flatpak-build com.github.zbcoding.Impasto.yml
-        flatpak build-bundle repo Impasto-x86_64.flatpak com.github.zbcoding.Impasto
+        flatpak build-bundle repo Impasto-x86_64.flatpak com.github.zbcoding.Impasto stable
     - name: Upload flatpak
       uses: actions/upload-artifact@v7
       with:

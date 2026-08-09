@@ -27,9 +27,9 @@ config.status
 configure
 configure~
 install-sh
-installer/macos/Pinta.dmg
+installer/macos/Impasto.dmg
 installer/macos/package
-installer/linux/pinta
+installer/linux/impasto
 intltool-extract.in
 intltool-merge.in
 intltool-update.in
@@ -37,7 +37,7 @@ Makefile
 Makefile.in
 missing
 obj
-pinta.pc
+impasto.pc
 Pinta.sln.DotSettings.user
 po/.intltool-merge-cache
 po/Makefile.in.in
@@ -57,3 +57,7 @@ impasto-linux-x64.zip
 flatpak-build/
 repo/
 *.flatpak
+
+# autotools build outputs
+impasto-*.tar.gz
+publish/

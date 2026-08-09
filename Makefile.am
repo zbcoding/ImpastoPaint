@@ -32,24 +32,24 @@ all: publish
 
 # target: run - Launch the uninstalled copy
 run: build
-	$(DOTNET_CMD) build/bin/Pinta.dll
+	$(DOTNET_CMD) build/bin/Impasto.dll
 
 # target: help - Display callable targets.
 help:
 	egrep "^# target:" Makefile | sed 's/^# target:/make/'
 
-build/bin/Pinta.dll: Pinta.sln
+build/bin/Impasto.dll: Pinta.sln
 	cd $(srcdir) && $(DOTNET_CMD) build Pinta.sln $(PINTA_BUILD_OPTS)
 
 # target: build - Build Pinta.
-build: build/bin/Pinta.dll
+build: build/bin/Impasto.dll
 
 # Note we only publish the Pinta project, not the whole solution, to avoid races publishing to the same folder (#1241)
-publish/Pinta.dll: Pinta.sln
+publish/Impasto.dll: Pinta.sln
 	cd $(srcdir) && $(DOTNET_CMD) publish Impasto/Impasto.csproj $(PINTA_BUILD_OPTS) --self-contained false -p:PublishDir=$(abs_srcdir)/publish
 
 # target: publish - Build Pinta for deployment.
-publish: publish/Pinta.dll
+publish: publish/Impasto.dll
 
 test: build
 	$(DOTNET_CMD) test Pinta.sln $(PINTA_BUILD_OPTS)

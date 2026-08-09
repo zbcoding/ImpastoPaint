@@ -1,8 +1,8 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
-    <!-- ponytail: folder renamed to Impasto so `dotnet run` targets Impasto; assembly stays Pinta so installers/.pc/launchers/namespace don't cascade. Rename these for a full binary rebrand. -->
-    <AssemblyName>Pinta</AssemblyName>
+    <!-- ponytail: assembly is Impasto so the Wayland app_id / WM_CLASS stops colliding with the Pinta flatpak. RootNamespace stays Pinta to avoid touching every source file. -->
+    <AssemblyName>Impasto</AssemblyName>
     <RootNamespace>Pinta</RootNamespace>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <ApplicationIcon>Impasto.ico</ApplicationIcon>

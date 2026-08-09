@@ -1,4 +1,4 @@
-#define ProductName "Pinta"
+#define ProductName "Impasto"
 #define ProductVersion "0.0.1"
 
 ; The architecture can be configured on the command line to build the arm64 or x64 installer
@@ -39,4 +39,4 @@ Name: "{group}\{#ProductName}"; Filename: "{app}\bin\{#ProductName}.exe"
 Source: "release\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs
 
 [Run]
-Filename: "{app}\bin\Pinta.exe"; Flags: nowait postinstall skipifsilent; Description: "{cm:LaunchProgram,{#ProductName}}"
+Filename: "{app}\bin\Impasto.exe"; Flags: nowait postinstall skipifsilent; Description: "{cm:LaunchProgram,{#ProductName}}"

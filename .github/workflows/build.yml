@@ -179,7 +179,7 @@ jobs:
       uses: actions/upload-artifact@v7
       with:
         name: "Impasto-${{matrix.build.dotnet_rid}}.exe"
-        path: installer/windows/Pinta.exe
+        path: installer/windows/Impasto.exe
         if-no-files-found: error
 
     # Only enable signing for tagged releases.
@@ -202,7 +202,7 @@ jobs:
       uses: actions/upload-artifact@v7
       with:
         name: "Impasto-signed-${{matrix.build.dotnet_rid}}.exe"
-        path: ./signed-artifacts/Pinta.exe
+        path: ./signed-artifacts/Impasto.exe
         if-no-files-found: error
 
   # On a v* tag, publish the built artifacts as a GitHub release.

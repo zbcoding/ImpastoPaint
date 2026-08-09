@@ -4,7 +4,7 @@ _Name=Impasto
 _Comment=Paint, create and edit images
 _GenericName=Paint & Image Editor
 _X-GNOME-FullName=Impasto Paint
-# ponytail: binary is still named pinta; autotools packaging untouched. Rename both together or not at all.
+# ponytail: `pinta` is the autotools launcher script name; the assembly itself is Impasto.
 TryExec=pinta
 Exec=pinta %F
 Icon=com.github.zbcoding.Impasto

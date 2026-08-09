@@ -2562,17 +2562,13 @@ msgstr ""
 msgid "Pinta Website"
 msgstr "Веб сајт Пинте"
 
-#. AI-generated translation; human review requested.
 #: ../Pinta/Actions/File/SaveDocumentImplementationAction.cs:217
-#, fuzzy
 msgid "Impasto does not support saving images in this file format."
-msgstr "Пинта не подржава чување слика у овом запису."
+msgstr "Impasto не подржава чување слика у овом запису."
 
-#. AI-generated translation; human review requested.
 #: ../Pinta.Core/Extensions/OtherExtensions.cs:167
-#, fuzzy
 msgid "Impasto supports the following palette formats:"
-msgstr "Пинта подржава следеће формате палете:"
+msgstr "Impasto подржава следеће формате палете:"
 
 #: ../Pinta.Effects/Effects/PixelateEffect.cs:23
 msgid "Pixelate"

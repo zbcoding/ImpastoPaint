@@ -2610,17 +2610,13 @@ msgstr ""
 msgid "Pinta Website"
 msgstr "موقع بِنْتا"
 
-#. AI-generated translation; human review requested.
 #: ../Pinta/Actions/File/SaveDocumentImplementationAction.cs:217
-#, fuzzy
 msgid "Impasto does not support saving images in this file format."
-msgstr "لايدعم بِنْتا الصور المحفوظة بهذه الصيغ."
+msgstr "لايدعم Impasto الصور المحفوظة بهذه الصيغ."
 
-#. AI-generated translation; human review requested.
 #: ../Pinta.Core/Extensions/OtherExtensions.cs:167
-#, fuzzy
 msgid "Impasto supports the following palette formats:"
-msgstr "يدعم بِنْتا الصيغ التالية للوحات الألوان:"
+msgstr "يدعم Impasto الصيغ التالية للوحات الألوان:"
 
 #: ../Pinta.Effects/Effects/PixelateEffect.cs:23
 msgid "Pixelate"
@@ -2639,11 +2635,9 @@ msgstr "بينا كولادا"
 msgid "Please restart Impasto for the toolbox layout change to take effect."
 msgstr "يرجى إعادة تشغيل Impasto لتفعيل تغيير تخطيط شريط الأدوات."
 
-#. AI-generated translation; human review requested.
 #: ../Pinta/Actions/View/MenuBarToggledAction.cs:40
-#, fuzzy
 msgid "Please restart Impasto for the changes to take effect."
-msgstr "يرجى إعادة تشغيل بِنْتا ليتم تطبيق التغييرات."
+msgstr "يرجى إعادة تشغيل Impasto ليتم تطبيق التغييرات."
 
 #: ../Pinta.Tools/Tools/TextTool.cs:239
 msgid "Point"
@@ -3595,10 +3589,9 @@ msgstr ""
 
 #. Translators: {0} is the name of an add-in.
 #: ../Pinta/MainWindow.cs:338
-#, csharp-format, fuzzy
-#. AI-generated translation; human review requested.
+#, csharp-format
 msgid "The '{0}' add-in may not be compatible with this version of Impasto"
-msgstr "قد لا تكون الإضافة '{0}' متوافقة مع إصدار بِنْتا الحالي"
+msgstr "قد لا تكون الإضافة '{0}' متوافقة مع إصدار Impasto الحالي"
 
 #: ../Pinta/Actions/Edit/PasteAction.cs:209
 msgid "The clipboard does not contain an image."

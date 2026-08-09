@@ -2556,11 +2556,9 @@ msgstr ""
 msgid "Pinta Website"
 msgstr "نشانی اینترنتی پینتا"
 
-#. AI-generated translation; human review requested.
 #: ../Pinta/Actions/File/SaveDocumentImplementationAction.cs:217
-#, fuzzy
 msgid "Impasto does not support saving images in this file format."
-msgstr "پینتا از این قالب تصویری پشتیبانی نمی‌کند."
+msgstr "Impasto از این قالب تصویری پشتیبانی نمی‌کند."
 
 #: ../Pinta.Core/Extensions/OtherExtensions.cs:167
 msgid "Impasto supports the following palette formats:"

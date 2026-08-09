@@ -3591,10 +3591,9 @@ msgstr ""
 
 #. Translators: {0} is the name of an add-in.
 #: ../Pinta/MainWindow.cs:338
-#, csharp-format, fuzzy
-#. AI-generated translation; human review requested.
+#, csharp-format
 msgid "The '{0}' add-in may not be compatible with this version of Impasto"
-msgstr "Plugin \"{0}\" nemusí být kompatibilní s touto verzí Pinty"
+msgstr "Plugin \"{0}\" nemusí být kompatibilní s touto verzí Impasto"
 
 #: ../Pinta/Actions/Edit/PasteAction.cs:209
 msgid "The clipboard does not contain an image."

@@ -2596,17 +2596,13 @@ msgstr ""
 msgid "Pinta Website"
 msgstr "வலைத்தளத்தைக் கேளுங்கள்"
 
-#. AI-generated translation; human review requested.
 #: ../Pinta/Actions/File/SaveDocumentImplementationAction.cs:217
-#, fuzzy
 msgid "Impasto does not support saving images in this file format."
-msgstr "இந்த கோப்பு வடிவத்தில் படங்களை சேமிப்பதை பிண்டா ஆதரிக்கவில்லை."
+msgstr "இந்த கோப்பு வடிவத்தில் படங்களை சேமிப்பதை Impasto ஆதரிக்கவில்லை."
 
-#. AI-generated translation; human review requested.
 #: ../Pinta.Core/Extensions/OtherExtensions.cs:167
-#, fuzzy
 msgid "Impasto supports the following palette formats:"
-msgstr "பிந்தா பின்வரும் தட்டு வடிவங்களை ஆதரிக்கிறது:"
+msgstr "Impasto பின்வரும் தட்டு வடிவங்களை ஆதரிக்கிறது:"
 
 #: ../Pinta.Effects/Effects/PixelateEffect.cs:23
 msgid "Pixelate"
@@ -2625,11 +2621,9 @@ msgstr "பினா கோலாடா"
 msgid "Please restart Impasto for the toolbox layout change to take effect."
 msgstr "கருவிப்பெட்டி வடிவமைப்பு மாற்றம் செயல்படுத்த Impasto-ஐ மறுதொடக்கம் செய்யவும்."
 
-#. AI-generated translation; human review requested.
 #: ../Pinta/Actions/View/MenuBarToggledAction.cs:40
-#, fuzzy
 msgid "Please restart Impasto for the changes to take effect."
-msgstr "மாற்றங்கள் நடைமுறைக்கு வர பிண்டாவை மறுதொடக்கம் செய்யுங்கள்."
+msgstr "மாற்றங்கள் நடைமுறைக்கு வர Impasto-ஐ மறுதொடக்கம் செய்யுங்கள்."
 
 #: ../Pinta.Tools/Tools/TextTool.cs:239
 msgid "Point"
@@ -3581,10 +3575,9 @@ msgstr ""
 
 #. Translators: {0} is the name of an add-in.
 #: ../Pinta/MainWindow.cs:338
-#, csharp-format, fuzzy
-#. AI-generated translation; human review requested.
+#, csharp-format
 msgid "The '{0}' add-in may not be compatible with this version of Impasto"
-msgstr "பிண்டாவின் இந்த பதிப்போடு '{0}' சேர்க்கை பொருந்தாது"
+msgstr "Impasto-வின் இந்த பதிப்போடு '{0}' சேர்க்கை பொருந்தாது"
 
 #: ../Pinta/Actions/Edit/PasteAction.cs:209
 msgid "The clipboard does not contain an image."

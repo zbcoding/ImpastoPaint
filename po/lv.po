@@ -2611,11 +2611,9 @@ msgid "Please restart Impasto for the toolbox layout change to take effect."
 msgstr ""
 "Lūdzu, restartējiet Impasto, lai rīkjoslas izkārtojuma izmaiņas stātos spēkā."
 
-#. AI-generated translation; human review requested.
 #: ../Pinta/Actions/View/MenuBarToggledAction.cs:40
-#, fuzzy
 msgid "Please restart Impasto for the changes to take effect."
-msgstr "Lūdzu restartējiet Pina, lai izmaiņas varētu tikt pielietotas."
+msgstr "Lūdzu restartējiet Impasto, lai izmaiņas varētu tikt pielietotas."
 
 #: ../Pinta.Tools/Tools/TextTool.cs:239
 msgid "Point"

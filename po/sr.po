@@ -2562,12 +2562,16 @@ msgstr ""
 msgid "Pinta Website"
 msgstr "Веб сајт Пинте"
 
+#. AI-generated translation; human review requested.
 #: ../Pinta/Actions/File/SaveDocumentImplementationAction.cs:217
-msgid "Pinta does not support saving images in this file format."
+#, fuzzy
+msgid "Impasto does not support saving images in this file format."
 msgstr "Пинта не подржава чување слика у овом запису."
 
+#. AI-generated translation; human review requested.
 #: ../Pinta.Core/Extensions/OtherExtensions.cs:167
-msgid "Pinta supports the following palette formats:"
+#, fuzzy
+msgid "Impasto supports the following palette formats:"
 msgstr "Пинта подржава следеће формате палете:"
 
 #: ../Pinta.Effects/Effects/PixelateEffect.cs:23
@@ -2590,7 +2594,7 @@ msgstr ""
 "снагу."
 
 #: ../Pinta/Actions/View/MenuBarToggledAction.cs:40
-msgid "Please restart Pinta for the changes to take effect."
+msgid "Please restart Impasto for the changes to take effect."
 msgstr ""
 
 #: ../Pinta.Tools/Tools/TextTool.cs:239
@@ -3000,12 +3004,9 @@ msgid "Resize text (drag corner, changes font size)"
 msgstr ""
 
 #: ../Pinta/Actions/Edit/PreferencesAction.cs:83
+#: ../Pinta/Actions/View/MenuBarToggledAction.cs:39
 msgid "Restart Impasto"
 msgstr "Поново покрени Impasto"
-
-#: ../Pinta/Actions/View/MenuBarToggledAction.cs:39
-msgid "Restart Pinta"
-msgstr ""
 
 #: ../Pinta.Tools/Tools/ColorPickerTool.cs:228
 msgid "Return to the tool that was active before the Color Picker."
@@ -3547,7 +3548,7 @@ msgstr ""
 #. Translators: {0} is the name of an add-in.
 #: ../Pinta/MainWindow.cs:338
 #, csharp-format
-msgid "The '{0}' add-in may not be compatible with this version of Pinta"
+msgid "The '{0}' add-in may not be compatible with this version of Impasto"
 msgstr ""
 
 #: ../Pinta/Actions/Edit/PasteAction.cs:209

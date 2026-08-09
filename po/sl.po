@@ -2621,12 +2621,12 @@ msgid "Pinta Website"
 msgstr "Spletna stran Pinte"
 
 #: ../Pinta/Actions/File/SaveDocumentImplementationAction.cs:217
-msgid "Pinta does not support saving images in this file format."
-msgstr "Pinta ne podpira shranjevanje slike v to obliko datoteke."
+msgid "Impasto does not support saving images in this file format."
+msgstr "Impasto ne podpira shranjevanje slike v to obliko datoteke."
 
 #: ../Pinta.Core/Extensions/OtherExtensions.cs:167
-msgid "Pinta supports the following palette formats:"
-msgstr "Pinta podpira sledeče tipe palet:"
+msgid "Impasto supports the following palette formats:"
+msgstr "Impasto podpira sledeče tipe palet:"
 
 #: ../Pinta.Effects/Effects/PixelateEffect.cs:23
 msgid "Pixelate"
@@ -2646,8 +2646,10 @@ msgid "Please restart Impasto for the toolbox layout change to take effect."
 msgstr ""
 "Znova zaženite Impasto, da začne veljati sprememba postavitve orodjarne."
 
+#. AI-generated translation; human review requested.
 #: ../Pinta/Actions/View/MenuBarToggledAction.cs:40
-msgid "Please restart Pinta for the changes to take effect."
+#, fuzzy
+msgid "Please restart Impasto for the changes to take effect."
 msgstr "Prosim ponovno zaženite Pinto za uveljavitev sprememb."
 
 #: ../Pinta.Tools/Tools/TextTool.cs:239
@@ -3057,12 +3059,9 @@ msgid "Resize text (drag corner, changes font size)"
 msgstr ""
 
 #: ../Pinta/Actions/Edit/PreferencesAction.cs:83
+#: ../Pinta/Actions/View/MenuBarToggledAction.cs:39
 msgid "Restart Impasto"
 msgstr "Znova zaženi Impasto"
-
-#: ../Pinta/Actions/View/MenuBarToggledAction.cs:39
-msgid "Restart Pinta"
-msgstr "Ponovno zaženite Pinto"
 
 #: ../Pinta.Tools/Tools/ColorPickerTool.cs:228
 msgid "Return to the tool that was active before the Color Picker."
@@ -3603,8 +3602,9 @@ msgstr ""
 
 #. Translators: {0} is the name of an add-in.
 #: ../Pinta/MainWindow.cs:338
-#, csharp-format
-msgid "The '{0}' add-in may not be compatible with this version of Pinta"
+#, csharp-format, fuzzy
+#. AI-generated translation; human review requested.
+msgid "The '{0}' add-in may not be compatible with this version of Impasto"
 msgstr "Vtičnik '{0}' morda ni združljiv s trenutno različico Pinte"
 
 #: ../Pinta/Actions/Edit/PasteAction.cs:209

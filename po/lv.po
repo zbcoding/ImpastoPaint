@@ -2586,12 +2586,12 @@ msgid "Pinta Website"
 msgstr "Pinta mājaslapa"
 
 #: ../Pinta/Actions/File/SaveDocumentImplementationAction.cs:217
-msgid "Pinta does not support saving images in this file format."
-msgstr "Pinta neatbalsta šo faila formātu."
+msgid "Impasto does not support saving images in this file format."
+msgstr "Impasto neatbalsta šo faila formātu."
 
 #: ../Pinta.Core/Extensions/OtherExtensions.cs:167
-msgid "Pinta supports the following palette formats:"
-msgstr "Pinta atbalsta sekojošus paletes formātus:"
+msgid "Impasto supports the following palette formats:"
+msgstr "Impasto atbalsta sekojošus paletes formātus:"
 
 #: ../Pinta.Effects/Effects/PixelateEffect.cs:23
 msgid "Pixelate"
@@ -2611,8 +2611,10 @@ msgid "Please restart Impasto for the toolbox layout change to take effect."
 msgstr ""
 "Lūdzu, restartējiet Impasto, lai rīkjoslas izkārtojuma izmaiņas stātos spēkā."
 
+#. AI-generated translation; human review requested.
 #: ../Pinta/Actions/View/MenuBarToggledAction.cs:40
-msgid "Please restart Pinta for the changes to take effect."
+#, fuzzy
+msgid "Please restart Impasto for the changes to take effect."
 msgstr "Lūdzu restartējiet Pina, lai izmaiņas varētu tikt pielietotas."
 
 #: ../Pinta.Tools/Tools/TextTool.cs:239
@@ -3023,12 +3025,9 @@ msgid "Resize text (drag corner, changes font size)"
 msgstr ""
 
 #: ../Pinta/Actions/Edit/PreferencesAction.cs:83
+#: ../Pinta/Actions/View/MenuBarToggledAction.cs:39
 msgid "Restart Impasto"
 msgstr "Restartēt Impasto"
-
-#: ../Pinta/Actions/View/MenuBarToggledAction.cs:39
-msgid "Restart Pinta"
-msgstr "Restartēt Pinta"
 
 #: ../Pinta.Tools/Tools/ColorPickerTool.cs:228
 msgid "Return to the tool that was active before the Color Picker."
@@ -3570,8 +3569,8 @@ msgstr ""
 #. Translators: {0} is the name of an add-in.
 #: ../Pinta/MainWindow.cs:338
 #, csharp-format
-msgid "The '{0}' add-in may not be compatible with this version of Pinta"
-msgstr "'{0}' spraudnis var nebūt savienojams ar šo Pinta versiju"
+msgid "The '{0}' add-in may not be compatible with this version of Impasto"
+msgstr "'{0}' spraudnis var nebūt savienojams ar šo Impasto versiju"
 
 #: ../Pinta/Actions/Edit/PasteAction.cs:209
 msgid "The clipboard does not contain an image."

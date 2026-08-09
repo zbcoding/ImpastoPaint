@@ -2642,12 +2642,12 @@ msgid "Pinta Website"
 msgstr "Suíomh Idirlín Pinta"
 
 #: ../Pinta/Actions/File/SaveDocumentImplementationAction.cs:217
-msgid "Pinta does not support saving images in this file format."
-msgstr "Ní thacaíonn Pinta le híomhánna a shábháil sa fhormáid comhaid seo."
+msgid "Impasto does not support saving images in this file format."
+msgstr "Ní thacaíonn Impasto le híomhánna a shábháil sa fhormáid comhaid seo."
 
 #: ../Pinta.Core/Extensions/OtherExtensions.cs:167
-msgid "Pinta supports the following palette formats:"
-msgstr "Tacaíonn Pinta leis na formáidí pailéid seo a leanas:"
+msgid "Impasto supports the following palette formats:"
+msgstr "Tacaíonn Impasto leis na formáidí pailéid seo a leanas:"
 
 #: ../Pinta.Effects/Effects/PixelateEffect.cs:23
 msgid "Pixelate"
@@ -2669,8 +2669,8 @@ msgstr ""
 "an bhosca uirlisí i bhfeidhm."
 
 #: ../Pinta/Actions/View/MenuBarToggledAction.cs:40
-msgid "Please restart Pinta for the changes to take effect."
-msgstr "Atosaigh Pinta le go dtiocfaidh na hathruithe i bhfeidhm."
+msgid "Please restart Impasto for the changes to take effect."
+msgstr "Atosaigh Impasto le go dtiocfaidh na hathruithe i bhfeidhm."
 
 #: ../Pinta.Tools/Tools/TextTool.cs:239
 msgid "Point"
@@ -3079,12 +3079,9 @@ msgid "Resize text (drag corner, changes font size)"
 msgstr ""
 
 #: ../Pinta/Actions/Edit/PreferencesAction.cs:83
+#: ../Pinta/Actions/View/MenuBarToggledAction.cs:39
 msgid "Restart Impasto"
 msgstr "Atosaigh Impasto"
-
-#: ../Pinta/Actions/View/MenuBarToggledAction.cs:39
-msgid "Restart Pinta"
-msgstr "Atosaigh Pinta"
 
 #: ../Pinta.Tools/Tools/ColorPickerTool.cs:228
 msgid "Return to the tool that was active before the Color Picker."
@@ -3627,10 +3624,10 @@ msgstr ""
 #. Translators: {0} is the name of an add-in.
 #: ../Pinta/MainWindow.cs:338
 #, csharp-format
-msgid "The '{0}' add-in may not be compatible with this version of Pinta"
+msgid "The '{0}' add-in may not be compatible with this version of Impasto"
 msgstr ""
 "B’fhéidir nach bhfuil an breiseán '{0}' comhoiriúnach leis an leagan seo de "
-"Pinta"
+"Impasto"
 
 #: ../Pinta/Actions/Edit/PasteAction.cs:209
 msgid "The clipboard does not contain an image."

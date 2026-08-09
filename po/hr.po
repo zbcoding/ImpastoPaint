@@ -2619,12 +2619,12 @@ msgid "Pinta Website"
 msgstr "Pinta web stranica"
 
 #: ../Pinta/Actions/File/SaveDocumentImplementationAction.cs:217
-msgid "Pinta does not support saving images in this file format."
-msgstr "Pinta ne podržava spremanje slika u ovaj datotečni format."
+msgid "Impasto does not support saving images in this file format."
+msgstr "Impasto ne podržava spremanje slika u ovaj datotečni format."
 
 #: ../Pinta.Core/Extensions/OtherExtensions.cs:167
-msgid "Pinta supports the following palette formats:"
-msgstr "Pinta podržava sljedeće formate paleta:"
+msgid "Impasto supports the following palette formats:"
+msgstr "Impasto podržava sljedeće formate paleta:"
 
 #: ../Pinta.Effects/Effects/PixelateEffect.cs:23
 msgid "Pixelate"
@@ -2646,8 +2646,8 @@ msgstr ""
 "snagu."
 
 #: ../Pinta/Actions/View/MenuBarToggledAction.cs:40
-msgid "Please restart Pinta for the changes to take effect."
-msgstr "Ponovo pokreni Pinta kako bi promjene stupile na snagu."
+msgid "Please restart Impasto for the changes to take effect."
+msgstr "Ponovo pokreni Impasto kako bi promjene stupile na snagu."
 
 #: ../Pinta.Tools/Tools/TextTool.cs:239
 msgid "Point"
@@ -3056,12 +3056,9 @@ msgid "Resize text (drag corner, changes font size)"
 msgstr ""
 
 #: ../Pinta/Actions/Edit/PreferencesAction.cs:83
+#: ../Pinta/Actions/View/MenuBarToggledAction.cs:39
 msgid "Restart Impasto"
 msgstr "Ponovno pokreni Impasto"
-
-#: ../Pinta/Actions/View/MenuBarToggledAction.cs:39
-msgid "Restart Pinta"
-msgstr "Ponovo pokreni Pinta"
 
 #: ../Pinta.Tools/Tools/ColorPickerTool.cs:228
 msgid "Return to the tool that was active before the Color Picker."
@@ -3603,8 +3600,8 @@ msgstr ""
 #. Translators: {0} is the name of an add-in.
 #: ../Pinta/MainWindow.cs:338
 #, csharp-format
-msgid "The '{0}' add-in may not be compatible with this version of Pinta"
-msgstr "Dodatak „{0}“ možda nije kompatibilan s ovom Pinta verzijom"
+msgid "The '{0}' add-in may not be compatible with this version of Impasto"
+msgstr "Dodatak „{0}“ možda nije kompatibilan s ovom Impasto verzijom"
 
 #: ../Pinta/Actions/Edit/PasteAction.cs:209
 msgid "The clipboard does not contain an image."

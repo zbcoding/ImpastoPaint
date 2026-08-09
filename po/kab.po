@@ -2564,11 +2564,11 @@ msgid "Pinta Website"
 msgstr "Asmel n web n Pinta"
 
 #: ../Pinta/Actions/File/SaveDocumentImplementationAction.cs:217
-msgid "Pinta does not support saving images in this file format."
-msgstr "Pinta ur yedhil ara asekles n tugniwin deg umasal-agi n ufaylu."
+msgid "Impasto does not support saving images in this file format."
+msgstr "Impasto ur yedhil ara asekles n tugniwin deg umasal-agi n ufaylu."
 
 #: ../Pinta.Core/Extensions/OtherExtensions.cs:167
-msgid "Pinta supports the following palette formats:"
+msgid "Impasto supports the following palette formats:"
 msgstr ""
 
 #: ../Pinta.Effects/Effects/PixelateEffect.cs:23
@@ -2590,7 +2590,7 @@ msgstr ""
 "Ttxil-k alham Impasto akken ubeddel n talqaḍt n ifecka ad yili s wazal."
 
 #: ../Pinta/Actions/View/MenuBarToggledAction.cs:40
-msgid "Please restart Pinta for the changes to take effect."
+msgid "Please restart Impasto for the changes to take effect."
 msgstr ""
 
 #: ../Pinta.Tools/Tools/TextTool.cs:239
@@ -3000,12 +3000,9 @@ msgid "Resize text (drag corner, changes font size)"
 msgstr ""
 
 #: ../Pinta/Actions/Edit/PreferencesAction.cs:83
+#: ../Pinta/Actions/View/MenuBarToggledAction.cs:39
 msgid "Restart Impasto"
 msgstr "Alham n Impasto"
-
-#: ../Pinta/Actions/View/MenuBarToggledAction.cs:39
-msgid "Restart Pinta"
-msgstr ""
 
 #: ../Pinta.Tools/Tools/ColorPickerTool.cs:228
 msgid "Return to the tool that was active before the Color Picker."
@@ -3547,7 +3544,7 @@ msgstr ""
 #. Translators: {0} is the name of an add-in.
 #: ../Pinta/MainWindow.cs:338
 #, csharp-format
-msgid "The '{0}' add-in may not be compatible with this version of Pinta"
+msgid "The '{0}' add-in may not be compatible with this version of Impasto"
 msgstr ""
 
 #: ../Pinta/Actions/Edit/PasteAction.cs:209

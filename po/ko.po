@@ -2608,12 +2608,12 @@ msgid "Pinta Website"
 msgstr "Pinta 웹사이트"
 
 #: ../Pinta/Actions/File/SaveDocumentImplementationAction.cs:217
-msgid "Pinta does not support saving images in this file format."
-msgstr "Pinta는 해당 형식의 이미지 파일을 지원하지 않습니다."
+msgid "Impasto does not support saving images in this file format."
+msgstr "Impasto는 해당 형식의 이미지 파일을 지원하지 않습니다."
 
 #: ../Pinta.Core/Extensions/OtherExtensions.cs:167
-msgid "Pinta supports the following palette formats:"
-msgstr "Pinta는 다음 팔레트 형식을 지원합니다:"
+msgid "Impasto supports the following palette formats:"
+msgstr "Impasto는 다음 팔레트 형식을 지원합니다:"
 
 #: ../Pinta.Effects/Effects/PixelateEffect.cs:23
 msgid "Pixelate"
@@ -2633,8 +2633,8 @@ msgid "Please restart Impasto for the toolbox layout change to take effect."
 msgstr "도구 상자 레이아웃 변경 사항을 적용하려면 Impasto를 재시작하세요."
 
 #: ../Pinta/Actions/View/MenuBarToggledAction.cs:40
-msgid "Please restart Pinta for the changes to take effect."
-msgstr "변경 사항을 적용하려면 Pinta를 재시작해 주세요."
+msgid "Please restart Impasto for the changes to take effect."
+msgstr "변경 사항을 적용하려면 Impasto를 재시작해 주세요."
 
 #: ../Pinta.Tools/Tools/TextTool.cs:239
 msgid "Point"
@@ -3043,12 +3043,9 @@ msgid "Resize text (drag corner, changes font size)"
 msgstr ""
 
 #: ../Pinta/Actions/Edit/PreferencesAction.cs:83
+#: ../Pinta/Actions/View/MenuBarToggledAction.cs:39
 msgid "Restart Impasto"
 msgstr "Impasto 재시작"
-
-#: ../Pinta/Actions/View/MenuBarToggledAction.cs:39
-msgid "Restart Pinta"
-msgstr "Pinta 다시 시작"
 
 #: ../Pinta.Tools/Tools/ColorPickerTool.cs:228
 msgid "Return to the tool that was active before the Color Picker."
@@ -3592,8 +3589,8 @@ msgstr ""
 #. Translators: {0} is the name of an add-in.
 #: ../Pinta/MainWindow.cs:338
 #, csharp-format
-msgid "The '{0}' add-in may not be compatible with this version of Pinta"
-msgstr "'{0}' 추가 기능이 이 버전의 Pinta와 호환되지 않을 수 있습니다"
+msgid "The '{0}' add-in may not be compatible with this version of Impasto"
+msgstr "'{0}' 추가 기능이 이 버전의 Impasto와 호환되지 않을 수 있습니다"
 
 #: ../Pinta/Actions/Edit/PasteAction.cs:209
 msgid "The clipboard does not contain an image."

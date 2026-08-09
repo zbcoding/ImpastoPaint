@@ -2620,12 +2620,12 @@ msgid "Pinta Website"
 msgstr "Відвідати сайт Pinta"
 
 #: ../Pinta/Actions/File/SaveDocumentImplementationAction.cs:217
-msgid "Pinta does not support saving images in this file format."
-msgstr "Pinta не підтримує збереження зображень в цьому форматі."
+msgid "Impasto does not support saving images in this file format."
+msgstr "Impasto не підтримує збереження зображень в цьому форматі."
 
 #: ../Pinta.Core/Extensions/OtherExtensions.cs:167
-msgid "Pinta supports the following palette formats:"
-msgstr "У Pinta передбачено підтримку таких форматів палітр:"
+msgid "Impasto supports the following palette formats:"
+msgstr "У Impasto передбачено підтримку таких форматів палітр:"
 
 #: ../Pinta.Effects/Effects/PixelateEffect.cs:23
 msgid "Pixelate"
@@ -2647,8 +2647,8 @@ msgstr ""
 "набула чинності."
 
 #: ../Pinta/Actions/View/MenuBarToggledAction.cs:40
-msgid "Please restart Pinta for the changes to take effect."
-msgstr "Перезапустіть додаток Pinta, щоб зміни вступили в силу."
+msgid "Please restart Impasto for the changes to take effect."
+msgstr "Перезапустіть додаток Impasto, щоб зміни вступили в силу."
 
 #: ../Pinta.Tools/Tools/TextTool.cs:239
 msgid "Point"
@@ -3057,12 +3057,9 @@ msgid "Resize text (drag corner, changes font size)"
 msgstr ""
 
 #: ../Pinta/Actions/Edit/PreferencesAction.cs:83
+#: ../Pinta/Actions/View/MenuBarToggledAction.cs:39
 msgid "Restart Impasto"
 msgstr "Перезапустити Impasto"
-
-#: ../Pinta/Actions/View/MenuBarToggledAction.cs:39
-msgid "Restart Pinta"
-msgstr "Перезапуск додатку Pinta"
 
 #: ../Pinta.Tools/Tools/ColorPickerTool.cs:228
 msgid "Return to the tool that was active before the Color Picker."
@@ -3605,8 +3602,8 @@ msgstr ""
 #. Translators: {0} is the name of an add-in.
 #: ../Pinta/MainWindow.cs:338
 #, csharp-format
-msgid "The '{0}' add-in may not be compatible with this version of Pinta"
-msgstr "Додаток '{0}' може бути не сумісним з цією версією Pinta"
+msgid "The '{0}' add-in may not be compatible with this version of Impasto"
+msgstr "Додаток '{0}' може бути не сумісним з цією версією Impasto"
 
 #: ../Pinta/Actions/Edit/PasteAction.cs:209
 msgid "The clipboard does not contain an image."

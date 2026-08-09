@@ -37,7 +37,7 @@ internal static class ErrorDialog
 		string message,
 		string body)
 	{
-		Console.Error.WriteLine ("Pinta: {0}\n{1}", message, body);
+		Console.Error.WriteLine ("Impasto: {0}\n{1}", message, body);
 
 		using Adw.MessageDialog dialog = Adw.MessageDialog.New (parent, message, body);
 
@@ -54,7 +54,7 @@ internal static class ErrorDialog
 		string body,
 		string details)
 	{
-		Console.Error.WriteLine ("Pinta: {0}\n{1}", message, details);
+		Console.Error.WriteLine ("Impasto: {0}\n{1}", message, details);
 
 		using Gtk.TextView text_view = Gtk.TextView.New ();
 		text_view.Buffer!.SetText (details, -1);

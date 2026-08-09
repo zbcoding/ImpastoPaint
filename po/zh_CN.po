@@ -2603,12 +2603,12 @@ msgid "Pinta Website"
 msgstr "Pinta 网站"
 
 #: ../Pinta/Actions/File/SaveDocumentImplementationAction.cs:217
-msgid "Pinta does not support saving images in this file format."
-msgstr "Pinta 不支持保存图像为这种格式。"
+msgid "Impasto does not support saving images in this file format."
+msgstr "Impasto 不支持保存图像为这种格式。"
 
 #: ../Pinta.Core/Extensions/OtherExtensions.cs:167
-msgid "Pinta supports the following palette formats:"
-msgstr "Pinta 支持以下调色板格式："
+msgid "Impasto supports the following palette formats:"
+msgstr "Impasto 支持以下调色板格式："
 
 #: ../Pinta.Effects/Effects/PixelateEffect.cs:23
 msgid "Pixelate"
@@ -2628,8 +2628,8 @@ msgid "Please restart Impasto for the toolbox layout change to take effect."
 msgstr "请重启 Impasto 以使工具箱布局的更改生效。"
 
 #: ../Pinta/Actions/View/MenuBarToggledAction.cs:40
-msgid "Please restart Pinta for the changes to take effect."
-msgstr "请重新启动 Pinta 以应用更改。"
+msgid "Please restart Impasto for the changes to take effect."
+msgstr "请重新启动 Impasto 以应用更改。"
 
 #: ../Pinta.Tools/Tools/TextTool.cs:239
 msgid "Point"
@@ -3038,12 +3038,9 @@ msgid "Resize text (drag corner, changes font size)"
 msgstr ""
 
 #: ../Pinta/Actions/Edit/PreferencesAction.cs:83
+#: ../Pinta/Actions/View/MenuBarToggledAction.cs:39
 msgid "Restart Impasto"
 msgstr "重启 Impasto"
-
-#: ../Pinta/Actions/View/MenuBarToggledAction.cs:39
-msgid "Restart Pinta"
-msgstr "重启 Pinta"
 
 #: ../Pinta.Tools/Tools/ColorPickerTool.cs:228
 msgid "Return to the tool that was active before the Color Picker."
@@ -3585,8 +3582,8 @@ msgstr ""
 #. Translators: {0} is the name of an add-in.
 #: ../Pinta/MainWindow.cs:338
 #, csharp-format
-msgid "The '{0}' add-in may not be compatible with this version of Pinta"
-msgstr "附加组件“{0}”可能与此版本的 Pinta 不兼容"
+msgid "The '{0}' add-in may not be compatible with this version of Impasto"
+msgstr "附加组件“{0}”可能与此版本的 Impasto 不兼容"
 
 #: ../Pinta/Actions/Edit/PasteAction.cs:209
 msgid "The clipboard does not contain an image."

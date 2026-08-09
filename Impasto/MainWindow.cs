@@ -373,7 +373,7 @@ internal sealed class MainWindow
 				extension.Initialize ();
 			} catch (Exception e) {
 				// Translators: {0} is the name of an add-in.
-				string body = Translations.GetString ("The '{0}' add-in may not be compatible with this version of Pinta", args.ExtensionNode.Addin.Id);
+				string body = Translations.GetString ("The '{0}' add-in may not be compatible with this version of Impasto", args.ExtensionNode.Addin.Id);
 				_ = PintaCore.Chrome.ShowErrorDialog (
 					PintaCore.Chrome.MainWindow,
 					Translations.GetString ("Failed to initialize add-in"),
@@ -396,7 +396,7 @@ internal sealed class MainWindow
 
 		window_shell = new WindowShell (
 			app,
-			"Pinta.GenericWindow",
+			"Impasto.GenericWindow",
 			"Impasto",
 			width,
 			height,

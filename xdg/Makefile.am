@@ -1,10 +1,10 @@
 desktopdir 	 = $(datadir)/applications
-desktop_in_files = com.github.Impasto.Impasto.desktop.in
+desktop_in_files = com.github.zbcoding.Impasto.desktop.in
 desktop_DATA 	 = $(desktop_in_files:.desktop.in=.desktop)
 @INTLTOOL_DESKTOP_RULE@
 
 appdatadir = $(datadir)/metainfo
-appdata_in_files = com.github.Impasto.Impasto.metainfo.xml.in
+appdata_in_files = com.github.zbcoding.Impasto.metainfo.xml.in
 appdata_DATA = $(appdata_in_files:.xml.in=.xml)
 @INTLTOOL_XML_RULE@
 

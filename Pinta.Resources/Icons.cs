@@ -219,7 +219,7 @@ public static class Icons
 	// Non-symbolic so the white halo + black stroke are preserved (symbolic recolors to single color).
 	public const string RotateHandle = "rotate-handle";
 
-	public const string Pinta = "com.github.Impasto.Impasto";
+	public const string Pinta = "com.github.zbcoding.Impasto";
 
 	public const string ResizeCanvasBase = "image-resize-canvas-base-symbolic";
 	public const string ResizeCanvasDown = "image-resize-canvas-down-symbolic";

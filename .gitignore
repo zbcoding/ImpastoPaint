@@ -44,8 +44,8 @@ po/Makefile.in.in
 po/POTFILES
 po/stamp-it
 release
-xdg/pinta.desktop
-xdg/pinta.appdata.xml
+xdg/com.github.zbcoding.Impasto.desktop
+xdg/com.github.zbcoding.Impasto.metainfo.xml
 .vs
 .vscode
 

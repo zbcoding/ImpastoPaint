@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <component type="desktop">
-  <id>com.github.Impasto.Impasto</id>
+  <id>com.github.zbcoding.Impasto</id>
   <!-- ponytail: no <replaces> — Impasto installs alongside Pinta, it does not supersede it. -->
   <metadata_license>CC0-1.0</metadata_license>
   <project_license>MIT</project_license>
@@ -17,7 +17,7 @@
       Impasto is a fork of Pinta.
     </_p>
   </description>
-  <launchable type="desktop-id">com.github.Impasto.Impasto.desktop</launchable>
+  <launchable type="desktop-id">com.github.zbcoding.Impasto.desktop</launchable>
   <kudos>
     <kudo>HiDpiIcon</kudo>
     <kudo>HighContrast</kudo>
@@ -99,7 +99,7 @@
         <p>Changes</p>
         <ul>
           <li>Updated dependencies to require GTK 4.18+ and libadwaita 1.7+</li>
-          <li>Pinta now consistently uses an application ID of `com.github.Impasto.Impasto`, which previously had been applied in patches for downstream packages (#1706, #1419)</li>
+          <li>Pinta now consistently uses an application ID of `com.github.zbcoding.Impasto`, which previously had been applied in patches for downstream packages (#1706, #1419)</li>
           <li>Breaking API changes for add-ins will require add-ins to be rebuilt against Pinta 3.1</li>
           <li>Attributes used for effect configuration properties (`CaptionAttribute`, `MaximumValueAttribute`, ...) are now in the `Pinta.Core` assembly and the `Pinta.Core` namespace (#1665)</li>
           <li>Methods `RegisterEffect`, `UnregisterInstanceOfEffect`, `RegisterAdjustment`, and `UnregisterInstanceOfAdjustment` in `EffectsManager` are now generic (#1678)</li>

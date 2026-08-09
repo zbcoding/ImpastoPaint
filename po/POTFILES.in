@@ -1,5 +1,5 @@
-xdg/com.github.Impasto.Impasto.desktop.in
-xdg/com.github.Impasto.Impasto.metainfo.xml.in
+xdg/com.github.zbcoding.Impasto.desktop.in
+xdg/com.github.zbcoding.Impasto.metainfo.xml.in
 Pinta/ActionHandlers.cs
 Pinta/Actions/Addins/AddinManagerAction.cs
 Pinta/Actions/Edit/OffsetSelectionAction.cs

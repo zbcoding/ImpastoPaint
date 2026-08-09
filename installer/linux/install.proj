@@ -36,8 +36,8 @@
     <MakeDir Directories="$(InstallBinDir)" />
     <Copy SourceFiles="$(SourceDir)/xdg/pinta.1" DestinationFolder="$(InstallManDir)/man1" />
     <Exec Command='gzip -f "$(InstallManDir)/man1/pinta.1"' />
-    <Copy SourceFiles="$(SourceDir)/xdg/com.github.PintaProject.Pinta.metainfo.xml" DestinationFolder="$(InstallDataRootDir)/metainfo" />
-    <Copy SourceFiles="$(SourceDir)/xdg/com.github.PintaProject.Pinta.desktop" DestinationFolder="$(InstallDataRootDir)/applications" />
+    <Copy SourceFiles="$(SourceDir)/xdg/com.github.zbcoding.Impasto.metainfo.xml" DestinationFolder="$(InstallDataRootDir)/metainfo" />
+    <Copy SourceFiles="$(SourceDir)/xdg/com.github.zbcoding.Impasto.desktop" DestinationFolder="$(InstallDataRootDir)/applications" />
     <Copy SourceFiles="@(Icon)" DestinationFolder="$(InstallDataRootDir)/icons/%(Icon.RecursiveDir)" />
     <Copy SourceFiles="@(Translation)" DestinationFolder="$(InstallLocaleDir)/%(Translation.RecursiveDir)" />
   </Target>
@@ -49,8 +49,8 @@
     <Delete Files="$(InstallLocaleDir)/%(Translation.Code)/LC_MESSAGES/pinta.mo" />
     <Delete Files="$(InstallManDir)/man1/pinta.1" />
     <Delete Files="$(InstallManDir)/man1/pinta.1.gz" />
-    <Delete Files="$(InstallDataRootDir)/metainfo/com.github.PintaProject.Pinta.metainfo.xml" />
-    <Delete Files="$(InstallDataRootDir)/applications/com.github.PintaProject.Pinta.desktop" />
+    <Delete Files="$(InstallDataRootDir)/metainfo/com.github.zbcoding.Impasto.metainfo.xml" />
+    <Delete Files="$(InstallDataRootDir)/applications/com.github.zbcoding.Impasto.desktop" />
     <Delete Files="$(InstallDataRootDir)/icons/%(Icon.RecursiveDir)/%(Icon.Filename)%(Icon.Extension)" />
     <Delete Files="$(InstallLocaleDir)/%(Translation.RecursiveDir)/pinta.mo" />
   </Target>

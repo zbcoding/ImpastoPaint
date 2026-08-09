@@ -34,10 +34,17 @@ public sealed class ModifyCompressionEventArgs : EventArgs
 	public bool Cancel { get; set; }
 	public Gtk.Window ParentWindow { get; set; }
 
-	public ModifyCompressionEventArgs (int quality, Gtk.Window parent)
+	/// <summary>
+	/// Whether the format can encode losslessly. When true the dialog offers a
+	/// lossless toggle, and <see cref="Quality"/> of 100 means lossless.
+	/// </summary>
+	public bool AllowLossless { get; }
+
+	public ModifyCompressionEventArgs (int quality, Gtk.Window parent, bool allowLossless = false)
 	{
 		Quality = quality;
 		Cancel = false;
 		ParentWindow = parent;
+		AllowLossless = allowLossless;
 	}
 }

@@ -24,6 +24,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+using System;
 using System.Diagnostics.CodeAnalysis;
 using Pinta.Core;
 
@@ -32,9 +33,16 @@ namespace Pinta;
 [GObject.Subclass<Gtk.Dialog>]
 public sealed partial class QualityDialog
 {
-	private Gtk.Scale compression_level;
+	/// <summary>
+	/// Quality reported when the lossless toggle is active. Formats that offer
+	/// lossless treat this value as "lossless" rather than "lossy at 100".
+	/// </summary>
+	public const int LosslessQuality = 100;
 
-	[MemberNotNull (nameof (compression_level))]
+	private Gtk.Scale compression_level;
+	private Gtk.CheckButton lossless_check;
+
+	[MemberNotNull (nameof (compression_level), nameof (lossless_check))]
 	partial void Initialize ()
 	{
 		Gtk.Label qualityLabel = Gtk.Label.New (Translations.GetString ("Quality: "));
@@ -42,6 +50,13 @@ public sealed partial class QualityDialog
 
 		Gtk.Scale levelScale = Gtk.Scale.NewWithRange (Gtk.Orientation.Horizontal, 1, 100, 1);
 		levelScale.DrawValue = true;
+
+		Gtk.CheckButton losslessCheck = Gtk.CheckButton.NewWithLabel (Translations.GetString ("Lossless"));
+		losslessCheck.Visible = false;
+		losslessCheck.OnToggled += (_, _) => {
+			levelScale.Sensitive = !losslessCheck.Active;
+			qualityLabel.Sensitive = !losslessCheck.Active;
+		};
 
 		// --- Initialization (Gtk.Window)
 
@@ -57,22 +72,37 @@ public sealed partial class QualityDialog
 		contentBox.SetAllMargins (6);
 		contentBox.Spacing = 3;
 		contentBox.AppendMultiple ([
+			losslessCheck,
 			qualityLabel,
 			levelScale]);
 
 		// --- References to keep
 
 		compression_level = levelScale;
+		lossless_check = losslessCheck;
 	}
 
-	public static QualityDialog New (int defaultQuality, Gtk.Window parent)
+	public static QualityDialog New (int defaultQuality, Gtk.Window parent, bool allowLossless = false)
 	{
 		QualityDialog dialog = NewWithProperties ([]);
-		dialog.compression_level.SetValue (defaultQuality);
+
+		int maximumQuality = LosslessQuality;
+
+		if (allowLossless) {
+			// The lossy scale tops out at 99 so that 100 unambiguously means lossless.
+			maximumQuality = LosslessQuality - 1;
+			dialog.compression_level.SetRange (1, maximumQuality);
+			dialog.lossless_check.Visible = true;
+			dialog.lossless_check.Active = defaultQuality >= LosslessQuality;
+		}
+
+		dialog.compression_level.SetValue (Math.Min (defaultQuality, maximumQuality));
 		dialog.TransientFor = parent;
 		return dialog;
 	}
 
 	public int CompressionLevel
-		=> (int) compression_level.GetValue ();
+		=> lossless_check.Active
+			? LosslessQuality
+			: (int) compression_level.GetValue ();
 }

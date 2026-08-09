@@ -349,6 +349,21 @@ internal sealed class FileFormatTests
 			AssertSimilar (expected[i], actual![i], 0, $"webp lossless pixel {i}");
 	}
 
+	// Guards the reason we bypass the pixbuf encoders entirely: glycin ignores
+	// the quality option, so every setting produced a byte-identical file.
+	[Test]
+	public void Export_WebP_QualityAffectsSize ()
+	{
+		Assume.That (WebPFormat.IsLosslessAvailable, "libwebp is not available on this system");
+
+		using ImageSurface surface = MakeNoiseImage ();
+
+		int low = WebPFormat.Encode (surface, 10).Length;
+		int high = WebPFormat.Encode (surface, 90).Length;
+
+		Assert.That (low, Is.LessThan (high), "lower quality should produce a smaller file");
+	}
+
 	// FormatDescriptor and FileFilter need GTK's type system registered; skip
 	// where GTK can't initialize (e.g. a headless CI without a display).
 	static bool TryInitGtk ()

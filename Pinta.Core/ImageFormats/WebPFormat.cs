@@ -12,20 +12,21 @@ public sealed class WebPFormat : GdkPixbufFormat
 
 	/// <summary>
 	/// Quality 100 selects WebP's lossless mode rather than its lossy encoder at
-	/// maximum quality: lossy-at-100 is both larger and still not pixel-exact.
-	/// This keeps the shared compression dialog as the only control.
+	/// maximum quality. The dialog's lossy scale stops at 99 so the two never
+	/// overlap.
 	/// </summary>
 	public const int LosslessQuality = 100;
 
-	// ponytail: webp-pixbuf-loader only understands "quality", "icc-profile" and
-	// "preset" - it has no lossless switch, and silently drops unknown keys. So
-	// lossless goes straight to libwebp, which is already present on every
-	// platform we ship (the pixbuf loader links against it).
+	// ponytail: neither pixbuf backend is usable for this. webp-pixbuf-loader
+	// (Windows, macOS) has no lossless switch and silently drops unknown keys;
+	// glycin (Linux, Flatpak) ignores "quality" outright and always writes
+	// lossless. So both modes go straight to libwebp, which is already present
+	// on every platform we ship - the decode path links against it.
 	private const string WebPLibraryName = "webp";
 
 	/// <summary>
-	/// Whether libwebp could be loaded. When it can't, quality 100 falls back to
-	/// the lossy encoder at maximum quality rather than failing the save.
+	/// Whether libwebp could be loaded. When it can't, saving falls back to the
+	/// pixbuf encoder, whose quality handling varies by platform.
 	/// </summary>
 	public static bool IsLosslessAvailable { get; } = ProbeLibrary ();
 
@@ -59,7 +60,7 @@ public sealed class WebPFormat : GdkPixbufFormat
 		int level = PintaCore.Settings.GetSetting<int> (SettingNames.WEBP_QUALITY, DefaultQuality);
 
 		if (!PintaCore.Workspace.ActiveDocument.HasBeenSavedInSession) {
-			level = PintaCore.Actions.File.RaiseModifyCompression (level, parent);
+			level = PintaCore.Actions.File.RaiseModifyCompression (level, parent, allowLossless: IsLosslessAvailable);
 
 			if (level == -1)
 				throw new OperationCanceledException ();
@@ -69,8 +70,8 @@ public sealed class WebPFormat : GdkPixbufFormat
 
 		using ImageSurface flattenedImage = document.GetFlattenedImage ();
 
-		if (level >= LosslessQuality && IsLosslessAvailable) {
-			byte[] encoded = EncodeLossless (flattenedImage);
+		if (IsLosslessAvailable) {
+			byte[] encoded = Encode (flattenedImage, level);
 			using GioStream file_stream = new (file.Replace ());
 			file_stream.Write (encoded, 0, encoded.Length);
 			return;
@@ -86,6 +87,9 @@ public sealed class WebPFormat : GdkPixbufFormat
 	}
 
 	internal static byte[] EncodeLossless (ImageSurface surface)
+		=> Encode (surface, LosslessQuality);
+
+	internal static byte[] Encode (ImageSurface surface, int quality)
 	{
 		int width = surface.Width;
 		int height = surface.Height;
@@ -102,10 +106,12 @@ public sealed class WebPFormat : GdkPixbufFormat
 			bgra[i * 4 + 3] = color.A;
 		}
 
-		nuint size = WebPEncodeLosslessBGRA (bgra, width, height, width * 4, out IntPtr output);
+		nuint size = quality >= LosslessQuality
+			? WebPEncodeLosslessBGRA (bgra, width, height, width * 4, out IntPtr output)
+			: WebPEncodeBGRA (bgra, width, height, width * 4, quality, out output);
 
 		if (size == 0 || output == IntPtr.Zero)
-			throw new InvalidOperationException ("libwebp failed to encode the image losslessly.");
+			throw new InvalidOperationException ("libwebp failed to encode the image.");
 
 		try {
 			byte[] encoded = new byte[(int) size];
@@ -118,6 +124,9 @@ public sealed class WebPFormat : GdkPixbufFormat
 
 	[DllImport (WebPLibraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "WebPEncodeLosslessBGRA")]
 	private static extern nuint WebPEncodeLosslessBGRA (byte[] bgra, int width, int height, int stride, out IntPtr output);
+
+	[DllImport (WebPLibraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "WebPEncodeBGRA")]
+	private static extern nuint WebPEncodeBGRA (byte[] bgra, int width, int height, int stride, float quality, out IntPtr output);
 
 	[DllImport (WebPLibraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = "WebPFree")]
 	private static extern void WebPFree (IntPtr pointer);

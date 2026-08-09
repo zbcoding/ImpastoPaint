@@ -163,9 +163,9 @@ public sealed class FileActions
 		return results.All (succeeded => succeeded);
 	}
 
-	internal int RaiseModifyCompression (int defaultCompression, Gtk.Window parent)
+	internal int RaiseModifyCompression (int defaultCompression, Gtk.Window parent, bool allowLossless = false)
 	{
-		ModifyCompressionEventArgs e = new (defaultCompression, parent);
+		ModifyCompressionEventArgs e = new (defaultCompression, parent, allowLossless);
 		ModifyCompression?.Invoke (this, e);
 		return
 			e.Cancel

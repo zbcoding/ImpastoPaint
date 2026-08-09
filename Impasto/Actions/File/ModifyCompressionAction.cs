@@ -48,7 +48,7 @@ internal sealed class ModifyCompressionAction : IActionHandler
 
 	private void Activated (object? sender, ModifyCompressionEventArgs e)
 	{
-		QualityDialog dlg = QualityDialog.New (e.Quality, e.ParentWindow);
+		QualityDialog dlg = QualityDialog.New (e.Quality, e.ParentWindow, e.AllowLossless);
 
 		if (dlg.RunBlocking () == Gtk.ResponseType.Ok)
 			e.Quality = dlg.CompressionLevel;

@@ -113,7 +113,7 @@ releasezip:
 	cd $(abs_srcdir)/release && zip -r ../$(RELEASE_FILE).zip * -x "*.pdb"
 
 EXTRA_DIST = Impasto Pinta.Core Pinta.Docking Pinta.Effects Pinta.Gui.Addins Pinta.Gui.Widgets Pinta.Resources Pinta.Tools po xdg tests license-mit.txt \
-           license-mit-pinta.txt license-pdn.txt Pinta.sln impasto.pc.in readme.md intltool-extract.in \
+           license-mit-pinta.txt license-lgpl.txt license-pdn.txt THIRD-PARTY-NOTICES.md CONTRIBUTORS.md Pinta.sln impasto.pc.in readme.md intltool-extract.in \
            intltool-merge.in intltool-update.in installer/addins installer/linux/install.proj properties Directory.Build.props Directory.Packages.props
 
 CLEANFILES = intltool-extract \

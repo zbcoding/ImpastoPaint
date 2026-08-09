@@ -79,6 +79,43 @@ jobs:
         path: ${{env.BUILD_DIR}}/pinta-${{env.PINTA_VERSION}}.zip
         if-no-files-found: error
 
+  build-flatpak:
+    runs-on: ubuntu-24.04
+
+    env:
+      GNOME_RUNTIME: '50'
+
+    steps:
+    - uses: actions/checkout@v7
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v5
+      with:
+        dotnet-version: ${{env.DOTNET_VERSION}}
+    - name: Install flatpak-builder and the GNOME runtime
+      run: |
+        sudo apt update
+        sudo apt install -y flatpak flatpak-builder
+        sudo flatpak remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
+        sudo flatpak install -y --noninteractive flathub \
+          org.gnome.Platform//${{env.GNOME_RUNTIME}} org.gnome.Sdk//${{env.GNOME_RUNTIME}}
+    # Self-contained so the flatpak needs no .NET runtime extension at runtime.
+    - name: Publish
+      run: |
+        dotnet publish Impasto/Impasto.csproj -c Release -r linux-x64 --self-contained true \
+          -p:PublishDir=$PWD/release
+        cd release && zip -r ../impasto-linux-x64.zip * -x "*.pdb"
+    - name: Build flatpak
+      run: |
+        flatpak-builder --repo=repo --force-clean --disable-rofiles-fuse \
+          flatpak-build com.github.zbcoding.Impasto.yml
+        flatpak build-bundle repo Impasto-x86_64.flatpak com.github.zbcoding.Impasto
+    - name: Upload flatpak
+      uses: actions/upload-artifact@v7
+      with:
+        name: Impasto-x86_64.flatpak
+        path: Impasto-x86_64.flatpak
+        if-no-files-found: error
+
   build-macos:
     # Build for both intel and arm64
     strategy:
@@ -207,7 +244,7 @@ jobs:
 
   # On a v* tag, publish the built artifacts as a GitHub release.
   release:
-    needs: [build-ubuntu, build-macos, build-windows]
+    needs: [build-ubuntu, build-flatpak, build-macos, build-windows]
     if: startsWith(github.ref, 'refs/tags/v')
     runs-on: ubuntu-24.04
     permissions:

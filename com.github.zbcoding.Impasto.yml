@@ -1,0 +1,69 @@
+app-id: com.github.zbcoding.Impasto
+runtime: org.gnome.Platform
+runtime-version: '50'
+sdk: org.gnome.Sdk
+command: impasto
+
+# ponytail: this packages the self-contained linux-x64 publish output rather than
+# compiling from source inside the sandbox. flatpak-builder runs offline, so a source
+# build needs a generated nuget-sources.json (flatpak-builder-tools/dotnet) regenerated
+# on every dependency change. Do that when submitting to Flathub, which requires it;
+# for our own release assets the prebuilt zip is equivalent and far less machinery.
+# Same reason this is x86_64-only: it follows whatever `impasto-linux-x64.zip` contains.
+
+finish-args:
+  - --share=ipc
+  - --socket=wayland
+  - --socket=fallback-x11
+  - --device=dri
+  # Printing (Image > Print).
+  - --socket=cups
+  # Everything else goes through the file chooser portal.
+  - --filesystem=xdg-pictures
+  - --filesystem=xdg-documents
+  - --filesystem=xdg-download
+
+modules:
+  - name: impasto
+    buildsystem: simple
+
+    sources:
+      # Produced by: dotnet publish Impasto/Impasto.csproj -c Release -r linux-x64
+      #              --self-contained true -p:PublishDir=$PWD/release
+      #              && cd release && zip -r ../impasto-linux-x64.zip * -x "*.pdb"
+      - type: archive
+        path: impasto-linux-x64.zip
+        strip-components: 0
+        dest: app
+
+      - type: dir
+        path: xdg
+        dest: xdg
+
+      - type: script
+        dest-filename: impasto
+        commands:
+          - exec /app/lib/impasto/Impasto "$@"
+
+    build-commands:
+      - install -d /app/lib/impasto /app/share/applications /app/share/metainfo /app/share/icons
+      - cp -r app/. /app/lib/impasto/
+      - chmod +x /app/lib/impasto/Impasto
+      - install -Dm755 impasto /app/bin/impasto
+
+      # The desktop/metainfo templates carry intltool's leading-underscore markers and
+      # name the autotools launcher script; neither applies inside the flatpak.
+      - sed -e 's/^_//' -e 's/^TryExec=.*/TryExec=impasto/' -e 's/^Exec=.*/Exec=impasto %F/'
+        xdg/com.github.zbcoding.Impasto.desktop.in
+        > /app/share/applications/com.github.zbcoding.Impasto.desktop
+      - sed 's|<\(/\?\)_|<\1|g' xdg/com.github.zbcoding.Impasto.metainfo.xml.in
+        > /app/share/metainfo/com.github.zbcoding.Impasto.metainfo.xml
+
+      # The app's own icons ship inside the publish output; hoist them to the
+      # standard location so the shell can resolve Icon=com.github.zbcoding.Impasto.
+      - cp -r /app/lib/impasto/icons/hicolor /app/share/icons/
+      - install -Dm644 xdg/pinta.1 /app/share/man/man1/impasto.1
+
+    post-install:
+      - desktop-file-validate /app/share/applications/com.github.zbcoding.Impasto.desktop
+      - appstreamcli validate --no-net /app/share/metainfo/com.github.zbcoding.Impasto.metainfo.xml

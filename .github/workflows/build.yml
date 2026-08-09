@@ -202,7 +202,7 @@ jobs:
         path-type: inherit # Inherit the path so that dotnet can be found
         update: true
         msystem: ${{matrix.build.mingw_system}}
-        install: mingw-w64-${{matrix.build.mingw_repo}}-libadwaita mingw-w64-${{matrix.build.mingw_repo}}-webp-pixbuf-loader mingw-w64-${{matrix.build.mingw_repo}}-libavif
+        install: mingw-w64-${{matrix.build.mingw_repo}}-libadwaita mingw-w64-${{matrix.build.mingw_repo}}-webp-pixbuf-loader mingw-w64-${{matrix.build.mingw_repo}}-libavif mingw-w64-${{matrix.build.mingw_repo}}-libaom
     - name: Build
       run: dotnet build Pinta.sln -c Release -p:MinGWFolder=${{matrix.build.mingw_folder}}
     - name: Test

@@ -64,7 +64,7 @@ modules:
       # The app's own icons ship inside the publish output; hoist them to the
       # standard location so the shell can resolve Icon=com.github.zbcoding.Impasto.
       - cp -r /app/lib/impasto/icons/hicolor /app/share/icons/
-      - install -Dm644 xdg/pinta.1 /app/share/man/man1/impasto.1
+      - install -Dm644 xdg/impasto.1 /app/share/man/man1/impasto.1
 
     post-install:
       - desktop-file-validate /app/share/applications/com.github.zbcoding.Impasto.desktop

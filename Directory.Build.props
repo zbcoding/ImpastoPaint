@@ -5,9 +5,15 @@
     <Nullable>enable</Nullable>
 
     <!-- Versioning and assembly info -->
-    <Version>0.0.1.0</Version>
+    <!--
+      configure.ac is the single source of truth for the version (the CI release
+      job reads it from there too) - bump AC_INIT for each release, nowhere else.
+    -->
+    <_ConfigureAc>$([System.IO.File]::ReadAllText('$(MSBuildThisFileDirectory)configure.ac'))</_ConfigureAc>
+    <AppVersion>$([System.Text.RegularExpressions.Regex]::Match($(_ConfigureAc), '(?&lt;=AC_INIT\(\[impasto\], \[)[^]]+').Value)</AppVersion>
+    <Version>$(AppVersion).0</Version>
     <!-- User-facing version number, used for the version command line argument -->
-    <InformationalVersion>0.0.1f</InformationalVersion>
+    <InformationalVersion>$(AppVersion)f</InformationalVersion>
     <Authors>zbcoding</Authors>
     <Company />
     <Product />

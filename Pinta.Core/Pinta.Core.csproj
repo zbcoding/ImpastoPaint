@@ -15,4 +15,20 @@
   <ItemGroup>
     <ProjectReference Include="..\Pinta.Resources\Pinta.Resources.csproj" />
   </ItemGroup>
+
+  <!--
+    The application version constants are generated from Directory.Build.props
+    (the AppVersion element), so there is a single place to update the version.
+  -->
+  <Target Name="GenerateAppVersionConstants" BeforeTargets="CoreCompile">
+    <PropertyGroup>
+      <_VersionFile>$(IntermediateOutputPath)PintaCore.Version.g.cs</_VersionFile>
+      <_VersionBody>// &lt;auto-generated&gt; Generated from Directory.Build.props - do not edit.%0Anamespace Pinta.Core%3B%0A%0Apublic static partial class PintaCore%0A{%0A%09// Current release version (kept numeric because Mono.Addins compares it against add-in requirements).%0A%09public const string ApplicationVersion = &quot;$(AppVersion)&quot;%3B%0A%0A%09// User-facing version (shown in About and --version).%0A%09public const string DisplayVersion = &quot;$(AppVersion)f&quot;%3B%0A%0A%09// Oldest app version that add-ins built against it still run on%3B bump only on ABI-breaking changes.%0A%09public const string AddinCompatVersion = &quot;$(AppVersion)&quot;%3B%0A}
+      </_VersionBody>
+    </PropertyGroup>
+    <WriteLinesToFile File="$(_VersionFile)" Overwrite="true" WriteOnlyWhenDifferent="true" Lines="$(_VersionBody)" />
+    <ItemGroup>
+      <Compile Include="$(_VersionFile)" />
+    </ItemGroup>
+  </Target>
 </Project>

@@ -1,5 +1,8 @@
 #define ProductName "Impasto"
-#define ProductVersion "0.0.1"
+; The version is passed in from the build; configure.ac (AC_INIT) is the source of truth.
+#ifndef ProductVersion
+  #define ProductVersion "0.0.0"
+#endif
 
 ; The architecture can be configured on the command line to build the arm64 or x64 installer
 #ifndef ProductArch

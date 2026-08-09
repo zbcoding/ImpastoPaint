@@ -202,7 +202,8 @@ jobs:
         cp -r release/bin/icons release/bin/locale release/share/
         rm -rf release/bin/icons release/bin/locale
         cp installer/macos/hicolor.index.theme release/share/icons/hicolor/index.theme
-        iscc -DProductArch="${{matrix.build.setup_arch}}" installer/windows/installer.iss
+        version=$(sed -n 's/^AC_INIT(\[impasto\], \[\(.*\)\])/\1/p' configure.ac)
+        iscc -DProductArch="${{matrix.build.setup_arch}}" -DProductVersion="$version" installer/windows/installer.iss
 
     - name: Upload Installer
       uses: actions/upload-artifact@v7

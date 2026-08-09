@@ -60,6 +60,7 @@ public sealed class ActionHandlers
 			//new PrintDocumentAction ();
 			new CloseDocumentAction (actions, chrome, workspace, tools),
 			new ExitProgramAction (actions, chrome, workspace),
+			new UpdateImpastoAction (actions.File, system),
 
 			// Edit
 			new OffsetSelectionAction (actions.Edit, chrome, workspace, tools),

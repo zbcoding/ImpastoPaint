@@ -26,7 +26,7 @@
 
 namespace Pinta.Core;
 
-public static class PintaCore
+public static partial class PintaCore
 {
 	public static ActionManager Actions { get; }
 	public static ChromeManager Chrome { get; }
@@ -51,25 +51,6 @@ public static class PintaCore
 	/// This is used for GApplication and also must match the .desktop file.
 	/// </summary>
 	public const string ApplicationId = "com.github.zbcoding.Impasto";
-
-	/// <summary>
-	/// The current version number. Kept numeric because Mono.Addins compares it
-	/// against add-in version requirements; use <see cref="DisplayVersion"/> for
-	/// anything the user sees.
-	/// </summary>
-	public const string ApplicationVersion = "0.0.1";
-
-	/// <summary>
-	/// The user-facing version. The "f" suffix marks the free, open source edition.
-	/// </summary>
-	public const string DisplayVersion = ApplicationVersion + "f";
-
-	/// <summary>
-	/// The oldest version of Pinta for which add-ins built against it will still
-	/// run in the current version.
-	/// This should be updated when there are ABI-breaking changes.
-	/// </summary>
-	public const string AddinCompatVersion = "0.0.1";
 
 	static PintaCore ()
 	{

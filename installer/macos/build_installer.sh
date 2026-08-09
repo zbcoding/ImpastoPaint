@@ -33,7 +33,9 @@ mv ${MAC_APP_BIN_DIR}/locale ${MAC_APP_SHARE_DIR}/locale
 mv ${MAC_APP_BIN_DIR}/icons ${MAC_APP_SHARE_DIR}/icons
 cp hicolor.index.theme ${MAC_APP_SHARE_DIR}/icons/hicolor/index.theme
 
-cp Info.plist ${MAC_APP_DIR}/Contents
+# configure.ac (AC_INIT) is the source of truth for the version.
+version=$(sed -n 's/^AC_INIT(\[impasto\], \[\(.*\)\])/\1/p' ../../configure.ac)
+sed "s/@VERSION@/${version}/g" Info.plist > ${MAC_APP_DIR}/Contents/Info.plist
 cp impasto.icns ${MAC_APP_DIR}/Contents/Resources
 
 # Install the GTK dependencies.

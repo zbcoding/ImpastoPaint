@@ -40,6 +40,19 @@ public sealed class FileActions
 	public Command SaveAs { get; }
 	public Command Print { get; }
 
+	/// <summary>Added to the File menu by the update checker when a newer release is available.</summary>
+	public Command UpdateImpasto { get; }
+
+	// Empty until ShowUpdateCommand() is called; GTK doesn't render empty sections.
+	private readonly Gio.Menu update_section = Gio.Menu.New ();
+
+	/// <summary>Reveals the "Update Impasto..." item in the File menu.</summary>
+	public void ShowUpdateCommand ()
+	{
+		if (update_section.GetNItems () == 0)
+			update_section.AppendItem (UpdateImpasto.CreateMenuItem ());
+	}
+
 	/// <summary>Submenu populated with recently-opened files by the GUI layer.</summary>
 	public Gio.Menu OpenRecentMenu { get; } = Gio.Menu.New ();
 
@@ -106,6 +119,14 @@ public sealed class FileActions
 			null,
 			Resources.StandardIcons.DocumentPrint);
 
+		UpdateImpasto = new Command (
+			"updateImpasto",
+			Translations.GetString ("Update Impasto..."),
+			null,
+			Resources.StandardIcons.SoftwareUpdateAvailable) {
+			ShortLabel = Translations.GetString ("Update Impasto")
+		};
+
 		this.system = system;
 		this.app = app;
 	}
@@ -128,6 +149,8 @@ public sealed class FileActions
 		menu.AppendSubmenu (Translations.GetString ("Open Recent"), OpenRecentMenu);
 		menu.AppendSection (null, save_section);
 		menu.AppendSection (null, close_section);
+
+		menu.AppendSection (null, update_section);
 #if false
 		// Printing is disabled for now until it is fully functional.
 		menu.Append (Print.CreateAcceleratedMenuItem (Gdk.Key.P, Gdk.ModifierType.ControlMask));
@@ -141,7 +164,8 @@ public sealed class FileActions
 			Save,
 			SaveAs,
 
-			Close]);
+			Close,
+			UpdateImpasto]);
 
 		if (!isMac)
 			application.AddCommand (app.Exit); // This is part of the application menu on macOS

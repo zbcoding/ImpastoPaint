@@ -93,7 +93,7 @@ public class GdkPixbufFormat : IImageImporter, IImageExporter
 		}
 	}
 
-	public void Export (
+	public virtual void Export (
 		Document document,
 		Gio.File file,
 		Gtk.Window parent)

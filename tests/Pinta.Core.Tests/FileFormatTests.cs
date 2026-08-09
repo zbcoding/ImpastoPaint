@@ -317,11 +317,36 @@ internal sealed class FileFormatTests
 		}
 	}
 
-	[Test]
-	public void WebP_SaveOptions_AlwaysUsesQuality ()
+	// Noise: incompressible, so a lossy encoder cannot accidentally reproduce it
+	// exactly and make the lossless assertion below pass for the wrong reason.
+	static ImageSurface MakeNoiseImage ()
 	{
-		Assert.That (WebPFormat.SaveOptions (80), Is.EqualTo ((new[] { "quality" }, new[] { "80" })));
-		Assert.That (WebPFormat.SaveOptions (100), Is.EqualTo ((new[] { "quality" }, new[] { "100" })));
+		ImageSurface surface = new (Format.Argb32, 32, 32);
+		Span<ColorBgra> data = surface.GetPixelData ();
+		Random rng = new (1);
+		for (int i = 0; i < data.Length; i++)
+			data[i] = ColorBgra.FromBgra ((byte) rng.Next (256), (byte) rng.Next (256), (byte) rng.Next (256), 255);
+		surface.MarkDirty ();
+		return surface;
+	}
+
+	[Test]
+	public void Export_WebP_LosslessRoundTripsExactly ()
+	{
+		Assume.That (WebPFormat.IsLosslessAvailable, "libwebp is not available on this system");
+
+		using ImageSurface surface = MakeNoiseImage ();
+
+		byte[] encoded = WebPFormat.EncodeLossless (surface);
+		ColorBgra[]? actual = TryDecode (encoded, "webp", out int width, out int height);
+		Assume.That (actual, Is.Not.Null, "no webp loader on this system");
+
+		Assert.That (width, Is.EqualTo (surface.Width));
+		Assert.That (height, Is.EqualTo (surface.Height));
+
+		ReadOnlySpan<ColorBgra> expected = surface.GetReadOnlyPixelData ();
+		for (int i = 0; i < expected.Length; i++)
+			AssertSimilar (expected[i], actual![i], 0, $"webp lossless pixel {i}");
 	}
 
 	// FormatDescriptor and FileFilter need GTK's type system registered; skip

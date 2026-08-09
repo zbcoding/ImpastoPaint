@@ -8,9 +8,6 @@ on:
       - '**.po'
       - '**.pot'
   pull_request:
-  schedule:
-    # Run every week just to make sure the CI environment still works.
-    - cron: '0 0 * * 0'
 
 env:
   DOTNET_VERSION: 10.0.x
@@ -126,6 +123,11 @@ jobs:
 
     runs-on: ${{matrix.build.runner}}
 
+    env:
+      # Publish secrets into env so they can be checked in step `if` conditions,
+      # which don't allow the `secrets` context directly.
+      MAC_CERTS_BASE64: ${{ secrets.MAC_CERTS_BASE64 }}
+
     steps:
     - uses: actions/checkout@v7
     - name: Setup .NET
@@ -147,14 +149,14 @@ jobs:
 
     # ponytail: skip signing when the certs aren't configured on this repo.
     - name: Add Cert to Keychain
-      if: github.event_name != 'pull_request' && secrets.MAC_CERTS_BASE64 != ''
+      if: github.event_name != 'pull_request' && env.MAC_CERTS_BASE64 != ''
       uses: apple-actions/import-codesign-certs@v7
       with:
         p12-file-base64: ${{ secrets.MAC_CERTS_BASE64 }}
         p12-password: ${{ secrets.MAC_CERTS_PASSWORD }}
 
     - name: Build Installer
-      if: github.event_name != 'pull_request' && secrets.MAC_CERTS_BASE64 != ''
+      if: github.event_name != 'pull_request' && env.MAC_CERTS_BASE64 != ''
       env:
         MAC_DEV_PASSWORD: ${{ secrets.MAC_DEV_PASSWORD }}
       run: |
@@ -162,7 +164,7 @@ jobs:
         ./build_installer.sh ${{matrix.build.dotnet_rid}}
 
     - name: Upload Installer
-      if: github.event_name != 'pull_request' && secrets.MAC_CERTS_BASE64 != ''
+      if: github.event_name != 'pull_request' && env.MAC_CERTS_BASE64 != ''
       uses: actions/upload-artifact@v7
       with:
         name: "Impasto-${{matrix.build.dotnet_rid}}.dmg"
@@ -181,6 +183,11 @@ jobs:
     defaults:
       run:
         shell: msys2 {0}
+
+    env:
+      # Publish secret into env so it can be checked in step `if` conditions,
+      # which don't allow the `secrets` context directly.
+      SIGNPATH_API_TOKEN: ${{ secrets.SIGNPATH_API_TOKEN }}
 
     steps:
     - uses: actions/checkout@v7
@@ -221,7 +228,7 @@ jobs:
 
     # Only enable signing for tagged releases.
     - name: Sign Installer
-      if: startsWith( github.ref, 'refs/tags/' ) && secrets.SIGNPATH_API_TOKEN != ''
+      if: startsWith( github.ref, 'refs/tags/' ) && env.SIGNPATH_API_TOKEN != ''
       uses: signpath/github-action-submit-signing-request@v2
       with:
         api-token: '${{ secrets.SIGNPATH_API_TOKEN }}'
@@ -234,7 +241,7 @@ jobs:
         output-artifact-directory: './signed-artifacts'
 
     - name: Upload Signed Installer
-      if: startsWith( github.ref, 'refs/tags/' ) && secrets.SIGNPATH_API_TOKEN != ''
+      if: startsWith( github.ref, 'refs/tags/' ) && env.SIGNPATH_API_TOKEN != ''
       id: upload-signed-installer
       uses: actions/upload-artifact@v7
       with:

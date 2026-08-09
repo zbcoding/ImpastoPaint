@@ -31,7 +31,6 @@ internal static class SettingNames
 	internal const string FREEFORM_SHAPE_DASH_PATTERN = "freeform-shape-dash_pattern";
 
 	internal const string LASSO_MODE = "lasso-mode";
-	internal const string SCISSORS_EDGE_TOLERANCE = "scissors-edge-tolerance";
 	internal const string POPOVER_HINT_MODE = "popover-hint-mode";
 
 	internal const string SHAPE_CURVED_SEGMENTS = "shape-curved-segments";

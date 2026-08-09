@@ -45,7 +45,7 @@ internal sealed class MainClass
 		string locale_dir = Path.Combine (SystemManager.GetDataRootDirectory (), "locale");
 
 		try {
-			Translations.Init ("pinta", locale_dir);
+			Translations.Init ("impasto", locale_dir);
 		} catch (Exception ex) {
 			Console.WriteLine (ex);
 		}

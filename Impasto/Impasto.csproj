@@ -53,15 +53,15 @@
     <Translation Include="../po/*.po" />
   </ItemGroup>
 
-  <Target Name="CompileTranslations" BeforeTargets="Build" Condition="'$(BuildTranslations)' == 'true'" Inputs="@(Translation)" Outputs="$(OutputPath)/locale/%(Translation.Filename)/LC_MESSAGES/pinta.mo">
+  <Target Name="CompileTranslations" BeforeTargets="Build" Condition="'$(BuildTranslations)' == 'true'" Inputs="@(Translation)" Outputs="$(OutputPath)/locale/%(Translation.Filename)/LC_MESSAGES/impasto.mo">
 
     <MakeDir Directories="$(OutputPath)/locale/%(Translation.Filename)/LC_MESSAGES" />
-    <Exec Command="msgfmt &quot;%(Translation.FullPath)&quot; -o &quot;$(OutputPath)/locale/%(Translation.Filename)/LC_MESSAGES/pinta.mo&quot;" />
+    <Exec Command="msgfmt &quot;%(Translation.FullPath)&quot; -o &quot;$(OutputPath)/locale/%(Translation.Filename)/LC_MESSAGES/impasto.mo&quot;" />
   </Target>
 
   <!-- Include the compiled translation files when publishing. -->
   <Target Name="PublishTranslations" AfterTargets="Publish" Condition="'$(BuildTranslations)' == 'true'">
-    <Copy SourceFiles="$(OutputPath)/locale/%(Translation.Filename)/LC_MESSAGES/pinta.mo" DestinationFiles="$(PublishDir)/locale/%(Translation.Filename)/LC_MESSAGES/pinta.mo" />
+    <Copy SourceFiles="$(OutputPath)/locale/%(Translation.Filename)/LC_MESSAGES/impasto.mo" DestinationFiles="$(PublishDir)/locale/%(Translation.Filename)/LC_MESSAGES/impasto.mo" />
   </Target>
 
   <!-- For Windows, copy GTK library dependencies to the build folder. -->

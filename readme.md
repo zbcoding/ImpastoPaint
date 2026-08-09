@@ -1,10 +1,14 @@
 # Impasto
 
-[![Build Status](https://github.com/zbcoding/Impasto/workflows/Build/badge.svg)](https://github.com/zbcoding/Impasto/actions)
+[![Build Status](https://github.com/zbcoding/ImpastoPaint/workflows/Build/badge.svg)](https://github.com/zbcoding/ImpastoPaint/actions)
 
 Impasto is a fork of [Pinta](https://github.com/PintaProject/Pinta) — a GTK clone of
 [Paint.NET](https://www.getpaint.net/) — that adopts Paint.NET's interface. It runs on
 Linux, Windows, and macOS.
+
+![Shapes and text as editable objects, with per-object history](docs/screenshots/impasto-object-layers.png)
+
+![The text tool, with the UI preferences dialog open](docs/screenshots/impasto-text-tool.png)
 
 Impasto is licensed under the MIT License (see `license-mit.txt`). Third-party
 attributions, notices, and license texts are in `THIRD-PARTY-NOTICES.md`.

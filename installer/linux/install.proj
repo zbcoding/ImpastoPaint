@@ -15,7 +15,7 @@
 
   <!-- All of our compiled translation files -->
   <ItemGroup>
-      <Translation Include="$(PublishDir)/locale/**/pinta.mo"/>
+      <Translation Include="$(PublishDir)/locale/**/impasto.mo"/>
   </ItemGroup>
 
   <!-- All of our icons -->
@@ -46,12 +46,12 @@
   <Target Name="Uninstall">
     <Exec Command='rm -rf "$(InstallLibDir)/pinta"' />
     <Delete Files="$(InstallBinDir)/pinta" />
-    <Delete Files="$(InstallLocaleDir)/%(Translation.Code)/LC_MESSAGES/pinta.mo" />
+    <Delete Files="$(InstallLocaleDir)/%(Translation.Code)/LC_MESSAGES/impasto.mo" />
     <Delete Files="$(InstallManDir)/man1/pinta.1" />
     <Delete Files="$(InstallManDir)/man1/pinta.1.gz" />
     <Delete Files="$(InstallDataRootDir)/metainfo/com.github.zbcoding.Impasto.metainfo.xml" />
     <Delete Files="$(InstallDataRootDir)/applications/com.github.zbcoding.Impasto.desktop" />
     <Delete Files="$(InstallDataRootDir)/icons/%(Icon.RecursiveDir)/%(Icon.Filename)%(Icon.Extension)" />
-    <Delete Files="$(InstallLocaleDir)/%(Translation.RecursiveDir)/pinta.mo" />
+    <Delete Files="$(InstallLocaleDir)/%(Translation.RecursiveDir)/impasto.mo" />
   </Target>
 </Project>

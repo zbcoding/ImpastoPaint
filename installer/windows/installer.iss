@@ -11,8 +11,8 @@
 AllowNoIcons=yes
 AppId=C0BCDEDA-62E7-4A43-8435-58323E096912
 AppName={#ProductName}
-AppPublisher=Pinta Community
-AppPublisherURL=https://www.pinta-project.com/
+AppPublisher=zbcoding
+AppPublisherURL=https://github.com/zbcoding/ImpastoPaint
 AppVerName={#ProductName} {#ProductVersion}
 AppVersion={#ProductVersion}
 ArchitecturesAllowed={#ProductArch}

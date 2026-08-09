@@ -69,13 +69,13 @@ internal sealed class AboutDialogAction : IActionHandler
 		dialog.Version = application_version;
 		dialog.DefaultWidth = 800;
 		dialog.DefaultHeight = 700;
-		dialog.Website = "https://github.com/zbcoding/Impasto";
+		dialog.Website = "https://github.com/zbcoding/ImpastoPaint";
 		dialog.Comments = Translations.GetString ("Easily create and edit images");
 		dialog.Copyright = BuildCopyrightText ();
 		dialog.License = string.Empty;
 
 		// The Legal and Credits sections below are populated verbatim from the
-		// corresponding files (embedded as resources in Pinta.csproj). To update what
+		// corresponding files (embedded as resources in Impasto.csproj). To update what
 		// users see in the app, edit these files — don't hardcode text here:
 		//   license-mit.txt        -> MIT License (the Impasto application license)
 		//   license-mit-pinta.txt  -> MIT License (upstream Pinta Project)
@@ -101,8 +101,8 @@ internal sealed class AboutDialogAction : IActionHandler
 			Translations.GetString ("Pinta Project code by"),
 			LoadContributors (LoadEmbeddedText ("CONTRIBUTORS.md")));
 		dialog.TranslatorCredits = Translations.GetString ("translator-credits");
-		dialog.IssueUrl = "https://github.com/zbcoding/Impasto/issues";
-		dialog.SupportUrl = "https://github.com/zbcoding/Impasto/issues";
+		dialog.IssueUrl = "https://github.com/zbcoding/ImpastoPaint/issues";
+		dialog.SupportUrl = "https://github.com/zbcoding/ImpastoPaint/issues";
 		await dialog.PresentAsync ();
 	}
 

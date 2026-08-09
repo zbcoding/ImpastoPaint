@@ -134,7 +134,7 @@ In addition, for a period of three years from the date you received this
 software, we will provide, on request, a complete machine-readable copy of the
 corresponding source code for those libraries as redistributed here, for a
 charge no more than the cost of physically performing the distribution. Requests
-should be sent through https://github.com/zbcoding/Impasto/issues.
+should be sent through https://github.com/zbcoding/ImpastoPaint/issues.
 
 ## License texts
 

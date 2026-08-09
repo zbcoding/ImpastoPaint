@@ -72,9 +72,9 @@ Contributions are welcome. In short:
 
 The full guide, including the git/PR workflow, is in `CONTRIBUTING.md`.
 
-- You can report [bugs/issues](https://github.com/zbcoding/Impasto/issues).
-- You can make [suggestions](https://github.com/zbcoding/Impasto/discussions).
-- You can fork the project on [GitHub](https://github.com/zbcoding/Impasto).
+- You can report [bugs/issues](https://github.com/zbcoding/ImpastoPaint/issues).
+- You can make [suggestions](https://github.com/zbcoding/ImpastoPaint/discussions).
+- You can fork the project on [GitHub](https://github.com/zbcoding/ImpastoPaint).
 - Notable changes of each release are recorded in `CHANGELOG.md`.
 
 ## Privacy policy

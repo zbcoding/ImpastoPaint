@@ -63,13 +63,13 @@ The workflow for AI-assisted entries:
 ### Bug fixes and issues
 
 PRs to fix issues are great. Be sure to check the issue comments, in case someone else is working on a bug fix too, at the
-[issue tracker](https://github.com/zbcoding/Impasto/issues).
+[issue tracker](https://github.com/zbcoding/ImpastoPaint/issues).
 
 ### Creating a fork
 
 Create a GitHub account if you haven't got one (use your full name, so we
 have something to put in the credits), then fork the
-[Impasto repository](https://github.com/zbcoding/Impasto) and pull the
+[Impasto repository](https://github.com/zbcoding/ImpastoPaint) and pull the
 code down to your local machine.
 
 ### Writing, compiling, and testing code

@@ -100,16 +100,16 @@ public sealed class HelpActions
 
 	private async void Bugs_Activated (object sender, EventArgs e)
 	{
-		await system.LaunchUri ("https://github.com/zbcoding/Impasto/issues");
+		await system.LaunchUri ("https://github.com/zbcoding/ImpastoPaint/issues");
 	}
 
 	private async void DisplayHelp (object sender, EventArgs e)
 	{
-		await system.LaunchUri ("https://github.com/zbcoding/Impasto");
+		await system.LaunchUri ("https://github.com/zbcoding/ImpastoPaint");
 	}
 
 	private async void Website_Activated (object sender, EventArgs e)
 	{
-		await system.LaunchUri ("https://github.com/zbcoding/Impasto");
+		await system.LaunchUri ("https://github.com/zbcoding/ImpastoPaint");
 	}
 }

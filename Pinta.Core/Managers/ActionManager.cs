@@ -212,6 +212,10 @@ public sealed class ActionManager
 	/// </summary>
 	public (int occupiedByChips, int cursorWidth, int imageWidth, bool sliding) GetFooterChipRoom ()
 	{
+		// Only the collapsible chips count here. The selection chip never collapses, so it
+		// belongs outside the shared region: the box has already taken its width out of the
+		// palette's allocation, and adding it back handed the palette room it doesn't have -
+		// the swatches and action icons then drew out underneath it.
 		int occupied = (cursor_slot?.GetWidth () ?? 0) + (image_slot?.GetWidth () ?? 0);
 
 		return (
@@ -263,6 +267,35 @@ public sealed class ActionManager
 
 	public void CreateStatusBar (Gtk.Box statusbar, WorkspaceManager workspaceManager)
 	{
+		// Selection widget - top-left coords + size (issue #2116). Sits left of the
+		// other chips and never collapses: it's only on screen while a selection is
+		// live, and the box takes its width straight out of the palette's allocation,
+		// so the cascade starts sooner without it joining in.
+		Gtk.Box selection_group = Gtk.Box.New (Gtk.Orientation.Horizontal, 4);
+		selection_group.MarginEnd = 4;
+		var selection_icon = Gtk.Image.NewFromIconName (Resources.Icons.ToolSelectRectangle);
+		selection_group.Append (selection_icon);
+		var selection_size = Gtk.Label.New ("");
+		selection_size.Xalign = 0.5f;
+		selection_size.Halign = Gtk.Align.Center;
+		selection_group.Append (selection_size);
+		selection_group.TooltipText = Translations.GetString ("Selection: top-left corner in pixels, then its width and height.");
+		ApplyStatusBarChipStyle (selection_group);
+		selection_group.SetVisible (false);
+		statusbar.Append (selection_group);
+
+		// Hidden until a selection is actually visible; upstream's full-canvas reset
+		// selection otherwise made it look like a selection existed when it didn't (PR #2013).
+		workspaceManager.SelectionChanged += delegate {
+			if (!workspaceManager.HasOpenDocuments || !workspaceManager.ActiveDocument.Selection.Visible) {
+				selection_group.SetVisible (false);
+				return;
+			}
+			var bounds = workspaceManager.ActiveDocument.Selection.GetBounds ();
+			selection_size.SetText ($"{(int) bounds.X}, {(int) bounds.Y} · {(int) bounds.Width} × {(int) bounds.Height}");
+			selection_group.SetVisible (true);
+		};
+
 		// Cursor position widget - left aligned with enough space to display coordinates up to tens of thousands (e.g. 10000, 10000).
 		Gtk.Box cursor_group = Gtk.Box.New (Gtk.Orientation.Horizontal, 4);
 		cursor_group.MarginEnd = 4;
@@ -274,6 +307,7 @@ public sealed class ActionManager
 		cursor.WidthChars = 8;
 		cursor_group.Append (cursor);
 		cursor_position_label = cursor;
+		cursor_group.TooltipText = Translations.GetString ("Pointer position on the canvas, in pixels from the top-left corner.");
 		ApplyStatusBarChipStyle (cursor_group);
 		cursor_slot = CreateChipSlot (cursor_group);
 		statusbar.Append (cursor_slot);
@@ -284,32 +318,6 @@ public sealed class ActionManager
 		chrome.LastCanvasCursorPointChanged += delegate {
 			var pt = chrome.LastCanvasCursorPoint;
 			cursor.SetText ($"{pt.X}, {pt.Y}");
-		};
-
-		// Selection widget - top-left coords + size (issue #2116). Hidden until a
-		// selection is actually visible; upstream's full-canvas reset selection
-		// otherwise made it look like a selection existed when it didn't (PR #2013).
-		var selection_icon = Gtk.Image.NewFromIconName (Resources.Icons.ToolSelectRectangle);
-		statusbar.Append (selection_icon);
-		var selection_size = Gtk.Label.New ("");
-		selection_size.Xalign = 0.0f;
-		selection_size.Halign = Gtk.Align.Start;
-		selection_size.WidthChars = 20;
-		statusbar.Append (selection_size);
-
-		selection_icon.SetVisible (false);
-		selection_size.SetVisible (false);
-
-		workspaceManager.SelectionChanged += delegate {
-			if (!workspaceManager.HasOpenDocuments || !workspaceManager.ActiveDocument.Selection.Visible) {
-				selection_icon.SetVisible (false);
-				selection_size.SetVisible (false);
-				return;
-			}
-			var bounds = workspaceManager.ActiveDocument.Selection.GetBounds ();
-			selection_size.SetText ($"{(int) bounds.X}, {(int) bounds.Y} · {(int) bounds.Width} × {(int) bounds.Height}");
-			selection_icon.SetVisible (true);
-			selection_size.SetVisible (true);
 		};
 
 		// Image dimensions widget - "800 × 600 · 4:3" (PR #2013).
@@ -323,6 +331,13 @@ public sealed class ActionManager
 		image_size.WidthChars = 14;
 		image_group.Append (image_size);
 		image_size_label = image_size;
+		image_group.TooltipText = Translations.GetString ("Canvas size in pixels and its aspect ratio.\nDouble click to change the canvas size.");
+		Gtk.GestureClick image_group_click = Gtk.GestureClick.New ();
+		image_group_click.OnPressed += (_, args) => {
+			if (args.NPress == 2 && Image.CanvasSize.Sensitive)
+				Image.CanvasSize.Activate ();
+		};
+		image_group.AddController (image_group_click);
 		ApplyStatusBarChipStyle (image_group);
 		image_slot = CreateChipSlot (image_group);
 		statusbar.Append (image_slot);

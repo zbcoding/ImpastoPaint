@@ -12,14 +12,14 @@ Changes for the next release (0.0.2) go here.
 
 ## Impasto - [0.0.1](https://github.com/zbcoding/ImpastoPaint/releases/tag/v0.0.1) - 2026-08-09
 
-First Impasto release, with added features, started by forking Pinta 3.1.2.
+First Impasto release, with added features, and started by forking Pinta 3.1.2.
 
 ### Added
 
 - Renamed the application to Impasto. Added Impasto to the About dialog, license sections and issue/support links
 - Shapes and text are now editable sub-layer objects: each layer lists its objects, which can be shown/hidden, renamed, reordered by drag and drop, blended, given per-object opacity, rasterized or deleted individually
 - Layers can be duplicated together with their objects, and object sub-rows can be moved between positions
-- The scissors (smart) selection, healing brush and smart patch tools moved into a premium add-in; freeform and polygon lasso remain part of the free Lasso Select tool
+- The scissors (smart) selection, healing brush and smart patch tools moved into a premium add-in that's still in development; freeform and polygon lasso remain part of the free Lasso Select tool
 - The About dialog legal section now uses expandable license and notice panels with independent scrolling
 - The Text Tool now offers a Point/Area mode: Area (flow) text wraps to fit a box that can be resized by dragging a corner, in addition to the existing point text
 - The Text Tool now supports justified alignment, which stretches line spacing to fill the area box
@@ -34,7 +34,7 @@ First Impasto release, with added features, started by forking Pinta 3.1.2.
 ### Changed
 
 - Updated dependencies to require libadwaita 1.8+
-- Deselecting via the Escape key now requires a double-tap, so a single stray Escape press no longer clears the selection
+- Double tap Esc to deselect
 - The Keyboard Shortcuts dialog now shows a separate, independently rebindable row for each of a command's shortcuts (e.g. "Deselect All" and "Deselect All (Alternate)") instead of only exposing the first one
 
 ### Fixed

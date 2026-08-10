@@ -9,8 +9,6 @@ in its own document under `docs/`:
 | Document | What's in it |
 |---|---|
 | [fork-charter.md](docs/fork-charter.md) | Why the fork exists, the naming decision, and the ground rules that keep it rebasable against upstream |
-| [feature-status.md](docs/feature-status.md) | What has been built, and how far each item is actually verified |
-| [known-issues.md](docs/known-issues.md) | Open bugs and accepted warts |
 | [toolbox-layout.md](docs/toolbox-layout.md) | How tools are assigned to toolbox sections and stacks |
 
 Working notes for individual subsystems stay in `docs-private/`, which is untracked —

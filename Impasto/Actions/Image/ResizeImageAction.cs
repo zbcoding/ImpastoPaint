@@ -63,6 +63,7 @@ internal sealed class ResizeImageAction : IActionHandler
 		ResizeImageOptions? response = await PromptResize ();
 		if (!response.HasValue) return;
 		ResizeImageOptions resizing = response.Value;
+		if (!await LargeImagePrompt.ConfirmIfLarge (chrome, resizing.NewSize)) return;
 		workspace.ResizeImage (resizing.NewSize, resizing.ResamplingMode);
 	}
 

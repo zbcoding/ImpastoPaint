@@ -13,7 +13,7 @@ public sealed partial class CanvasGridSettingsDialog
 	private Gtk.CheckButton show_grid_checkbox;
 	private Gtk.SpinButton grid_width_spinner;
 	private Gtk.SpinButton grid_height_spinner;
-	private Gtk.ColorDialogButton grid_color_button;
+	private PintaColorButton grid_color_button;
 	private Gtk.CheckButton show_axonometric_grid_checkbox;
 	private Gtk.SpinButton grid_axonometric_width_spinner;
 	private AnglePickerWidget grid_axonometric_angle_picker;
@@ -27,7 +27,7 @@ public sealed partial class CanvasGridSettingsDialog
 		dialog.show_grid_checkbox.Active = initialSettings.ShowGrid;
 		dialog.grid_width_spinner.Value = initialSettings.CellSize.Width;
 		dialog.grid_height_spinner.Value = initialSettings.CellSize.Height;
-		dialog.grid_color_button.SetRgba (initialSettings.GridColor.ToGdkRGBA ());
+		dialog.grid_color_button.DisplayColor = initialSettings.GridColor;
 		dialog.show_axonometric_grid_checkbox.Active = initialSettings.ShowAxonometricGrid;
 		dialog.grid_axonometric_angle_picker.Value = initialSettings.AxonometricAngle;
 		dialog.grid_axonometric_width_spinner.Value = initialSettings.AxonometricWidth;
@@ -67,13 +67,27 @@ public sealed partial class CanvasGridSettingsDialog
 			Gtk.SpinButton.SensitivePropertyDefinition.UnmanagedName,
 			GObject.BindingFlags.SyncCreate);
 
-		Gtk.ColorDialog colorDialog = Gtk.ColorDialog.New ();
-		colorDialog.WithAlpha = true;
-		Gtk.ColorDialogButton colorButton = Gtk.ColorDialogButton.New (colorDialog);
+		// Same picker the effect dialogs use: a single adjustable color, so none of
+		// the palette's swatch or primary/secondary rows show up.
+		PintaColorButton colorButton = PintaColorButton.New ();
 		colorButton.Halign = Gtk.Align.Start;
-		colorButton.OnNotify += (_, args) => {
-			if (args.Pspec.GetName () == "rgba")
-				SettingsChanged (this, EventArgs.Empty);
+		colorButton.WidthRequest = 80;
+		colorButton.OnClicked += async (_, _) => {
+
+			using ColorPickerDialog dialog = ColorPickerDialog.New (
+				this,
+				PintaCore.Palette,
+				new SingleColor (colorButton.DisplayColor),
+				primarySelected: true,
+				false,
+				Translations.GetString ("Grid Color"));
+
+			Gtk.ResponseType response = await dialog.RunAsync ();
+			if (response != Gtk.ResponseType.Ok)
+				return;
+
+			colorButton.DisplayColor = ((SingleColor) dialog.Colors).Color;
+			SettingsChanged (this, EventArgs.Empty);
 		};
 
 		Gtk.SpinButton axonometricWidthSpinner = Gtk.SpinButton.NewWithRange (1, int.MaxValue, 1);
@@ -135,7 +149,9 @@ public sealed partial class CanvasGridSettingsDialog
 		// --- Initialization (Gtk.Window)
 
 		Title = Translations.GetString ("Canvas Grid Settings");
-		Modal = true;
+		// Non-modal like the effect dialogs, so it floats over the canvas without
+		// dimming it and changing the apparent grid color.
+		Modal = false;
 		IconName = Resources.Icons.ViewGrid;
 
 		// --- Initialization (Gtk.Dialog)
@@ -170,7 +186,7 @@ public sealed partial class CanvasGridSettingsDialog
 				grid_width_spinner.GetValueAsInt (),
 				grid_height_spinner.GetValueAsInt ()
 			),
-			grid_color_button.GetRgba ().ToCairoColor (),
+			grid_color_button.DisplayColor,
 			grid_axonometric_width_spinner.GetValueAsInt (),
 			grid_axonometric_angle_picker.Value);
 

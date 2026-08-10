@@ -128,6 +128,10 @@ public sealed class CanvasGridManager : ICanvasGridService
 			if (!SnapEnabled)
 				return null;
 
+			// The axonometric lattice isn't a rectangular step; SnapPoint handles it.
+			if (AxonometricSnapActive)
+				return null;
+
 			if (ShowGrid)
 				return new (CellWidth, CellHeight);
 
@@ -188,6 +192,11 @@ public sealed class CanvasGridManager : ICanvasGridService
 			return point;
 		}
 
+		if (AxonometricSnapActive) {
+			ClearActiveGuides ();
+			return SnapToAxonometricLattice (point);
+		}
+
 		if (SnapStep is PointD step) {
 			ClearActiveGuides ();
 			return new (
@@ -220,6 +229,36 @@ public sealed class CanvasGridManager : ICanvasGridService
 		ActiveGuides = xGuide | yGuide;
 
 		return new (x, y);
+	}
+
+	/// <summary>
+	/// The axonometric grid, when shown, is the finest thing on the canvas, so
+	/// it takes priority over the rectangular grid and the ruler ticks.
+	/// </summary>
+	private bool AxonometricSnapActive
+		=> ShowAxonometricGrid
+		&& AxonometricWidth > 0
+		&& AxonometricAngle.Degrees > 0
+		&& AxonometricAngle.Degrees < 90;
+
+	/// <summary>
+	/// The lattice the axonometric grid's lines cross at: verticals every
+	/// <see cref="AxonometricWidth"/> pixels, and rows every
+	/// width * tan(angle) pixels, where a row is only reachable from columns of
+	/// the same parity (the diagonals skip every other crossing).
+	/// </summary>
+	private PointD SnapToAxonometricLattice (PointD point)
+	{
+		double columnWidth = AxonometricWidth;
+		double rowHeight = columnWidth * Math.Tan (AxonometricAngle.ToRadians ().Radians);
+
+		double column = Math.Round (point.X / columnWidth);
+		double row = point.Y / rowHeight;
+
+		// Snap to the nearest row with the column's parity.
+		double parityRow = Math.Round ((row - column) / 2.0) * 2.0 + column;
+
+		return new (column * columnWidth, parityRow * rowHeight);
 	}
 
 	private static (double, SnapGuides) SnapToGuides (

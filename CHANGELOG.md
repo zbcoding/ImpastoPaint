@@ -6,7 +6,13 @@ Impasto is a fork of the [Pinta Project](https://github.com/PintaProject/Pinta).
 Everything below the "Pinta Project history" heading, plus the "Inherited from Pinta"
 entries, is upstream Pinta work; the Impasto sections cover changes made in this fork.
 
-## Impasto - [Unreleased](https://github.com/zbcoding/ImpastoPaint/commits/main)
+## Impasto - [Unreleased](https://github.com/zbcoding/ImpastoPaint/compare/v0.0.1...main)
+
+Changes for the next release (0.0.2) go here.
+
+## Impasto - [0.0.1](https://github.com/zbcoding/ImpastoPaint/releases/tag/v0.0.1) - 2026-08-09
+
+First Impasto release, with added features, started by forking Pinta 3.1.2.
 
 ### Added
 
@@ -50,7 +56,7 @@ entries, is upstream Pinta work; the Impasto sections cover changes made in this
 - Fixed the canvas not re-fitting to the window on resize, and the toolbox not scrolling
 - Fixed the layer properties dialog dimming the screen, and a stack overflow when drawing a shape after object unification
 
-## Inherited from Pinta - [Unreleased](https://github.com/PintaProject/Pinta/compare/3.1...HEAD)
+## Inherited from Pinta - [unreleased upstream work](https://github.com/PintaProject/Pinta/compare/3.1...HEAD), shipped in Impasto 0.0.1
 
 Thanks to the following upstream contributors who worked on this release:
 - @cameronwhite

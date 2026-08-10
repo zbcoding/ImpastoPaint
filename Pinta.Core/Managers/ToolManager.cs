@@ -393,6 +393,10 @@ public sealed class ToolManager : IEnumerable<BaseTool>, IToolService
 			return;
 		if (!TryMouseMovePanOverride (document, args))
 			CurrentTool?.DoMouseMove (document, ApplySnapping (args));
+
+		// Guides are feedback for a drag in progress, not for hovering over the canvas.
+		if (args.MouseButton == MouseButton.None)
+			PintaCore.CanvasGrid.ClearActiveGuides ();
 	}
 
 	public void DoMouseUp (Document document, ToolMouseEventArgs args)
@@ -401,6 +405,9 @@ public sealed class ToolManager : IEnumerable<BaseTool>, IToolService
 			return;
 		if (!TryMouseUpPanOverride (document, args))
 			CurrentTool?.DoMouseUp (document, ApplySnapping (args));
+
+		// The drag is over, so the guides it was holding stop being shown.
+		PintaCore.CanvasGrid.ClearActiveGuides ();
 	}
 
 	/// <summary>

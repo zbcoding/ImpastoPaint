@@ -3,6 +3,22 @@ using System;
 namespace Pinta.Core;
 
 
+/// <summary>
+/// The canvas-relative lines that snapping can pull a point onto, when there is
+/// no grid or ruler to snap to instead.
+/// </summary>
+[Flags]
+public enum SnapGuides
+{
+	None = 0,
+	Left = 1 << 0,
+	HorizontalCenter = 1 << 1,
+	Right = 1 << 2,
+	Top = 1 << 3,
+	VerticalCenter = 1 << 4,
+	Bottom = 1 << 5,
+}
+
 public interface ICanvasGridService
 {
 	bool ShowGrid { get; set; }
@@ -18,6 +34,17 @@ public interface ICanvasGridService
 	PointD? SnapStep { get; }
 
 	PointD SnapPoint (PointD point);
+
+	/// <summary>
+	/// Which canvas guides the last snapped point landed on, so the canvas can
+	/// show them while they are holding the point.
+	/// </summary>
+	SnapGuides ActiveGuides { get; }
+
+	/// <summary>
+	/// Drops the guide display, e.g. once the drag that was snapping ends.
+	/// </summary>
+	void ClearActiveGuides ();
 
 	/// <summary>
 	/// The ruler's metric, as the index used by the "rulermetric" action.
@@ -129,42 +156,80 @@ public sealed class CanvasGridManager : ICanvasGridService
 	/// </summary>
 	private const double CANVAS_GUIDE_TOLERANCE = 8.0;
 
+	public SnapGuides ActiveGuides {
+		get => active_guides;
+		private set {
+			if (active_guides == value) return;
+			active_guides = value;
+			workspace.Invalidate ();
+		}
+	}
+	private SnapGuides active_guides;
+
+	public void ClearActiveGuides () => ActiveGuides = SnapGuides.None;
+
 	public PointD SnapPoint (PointD point)
 	{
-		if (!SnapEnabled)
+		if (!SnapEnabled) {
+			ClearActiveGuides ();
 			return point;
+		}
 
-		if (SnapStep is PointD step)
+		if (SnapStep is PointD step) {
+			ClearActiveGuides ();
 			return new (
 				Math.Round (point.X / step.X) * step.X,
 				Math.Round (point.Y / step.Y) * step.Y);
+		}
 
 		// Nothing regular to snap to, so fall back to the canvas itself: its
 		// edges and its two centre lines.
-		if (!workspace.HasOpenDocuments)
+		if (!workspace.HasOpenDocuments) {
+			ClearActiveGuides ();
 			return point;
+		}
 
 		Size imageSize = workspace.ImageSize;
 		double tolerance = CANVAS_GUIDE_TOLERANCE / workspace.GetScale ();
 
-		return new (
-			SnapToGuides (point.X, imageSize.Width, tolerance),
-			SnapToGuides (point.Y, imageSize.Height, tolerance));
+		(double x, SnapGuides xGuide) = SnapToGuides (
+			point.X,
+			imageSize.Width,
+			tolerance,
+			[SnapGuides.Left, SnapGuides.HorizontalCenter, SnapGuides.Right]);
+
+		(double y, SnapGuides yGuide) = SnapToGuides (
+			point.Y,
+			imageSize.Height,
+			tolerance,
+			[SnapGuides.Top, SnapGuides.VerticalCenter, SnapGuides.Bottom]);
+
+		ActiveGuides = xGuide | yGuide;
+
+		return new (x, y);
 	}
 
-	private static double SnapToGuides (double value, double extent, double tolerance)
+	private static (double, SnapGuides) SnapToGuides (
+		double value,
+		double extent,
+		double tolerance,
+		SnapGuides[] names)
 	{
+		double[] guides = [0.0, extent / 2.0, extent];
+
 		double nearest = value;
+		SnapGuides nearestGuide = SnapGuides.None;
 		double bestDistance = tolerance;
 
-		foreach (double guide in new[] { 0.0, extent / 2.0, extent }) {
-			double distance = Math.Abs (value - guide);
+		for (int i = 0; i < guides.Length; ++i) {
+			double distance = Math.Abs (value - guides[i]);
 			if (distance >= bestDistance) continue;
 			bestDistance = distance;
-			nearest = guide;
+			nearest = guides[i];
+			nearestGuide = names[i];
 		}
 
-		return nearest;
+		return (nearest, nearestGuide);
 	}
 
 	public bool ShowAxonometricGrid {

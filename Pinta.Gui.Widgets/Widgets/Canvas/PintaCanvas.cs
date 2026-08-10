@@ -183,6 +183,7 @@ internal sealed partial class PintaCanvas
 		DrawHandles (snapshot, canvasViewBounds);
 		DrawCanvasGrid (snapshot, canvasViewBounds);
 		DrawCanvasAxonometricGrid (snapshot, canvasViewBounds);
+		DrawSnapGuides (snapshot, canvasViewBounds);
 
 		// In the future, this would be cleaner to implement as a custom widget once gir.core supports virtual methods
 		// (in particular, zooming might be easier when we have control over the size allocation)
@@ -317,6 +318,55 @@ internal sealed partial class PintaCanvas
 			control.Draw (snapshot);
 		}
 
+		snapshot.Pop ();
+	}
+
+	/// <summary>
+	/// Shows the canvas edges and centre lines that snapping is currently
+	/// holding a point on, so the pull is visible while it happens.
+	/// </summary>
+	private void DrawSnapGuides (Gtk.Snapshot snapshot, Graphene.Rect canvasViewBounds)
+	{
+		SnapGuides guides = canvas_grid.ActiveGuides;
+		if (guides == SnapGuides.None)
+			return;
+
+		int width = document.ImageSize.Width;
+		int height = document.ImageSize.Height;
+
+		Gsk.PathBuilder pathBuilder = Gsk.PathBuilder.New ();
+
+		foreach ((SnapGuides guide, float x) in new[] {
+			(SnapGuides.Left, 0f),
+			(SnapGuides.HorizontalCenter, width / 2f),
+			(SnapGuides.Right, (float) width)}) {
+			if (!guides.HasFlag (guide)) continue;
+			pathBuilder.MoveTo (x, 0);
+			pathBuilder.LineTo (x, height);
+		}
+
+		foreach ((SnapGuides guide, float y) in new[] {
+			(SnapGuides.Top, 0f),
+			(SnapGuides.VerticalCenter, height / 2f),
+			(SnapGuides.Bottom, (float) height)}) {
+			if (!guides.HasFlag (guide)) continue;
+			pathBuilder.MoveTo (0, y);
+			pathBuilder.LineTo (width, y);
+		}
+
+		snapshot.PushClip (canvasViewBounds);
+		snapshot.Save ();
+
+		float scale = (float) document.Workspace.Scale;
+		snapshot.Scale (scale, scale);
+
+		Gsk.Stroke stroke = Gsk.Stroke.New (lineWidth: 1.0f / scale);
+		stroke.SetDash ([4.0f / scale, 4.0f / scale]);
+
+		Gdk.RGBA color = new () { Red = 0.2f, Green = 0.5f, Blue = 1.0f, Alpha = 0.5f };
+		snapshot.AppendStroke (pathBuilder.ToPath (), stroke, color);
+
+		snapshot.Restore ();
 		snapshot.Pop ();
 	}
 

@@ -384,7 +384,7 @@ public sealed class ToolManager : IEnumerable<BaseTool>, IToolService
 		if (PintaCore.LivePreview.IsEnabled)
 			return;
 		if (!TryMouseDownPanOverride (document, args))
-			CurrentTool?.DoMouseDown (document, args);
+			CurrentTool?.DoMouseDown (document, ApplySnapping (args));
 	}
 
 	public void DoMouseMove (Document document, ToolMouseEventArgs args)
@@ -392,7 +392,7 @@ public sealed class ToolManager : IEnumerable<BaseTool>, IToolService
 		if (PintaCore.LivePreview.IsEnabled)
 			return;
 		if (!TryMouseMovePanOverride (document, args))
-			CurrentTool?.DoMouseMove (document, args);
+			CurrentTool?.DoMouseMove (document, ApplySnapping (args));
 	}
 
 	public void DoMouseUp (Document document, ToolMouseEventArgs args)
@@ -400,7 +400,24 @@ public sealed class ToolManager : IEnumerable<BaseTool>, IToolService
 		if (PintaCore.LivePreview.IsEnabled)
 			return;
 		if (!TryMouseUpPanOverride (document, args))
-			CurrentTool?.DoMouseUp (document, args);
+			CurrentTool?.DoMouseUp (document, ApplySnapping (args));
+	}
+
+	/// <summary>
+	/// Snaps the cursor position to the grid (or to ruler units when the grid is
+	/// hidden) for tools that opt in, so every snapping tool shares one rule.
+	/// </summary>
+	private ToolMouseEventArgs ApplySnapping (ToolMouseEventArgs args)
+	{
+		if (CurrentTool?.UseSnapping != true)
+			return args;
+
+		PointD snapped = PintaCore.CanvasGrid.SnapPoint (args.PointDouble);
+
+		if (snapped == args.PointDouble)
+			return args;
+
+		return args.WithPoint (snapped);
 	}
 
 	public bool DoKeyDown (Document document, ToolKeyEventArgs args)

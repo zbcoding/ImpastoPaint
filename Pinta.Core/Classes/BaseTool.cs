@@ -301,6 +301,13 @@ public abstract class BaseTool
 	/// Called when a key is pressed. Return 'true' if the key is handled, or
 	/// 'false' to allow other components to handle it.
 	/// </summary>
+	/// <summary>
+	/// Whether the canvas position handed to this tool should be snapped to the
+	/// grid / ruler units while snapping is enabled. Off for freehand tools,
+	/// whose strokes would otherwise be quantized into steps.
+	/// </summary>
+	public virtual bool UseSnapping => false;
+
 	protected virtual bool OnKeyDown (Document document, ToolKeyEventArgs e)
 		=> false;
 

@@ -35,6 +35,8 @@ namespace Pinta.Tools;
 
 public abstract class SelectTool : BaseTool
 {
+	public override bool UseSnapping => true;
+
 	private readonly IToolService tools;
 	private readonly IWorkspaceService workspace;
 

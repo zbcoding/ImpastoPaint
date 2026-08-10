@@ -52,7 +52,15 @@ public abstract class BaseTransformTool : BaseTool
 	private readonly RectangleHandle handle;
 	private readonly Gdk.Cursor rotate_cursor;
 	private bool is_handle_scaling = false;
+
+	// Impasto: snapping. The mouse position itself is snapped upstream (see
+	// UseSnapping), which is what grip resizing needs; a plain drag additionally
+	// aligns the content's own corner - or its center, while "c" is held - to the
+	// grid instead of preserving the grab offset.
+	private bool center_snap_held = false;
 	public override IEnumerable<IToolHandle> Handles => [handle];
+
+	public override bool UseSnapping => true;
 
 	// Live orientation of the moved content (issue #4): maps the axis-aligned
 	// reference rect (ref_rect, captured when the selection first attaches) onto
@@ -470,6 +478,7 @@ public abstract class BaseTransformTool : BaseTool
 			transform.Translate (-center.X, -center.Y);
 
 		} else {
+			(dx, dy) = SnapTranslation (dx, dy);
 			transform.Translate (dx, dy);
 		}
 
@@ -497,10 +506,33 @@ public abstract class BaseTransformTool : BaseTool
 		OnFinishTransform (document, final);
 	}
 
+	/// <summary>
+	/// Aligns a drag so the moved content lands on the grid, rather than moving
+	/// it by a snapped delta from wherever it was grabbed. The reference rect's
+	/// top-left corner is the anchor, or its center while "c" is held.
+	/// </summary>
+	private (double, double) SnapTranslation (double dx, double dy)
+	{
+		if (PintaCore.CanvasGrid.SnapStep is null)
+			return (dx, dy);
+
+		PointD anchor =
+			center_snap_held
+			? ref_rect.GetCenter ()
+			: new PointD (ref_rect.X, ref_rect.Y);
+
+		PointD snapped = PintaCore.CanvasGrid.SnapPoint (new (anchor.X + dx, anchor.Y + dy));
+
+		return (snapped.X - anchor.X, snapped.Y - anchor.Y);
+	}
+
 	protected override bool OnKeyDown (
 		Document document,
 		ToolKeyEventArgs e)
 	{
+		if (e.Key.ToUpper ().Value == Gdk.Constants.KEY_C)
+			center_snap_held = true;
+
 		if (using_mouse) // Don't handle the arrow keys while already interacting via the mouse.
 			return base.OnKeyDown (document, e);
 
@@ -560,6 +592,9 @@ public abstract class BaseTransformTool : BaseTool
 		Document document,
 		ToolKeyEventArgs e)
 	{
+		if (e.Key.ToUpper ().Value == Gdk.Constants.KEY_C)
+			center_snap_held = false;
+
 		// Clear nudge hint state when arrow key is released.
 		if (GetNudgeBinding (e.Gesture) is not null) {
 			ClearNudgeState ();

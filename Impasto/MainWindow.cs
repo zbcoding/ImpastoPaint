@@ -200,6 +200,7 @@ internal sealed class MainWindow
 			GetCanvasSurroundColor ());
 		canvas.RulersVisible = PintaCore.Actions.View.Rulers.Value;
 		canvas.RulerMetric = GetCurrentRulerMetric ();
+		PintaCore.CanvasGrid.RulerMetric = (int) GetCurrentRulerMetric ();
 		doc.Workspace.CanvasWindow = canvas;
 		doc.Workspace.Canvas = canvas.Canvas;
 
@@ -275,6 +276,7 @@ internal sealed class MainWindow
 		PintaCore.Actions.View.RulerMetric.OnActivate += (o, args) => {
 			PintaCore.Actions.View.RulerMetric.ChangeState (args.Parameter!);
 			canvas.RulerMetric = GetCurrentRulerMetric ();
+			PintaCore.CanvasGrid.RulerMetric = (int) GetCurrentRulerMetric ();
 		};
 	}
 

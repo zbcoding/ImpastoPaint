@@ -42,6 +42,7 @@ public sealed class ViewActions
 	public ToggleCommand ToolWindows { get; }
 	public Command EditCanvasGrid { get; }
 	public ToggleCommand ShowGrid { get; }
+	public ToggleCommand SnapToGrid { get; }
 	public ToggleCommand MenuBar { get; }
 	public ToggleCommand StatusBar { get; }
 	public ToggleCommand ToolBox { get; }
@@ -136,6 +137,14 @@ public sealed class ViewActions
 			null,
 			Resources.Icons.ViewGrid,
 			shortcuts: ["<Primary><Shift>G"]);
+
+		SnapToGrid = new ToggleCommand (
+			"SnapToGrid",
+			// Translators: Snaps tool input to the canvas grid, or to the ruler's
+			// unit marks when the grid is hidden.
+			Translations.GetString ("Snap to Grid"),
+			null,
+			Resources.Icons.ViewGrid);
 
 		MenuBar = new ToggleCommand (
 			"MenuBar",
@@ -253,6 +262,7 @@ public sealed class ViewActions
 		Gio.Menu grid_section = Gio.Menu.New ();
 		grid_section.AppendItem (ShowGrid.CreateMenuItem ());
 		grid_section.AppendItem (EditCanvasGrid.CreateMenuItem ());
+		grid_section.AppendItem (SnapToGrid.CreateMenuItem ());
 
 		Gio.Menu metric_menu = Gio.Menu.New ();
 		metric_menu.Append (Translations.GetString ("Pixels"), $"app.{RulerMetric.Name}(0)");
@@ -301,6 +311,7 @@ public sealed class ViewActions
 			Fullscreen,
 			EditCanvasGrid,
 			ShowGrid,
+			SnapToGrid,
 			Rulers,
 			MenuBar,
 			StatusBar,

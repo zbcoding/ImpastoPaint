@@ -83,4 +83,17 @@ public sealed class ToolMouseEventArgs : EventArgs
 	/// The cursor location in window coordinates.
 	/// </summary>
 	public PointD WindowPoint { get; init; }
+
+	/// <summary>
+	/// A copy of these arguments with the canvas position replaced, used to
+	/// apply grid snapping before the event reaches the tool.
+	/// </summary>
+	public ToolMouseEventArgs WithPoint (PointD point)
+		=> new () {
+			State = State,
+			MouseButton = MouseButton,
+			PointDouble = point,
+			RootPoint = RootPoint,
+			WindowPoint = WindowPoint,
+		};
 }

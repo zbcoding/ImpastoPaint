@@ -22,6 +22,9 @@ internal static class SettingNames
 	// Impasto: user-chosen grid line color (RRGGBBAA hex).
 	internal const string CANVAS_GRID_COLOR = "canvas-grid-color";
 
+	// Impasto: snap tool input to the grid, or to ruler units when the grid is hidden.
+	internal const string SNAP_TO_GRID = "snap-to-grid";
+
 	internal const string SHOW_CANVAS_AXONOMETRIC_GRID = "show-canvas-axonometric-grid";
 	internal const string CANVAS_AXONOMETRIC_WIDTH = "canvas-axonometric-grid-width";
 	internal const string CANVAS_AXONOMETRIC_ANGLE = "canvas-axonometric-grid-angle";

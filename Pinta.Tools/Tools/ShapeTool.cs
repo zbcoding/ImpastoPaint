@@ -32,6 +32,8 @@ namespace Pinta.Tools;
 
 public abstract class ShapeTool : BaseTool
 {
+	public override bool UseSnapping => true;
+
 	public override bool UsesPaintColors => true;
 
 	public abstract BaseEditEngine EditEngine { get; }

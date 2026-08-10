@@ -19,6 +19,8 @@ namespace Pinta.Tools;
 
 public sealed class TextTool : BaseTool
 {
+	public override bool UseSnapping => true;
+
 	// Variables for dragging
 	private PointD start_mouse_xy;
 	private PointI start_click_point;

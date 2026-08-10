@@ -313,6 +313,18 @@ public sealed class WorkspaceManager : IWorkspaceService
 	{
 		parent ??= chrome_manager.MainWindow;
 
+		// A missing file otherwise surfaces as the raw GLib error from the display name
+		// lookup below, which reads like a crash report. This is the common case for a
+		// stale recent-files entry, or a path the sandbox doesn't grant access to.
+		if (!file.QueryExists (null)) {
+			ShowOpenFileErrorDialog (
+				parent,
+				file.GetParseName (),
+				Translations.GetString ("The file no longer exists, or cannot be read."),
+				string.Empty);
+			return false;
+		}
+
 		try {
 			// Open the image and add it to the layers
 			IImageImporter? importer = image_formats.GetImporterByFile (file.GetDisplayName ());

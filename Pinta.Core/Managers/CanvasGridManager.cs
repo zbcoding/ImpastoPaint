@@ -45,6 +45,7 @@ public interface ICanvasGridService
 public sealed class CanvasGridManager : ICanvasGridService
 {
 	private readonly SettingsManager settings;
+	private readonly IWorkspaceService workspace;
 
 	private bool show_grid;
 	private int cell_width;
@@ -121,14 +122,49 @@ public sealed class CanvasGridManager : ICanvasGridService
 
 	public bool RulersVisible { get; set; }
 
+	/// <summary>
+	/// How close, in screen pixels, the cursor must be to a canvas guide for it
+	/// to snap. Regular spacings snap unconditionally; the canvas guides are
+	/// only three lines per axis, so they pull instead of quantizing.
+	/// </summary>
+	private const double CANVAS_GUIDE_TOLERANCE = 8.0;
+
 	public PointD SnapPoint (PointD point)
 	{
-		if (SnapStep is not PointD step)
+		if (!SnapEnabled)
 			return point;
 
+		if (SnapStep is PointD step)
+			return new (
+				Math.Round (point.X / step.X) * step.X,
+				Math.Round (point.Y / step.Y) * step.Y);
+
+		// Nothing regular to snap to, so fall back to the canvas itself: its
+		// edges and its two centre lines.
+		if (!workspace.HasOpenDocuments)
+			return point;
+
+		Size imageSize = workspace.ImageSize;
+		double tolerance = CANVAS_GUIDE_TOLERANCE / workspace.GetScale ();
+
 		return new (
-			Math.Round (point.X / step.X) * step.X,
-			Math.Round (point.Y / step.Y) * step.Y);
+			SnapToGuides (point.X, imageSize.Width, tolerance),
+			SnapToGuides (point.Y, imageSize.Height, tolerance));
+	}
+
+	private static double SnapToGuides (double value, double extent, double tolerance)
+	{
+		double nearest = value;
+		double bestDistance = tolerance;
+
+		foreach (double guide in new[] { 0.0, extent / 2.0, extent }) {
+			double distance = Math.Abs (value - guide);
+			if (distance >= bestDistance) continue;
+			bestDistance = distance;
+			nearest = guide;
+		}
+
+		return nearest;
 	}
 
 	public bool ShowAxonometricGrid {
@@ -149,6 +185,7 @@ public sealed class CanvasGridManager : ICanvasGridService
 	public CanvasGridManager (WorkspaceManager workspace, SettingsManager settings)
 	{
 		this.settings = settings;
+		this.workspace = workspace;
 
 		// Invalidate the workspace if the grid is changed to redraw the grid
 		SettingsChanged += (_, __) => {

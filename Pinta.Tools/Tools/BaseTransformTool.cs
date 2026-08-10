@@ -513,7 +513,7 @@ public abstract class BaseTransformTool : BaseTool
 	/// </summary>
 	private (double, double) SnapTranslation (double dx, double dy)
 	{
-		if (PintaCore.CanvasGrid.SnapStep is null)
+		if (!PintaCore.CanvasGrid.SnapEnabled)
 			return (dx, dy);
 
 		PointD anchor =

@@ -175,6 +175,14 @@ public sealed partial class Ruler
 		Color Color,
 		Gtk.Orientation Orientation);
 
+	private static double PixelsPerUnit (MetricType metric)
+		=> metric switch {
+			MetricType.Pixels => 1.0,
+			MetricType.Inches => 72,
+			MetricType.Centimeters => 28.35,
+			_ => throw new UnreachableException (),
+		};
+
 	private RulerDrawSettings CreateSettings (Size preliminarySize)
 	{
 		GetStyleContext ().GetColor (out Gdk.RGBA color);
@@ -216,12 +224,7 @@ public sealed partial class Ruler
 			_ => throw new UnreachableException (),
 		};
 
-		double pixels_per_unit = Metric switch {
-			MetricType.Pixels => 1.0,
-			MetricType.Inches => 72,
-			MetricType.Centimeters => 28.35,
-			_ => throw new UnreachableException (),
-		};
+		double pixels_per_unit = PixelsPerUnit (Metric);
 
 		// Find our scaled range.
 
@@ -283,6 +286,14 @@ public sealed partial class Ruler
 		}
 
 		RulerDrawSettings settings = CreateSettings (preliminarySize);
+
+		// Snapping to ruler ticks needs the spacing the ruler actually drew, which
+		// depends on the zoom, the metric and how wide the labels are.
+		double tickSize = settings.UnitsPerTick * PixelsPerUnit (Metric);
+		if (Orientation == Gtk.Orientation.Horizontal)
+			PintaCore.CanvasGrid.RulerTickWidth = tickSize;
+		else
+			PintaCore.CanvasGrid.RulerTickHeight = tickSize;
 
 		cached_surface ??= CreateBaseRuler (settings, preliminarySize);
 

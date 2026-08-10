@@ -52,6 +52,14 @@ public interface ICanvasGridService
 	int RulerMetric { get; set; }
 
 	/// <summary>
+	/// Spacing, in canvas pixels, between the tick marks the rulers last drew.
+	/// Set by the rulers themselves, since the spacing they pick depends on the
+	/// zoom and on how wide their labels are.
+	/// </summary>
+	double RulerTickWidth { get; set; }
+	double RulerTickHeight { get; set; }
+
+	/// <summary>
 	/// Whether the rulers are currently shown, which is what makes their tick
 	/// marks available as a snapping target.
 	/// </summary>
@@ -126,15 +134,17 @@ public sealed class CanvasGridManager : ICanvasGridService
 			if (!RulersVisible)
 				return null;
 
-			// Pixels / inches / centimeters, matching Ruler's MetricType order and
-			// its pixels-per-unit values. MetricType itself lives in the widgets
-			// assembly, which Core cannot reference.
+			// The rulers report the spacing of the ticks they drew. Before they
+			// have drawn, fall back to one unit of the current metric - pixels /
+			// inches / centimeters, matching Ruler's MetricType order.
 			double unit = ruler_metric switch {
 				1 => 72.0,
 				2 => 28.35,
 				_ => 1.0,
 			};
-			return new (unit, unit);
+			return new (
+				RulerTickWidth > 0 ? RulerTickWidth : unit,
+				RulerTickHeight > 0 ? RulerTickHeight : unit);
 		}
 	}
 
@@ -148,6 +158,9 @@ public sealed class CanvasGridManager : ICanvasGridService
 	private int ruler_metric;
 
 	public bool RulersVisible { get; set; }
+
+	public double RulerTickWidth { get; set; }
+	public double RulerTickHeight { get; set; }
 
 	/// <summary>
 	/// How close, in screen pixels, the cursor must be to a canvas guide for it

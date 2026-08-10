@@ -12,7 +12,8 @@ public interface ICanvasGridService
 	bool SnapEnabled { get; set; }
 
 	/// <summary>
-	/// Spacing that tool input snaps to, or null when snapping is off.
+	/// Spacing that tool input snaps to, or null when nothing to snap to is
+	/// visible.
 	/// </summary>
 	PointD? SnapStep { get; }
 
@@ -22,6 +23,12 @@ public interface ICanvasGridService
 	/// The ruler's metric, as the index used by the "rulermetric" action.
 	/// </summary>
 	int RulerMetric { get; set; }
+
+	/// <summary>
+	/// Whether the rulers are currently shown, which is what makes their tick
+	/// marks available as a snapping target.
+	/// </summary>
+	bool RulersVisible { get; set; }
 
 	bool ShowAxonometricGrid { get; set; }
 	int AxonometricWidth { get; set; }
@@ -76,7 +83,9 @@ public sealed class CanvasGridManager : ICanvasGridService
 
 	/// <summary>
 	/// Snap spacing in canvas pixels: the grid's cell size when the grid is
-	/// shown, otherwise one unit of the ruler's current metric.
+	/// shown, otherwise one unit of the ruler's current metric. Null when
+	/// neither the grid nor the rulers are on - there is nothing visible to
+	/// snap to, so snapping stays out of the way.
 	/// </summary>
 	public PointD? SnapStep {
 		get {
@@ -85,6 +94,9 @@ public sealed class CanvasGridManager : ICanvasGridService
 
 			if (ShowGrid)
 				return new (CellWidth, CellHeight);
+
+			if (!RulersVisible)
+				return null;
 
 			// Pixels / inches / centimeters, matching Ruler's MetricType order and
 			// its pixels-per-unit values. MetricType itself lives in the widgets
@@ -106,6 +118,8 @@ public sealed class CanvasGridManager : ICanvasGridService
 		set => ruler_metric = value;
 	}
 	private int ruler_metric;
+
+	public bool RulersVisible { get; set; }
 
 	public PointD SnapPoint (PointD point)
 	{

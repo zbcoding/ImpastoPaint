@@ -142,7 +142,7 @@ public sealed class ViewActions
 			"SnapToGrid",
 			// Translators: Snaps tool input to the canvas grid, or to the ruler's
 			// unit marks when the grid is hidden.
-			Translations.GetString ("Snap to Grid"),
+			Translations.GetString ("Snap to grid/ruler"),
 			null,
 			Resources.Icons.ViewGrid);
 

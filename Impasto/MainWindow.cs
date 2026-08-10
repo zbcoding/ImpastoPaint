@@ -199,6 +199,7 @@ internal sealed class MainWindow
 			PintaCore.CanvasGrid,
 			GetCanvasSurroundColor ());
 		canvas.RulersVisible = PintaCore.Actions.View.Rulers.Value;
+		PintaCore.CanvasGrid.RulersVisible = PintaCore.Actions.View.Rulers.Value;
 		canvas.RulerMetric = GetCurrentRulerMetric ();
 		PintaCore.CanvasGrid.RulerMetric = (int) GetCurrentRulerMetric ();
 		doc.Workspace.CanvasWindow = canvas;
@@ -272,7 +273,10 @@ internal sealed class MainWindow
 		WatchPageSize (view.Hadjustment!);
 		WatchPageSize (view.Vadjustment!);
 
-		PintaCore.Actions.View.Rulers.Toggled += (active, _) => { canvas.RulersVisible = active; };
+		PintaCore.Actions.View.Rulers.Toggled += (active, _) => {
+			canvas.RulersVisible = active;
+			PintaCore.CanvasGrid.RulersVisible = active;
+		};
 		PintaCore.Actions.View.RulerMetric.OnActivate += (o, args) => {
 			PintaCore.Actions.View.RulerMetric.ChangeState (args.Parameter!);
 			canvas.RulerMetric = GetCurrentRulerMetric ();

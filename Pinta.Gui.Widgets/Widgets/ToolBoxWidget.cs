@@ -47,6 +47,9 @@ public sealed partial class ToolBoxWidget
 	private readonly Dictionary<int[], ToolStack> tool_stacks = new ();
 	// Dummy ToggleButton to use for grouping together the tools' buttons.
 	private readonly Gtk.ToggleButton toggle_group = Gtk.ToggleButton.New ();
+	// The pinned copies group separately, so a pinned tool can light both its buttons - one
+	// group would force a choice. Activating this dummy leader turns the whole section off.
+	private readonly Gtk.ToggleButton pinned_toggle_group = Gtk.ToggleButton.New ();
 
 	private readonly Gtk.FlowBox[] sections = new Gtk.FlowBox[section_bounds.Length];
 	private readonly Gtk.Separator[] separators = new Gtk.Separator[section_bounds.Length - 1];
@@ -527,8 +530,13 @@ public sealed partial class ToolBoxWidget
 
 		if (pinned) {
 			Gtk.ToggleButton button = CreateToolButton (tool);
-			button.Group = toggle_group;
+			button.Group = pinned_toggle_group;
 			button.OnClicked += (_, _) => HandleToolButtonClicked (tool);
+
+			// Pinning the tool that's already selected has to light the new copy itself -
+			// nothing re-selects the tool on the way out of here.
+			if (tools.CurrentTool == tool)
+				button.Active = true;
 
 			// Right click a pinned button to unpin it again.
 			Gtk.GestureClick rightClick = Gtk.GestureClick.New ();
@@ -624,13 +632,15 @@ public sealed partial class ToolBoxWidget
 			SetStackTooltip (stack);
 		}
 
-		// ponytail: every button shares one toggle group, so exactly one can be lit. A pinned
-		// tool has two buttons; light the pinned one, since that's the copy the user asked for.
-		Gtk.ToggleButton toolButton = pinned_buttons.TryGetValue (tool, out Gtk.ToggleButton? pinnedButton)
-			? pinnedButton
-			: tool_buttons[tool];
+		// A pinned tool has two buttons and they group separately, so both light. For a stacked
+		// tool the first one is the shared stack button, which is the point - picking a member
+		// from the flyout has to light the stack it came from.
+		tool_buttons[tool].Active = true;
 
-		toolButton.Active = true;
+		if (pinned_buttons.TryGetValue (tool, out Gtk.ToggleButton? pinnedButton))
+			pinnedButton.Active = true;
+		else
+			pinned_toggle_group.Active = true; // No pinned copy: clear the section.
 	}
 
 	private void HandleToolRemoved (BaseTool tool)

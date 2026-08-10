@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <component type="desktop">
   <id>com.github.zbcoding.Impasto</id>
-  <!-- ponytail: no <replaces> — Impasto installs alongside Pinta, it does not supersede it. -->
+  <!-- No <replaces>: Impasto installs alongside Pinta, it does not supersede it. -->
   <metadata_license>CC0-1.0</metadata_license>
   <project_license>MIT</project_license>
   <name>Impasto</name>
@@ -20,7 +20,6 @@
   <launchable type="desktop-id">com.github.zbcoding.Impasto.desktop</launchable>
   <kudos>
     <kudo>HiDpiIcon</kudo>
-    <kudo>HighContrast</kudo>
   </kudos>
   <screenshots>
     <screenshot type="default">

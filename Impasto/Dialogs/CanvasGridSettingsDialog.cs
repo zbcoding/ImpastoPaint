@@ -13,6 +13,7 @@ public sealed partial class CanvasGridSettingsDialog
 	private Gtk.CheckButton show_grid_checkbox;
 	private Gtk.SpinButton grid_width_spinner;
 	private Gtk.SpinButton grid_height_spinner;
+	private Gtk.ColorDialogButton grid_color_button;
 	private Gtk.CheckButton show_axonometric_grid_checkbox;
 	private Gtk.SpinButton grid_axonometric_width_spinner;
 	private AnglePickerWidget grid_axonometric_angle_picker;
@@ -26,6 +27,7 @@ public sealed partial class CanvasGridSettingsDialog
 		dialog.show_grid_checkbox.Active = initialSettings.ShowGrid;
 		dialog.grid_width_spinner.Value = initialSettings.CellSize.Width;
 		dialog.grid_height_spinner.Value = initialSettings.CellSize.Height;
+		dialog.grid_color_button.SetRgba (initialSettings.GridColor.ToGdkRGBA ());
 		dialog.show_axonometric_grid_checkbox.Active = initialSettings.ShowAxonometricGrid;
 		dialog.grid_axonometric_angle_picker.Value = initialSettings.AxonometricAngle;
 		dialog.grid_axonometric_width_spinner.Value = initialSettings.AxonometricWidth;
@@ -38,6 +40,7 @@ public sealed partial class CanvasGridSettingsDialog
 	[MemberNotNull (nameof (show_grid_checkbox))]
 	[MemberNotNull (nameof (grid_width_spinner))]
 	[MemberNotNull (nameof (grid_height_spinner))]
+	[MemberNotNull (nameof (grid_color_button))]
 	[MemberNotNull (nameof (show_axonometric_grid_checkbox))]
 	[MemberNotNull (nameof (grid_axonometric_width_spinner))]
 	[MemberNotNull (nameof (grid_axonometric_angle_picker))]
@@ -63,6 +66,15 @@ public sealed partial class CanvasGridSettingsDialog
 			heightSpinner,
 			Gtk.SpinButton.SensitivePropertyDefinition.UnmanagedName,
 			GObject.BindingFlags.SyncCreate);
+
+		Gtk.ColorDialog colorDialog = Gtk.ColorDialog.New ();
+		colorDialog.WithAlpha = true;
+		Gtk.ColorDialogButton colorButton = Gtk.ColorDialogButton.New (colorDialog);
+		colorButton.Halign = Gtk.Align.Start;
+		colorButton.OnNotify += (_, args) => {
+			if (args.Pspec.GetName () == "rgba")
+				SettingsChanged (this, EventArgs.Empty);
+		};
 
 		Gtk.SpinButton axonometricWidthSpinner = Gtk.SpinButton.NewWithRange (1, int.MaxValue, 1);
 		axonometricWidthSpinner.OnValueChanged += SettingsChanged;
@@ -100,13 +112,16 @@ public sealed partial class CanvasGridSettingsDialog
 		grid.Attach (heightSpinner, 1, 2, 1, 1);
 		grid.Attach (Gtk.Label.New (Translations.GetString ("pixels")), 2, 2, 1, 1);
 
-		grid.Attach (showAxonometricGridCheckBox, 0, 3, 2, 1);
+		grid.Attach (CreateLabel (Translations.GetString ("Color:"), Gtk.Align.End), 0, 3, 1, 1);
+		grid.Attach (colorButton, 1, 3, 1, 1);
 
-		grid.Attach (CreateLabel (Translations.GetString ("Width:"), Gtk.Align.End), 0, 4, 1, 1);
-		grid.Attach (axonometricWidthSpinner, 1, 4, 1, 1);
-		grid.Attach (Gtk.Label.New (Translations.GetString ("pixels")), 2, 4, 1, 1);
+		grid.Attach (showAxonometricGridCheckBox, 0, 4, 2, 1);
 
-		grid.Attach (axonometricAnglePicker, 0, 5, 3, 1);
+		grid.Attach (CreateLabel (Translations.GetString ("Width:"), Gtk.Align.End), 0, 5, 1, 1);
+		grid.Attach (axonometricWidthSpinner, 1, 5, 1, 1);
+		grid.Attach (Gtk.Label.New (Translations.GetString ("pixels")), 2, 5, 1, 1);
+
+		grid.Attach (axonometricAnglePicker, 0, 6, 3, 1);
 
 		Gtk.Box mainVbox = Gtk.Box.New (Gtk.Orientation.Vertical, SPACING);
 		mainVbox.Append (grid);
@@ -133,6 +148,7 @@ public sealed partial class CanvasGridSettingsDialog
 		show_grid_checkbox = showGridCheckBox;
 		grid_width_spinner = widthSpinner;
 		grid_height_spinner = heightSpinner;
+		grid_color_button = colorButton;
 		show_axonometric_grid_checkbox = showAxonometricGridCheckBox;
 		grid_axonometric_width_spinner = axonometricWidthSpinner;
 		grid_axonometric_angle_picker = axonometricAnglePicker;
@@ -154,6 +170,7 @@ public sealed partial class CanvasGridSettingsDialog
 				grid_width_spinner.GetValueAsInt (),
 				grid_height_spinner.GetValueAsInt ()
 			),
+			grid_color_button.GetRgba ().ToCairoColor (),
 			grid_axonometric_width_spinner.GetValueAsInt (),
 			grid_axonometric_angle_picker.Value);
 
@@ -164,6 +181,7 @@ public sealed partial class CanvasGridSettingsDialog
 		bool ShowGrid,
 		bool ShowAxonometricGrid,
 		Size CellSize,
+		Cairo.Color GridColor,
 		int AxonometricWidth,
 		DegreesAngle AxonometricAngle);
 }

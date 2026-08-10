@@ -8,6 +8,7 @@ public interface ICanvasGridService
 	bool ShowGrid { get; set; }
 	int CellWidth { get; set; }
 	int CellHeight { get; set; }
+	Cairo.Color GridColor { get; set; }
 
 	bool ShowAxonometricGrid { get; set; }
 	int AxonometricWidth { get; set; }
@@ -28,6 +29,7 @@ public sealed class CanvasGridManager : ICanvasGridService
 	private bool show_grid;
 	private int cell_width;
 	private int cell_height;
+	private Cairo.Color grid_color;
 
 	private bool show_axonometric_grid;
 	private int axonometric_width;
@@ -46,6 +48,11 @@ public sealed class CanvasGridManager : ICanvasGridService
 	public int CellHeight {
 		get => cell_height;
 		set => SetProperty (ref cell_height, value);
+	}
+
+	public Cairo.Color GridColor {
+		get => grid_color;
+		set => SetProperty (ref grid_color, value);
 	}
 
 	public bool ShowAxonometricGrid {
@@ -80,6 +87,7 @@ public sealed class CanvasGridManager : ICanvasGridService
 		settings.PutSetting (SettingNames.SHOW_CANVAS_GRID, ShowGrid);
 		settings.PutSetting (SettingNames.CANVAS_GRID_WIDTH, CellWidth);
 		settings.PutSetting (SettingNames.CANVAS_GRID_HEIGHT, CellHeight);
+		settings.PutSetting (SettingNames.CANVAS_GRID_COLOR, GridColor.ToHex ());
 
 		settings.PutSetting (SettingNames.SHOW_CANVAS_AXONOMETRIC_GRID, ShowAxonometricGrid);
 		settings.PutSetting (SettingNames.CANVAS_AXONOMETRIC_WIDTH, AxonometricWidth);
@@ -91,6 +99,7 @@ public sealed class CanvasGridManager : ICanvasGridService
 		ShowGrid = settings.GetSetting (SettingNames.SHOW_CANVAS_GRID, false);
 		CellWidth = settings.GetSetting (SettingNames.CANVAS_GRID_WIDTH, 64);
 		CellHeight = settings.GetSetting (SettingNames.CANVAS_GRID_HEIGHT, 64);
+		GridColor = Cairo.Color.FromHex (settings.GetSetting (SettingNames.CANVAS_GRID_COLOR, string.Empty)) ?? new Cairo.Color (0, 0, 0);
 
 		ShowAxonometricGrid = settings.GetSetting (SettingNames.SHOW_CANVAS_AXONOMETRIC_GRID, false);
 		AxonometricWidth = settings.GetSetting (SettingNames.CANVAS_AXONOMETRIC_WIDTH, 64);

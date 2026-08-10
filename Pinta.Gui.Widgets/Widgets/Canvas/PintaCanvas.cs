@@ -338,8 +338,7 @@ internal sealed partial class PintaCanvas
 		Gsk.Stroke stroke = Gsk.Stroke.New (lineWidth: 1.0f / scale);
 		stroke.SetDash ([1.0f / scale, 1.0f / scale]);
 
-		Gdk.RGBA color = new () { Red = 0, Green = 0, Blue = 0, Alpha = 1 };
-		snapshot.AppendStroke (gridPath, stroke, color);
+		snapshot.AppendStroke (gridPath, stroke, canvas_grid.GridColor.ToGdkRGBA ());
 
 		snapshot.Restore ();
 		snapshot.Pop ();
@@ -405,8 +404,7 @@ internal sealed partial class PintaCanvas
 		Gsk.Stroke stroke = Gsk.Stroke.New (lineWidth: 1.0f / scale);
 		stroke.SetDash ([1.0f / scale, 1.0f / scale]);
 
-		Gdk.RGBA color = new () { Red = 0, Green = 0, Blue = 0, Alpha = 1 };
-		snapshot.AppendStroke (gridPath, stroke, color);
+		snapshot.AppendStroke (gridPath, stroke, canvas_grid.GridColor.ToGdkRGBA ());
 
 		snapshot.Restore ();
 		snapshot.Pop ();

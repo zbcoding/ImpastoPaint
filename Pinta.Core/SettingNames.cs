@@ -19,6 +19,9 @@ internal static class SettingNames
 	internal const string CANVAS_GRID_WIDTH = "canvas-grid-width";
 	internal const string CANVAS_GRID_HEIGHT = "canvas-grid-height";
 
+	// Impasto: user-chosen grid line color (RRGGBBAA hex).
+	internal const string CANVAS_GRID_COLOR = "canvas-grid-color";
+
 	internal const string SHOW_CANVAS_AXONOMETRIC_GRID = "show-canvas-axonometric-grid";
 	internal const string CANVAS_AXONOMETRIC_WIDTH = "canvas-axonometric-grid-width";
 	internal const string CANVAS_AXONOMETRIC_ANGLE = "canvas-axonometric-grid-angle";

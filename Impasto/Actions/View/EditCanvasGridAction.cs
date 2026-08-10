@@ -34,6 +34,7 @@ internal sealed class EditCanvasGridAction : IActionHandler
 		canvas_grid.ShowGrid = eventArgs.ShowGrid;
 		canvas_grid.CellWidth = eventArgs.CellSize.Width;
 		canvas_grid.CellHeight = eventArgs.CellSize.Height;
+		canvas_grid.GridColor = eventArgs.GridColor;
 		canvas_grid.ShowAxonometricGrid = eventArgs.ShowAxonometricGrid;
 		canvas_grid.AxonometricWidth = eventArgs.AxonometricWidth;
 		canvas_grid.AxonometricAngle = eventArgs.AxonometricAngle;
@@ -47,6 +48,7 @@ internal sealed class EditCanvasGridAction : IActionHandler
 			new (
 				canvas_grid.CellWidth,
 				canvas_grid.CellHeight),
+			canvas_grid.GridColor,
 			canvas_grid.AxonometricWidth,
 			canvas_grid.AxonometricAngle);
 
@@ -63,6 +65,7 @@ internal sealed class EditCanvasGridAction : IActionHandler
 				canvas_grid.ShowGrid = initialSettings.ShowGrid;
 				canvas_grid.CellWidth = initialSettings.CellSize.Width;
 				canvas_grid.CellHeight = initialSettings.CellSize.Height;
+				canvas_grid.GridColor = initialSettings.GridColor;
 
 				canvas_grid.ShowAxonometricGrid = initialSettings.ShowAxonometricGrid;
 				canvas_grid.AxonometricWidth = initialSettings.AxonometricWidth;

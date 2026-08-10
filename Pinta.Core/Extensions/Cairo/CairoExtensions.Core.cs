@@ -73,6 +73,12 @@ partial class CairoExtensions
 	}
 
 	/// <summary>
+	/// Largest width or height cairo/pixman can back with an image surface. Anything
+	/// beyond this yields an INVALID_SIZE surface with a null data pointer.
+	/// </summary>
+	public const int MaxImageDimension = 32767;
+
+	/// <summary>
 	/// Wrapper method to create an ImageSurface and handle allocation failures.
 	/// </summary>
 	public static ImageSurface CreateImageSurface (
@@ -84,6 +90,11 @@ partial class CairoExtensions
 
 		if (surf == null || surf.Status == Cairo.Status.NoMemory)
 			throw new OutOfMemoryException ("Unable to allocate memory for image");
+
+		// An oversized request comes back as INVALID_SIZE (not NoMemory) with no pixel data,
+		// which otherwise only blows up later when the surface is uploaded to a texture.
+		if (surf.Status != Cairo.Status.Success)
+			throw new InvalidOperationException ($"Unable to create a {width}x{height} image surface: {surf.Status}");
 
 		return surf;
 	}

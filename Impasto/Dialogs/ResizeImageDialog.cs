@@ -64,11 +64,11 @@ public sealed partial class ResizeImageDialog
 		percentageSpinner.OnValueChanged += percentageSpinner_ValueChanged;
 		percentageSpinner.SetActivatesDefaultImmediate (true);
 
-		Gtk.SpinButton widthSpinner = Gtk.SpinButton.NewWithRange (1, int.MaxValue, 1);
+		Gtk.SpinButton widthSpinner = Gtk.SpinButton.NewWithRange (1, CairoExtensions.MaxImageDimension, 1);
 		widthSpinner.OnValueChanged += widthSpinner_ValueChanged;
 		widthSpinner.SetActivatesDefaultImmediate (true);
 
-		Gtk.SpinButton heightSpinner = Gtk.SpinButton.NewWithRange (1, int.MaxValue, 1);
+		Gtk.SpinButton heightSpinner = Gtk.SpinButton.NewWithRange (1, CairoExtensions.MaxImageDimension, 1);
 		heightSpinner.OnValueChanged += heightSpinner_ValueChanged;
 		heightSpinner.SetActivatesDefaultImmediate (true);
 

@@ -80,14 +80,14 @@ public sealed partial class ResizeCanvasDialog
 		Gtk.Label widthLabel = Gtk.Label.New (Translations.GetString ("Width:"));
 		widthLabel.Halign = Gtk.Align.End;
 
-		Gtk.SpinButton widthSpinner = Gtk.SpinButton.NewWithRange (1, int.MaxValue, 1);
+		Gtk.SpinButton widthSpinner = Gtk.SpinButton.NewWithRange (1, CairoExtensions.MaxImageDimension, 1);
 		widthSpinner.OnValueChanged += widthSpinner_ValueChanged;
 		widthSpinner.SetActivatesDefaultImmediate (true);
 
 		Gtk.Label heightLabel = Gtk.Label.New (Translations.GetString ("Height:"));
 		heightLabel.Halign = Gtk.Align.End;
 
-		Gtk.SpinButton heightSpinner = Gtk.SpinButton.NewWithRange (1, int.MaxValue, 1);
+		Gtk.SpinButton heightSpinner = Gtk.SpinButton.NewWithRange (1, CairoExtensions.MaxImageDimension, 1);
 		heightSpinner.OnValueChanged += heightSpinner_ValueChanged;
 		heightSpinner.SetActivatesDefaultImmediate (true);
 

@@ -54,7 +54,9 @@ public sealed class MoveSelectionTool : BaseTransformTool
 		"\nUse arrow keys to move selection outline by a single pixel.",
 		system_manager.CtrlLabel ());
 
-	public override Gdk.Cursor DefaultCursor => Gdk.Cursor.NewFromTexture (Resources.GetIcon (Pinta.Resources.Icons.ToolMoveSelection), 0, 0, null);
+	// Rendered at 2x the default 16px with a centered hotspot, matching the
+	// move-pixels cross cursor.
+	public override Gdk.Cursor DefaultCursor => Gdk.Cursor.NewFromTexture (Resources.GetIcon (Pinta.Resources.Icons.ToolMoveSelection, 32), 16, 16, null);
 	public override Gdk.Key ShortcutKey => new (Gdk.Constants.KEY_M);
 	public override int Priority => 7;
 	public override bool IsSelectionTool => true;

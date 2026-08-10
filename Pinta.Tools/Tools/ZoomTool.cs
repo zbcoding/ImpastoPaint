@@ -49,8 +49,10 @@ public sealed class ZoomTool : BaseTool
 
 		cursor_zoom_in = GdkExtensions.CursorFromName (Pinta.Resources.StandardCursors.ZoomIn);
 		cursor_zoom_out = GdkExtensions.CursorFromName (Pinta.Resources.StandardCursors.ZoomOut);
-		cursor_zoom = Gdk.Cursor.NewFromTexture (Resources.GetIcon (Pinta.Resources.Icons.ToolZoom), 0, 0, null);
-		cursor_zoom_pan = Gdk.Cursor.NewFromTexture (Resources.GetIcon (Pinta.Resources.Icons.ToolPan), 0, 0, null);
+		// Rendered at 2x the default 16px with a centered hotspot, matching the
+		// move-pixels cross cursor.
+		cursor_zoom = Gdk.Cursor.NewFromTexture (Resources.GetIcon (Pinta.Resources.Icons.ToolZoom, 32), 16, 16, null);
+		cursor_zoom_pan = Gdk.Cursor.NewFromTexture (Resources.GetIcon (Pinta.Resources.Icons.ToolPan, 32), 16, 16, null);
 	}
 
 	public override string Name => Translations.GetString ("Zoom");

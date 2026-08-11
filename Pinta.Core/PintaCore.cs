@@ -45,6 +45,7 @@ public static partial class PintaCore
 	public static ToolManager Tools { get; }
 	public static WorkspaceManager Workspace { get; }
 	public static CanvasGridManager CanvasGrid { get; }
+	public static AutosaveManager Autosave { get; }
 
 	/// <summary>
 	/// Unique identifier for the application.
@@ -75,6 +76,7 @@ public static partial class PintaCore
 		EffectsManager effects = new (actions, chrome, livePreview);
 		CanvasGridManager canvasGrid = new (workspace, settings);
 		KeyboardShortcutManager shortcuts = new (actions, tools, chrome, settings);
+		AutosaveManager autosave = new (settings, workspace, imageFormats, chrome);
 
 		// --- Service manager
 
@@ -114,6 +116,7 @@ public static partial class PintaCore
 		Effects = effects;
 		CanvasGrid = canvasGrid;
 		Shortcuts = shortcuts;
+		Autosave = autosave;
 
 		Services = services;
 	}

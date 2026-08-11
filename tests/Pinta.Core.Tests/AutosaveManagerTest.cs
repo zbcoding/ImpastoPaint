@@ -1,0 +1,104 @@
+using System.IO;
+using System.IO.Compression;
+using System.Text;
+using NUnit.Framework;
+
+namespace Pinta.Core.Tests;
+
+/// <summary>
+/// Recovery only offers an autosave that it has checked, because the file it is most
+/// likely to find is one the crash interrupted halfway through being written. Handing
+/// such a file to the importer produces an exception where the user expects their work,
+/// so every case below must be rejected before the offer is made.
+/// </summary>
+[TestFixture]
+internal sealed class AutosaveManagerTest
+{
+	private string directory = null!;
+
+	[SetUp]
+	public void CreateWorkingDirectory ()
+	{
+		directory = Path.Combine (Path.GetTempPath (), Path.GetRandomFileName ());
+		Directory.CreateDirectory (directory);
+	}
+
+	[TearDown]
+	public void RemoveWorkingDirectory ()
+		=> Directory.Delete (directory, recursive: true);
+
+	[Test]
+	public void CompleteArchiveIsRecoverable ()
+	{
+		string path = WriteOra ("valid.ora", "image/openraster", includeStack: true);
+
+		Assert.That (AutosaveManager.Validate (path), Is.Null);
+	}
+
+	[Test]
+	public void MissingFileIsRejected ()
+		=> Assert.That (AutosaveManager.Validate (Path.Combine (directory, "absent.ora")), Is.Not.Null);
+
+	[Test]
+	public void EmptyFileIsRejected ()
+	{
+		// What a crash leaves when it hits between creating the file and writing it.
+		string path = Path.Combine (directory, "empty.ora");
+		File.WriteAllBytes (path, []);
+
+		Assert.That (AutosaveManager.Validate (path), Is.Not.Null);
+	}
+
+	[Test]
+	public void TruncatedArchiveIsRejected ()
+	{
+		// A partially flushed export: valid up to the point the process died.
+		string path = WriteOra ("truncated.ora", "image/openraster", includeStack: true);
+		byte[] complete = File.ReadAllBytes (path);
+		File.WriteAllBytes (path, complete[..(complete.Length / 2)]);
+
+		Assert.That (AutosaveManager.Validate (path), Is.Not.Null);
+	}
+
+	[Test]
+	public void ArchiveWithoutLayerInformationIsRejected ()
+	{
+		string path = WriteOra ("no-stack.ora", "image/openraster", includeStack: false);
+
+		Assert.That (AutosaveManager.Validate (path), Is.Not.Null);
+	}
+
+	[Test]
+	public void ArchiveOfAnotherFormatIsRejected ()
+	{
+		// Guards against a stray file in the autosave directory being opened as a document.
+		string path = WriteOra ("other.ora", "application/zip", includeStack: true);
+
+		Assert.That (AutosaveManager.Validate (path), Is.Not.Null);
+	}
+
+	private string WriteOra (string name, string mimetype, bool includeStack)
+	{
+		string path = Path.Combine (directory, name);
+
+		using (FileStream stream = File.Create (path))
+		using (ZipArchive archive = new (stream, ZipArchiveMode.Create)) {
+
+			WriteEntry (archive, "mimetype", mimetype);
+
+			if (includeStack)
+				WriteEntry (archive, "stack.xml", "<image w=\"1\" h=\"1\"><stack /></image>");
+
+			// Padding, so that halving the file leaves a plausible-looking prefix.
+			WriteEntry (archive, "data/layer0.png", new string ('x', 4096));
+		}
+
+		return path;
+	}
+
+	private static void WriteEntry (ZipArchive archive, string name, string content)
+	{
+		using Stream entry = archive.CreateEntry (name).Open ();
+		entry.Write (Encoding.UTF8.GetBytes (content));
+	}
+}

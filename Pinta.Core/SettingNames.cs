@@ -29,6 +29,10 @@ internal static class SettingNames
 	internal const string CANVAS_AXONOMETRIC_WIDTH = "canvas-axonometric-grid-width";
 	internal const string CANVAS_AXONOMETRIC_ANGLE = "canvas-axonometric-grid-angle";
 
+	// Impasto: periodically export open documents so a crash doesn't lose unsaved work.
+	internal const string AUTOSAVE_ENABLED = "autosave-enabled";
+	internal const string AUTOSAVE_INTERVAL = "autosave-interval";
+
 	internal const string PRIMARY_COLOR = "primary-color";
 	internal const string SECONDARY_COLOR = "secondary-color";
 	internal const string RECENT_COLORS = "recently-used-colors";

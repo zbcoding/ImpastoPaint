@@ -10,6 +10,15 @@ entries, is upstream Pinta work; the Impasto sections cover changes made in this
 
 Changes for the next release (0.0.2) go here.
 
+### Added
+
+- Open documents are now autosaved to the settings directory every minute (configurable via
+  the `autosave-enabled` and `autosave-interval` settings). Autosaves are cleared on a normal
+  quit, so on the next launch after a crash Impasto offers to reopen the work it saved.
+  Each autosave is checked before being offered, and one that the crash left incomplete is
+  reported rather than opened.
+  Based on Pinta PR #2189 by: colin-i
+
 ## Impasto - [0.0.1](https://github.com/zbcoding/ImpastoPaint/releases/tag/v0.0.1) - 2026-08-09
 
 First Impasto release, with added features, and started by forking Pinta 3.1.2.

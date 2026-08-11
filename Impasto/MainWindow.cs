@@ -139,6 +139,18 @@ internal sealed class MainWindow
 		DockNotebook notebook = canvas_pad.Notebook;
 		notebook.TabClosed += DockNotebook_TabClosed;
 		notebook.ActiveTabChanged += DockNotebook_ActiveTabChanged;
+
+		// Impasto: autosaves are cleared on a normal quit, so whatever is still on disk
+		// at startup belongs to a session that crashed - offer those back to the user.
+		PintaCore.Actions.App.BeforeQuit += delegate { PintaCore.Autosave.Stop (); };
+		PintaCore.Autosave.Start ();
+
+		// Deferred so the prompt lands on a built window, after any files named on the
+		// command line have been opened.
+		GLib.Functions.IdleAdd (GLib.Constants.PRIORITY_DEFAULT_IDLE, () => {
+			_ = AutosaveRecoveryDialog.PromptAsync (window_shell.Window, PintaCore.Autosave);
+			return false;
+		});
 	}
 
 	private void Workspace_DocumentClosed (object? sender, DocumentEventArgs e)

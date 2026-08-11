@@ -225,6 +225,7 @@ Pinta.Core/ImageFormats/PdnFormat.cs
 Pinta.Core/ImageFormats/TgaExporter.cs
 Pinta.Core/ImageFormats/WebPFormat.cs
 Pinta.Core/Managers/ActionManager.cs
+Pinta.Core/Managers/AutosaveManager.cs
 Pinta.Core/Managers/CanvasGridManager.cs
 Pinta.Core/Managers/ChromeManager.cs
 Pinta.Core/Managers/EffectsManager.cs
@@ -252,6 +253,7 @@ Pinta.Core/PintaCore.cs
 Pinta.Core/PopoverHintMode.cs
 Pinta.Core/SettingNames.cs
 Pinta.Core/Widgets/ToolBarDropDownButton.cs
+Pinta/Dialogs/AutosaveRecoveryDialog.cs
 Pinta/Dialogs/CanvasGridSettingsDialog.cs
 Pinta/Dialogs/ErrorDialog.cs
 Pinta/Dialogs/LayerPropertiesDialog.cs

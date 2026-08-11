@@ -79,7 +79,7 @@ public interface ICanvasGridService
 
 public sealed class CanvasGridManager : ICanvasGridService
 {
-	private readonly SettingsManager settings;
+	private readonly ISettingsService settings;
 	private readonly IWorkspaceService workspace;
 
 	private bool show_grid;
@@ -133,7 +133,9 @@ public sealed class CanvasGridManager : ICanvasGridService
 				return null;
 
 			if (ShowGrid)
-				return new (CellWidth, CellHeight);
+				return CellWidth > 0 && CellHeight > 0
+					? new (CellWidth, CellHeight)
+					: null;
 
 			if (!RulersVisible)
 				return null;
@@ -249,7 +251,7 @@ public sealed class CanvasGridManager : ICanvasGridService
 	/// </summary>
 	private PointD SnapToAxonometricLattice (PointD point)
 	{
-		double columnWidth = AxonometricWidth;
+		double columnWidth = Math.Max (1, AxonometricWidth);
 		double rowHeight = columnWidth * Math.Tan (AxonometricAngle.ToRadians ().Radians);
 
 		double column = Math.Round (point.X / columnWidth);
@@ -299,7 +301,7 @@ public sealed class CanvasGridManager : ICanvasGridService
 		set => SetProperty (ref axonometric_angle, value);
 	}
 
-	public CanvasGridManager (WorkspaceManager workspace, SettingsManager settings)
+	public CanvasGridManager (IWorkspaceService workspace, ISettingsService settings)
 	{
 		this.settings = settings;
 		this.workspace = workspace;
@@ -327,14 +329,19 @@ public sealed class CanvasGridManager : ICanvasGridService
 
 	public void LoadGridSettings ()
 	{
+		// Clamp the spacings to at least one pixel. A hand-edited or corrupt
+		// settings file could otherwise load a 0 here, which would make snapping
+		// divide by zero (NaN) and the grid-drawing loops spin forever.
+		const int MIN_SPACING = 1;
+
 		ShowGrid = settings.GetSetting (SettingNames.SHOW_CANVAS_GRID, false);
-		CellWidth = settings.GetSetting (SettingNames.CANVAS_GRID_WIDTH, 64);
-		CellHeight = settings.GetSetting (SettingNames.CANVAS_GRID_HEIGHT, 64);
+		CellWidth = Math.Max (MIN_SPACING, settings.GetSetting (SettingNames.CANVAS_GRID_WIDTH, 64));
+		CellHeight = Math.Max (MIN_SPACING, settings.GetSetting (SettingNames.CANVAS_GRID_HEIGHT, 64));
 		SnapEnabled = settings.GetSetting (SettingNames.SNAP_TO_GRID, false);
 		GridColor = Cairo.Color.FromHex (settings.GetSetting (SettingNames.CANVAS_GRID_COLOR, string.Empty)) ?? new Cairo.Color (0, 0, 0);
 
 		ShowAxonometricGrid = settings.GetSetting (SettingNames.SHOW_CANVAS_AXONOMETRIC_GRID, false);
-		AxonometricWidth = settings.GetSetting (SettingNames.CANVAS_AXONOMETRIC_WIDTH, 64);
+		AxonometricWidth = Math.Max (MIN_SPACING, settings.GetSetting (SettingNames.CANVAS_AXONOMETRIC_WIDTH, 64));
 		AxonometricAngle = new (settings.GetSetting<double> (SettingNames.CANVAS_AXONOMETRIC_ANGLE, 30));
 	}
 

@@ -6,6 +6,12 @@
 // startup is by definition the leftovers of a session that died - those are what the
 // recovery dialog offers.
 //
+// ponytail: the export itself runs on the main loop, so it is scheduled for a moment when
+// the user isn't interacting rather than being made interruptible. Ceiling: a document slow
+// enough to export that a stall is visible even from an idle start. Upgrade path is to
+// snapshot the layer surfaces on the main thread and encode off it, which needs the whole
+// document - objects and text engines included - to be safe to read from another thread.
+//
 // Based on Pinta PR #2189 by: colin-i
 
 using System;
@@ -62,6 +68,9 @@ public sealed class AutosaveManager
 	/// <summary>Longest a document may go without being autosaved.</summary>
 	private const int MAX_INTERVAL_SECONDS = 300;
 
+	/// <summary>How long to wait before looking again for a gap in the user's work.</summary>
+	private const uint RETRY_MILLISECONDS = 2000;
+
 	private readonly ChromeManager chrome;
 	private readonly ImageConverterManager image_formats;
 	private readonly SettingsManager settings;
@@ -85,6 +94,8 @@ public sealed class AutosaveManager
 	private int next_slot;
 
 	private uint timer_id;
+	private uint retry_timer_id;
+	private bool autosave_scheduled;
 
 	public AutosaveManager (
 		SettingsManager settings,
@@ -135,6 +146,11 @@ public sealed class AutosaveManager
 			timer_id = 0;
 		}
 
+		if (retry_timer_id != 0) {
+			GLib.Source.Remove (retry_timer_id);
+			retry_timer_id = 0;
+		}
+
 		document_slots.Clear ();
 		autosaved_states.Clear ();
 		next_autosave_times.Clear ();
@@ -150,6 +166,44 @@ public sealed class AutosaveManager
 
 	private bool OnTimerTick ()
 	{
+		// The interval only says autosaving is due. When it actually happens is decided by
+		// TryAutosave, which waits for a moment that won't interrupt the user.
+		ScheduleAutosave ();
+
+		return true;
+	}
+
+	/// <summary>
+	/// Queues an autosave attempt at a priority below input handling and drawing, so it
+	/// can only start once the main loop has nothing else to do.
+	/// </summary>
+	private void ScheduleAutosave ()
+	{
+		if (autosave_scheduled)
+			return;
+
+		autosave_scheduled = true;
+
+		GLib.Functions.IdleAdd (GLib.Constants.PRIORITY_LOW, TryAutosave);
+	}
+
+	private bool TryAutosave ()
+	{
+		autosave_scheduled = false;
+
+		// Exporting blocks the main loop for as long as it takes to write the file, so it
+		// must not begin in the middle of a brush stroke, a drag, or any other gesture.
+		// Strokes end, so this defers the work rather than skipping it.
+		if (IsPointerButtonHeld ()) {
+			retry_timer_id = GLib.Functions.TimeoutAdd (GLib.Constants.PRIORITY_LOW, RETRY_MILLISECONDS, () => {
+				retry_timer_id = 0;
+				ScheduleAutosave ();
+				return false;
+			});
+
+			return false;
+		}
+
 		// Autosaving must never be the thing that takes the app down - that is the whole
 		// point of the feature. Any failure is reported and the timer keeps running.
 		try {
@@ -158,7 +212,25 @@ public sealed class AutosaveManager
 			Console.Error.WriteLine ($"Autosave failed: {e}");
 		}
 
-		return true;
+		return false;
+	}
+
+	/// <summary>
+	/// Whether the user currently has a mouse button down. Asked of the seat rather than of
+	/// the active tool, so it holds for every tool and for drags on any part of the window.
+	/// </summary>
+	private bool IsPointerButtonHeld ()
+	{
+		const Gdk.ModifierType buttons =
+			Gdk.ModifierType.Button1Mask |
+			Gdk.ModifierType.Button2Mask |
+			Gdk.ModifierType.Button3Mask |
+			Gdk.ModifierType.Button4Mask |
+			Gdk.ModifierType.Button5Mask;
+
+		Gdk.Device? pointer = chrome.MainWindow.GetDisplay ().GetDefaultSeat ()?.GetPointer ();
+
+		return pointer is not null && (pointer.GetModifierState () & buttons) != 0;
 	}
 
 	private void AutosaveDirtyDocuments ()

@@ -237,7 +237,20 @@ public sealed class AutosaveManager
 			if (Path.GetFullPath (directory) == Path.GetFullPath (session_directory))
 				continue;
 
-			foreach (string image in Directory.EnumerateFiles (directory, "*" + IMAGE_EXTENSION))
+			// A failed export leaves its temporary file behind, and a session that never
+			// managed to autosave leaves nothing but the directory. Neither is recoverable
+			// and nothing else will ever remove them, so sweep them up on the way past.
+			foreach (string partial in Directory.EnumerateFiles (directory, "*" + PARTIAL_EXTENSION))
+				Delete (partial);
+
+			string[] images = Directory.GetFiles (directory, "*" + IMAGE_EXTENSION);
+
+			if (images.Length == 0) {
+				DeleteDirectoryIfEmpty (directory);
+				continue;
+			}
+
+			foreach (string image in images)
 				candidates.Add (Inspect (image));
 		}
 
@@ -252,9 +265,15 @@ public sealed class AutosaveManager
 		Delete (candidate.AutosavePath);
 		Delete (Path.ChangeExtension (candidate.AutosavePath, INFO_EXTENSION));
 
-		// The session directory is only ours to remove once nothing is left in it.
+		DeleteDirectoryIfEmpty (Path.GetDirectoryName (candidate.AutosavePath));
+	}
+
+	/// <summary>
+	/// Removes a finished session's directory. Only ours to remove once nothing is left in it.
+	/// </summary>
+	private static void DeleteDirectoryIfEmpty (string? directory)
+	{
 		try {
-			string? directory = Path.GetDirectoryName (candidate.AutosavePath);
 			if (directory is not null && !Directory.EnumerateFileSystemEntries (directory).Any ())
 				Directory.Delete (directory);
 		} catch (Exception e) {

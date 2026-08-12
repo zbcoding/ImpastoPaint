@@ -240,8 +240,20 @@ public abstract class BaseEditEngine
 
 	// Alt + left-drag on a control point spins the shape about its bounding box centre.
 	private bool rotating_whole_shape = false;
+	private bool rotate_modifier_down = false;
+	private readonly Gdk.Cursor rotate_cursor = CreateRotateCursor ();
 	private PointD shape_rotate_center;
 	private double last_rotate_angle;
+
+	private static KeyGesture RotateGesture
+		=> PintaCore.Shortcuts.GetToolBinding (KeyboardShortcutManager.ShapeRotate);
+
+	private static Gdk.Cursor CreateRotateCursor ()
+	{
+		// Reuse the same rotation icon the transform and text tools use.
+		Gdk.Texture texture = BaseTransformTool.LoadRotateTexture ();
+		return Gdk.Cursor.NewFromTexture (texture, texture.Width / 2, texture.Height / 2, null);
+	}
 
 	//Helps to keep track of the first modification on a shape after the mouse is clicked, to prevent unnecessary history items.
 	protected bool clicked_without_modifying = false;
@@ -1158,8 +1170,8 @@ public abstract class BaseEditEngine
 		clicked_without_modifying = clicked_control_point;
 
 		// Alt + left-drag on a control point rotates the whole shape instead of moving that point.
-		KeyGesture rotateGesture = PintaCore.Shortcuts.GetToolBinding (KeyboardShortcutManager.ShapeRotate);
-		if (!rightButton && IsSwitchGesturePressed (rotateGesture, e.State) && (clicked_control_point || clicked_generated_point)) {
+		rotate_modifier_down = IsSwitchGesturePressed (RotateGesture, e.State);
+		if (!rightButton && rotate_modifier_down && (clicked_control_point || clicked_generated_point)) {
 			SelectedShapeIndex = clicked_control_point ? closestCPShapeIndex : closestShapeIndex;
 
 			RectangleD bounds = ShapeBounds (SEngines[SelectedShapeIndex]);
@@ -1396,6 +1408,7 @@ public abstract class BaseEditEngine
 		bool shiftKey = e.IsShiftPressed;
 		KeyGesture switchGesture = PintaCore.Shortcuts.GetToolBinding (KeyboardShortcutManager.TriangleTypeSwitch);
 		triangle_switch_down = IsSwitchGesturePressed (switchGesture, e.State);
+		rotate_modifier_down = IsSwitchGesturePressed (RotateGesture, e.State);
 
 		if (!is_drawing) {
 			//Redraw the active shape to show a (temporary) highlighted control point (over any shape) when applicable.
@@ -2012,6 +2025,7 @@ public abstract class BaseEditEngine
 						+ Translations.GetString ("Shift-drag: snap the adjacent segment to a 15° angle.") + "\n"
 						+ Translations.GetString ("Right click + drag: move the whole shape.") + "\n"
 						+ Translations.GetString ("{0} + right drag: change tension.", tension) + "\n"
+						+ Translations.GetString ("{0} and drag: rotate the whole shape.", RotateGesture.ClickBindingLabel ()) + "\n"
 						+ Translations.GetString ("{0} + click: start a new shape here.", ctrl);
 				}
 			}
@@ -2045,9 +2059,13 @@ public abstract class BaseEditEngine
 		// Otherwise, the normal cursor is shown to indicate that a shape can be drawn.
 		var tool = tools.CurrentTool!;
 
-		if (!is_drawing && !ctrl_key && (hovering_control_point || hovering_segment)) {
+		if (rotating_whole_shape) {
+			tool.SetCursor (rotate_cursor);
+		} else if (!is_drawing && !ctrl_key && (hovering_control_point || hovering_segment)) {
 			// Grab on control points / for node-add; move when sides drag the whole shape.
-			if (hovering_segment && !curved_segments_enabled)
+			if (rotate_modifier_down)
+				tool.SetCursor (rotate_cursor);
+			else if (hovering_segment && !curved_segments_enabled)
 				tool.SetCursor (move_cursor);
 			else
 				tool.SetCursor (grab_cursor);

@@ -61,6 +61,35 @@ partial class GtkExtensions
 	}
 
 	/// <summary>
+	/// Renders a human-readable label for a "click" gesture (e.g. "Ctrl+Shift+Click"),
+	/// i.e. one whose key is a pointer button rather than a keyboard key.
+	/// </summary>
+	public static string ClickBindingLabel (this KeyGesture gesture)
+	{
+		if (!gesture.IsValid)
+			return Translations.GetString ("None");
+
+		System.Collections.Generic.List<string> parts = [];
+		Gdk.ModifierType m = gesture.Modifiers;
+
+		if (m.HasFlag (Gdk.ModifierType.ControlMask))
+			parts.Add ("Ctrl");
+
+		if (m.HasFlag (Gdk.ModifierType.ShiftMask))
+			parts.Add ("Shift");
+
+		if (m.HasFlag (Gdk.ModifierType.AltMask))
+			parts.Add ("Alt");
+
+		if (m.HasFlag (Gdk.ModifierType.SuperMask) || m.HasFlag (Gdk.ModifierType.MetaMask))
+			parts.Add ("Super");
+
+		parts.Add (Translations.GetString ("Click"));
+
+		return string.Join ("+", parts);
+	}
+
+	/// <summary>
 	/// Returns a friendly, layout-independent label for a modifier-key gesture (one whose Key is a
 	/// lone modifier key such as Left/Right Ctrl, Shift, or Alt — e.g. the SHAPE_TENSION switch).
 	/// Left modifiers render as their usual label ("Ctrl"/"Shift"/"Alt", platform-aware for Ctrl),

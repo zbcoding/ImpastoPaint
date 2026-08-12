@@ -53,7 +53,7 @@ public abstract class ShapeTool : BaseTool
 		get {
 			string ctrl = system_manager.CtrlLabel ();
 			string tension = PintaCore.Shortcuts.GetToolBinding (KeyboardShortcutManager.ShapeChangeTension).ModifierKeyLabel (system_manager);
-			string rotate = PintaCore.Shortcuts.GetToolBinding (KeyboardShortcutManager.ShapeRotate).ToLabel ();
+			string rotate = PintaCore.Shortcuts.GetToolBinding (KeyboardShortcutManager.ShapeRotate).ClickBindingLabel ();
 			return
 				// Translators: {0} is 'Ctrl', or a platform-specific key such as 'Command' on macOS. {1} is the tension modifier key. {2} is the rotate gesture.
 				Translations.GetString ("Left click to draw a shape with the primary color." +

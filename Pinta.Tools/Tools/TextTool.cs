@@ -1471,25 +1471,7 @@ public sealed class TextTool : BaseTool
 
 	//Renders a human-readable label for a "click" tool binding (e.g. "Ctrl+Shift+Click").
 	private static string ClickBindingLabel (ToolBindingDescriptor binding)
-	{
-		KeyGesture gesture = PintaCore.Shortcuts.GetToolBinding (binding);
-		if (!gesture.IsValid)
-			return Translations.GetString ("None");
-
-		List<string> parts = [];
-		Gdk.ModifierType m = gesture.Modifiers;
-		if (m.HasFlag (Gdk.ModifierType.ControlMask))
-			parts.Add ("Ctrl");
-		if (m.HasFlag (Gdk.ModifierType.ShiftMask))
-			parts.Add ("Shift");
-		if (m.HasFlag (Gdk.ModifierType.AltMask))
-			parts.Add ("Alt");
-		if (m.HasFlag (Gdk.ModifierType.SuperMask) || m.HasFlag (Gdk.ModifierType.MetaMask))
-			parts.Add ("Super");
-		parts.Add ("Click");
-
-		return string.Join ("+", parts);
-	}
+		=> PintaCore.Shortcuts.GetToolBinding (binding).ClickBindingLabel ();
 	#endregion
 
 	#region Keyboard Handlers

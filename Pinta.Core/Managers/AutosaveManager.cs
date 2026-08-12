@@ -379,8 +379,7 @@ public sealed class AutosaveManager
 		if (newest.Count <= MAX_RECOVERABLE)
 			return newest;
 
-		// Past the cap the oldest go, on the grounds that work abandoned through that many
-		// later crashes is work the user has already decided not to come back for.
+		// Delete the stale autosaves first, assume the user has decided not to come back for these
 		foreach (AutosaveCandidate stale in newest[MAX_RECOVERABLE..])
 			Discard (stale);
 

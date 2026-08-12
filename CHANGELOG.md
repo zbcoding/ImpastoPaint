@@ -19,6 +19,11 @@ Changes for the next release (0.0.2) go here.
   reported rather than opened.
   Based on Pinta PR #2189 by: colin-i
 
+### Fixed
+
+- Saving a document with shapes or text to `.ora` no longer fails with "Cannot access a closed
+  Stream"
+
 ## Impasto - [0.0.1](https://github.com/zbcoding/ImpastoPaint/releases/tag/v0.0.1) - 2026-08-09
 
 First Impasto release, with added features, and started by forking Pinta 3.1.2.

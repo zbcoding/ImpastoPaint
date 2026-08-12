@@ -271,10 +271,12 @@ public sealed class OraFormat : IImageImporter, IImageExporter
 			writer.WriteEndElement (); // impasto-text
 		}
 
-		ms.Position = 0;
+		// ToArray, not Position/CopyTo: disposing the writer above also closed the stream
+		// it was wrapping, and a closed MemoryStream can still be read this way.
+		byte[] textXml = ms.ToArray ();
 		ZipArchiveEntry textEntry = archive.CreateEntry (TEXT_ENTRY_PATH);
 		using Stream textStream = textEntry.Open ();
-		ms.CopyTo (textStream);
+		textStream.Write (textXml, 0, textXml.Length);
 	}
 
 	private static void AddShapeEntry (ZipArchive archive, Document document)
@@ -310,10 +312,11 @@ public sealed class OraFormat : IImageImporter, IImageExporter
 			writer.WriteEndElement ();
 		}
 
-		ms.Position = 0;
+		// See AddTextEntry: the writer closed this stream when it was disposed.
+		byte[] shapeXml = ms.ToArray ();
 		ZipArchiveEntry shapeEntry = archive.CreateEntry (SHAPE_ENTRY_PATH);
 		using Stream shapeStream = shapeEntry.Open ();
-		ms.CopyTo (shapeStream);
+		shapeStream.Write (shapeXml, 0, shapeXml.Length);
 	}
 
 	// The per-object sub-node properties every object kind shares (see ILayerObject), written and

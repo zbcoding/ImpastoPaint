@@ -10,6 +10,7 @@ in its own document under `docs/`:
 |---|---|
 | [fork-charter.md](docs/fork-charter.md) | Why the fork exists, the naming decision, and the ground rules that keep it rebasable against upstream |
 | [toolbox-layout.md](docs/toolbox-layout.md) | How tools are assigned to toolbox sections and stacks |
+| [ora-format.md](docs/ora-format.md) | What Impasto writes into an `.ora` file, and how re-editable objects are stored |
 
 Working notes for individual subsystems stay in `docs-private/`, which is untracked —
 they are scratch, not published documentation.

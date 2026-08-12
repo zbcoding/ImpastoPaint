@@ -507,23 +507,47 @@ public abstract class BaseTransformTool : BaseTool
 	}
 
 	/// <summary>
-	/// Aligns a drag so the moved content lands on the grid, rather than moving
-	/// it by a snapped delta from wherever it was grabbed. The reference rect's
-	/// top-left corner is the anchor, or its center while "c" is held.
+	/// Aligns a drag so the moved content itself lands on the grid or on the
+	/// canvas guides, rather than moving it by a snapped delta from wherever it
+	/// was grabbed. Against the canvas guides the whole box is offered, so a
+	/// drag settles into centered or edge-aligned on its own; on a grid or ruler
+	/// the anchor is the box's top-left corner, or its center while "c" is held.
 	/// </summary>
 	private (double, double) SnapTranslation (double dx, double dy)
 	{
 		if (!PintaCore.CanvasGrid.SnapEnabled)
 			return (dx, dy);
 
-		PointD anchor =
-			center_snap_held
-			? ref_rect.GetCenter ()
-			: new PointD (ref_rect.X, ref_rect.Y);
+		RectangleD bounds = CurrentBounds ();
 
-		PointD snapped = PintaCore.CanvasGrid.SnapPoint (new (anchor.X + dx, anchor.Y + dy));
+		PointD snapped = PintaCore.CanvasGrid.SnapRect (
+			new (new PointD (bounds.X + dx, bounds.Y + dy), bounds.Width, bounds.Height),
+			center_snap_held);
 
-		return (snapped.X - anchor.X, snapped.Y - anchor.Y);
+		return (snapped.X - bounds.X, snapped.Y - bounds.Y);
+	}
+
+	/// <summary>
+	/// Where the content sits on the canvas right now, as an axis-aligned box:
+	/// the reference rect placed through the live orientation. Rotated content
+	/// snaps by that box, which is what the guides are drawn against.
+	/// </summary>
+	private RectangleD CurrentBounds ()
+	{
+		PointD[] corners = [
+			live.TransformPoint (new (ref_rect.X, ref_rect.Y)),
+			live.TransformPoint (new (ref_rect.X + ref_rect.Width, ref_rect.Y)),
+			live.TransformPoint (new (ref_rect.X + ref_rect.Width, ref_rect.Y + ref_rect.Height)),
+			live.TransformPoint (new (ref_rect.X, ref_rect.Y + ref_rect.Height)),
+		];
+
+		double minX = corners.Min (c => c.X);
+		double minY = corners.Min (c => c.Y);
+
+		return new (
+			new PointD (minX, minY),
+			corners.Max (c => c.X) - minX,
+			corners.Max (c => c.Y) - minY);
 	}
 
 	protected override bool OnKeyDown (

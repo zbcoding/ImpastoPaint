@@ -141,4 +141,39 @@ internal sealed class CanvasGridManagerTest
 		Assert.That (result.X, Is.EqualTo (128));
 		Assert.That (result.Y, Is.EqualTo (96));
 	}
+
+	private static readonly SnapGuides[] horizontal_guides =
+		[SnapGuides.Left, SnapGuides.HorizontalCenter, SnapGuides.Right];
+
+	// The point of offering the whole box to the guides: a drag that is merely
+	// near centered lands exactly centered, which a corner-only anchor can't do.
+	[Test]
+	public void SnapExtentToGuides_CentersBox_WhenNearlyCentered ()
+	{
+		(double origin, SnapGuides guide) = CanvasGridManager.SnapExtentToGuides (
+			origin: 96, size: 100, extent: 300, tolerance: 8, horizontal_guides);
+
+		Assert.That (origin, Is.EqualTo (100));
+		Assert.That (guide, Is.EqualTo (SnapGuides.HorizontalCenter));
+	}
+
+	[Test]
+	public void SnapExtentToGuides_AlignsTrailingEdge_ToOppositeCanvasEdge ()
+	{
+		(double origin, SnapGuides guide) = CanvasGridManager.SnapExtentToGuides (
+			origin: 196, size: 100, extent: 300, tolerance: 8, horizontal_guides);
+
+		Assert.That (origin, Is.EqualTo (200));
+		Assert.That (guide, Is.EqualTo (SnapGuides.Right));
+	}
+
+	[Test]
+	public void SnapExtentToGuides_LeavesBoxAlone_WhenNoGuideIsWithinTolerance ()
+	{
+		(double origin, SnapGuides guide) = CanvasGridManager.SnapExtentToGuides (
+			origin: 60, size: 100, extent: 300, tolerance: 8, horizontal_guides);
+
+		Assert.That (origin, Is.EqualTo (60));
+		Assert.That (guide, Is.EqualTo (SnapGuides.None));
+	}
 }

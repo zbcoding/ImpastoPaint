@@ -36,6 +36,16 @@ public interface ICanvasGridService
 	PointD SnapPoint (PointD point);
 
 	/// <summary>
+	/// Snaps a whole object rather than a single point: with no grid or ruler to
+	/// quantize to, each of the box's edges and its centre line are offered to
+	/// the canvas guides and the nearest match within tolerance wins, so a drag
+	/// falls into centred or edge-aligned by itself. Returns the box's new
+	/// origin. <paramref name="centerAnchor"/> only picks which point the grid
+	/// and ruler path pins to the spacing.
+	/// </summary>
+	PointD SnapRect (RectangleD rect, bool centerAnchor);
+
+	/// <summary>
 	/// Which canvas guides the last snapped point landed on, so the canvas can
 	/// show them while they are holding the point.
 	/// </summary>
@@ -231,6 +241,85 @@ public sealed class CanvasGridManager : ICanvasGridService
 		ActiveGuides = xGuide | yGuide;
 
 		return new (x, y);
+	}
+
+	public PointD SnapRect (RectangleD rect, bool centerAnchor)
+	{
+		PointD origin = new (rect.X, rect.Y);
+		PointD half = new (rect.Width / 2.0, rect.Height / 2.0);
+
+		if (!SnapEnabled) {
+			ClearActiveGuides ();
+			return origin;
+		}
+
+		// A grid, the ruler ticks or the axonometric lattice all quantize, so
+		// there is one anchor to pin: the box's corner, or its centre.
+		if (AxonometricSnapActive || SnapStep is not null) {
+			if (!centerAnchor)
+				return SnapPoint (origin);
+
+			PointD center = SnapPoint (new (origin.X + half.X, origin.Y + half.Y));
+			return new (center.X - half.X, center.Y - half.Y);
+		}
+
+		if (!workspace.HasOpenDocuments) {
+			ClearActiveGuides ();
+			return origin;
+		}
+
+		Size imageSize = workspace.ImageSize;
+		double tolerance = CANVAS_GUIDE_TOLERANCE / workspace.GetScale ();
+
+		(double x, SnapGuides xGuide) = SnapExtentToGuides (
+			rect.X,
+			rect.Width,
+			imageSize.Width,
+			tolerance,
+			[SnapGuides.Left, SnapGuides.HorizontalCenter, SnapGuides.Right]);
+
+		(double y, SnapGuides yGuide) = SnapExtentToGuides (
+			rect.Y,
+			rect.Height,
+			imageSize.Height,
+			tolerance,
+			[SnapGuides.Top, SnapGuides.VerticalCenter, SnapGuides.Bottom]);
+
+		ActiveGuides = xGuide | yGuide;
+
+		return new (x, y);
+	}
+
+	/// <summary>
+	/// Along one axis, tries the box's leading edge, centre and trailing edge
+	/// against each canvas guide and returns the origin that lands the closest
+	/// pair together, plus the guide it landed on.
+	/// </summary>
+	internal static (double, SnapGuides) SnapExtentToGuides (
+		double origin,
+		double size,
+		double extent,
+		double tolerance,
+		SnapGuides[] names)
+	{
+		double[] guides = [0.0, extent / 2.0, extent];
+		double[] offsets = [0.0, size / 2.0, size];
+
+		double nearest = origin;
+		SnapGuides nearestGuide = SnapGuides.None;
+		double bestDistance = tolerance;
+
+		for (int g = 0; g < guides.Length; ++g) {
+			foreach (double offset in offsets) {
+				double distance = Math.Abs (origin + offset - guides[g]);
+				if (distance >= bestDistance) continue;
+				bestDistance = distance;
+				nearest = guides[g] - offset;
+				nearestGuide = names[g];
+			}
+		}
+
+		return (nearest, nearestGuide);
 	}
 
 	/// <summary>

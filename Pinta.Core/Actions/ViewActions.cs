@@ -140,9 +140,10 @@ public sealed class ViewActions
 
 		SnapToGrid = new ToggleCommand (
 			"SnapToGrid",
-			// Translators: Snaps tool input to the canvas grid, or to the ruler's
-			// unit marks when the grid is hidden.
-			Translations.GetString ("Snap to grid/ruler"),
+			// Translators: Snaps tool input to the canvas grid, to the ruler's unit
+			// marks when the grid is hidden, or to the canvas edges and centre
+			// lines when neither is shown.
+			Translations.GetString ("Snap to grid/ruler/center"),
 			null,
 			Resources.Icons.ViewGrid);
 

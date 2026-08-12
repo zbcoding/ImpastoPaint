@@ -74,6 +74,15 @@ public sealed class ToolMouseEventArgs : EventArgs
 	public PointD PointDouble { get; init; }
 
 	/// <summary>
+	/// Where the cursor was before snapping moved it, when it did. A gesture
+	/// that snaps the dragged object's own bounds wants the raw cursor, so that
+	/// the cursor's snap doesn't pull the object a second time.
+	/// </summary>
+	public PointD? SnappedFrom { get; init; }
+
+	public PointD UnsnappedPointDouble => SnappedFrom ?? PointDouble;
+
+	/// <summary>
 	/// The cursor location in the root canvas window.
 	/// Unlike WindowPoint, this is outside the scroll area and remains the same while scrolling.
 	/// </summary>
@@ -93,6 +102,7 @@ public sealed class ToolMouseEventArgs : EventArgs
 			State = State,
 			MouseButton = MouseButton,
 			PointDouble = point,
+			SnappedFrom = PointDouble,
 			RootPoint = RootPoint,
 			WindowPoint = WindowPoint,
 		};

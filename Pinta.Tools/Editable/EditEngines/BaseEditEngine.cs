@@ -231,6 +231,13 @@ public abstract class BaseEditEngine
 	private bool moving_whole_shape = false;
 	private PointD last_shape_move_point;
 
+	// Where the whole-shape drag was grabbed, and where the shape's bounding box
+	// sat at that moment. The drag is tracked against these rather than frame to
+	// frame, so a snapped shape stays pinned to its guide while the cursor moves
+	// inside the snap tolerance, and comes off it cleanly afterwards.
+	private PointD shape_move_grab_point;
+	private RectangleD shape_move_start_bounds;
+
 	//Helps to keep track of the first modification on a shape after the mouse is clicked, to prevent unnecessary history items.
 	protected bool clicked_without_modifying = false;
 
@@ -1155,6 +1162,7 @@ public abstract class BaseEditEngine
 				SelectedShapeIndex = hitShapeIndex;
 				moving_whole_shape = true;
 				last_shape_move_point = current_point;
+				BeginWholeShapeMove (e);
 				clicked_without_modifying = true;
 			} else {
 				// Right click missed the shape: don't let the drag fall through to the
@@ -1214,6 +1222,7 @@ public abstract class BaseEditEngine
 				SelectedPointIndex = 0;
 				moving_whole_shape = true;
 				last_shape_move_point = current_point;
+				BeginWholeShapeMove (e);
 				clicked_without_modifying = true;
 			} else {
 				SelectedPointIndex = closestPointIndex;
@@ -1296,6 +1305,59 @@ public abstract class BaseEditEngine
 		DrawActiveShape (false, false, true, shiftKey, false, e.IsControlPressed);
 	}
 
+	private void BeginWholeShapeMove (ToolMouseEventArgs e)
+	{
+		shape_move_grab_point = e.UnsnappedPointDouble;
+		last_shape_move_point = shape_move_grab_point;
+		shape_move_start_bounds = ActiveShapeEngine is null
+			? default
+			: ShapeBounds (ActiveShapeEngine);
+	}
+
+	/// <summary>
+	/// How far to move the whole shape this frame: the drag puts its bounding
+	/// box at grab-relative position, and snapping then aligns that box - its
+	/// edges or its centre lines - rather than the cursor alone.
+	/// </summary>
+	private (double dx, double dy) SnapWholeShapeMove (ShapeEngine engine, PointD dragPoint)
+	{
+		RectangleD current = ShapeBounds (engine);
+
+		double dx = dragPoint.X - shape_move_grab_point.X;
+		double dy = dragPoint.Y - shape_move_grab_point.Y;
+
+		PointD wanted = new (shape_move_start_bounds.X + dx, shape_move_start_bounds.Y + dy);
+
+		if (!PintaCore.CanvasGrid.SnapEnabled)
+			return (wanted.X - current.X, wanted.Y - current.Y);
+
+		PointD snapped = PintaCore.CanvasGrid.SnapRect (
+			new RectangleD (wanted, shape_move_start_bounds.Width, shape_move_start_bounds.Height),
+			centerAnchor: false);
+
+		return (snapped.X - current.X, snapped.Y - current.Y);
+	}
+
+	/// <summary>
+	/// The shape's bounding box, taken from its control points. For a curve
+	/// that bulges past its control points this is a little tight, which only
+	/// shifts where the shape lands by that overshoot.
+	/// ponytail: flatten the curve for an exact box if that ever shows.
+	/// </summary>
+	private static RectangleD ShapeBounds (ShapeEngine engine)
+	{
+		if (engine.ControlPoints.Count == 0)
+			return default;
+
+		double minX = engine.ControlPoints.Min (cp => cp.Position.X);
+		double minY = engine.ControlPoints.Min (cp => cp.Position.Y);
+
+		return new (
+			new PointD (minX, minY),
+			engine.ControlPoints.Max (cp => cp.Position.X) - minX,
+			engine.ControlPoints.Max (cp => cp.Position.Y) - minY);
+	}
+
 	public virtual void HandleMouseUp (Document document, ToolMouseEventArgs e)
 	{
 		is_drawing = false;
@@ -1335,14 +1397,15 @@ public abstract class BaseEditEngine
 				clicked_without_modifying = false;
 			}
 
-			double dx = current_point.X - last_shape_move_point.X;
-			double dy = current_point.Y - last_shape_move_point.Y;
+			PointD dragPoint = doc.ClampToImageSize (e.UnsnappedPointDouble);
+
+			(double dx, double dy) = SnapWholeShapeMove (ActiveShapeEngine, dragPoint);
 
 			if (dx != 0d || dy != 0d) {
 				foreach (ControlPoint cp in ActiveShapeEngine.ControlPoints)
 					cp.Position = new PointD (cp.Position.X + dx, cp.Position.Y + dy);
 
-				last_shape_move_point = current_point;
+				last_shape_move_point = dragPoint;
 			}
 
 			DrawActiveShape (false, false, true, shiftKey, false, e.IsControlPressed);

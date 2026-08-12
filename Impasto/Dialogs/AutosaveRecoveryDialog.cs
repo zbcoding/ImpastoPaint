@@ -53,7 +53,10 @@ internal static class AutosaveRecoveryDialog
 		}
 
 		Gtk.ScrolledWindow scroll = Gtk.ScrolledWindow.New ();
-		scroll.HeightRequest = Math.Min (300, 60 * candidates.Count);
+
+		// Tall enough for a wrapped description to be read in full: a long original path,
+		// or the reason a damaged autosave can't be opened, runs to several lines.
+		scroll.HeightRequest = Math.Clamp (100 * candidates.Count, 150, 400);
 		scroll.SetChild (list);
 
 		using Adw.MessageDialog dialog = Adw.MessageDialog.New (

@@ -17,6 +17,8 @@ Changes for the next release (0.0.2) go here.
   quit, so on the next launch after a crash Impasto offers to reopen the work it saved.
   Each autosave is checked before being offered, and one that the crash left incomplete is
   reported rather than opened.
+  A document that is slow to export is autosaved less often - up to every five minutes -
+  rather than stalling the interface every interval or being skipped for its size.
   Based on Pinta PR #2189 by: colin-i
 
 ### Fixed

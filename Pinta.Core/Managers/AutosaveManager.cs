@@ -52,6 +52,16 @@ public sealed class AutosaveManager
 	// truncated file that looks recoverable.
 	private const string PARTIAL_EXTENSION = ".part";
 
+	/// <summary>
+	/// Share of wall-clock time a document may spend being autosaved. Exporting blocks the
+	/// UI, so an expensive document waits proportionally longer between autosaves rather
+	/// than stalling the app every interval - or, worse, being skipped for its size.
+	/// </summary>
+	private const int EXPORT_DUTY_DIVISOR = 50;
+
+	/// <summary>Longest a document may go without being autosaved.</summary>
+	private const int MAX_INTERVAL_SECONDS = 300;
+
 	private readonly ChromeManager chrome;
 	private readonly ImageConverterManager image_formats;
 	private readonly SettingsManager settings;
@@ -68,6 +78,10 @@ public sealed class AutosaveManager
 	// being re-exported every tick, and unlike a dirty flag it also notices undo and redo.
 	private readonly Dictionary<Document, int> document_slots = [];
 	private readonly Dictionary<Document, (int Pointer, int Count)> autosaved_states = [];
+
+	// When each document is next allowed to be autosaved, from how long its last export took.
+	private readonly Dictionary<Document, DateTime> next_autosave_times = [];
+
 	private int next_slot;
 
 	private uint timer_id;
@@ -123,6 +137,7 @@ public sealed class AutosaveManager
 
 		document_slots.Clear ();
 		autosaved_states.Clear ();
+		next_autosave_times.Clear ();
 
 		try {
 			if (Directory.Exists (session_directory))
@@ -164,6 +179,10 @@ public sealed class AutosaveManager
 			if (autosaved_states.TryGetValue (document, out var previous) && previous == state)
 				continue;
 
+			// A document that is slow to export is autosaved less often, never not at all.
+			if (next_autosave_times.TryGetValue (document, out DateTime due) && DateTime.UtcNow < due)
+				continue;
+
 			// A document sitting at its initial state has nothing worth recovering.
 			if (!document.IsDirty) {
 				autosaved_states[document] = state;
@@ -188,14 +207,35 @@ public sealed class AutosaveManager
 		string imagePath = Path.Combine (session_directory, $"{slot}{IMAGE_EXTENSION}");
 		string partialPath = imagePath + PARTIAL_EXTENSION;
 
+		System.Diagnostics.Stopwatch elapsed = System.Diagnostics.Stopwatch.StartNew ();
+
 		exporter.Export (document, Gio.FileHelper.NewForPath (partialPath), chrome.MainWindow);
 
 		File.Move (partialPath, imagePath, overwrite: true);
+
+		elapsed.Stop ();
+
+		next_autosave_times[document] = DateTime.UtcNow.AddSeconds (
+			NextIntervalSeconds (elapsed.Elapsed.TotalSeconds, IntervalSeconds));
 
 		// Written after the image so that an info file always describes a complete image.
 		File.WriteAllLines (
 			Path.Combine (session_directory, $"{slot}{INFO_EXTENSION}"),
 			[document.DisplayName, document.File?.GetUri () ?? string.Empty]);
+	}
+
+	/// <summary>
+	/// How long to wait before autosaving a document again, given how long its last export
+	/// took. Never shorter than the configured interval, never longer than five minutes.
+	/// </summary>
+	internal static int NextIntervalSeconds (double exportSeconds, int configuredSeconds)
+	{
+		int proportional = (int) Math.Ceiling (exportSeconds * EXPORT_DUTY_DIVISOR);
+
+		// A configured interval longer than the cap is the user's call, so it wins.
+		int longest = Math.Max (configuredSeconds, MAX_INTERVAL_SECONDS);
+
+		return Math.Clamp (proportional, configuredSeconds, longest);
 	}
 
 	private void Forget (Document document)
@@ -207,6 +247,7 @@ public sealed class AutosaveManager
 
 		document_slots.Remove (document);
 		autosaved_states.Remove (document);
+		next_autosave_times.Remove (document);
 	}
 
 	private static void Delete (string path)

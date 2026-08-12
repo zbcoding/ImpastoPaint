@@ -77,6 +77,26 @@ internal sealed class AutosaveManagerTest
 		Assert.That (AutosaveManager.Validate (path), Is.Not.Null);
 	}
 
+	/// <summary>
+	/// Exporting blocks the UI, so the interval stretches with what the last export cost.
+	/// A big painting is the one a user can least afford to lose, so it is never dropped
+	/// for its size - it just waits longer, up to the cap.
+	/// </summary>
+	[TestCase (0.01, 60, 60)]   // cheap document: the configured interval is the floor
+	[TestCase (1.2, 60, 60)]    // still under the duty budget at 60s
+	[TestCase (4.0, 60, 200)]   // 4s per export earns a ~3.3 minute wait
+	[TestCase (30.0, 60, 300)]  // pathological document: capped, not abandoned
+	public void IntervalStretchesWithExportCost (double exportSeconds, int configured, int expected)
+		=> Assert.That (AutosaveManager.NextIntervalSeconds (exportSeconds, configured), Is.EqualTo (expected));
+
+	[Test]
+	public void ConfiguredIntervalBeyondTheCapIsHonoured ()
+	{
+		// The cap bounds what the adaptive backoff may impose, not what the user may ask for.
+		Assert.That (AutosaveManager.NextIntervalSeconds (0.01, 900), Is.EqualTo (900));
+		Assert.That (AutosaveManager.NextIntervalSeconds (30.0, 900), Is.EqualTo (900));
+	}
+
 	private string WriteOra (string name, string mimetype, bool includeStack)
 	{
 		string path = Path.Combine (directory, name);

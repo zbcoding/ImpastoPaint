@@ -12,11 +12,12 @@ Changes for the next release (0.0.2) go here.
 
 ### Added
 
-- Open documents are now autosaved to the settings directory every minute (configurable via
+- Open documents are now autosaved to `~/.config/Impasto/autosave` every minute (configurable via
   the `autosave-enabled` and `autosave-interval` settings). Autosaves are cleared on a normal
   quit, so on the next launch after a crash Impasto offers to reopen the work it saved.
   Each autosave is checked before being offered, and one that the crash left incomplete is
-  reported rather than opened.
+  reported rather than opened. Each open document keeps a single autosave file that is
+  overwritten in place, and at most ten unrecovered autosaves are kept.
   Autosaving waits for a gap in the user's work: it never begins while a mouse button is
   held, and only runs once the interface has nothing else to do. A document that is slow to
   export is then autosaved less often - up to every five minutes - rather than stalling the

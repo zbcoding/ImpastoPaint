@@ -1,7 +1,8 @@
 # Impasto's OpenRaster files
 
 `.ora` is Impasto's only lossless format: it is what Save produces for a layered
-document, and what [autosave](../Pinta.Core/Managers/AutosaveManager.cs) writes. It is a
+document, and what [autosave](../Pinta.Core/Managers/AutosaveManager.cs) writes to
+`~/.config/Impasto/autosave/<pid>/`. It is a
 ZIP archive following the [OpenRaster spec](https://www.openraster.org/), plus two extra
 entries that carry the re-editable objects the spec has no place for.
 

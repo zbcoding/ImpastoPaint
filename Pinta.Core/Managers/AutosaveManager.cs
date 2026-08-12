@@ -71,6 +71,13 @@ public sealed class AutosaveManager
 	/// <summary>How long to wait before looking again for a gap in the user's work.</summary>
 	private const uint RETRY_MILLISECONDS = 2000;
 
+	/// <summary>
+	/// How many autosaves may wait to be recovered. A session that crashes leaves its
+	/// documents behind until they are recovered or discarded, and dismissing the prompt
+	/// keeps them - so without a cap, repeated crashes accumulate without bound.
+	/// </summary>
+	private const int MAX_RECOVERABLE = 10;
+
 	private readonly ChromeManager chrome;
 	private readonly ImageConverterManager image_formats;
 	private readonly SettingsManager settings;
@@ -367,7 +374,17 @@ public sealed class AutosaveManager
 				candidates.Add (Inspect (image));
 		}
 
-		return candidates.OrderByDescending (c => c.Timestamp).ToList ();
+		List<AutosaveCandidate> newest = candidates.OrderByDescending (c => c.Timestamp).ToList ();
+
+		if (newest.Count <= MAX_RECOVERABLE)
+			return newest;
+
+		// Past the cap the oldest go, on the grounds that work abandoned through that many
+		// later crashes is work the user has already decided not to come back for.
+		foreach (AutosaveCandidate stale in newest[MAX_RECOVERABLE..])
+			Discard (stale);
+
+		return newest[..MAX_RECOVERABLE];
 	}
 
 	/// <summary>

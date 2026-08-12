@@ -326,6 +326,12 @@ public sealed class KeyboardShortcutManager
 		Translations.GetString ("Change control point tension while dragging"),
 		new KeyGesture (new Gdk.Key (Gdk.Constants.KEY_Control_L)));
 
+	public static readonly ToolBindingDescriptor ShapeRotate = new (
+		"ShapeTool.Rotate",
+		Translations.GetString ("Shape Tools"),
+		Translations.GetString ("Rotate shape (drag a control point)"),
+		new KeyGesture (new Gdk.Key (Gdk.Constants.KEY_Pointer_Button1), Gdk.ModifierType.AltMask));
+
 	public static readonly ToolBindingDescriptor TriangleTypeSwitch = new (
 		"TriangleTool.TypeSwitch",
 		Translations.GetString ("Triangle Tool"),
@@ -482,6 +488,7 @@ public sealed class KeyboardShortcutManager
 		ShapeSelectNextPoint,
 		ShapeCreateNewAtPoint,
 		ShapeChangeTension,
+		ShapeRotate,
 		TriangleTypeSwitch,
 		TransformNudgeLeft,
 		TransformNudgeRight,

@@ -238,6 +238,11 @@ public abstract class BaseEditEngine
 	private PointD shape_move_grab_point;
 	private RectangleD shape_move_start_bounds;
 
+	// Alt + left-drag on a control point spins the shape about its bounding box centre.
+	private bool rotating_whole_shape = false;
+	private PointD shape_rotate_center;
+	private double last_rotate_angle;
+
 	//Helps to keep track of the first modification on a shape after the mouse is clicked, to prevent unnecessary history items.
 	protected bool clicked_without_modifying = false;
 
@@ -1152,6 +1157,21 @@ public abstract class BaseEditEngine
 
 		clicked_without_modifying = clicked_control_point;
 
+		// Alt + left-drag on a control point rotates the whole shape instead of moving that point.
+		KeyGesture rotateGesture = PintaCore.Shortcuts.GetToolBinding (KeyboardShortcutManager.ShapeRotate);
+		if (!rightButton && IsSwitchGesturePressed (rotateGesture, e.State) && (clicked_control_point || clicked_generated_point)) {
+			SelectedShapeIndex = clicked_control_point ? closestCPShapeIndex : closestShapeIndex;
+
+			RectangleD bounds = ShapeBounds (SEngines[SelectedShapeIndex]);
+			shape_rotate_center = new PointD (bounds.X + bounds.Width / 2d, bounds.Y + bounds.Height / 2d);
+			last_rotate_angle = Math.Atan2 (unclamped_point.Y - shape_rotate_center.Y, unclamped_point.X - shape_rotate_center.X);
+			rotating_whole_shape = true;
+			clicked_without_modifying = true;
+
+			DrawActiveShape (false, false, true, shiftKey, false, ctrlKey);
+			return;
+		}
+
 		// A plain right click drags the whole shape (mirroring the Text tool), whether it lands on a
 		// control point or on the shape's edge. Right-clicking with the tension modifier held instead
 		// changes a control point's tension (changing_tension above). A right click into empty space
@@ -1364,6 +1384,7 @@ public abstract class BaseEditEngine
 
 		changing_tension = false;
 		moving_whole_shape = false;
+		rotating_whole_shape = false;
 
 		DrawActiveShape (true, false, true, e.IsShiftPressed, false, e.IsControlPressed);
 	}
@@ -1389,6 +1410,45 @@ public abstract class BaseEditEngine
 
 		if (shiftKey)
 			CalculateModifiedCurrentPoint ();
+
+		if (rotating_whole_shape && ActiveShapeEngine != null) {
+			if (clicked_without_modifying) {
+				doc.History.PushNewItem (
+					new ShapesModifyHistoryItem (this, owner.Icon, ShapeName + " " + Translations.GetString ("Rotated")));
+				clicked_without_modifying = false;
+			}
+
+			PointD p = e.UnsnappedPointDouble;
+			double angle = Math.Atan2 (p.Y - shape_rotate_center.Y, p.X - shape_rotate_center.X);
+			double delta = angle - last_rotate_angle;
+
+			// Shift snaps the rotation to 15 degree steps, matching the angle snapping elsewhere.
+			if (shiftKey) {
+				double step = Math.PI / 12d;
+				delta = Math.Round (delta / step) * step;
+				if (delta == 0d) {
+					last_mouse_pos = current_point;
+					return;
+				}
+			}
+
+			double cos = Math.Cos (delta);
+			double sin = Math.Sin (delta);
+
+			foreach (ControlPoint cp in ActiveShapeEngine.ControlPoints) {
+				double x = cp.Position.X - shape_rotate_center.X;
+				double y = cp.Position.Y - shape_rotate_center.Y;
+				cp.Position = new PointD (
+					shape_rotate_center.X + x * cos - y * sin,
+					shape_rotate_center.Y + x * sin + y * cos);
+			}
+
+			last_rotate_angle += delta;
+
+			DrawActiveShape (false, false, true, shiftKey, false, e.IsControlPressed);
+			last_mouse_pos = current_point;
+			return;
+		}
 
 		if (moving_whole_shape && ActiveShapeEngine != null) {
 			if (clicked_without_modifying) {

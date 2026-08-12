@@ -53,13 +53,15 @@ public abstract class ShapeTool : BaseTool
 		get {
 			string ctrl = system_manager.CtrlLabel ();
 			string tension = PintaCore.Shortcuts.GetToolBinding (KeyboardShortcutManager.ShapeChangeTension).ModifierKeyLabel (system_manager);
+			string rotate = PintaCore.Shortcuts.GetToolBinding (KeyboardShortcutManager.ShapeRotate).ToLabel ();
 			return
-				// Translators: {0} is 'Ctrl', or a platform-specific key such as 'Command' on macOS. {1} is the tension modifier key.
+				// Translators: {0} is 'Ctrl', or a platform-specific key such as 'Command' on macOS. {1} is the tension modifier key. {2} is the rotate gesture.
 				Translations.GetString ("Left click to draw a shape with the primary color." +
 					"\nLeft click on a shape to add a control point." +
 					"\nLeft click on a control point and drag to move it." +
 					"\nRight click on a shape and drag to move the whole shape." +
 					"\nHold {1} while right clicking on a control point and drag to change its tension." +
+					"\nUse {2} on a control point and drag to rotate the whole shape." +
 					"\nHold Shift to snap to angles." +
 					"\nUse arrow keys to move the selected control point." +
 					"\nPress {0} + left/right arrows to select control points by order." +
@@ -68,7 +70,7 @@ public abstract class ShapeTool : BaseTool
 					"\nHold {0} while pressing Space to create the control point at the exact same position." +
 					"\nHold {0} to hide other shapes' control points and clear the way." +
 					"\n{0} + click a control point to start a new shape at that exact spot." +
-					"\nPress Enter to finalize the shape.", ctrl, tension);
+					"\nPress Enter to finalize the shape.", ctrl, tension, rotate);
 		}
 	}
 

@@ -44,6 +44,9 @@ public sealed class TextTool : BaseTool
 	private enum TextManipulation { None, Move, Rotate, Resize }
 
 	private TextManipulation manipulation = TextManipulation.None;
+	//The object's bounding box when a move gesture started. Snapping aligns that
+	//box - its edges and its centre lines - rather than the cursor alone.
+	private RectangleD move_start_bounds;
 	//The corner (0 TL, 1 TR, 2 BR, 3 BL) being dragged during a resize.
 	private int resize_corner;
 	//The object's rotation (degrees) and pointer angle (degrees) at gesture start.
@@ -1076,7 +1079,7 @@ public sealed class TextTool : BaseTool
 				return;
 			}
 			if (zone == HitZone.Move) {
-				BeginManipulation (document, editing, CurrentUserLayer, TextManipulation.Move, e.PointDouble);
+				BeginManipulation (document, editing, CurrentUserLayer, TextManipulation.Move, e.UnsnappedPointDouble);
 				return;
 			}
 			if (zone == HitZone.Interior) {
@@ -1131,7 +1134,7 @@ public sealed class TextTool : BaseTool
 
 			// Dragging the dashed border moves the object.
 			if (zone == HitZone.Move) {
-				BeginManipulation (document, hit, layer!, TextManipulation.Move, e.PointDouble);
+				BeginManipulation (document, hit, layer!, TextManipulation.Move, e.UnsnappedPointDouble);
 				return;
 			}
 
@@ -1194,7 +1197,7 @@ public sealed class TextTool : BaseTool
 		// as a left-drag on its border. Committing first would (in Raster mode) bake the text and leave
 		// an un-editable overlay, so the object being typed must be manipulated directly.
 		if (is_editing && current_text_object is not null && GetHitZone (current_text_object, e.PointDouble) != HitZone.None) {
-			BeginManipulation (document, current_text_object, CurrentUserLayer, TextManipulation.Move, e.PointDouble);
+			BeginManipulation (document, current_text_object, CurrentUserLayer, TextManipulation.Move, e.UnsnappedPointDouble);
 			return;
 		}
 
@@ -1210,12 +1213,30 @@ public sealed class TextTool : BaseTool
 		if (layer != CurrentUserLayer)
 			document.Layers.SetCurrentUserLayer (layer!); // NRT - Non-null when hit is non-null.
 
-		BeginManipulation (document, hit, layer!, TextManipulation.Move, e.PointDouble);
+		BeginManipulation (document, hit, layer!, TextManipulation.Move, e.UnsnappedPointDouble);
 	}
 
 	/// <summary>
 	/// Starts a move/rotate/resize gesture on the given text object.
 	/// </summary>
+	/// <summary>
+	/// How much further than the raw drag to move the object, so that its
+	/// bounding box lands on the grid or on the canvas guides.
+	/// </summary>
+	private PointD SnapMovedBounds (PointD delta)
+	{
+		if (!PintaCore.CanvasGrid.SnapEnabled || move_start_bounds.Width <= 0)
+			return new (0, 0);
+
+		PointD wanted = new (move_start_bounds.X + delta.X, move_start_bounds.Y + delta.Y);
+
+		PointD snapped = PintaCore.CanvasGrid.SnapRect (
+			new RectangleD (wanted, move_start_bounds.Width, move_start_bounds.Height),
+			centerAnchor: false);
+
+		return new (snapped.X - wanted.X, snapped.Y - wanted.Y);
+	}
+
 	private void BeginManipulation (Document document, TextObject obj, UserLayer layer, TextManipulation kind, PointD mouse, int corner = -1)
 	{
 		current_text_object = obj;
@@ -1234,6 +1255,7 @@ public sealed class TextTool : BaseTool
 		switch (kind) {
 			case TextManipulation.Move:
 				start_click_point = obj.Engine.Origin;
+				move_start_bounds = obj.TextBounds.ToDouble ();
 				break;
 			case TextManipulation.Rotate:
 				start_rotation_angle = obj.Rotation;
@@ -1277,13 +1299,17 @@ public sealed class TextTool : BaseTool
 
 			switch (manipulation) {
 				case TextManipulation.Move: {
+						//The raw cursor drives the drag: the cursor's own snap would
+						//otherwise pull the object a second time, on top of its box's.
 						PointD delta = new (
-							e.PointDouble.X - start_mouse_xy.X,
-							e.PointDouble.Y - start_mouse_xy.Y);
+							e.UnsnappedPointDouble.X - start_mouse_xy.X,
+							e.UnsnappedPointDouble.Y - start_mouse_xy.Y);
+
+						PointD correction = SnapMovedBounds (delta);
 
 						obj.Engine.Origin = new PointI (
-							(int) (start_click_point.X + delta.X),
-							(int) (start_click_point.Y + delta.Y));
+							(int) (start_click_point.X + delta.X + correction.X),
+							(int) (start_click_point.Y + delta.Y + correction.Y));
 						break;
 					}
 

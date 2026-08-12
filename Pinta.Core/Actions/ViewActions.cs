@@ -145,7 +145,8 @@ public sealed class ViewActions
 			// lines when neither is shown.
 			Translations.GetString ("Snap to grid/ruler/center"),
 			null,
-			Resources.Icons.ViewGrid);
+			Resources.Icons.ViewGrid,
+			shortcuts: ["<Primary><Alt>G"]);
 
 		MenuBar = new ToggleCommand (
 			"MenuBar",

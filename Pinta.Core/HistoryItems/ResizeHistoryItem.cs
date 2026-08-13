@@ -28,11 +28,10 @@ namespace Pinta.Core;
 
 public sealed class ResizeHistoryItem : CompoundHistoryItem
 {
-	private readonly WorkspaceManager workspace;
 	private Size old_size;
+	// ponytail: workspace param kept for call-site compatibility; undo/redo uses the stamped Document
 	public ResizeHistoryItem (WorkspaceManager workspace, Size oldSize) : base ()
 	{
-		this.workspace = workspace;
 		old_size = oldSize;
 
 		Icon = Resources.Icons.ImageResize;
@@ -43,15 +42,15 @@ public sealed class ResizeHistoryItem : CompoundHistoryItem
 
 	public override void Undo ()
 	{
-		var doc = workspace.ActiveDocument;
+		var doc = this.Document!;
 
 		// maintain the current scaling setting after the operation
-		double scale = workspace.Scale;
+		double scale = doc.Workspace.Scale;
 
-		Size swap = workspace.ImageSize;
+		Size swap = doc.ImageSize;
 
-		workspace.ImageSize = old_size;
-		workspace.CanvasSize = old_size;
+		doc.ImageSize = old_size;
+		doc.Workspace.ViewSize = old_size;
 
 		old_size = swap;
 
@@ -62,30 +61,30 @@ public sealed class ResizeHistoryItem : CompoundHistoryItem
 		else
 			doc.ResetSelectionPaths ();
 
-		workspace.Invalidate ();
+		doc.Workspace.Invalidate ();
 
-		workspace.Scale = scale;
+		doc.Workspace.Scale = scale;
 	}
 
 	public override void Redo ()
 	{
-		var doc = workspace.ActiveDocument;
+		var doc = this.Document!;
 
 		// maintain the current scaling setting after the operation
-		double scale = workspace.Scale;
+		double scale = doc.Workspace.Scale;
 
-		Size swap = workspace.ImageSize;
+		Size swap = doc.ImageSize;
 
-		workspace.ImageSize = old_size;
-		workspace.CanvasSize = old_size;
+		doc.ImageSize = old_size;
+		doc.Workspace.ViewSize = old_size;
 
 		old_size = swap;
 
 		base.Redo ();
 
 		doc.ResetSelectionPaths ();
-		workspace.Invalidate ();
+		doc.Workspace.Invalidate ();
 
-		workspace.Scale = scale;
+		doc.Workspace.Scale = scale;
 	}
 }

@@ -58,7 +58,7 @@ public sealed class SelectionHistoryItem : BaseHistoryItem
 
 	private void Swap ()
 	{
-		var doc = workspace.ActiveDocument;
+		var doc = this.Document!;
 		DocumentSelection swap_selection = doc.Selection;
 		bool swap_hide_tool_layer = doc.Layers.ToolLayer.Hidden;
 
@@ -72,7 +72,7 @@ public sealed class SelectionHistoryItem : BaseHistoryItem
 		old_previous_selection = doc.PreviousSelection;
 		doc.PreviousSelection = swap_selection!;
 
-		workspace.Invalidate ();
+		doc.Workspace.Invalidate ();
 	}
 
 	public void TakeSnapshot ()

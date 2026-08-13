@@ -64,6 +64,8 @@ public sealed partial class ToolBoxWidget
 	// While a pin menu is up, hovering its anchor must not pop the flyout back open -
 	// the flyout's grab would dismiss the pin menu before it can be clicked.
 	private Gtk.Popover? open_pin_menu;
+	private Gtk.Popover? hint_popup;
+	private uint hint_timeout_id;
 
 	/// <param name="classic">
 	/// The pre-fork layout: Vertical orientation, so ChildrenPerLine counts children per
@@ -243,6 +245,78 @@ public sealed partial class ToolBoxWidget
 			button.TooltipText = TooltipFor (tool);
 	}
 
+	/// <summary>
+	/// Hovering shows the tool's hint in a caption popover rather than a native tooltip. Only
+	/// flyout entries need this: GTK4 mapping a tooltip popup while the flyout's own grabbing
+	/// popover is open can leave the pointer grab stuck, freezing input until the next click.
+	/// Buttons outside a flyout use ordinary tooltips, made opaque in style.css.
+	/// </summary>
+	private void AttachHint (Gtk.Widget widget, BaseTool tool)
+	{
+		Gtk.EventControllerMotion motion = Gtk.EventControllerMotion.New ();
+
+		motion.OnEnter += (_, _) => {
+			CancelHintTimeout ();
+			hint_timeout_id = GLib.Functions.TimeoutAdd (0, 500, () => {
+				hint_timeout_id = 0;
+				ShowHint (widget, TooltipFor (tool));
+				return false;
+			});
+		};
+
+		motion.OnLeave += (_, _) => {
+			CancelHintTimeout ();
+			HideHint ();
+		};
+
+		widget.AddController (motion);
+	}
+
+	private void CancelHintTimeout ()
+	{
+		if (hint_timeout_id == 0)
+			return;
+
+		GLib.Source.Remove (hint_timeout_id);
+		hint_timeout_id = 0;
+	}
+
+	private void ShowHint (Gtk.Widget anchor, string text)
+	{
+		HideHint ();
+
+		Gtk.Label caption = Gtk.Label.New (text);
+		caption.Halign = Gtk.Align.Start;
+		caption.Justify = Gtk.Justification.Left;
+		caption.Wrap = true;
+		caption.MaxWidthChars = 32;
+
+		Gtk.Popover popup = Gtk.Popover.New ();
+		// Not autohiding: an autohiding popover grabs the pointer, which is exactly what makes
+		// a hint next to the flyout freeze input. This one never takes a grab and is dismissed
+		// by hand when the cursor leaves.
+		popup.Autohide = false;
+		popup.CanTarget = false;
+		popup.HasArrow = false; // Reads as a tooltip, not as a menu anchored to the entry.
+		popup.AddCssClass ("toolbox-hint");
+		popup.SetChild (caption);
+		popup.SetParent (anchor);
+		popup.Position = Gtk.PositionType.Right;
+
+		hint_popup = popup;
+		popup.Popup ();
+	}
+
+	private void HideHint ()
+	{
+		if (hint_popup is null)
+			return;
+
+		hint_popup.Popdown ();
+		hint_popup.Unparent ();
+		hint_popup = null;
+	}
+
 	private void HandleToolAdded (BaseTool tool)
 	{
 		int[]? stackDefinition = StackDefinition (tool.Priority);
@@ -284,6 +358,7 @@ public sealed partial class ToolBoxWidget
 			// Small corner marker so the flyout is discoverable, like Photoshop's triangle.
 			Gtk.Image marker = Gtk.Image.NewFromIconName ("pan-down-symbolic");
 			marker.PixelSize = 8;
+			marker.AddCssClass ("stack-marker");
 			marker.Valign = Gtk.Align.End;
 			marker.Halign = Gtk.Align.End;
 
@@ -402,27 +477,15 @@ public sealed partial class ToolBoxWidget
 
 		foreach (BaseTool member in stack.Members) {
 
-			// No native tooltip here: GTK4 mapping a tooltip popup while this entry's own
-			// popover (a grabbing popup) is open can leave the pointer grab stuck, freezing
-			// input until the next click. The shortcut is shown as an inline label instead,
-			// so it's still visible without relying on a second popup surface.
 			Gtk.Button entry = Gtk.Button.New ();
 			entry.SetCssClasses ([AdwaitaStyles.Flat]);
 
 			Gtk.Box row = Gtk.Box.New (Gtk.Orientation.Horizontal, 6);
 			row.Append (Gtk.Image.NewFromIconName (member.Icon));
 			row.Append (Gtk.Label.New (member.Name));
-
-			KeyGesture shortcut = tools.GetEffectiveShortcutKey (member);
-			if (shortcut.IsValid) {
-				Gtk.Label shortcutLabel = Gtk.Label.New (shortcut.ToLabel ());
-				shortcutLabel.AddCssClass (AdwaitaStyles.DimLabel);
-				shortcutLabel.Hexpand = true;
-				shortcutLabel.Halign = Gtk.Align.End;
-				row.Append (shortcutLabel);
-			}
-
 			entry.SetChild (row);
+
+			AttachHint (entry, member);
 
 			entry.OnClicked += (_, _) => {
 				popover.Popdown ();
@@ -449,6 +512,8 @@ public sealed partial class ToolBoxWidget
 
 		// The popover is rebuilt per showing, so release it once it closes.
 		popover.OnClosed += (_, _) => {
+			CancelHintTimeout ();
+			HideHint (); // Its anchor is about to go away with the flyout.
 			CancelCloseTimeout (stack);
 			stack.OpenFlyout = null;
 			popover.Unparent ();

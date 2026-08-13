@@ -88,3 +88,36 @@
     border-radius: 6px;
     padding: 1px 6px;
 }
+
+/* Impasto: opaque tooltips. The theme's translucent tooltip is hard to read over the
+   canvas, and tooltips are the toolbox's hint surface everywhere a grabbing popover
+   isn't in play. */
+tooltip {
+    opacity: 1;
+}
+
+tooltip.background {
+    background-color: @view_bg_color;
+}
+
+/* Impasto: the flyout entry hint is a popover standing in for a tooltip (a real tooltip
+   next to the flyout's grabbing popover freezes the pointer), so it wears the tooltip's
+   look - same background as the `tooltip.background` rule above, no popover shadow. */
+popover.toolbox-hint > contents {
+    background-color: @view_bg_color;
+    color: @view_fg_color;
+    border-radius: 6px;
+    padding: 6px 10px;
+    box-shadow: none;
+}
+
+/* Impasto: the flyout marker sits on top of the tool's own monochrome icon, so a plain
+   symbolic triangle disappears into it. Four one-pixel drop shadows in the window's own
+   background tone ring the glyph without thickening it. */
+image.stack-marker {
+    filter:
+        drop-shadow(1px 0 0 @window_bg_color)
+        drop-shadow(-1px 0 0 @window_bg_color)
+        drop-shadow(0 1px 0 @window_bg_color)
+        drop-shadow(0 -1px 0 @window_bg_color);
+}

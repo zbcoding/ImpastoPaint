@@ -94,7 +94,10 @@ internal sealed class MainWindow
 
 		PintaCore.Initialize ();
 
-		// Initialize extensions
+		// Initialize extensions. The assembly resolver must be in place first, so add-ins built
+		// against a different release of the host libraries can still load.
+		AddinAssemblyResolver.Install ();
+
 		string addins_dir = System.IO.Path.Combine (PintaCore.Settings.GetUserSettingsDirectory (), "addins");
 		AddinManager.Initialize (addins_dir);
 

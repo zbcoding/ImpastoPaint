@@ -28,10 +28,10 @@ using System;
 using Mono.Addins;
 using Pinta.Core;
 
-[assembly: Addin ("DefaultEffects", PintaCore.ApplicationVersion, Category = "Core")]
+[assembly: Addin ("DefaultEffects", PintaCore.PintaCompatVersion, Category = "Core")]
 [assembly: AddinName ("Default Effects")]
 [assembly: AddinDescription ("The default adjustments and effects that ship with Pinta")]
-[assembly: AddinDependency ("Pinta", PintaCore.ApplicationVersion)]
+[assembly: AddinDependency ("Pinta", PintaCore.PintaCompatVersion)]
 [assembly: AddinFlags (Mono.Addins.Description.AddinFlags.Hidden | Mono.Addins.Description.AddinFlags.CantUninstall)]
 
 namespace Pinta.Effects;

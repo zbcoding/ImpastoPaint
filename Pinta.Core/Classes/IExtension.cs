@@ -1,6 +1,6 @@
 using Pinta.Core;
 
-[assembly: Mono.Addins.AddinRoot ("Pinta", PintaCore.ApplicationVersion, CompatVersion = PintaCore.AddinCompatVersion)]
+[assembly: Mono.Addins.AddinRoot ("Pinta", PintaCore.PintaCompatVersion, CompatVersion = PintaCore.PintaAddinCompatVersion)]
 
 namespace Pinta.Core;
 

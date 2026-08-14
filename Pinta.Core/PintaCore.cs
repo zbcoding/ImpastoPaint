@@ -53,6 +53,21 @@ public static partial class PintaCore
 	/// </summary>
 	public const string ApplicationId = "com.github.zbcoding.Impasto";
 
+	/// <summary>
+	/// The upstream Pinta version whose add-in ABI (Pinta.Core/Pinta.Tools/Pinta.Effects APIs)
+	/// this fork still implements. Used only for Mono.Addins version matching against add-ins
+	/// from the Pinta Community Addins repository - independent of <see cref="ApplicationVersion"/>,
+	/// which is Impasto's own release number. Bump only when rebasing onto a newer Pinta and
+	/// confirming add-in compatibility; do not tie this to Impasto's release cadence.
+	/// </summary>
+	public const string PintaCompatVersion = "3.2";
+
+	/// <summary>
+	/// The oldest Pinta version whose add-ins still run against <see cref="PintaCompatVersion"/>.
+	/// Bump only on ABI-breaking changes.
+	/// </summary>
+	public const string PintaAddinCompatVersion = "3.1";
+
 	static PintaCore ()
 	{
 		// --- Services that don't depend on other services

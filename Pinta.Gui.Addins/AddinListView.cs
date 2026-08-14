@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using Mono.Addins;
 using Mono.Addins.Setup;
@@ -10,8 +11,21 @@ namespace Pinta.Gui.Addins;
 [GObject.Subclass<Adw.Bin>]
 internal sealed partial class AddinListView
 {
-	private Gio.ListStore model;
-	private Gtk.SingleSelection selection_model;
+	// Add-ins are rendered as one labeled section per source (e.g. "Pinta Add-ins" for the
+	// Pinta Community Addins repository) so a future second source - a native Impasto add-in
+	// ecosystem, or a PDN-compatible one - never appears merged into today's single list.
+	private sealed class Group
+	{
+		public required Gio.ListStore Model { get; init; }
+		public required Gtk.SingleSelection Selection { get; init; }
+		public required Gtk.Widget Widget { get; init; }
+	}
+
+	private readonly Dictionary<string, Group> groups = [];
+	private bool changing_selection;
+	private bool has_selection;
+
+	private Gtk.Box list_box;
 
 	private Adw.StatusPage empty_list_page;
 	private Gtk.ScrolledWindow list_view_scroll;
@@ -24,34 +38,16 @@ internal sealed partial class AddinListView
 	/// </summary>
 	public event EventHandler? OnAddinChanged;
 
-	[MemberNotNull (nameof (model), nameof (selection_model))]
+	[MemberNotNull (nameof (list_box))]
 	[MemberNotNull (nameof (empty_list_page), nameof (list_view_scroll), nameof (list_view_stack))]
 	[MemberNotNull (nameof (info_view))]
 	partial void Initialize ()
 	{
-		Gio.ListStore listStore = Gio.ListStore.New (AddinListViewItem.GetGType ());
-
-		Gtk.SingleSelection selectionModel = Gtk.SingleSelection.New (listStore);
-		selectionModel.OnSelectionChanged += (_, _) => HandleSelectionChanged ();
-		selectionModel.Autoselect = true;
-
-		Gtk.SignalListItemFactory itemFactory = Gtk.SignalListItemFactory.New ();
-		itemFactory.OnSetup += (factory, args) => {
-			var item = (Gtk.ListItem) args.Object;
-			item.SetChild (AddinListViewItemWidget.New ());
-		};
-		itemFactory.OnBind += (factory, args) => {
-			var list_item = (Gtk.ListItem) args.Object;
-			var model_item = (AddinListViewItem) list_item.GetItem ()!;
-			var widget = (AddinListViewItemWidget) list_item.GetChild ()!;
-			widget.Update (model_item);
-		};
-
-		// TODO: have an option to group by category like the old GTK2 addin dialog.
-		Gtk.ListView listView = Gtk.ListView.New (selectionModel, itemFactory);
+		Gtk.Box listBox = Gtk.Box.New (Gtk.Orientation.Vertical, 12);
+		listBox.SetAllMargins (6);
 
 		Gtk.ScrolledWindow listViewScroll = Gtk.ScrolledWindow.New ();
-		listViewScroll.SetChild (listView);
+		listViewScroll.SetChild (listBox);
 		listViewScroll.SetSizeRequest (300, 400);
 		listViewScroll.SetPolicy (Gtk.PolicyType.Automatic, Gtk.PolicyType.Automatic);
 
@@ -77,8 +73,7 @@ internal sealed partial class AddinListView
 
 		// --- References to keep
 
-		model = listStore;
-		selection_model = selectionModel;
+		list_box = listBox;
 		list_view_scroll = listViewScroll;
 		empty_list_page = emptyListPage;
 		list_view_stack = listViewStack;
@@ -102,7 +97,12 @@ internal sealed partial class AddinListView
 
 	public void Clear ()
 	{
-		model.RemoveAll ();
+		foreach (Group group in groups.Values)
+			list_box.Remove (group.Widget);
+
+		groups.Clear ();
+		has_selection = false;
+
 		list_view_stack.VisibleChild = empty_list_page;
 		info_view.Update (null);
 	}
@@ -113,13 +113,7 @@ internal sealed partial class AddinListView
 		Addin addin,
 		AddinStatus status)
 	{
-		list_view_stack.VisibleChild = list_view_scroll;
-
-		model.Append (AddinListViewItem.NewForInstalledAddin (service, info, addin, status));
-
-		// Adding items may not cause a selection-changed signal, as mentioned in the SelectionModel docs
-		if (model.NItems == 1)
-			HandleSelectionChanged ();
+		AddItem (info, AddinListViewItem.NewForInstalledAddin (service, info, addin, status));
 	}
 
 	public void AddAddinRepositoryEntry (
@@ -128,21 +122,110 @@ internal sealed partial class AddinListView
 		AddinRepositoryEntry addin,
 		AddinStatus status)
 	{
-		list_view_stack.VisibleChild = list_view_scroll;
-
-		model.Append (AddinListViewItem.NewForAvailableAddin (service, info, addin, status));
-
-		// Adding items may not cause a selection-changed signal, as mentioned in the SelectionModel docs
-		if (model.NItems == 1)
-			HandleSelectionChanged ();
+		AddItem (info, AddinListViewItem.NewForAvailableAddin (service, info, addin, status));
 	}
 
-	private void HandleSelectionChanged ()
+	private void AddItem (AddinHeader info, AddinListViewItem item)
 	{
-		if (model.GetObject (selection_model.Selected) is AddinListViewItem item)
-			info_view.Update (item);
-		else
-			info_view.Update (null);
+		list_view_stack.VisibleChild = list_view_scroll;
+
+		Group group = GetOrCreateGroup (GetSourceLabel (info.Id));
+		group.Model.Append (item);
+
+		// Select the very first item added across all groups, so the info panel is never
+		// empty while the list has entries. Selection models don't reliably signal a change
+		// for the very first item (see the SingleSelection docs), so update directly too.
+		if (!has_selection) {
+			group.Selection.Selected = 0;
+			HandleSelectionChanged (group);
+		}
+	}
+
+	private Group GetOrCreateGroup (string sourceLabel)
+	{
+		if (groups.TryGetValue (sourceLabel, out Group? existing))
+			return existing;
+
+		Gio.ListStore listStore = Gio.ListStore.New (AddinListViewItem.GetGType ());
+
+		Gtk.SingleSelection selectionModel = Gtk.SingleSelection.New (listStore);
+		selectionModel.Autoselect = false;
+
+		Gtk.SignalListItemFactory itemFactory = Gtk.SignalListItemFactory.New ();
+		itemFactory.OnSetup += (factory, args) => {
+			var listItem = (Gtk.ListItem) args.Object;
+			listItem.SetChild (AddinListViewItemWidget.New ());
+		};
+		itemFactory.OnBind += (factory, args) => {
+			var listItem = (Gtk.ListItem) args.Object;
+			var modelItem = (AddinListViewItem) listItem.GetItem ()!;
+			var widget = (AddinListViewItemWidget) listItem.GetChild ()!;
+			widget.Update (modelItem);
+		};
+
+		Gtk.ListView listView = Gtk.ListView.New (selectionModel, itemFactory);
+
+		Gtk.Label header = Gtk.Label.New (sourceLabel);
+		header.Halign = Gtk.Align.Start;
+		header.AddCssClass (AdwaitaStyles.Title4);
+
+		Gtk.Box sectionBox = Gtk.Box.New (Gtk.Orientation.Vertical, 6);
+		sectionBox.Append (header);
+		sectionBox.Append (listView);
+
+		Group group = new () {
+			Model = listStore,
+			Selection = selectionModel,
+			Widget = sectionBox,
+		};
+
+		selectionModel.OnSelectionChanged += (_, _) => HandleSelectionChanged (group);
+
+		groups[sourceLabel] = group;
+		list_box.Append (sectionBox);
+
+		return group;
+	}
+
+	private void HandleSelectionChanged (Group group)
+	{
+		if (changing_selection)
+			return;
+
+		uint selected = group.Selection.Selected;
+
+		// GTK_INVALID_LIST_POSITION is uint.MaxValue.
+		if (selected == uint.MaxValue)
+			return;
+
+		// Enforce a single selection across every section: claiming a selection in one
+		// group clears whatever was selected in the others.
+		changing_selection = true;
+		foreach (Group other in groups.Values) {
+			if (other != group && other.Selection.Selected != uint.MaxValue)
+				other.Selection.Selected = uint.MaxValue;
+		}
+		changing_selection = false;
+
+		has_selection = true;
+		info_view.Update ((AddinListViewItem) group.Model.GetObject (selected)!);
+	}
+
+	/// <summary>
+	/// Groups add-ins by the namespace of their id (e.g. "Pinta.SomeAddin" -&gt; "Pinta"), which
+	/// is also what <see cref="Utilities.InApplicationNamespace"/> filters on. This keeps the
+	/// grouping data-driven: a future add-in root beyond "Pinta" gets its own section for free.
+	/// </summary>
+	private static string GetSourceLabel (string addinId)
+	{
+		Addin.GetIdParts (addinId, out string name, out _);
+		int dot = name.IndexOf ('.');
+		string ns = dot > 0 ? name[..dot] : name;
+
+		return ns switch {
+			"Pinta" => Translations.GetString ("Pinta Add-ins"),
+			_ => Translations.GetString ("{0} Add-ins", ns),
+		};
 	}
 }
 

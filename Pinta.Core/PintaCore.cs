@@ -64,9 +64,25 @@ public static partial class PintaCore
 
 	/// <summary>
 	/// The oldest Pinta version whose add-ins still run against <see cref="PintaCompatVersion"/>.
-	/// Bump only on ABI-breaking changes.
+	/// <para>
+	/// 3.0 is the GTK4 boundary: Pinta 3.0 was the first release after the GTK3 -&gt; GTK4 port, so
+	/// a 2.x add-in is GTK3-era and its very first widget call fails. Do not lower this below 3.0.
+	/// </para>
+	/// <para>
+	/// This is load-bearing for more than which add-ins are offered. Until add-ins could resolve
+	/// the host libraries at all, a GTK3-era add-in that slipped past this check died harmlessly
+	/// on assembly resolution; <see cref="Pinta.AddinAssemblyResolver"/> deliberately removed that
+	/// second gate, so this constant is now the only thing keeping GTK3-era add-ins from loading
+	/// and then failing on first use.
+	/// </para>
+	/// <para>
+	/// Upstream Pinta raised its own floor to 3.1 when it moved the effect dialog attributes into
+	/// Pinta.Core, so a 3.0 add-in that uses those may still fail - but that break is narrow and
+	/// caught per add-in, whereas the GTK3 cliff is total. 3.0 trades that narrow risk for the
+	/// 3.0.x add-ins that actually work.
+	/// </para>
 	/// </summary>
-	public const string PintaAddinCompatVersion = "3.1";
+	public const string PintaAddinCompatVersion = "3.0";
 
 	static PintaCore ()
 	{

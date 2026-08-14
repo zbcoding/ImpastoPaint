@@ -2521,6 +2521,10 @@ msgstr ""
 msgid "Pinned items"
 msgstr ""
 
+#: ../Pinta.Gui.Addins/AddinListView.cs:239
+msgid "Pinta Add-ins"
+msgstr ""
+
 #: ../Pinta/AddinSetupService.cs:66
 msgid "Pinta Community Addins - Cross-Platform"
 msgstr ""

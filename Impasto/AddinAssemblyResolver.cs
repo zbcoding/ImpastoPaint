@@ -45,6 +45,14 @@ namespace Pinta;
 /// number any published add-in was compiled against, so without this fallback no existing add-in
 /// can load. Redirect requests for the host libraries to whichever copy is already loaded,
 /// ignoring the requested version.
+///
+/// This moves failures from load time to use time: an add-in built against an API that has since
+/// been removed or resignatured now binds successfully and throws when the user invokes it. That
+/// is contained - extension creation and initialization are caught per add-in in
+/// <c>MainWindow.UpdateExtension</c>, and effect render faults are caught per tile in
+/// <c>AsyncEffectRenderer</c> - so one bad add-in cannot take the application down. The trade is
+/// deliberate: it is what <see cref="Pinta.Core.PintaCore.PintaAddinCompatVersion"/> now guards,
+/// since this resolver is the gate it replaced.
 /// </summary>
 internal static class AddinAssemblyResolver
 {
@@ -61,11 +69,16 @@ internal static class AddinAssemblyResolver
 		"Pinta.Resources",
 	];
 
+	// Deliberately not synchronized: Install is called once, from the UI thread, before add-ins
+	// are loaded. A lock here would guard nothing.
 	private static bool installed;
 
 	/// <summary>
 	/// Must be called before <see cref="Mono.Addins.AddinManager.Initialize"/>, so the fallback is
 	/// in place for the add-in assemblies loaded during registry scanning and extension creation.
+	/// Must stay registered on <see cref="AssemblyLoadContext.Default"/>: that is what guarantees
+	/// the handler only ever receives Default, which is what makes reading
+	/// <see cref="AssemblyLoadContext.Assemblies"/> in the handler sound.
 	/// </summary>
 	public static void Install ()
 	{

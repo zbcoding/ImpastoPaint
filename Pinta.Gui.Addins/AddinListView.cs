@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.Linq;
 using Mono.Addins;
 using Mono.Addins.Setup;
 using Pinta.Core;
@@ -197,8 +198,15 @@ internal sealed partial class AddinListView
 		uint selected = group.Selection.Selected;
 
 		// GTK_INVALID_LIST_POSITION is uint.MaxValue.
-		if (selected == uint.MaxValue)
+		if (selected == uint.MaxValue) {
+			// This group lost its selection. If it was the one holding it - e.g. its items were
+			// replaced - the detail pane would otherwise keep showing a deselected add-in.
+			if (!groups.Values.Any (g => g.Selection.Selected != uint.MaxValue)) {
+				has_selection = false;
+				info_view.Update (null);
+			}
 			return;
+		}
 
 		// Enforce a single selection across every section: claiming a selection in one
 		// group clears whatever was selected in the others.

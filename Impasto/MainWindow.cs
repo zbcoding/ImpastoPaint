@@ -401,8 +401,16 @@ internal sealed class MainWindow
 					body, e.ToString ());
 			}
 		} else {
-			IExtension extension = (IExtension) args.ExtensionObject;
-			extension.Uninitialize ();
+			// Reachable with the same failure as the Add path - e.g. disabling or uninstalling an
+			// add-in whose extension object could never be created. This runs inside a GLib idle
+			// callback when it arrives off the main thread, where an escaping exception would take
+			// the application down, so swallow it: there is nothing left to uninitialize.
+			try {
+				IExtension extension = (IExtension) args.ExtensionObject;
+				extension.Uninitialize ();
+			} catch (Exception e) {
+				Console.Error.WriteLine ($"Failed to uninitialize add-in '{args.ExtensionNode.Addin.Id}': {e}");
+			}
 		}
 	}
 

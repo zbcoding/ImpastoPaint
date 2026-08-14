@@ -113,7 +113,9 @@ internal sealed partial class AddinListView
 		Addin addin,
 		AddinStatus status)
 	{
-		AddItem (info, AddinListViewItem.NewForInstalledAddin (service, info, addin, status));
+		// Installed add-ins carry no repository info; the only add-in source this fork
+		// currently exposes is Pinta Community Addins.
+		AddItem (GetSourceLabel (null), AddinListViewItem.NewForInstalledAddin (service, info, addin, status));
 	}
 
 	public void AddAddinRepositoryEntry (
@@ -122,14 +124,14 @@ internal sealed partial class AddinListView
 		AddinRepositoryEntry addin,
 		AddinStatus status)
 	{
-		AddItem (info, AddinListViewItem.NewForAvailableAddin (service, info, addin, status));
+		AddItem (GetSourceLabel (addin), AddinListViewItem.NewForAvailableAddin (service, info, addin, status));
 	}
 
-	private void AddItem (AddinHeader info, AddinListViewItem item)
+	private void AddItem (string sourceLabel, AddinListViewItem item)
 	{
 		list_view_stack.VisibleChild = list_view_scroll;
 
-		Group group = GetOrCreateGroup (GetSourceLabel (info.Id));
+		Group group = GetOrCreateGroup (sourceLabel);
 		group.Model.Append (item);
 
 		// Select the very first item added across all groups, so the info panel is never
@@ -212,19 +214,22 @@ internal sealed partial class AddinListView
 	}
 
 	/// <summary>
-	/// Groups add-ins by the namespace of their id (e.g. "Pinta.SomeAddin" -&gt; "Pinta"), which
-	/// is also what <see cref="Utilities.InApplicationNamespace"/> filters on. This keeps the
-	/// grouping data-driven: a future add-in root beyond "Pinta" gets its own section for free.
+	/// Groups add-ins by the host of the repository they came from - add-in ids in the actual
+	/// Pinta Community Addins repository (e.g. "WebP", "BlockBrush") don't carry any namespace
+	/// convention to group on, but the repository host is stable and known. Installed add-ins
+	/// (no repository entry) and anything served from pintaproject.github.io fall under the
+	/// same "Pinta Add-ins" heading; an unrecognized future repository gets its own section
+	/// labeled by host, ready for a native Impasto or PDN-compatible source later.
 	/// </summary>
-	private static string GetSourceLabel (string addinId)
+	private static string GetSourceLabel (AddinRepositoryEntry? repositoryEntry)
 	{
-		Addin.GetIdParts (addinId, out string name, out _);
-		int dot = name.IndexOf ('.');
-		string ns = dot > 0 ? name[..dot] : name;
+		string? host = repositoryEntry is not null && Uri.TryCreate (repositoryEntry.RepositoryUrl, UriKind.Absolute, out Uri? uri)
+			? uri.Host
+			: null;
 
-		return ns switch {
-			"Pinta" => Translations.GetString ("Pinta Add-ins"),
-			_ => Translations.GetString ("{0} Add-ins", ns),
+		return host switch {
+			null or "pintaproject.github.io" => Translations.GetString ("Pinta Add-ins"),
+			_ => host,
 		};
 	}
 }

@@ -534,7 +534,17 @@ internal sealed class MainWindow
 		PintaCore.Actions.Window.RegisterActions (app, windowMenu);
 		PintaCore.Actions.Help.RegisterActions (app, helpMenu);
 
-		PintaCore.Chrome.InitializeMainMenu (adjustmentsMenu, effectsMenu);
+		PintaCore.Chrome.InitializeMainMenu (new Dictionary<MainMenu, Gio.Menu> {
+			[MainMenu.File] = fileMenu,
+			[MainMenu.Edit] = editMenu,
+			[MainMenu.View] = viewMenu,
+			[MainMenu.Image] = imageMenu,
+			[MainMenu.Adjustments] = adjustmentsMenu,
+			[MainMenu.Effects] = effectsMenu,
+			[MainMenu.Addins] = addinsMenu,
+			[MainMenu.Window] = windowMenu,
+			[MainMenu.Help] = helpMenu,
+		});
 
 		// --- References to keep
 

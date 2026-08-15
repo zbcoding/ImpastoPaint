@@ -25,6 +25,7 @@
 // THE SOFTWARE.
 
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Mono.Addins.Localization;
 
@@ -41,10 +42,29 @@ public interface IChromeService
 		IWorkspaceService workspace);
 }
 
+/// <summary>
+/// The menus that make up the main menu. Anything that extends one - an add-in, or the
+/// effects registry - names it with this rather than being handed the model.
+/// </summary>
+public enum MainMenu
+{
+	File,
+	Edit,
+	View,
+	Image,
+	Adjustments,
+	Effects,
+	Addins,
+	Window,
+	Help,
+}
+
 public sealed class ChromeManager : IChromeService
 {
 	private PointI last_canvas_cursor_point;
 	private bool main_window_busy;
+
+	private readonly Dictionary<MainMenu, Gio.Menu> main_menus = [];
 
 	// NRT - These are all initialized via the Initialize* functions
 	// but it would be nice to rewrite it to provably non-null.
@@ -63,8 +83,8 @@ public sealed class ChromeManager : IChromeService
 	public Gtk.Box StatusBar { get; private set; } = null!;
 
 	public IProgressDialog ProgressDialog => progress_dialog;
-	public Gio.Menu AdjustmentsMenu { get; private set; } = null!;
-	public Gio.Menu EffectsMenu { get; private set; } = null!;
+	public Gio.Menu AdjustmentsMenu => GetMainMenu (MainMenu.Adjustments);
+	public Gio.Menu EffectsMenu => GetMainMenu (MainMenu.Effects);
 
 	public PointI LastCanvasCursorPoint {
 		get => last_canvas_cursor_point;
@@ -128,11 +148,23 @@ public sealed class ChromeManager : IChromeService
 		ImageTabsNotebook = notebook;
 	}
 
-	public void InitializeMainMenu (Gio.Menu adj_menu, Gio.Menu effects_menu)
+	/// <summary>
+	/// Records the menus that make up the main menu, so anything that extends one can address
+	/// it by name. In the header bar layout several of these are shown as toolbar menu buttons
+	/// rather than menu bar entries, but they are the same models either way.
+	/// </summary>
+	public void InitializeMainMenu (IReadOnlyDictionary<MainMenu, Gio.Menu> menus)
 	{
-		AdjustmentsMenu = adj_menu;
-		EffectsMenu = effects_menu;
+		main_menus.Clear ();
+
+		foreach (var (id, menu) in menus)
+			main_menus.Add (id, menu);
 	}
+
+	public Gio.Menu GetMainMenu (MainMenu id)
+		=> main_menus.TryGetValue (id, out Gio.Menu? menu)
+			? menu
+			: throw new InvalidOperationException ($"The {id} menu has not been initialized");
 
 	public void InitializeProgessDialog (IProgressDialog progressDialog)
 	{

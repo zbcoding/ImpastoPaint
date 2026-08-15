@@ -51,16 +51,36 @@ public sealed class AddinActions
 	}
 
 	/// <summary>
-	/// Removes an item from the Add-ins menu.
+	/// Removes an item from the Add-ins menu. Silently does nothing if the item is not in the
+	/// menu, so an add-in can call this unconditionally while shutting down.
 	/// </summary>
+	/// <remarks>
+	/// Identity cannot be used: <see cref="Gio.Menu.AppendItem"/> copies the item's attributes,
+	/// so the entry in the menu is not the object the caller still holds. Match on the action
+	/// name instead, which is what distinguishes one command from another, and fall back to the
+	/// label for an item that carries no action (e.g. a submenu).
+	/// </remarks>
 	public void RemoveMenuItem (Gio.MenuItem item)
 	{
-		// TODO-GTK3 (addins)
-		throw new NotImplementedException ();
-#if false
-		addins_menu.Remove (item);
-#endif
+		string attribute = ItemAttribute (item, "action") is null ? "label" : "action";
+
+		if (ItemAttribute (item, attribute) is not string wanted)
+			return;
+
+		for (int i = 0; i < addins_menu.GetNItems (); i++) {
+			if (MenuItemAttribute (addins_menu, i, attribute) != wanted)
+				continue;
+
+			addins_menu.Remove (i);
+			return;
+		}
 	}
+
+	private static string? ItemAttribute (Gio.MenuItem item, string name)
+		=> item.GetAttributeValue (name, GLib.VariantType.String)?.GetString (out nuint _);
+
+	private static string? MenuItemAttribute (Gio.Menu menu, int index, string name)
+		=> menu.GetItemAttributeValue (index, name, GLib.VariantType.String)?.GetString (out nuint _);
 
 	#region Initialization
 	public void RegisterActions (Gtk.Application app, Gio.Menu menu)

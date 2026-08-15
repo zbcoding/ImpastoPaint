@@ -66,23 +66,39 @@ public static class GioExtensions
 			cancellable: null);
 	}
 
+	/// <summary>
+	/// Removes the item that invokes <paramref name="action"/>, if the menu has one.
+	/// </summary>
 	public static void Remove (this Gio.Menu menu, Command action)
 	{
 		for (int i = 0; i < menu.GetNItems (); ++i) {
-			string name_attr = menu.GetItemAttributeValue (i, "action", GLib.VariantType.String)!.GetString (out nuint _);
-			if (name_attr != action.FullName) continue;
+			// Not every item has an action: a submenu or section item has none, and asking for
+			// a missing attribute returns null. Skip those rather than dereferencing null.
+			if (menu.GetItemAttributeValue (i, "action", GLib.VariantType.String) is not GLib.Variant name)
+				continue;
+
+			if (name.GetString (out nuint _) != action.FullName) continue;
 			menu.Remove (i);
 			return;
 		}
 	}
 
+	/// <summary>
+	/// Inserts an item in label order. A label-less item - a section, which a menu can hold
+	/// alongside its items - ends the sorted run: the new item goes above it, so a trailing
+	/// section stays at the bottom of the menu where it was appended.
+	/// </summary>
 	public static void AppendMenuItemSorted (this Gio.Menu menu, Gio.MenuItem item)
 	{
 		string newLabel = item.GetAttributeValue ("label", GLib.VariantType.String)!.GetString (out nuint _);
 
 		for (int i = 0; i < menu.GetNItems (); i++) {
-			string label = menu.GetItemAttributeValue (i, "label", GLib.VariantType.String)!.GetString (out nuint _);
-			if (string.Compare (label, newLabel) <= 0) continue;
+			if (menu.GetItemAttributeValue (i, "label", GLib.VariantType.String) is not GLib.Variant existing) {
+				menu.InsertItem (i, item);
+				return;
+			}
+
+			if (string.Compare (existing.GetString (out nuint _), newLabel) <= 0) continue;
 			menu.InsertItem (i, item);
 			return;
 		}

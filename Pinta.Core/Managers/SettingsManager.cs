@@ -149,8 +149,29 @@ public sealed class SettingsManager : ISettingsService
 				return true;
 		}
 
+		// Enums are stored by their assembly-qualified-less type name (e.g. "Pinta.BackgroundType")
+		// and ToString() value; resolve them across loaded assemblies since they may live outside Core.
+		if (typeName is not null && FindEnumType (typeName) is Type enumType) {
+			try {
+				value = Enum.Parse (enumType, rawValue);
+				return true;
+			} catch (Exception) {
+				// Fall through to the "unrecognized" path below.
+			}
+		}
+
 		value = null;
 		return false;
+	}
+
+	private static Type? FindEnumType (string typeName)
+	{
+		foreach (var assembly in AppDomain.CurrentDomain.GetAssemblies ()) {
+			if (assembly.GetType (typeName, throwOnError: false) is Type type && type.IsEnum)
+				return type;
+		}
+
+		return null;
 	}
 
 	public string GetUserSettingsDirectory ()

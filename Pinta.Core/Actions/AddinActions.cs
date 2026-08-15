@@ -33,8 +33,15 @@ public sealed class AddinActions
 
 	public Command AddinManager { get; }
 
-	public AddinActions ()
+	/// <summary>
+	/// Impasto: the per-menu "Add-ins" containers that add-in contributions live under.
+	/// </summary>
+	public AddinMenu Menu { get; }
+
+	public AddinActions (ChromeManager chrome)
 	{
+		Menu = new AddinMenu (chrome);
+
 		AddinManager = new Command (
 			"AddinManager",
 			Translations.GetString ("Add-in Manager..."),

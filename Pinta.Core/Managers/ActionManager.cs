@@ -56,11 +56,11 @@ public sealed class ActionManager
 	{
 		// --- Action handlers that don't depend on other handlers
 
-		AddinActions addins = new ();
+		AddinActions addins = new (chrome);
 		AdjustmentsActions adjustments = new ();
 		AppActions app = new ();
 		EditActions edit = new (chrome, paletteFormats, palette, tools, workspace);
-		EffectsActions effects = new (chrome);
+		EffectsActions effects = new (addins);
 		ViewActions view = new (chrome, workspace);
 		WindowActions window = new (workspace);
 

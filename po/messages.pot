@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-08-14 13:22-0500\n"
+"POT-Creation-Date: 2026-08-15 07:36-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -25,8 +25,8 @@ msgstr ""
 msgid " Selection Mode: "
 msgstr ""
 
-#: ../Pinta.Core/Managers/EffectsManager.cs:78
-#: ../Pinta.Core/Managers/EffectsManager.cs:116
+#: ../Pinta.Core/Managers/EffectsManager.cs:80
+#: ../Pinta.Core/Managers/EffectsManager.cs:126
 msgid "..."
 msgstr ""
 
@@ -50,7 +50,7 @@ msgstr ""
 msgid "A triangle with equal sides, growing up or down from the first point."
 msgstr ""
 
-#: ../Impasto/MainWindow.cs:487
+#: ../Impasto/MainWindow.cs:513
 msgid "A_dd-ins"
 msgstr ""
 
@@ -80,8 +80,12 @@ msgstr ""
 msgid "Add control point at mouse position"
 msgstr ""
 
-#: ../Pinta.Core/Actions/AddinActions.cs:40
+#: ../Pinta.Core/Actions/AddinActions.cs:47
 msgid "Add-in Manager..."
+msgstr ""
+
+#: ../Pinta.Core/Actions/AddinMenu.cs:167
+msgid "Add-ins"
 msgstr ""
 
 #: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:1288
@@ -95,7 +99,7 @@ msgid ""
 msgstr ""
 
 #: ../Impasto/Actions/Help/KeyboardShortcutsDialogAction.cs:181
-#: ../Impasto/MainWindow.cs:543
+#: ../Impasto/MainWindow.cs:579
 msgid "Adjustments"
 msgstr ""
 
@@ -122,7 +126,7 @@ msgstr ""
 
 #: ../Impasto/Actions/File/OpenDocumentAction.cs:140
 #: ../Pinta.Core/Actions/EditActions.cs:721
-#: ../Pinta.Gui.Addins/AddinManagerDialog.cs:302
+#: ../Pinta.Gui.Addins/AddinManagerDialog.cs:332
 msgid "All files"
 msgstr ""
 
@@ -542,7 +546,7 @@ msgstr ""
 msgid "Clamp"
 msgstr ""
 
-#: ../Pinta.Gui.Widgets/Widgets/ToolBoxWidget.cs:565
+#: ../Pinta.Gui.Widgets/Widgets/ToolBoxWidget.cs:576
 msgid "Clear pinned tools"
 msgstr ""
 
@@ -573,7 +577,7 @@ msgstr ""
 msgid "Click and drag to navigate image."
 msgstr ""
 
-#: ../Impasto/MainWindow.cs:890
+#: ../Impasto/MainWindow.cs:926
 #: ../Pinta.Gui.Widgets/Widgets/StatusBarColorPaletteWidget.cs:812
 msgid "Click to reset primary and secondary color."
 msgstr ""
@@ -596,7 +600,7 @@ msgstr ""
 msgid "Click to select secondary color."
 msgstr ""
 
-#: ../Impasto/MainWindow.cs:881
+#: ../Impasto/MainWindow.cs:917
 #: ../Pinta.Gui.Widgets/Widgets/ColorPickerDialog.cs:365
 #: ../Pinta.Gui.Widgets/Widgets/ColorPickerPanel.cs:128
 #: ../Pinta.Gui.Widgets/Widgets/StatusBarColorPaletteWidget.cs:807
@@ -711,7 +715,7 @@ msgstr ""
 msgid "Coloring"
 msgstr ""
 
-#: ../Impasto/MainWindow.cs:699 ../Pinta.Core/Actions/ViewActions.cs:171
+#: ../Impasto/MainWindow.cs:735 ../Pinta.Core/Actions/ViewActions.cs:171
 msgid "Colors"
 msgstr ""
 
@@ -1025,12 +1029,12 @@ msgid ""
 "to bake silently and skip the warning."
 msgstr ""
 
-#: ../Impasto/MainWindow.cs:485
+#: ../Impasto/MainWindow.cs:511
 msgid "Effe_cts"
 msgstr ""
 
 #: ../Impasto/Actions/Help/KeyboardShortcutsDialogAction.cs:182
-#: ../Impasto/MainWindow.cs:538
+#: ../Impasto/MainWindow.cs:574
 msgid "Effects"
 msgstr ""
 
@@ -1101,7 +1105,7 @@ msgstr ""
 msgid "Export Settings..."
 msgstr ""
 
-#: ../Pinta.Gui.Addins/AddinManagerDialog.cs:294
+#: ../Pinta.Gui.Addins/AddinManagerDialog.cs:324
 msgid "Extension packages"
 msgstr ""
 
@@ -1119,7 +1123,7 @@ msgstr ""
 msgid "Failed to export settings: {0}"
 msgstr ""
 
-#: ../Impasto/MainWindow.cs:400
+#: ../Impasto/MainWindow.cs:402
 msgid "Failed to initialize add-in"
 msgstr ""
 
@@ -1358,7 +1362,7 @@ msgstr ""
 msgid "GNU LGPL Licenses"
 msgstr ""
 
-#: ../Pinta.Gui.Addins/AddinManagerDialog.cs:103
+#: ../Pinta.Gui.Addins/AddinManagerDialog.cs:104
 msgid "Gallery"
 msgstr ""
 
@@ -1519,7 +1523,7 @@ msgid "If you don't save, all changes will be permanently lost."
 msgstr ""
 
 #: ../Impasto/Actions/Help/KeyboardShortcutsDialogAction.cs:180
-#: ../Impasto/MainWindow.cs:548 ../Pinta.Tools/Tools/ColorPickerTool.cs:265
+#: ../Impasto/MainWindow.cs:584 ../Pinta.Tools/Tools/ColorPickerTool.cs:265
 msgid "Image"
 msgstr ""
 
@@ -1689,11 +1693,11 @@ msgstr ""
 msgid "Install"
 msgstr ""
 
-#: ../Pinta.Gui.Addins/AddinManagerDialog.cs:268
+#: ../Pinta.Gui.Addins/AddinManagerDialog.cs:298
 msgid "Install Extension Package"
 msgstr ""
 
-#: ../Pinta.Gui.Addins/AddinManagerDialog.cs:127
+#: ../Pinta.Gui.Addins/AddinManagerDialog.cs:128
 msgid "Install from file..."
 msgstr ""
 
@@ -1701,7 +1705,7 @@ msgstr ""
 msgid "Install..."
 msgstr ""
 
-#: ../Pinta.Gui.Addins/AddinManagerDialog.cs:104
+#: ../Pinta.Gui.Addins/AddinManagerDialog.cs:105
 msgid "Installed"
 msgstr ""
 
@@ -2026,7 +2030,7 @@ msgstr ""
 msgid "Magic Wand Select"
 msgstr ""
 
-#: ../Impasto/MainWindow.cs:533
+#: ../Impasto/MainWindow.cs:569
 msgid "Main Menu"
 msgstr ""
 
@@ -2568,11 +2572,11 @@ msgstr ""
 msgid "Paste text"
 msgstr ""
 
-#: ../Impasto/MainWindow.cs:525
+#: ../Impasto/MainWindow.cs:561
 msgid "Paste to Active Layer"
 msgstr ""
 
-#: ../Impasto/MainWindow.cs:526
+#: ../Impasto/MainWindow.cs:562
 msgid "Paste to New Layer"
 msgstr ""
 
@@ -2611,7 +2615,7 @@ msgstr ""
 msgid "Phyllotaxis"
 msgstr ""
 
-#: ../Pinta.Gui.Widgets/Widgets/ToolBoxWidget.cs:537
+#: ../Pinta.Gui.Widgets/Widgets/ToolBoxWidget.cs:548
 msgid "Pin this item"
 msgstr ""
 
@@ -2623,11 +2627,11 @@ msgstr ""
 msgid "Pinta Add-ins"
 msgstr ""
 
-#: ../Impasto/AddinSetupService.cs:66
+#: ../Impasto/AddinSetupService.cs:75
 msgid "Pinta Community Addins - Cross-Platform"
 msgstr ""
 
-#: ../Impasto/AddinSetupService.cs:62
+#: ../Impasto/AddinSetupService.cs:71
 msgid "Pinta Community Addins - Platform-Specific"
 msgstr ""
 
@@ -2990,7 +2994,7 @@ msgstr ""
 msgid "Refraction"
 msgstr ""
 
-#: ../Pinta.Gui.Addins/AddinManagerDialog.cs:119
+#: ../Pinta.Gui.Addins/AddinManagerDialog.cs:120
 msgid "Refresh"
 msgstr ""
 
@@ -3080,7 +3084,7 @@ msgstr ""
 msgid "Reset to image size"
 msgstr ""
 
-#: ../Impasto/MainWindow.cs:668
+#: ../Impasto/MainWindow.cs:704
 msgid "Reset window"
 msgstr ""
 
@@ -3703,7 +3707,7 @@ msgid "Text properties ({0})"
 msgstr ""
 
 #. Translators: {0} is the name of an add-in.
-#: ../Impasto/MainWindow.cs:397
+#: ../Impasto/MainWindow.cs:399
 #, csharp-format
 msgid "The '{0}' add-in may not be compatible with this version of Impasto"
 msgstr ""
@@ -4084,7 +4088,7 @@ msgstr ""
 msgid "Union (+) ({0} + Left Click)"
 msgstr ""
 
-#: ../Pinta.Gui.Widgets/Widgets/ToolBoxWidget.cs:536
+#: ../Pinta.Gui.Widgets/Widgets/ToolBoxWidget.cs:547
 msgid "Unpin this item"
 msgstr ""
 
@@ -4113,7 +4117,7 @@ msgstr ""
 msgid "Update..."
 msgstr ""
 
-#: ../Pinta.Gui.Addins/AddinManagerDialog.cs:105
+#: ../Pinta.Gui.Addins/AddinManagerDialog.cs:106
 msgid "Updates"
 msgstr ""
 
@@ -4156,7 +4160,7 @@ msgid "Vertical red (R)"
 msgstr ""
 
 #: ../Impasto/Actions/Help/KeyboardShortcutsDialogAction.cs:179
-#: ../Impasto/MainWindow.cs:553
+#: ../Impasto/MainWindow.cs:589
 msgid "View"
 msgstr ""
 
@@ -4260,7 +4264,7 @@ msgstr ""
 msgid "Zoom to Selection"
 msgstr ""
 
-#: ../Impasto/MainWindow.cs:484
+#: ../Impasto/MainWindow.cs:510
 msgid "_Adjustments"
 msgstr ""
 
@@ -4284,19 +4288,19 @@ msgstr ""
 msgid "_Discard"
 msgstr ""
 
-#: ../Impasto/MainWindow.cs:480
+#: ../Impasto/MainWindow.cs:506
 msgid "_Edit"
 msgstr ""
 
-#: ../Impasto/MainWindow.cs:479
+#: ../Impasto/MainWindow.cs:505
 msgid "_File"
 msgstr ""
 
-#: ../Impasto/MainWindow.cs:489
+#: ../Impasto/MainWindow.cs:515
 msgid "_Help"
 msgstr ""
 
-#: ../Impasto/MainWindow.cs:483
+#: ../Impasto/MainWindow.cs:509
 msgid "_Image"
 msgstr ""
 
@@ -4323,11 +4327,11 @@ msgstr ""
 msgid "_Save"
 msgstr ""
 
-#: ../Impasto/MainWindow.cs:482
+#: ../Impasto/MainWindow.cs:508
 msgid "_View"
 msgstr ""
 
-#: ../Impasto/MainWindow.cs:488
+#: ../Impasto/MainWindow.cs:514
 msgid "_Window"
 msgstr ""
 

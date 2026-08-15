@@ -71,9 +71,18 @@ public abstract class BaseEffect
 	public virtual string AdjustmentMenuKeyModifiers => "<Primary><Shift>";
 
 	/// <summary>
-	/// Returns the menu category for an effect. Only affects effects, not adjustments. Default is "General".
+	/// Impasto: the category an effect asks for, which says nothing about where it is placed.
+	/// An effect that ships with the application becomes a category of the Effects menu; one
+	/// from an add-in is grouped under that menu's Add-ins container instead, with this as a
+	/// qualifier. Only affects effects, not adjustments.
 	/// </summary>
-	public virtual string EffectMenuCategory => "General";
+	public virtual string EffectMenuCategory => DefaultMenuCategory;
+
+	/// <summary>
+	/// What <see cref="EffectMenuCategory"/> means when an effect does not choose one. Carries
+	/// no information, so it is left out of an add-in's grouping.
+	/// </summary>
+	public const string DefaultMenuCategory = "General";
 
 	/// <summary>
 	/// The user configurable data this effect uses.

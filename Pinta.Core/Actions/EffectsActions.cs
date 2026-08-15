@@ -31,40 +31,56 @@ namespace Pinta.Core;
 
 public sealed class EffectsActions
 {
+	/// <summary>
+	/// Category menus, keyed by the resolved path rather than the requested one, so an add-in
+	/// pack named after a built-in category stays a separate menu.
+	/// </summary>
 	public Dictionary<string, Gio.Menu> Menus { get; } = [];
 	public Collection<Command> Actions { get; } = [];
 
-	private readonly ChromeManager chrome;
-	public EffectsActions (ChromeManager chrome)
+	// Resolved path per category, so removal knows which menu the entry went into.
+	private readonly Dictionary<string, string> resolved_keys = [];
+
+	private readonly AddinActions addins;
+	public EffectsActions (AddinActions addins)
 	{
-		this.chrome = chrome;
+		this.addins = addins;
 	}
 
 	#region Initialization
+	/// <summary>
+	/// Adds an effect to the Effects menu. <paramref name="category"/> is a menu path: a plain
+	/// name is a category of the Effects menu, and one starting with <see cref="AddinMenu.Root"/>
+	/// is placed under the Add-ins container instead.
+	/// </summary>
 	public void AddEffect (string category, Command action)
 	{
-		var effects_menu = chrome.EffectsMenu;
-
 		if (!Menus.ContainsKey (category)) {
-			var category_menu = Gio.Menu.New ();
-			effects_menu.AppendMenuItemSorted (Gio.MenuItem.NewSubmenu (category, category_menu));
-			Menus.Add (category, category_menu);
+			Gio.Menu categoryMenu = addins.Menu.ResolvePath (MainMenu.Effects, category, out string resolvedKey);
+			Menus.Add (category, categoryMenu);
+			resolved_keys.Add (category, resolvedKey);
 		}
 
 		Actions.Add (action);
-
-		Gio.Menu m = Menus[category];
-		m.AppendMenuItemSorted (action.CreateMenuItem ());
+		Menus[category].AppendMenuItemSorted (action.CreateMenuItem ());
 	}
 
-	// TODO: Remove menu category if empty
 	internal void RemoveEffect (string category, Command action)
 	{
-		if (!Menus.ContainsKey (category))
+		if (!Menus.TryGetValue (category, out Gio.Menu? menu))
 			return;
 
-		var menu = Menus[category];
 		menu.Remove (action);
+		Actions.Remove (action);
+
+		if (menu.GetNItems () > 0)
+			return;
+
+		// Last effect in this category: drop the now-empty submenu, and the Add-ins container
+		// with it if that was the last pack under it.
+		Menus.Remove (category);
+		addins.Menu.PruneEmpty (MainMenu.Effects, resolved_keys[category]);
+		resolved_keys.Remove (category);
 	}
 	#endregion
 

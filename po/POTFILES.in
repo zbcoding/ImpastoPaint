@@ -70,6 +70,7 @@ Impasto/Pads/LayersPad.cs
 Impasto/SettingNames.cs
 Impasto/WindowShell.cs
 Pinta.Core/Actions/AddinActions.cs
+Pinta.Core/Actions/AddinMenu.cs
 Pinta.Core/Actions/AdjustmentsActions.cs
 Pinta.Core/Actions/AppActions.cs
 Pinta.Core/Actions/Command.cs

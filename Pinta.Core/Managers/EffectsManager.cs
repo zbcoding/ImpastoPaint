@@ -35,6 +35,8 @@ namespace Pinta.Core;
 public sealed class EffectsManager
 {
 	private readonly Dictionary<Type, Command> adjustments;
+	// Resolved menu path per adjustment, absent when it went into the Adjustments menu itself.
+	private readonly Dictionary<Type, string> adjustment_keys = [];
 
 	private readonly Dictionary<Type, Command> effects;
 	private readonly Dictionary<Type, string> effects_categories;
@@ -89,7 +91,15 @@ public sealed class EffectsManager
 
 		chrome_manager.Application.AddCommand (action);
 
-		chrome_manager.AdjustmentsMenu.AppendMenuItemSorted (action.CreateMenuItem ());
+		// An adjustment from an add-in is grouped under the Adjustments menu's Add-ins container.
+		// The application's own adjustments sit directly in the menu, as they always have.
+		if (AddinMenu.PathFor (adjustment.GetType (), null) is string path) {
+			Gio.Menu menu = action_manager.Addins.Menu.ResolvePath (MainMenu.Adjustments, path, out string resolvedKey);
+			menu.AppendMenuItemSorted (action.CreateMenuItem ());
+			adjustment_keys.Add (adjustmentType, resolvedKey);
+		} else {
+			chrome_manager.AdjustmentsMenu.AppendMenuItemSorted (action.CreateMenuItem ());
+		}
 
 		adjustments.Add (adjustmentType, action);
 	}
@@ -120,10 +130,15 @@ public sealed class EffectsManager
 		chrome_manager.Application.AddCommand (action);
 		action.Activated += (o, args) => live_preview_manager.Start (effect);
 
-		action_manager.Effects.AddEffect (effect.EffectMenuCategory, action);
+		// Placement is decided from where the effect came from, not from what it asked for: an
+		// add-in's effects belong under the Effects menu's Add-ins container whether or not the
+		// add-in knows that container exists.
+		string category = AddinMenu.PathFor (effect.GetType (), effect.EffectMenuCategory) ?? effect.EffectMenuCategory;
+
+		action_manager.Effects.AddEffect (category, action);
 
 		effects.Add (effectType, action);
-		effects_categories.Add (effectType, effect.EffectMenuCategory);
+		effects_categories.Add (effectType, category);
 	}
 
 	/// <summary>
@@ -157,6 +172,12 @@ public sealed class EffectsManager
 
 		adjustments.Remove (adjustmentType);
 		action_manager.Adjustments.Actions.Remove (action);
-		chrome_manager.AdjustmentsMenu.Remove (action);
+
+		if (adjustment_keys.Remove (adjustmentType, out string? resolvedKey)) {
+			action_manager.Addins.Menu.ResolvePath (MainMenu.Adjustments, resolvedKey, out _).Remove (action);
+			action_manager.Addins.Menu.PruneEmpty (MainMenu.Adjustments, resolvedKey);
+		} else {
+			chrome_manager.AdjustmentsMenu.Remove (action);
+		}
 	}
 }

@@ -106,6 +106,8 @@ internal sealed class MainWindow
 		if (!setupService.AreRepositoriesRegistered ())
 			setupService.RegisterRepositories (true);
 
+		AddAddinIconSearchPaths ();
+
 		// Look out for any changes in extensions
 		main_thread_id = Environment.CurrentManagedThreadId;
 		AddinManager.AddExtensionNodeHandler (typeof (IExtension), OnExtensionChanged);
@@ -411,6 +413,30 @@ internal sealed class MainWindow
 			} catch (Exception e) {
 				Console.Error.WriteLine ($"Failed to uninitialize add-in '{args.ExtensionNode.Addin.Id}': {e}");
 			}
+		}
+	}
+
+	/// <summary>
+	/// Lets an add-in ship its own icons. Only the application's own icon directory is on the
+	/// theme's search path, so a tool or effect from an add-in has no way to resolve its
+	/// <c>Icon</c> name and renders GTK's broken-image glyph instead.
+	///
+	/// An add-in that wants icons lays them out the way the application does, under an
+	/// <c>icons</c> directory beside its assembly:
+	/// <c>icons/hicolor/scalable/actions/my-effect-symbolic.svg</c>.
+	/// </summary>
+	private static void AddAddinIconSearchPaths ()
+	{
+		Gtk.IconTheme theme = GtkExtensions.GetDefaultIconTheme ();
+
+		foreach (Mono.Addins.Addin addin in AddinManager.Registry.GetAddins ()) {
+			if (System.IO.Path.GetDirectoryName (addin.AddinFile) is not string addinDir)
+				continue;
+
+			string iconsDir = System.IO.Path.Combine (addinDir, "icons");
+
+			if (System.IO.Directory.Exists (iconsDir))
+				theme.AddSearchPath (iconsDir);
 		}
 	}
 

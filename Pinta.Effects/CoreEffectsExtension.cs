@@ -32,7 +32,7 @@ using Pinta.Core;
 [assembly: AddinName ("Default Effects")]
 [assembly: AddinDescription ("The default adjustments and effects that ship with Pinta")]
 [assembly: AddinDependency ("Pinta", PintaCore.PintaCompatVersion)]
-[assembly: AddinFlags (Mono.Addins.Description.AddinFlags.Hidden | Mono.Addins.Description.AddinFlags.CantUninstall)]
+[assembly: AddinFlags (Mono.Addins.Description.AddinFlags.Hidden | Mono.Addins.Description.AddinFlags.CantUninstall | Mono.Addins.Description.AddinFlags.CantDisable)]
 
 namespace Pinta.Effects;
 

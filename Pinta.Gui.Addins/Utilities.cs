@@ -31,6 +31,7 @@ using System.Linq;
 using Mono.Addins;
 using Mono.Addins.Description;
 using Mono.Addins.Setup;
+using Pinta.Core;
 
 namespace Pinta.Gui.Addins;
 
@@ -40,6 +41,15 @@ internal static class Utilities
 	{
 		return service.ApplicationNamespace == null || id.StartsWith (service.ApplicationNamespace + ".");
 	}
+
+	/// <summary>
+	/// Impasto: true when an add-in ships with the application rather than being installed by
+	/// the user. Decided by where the assembly sits - the same rule that decides which menu
+	/// and toolbox section a contribution lands in (see <see cref="AddinMenu.AddinNameOf"/>) -
+	/// so an add-in cannot claim to be part of the application by setting a flag.
+	/// </summary>
+	public static bool IsBundledWithApplication (Addin addin)
+		=> AddinMenu.IsApplicationDirectory (System.IO.Path.GetDirectoryName (addin.AddinFile));
 
 	public readonly record struct MissingDepInfo (string Addin, string Required, string Found);
 

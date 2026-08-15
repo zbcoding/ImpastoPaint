@@ -188,7 +188,10 @@ public sealed partial class AddinManagerDialog
 
 		foreach (Addin ainfo in AddinManager.Registry.GetModules (AddinSearchFlags.IncludeAddins | AddinSearchFlags.LatestVersionsOnly)) {
 
-			if (!Utilities.InApplicationNamespace (setup_service, ainfo.Id) || ainfo.Description.IsHidden)
+			// Impasto: the add-ins that ship with the application are listed too, in a section
+			// of their own, so the tab answers "what is installed" rather than only "what did I
+			// install". They are marked hidden upstream, which is what kept them out.
+			if (!Utilities.InApplicationNamespace (setup_service, ainfo.Id))
 				continue;
 
 			AddinHeader ah = SetupService.GetAddinHeader (ainfo);

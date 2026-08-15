@@ -12,15 +12,23 @@ namespace Pinta.Gui.Addins;
 [GObject.Subclass<Adw.Bin>]
 internal sealed partial class AddinListView
 {
-	// Add-ins are rendered as one labeled section per source (e.g. "Pinta Add-ins" for the
-	// Pinta Community Addins repository) so a future second source - a native Impasto add-in
-	// ecosystem, or a PDN-compatible one - never appears merged into today's single list.
+	// Add-ins are rendered as one labeled section per source: what the user installed, what
+	// ships with the application, or the repository an available add-in comes from. A source is
+	// never merged into another, and sections keep a fixed order rather than the order add-ins
+	// happened to be enumerated in.
 	private sealed class Group
 	{
 		public required Gio.ListStore Model { get; init; }
 		public required Gtk.SingleSelection Selection { get; init; }
 		public required Gtk.Widget Widget { get; init; }
+		public required int Rank { get; init; }
 	}
+
+	// Section order. What the user installed comes first: it is the part they act on, and the
+	// bundled section is only there to say what the application already provides.
+	private const int UserInstalledRank = 0;
+	private const int RepositoryRank = 1;
+	private const int BundledRank = 2;
 
 	private readonly Dictionary<string, Group> groups = [];
 	private bool changing_selection;
@@ -114,9 +122,12 @@ internal sealed partial class AddinListView
 		Addin addin,
 		AddinStatus status)
 	{
-		// Installed add-ins carry no repository info; the only add-in source this fork
-		// currently exposes is Pinta Community Addins.
-		AddItem (GetSourceLabel (null), AddinListViewItem.NewForInstalledAddin (service, info, addin, status));
+		bool bundled = Utilities.IsBundledWithApplication (addin);
+
+		AddItem (
+			bundled ? Translations.GetString ("Included with Impasto") : Translations.GetString ("Installed add-ins"),
+			bundled ? BundledRank : UserInstalledRank,
+			AddinListViewItem.NewForInstalledAddin (service, info, addin, status));
 	}
 
 	public void AddAddinRepositoryEntry (
@@ -125,14 +136,14 @@ internal sealed partial class AddinListView
 		AddinRepositoryEntry addin,
 		AddinStatus status)
 	{
-		AddItem (GetSourceLabel (addin), AddinListViewItem.NewForAvailableAddin (service, info, addin, status));
+		AddItem (GetSourceLabel (addin), RepositoryRank, AddinListViewItem.NewForAvailableAddin (service, info, addin, status));
 	}
 
-	private void AddItem (string sourceLabel, AddinListViewItem item)
+	private void AddItem (string sourceLabel, int rank, AddinListViewItem item)
 	{
 		list_view_stack.VisibleChild = list_view_scroll;
 
-		Group group = GetOrCreateGroup (sourceLabel);
+		Group group = GetOrCreateGroup (sourceLabel, rank);
 		group.Model.Append (item);
 
 		// Select the very first item added across all groups, so the info panel is never
@@ -144,7 +155,7 @@ internal sealed partial class AddinListView
 		}
 	}
 
-	private Group GetOrCreateGroup (string sourceLabel)
+	private Group GetOrCreateGroup (string sourceLabel, int rank)
 	{
 		if (groups.TryGetValue (sourceLabel, out Group? existing))
 			return existing;
@@ -180,12 +191,22 @@ internal sealed partial class AddinListView
 			Model = listStore,
 			Selection = selectionModel,
 			Widget = sectionBox,
+			Rank = rank,
 		};
 
 		selectionModel.OnSelectionChanged += (_, _) => HandleSelectionChanged (group);
 
 		groups[sourceLabel] = group;
-		list_box.Append (sectionBox);
+
+		// Place the section by rank, after the last one that sorts at or above it, so the order
+		// does not depend on which add-in the registry happened to hand over first.
+		Gtk.Widget? previous = groups.Values
+			.Where (g => g != group && g.Rank <= rank)
+			.OrderBy (g => g.Rank)
+			.LastOrDefault ()
+			?.Widget;
+
+		list_box.InsertChildAfter (sectionBox, previous);
 
 		return group;
 	}

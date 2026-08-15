@@ -31,7 +31,7 @@ using Pinta.Core;
 [assembly: Mono.Addins.AddinName ("Default Tools")]
 [assembly: Mono.Addins.AddinDescription ("The default tools and brushes that ship with Pinta")]
 [assembly: Mono.Addins.AddinDependency ("Pinta", PintaCore.PintaCompatVersion)]
-[assembly: Mono.Addins.AddinFlags (Mono.Addins.Description.AddinFlags.Hidden | Mono.Addins.Description.AddinFlags.CantUninstall)]
+[assembly: Mono.Addins.AddinFlags (Mono.Addins.Description.AddinFlags.Hidden | Mono.Addins.Description.AddinFlags.CantUninstall | Mono.Addins.Description.AddinFlags.CantDisable)]
 
 namespace Pinta.Tools;
 

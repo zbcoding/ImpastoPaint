@@ -30,7 +30,14 @@ the oldest it accepts, and 3.0 is the GTK3 → GTK4 boundary below which nothing
 
 Working example, with build and install steps: `samples/ImpastoSampleAddin`.
 
-## Menu placement is decided by provenance
+## Provenance decides placement
+
+Where a contribution came from is decided in one place, `AddinMenu.IsApplicationDirectory`: the
+application's assemblies sit beside the executable, an add-in's live under the registry. Every
+surface that separates the two reads it, so the menus, the toolbox and the Add-in Manager cannot
+disagree — and an add-in cannot claim to be part of the application by setting a flag.
+
+### Menus
 
 An add-in's effects and adjustments are grouped under an **Add-ins** container in the menu they
 belong to, by the add-in's name, then by whatever category it asked for:
@@ -50,6 +57,20 @@ a deeper path is folded into the last label. `AddinMenu` owns all of this.
 
 `AddinActions.AddMenuItem` / `RemoveMenuItem` add commands to the top-level Add-ins menu.
 
+### Toolbox
+
+An add-in's tools get their own section, below every built-in one and behind a divider
+(`docs/toolbox-layout.md`). `Priority` only orders them within that section, and add-in tools
+never collapse into a built-in's flyout stack. Each button's tooltip names the add-in that
+supplied the tool, so several installed add-ins stay distinguishable.
+
+### Add-in Manager
+
+The Installed tab lists what the user installed first, then an **Included with Impasto** section
+for the add-ins that ship with the application. Those are marked `Hidden`, which upstream used to
+keep them out of the list entirely; they are shown here so the tab answers "what is installed",
+and they carry `CantUninstall | CantDisable` so neither control appears for them.
+
 ## Icons
 
 Ship icons the way the application does — `icons/hicolor/scalable/actions/<name>-symbolic.svg`
@@ -58,12 +79,6 @@ directory is added to the theme's search path at startup.
 
 An icon name that does not resolve draws a stand-in in the toolbox, not a broken-image glyph.
 Effects already default to `Resources.Icons.EffectsDefault`.
-
-## Tools
-
-An add-in's tools get their own toolbox section, below every built-in one and behind a divider,
-decided the same way menu placement is (`docs/toolbox-layout.md`). `Priority` only orders them
-within that section, and add-in tools never collapse into a built-in's flyout stack.
 
 ## Not available yet
 

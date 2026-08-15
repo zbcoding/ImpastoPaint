@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-08-15 07:36-0500\n"
+"POT-Creation-Date: 2026-08-15 08:46-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -80,11 +80,15 @@ msgstr ""
 msgid "Add control point at mouse position"
 msgstr ""
 
+#: ../Pinta.Gui.Widgets/Widgets/ToolBoxWidget.cs:237
+msgid "Add-in"
+msgstr ""
+
 #: ../Pinta.Core/Actions/AddinActions.cs:47
 msgid "Add-in Manager..."
 msgstr ""
 
-#: ../Pinta.Core/Actions/AddinMenu.cs:167
+#: ../Pinta.Core/Actions/AddinMenu.cs:261
 msgid "Add-ins"
 msgstr ""
 
@@ -126,7 +130,7 @@ msgstr ""
 
 #: ../Impasto/Actions/File/OpenDocumentAction.cs:140
 #: ../Pinta.Core/Actions/EditActions.cs:721
-#: ../Pinta.Gui.Addins/AddinManagerDialog.cs:332
+#: ../Pinta.Gui.Addins/AddinManagerDialog.cs:335
 msgid "All files"
 msgstr ""
 
@@ -546,7 +550,7 @@ msgstr ""
 msgid "Clamp"
 msgstr ""
 
-#: ../Pinta.Gui.Widgets/Widgets/ToolBoxWidget.cs:576
+#: ../Pinta.Gui.Widgets/Widgets/ToolBoxWidget.cs:614
 msgid "Clear pinned tools"
 msgstr ""
 
@@ -1008,7 +1012,7 @@ msgstr ""
 #: ../Pinta.Effects/Effects/DentsEffect.cs:162
 #: ../Pinta.Effects/Effects/PolarInversionEffect.cs:99
 #: ../Pinta.Effects/Effects/TileEffect.cs:237
-#: ../Pinta.Effects/Effects/TwistEffect.cs:232 Polar Inversion dialog
+#: ../Pinta.Effects/Effects/TwistEffect.cs:232
 msgid "Edge Behavior"
 msgstr ""
 
@@ -1105,7 +1109,7 @@ msgstr ""
 msgid "Export Settings..."
 msgstr ""
 
-#: ../Pinta.Gui.Addins/AddinManagerDialog.cs:324
+#: ../Pinta.Gui.Addins/AddinManagerDialog.cs:327
 msgid "Extension packages"
 msgstr ""
 
@@ -1660,6 +1664,10 @@ msgstr ""
 msgid "Inches"
 msgstr ""
 
+#: ../Pinta.Gui.Addins/AddinListView.cs:128
+msgid "Included with Impasto"
+msgstr ""
+
 #: ../Pinta.Core/Managers/KeyboardShortcutManager.cs:220
 msgid "Increase brush width"
 msgstr ""
@@ -1693,7 +1701,7 @@ msgstr ""
 msgid "Install"
 msgstr ""
 
-#: ../Pinta.Gui.Addins/AddinManagerDialog.cs:298
+#: ../Pinta.Gui.Addins/AddinManagerDialog.cs:301
 msgid "Install Extension Package"
 msgstr ""
 
@@ -1707,6 +1715,10 @@ msgstr ""
 
 #: ../Pinta.Gui.Addins/AddinManagerDialog.cs:105
 msgid "Installed"
+msgstr ""
+
+#: ../Pinta.Gui.Addins/AddinListView.cs:128
+msgid "Installed add-ins"
 msgstr ""
 
 #: ../Pinta.Effects/Effects/AddNoiseEffect.cs:167
@@ -2211,7 +2223,7 @@ msgstr ""
 msgid "New..."
 msgstr ""
 
-#: ../Pinta.Gui.Addins/AddinListView.cs:57
+#: ../Pinta.Gui.Addins/AddinListView.cs:65
 msgid "No Items Found"
 msgstr ""
 
@@ -2615,15 +2627,15 @@ msgstr ""
 msgid "Phyllotaxis"
 msgstr ""
 
-#: ../Pinta.Gui.Widgets/Widgets/ToolBoxWidget.cs:548
+#: ../Pinta.Gui.Widgets/Widgets/ToolBoxWidget.cs:586
 msgid "Pin this item"
 msgstr ""
 
-#: ../Pinta.Gui.Widgets/Widgets/ToolBoxWidget.cs:121
+#: ../Pinta.Gui.Widgets/Widgets/ToolBoxWidget.cs:133
 msgid "Pinned items"
 msgstr ""
 
-#: ../Pinta.Gui.Addins/AddinListView.cs:239
+#: ../Pinta.Gui.Addins/AddinListView.cs:260
 msgid "Pinta Add-ins"
 msgstr ""
 
@@ -3446,7 +3458,7 @@ msgstr ""
 #: ../Pinta.Core/Extensions/Gtk/GtkExtensions.Widget.cs:106
 #: ../Pinta.Gui.Widgets/Widgets/ColorPickerDialog.cs:366
 #: ../Pinta.Gui.Widgets/Widgets/StatusBarColorPaletteWidget.cs:808
-#: ../Pinta.Gui.Widgets/Widgets/ToolBoxWidget.cs:199
+#: ../Pinta.Gui.Widgets/Widgets/ToolBoxWidget.cs:231
 msgid "Shortcut key"
 msgstr ""
 
@@ -4088,7 +4100,7 @@ msgstr ""
 msgid "Union (+) ({0} + Left Click)"
 msgstr ""
 
-#: ../Pinta.Gui.Widgets/Widgets/ToolBoxWidget.cs:547
+#: ../Pinta.Gui.Widgets/Widgets/ToolBoxWidget.cs:585
 msgid "Unpin this item"
 msgstr ""
 

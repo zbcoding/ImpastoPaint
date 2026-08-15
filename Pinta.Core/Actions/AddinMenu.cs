@@ -94,14 +94,6 @@ public sealed class AddinMenu
 	}
 
 	/// <summary>
-	/// True when an add-in ships this type rather than the application. Placement decisions
-	/// outside the menus - the toolbox section a tool's button lands in, say - use this so
-	/// they agree with the menus about what came from where.
-	/// </summary>
-	public static bool IsFromAddin (Type contributor)
-		=> AddinNameOf (contributor) is not null;
-
-	/// <summary>
 	/// Groups by add-in name, qualified by the category when the add-in asked for a meaningful
 	/// one. <see cref="BaseEffect.EffectMenuCategory"/> defaults to "General", which says
 	/// nothing once the entries are already grouped by add-in, so it is left off.
@@ -115,8 +107,14 @@ public sealed class AddinMenu
 	/// The name of the add-in that ships this type, or null when the application itself does.
 	/// Matched on the assembly's directory: the application's assemblies sit beside the
 	/// executable, and an installed add-in lives in its own directory under the add-in registry.
+	///
+	/// <para>
+	/// Placement decisions outside the menus use this too - the toolbox section a tool's button
+	/// lands in, the add-in named in its tooltip - so everything agrees about what came from
+	/// where.
+	/// </para>
 	/// </summary>
-	private static string? AddinNameOf (Type contributor)
+	public static string? AddinNameOf (Type contributor)
 	{
 		string location = contributor.Assembly.Location;
 
@@ -126,7 +124,7 @@ public sealed class AddinMenu
 		if (System.IO.Path.GetDirectoryName (location) is not string directory)
 			return null;
 
-		if (PathsEqual (directory, SystemManager.GetExecutableDirectory ()))
+		if (IsApplicationDirectory (directory))
 			return null;
 
 		foreach (Mono.Addins.Addin addin in Mono.Addins.AddinManager.Registry.GetAddins ()) {
@@ -141,6 +139,15 @@ public sealed class AddinMenu
 		// assembly rather than silently filing it with the application's own entries.
 		return contributor.Assembly.GetName ().Name;
 	}
+
+	/// <summary>
+	/// True when a file in this directory ships with the application: its assemblies sit beside
+	/// the executable, while an installed add-in lives in its own directory under the add-in
+	/// registry. This is the one place that decision is made, so the menus, the toolbox and the
+	/// Add-in Manager cannot disagree about what came from where.
+	/// </summary>
+	public static bool IsApplicationDirectory (string? directory)
+		=> directory is not null && PathsEqual (directory, SystemManager.GetExecutableDirectory ());
 
 	private static bool PathsEqual (string left, string right)
 		=> string.Equals (

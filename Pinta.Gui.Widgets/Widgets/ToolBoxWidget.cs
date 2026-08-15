@@ -198,7 +198,7 @@ public sealed partial class ToolBoxWidget
 		if (classic_layout)
 			return 0;
 
-		if (AddinMenu.IsFromAddin (tool.GetType ()))
+		if (AddinMenu.AddinNameOf (tool.GetType ()) is not null)
 			return addin_section;
 
 		for (int i = 0; i < section_bounds.Length; i++)
@@ -214,10 +214,15 @@ public sealed partial class ToolBoxWidget
 	/// priority would otherwise hide inside that stack's flyout.
 	/// </summary>
 	internal static int[]? StackDefinition (BaseTool tool)
-		=> AddinMenu.IsFromAddin (tool.GetType ())
+		=> AddinMenu.AddinNameOf (tool.GetType ()) is not null
 			? null
 			: stack_definitions.FirstOrDefault (s => s.Contains (tool.Priority));
 
+	/// <summary>
+	/// Names the add-in a tool came from, so a button in the add-in section says which plugin
+	/// put it there - the section groups them, but with several installed the divider alone
+	/// does not say whose tool this is.
+	/// </summary>
 	private string TooltipFor (BaseTool tool)
 	{
 		string shortcutText = "";
@@ -227,7 +232,13 @@ public sealed partial class ToolBoxWidget
 			shortcutText = $"{shortcutLabel}: {shortcut.ToLabel ()}\n";
 		}
 
-		return $"{tool.Name}\n{shortcutText}\n{tool.StatusBarText}";
+		string addinText = "";
+		if (AddinMenu.AddinNameOf (tool.GetType ()) is string addinName) {
+			string addinLabel = Translations.GetString ("Add-in");
+			addinText = $"{addinLabel}: {addinName}\n";
+		}
+
+		return $"{tool.Name}\n{addinText}{shortcutText}\n{tool.StatusBarText}";
 	}
 
 	/// <summary>

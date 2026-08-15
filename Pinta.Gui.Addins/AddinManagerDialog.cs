@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using Mono.Addins;
@@ -117,7 +118,7 @@ public sealed partial class AddinManagerDialog
 	{
 		Gtk.Button result = Gtk.Button.NewFromIconName (StandardIcons.ViewRefresh);
 		result.TooltipText = Translations.GetString ("Refresh");
-		result.OnClicked += (_, _) => LoadAll ();
+		result.OnClicked += (_, _) => LoadAll (forceRefresh: true);
 		return result;
 	}
 
@@ -129,27 +130,56 @@ public sealed partial class AddinManagerDialog
 		return result;
 	}
 
-	private void LoadAll ()
+	// Mono.Addins keeps the downloaded repository indexes on disk, so the gallery renders fully
+	// without touching the network. Only the check for new versions has to go out.
+	private const string LastRepositoryRefreshSetting = "addins-last-repository-refresh";
+	private static readonly TimeSpan repository_refresh_interval = TimeSpan.FromHours (24);
+
+	private void LoadAll (bool forceRefresh = false)
 	{
 		LoadInstalled ();
+
+		if (!forceRefresh && !IsRepositoryRefreshDue ()) {
+			LoadGallery ();
+			LoadUpdates ();
+			return;
+		}
 
 		// First update the available addins in a background thread, since this involves network access.
 		progress_bar.ShowProgress ();
 
 		Task.Run (() => {
 			setup_service.Repositories.UpdateAllRepositories (progress_bar);
-		}).ContinueWith (_ => {
+		}).ContinueWith (task => {
 			// Execute UI updates on the main thread.
 			GLib.Functions.IdleAdd (
 				0,
 				() => {
 					progress_bar.HideProgress ();
+
+					// A failed refresh keeps the old timestamp, so the next open retries
+					// instead of serving a stale gallery for a day.
+					if (task.IsCompletedSuccessfully)
+						PintaCore.Settings.PutSetting (
+							LastRepositoryRefreshSetting,
+							DateTime.UtcNow.ToString ("o", CultureInfo.InvariantCulture));
+
 					LoadGallery ();
 					LoadUpdates ();
 					return false;
 				}
 			);
 		});
+	}
+
+	private static bool IsRepositoryRefreshDue ()
+	{
+		string stamp = PintaCore.Settings.GetSetting (LastRepositoryRefreshSetting, string.Empty);
+
+		if (!DateTime.TryParse (stamp, CultureInfo.InvariantCulture, DateTimeStyles.RoundtripKind, out DateTime lastRefresh))
+			return true;
+
+		return DateTime.UtcNow - lastRefresh >= repository_refresh_interval;
 	}
 
 	private void LoadInstalled ()

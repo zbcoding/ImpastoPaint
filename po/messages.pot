@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-08-15 08:46-0500\n"
+"POT-Creation-Date: 2026-08-15 09:10-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1562,6 +1562,10 @@ msgstr ""
 msgid "Impasto"
 msgstr ""
 
+#: ../Impasto/AddinSetupService.cs:81
+msgid "Impasto Add-ins"
+msgstr ""
+
 #: ../xdg/com.github.zbcoding.Impasto.desktop.in.h:4
 msgid "Impasto Paint"
 msgstr ""
@@ -2639,11 +2643,11 @@ msgstr ""
 msgid "Pinta Add-ins"
 msgstr ""
 
-#: ../Impasto/AddinSetupService.cs:75
+#: ../Impasto/AddinSetupService.cs:76
 msgid "Pinta Community Addins - Cross-Platform"
 msgstr ""
 
-#: ../Impasto/AddinSetupService.cs:71
+#: ../Impasto/AddinSetupService.cs:72
 msgid "Pinta Community Addins - Platform-Specific"
 msgstr ""
 

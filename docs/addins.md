@@ -71,6 +71,10 @@ for the add-ins that ship with the application. Those are marked `Hidden`, which
 keep them out of the list entirely; they are shown here so the tab answers "what is installed",
 and they carry `CantUninstall | CantDisable` so neither control appears for them.
 
+The Gallery combines the two Pinta community repositories with Impasto's own repository. The
+latter currently contains the packaged sample from `samples/ImpastoSampleAddin/repository`;
+its source and distributable stay together so the listed add-in is directly inspectable.
+
 ## Icons
 
 Ship icons the way the application does — `icons/hicolor/scalable/actions/<name>-symbolic.svg`

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Repository xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <Addin>
+    <Url>ImpastoSampleAddin.0.1.mpack</Url>
+    <Addin>
+      <Id>ImpastoSampleAddin</Id>
+      <Namespace />
+      <Name>Impasto Sample Add-in</Name>
+      <Version>0.1</Version>
+      <BaseVersion />
+      <Author>Impasto contributors</Author>
+      <Copyright />
+      <Url>https://github.com/zbcoding/ImpastoPaint/tree/main/samples/ImpastoSampleAddin</Url>
+      <Description>Fixture exercising the add-in contract: an effect under the Add-ins menu container, and a tool in the toolbox.</Description>
+      <Category>Sample</Category>
+      <Dependencies>
+        <AddinDependency>
+          <AddinId>Pinta</AddinId>
+          <Version>3.2</Version>
+        </AddinDependency>
+      </Dependencies>
+      <OptionalDependencies />
+      <Properties>
+        <Property name="DownloadSize">4057</Property>
+      </Properties>
+    </Addin>
+  </Addin>
+</Repository>

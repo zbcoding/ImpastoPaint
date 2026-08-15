@@ -59,8 +59,9 @@ public sealed class AddinSetupService : SetupService
 
 	public bool AreRepositoriesRegistered ()
 	{
-		string url = GetPlatformRepositoryUrl ();
-		return Repositories.ContainsRepository (url);
+		return Repositories.ContainsRepository (GetPlatformRepositoryUrl ())
+			&& Repositories.ContainsRepository (GetAllRepositoryUrl ())
+			&& Repositories.ContainsRepository (ImpastoRepositoryUrl);
 	}
 
 	public void RegisterRepositories (bool enable)
@@ -74,6 +75,11 @@ public sealed class AddinSetupService : SetupService
 		RegisterRepository (GetAllRepositoryUrl (),
 				    Translations.GetString ("Pinta Community Addins - Cross-Platform"),
 				    enable);
+
+		RegisterRepository (
+			ImpastoRepositoryUrl,
+			Translations.GetString ("Impasto Add-ins"),
+			enable);
 	}
 
 	private void RegisterRepository (string url, string name, bool enable)
@@ -94,6 +100,9 @@ public sealed class AddinSetupService : SetupService
 
 	// What the same repositories were registered as before that redirect was cut out.
 	private const string LegacyRepositoryBaseUrl = "http://pintaproject.github.io/Pinta-Community-Addins/repository/";
+
+	private const string ImpastoRepositoryUrl =
+		"https://raw.githubusercontent.com/zbcoding/ImpastoPaint/main/samples/ImpastoSampleAddin/repository/main.mrep";
 
 	private static string GetPlatformRepositoryUrl ()
 	{

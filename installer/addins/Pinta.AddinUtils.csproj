@@ -4,7 +4,9 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Mono.Addins.CecilReflector" />
     <PackageReference Include="System.CommandLine" />
+    <PackageReference Include="Mono.Addins.Setup" />
   </ItemGroup>
 
   <PropertyGroup>

@@ -12,6 +12,9 @@ Changes for the next release (0.0.2) go here.
 
 ### Added
 
+- The Add-in Manager Gallery now includes an Impasto repository with a packaged, source-visible
+  sample add-in that demonstrates one effect and one custom tool.
+
 - Open documents are now autosaved to `~/.config/Impasto/autosave` every minute (configurable via
   the `autosave-enabled` and `autosave-interval` settings). Autosaves are cleared on a normal
   quit, so on the next launch after a crash Impasto offers to reopen the work it saved.

@@ -1,10 +1,15 @@
 # Sample add-in
 
-A fixture for the add-in contract: one effect, one tool, one extension entry point. It is
-deliberately outside `Pinta.sln`, so building the application does not build it, and it is not
-shipped.
+A fixture for the add-in contract: one effect, one tool, one extension entry point. Its source,
+project, package, and repository metadata all live in this folder, independently of the
+application solution.
 
-Build it and drop it into the add-in registry:
+The packaged sample appears in the Add-in Manager's **Gallery** tab under **Impasto Add-ins**.
+Installing it there exercises the same repository and install path as any third-party add-in.
+It is not compiled into Impasto: doing that would turn the fixture into a built-in and stop
+testing the contract it exists to demonstrate.
+
+For development, build it and drop it into the add-in registry:
 
 ```
 dotnet build samples/ImpastoSampleAddin
@@ -14,7 +19,24 @@ cp samples/ImpastoSampleAddin/bin/Debug/net10.0/ImpastoSampleAddin.dll \
 ```
 
 The registry is rescanned at startup, so the add-in appears on the next launch. Remove the
-directory to uninstall it. The Add-in Manager lists it like any other add-in.
+directory to uninstall a development copy.
+
+Regenerate the checked-in Gallery package after changing the add-in or its version:
+
+```
+dotnet build samples/ImpastoSampleAddin -c Release
+rm -rf samples/ImpastoSampleAddin/repository
+dotnet run --project installer/addins/Pinta.AddinUtils.csproj -- build-repository \
+  --output-directory samples/ImpastoSampleAddin/repository \
+  --addin-files samples/ImpastoSampleAddin/bin/Release/net10.0/ImpastoSampleAddin.dll
+```
+
+## Pinta compatibility
+
+This is an ordinary Pinta add-in. It uses the same `Pinta.Core` types, `IExtension` entry point,
+`Mono.Addins` attributes, and `"Pinta"` root dependency as an upstream Pinta plugin. No source
+port is required. Impasto differs in host behavior: it supplies provenance-based menu and
+toolbox placement and a missing-icon fallback without asking the add-in to use another API.
 
 ## What it demonstrates
 

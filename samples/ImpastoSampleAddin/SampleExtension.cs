@@ -2,10 +2,22 @@ using System;
 using Cairo;
 using Pinta.Core;
 
+// Nothing in this file is Impasto-specific: it is an ordinary Pinta add-in, and the same source
+// builds against upstream Pinta. There is no Impasto API to port to, and the dependency below
+// names "Pinta" because that is the add-in root both applications declare. What differs is what
+// the host does with the contribution - where the effect lands in the menu, which toolbox
+// section the tool gets, which icon is drawn when yours is missing - and none of that is
+// something an add-in asks for or can opt out of.
+
 // The manifest. PintaCompatVersion is what the host offers add-ins; depending on it is what
 // makes this add-in loadable, and the registry refuses it on a host that is too old.
-[assembly: Mono.Addins.Addin ("ImpastoSampleAddin", "0.1", Category = "Sample")]
+[assembly: Mono.Addins.Addin (
+	"ImpastoSampleAddin",
+	"0.1",
+	Category = "Sample",
+	Url = "https://github.com/zbcoding/ImpastoPaint/tree/main/samples/ImpastoSampleAddin")]
 [assembly: Mono.Addins.AddinName ("Impasto Sample Add-in")]
+[assembly: Mono.Addins.AddinAuthor ("Impasto contributors")]
 [assembly: Mono.Addins.AddinDescription ("Fixture exercising the add-in contract: an effect under the Add-ins menu container, and a tool in the toolbox.")]
 [assembly: Mono.Addins.AddinDependency ("Pinta", PintaCore.PintaCompatVersion)]
 

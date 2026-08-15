@@ -4,6 +4,8 @@ using System.CommandLine;
 using System.IO;
 using System.Linq;
 using System.Xml;
+using Mono.Addins;
+using Mono.Addins.Setup;
 
 // Create a map from the header properties to their untranslated values, e.g. "Name" => "MyEffect"
 static Dictionary<string, string> ExtractHeaderProperties (XmlDocument manifestDoc)
@@ -94,6 +96,23 @@ static void LocalizeManifest (FileInfo manifestFile, FileInfo[] resourceFiles)
 	Console.WriteLine ($"Updating {manifestFile}");
 	manifestDoc.Save (manifestFile.FullName);
 }
+static void BuildRepository (DirectoryInfo outputDirectory, FileInfo[] addinFiles)
+{
+	outputDirectory.Create ();
+
+	SetupService setup = new ();
+	ConsoleProgressStatus progress = new (verboseLog: true);
+	string[] packages = setup.BuildPackage (
+		progress,
+		outputDirectory.FullName,
+		addinFiles.Select (file => file.FullName).ToArray ());
+
+	if (packages.Length != addinFiles.Length)
+		throw new InvalidDataException (
+			$"Packaged {packages.Length} of {addinFiles.Length} add-ins.");
+
+	setup.BuildRepository (progress, outputDirectory.FullName);
+}
 
 var manifestFileOption =
 	new Option<FileInfo> (name: "--manifest-file") { Required = true }
@@ -119,7 +138,31 @@ localizeManifestCommand.SetAction (result => {
 		result.GetRequiredValue (resourceFilesOption));
 });
 
+var outputDirectoryOption =
+	new Option<DirectoryInfo> (name: "--output-directory") { Required = true };
+
+var addinFilesOption =
+	new Option<FileInfo[]> (name: "--addin-files") {
+		Required = true,
+		AllowMultipleArgumentsPerToken = true
+	}
+	.AcceptExistingOnly ();
+
+Command buildRepositoryCommand = new (
+	name: "build-repository",
+	description: "Package add-ins and generate an online repository")
+{
+	outputDirectoryOption,
+	addinFilesOption,
+};
+buildRepositoryCommand.SetAction (result => {
+	BuildRepository (
+		result.GetRequiredValue (outputDirectoryOption),
+		result.GetRequiredValue (addinFilesOption));
+});
+
 RootCommand rootCommand = new ("Command-line utilities for Pinta add-ins.");
 rootCommand.Subcommands.Add (localizeManifestCommand);
+rootCommand.Subcommands.Add (buildRepositoryCommand);
 
 return rootCommand.Parse (args).Invoke ();

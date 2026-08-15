@@ -24,6 +24,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+using System;
 using System.Net;
 using System.Net.Http;
 using Mono.Addins;
@@ -39,15 +40,21 @@ public sealed class AddinSetupService : SetupService
 		Mono.Addins.Setup.HttpClientProvider.SetHttpClientFactory (CreateHttpClient);
 	}
 
+	// Work around a bug (#1542) in Mono.Addins.Setup.HttpClientDownloadFileRequest,
+	// which assumes that ContentLength is never null.
+	// Github's server (which hosts the repo) doesn't provide this for gzipped responses.
+	private static readonly HttpClientHandler shared_handler = new () {
+		AutomaticDecompression = DecompressionMethods.Deflate
+	};
+
 	private static HttpClient CreateHttpClient (string uri)
 	{
-		// Work around a bug (#1542) in Mono.Addins.Setup.HttpClientDownloadFileRequest,
-		// which assumes that ContentLength is never null.
-		// Github's server (which hosts the repo) doesn't provide this for gzipped responses.
-		HttpClientHandler handler = new () {
-			AutomaticDecompression = DecompressionMethods.Deflate
-		};
-		return new HttpClient (handler);
+		// Refreshing the add-in list is latency-bound, not bandwidth-bound: the repository
+		// indexes are a couple of KB each, but every one costs a TCP connect plus a TLS
+		// handshake. Sharing the handler keeps its connection pool alive across the whole
+		// refresh so only the first request pays for that.
+		// disposeHandler: false because Mono.Addins owns the returned client and may dispose it.
+		return new HttpClient (shared_handler, disposeHandler: false);
 	}
 
 	public bool AreRepositoriesRegistered ()
@@ -58,6 +65,8 @@ public sealed class AddinSetupService : SetupService
 
 	public void RegisterRepositories (bool enable)
 	{
+		RemoveLegacyRepositories ();
+
 		RegisterRepository (GetPlatformRepositoryUrl (),
 				    Translations.GetString ("Pinta Community Addins - Platform-Specific"),
 				    enable);
@@ -79,6 +88,13 @@ public sealed class AddinSetupService : SetupService
 		Repositories.SetRepositoryEnabled (url, enable);
 	}
 
+	// The github.io host answers every request with a 301 to this one, so addressing it
+	// directly saves a connect and a handshake per file fetched.
+	private const string RepositoryBaseUrl = "https://www.pinta-project.com/Pinta-Community-Addins/repository/";
+
+	// What the same repositories were registered as before that redirect was cut out.
+	private const string LegacyRepositoryBaseUrl = "http://pintaproject.github.io/Pinta-Community-Addins/repository/";
+
 	private static string GetPlatformRepositoryUrl ()
 	{
 		string platform = SystemManager.GetOperatingSystem () switch {
@@ -87,11 +103,23 @@ public sealed class AddinSetupService : SetupService
 			_ => "Linux"
 		};
 
-		return "http://pintaproject.github.io/Pinta-Community-Addins/repository/" + platform + "/main.mrep";
+		return RepositoryBaseUrl + platform + "/main.mrep";
 	}
 
 	private static string GetAllRepositoryUrl ()
 	{
-		return "http://pintaproject.github.io/Pinta-Community-Addins/repository/All/main.mrep";
+		return RepositoryBaseUrl + "All/main.mrep";
+	}
+
+	/// <summary>
+	/// Drops repository registrations that point at the pre-redirect URL, so an existing
+	/// install stops paying for the redirect and does not list each repository twice.
+	/// </summary>
+	private void RemoveLegacyRepositories ()
+	{
+		foreach (AddinRepository rep in Repositories.GetRepositories ()) {
+			if (rep.Url is not null && rep.Url.StartsWith (LegacyRepositoryBaseUrl, StringComparison.Ordinal))
+				Repositories.RemoveRepository (rep.Url);
+		}
 	}
 }

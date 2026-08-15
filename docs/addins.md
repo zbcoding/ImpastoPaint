@@ -61,9 +61,9 @@ Effects already default to `Resources.Icons.EffectsDefault`.
 
 ## Tools
 
-`Priority` decides the toolbox section (`docs/toolbox-layout.md`). Use a priority past every
-built-in bound — 1000 and up — so the tool lands in the trailing section. Reusing a priority
-that belongs to a tool stack silently shares that stack's button.
+An add-in's tools get their own toolbox section, below every built-in one and behind a divider,
+decided the same way menu placement is (`docs/toolbox-layout.md`). `Priority` only orders them
+within that section, and add-in tools never collapse into a built-in's flyout stack.
 
 ## Not available yet
 

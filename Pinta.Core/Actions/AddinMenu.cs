@@ -94,6 +94,14 @@ public sealed class AddinMenu
 	}
 
 	/// <summary>
+	/// True when an add-in ships this type rather than the application. Placement decisions
+	/// outside the menus - the toolbox section a tool's button lands in, say - use this so
+	/// they agree with the menus about what came from where.
+	/// </summary>
+	public static bool IsFromAddin (Type contributor)
+		=> AddinNameOf (contributor) is not null;
+
+	/// <summary>
 	/// Groups by add-in name, qualified by the category when the add-in asked for a meaningful
 	/// one. <see cref="BaseEffect.EffectMenuCategory"/> defaults to "General", which says
 	/// nothing once the entries are already grouped by add-in, so it is left off.

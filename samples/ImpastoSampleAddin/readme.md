@@ -29,9 +29,9 @@ directory to uninstall it. The Add-in Manager lists it like any other add-in.
   draws a stand-in rather than a broken-image glyph. To ship a real one, put it at
   `icons/hicolor/scalable/actions/<name>-symbolic.svg` beside the assembly - the host adds
   that directory to the icon theme's search path - and return `<name>-symbolic` from `Icon`.
-- **Toolbox placement follows `Priority`.** 1000 is past every built-in bound, so the tool
-  lands in the last section instead of joining one the application owns. Reusing a built-in
-  priority that belongs to a tool stack would silently share that stack's button.
+- **The tool gets its own toolbox section.** Every add-in tool does, behind a divider below the
+  built-in sections, so `Priority` only decides the order within it. The sample keeps a high
+  priority anyway, as a reminder that a built-in's priority no longer buys placement.
 
 ## What the contract does not cover yet
 

@@ -1,7 +1,8 @@
 # Toolbox layout reference
 
-Sections are assigned by tool `Priority`, so addin tools land in a bucket without
-knowing about `ToolBoxWidget`:
+The application's own tools are assigned to a section by `Priority`. An add-in's tools are
+placed by where they came from instead, so a plugin never appears inside a group of related
+built-ins:
 
 | Section | Priorities | Tools |
 |---|---|---|
@@ -12,9 +13,15 @@ knowing about `ToolBoxWidget`:
 | Paint | ≤ 36 | Paintbrush, Pencil, Eraser, Bucket, Gradient, Colour Picker, Text |
 | Shapes | ≤ 46 | Line/Curve, and the stack |
 | Retouch | rest | Clone Stamp, Recolor |
+| Add-ins | n/a | every tool an add-in ships, whatever priority it picks |
+
+`Priority` still orders the add-in section, and an empty section draws no separator, so the
+divider appears only once an add-in tool is installed.
 
 Stacks are declared in `stack_definitions` as priority groups. Adding the selection stack
-(rectangle + ellipse marquee) is one array entry, no new code.
+(rectangle + ellipse marquee) is one array entry, no new code. Only the application's tools
+stack: an add-in tool that picked a stacked priority would otherwise be hidden inside that
+stack's flyout, reachable only by finding the member marker on someone else's button.
 
 ## Footer layout reference
 

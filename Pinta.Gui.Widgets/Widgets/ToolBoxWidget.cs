@@ -5,21 +5,32 @@ using Pinta.Core;
 namespace Pinta.Gui.Widgets;
 
 // Impasto: the toolbox is split into sections (Paint.NET style) instead of one undivided
-// grid, and related tools share a single button with a flyout (Photoshop style). Tools are
-// assigned to a section and a stack by their Priority, so addin tools land in a sensible
-// bucket without needing to know about this file.
+// grid, and related tools share a single button with a flyout (Photoshop style). The
+// application's own tools are assigned to a section and a stack by their Priority; an add-in's
+// tools get a section of their own, so a plugin never lands inside a group of related built-ins.
 [GObject.Subclass<Gtk.Box>]
 public sealed partial class ToolBoxWidget
 {
-	/// <summary>Upper bound (inclusive) of the tool priorities belonging to each section.</summary>
+	/// <summary>
+	/// Upper bound (inclusive) of the tool priorities belonging to each section. These cover
+	/// the tools the application ships; an add-in's tools are placed by
+	/// <see cref="addin_section"/> instead, whatever priority they pick.
+	/// </summary>
 	private static readonly int[] section_bounds = [
 		8,   // Move
 		12,  // View (zoom, pan)
 		20,  // Select
 		36,  // Paint
 		46,  // Shapes
-		int.MaxValue, // Retouch, plus any addin tool with an unexpected priority
+		int.MaxValue, // Retouch, plus anything else the application ships
 	];
+
+	/// <summary>
+	/// Add-in tools get the trailing section, below every built-in one. Grouping them by
+	/// priority instead would drop them into a section of related built-ins - or into a
+	/// stack's flyout - where nothing distinguishes them from the application's own tools.
+	/// </summary>
+	private static readonly int addin_section = section_bounds.Length;
 
 	/// <summary>
 	/// Tool priorities that collapse into one button with a flyout. The stack shows the
@@ -51,8 +62,9 @@ public sealed partial class ToolBoxWidget
 	// group would force a choice. Activating this dummy leader turns the whole section off.
 	private readonly Gtk.ToggleButton pinned_toggle_group = Gtk.ToggleButton.New ();
 
-	private readonly Gtk.FlowBox[] sections = new Gtk.FlowBox[section_bounds.Length];
-	private readonly Gtk.Separator[] separators = new Gtk.Separator[section_bounds.Length - 1];
+	// One box per built-in section, plus the add-in section at the end.
+	private readonly Gtk.FlowBox[] sections = new Gtk.FlowBox[section_bounds.Length + 1];
+	private readonly Gtk.Separator[] separators = new Gtk.Separator[section_bounds.Length];
 
 	// Impasto: pinned tools get a copy in a highlighted section at the top of the toolbox.
 	// They stay in their original spot as well - pinning copies, it doesn't move.
@@ -173,23 +185,38 @@ public sealed partial class ToolBoxWidget
 	}
 
 	/// <summary>
+	/// The section a tool's button belongs in. An add-in's tools take the add-in section
+	/// regardless of priority; the application's own are placed by <see cref="section_bounds"/>.
+	///
+	/// <para>
 	/// In classic layout every tool shares section 0, so the sections below it never
 	/// populate and stay hidden, leaving one continuous column.
+	/// </para>
 	/// </summary>
-	internal int SectionIndex (int priority)
+	internal int SectionIndex (BaseTool tool)
 	{
 		if (classic_layout)
 			return 0;
 
+		if (AddinMenu.IsFromAddin (tool.GetType ()))
+			return addin_section;
+
 		for (int i = 0; i < section_bounds.Length; i++)
-			if (priority <= section_bounds[i])
+			if (tool.Priority <= section_bounds[i])
 				return i;
 
 		return section_bounds.Length - 1;
 	}
 
-	internal static int[]? StackDefinition (int priority)
-		=> stack_definitions.FirstOrDefault (s => s.Contains (priority));
+	/// <summary>
+	/// The stack a tool collapses into, or null when it has its own button. Only the
+	/// application's tools share buttons: an add-in tool that happens to pick a stacked
+	/// priority would otherwise hide inside that stack's flyout.
+	/// </summary>
+	internal static int[]? StackDefinition (BaseTool tool)
+		=> AddinMenu.IsFromAddin (tool.GetType ())
+			? null
+			: stack_definitions.FirstOrDefault (s => s.Contains (tool.Priority));
 
 	private string TooltipFor (BaseTool tool)
 	{
@@ -249,7 +276,7 @@ public sealed partial class ToolBoxWidget
 	{
 		// Stacked buttons have no tooltip; their flyout entries are rebuilt on demand.
 		foreach (var (tool, button) in tool_buttons)
-			if (StackDefinition (tool.Priority) is null)
+			if (StackDefinition (tool) is null)
 				button.TooltipText = TooltipFor (tool);
 
 		foreach (var (tool, button) in pinned_buttons)
@@ -330,7 +357,7 @@ public sealed partial class ToolBoxWidget
 
 	private void HandleToolAdded (BaseTool tool)
 	{
-		int[]? stackDefinition = StackDefinition (tool.Priority);
+		int[]? stackDefinition = StackDefinition (tool);
 
 		if (stackDefinition is null)
 			AddStandaloneTool (tool);
@@ -660,12 +687,12 @@ public sealed partial class ToolBoxWidget
 
 	private void InsertIntoSection (Gtk.Widget button, BaseTool tool)
 	{
-		int sectionIndex = SectionIndex (tool.Priority);
+		int sectionIndex = SectionIndex (tool);
 
 		// Position within the section, reusing the global ordering the ToolManager provides,
 		// but counting each stack once (its position is that of its first member).
 		int index = tools
-			.Where (t => SectionIndex (t.Priority) == sectionIndex)
+			.Where (t => SectionIndex (t) == sectionIndex)
 			.Where (t => IsFirstOfItsStack (t))
 			.ToList ()
 			.IndexOf (tool);
@@ -679,12 +706,12 @@ public sealed partial class ToolBoxWidget
 	/// </summary>
 	private bool IsFirstOfItsStack (BaseTool tool)
 	{
-		int[]? definition = StackDefinition (tool.Priority);
+		int[]? definition = StackDefinition (tool);
 
 		if (definition is null)
 			return true;
 
-		return !tools.Any (t => StackDefinition (t.Priority) == definition && t.Priority < tool.Priority);
+		return !tools.Any (t => StackDefinition (t) == definition && t.Priority < tool.Priority);
 	}
 
 	private void HandleToolButtonClicked (BaseTool tool)
@@ -700,7 +727,7 @@ public sealed partial class ToolBoxWidget
 	/// </summary>
 	private void HandleToolActivated (BaseTool tool)
 	{
-		int[]? definition = StackDefinition (tool.Priority);
+		int[]? definition = StackDefinition (tool);
 
 		if (definition is not null && tool_stacks.TryGetValue (definition, out ToolStack? stack)) {
 			stack.Current = tool;
@@ -726,7 +753,7 @@ public sealed partial class ToolBoxWidget
 		Gtk.ToggleButton toolButton = tool_buttons[tool];
 		tool_buttons.Remove (tool);
 
-		int[]? definition = StackDefinition (tool.Priority);
+		int[]? definition = StackDefinition (tool);
 
 		if (definition is not null && tool_stacks.TryGetValue (definition, out ToolStack? stack)) {
 
@@ -746,7 +773,7 @@ public sealed partial class ToolBoxWidget
 			tool_stacks.Remove (definition);
 		}
 
-		sections[SectionIndex (tool.Priority)].Remove (toolButton);
+		sections[SectionIndex (tool)].Remove (toolButton);
 		UpdateSectionVisibility ();
 	}
 
@@ -759,7 +786,7 @@ public sealed partial class ToolBoxWidget
 		bool[] populated = new bool[sections.Length];
 
 		foreach (BaseTool tool in tool_buttons.Keys)
-			populated[SectionIndex (tool.Priority)] = true;
+			populated[SectionIndex (tool)] = true;
 
 		for (int i = 0; i < sections.Length; i++)
 			sections[i].Visible = populated[i];

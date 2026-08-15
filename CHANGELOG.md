@@ -29,6 +29,9 @@ Changes for the next release (0.0.2) go here.
 
 ### Fixed
 
+- The Add-in Manager labels Impasto's Gallery section as **Impasto Add-ins** instead of exposing
+  its `raw.githubusercontent.com` download host.
+
 - Saving a document with shapes or text to `.ora` no longer fails with "Cannot access a closed
   Stream"
 

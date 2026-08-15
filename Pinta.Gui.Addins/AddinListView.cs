@@ -243,23 +243,23 @@ internal sealed partial class AddinListView
 	}
 
 	/// <summary>
-	/// Groups add-ins by the host of the repository they came from - add-in ids in the actual
-	/// Pinta Community Addins repository (e.g. "WebP", "BlockBrush") don't carry any namespace
-	/// convention to group on, but the repository host is stable and known. Installed add-ins
-	/// (no repository entry) and anything served from pintaproject.github.io fall under the
-	/// same "Pinta Add-ins" heading; an unrecognized future repository gets its own section
-	/// labeled by host, ready for a native Impasto or PDN-compatible source later.
+	/// Groups add-ins by repository source. Pinta's community repositories and Impasto's own
+	/// checked-in repository get product-facing names; an unrecognized future repository gets
+	/// its host name so sources remain visibly separate.
 	/// </summary>
 	private static string GetSourceLabel (AddinRepositoryEntry? repositoryEntry)
 	{
-		string? host = repositoryEntry is not null && Uri.TryCreate (repositoryEntry.RepositoryUrl, UriKind.Absolute, out Uri? uri)
-			? uri.Host
-			: null;
+		if (repositoryEntry is null
+			|| !Uri.TryCreate (repositoryEntry.RepositoryUrl, UriKind.Absolute, out Uri? uri))
+			return Translations.GetString ("Pinta Add-ins");
 
-		return host switch {
-			null or "pintaproject.github.io" => Translations.GetString ("Pinta Add-ins"),
-			_ => host,
-		};
+		if (uri.Host == "raw.githubusercontent.com"
+			&& uri.AbsolutePath.StartsWith ("/zbcoding/ImpastoPaint/", StringComparison.Ordinal))
+			return Translations.GetString ("Impasto Add-ins");
+
+		return uri.Host == "pintaproject.github.io"
+			? Translations.GetString ("Pinta Add-ins")
+			: uri.Host;
 	}
 }
 

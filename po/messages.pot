@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-08-15 09:10-0500\n"
+"POT-Creation-Date: 2026-08-15 09:58-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1562,7 +1562,7 @@ msgstr ""
 msgid "Impasto"
 msgstr ""
 
-#: ../Impasto/AddinSetupService.cs:81
+#: ../Impasto/AddinSetupService.cs:81 ../Pinta.Gui.Addins/AddinListView.cs:258
 msgid "Impasto Add-ins"
 msgstr ""
 
@@ -2639,7 +2639,8 @@ msgstr ""
 msgid "Pinned items"
 msgstr ""
 
-#: ../Pinta.Gui.Addins/AddinListView.cs:260
+#: ../Pinta.Gui.Addins/AddinListView.cs:254
+#: ../Pinta.Gui.Addins/AddinListView.cs:261
 msgid "Pinta Add-ins"
 msgstr ""
 

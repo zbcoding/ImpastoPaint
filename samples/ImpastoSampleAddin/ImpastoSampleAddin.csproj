@@ -1,0 +1,31 @@
+<!--
+  Sample add-in, deliberately outside Pinta.sln: it is a fixture for the add-in contract, not
+  part of the application, and building the solution must not build it.
+
+    dotnet build samples/ImpastoSampleAddin
+    cp -r samples/ImpastoSampleAddin/bin/Debug/net10.0/ImpastoSampleAddin.dll \
+          ~/.config/Impasto/addins/addins/ImpastoSampleAddin.0.1/
+
+  See samples/ImpastoSampleAddin/readme.md.
+-->
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <IsPublishable>false</IsPublishable>
+    <IsPackable>false</IsPackable>
+    <!-- The host supplies every one of these at run time. -->
+    <CopyLocalLockFileAssemblies>false</CopyLocalLockFileAssemblies>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Mono.Addins" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="../../Pinta.Core/Pinta.Core.csproj" Private="false" ExcludeAssets="runtime" />
+  </ItemGroup>
+
+</Project>

@@ -220,10 +220,21 @@ public sealed partial class ToolBoxWidget
 		button.Valign = Gtk.Align.Center;
 	}
 
+	/// <summary>
+	/// A tool's <c>Icon</c> is a theme icon name, and GTK draws its broken-image glyph for
+	/// any name the theme cannot resolve. An add-in tool that ships no icons, or ships them
+	/// somewhere the theme is not looking, would render as that glyph everywhere it appears,
+	/// so fall back to a stand-in instead.
+	/// </summary>
+	private static string IconNameFor (BaseTool tool)
+		=> GtkExtensions.GetDefaultIconTheme ().HasIcon (tool.Icon)
+			? tool.Icon
+			: Resources.Icons.ToolDefault;
+
 	private Gtk.ToggleButton CreateToolButton (BaseTool tool)
 	{
 		Gtk.ToggleButton button = Gtk.ToggleButton.New ();
-		button.IconName = tool.Icon;
+		button.IconName = IconNameFor (tool);
 		button.Name = tool.Name;
 		button.CanFocus = false;
 
@@ -353,7 +364,7 @@ public sealed partial class ToolBoxWidget
 	{
 		if (!tool_stacks.TryGetValue (stackDefinition, out ToolStack? stack)) {
 
-			Gtk.Image icon = Gtk.Image.NewFromIconName (tool.Icon);
+			Gtk.Image icon = Gtk.Image.NewFromIconName (IconNameFor (tool));
 
 			// Small corner marker so the flyout is discoverable, like Photoshop's triangle.
 			Gtk.Image marker = Gtk.Image.NewFromIconName ("pan-down-symbolic");
@@ -481,7 +492,7 @@ public sealed partial class ToolBoxWidget
 			entry.SetCssClasses ([AdwaitaStyles.Flat]);
 
 			Gtk.Box row = Gtk.Box.New (Gtk.Orientation.Horizontal, 6);
-			row.Append (Gtk.Image.NewFromIconName (member.Icon));
+			row.Append (Gtk.Image.NewFromIconName (IconNameFor (member)));
 			row.Append (Gtk.Label.New (member.Name));
 			entry.SetChild (row);
 
@@ -693,7 +704,7 @@ public sealed partial class ToolBoxWidget
 
 		if (definition is not null && tool_stacks.TryGetValue (definition, out ToolStack? stack)) {
 			stack.Current = tool;
-			stack.Icon.SetFromIconName (tool.Icon);
+			stack.Icon.SetFromIconName (IconNameFor (tool));
 			SetStackTooltip (stack);
 		}
 
@@ -726,7 +737,7 @@ public sealed partial class ToolBoxWidget
 				if (stack.Current == tool)
 					stack.Current = stack.Members[0];
 
-				stack.Icon.SetFromIconName (stack.Current.Icon);
+				stack.Icon.SetFromIconName (IconNameFor (stack.Current));
 				SetStackTooltip (stack);
 				UpdateSectionVisibility ();
 				return;

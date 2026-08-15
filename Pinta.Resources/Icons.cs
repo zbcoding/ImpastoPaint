@@ -251,6 +251,10 @@ public static class Icons
 	public const string TextVariantUnicase = "text-variant-unicase-symbolic";
 	public const string TextVariantTitleCaps = "text-variant-title-caps-symbolic";
 
+	// Stand-in for a tool whose own icon cannot be resolved, e.g. an add-in tool that
+	// ships no icons. Without it the toolbox draws GTK's broken-image glyph.
+	public const string ToolDefault = "tool-default-symbolic";
+
 	public const string ToolCloneStamp = "tool-clonestamp-symbolic";
 	public const string ToolHealingBrush = "tool-healingbrush-symbolic";
 	public const string ToolSmartPatch = "tool-smartpatch-symbolic";

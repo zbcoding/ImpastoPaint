@@ -39,6 +39,15 @@ internal sealed class PaletteHelperTests
 		}
 	}
 
+	[TestCase (false, 8)]
+	[TestCase (true, 12)]
+	public void DefaultRecentColorCountTracksPaletteRows (bool extendedPaletteRows, int expected)
+		=> Assert.That (PaletteHelper.GetDefaultRecentColorCount (extendedPaletteRows), Is.EqualTo (expected));
+
+	[Test]
+	public void RecentColorLimitAllowsTwentyFourColors ()
+		=> Assert.That (PaletteHelper.MAX_RECENT_COLOR_COUNT, Is.EqualTo (24));
+
 	private static bool ColorsMatch (Color color, byte r, byte g, byte b)
 		=> (int) Math.Round (color.R * 255) == r
 			&& (int) Math.Round (color.G * 255) == g

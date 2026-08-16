@@ -62,6 +62,9 @@ public class ColorPickerTool : BaseTool
 	private int SampleSize => SampleSizeDropDown.SelectedItem.GetTagOrDefault (1);
 	private bool SampleLayerOnly => SampleTypeDropDown.SelectedItem.GetTagOrDefault (false);
 
+	public void UseImageSampling ()
+		=> SampleTypeDropDown.SelectedIndex = 1;
+
 	public override Gdk.Cursor DefaultCursor {
 		get {
 			double scale = workspace.GetScale ();

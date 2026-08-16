@@ -33,6 +33,7 @@ using Pinta.Core;
 using Pinta.Docking;
 using Pinta.Gui.Widgets;
 using Pinta.Resources;
+using Pinta.Tools;
 
 namespace Pinta;
 
@@ -673,11 +674,16 @@ internal sealed class MainWindow
 		// ColorPickerDialog's "Choose Colors" UI (wheel/square surface, sliders, hex,
 		// swap display) plus recent/quick swatch rows, with no OK/Cancel and no dialog
 		// chrome; every change writes straight to the palette.
-		colors_picker_panel = ColorPickerPanel.New (PintaCore.Palette);
+		colors_picker_panel = ColorPickerPanel.New (PintaCore.Palette, PintaCore.Chrome);
 		colors_picker_panel.MarginTop = 6;
 		colors_picker_panel.MarginBottom = 6;
 		colors_picker_panel.MarginStart = 6;
 		colors_picker_panel.MarginEnd = 6;
+		colors_picker_panel.EyedropperClicked += (_, _) => {
+			ColorPickerTool eyedropper = PintaCore.Tools.OfType<ColorPickerTool> ().Single ();
+			eyedropper.UseImageSampling ();
+			PintaCore.Tools.SetCurrentTool (eyedropper);
+		};
 
 		colors_contents = Gtk.Box.New (Gtk.Orientation.Vertical, 0);
 		colors_contents.Append (colors_picker_panel);

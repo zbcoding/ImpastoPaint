@@ -170,8 +170,8 @@ public sealed partial class StatusBarColorPaletteWidget
 
 		palette.PrimaryColorChanged += new EventHandler (Palette_ColorChanged);
 		palette.SecondaryColorChanged += new EventHandler (Palette_ColorChanged);
-		palette.RecentColorsChanged += new EventHandler (Palette_ColorChanged);
-		palette.CurrentPalette.PaletteChanged += new EventHandler (Palette_ColorChanged);
+		palette.RecentColorsChanged += new EventHandler (Palette_LayoutChanged);
+		palette.CurrentPalette.PaletteChanged += new EventHandler (Palette_LayoutChanged);
 	}
 
 	public static StatusBarColorPaletteWidget New (IChromeService chrome, IPaletteService palette, ISystemService system)
@@ -599,7 +599,7 @@ public sealed partial class StatusBarColorPaletteWidget
 		UpdateLayout (e.Width);
 	}
 
-	private void UpdateLayout (int width)
+	private void UpdateLayout (int width, bool shrinkSwatches = true)
 	{
 		bool was_quick_folded = quick_colors_folded;
 		bool was_recent_folded = recent_colors_folded;
@@ -654,15 +654,22 @@ public sealed partial class StatusBarColorPaletteWidget
 			}
 
 			// Collapse order, outermost first. Image size / aspect ratio goes, then
-			// cursor position, then the swatch grids shrink, and only then do whole
-			// sections fold into the popover. While the colors are floating there is
-			// nothing in the bar to collide with, so the chips keep their room.
+			// cursor position, then the swatch grids shrink during window resizing,
+			// and only then do whole sections fold into the popover. Palette-content
+			// changes skip shrinking: those changes must reposition the action buttons
+			// without making the established footer swatches smaller.
 			if (show_action_icons) {
 				if (Needed () > budget) show_image_chip = false;
 				if (Needed () > budget) show_cursor_chip = false;
-				ShrinkTiles ();
-				if (Needed () > budget) { quick_colors_folded = true; ShrinkTiles (); }
-				if (Needed () > budget) { recent_colors_folded = true; ShrinkTiles (); }
+				if (shrinkSwatches) ShrinkTiles ();
+				if (Needed () > budget) {
+					quick_colors_folded = true;
+					if (shrinkSwatches) ShrinkTiles ();
+				}
+				if (Needed () > budget) {
+					recent_colors_folded = true;
+					if (shrinkSwatches) ShrinkTiles ();
+				}
 				if (Needed () > budget) swatches_folded = true;
 			}
 		}
@@ -819,17 +826,23 @@ public sealed partial class StatusBarColorPaletteWidget
 
 	private void Palette_ColorChanged (object? sender, EventArgs e)
 	{
-		// Color change events may be received while the widget is minimized,
-		// so we only call Invalidate() if the widget is shown.
-		if (GetRealized ()) {
-			// Toggling the extended-palette setting reloads the default palette; the
-			// extra row changes PALETTE_ROWS and the widget height, so re-layout.
-			if (HeightRequest != PaletteWidget.WIDGET_HEIGHT) {
-				HeightRequest = PaletteWidget.WIDGET_HEIGHT;
-				UpdateLayout (GetWidth ());
-			}
+		if (GetRealized ())
 			QueueDraw ();
-		}
+	}
+
+	private void Palette_LayoutChanged (object? sender, EventArgs e)
+	{
+		// Palette events may be received while the widget is minimized,
+		// so only update the realized footer.
+		if (!GetRealized ())
+			return;
+
+		// Palette size and row-count changes alter every section after the quick
+		// colors, including the wheel and float buttons. Recompute even when the
+		// overall widget height is unchanged.
+		HeightRequest = PaletteWidget.WIDGET_HEIGHT;
+		UpdateLayout (GetWidth (), shrinkSwatches: false);
+		QueueDraw ();
 	}
 
 	// Exposed so the color-wheel popover's folded-in primary/secondary mini section

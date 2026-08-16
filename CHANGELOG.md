@@ -26,6 +26,8 @@ Changes for the next release (0.0.2) go here.
   export is then autosaved less often - up to every five minutes - rather than stalling the
   interface every interval or being skipped for its size.
   Based on Pinta PR #2189 by: colin-i
+- The floating Colors window now has an image-sampling eyedropper, keeps recent and quick colors
+  on one row when its width permits, and supports changing a quick color with Ctrl-click or middle-click.
 
 ### Fixed
 
@@ -33,6 +35,8 @@ Changes for the next release (0.0.2) go here.
   another running instance's partial exports untouched, and reports startup recovery errors.
 - The large-image memory warning's dimensions and estimate can now be translated.
 
+- The color wheel and float-window buttons now move with the status-bar palette when its color
+  count or row count changes.
 - The Add-in Manager labels Impasto's Gallery section as **Impasto Add-ins** instead of exposing
   its `raw.githubusercontent.com` download host.
 

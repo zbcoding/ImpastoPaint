@@ -17,6 +17,7 @@
 
 using System;
 using System.Linq;
+using System.Threading.Tasks;
 using Cairo;
 using Pinta.Core;
 
@@ -42,7 +43,11 @@ public sealed partial class ColorPickerPanel
 	// wider than the panel or clipping.
 	const int MAX_SWATCH_COLUMNS = 10;
 
+	public event EventHandler? EyedropperClicked;
+
 	private IPaletteService palette = null!; // NRT - set by factory method
+	private IChromeService chrome = null!;
+	private bool color_picker_active;
 	private bool primary_selected = true;
 	private SurfaceType surface_type = SurfaceType.HueAndSat;
 	private bool updating;
@@ -86,17 +91,29 @@ public sealed partial class ColorPickerPanel
 			tooltip: Translations.GetString ("Recently picked colors"),
 			swatchArea: out swatch_recent);
 		swatch_recent.SetDrawFunc ((_, g, _, _) => DrawRecentSwatches (g));
+		ConfigureSwatchClick (swatch_recent, recent: true);
 
 		Gtk.Box paletteRow = BuildSwatchRow (
 			icon: StatusBarColorPaletteWidget.DrawPaletteIcon,
 			tooltip: Translations.GetString ("Quick colors"),
 			swatchArea: out swatch_palette);
 		swatch_palette.SetDrawFunc ((_, g, _, _) => DrawQuickSwatches (g));
+		ConfigureSwatchClick (swatch_palette, recent: false);
+
+		Gtk.FlowBox swatchRows = Gtk.FlowBox.New ();
+		swatchRows.SetOrientation (Gtk.Orientation.Horizontal);
+		swatchRows.MinChildrenPerLine = 1;
+		swatchRows.MaxChildrenPerLine = 2;
+		swatchRows.Homogeneous = false;
+		swatchRows.SelectionMode = Gtk.SelectionMode.None;
+		swatchRows.ColumnSpacing = SPACING;
+		swatchRows.RowSpacing = SPACING;
+		swatchRows.Insert (recentRow, -1);
+		swatchRows.Insert (paletteRow, -1);
 
 		Append (topBox);
 		Append (Gtk.Separator.New (Gtk.Orientation.Horizontal));
-		Append (recentRow);
-		Append (paletteRow);
+		Append (swatchRows);
 
 		Gtk.GestureDrag dragGesture = Gtk.GestureDrag.New ();
 		dragGesture.SetButton (0); // Listen for all mouse buttons.
@@ -135,10 +152,16 @@ public sealed partial class ColorPickerPanel
 			palette.SetColor (false, temp, false);
 		};
 
+		Gtk.Button eyedropperButton = Gtk.Button.NewFromIconName (Resources.Icons.ToolColorPicker);
+		eyedropperButton.TooltipText = Translations.GetString ("Selects the color in view. Sample from the composited image, including all visible layers.");
+		eyedropperButton.FocusOnClick = false;
+		eyedropperButton.OnClicked += (_, _) => EyedropperClicked?.Invoke (this, EventArgs.Empty);
+
 		Gtk.Box box = Gtk.Box.New (Gtk.Orientation.Vertical, SPACING);
 		box.Append (primary_display);
 		box.Append (swapButton);
 		box.Append (secondary_display);
+		box.Append (eyedropperButton);
 		box.Valign = Gtk.Align.Start;
 		return box;
 	}
@@ -283,8 +306,8 @@ public sealed partial class ColorPickerPanel
 		});
 
 		Gtk.DrawingArea swatch = Gtk.DrawingArea.New ();
-		swatch.WidthRequest = PaletteWidget.SWATCH_SIZE * MAX_SWATCH_COLUMNS;
 		swatch.HeightRequest = PaletteWidget.SWATCH_SIZE * PaletteWidget.PALETTE_ROWS;
+		swatch.Halign = Gtk.Align.Start;
 
 		Gtk.Box row = Gtk.Box.New (Gtk.Orientation.Horizontal, SPACING);
 		row.Append (iconArea);
@@ -292,6 +315,19 @@ public sealed partial class ColorPickerPanel
 
 		swatchArea = swatch;
 		return row;
+	}
+
+	private void ConfigureSwatchClick (Gtk.DrawingArea swatch, bool recent)
+	{
+		Gtk.GestureClick click = Gtk.GestureClick.New ();
+		click.SetButton (0);
+		click.OnReleased += (_, e) =>
+			HandleSwatchClick (
+				recent,
+				new PointD (e.X, e.Y),
+				click.GetCurrentButton (),
+				click.GetCurrentEventState ());
+		swatch.AddController (click);
 	}
 
 	private void DrawRecentSwatches (Context g)
@@ -319,21 +355,34 @@ public sealed partial class ColorPickerPanel
 	private void UpdateSwatchSizes ()
 	{
 		int recentCols = PaletteWidget.GetRecentColorColumns (palette.MaxRecentlyUsedColor);
+		int visibleRecentCols = Math.Min (Math.Max (1, recentCols), MAX_SWATCH_COLUMNS);
 		int recentBands = PaletteWidget.GetWrappedBandCount (recentCols, MAX_SWATCH_COLUMNS);
+		swatch_recent.WidthRequest = PaletteWidget.SWATCH_SIZE * visibleRecentCols;
 		swatch_recent.HeightRequest = PaletteWidget.SWATCH_SIZE * PaletteWidget.PALETTE_ROWS * recentBands;
 
 		int quickCols = (palette.CurrentPalette.Colors.Count + PaletteWidget.PALETTE_ROWS - 1) / PaletteWidget.PALETTE_ROWS;
+		int visibleQuickCols = Math.Min (Math.Max (1, quickCols), MAX_SWATCH_COLUMNS);
 		int quickBands = PaletteWidget.GetWrappedBandCount (quickCols, MAX_SWATCH_COLUMNS);
+		swatch_palette.WidthRequest = PaletteWidget.SWATCH_SIZE * visibleQuickCols;
 		swatch_palette.HeightRequest = PaletteWidget.SWATCH_SIZE * PaletteWidget.PALETTE_ROWS * quickBands;
 	}
 
 	// Left click sets the primary color, right click the secondary - same semantics
 	// as the docked bar's quick/recent swatches (StatusBarColorPaletteWidget).
-	private void HandleSwatchClick (bool recent, PointD relPoint, uint button)
+	private async void HandleSwatchClick (bool recent, PointD relPoint, uint button, Gdk.ModifierType state)
 	{
 		int index = PaletteWidget.GetWrappedSwatchAtLocation (palette, relPoint, new RectangleD (), MAX_SWATCH_COLUMNS, recent);
 		if (index < 0)
 			return;
+
+		bool editQuickColor = !recent && (
+			button == GtkExtensions.MOUSE_MIDDLE_BUTTON ||
+			(button == GtkExtensions.MOUSE_LEFT_BUTTON && state.IsControlPressed ()));
+
+		if (editQuickColor) {
+			await EditQuickColor (index);
+			return;
+		}
 
 		Color color = recent
 			? palette.RecentlyUsedColors.ElementAt (index)
@@ -345,9 +394,33 @@ public sealed partial class ColorPickerPanel
 			palette.SetColor (true, color, addToRecent: !recent);
 	}
 
-	private void Configure (IPaletteService palette)
+	private async Task EditQuickColor (int index)
+	{
+		if (color_picker_active)
+			return;
+
+		color_picker_active = true;
+		using ColorPickerDialog dialog = ColorPickerDialog.New (
+			chrome.MainWindow,
+			palette,
+			new SingleColor (palette.CurrentPalette.Colors[index]),
+			primarySelected: true,
+			livePalette: false,
+			Translations.GetString ("Choose Palette Color"));
+
+		try {
+			if (await dialog.RunAsync () == Gtk.ResponseType.Ok)
+				palette.CurrentPalette.SetColor (index, ((SingleColor) dialog.Colors).Color);
+		} finally {
+			dialog.Destroy ();
+			color_picker_active = false;
+		}
+	}
+
+	private void Configure (IPaletteService palette, IChromeService chrome)
 	{
 		this.palette = palette;
+		this.chrome = chrome;
 
 		palette.PrimaryColorChanged += (_, _) => { if (!updating) RedrawAll (); };
 		palette.SecondaryColorChanged += (_, _) => { if (!updating) RedrawAll (); };
@@ -360,10 +433,10 @@ public sealed partial class ColorPickerPanel
 		updating = false;
 	}
 
-	public static ColorPickerPanel New (IPaletteService palette)
+	public static ColorPickerPanel New (IPaletteService palette, IChromeService chrome)
 	{
 		ColorPickerPanel panel = NewWithProperties ([]);
-		panel.Configure (palette);
+		panel.Configure (palette, chrome);
 		return panel;
 	}
 
@@ -534,13 +607,6 @@ public sealed partial class ColorPickerPanel
 
 		dragging_surface = false;
 
-		if (swatch_recent.IsMouseInDrawingArea (this, absPos, out PointD relRecent)) {
-			HandleSwatchClick (true, relRecent, gesture.GetCurrentButton ());
-			return;
-		}
-
-		if (swatch_palette.IsMouseInDrawingArea (this, absPos, out PointD relPalette))
-			HandleSwatchClick (false, relPalette, gesture.GetCurrentButton ());
 	}
 
 	private void DragGesture_OnDragUpdate (

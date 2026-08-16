@@ -38,7 +38,8 @@ Changes for the next release (0.0.2) go here.
 - The primary and secondary color swatches in the floating Colors window are larger, matching the
   width of the swap and eyedropper buttons beneath them.
 - The hue/saturation wheel is now drawn over a circular checkerboard, and a second checkbox beside
-  the brightness one previews the selection's opacity against it.
+  the brightness one previews the selection's opacity against it. The primary and secondary
+  swatches use the same checkerboard and follow the same checkbox.
 - Palette > Set Number of Colors now also sets the number of recently picked colors, so both
   counts can be changed without opening Settings.
 - Settings now allows 0–24 recently picked colors in increments matching the palette's row count;

@@ -37,6 +37,9 @@ public sealed partial class ColorPickerPanel
 	const int SLIDER_WIDTH = 150;
 	const int SPACING = 6;
 	const int SWATCH_ICON_SIZE = 14;
+	// One tile size everywhere transparency is shown, so the wheel and the
+	// primary/secondary swatches read as the same material.
+	const int CHECKER_SIZE = 12;
 	// Wide enough that the swap and eyedropper buttons stretch to the swatch width
 	// rather than the other way round, matching the picker dialog's proportions.
 	const int DISPLAY_SIZE = 40;
@@ -177,19 +180,29 @@ public sealed partial class ColorPickerPanel
 		return box;
 	}
 
-	private static void DrawDisplay (Context g, Color c, bool selected)
+	private void DrawDisplay (Context g, Color c, bool selected)
 	{
 		const int MARGIN = 3;
 		double wh = DISPLAY_SIZE - MARGIN * 2;
 		RectangleD rect = new (MARGIN, MARGIN, wh, wh);
 
-		if (c.A < 1) {
-			g.FillRectangle (rect, new Color (1, 1, 1));
-			g.FillRectangle (new RectangleD (rect.X, rect.Y, rect.Width / 2, rect.Height / 2), new Color (.8, .8, .8));
-			g.FillRectangle (new RectangleD (rect.X + rect.Width / 2, rect.Y + rect.Height / 2, rect.Width / 2, rect.Height / 2), new Color (.8, .8, .8));
+		// The opacity-preview checkbox governs the swatches as well as the wheel;
+		// with it off the swatch shows the color at full opacity.
+		bool previewAlpha = show_alpha_check.Active;
+
+		if (previewAlpha && c.A < 1) {
+			using ImageSurface checkers = CairoExtensions.CreateTransparentBackgroundSurface (CHECKER_SIZE);
+			using SurfacePattern pattern = new (checkers) { Extend = Extend.Repeat };
+
+			g.Save ();
+			g.Rectangle (rect);
+			g.Clip ();
+			g.SetSource (pattern);
+			g.Paint ();
+			g.Restore ();
 		}
 
-		g.FillRectangle (rect, c);
+		g.FillRectangle (rect, previewAlpha ? c : new Color (c.R, c.G, c.B));
 		g.DrawRectangle (rect, new Color (0, 0, 0), selected ? 3 : 1);
 	}
 
@@ -224,14 +237,12 @@ public sealed partial class ColorPickerPanel
 			if (!hueSatToggle.Active) return;
 			surface_type = SurfaceType.HueAndSat;
 			show_value_check.Visible = true;
-			show_alpha_check.Visible = true;
 			RedrawAll ();
 		};
 		satValToggle.OnToggled += (_, _) => {
 			if (!satValToggle.Active) return;
 			surface_type = SurfaceType.SatAndVal;
 			show_value_check.Visible = false;
-			show_alpha_check.Visible = false;
 			RedrawAll ();
 		};
 		hueSatToggle.SetGroup (satValToggle);
@@ -252,7 +263,7 @@ public sealed partial class ColorPickerPanel
 		surface_cursor.SetDrawFunc ((_, g, _, _) => DrawSurfaceCursor (g));
 
 		show_value_check.OnToggled += (_, _) => surface.QueueDraw ();
-		show_alpha_check.OnToggled += (_, _) => surface.QueueDraw ();
+		show_alpha_check.OnToggled += (_, _) => RedrawAll ();
 
 		Gtk.Overlay overlay = Gtk.Overlay.New ();
 		overlay.AddOverlay (surface);
@@ -668,7 +679,6 @@ public sealed partial class ColorPickerPanel
 	/// </summary>
 	private static void DrawTransparentBackgroundCircle (Context g)
 	{
-		const int CHECKER_SIZE = 12;
 		// Sit just inside the wheel and fade out before reaching it, so the wheel's own
 		// antialiased rim stays the outermost edge and no hard circle shows through.
 		const double INSET = 2;

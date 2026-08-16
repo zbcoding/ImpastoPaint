@@ -317,9 +317,14 @@ public sealed partial class ColorPickerPanel
 			// color: adopt it and show the current color that way.
 			if (Color.TryParseCssFormatName (sender.GetText (), out CssColorFormat namedFormat)) {
 				code_format = namedFormat;
-				updating = true;
-				code_entry.SetText (CurrentColor.ToCssCode (code_format));
-				updating = false;
+				// Defer: rewriting the entry from inside its own change signal is an
+				// edit nested in the user's keystroke, which GTK refuses to undo-group.
+				GLib.Functions.IdleAdd (GLib.Constants.PRIORITY_DEFAULT_IDLE, () => {
+					updating = true;
+					code_entry.SetText (CurrentColor.ToCssCode (code_format));
+					updating = false;
+					return false;
+				});
 				return;
 			}
 

@@ -58,7 +58,9 @@ public sealed class SelectionHistoryItem : BaseHistoryItem
 
 	private void Swap ()
 	{
-		var doc = this.Document!;
+		// Document is only set once the item is pushed onto the history stack;
+		// SelectTool rolls an un-pushed item back on a click-to-deselect.
+		var doc = Document ?? workspace.ActiveDocument;
 		DocumentSelection swap_selection = doc.Selection;
 		bool swap_hide_tool_layer = doc.Layers.ToolLayer.Hidden;
 

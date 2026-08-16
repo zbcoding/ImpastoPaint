@@ -409,13 +409,6 @@ msgstr ""
 msgid "By percentage:"
 msgstr ""
 
-#: ../Impasto/Actions/File/SaveDocumentImplementationAction.cs:97
-#: ../Impasto/Actions/Help/KeyboardShortcutsDialogAction.cs:108
-#: ../Impasto/Actions/Help/KeyboardShortcutsDialogAction.cs:121
-#: ../Impasto/Dialogs/PreferencesDialog.cs:364
-#: ../Pinta.Core/Actions/EditActions.cs:658
-#: ../Pinta.Gui.Addins/InstallDialog.cs:126
-#: ../Pinta.Gui.Widgets/Widgets/ColorPickerDialog.cs:496
 #. Translators: This tooltip lists CSS color syntax. Keep the code examples unchanged.
 #: ../Pinta.Gui.Widgets/Widgets/ColorPickerPanel.cs:257
 msgid ""
@@ -425,13 +418,23 @@ msgid ""
 "RGB with alpha — rgb(255 87 51 / 50%)\n"
 "HSL — hsl(11 100% 60%)\n"
 "HSL with alpha — hsl(11 100% 60% / 50%)\n"
+"HWB — hwb(11 20% 0%)\n"
+"HWB with alpha — hwb(11 20% 0% / 50%)\n"
 "OKLCH — oklch(65% 0.2 35)\n"
 "Named colors — any CSS color name, such as red, white, rebeccapurple, "
 "transparent, or currentColor\n"
 "\n"
+"Commas are optional: rgb(255, 87, 51) and rgb(255 87 51) are equivalent.\n"
 "currentColor uses the currently selected color."
 msgstr ""
 
+#: ../Impasto/Actions/File/SaveDocumentImplementationAction.cs:97
+#: ../Impasto/Actions/Help/KeyboardShortcutsDialogAction.cs:108
+#: ../Impasto/Actions/Help/KeyboardShortcutsDialogAction.cs:121
+#: ../Impasto/Dialogs/PreferencesDialog.cs:364
+#: ../Pinta.Core/Actions/EditActions.cs:658
+#: ../Pinta.Gui.Addins/InstallDialog.cs:126
+#: ../Pinta.Gui.Widgets/Widgets/ColorPickerDialog.cs:496
 #: ../Pinta.Tools/Dialogs/TextPropertiesDialog.cs:265
 msgid "Cancel"
 msgstr ""
@@ -1544,6 +1547,14 @@ msgstr ""
 msgid ""
 "If enabled, the hue/saturation surface is drawn at your current selection's "
 "brightness; otherwise it is shown at full brightness."
+msgstr ""
+
+#. Translators: Explains the "Show selection opacity in preview" checkbox.
+#: ../Pinta.Gui.Widgets/Widgets/ColorPickerPanel.cs:220
+msgid ""
+"If enabled, the hue/saturation surface is drawn at your current selection's "
+"opacity, letting the checkerboard behind it show through; otherwise it is "
+"shown fully opaque."
 msgstr ""
 
 #: ../Impasto/Actions/File/CloseDocumentAction.cs:75
@@ -3555,6 +3566,10 @@ msgstr ""
 #: ../Pinta.Gui.Widgets/Widgets/ColorPickerDialog.cs:191
 #: ../Pinta.Gui.Widgets/Widgets/ColorPickerPanel.cs:172
 msgid "Show selection brightness in preview"
+msgstr ""
+
+#: ../Pinta.Gui.Widgets/Widgets/ColorPickerPanel.cs:220
+msgid "Show selection opacity in preview"
 msgstr ""
 
 #: ../Pinta.Core/Actions/ViewActions.cs:289

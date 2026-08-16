@@ -1,6 +1,7 @@
 using System;
 using NUnit.Framework;
 using Color = Cairo.Color;
+using CssColorFormat = Cairo.CssColorFormat;
 
 namespace Pinta.Core.Tests;
 
@@ -52,6 +53,13 @@ internal sealed class ColorTests
 	[TestCase ("hsl(11 100% 60%)", 1, 0.3467, 0.2, 1)]
 	[TestCase ("hsl(11 100% 60% / 50%)", 1, 0.3467, 0.2, 0.5)]
 	[TestCase ("oklch(65% 0.2 35)", 0.9394, 0.3236, 0.1669, 1)]
+	[TestCase ("hwb(11 20% 0%)", 1, 0.3467, 0.2, 1)]
+	[TestCase ("hwb(11 20% 0% / 50%)", 1, 0.3467, 0.2, 0.5)]
+	[TestCase ("hwb(0 100% 100%)", 0.5, 0.5, 0.5, 1)]
+	// Commas are an accepted alternative to spaces in every function that takes them.
+	[TestCase ("rgb(255, 87, 51)", 1, 0.3412, 0.2, 1)]
+	[TestCase ("rgb(255, 87, 51, 0.5)", 1, 0.3412, 0.2, 0.5)]
+	[TestCase ("hsl(11, 100%, 60%)", 1, 0.3467, 0.2, 1)]
 	[TestCase ("rebeccapurple", 0.4, 0.2, 0.6, 1)]
 	[TestCase ("transparent", 0, 0, 0, 0)]
 	public void FromCssCode (string code, double r, double g, double b, double a)
@@ -70,6 +78,38 @@ internal sealed class ColorTests
 	{
 		Color current = new (0.1, 0.2, 0.3, 0.4);
 		Assert.That (Color.FromCssCode ("currentColor", current), Is.EqualTo (current));
+	}
+
+	// A user who types one notation should keep seeing that notation after editing
+	// the color with the wheel or sliders, not have it collapse back to hex.
+	[TestCase ("rgb(255 87 51)", CssColorFormat.Rgb)]
+	[TestCase ("hsl(11 100% 60%)", CssColorFormat.Hsl)]
+	[TestCase ("hwb(11 20% 0%)", CssColorFormat.Hwb)]
+	[TestCase ("oklch(65% 0.2 35)", CssColorFormat.Oklch)]
+	[TestCase ("#ff5733", CssColorFormat.Hex)]
+	[TestCase ("rebeccapurple", CssColorFormat.Hex)]
+	public void FromCssCodeReportsFormat (string code, CssColorFormat expected)
+	{
+		Color.FromCssCode (code, Color.Black, out CssColorFormat format);
+		Assert.That (format, Is.EqualTo (expected));
+	}
+
+	[TestCase ("rgb(255 87 51)")]
+	[TestCase ("rgb(255 87 51 / 50%)")]
+	[TestCase ("hsl(11 100% 60%)")]
+	[TestCase ("hwb(11 20% 0%)")]
+	[TestCase ("hwb(11 20% 0% / 50%)")]
+	[TestCase ("oklch(65% 0.2 35)")]
+	public void ToCssCodeRoundTrips (string code)
+	{
+		Color parsed = Color.FromCssCode (code, Color.Black, out CssColorFormat format)!.Value;
+		string rendered = parsed.ToCssCode (format);
+		Color reparsed = Color.FromCssCode (rendered, Color.Black)!.Value;
+
+		Assert.That (reparsed.R, Is.EqualTo (parsed.R).Within (0.01));
+		Assert.That (reparsed.G, Is.EqualTo (parsed.G).Within (0.01));
+		Assert.That (reparsed.B, Is.EqualTo (parsed.B).Within (0.01));
+		Assert.That (reparsed.A, Is.EqualTo (parsed.A).Within (0.01));
 	}
 
 	[TestCase ("rgb(1 2)")]

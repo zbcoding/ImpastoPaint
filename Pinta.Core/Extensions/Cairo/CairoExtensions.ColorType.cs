@@ -5,6 +5,18 @@ using Pinta.Core;
 
 namespace Cairo;
 
+/// <summary>
+/// CSS notations a color can be read from and written back to.
+/// </summary>
+public enum CssColorFormat
+{
+	Hex,
+	Rgb,
+	Hsl,
+	Hwb,
+	Oklch,
+}
+
 // TODO-GTK4 (bindings, unsubmitted) - should this be added to gir.core?
 public readonly record struct Color (
 	double R,
@@ -87,8 +99,18 @@ public readonly record struct Color (
 	/// <summary>
 	/// Parses a CSS color, also accepting hexadecimal values without a leading hash.
 	/// </summary>
-	public static Color? FromCssCode (string code, Color currentColor)
+	public static Color? FromCssCode (string code, Color currentColor) =>
+		FromCssCode (code, currentColor, out _);
+
+	/// <param name="format">
+	/// The notation the code was written in, so the same notation can be re-rendered
+	/// by <see cref="ToCssCode"/> after the color changes.
+	/// </param>
+	/// <inheritdoc cref="FromCssCode(string, Color)"/>
+	public static Color? FromCssCode (string code, Color currentColor, out CssColorFormat format)
 	{
+		format = CssColorFormat.Hex;
+
 		string trimmedCode = code.Trim ();
 		if (trimmedCode.Length == 0)
 			return null;
@@ -103,8 +125,20 @@ public readonly record struct Color (
 		if (hexColor is not null)
 			return hexColor;
 
-		if (TryParseOklch (trimmedCode, out Color oklchColor))
+		if (TryParseOklch (trimmedCode, out Color oklchColor)) {
+			format = CssColorFormat.Oklch;
 			return oklchColor;
+		}
+
+		if (TryParseHwb (trimmedCode, out Color hwbColor)) {
+			format = CssColorFormat.Hwb;
+			return hwbColor;
+		}
+
+		if (trimmedCode.StartsWith ("rgb", StringComparison.OrdinalIgnoreCase))
+			format = CssColorFormat.Rgb;
+		else if (trimmedCode.StartsWith ("hsl", StringComparison.OrdinalIgnoreCase))
+			format = CssColorFormat.Hsl;
 
 		string parserCode =
 			NormalizeModernColorFunction (trimmedCode, "rgb", "rgba", hueComponent: false)
@@ -180,6 +214,51 @@ public readonly record struct Color (
 		return true;
 	}
 
+	private static bool TryParseHwb (string code, out Color color)
+	{
+		color = default;
+		if (!TrySplitModernFunction (code, "hwb", out string[] components, out _, out double alpha))
+			return false;
+
+		if (components.Length != 3
+			|| !TryParseCssAngle (components[0], out double hue)
+			|| !TryParseHwbAmount (components[1], out double whiteness)
+			|| !TryParseHwbAmount (components[2], out double blackness))
+			return false;
+
+		whiteness = Math.Clamp (whiteness, 0, 1);
+		blackness = Math.Clamp (blackness, 0, 1);
+
+		if (whiteness + blackness >= 1) {
+			double gray = whiteness / (whiteness + blackness);
+			color = new (gray, gray, gray, alpha);
+			return true;
+		}
+
+		Color pure = FromHsv (hue, 1, 1, alpha);
+		double scale = 1 - whiteness - blackness;
+		color = new (
+			pure.R * scale + whiteness,
+			pure.G * scale + whiteness,
+			pure.B * scale + whiteness,
+			alpha);
+		return true;
+	}
+
+	/// <summary>
+	/// Whiteness and blackness are percentages; a bare number uses the same 0-100 scale.
+	/// </summary>
+	private static bool TryParseHwbAmount (string text, out double value)
+	{
+		if (!TryParsePercentageOrNumber (text, 1, out value))
+			return false;
+
+		if (!text.EndsWith ('%'))
+			value /= 100;
+
+		return true;
+	}
+
 	private static bool TrySplitModernFunction (
 		string code,
 		string functionName,
@@ -198,18 +277,25 @@ public readonly record struct Color (
 			return false;
 
 		string body = code[(functionName.Length + 1)..^1];
-		if (body.Contains (','))
-			return false;
 
+		// Commas and whitespace are interchangeable separators; alpha follows either a
+		// slash (modern syntax) or a fourth separator (legacy syntax).
 		string[] colorAndAlpha = body.Split ('/', 2, StringSplitOptions.TrimEntries);
-		if (colorAndAlpha.Length == 2) {
+		components = colorAndAlpha[0].Split ([',', ' ', '\t'], StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+
+		string? alphaText = colorAndAlpha.Length == 2 ? colorAndAlpha[1] : null;
+		if (alphaText is null && components.Length == 4) {
+			alphaText = components[3];
+			components = components[..3];
+		}
+
+		if (alphaText is not null) {
 			hasAlpha = true;
-			if (!TryParsePercentageOrNumber (colorAndAlpha[1], 1, out alpha))
+			if (!TryParsePercentageOrNumber (alphaText, 1, out alpha))
 				return false;
 			alpha = Math.Clamp (alpha, 0, 1);
 		}
 
-		components = colorAndAlpha[0].Split ((char[]?) null, StringSplitOptions.RemoveEmptyEntries);
 		return true;
 	}
 
@@ -252,6 +338,83 @@ public readonly record struct Color (
 		degrees = (degrees * scale % 360 + 360) % 360;
 		return true;
 	}
+
+	/// <summary>
+	/// Renders the color in the given CSS notation, so an entry field can echo back
+	/// whichever notation the user typed.
+	/// </summary>
+	public string ToCssCode (CssColorFormat format)
+	{
+		if (format == CssColorFormat.Hex)
+			return ToHex ();
+
+		string alphaSuffix =
+			A >= 1
+			? string.Empty
+			: $" / {Round (A * 100)}%";
+
+		switch (format) {
+			case CssColorFormat.Rgb:
+				return $"rgb({Round (R * 255)} {Round (G * 255)} {Round (B * 255)}{alphaSuffix})";
+
+			case CssColorFormat.Hsl: {
+					(double hue, double saturation, double lightness) = ToHslComponents ();
+					return $"hsl({Round (hue)} {Round (saturation * 100)}% {Round (lightness * 100)}%{alphaSuffix})";
+				}
+
+			case CssColorFormat.Hwb: {
+					double whiteness = Math.Min (R, Math.Min (G, B));
+					double blackness = 1 - Math.Max (R, Math.Max (G, B));
+					return $"hwb({Round (ToHsv ().Hue)} {Round (whiteness * 100)}% {Round (blackness * 100)}%{alphaSuffix})";
+				}
+
+			case CssColorFormat.Oklch: {
+					(double lightness, double chroma, double hue) = ToOklchComponents ();
+					return $"oklch({Round (lightness * 100)}% {Math.Round (chroma, 3).ToString (CultureInfo.InvariantCulture)} {Round (hue)}{alphaSuffix})";
+				}
+
+			default:
+				return ToHex ();
+		}
+
+		static string Round (double value) =>
+			Math.Round (value).ToString (CultureInfo.InvariantCulture);
+	}
+
+	private (double Hue, double Saturation, double Lightness) ToHslComponents ()
+	{
+		HsvColor hsv = ToHsv ();
+		double value = hsv.Val;
+		double lightness = value * (1 - hsv.Sat / 2);
+		double saturation =
+			(lightness <= 0 || lightness >= 1)
+			? 0
+			: (value - lightness) / Math.Min (lightness, 1 - lightness);
+		return (hsv.Hue, saturation, lightness);
+	}
+
+	private (double Lightness, double Chroma, double Hue) ToOklchComponents ()
+	{
+		double red = SrgbToLinear (R);
+		double green = SrgbToLinear (G);
+		double blue = SrgbToLinear (B);
+
+		double l = Math.Cbrt (0.4122214708 * red + 0.5363325363 * green + 0.0514459929 * blue);
+		double m = Math.Cbrt (0.2119034982 * red + 0.6806995451 * green + 0.1073969566 * blue);
+		double s = Math.Cbrt (0.0883024619 * red + 0.2817188376 * green + 0.6299787005 * blue);
+
+		double lightness = 0.2104542553 * l + 0.7936177850 * m - 0.0040720468 * s;
+		double a = 1.9779984951 * l - 2.4285922050 * m + 0.4505937099 * s;
+		double b = 0.0259040371 * l + 0.7827717662 * m - 0.8086757660 * s;
+
+		double hue = Math.Atan2 (b, a) * 180 / Math.PI;
+		return (lightness, Math.Sqrt (a * a + b * b), (hue % 360 + 360) % 360);
+	}
+
+	private static double SrgbToLinear (double value) =>
+		value <= 0.04045
+			? value / 12.92
+			: Math.Pow ((value + 0.055) / 1.055, 2.4);
 
 	private static double LinearToSrgb (double value) =>
 		value <= 0.0031308

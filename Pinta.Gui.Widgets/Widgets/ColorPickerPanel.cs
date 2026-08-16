@@ -37,7 +37,9 @@ public sealed partial class ColorPickerPanel
 	const int SLIDER_WIDTH = 150;
 	const int SPACING = 6;
 	const int SWATCH_ICON_SIZE = 14;
-	const int DISPLAY_SIZE = 28;
+	// Wide enough that the swap and eyedropper buttons stretch to the swatch width
+	// rather than the other way round, matching the picker dialog's proportions.
+	const int DISPLAY_SIZE = 40;
 	// Both swatch groups follow the configured 2- or 3-row palette. A 17-column
 	// cap keeps either default quick palette on one band while still wrapping
 	// larger user palettes.
@@ -57,9 +59,11 @@ public sealed partial class ColorPickerPanel
 	private Gtk.DrawingArea primary_display = null!;
 	private Gtk.DrawingArea secondary_display = null!;
 	private Gtk.CheckButton show_value_check = null!;
+	private Gtk.CheckButton show_alpha_check = null!;
 	private Gtk.DrawingArea surface = null!;
 	private Gtk.DrawingArea surface_cursor = null!;
 	private Gtk.Entry code_entry = null!;
+	private CssColorFormat code_format = CssColorFormat.Hex;
 	private ColorPickerSlider[] sliders = null!;
 	private Gtk.DrawingArea swatch_recent = null!;
 	private Gtk.Box recent_swatch_row = null!;
@@ -72,6 +76,7 @@ public sealed partial class ColorPickerPanel
 
 	[System.Diagnostics.CodeAnalysis.MemberNotNull (
 		nameof (primary_display), nameof (secondary_display), nameof (show_value_check),
+		nameof (show_alpha_check),
 		nameof (surface), nameof (surface_cursor), nameof (code_entry), nameof (sliders),
 		nameof (swatch_recent), nameof (swatch_palette), nameof (recent_swatch_row))]
 	partial void Initialize ()
@@ -187,7 +192,7 @@ public sealed partial class ColorPickerPanel
 		g.DrawRectangle (rect, new Color (0, 0, 0), selected ? 3 : 1);
 	}
 
-	[System.Diagnostics.CodeAnalysis.MemberNotNull (nameof (show_value_check), nameof (surface), nameof (surface_cursor))]
+	[System.Diagnostics.CodeAnalysis.MemberNotNull (nameof (show_value_check), nameof (show_alpha_check), nameof (surface), nameof (surface_cursor))]
 	private Gtk.Box BuildPickerSurface ()
 	{
 		Gtk.ToggleButton hueSatToggle = Gtk.ToggleButton.NewWithLabel (Translations.GetString ("Hue & Sat"));
@@ -206,16 +211,26 @@ public sealed partial class ColorPickerPanel
 		show_value_check.Child = brightnessIcon;
 		show_value_check.TooltipText = $"{Translations.GetString ("Show selection brightness in preview")}\n{Translations.GetString ("If enabled, the hue/saturation surface is drawn at your current selection's brightness; otherwise it is shown at full brightness.")}";
 
+		Gtk.Image alphaIcon = Gtk.Image.NewFromIconName (Resources.Icons.ColorModeTransparency);
+		alphaIcon.AddCssClass ("dim-label");
+
+		show_alpha_check = Gtk.CheckButton.New ();
+		show_alpha_check.FocusOnClick = false;
+		show_alpha_check.Child = alphaIcon;
+		show_alpha_check.TooltipText = $"{Translations.GetString ("Show selection opacity in preview")}\n{Translations.GetString ("If enabled, the hue/saturation surface is drawn at your current selection's opacity, letting the checkerboard behind it show through; otherwise it is shown fully opaque.")}";
+
 		hueSatToggle.OnToggled += (_, _) => {
 			if (!hueSatToggle.Active) return;
 			surface_type = SurfaceType.HueAndSat;
 			show_value_check.Visible = true;
+			show_alpha_check.Visible = true;
 			RedrawAll ();
 		};
 		satValToggle.OnToggled += (_, _) => {
 			if (!satValToggle.Active) return;
 			surface_type = SurfaceType.SatAndVal;
 			show_value_check.Visible = false;
+			show_alpha_check.Visible = false;
 			RedrawAll ();
 		};
 		hueSatToggle.SetGroup (satValToggle);
@@ -236,6 +251,7 @@ public sealed partial class ColorPickerPanel
 		surface_cursor.SetDrawFunc ((_, g, _, _) => DrawSurfaceCursor (g));
 
 		show_value_check.OnToggled += (_, _) => surface.QueueDraw ();
+		show_alpha_check.OnToggled += (_, _) => surface.QueueDraw ();
 
 		Gtk.Overlay overlay = Gtk.Overlay.New ();
 		overlay.AddOverlay (surface);
@@ -246,7 +262,12 @@ public sealed partial class ColorPickerPanel
 		box.WidthRequest = drawSize;
 		box.Append (toggleBox);
 		box.Append (overlay);
-		box.Append (show_value_check);
+
+		Gtk.Box previewCheckBox = Gtk.Box.New (Gtk.Orientation.Horizontal, SPACING);
+		previewCheckBox.Halign = Gtk.Align.Center;
+		previewCheckBox.Append (show_value_check);
+		previewCheckBox.Append (show_alpha_check);
+		box.Append (previewCheckBox);
 		return box;
 	}
 
@@ -254,15 +275,16 @@ public sealed partial class ColorPickerPanel
 	private Gtk.Box BuildSliders ()
 	{
 		// Translators: This tooltip lists CSS color syntax. Keep the code examples unchanged.
-		string codeTooltip = Translations.GetString ("CSS color formats:\nHEX — #ff5733 or ff5733\nRGB — rgb(255 87 51)\nRGB with alpha — rgb(255 87 51 / 50%)\nHSL — hsl(11 100% 60%)\nHSL with alpha — hsl(11 100% 60% / 50%)\nOKLCH — oklch(65% 0.2 35)\nNamed colors — any CSS color name, such as red, white, rebeccapurple, transparent, or currentColor\n\ncurrentColor uses the currently selected color.");
+		string codeTooltip = Translations.GetString ("CSS color formats:\nHEX — #ff5733 or ff5733\nRGB — rgb(255 87 51)\nRGB with alpha — rgb(255 87 51 / 50%)\nHSL — hsl(11 100% 60%)\nHSL with alpha — hsl(11 100% 60% / 50%)\nHWB — hwb(11 20% 0%)\nHWB with alpha — hwb(11 20% 0% / 50%)\nOKLCH — oklch(65% 0.2 35)\nNamed colors — any CSS color name, such as red, white, rebeccapurple, transparent, or currentColor\n\nCommas are optional: rgb(255, 87, 51) and rgb(255 87 51) are equivalent.\ncurrentColor uses the currently selected color.");
 
 		code_entry = Gtk.Entry.New ();
 		code_entry.Hexpand = true;
 		code_entry.OnChanged += (sender, _) => {
 			if (updating) return;
-			Color? parsed = Color.FromCssCode (sender.GetText (), CurrentColor);
-			if (parsed is not null)
-				CurrentColor = parsed.Value;
+			Color? parsed = Color.FromCssCode (sender.GetText (), CurrentColor, out CssColorFormat format);
+			if (parsed is null) return;
+			code_format = format;
+			CurrentColor = parsed.Value;
 		};
 		code_entry.TooltipText = codeTooltip;
 
@@ -542,7 +564,7 @@ public sealed partial class ColorPickerPanel
 			slider.Color = current;
 
 		if (!code_entry.IsEditingText ())
-			code_entry.SetText (current.ToHex ());
+			code_entry.SetText (current.ToCssCode (code_format));
 	}
 
 	private void DrawSurface (Context g)
@@ -603,8 +625,35 @@ public sealed partial class ColorPickerPanel
 		}
 
 		imgSurface.MarkDirty ();
+
+		if (surface_type == SurfaceType.HueAndSat)
+			DrawTransparentBackgroundCircle (g);
+
 		g.SetSourceSurface (imgSurface, SURFACE_PADDING, SURFACE_PADDING);
 		g.Paint ();
+	}
+
+	/// <summary>
+	/// The checkerboard the wheel is drawn over, so a partly transparent selection reads
+	/// as transparent rather than as a darker color.
+	/// </summary>
+	private static void DrawTransparentBackgroundCircle (Context g)
+	{
+		const int CHECKER_SIZE = 16;
+		using ImageSurface checkers = CairoExtensions.CreateTransparentBackgroundSurface (CHECKER_SIZE);
+		using SurfacePattern pattern = new (checkers) { Extend = Extend.Repeat };
+
+		g.Save ();
+		g.Arc (
+			SURFACE_RADIUS + SURFACE_PADDING,
+			SURFACE_RADIUS + SURFACE_PADDING,
+			SURFACE_RADIUS,
+			0,
+			2 * Math.PI);
+		g.Clip ();
+		g.SetSource (pattern);
+		g.Paint ();
+		g.Restore ();
 	}
 
 	private void DrawSurfaceCursor (Context g)

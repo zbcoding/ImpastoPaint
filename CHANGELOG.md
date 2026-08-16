@@ -28,6 +28,18 @@ Changes for the next release (0.0.2) go here.
   Based on Pinta PR #2189 by: colin-i
 - The floating Colors window now has a single-pixel image-sampling eyedropper, keeps recent and
   quick colors on one row when its width permits, and supports changing a quick color with Ctrl-click or middle-click.
+- The floating Colors window's Code box accepts any CSS color notation: hex with or without the
+  leading hash, `rgb()`, `hsl()`, `hwb()`, `oklch()`, named colors, `transparent`, and
+  `currentColor`. Commas are optional wherever CSS allows them, so `rgb(255, 87, 51)` and
+  `rgb(255 87 51)` both work. The box keeps writing back in whichever notation was last typed,
+  so a color entered as `oklch(45% 0.1 3)` is still shown as OKLCH after the wheel or sliders
+  change it.
+- The primary and secondary color swatches in the floating Colors window are larger, matching the
+  width of the swap and eyedropper buttons beneath them.
+- The hue/saturation wheel is now drawn over a circular checkerboard, and a second checkbox beside
+  the brightness one previews the selection's opacity against it.
+- Palette > Set Number of Colors now also sets the number of recently picked colors, so both
+  counts can be changed without opening Settings.
 - Settings now allows 0–24 recently picked colors in increments matching the palette's row count;
   zero hides the section, with defaults of eight colors for two rows and twelve for three rows.
 

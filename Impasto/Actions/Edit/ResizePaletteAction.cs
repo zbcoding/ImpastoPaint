@@ -57,32 +57,64 @@ internal sealed class ResizePaletteAction : IActionHandler
 
 	private async void Activated (object sender, EventArgs e)
 	{
-		int? response = await PromptResize ();
+		(int paletteSize, int recentColorCount)? response = await PromptResize ();
 		if (!response.HasValue) return;
-		int newSize = response.Value;
-		palette.CurrentPalette.Resize (newSize);
+
+		palette.CurrentPalette.Resize (response.Value.paletteSize);
+
+		if (response.Value.recentColorCount != palette.MaxRecentlyUsedColor)
+			palette.SetRecentlyUsedColorCount (response.Value.recentColorCount);
 	}
 
-	private async Task<int?> PromptResize ()
+	private async Task<(int paletteSize, int recentColorCount)?> PromptResize ()
 	{
 		int rows = PaletteHelper.GetPaletteRowCount ();
 
-		using SpinButtonEntryDialog dialog = SpinButtonEntryDialog.New ();
-		dialog.Title = Translations.GetString ("Resize Palette");
-		dialog.TransientFor = chrome.MainWindow;
-		dialog.LabelText = Translations.GetString ("New palette size:");
-		dialog.SetRange (rows, 96);
-		dialog.Step = rows;
+		// Both counts move in whole rows, so the quick colors and recent colors stay
+		// aligned with each other in the palette bar.
+		Gtk.SpinButton paletteSizeSpinner = Gtk.SpinButton.NewWithRange (rows, 96, rows);
+		paletteSizeSpinner.SetActivatesDefaultImmediate (true);
 		// Round down to the nearest full row so every column stays full - without
 		// silently resizing the actual palette until the user confirms.
-		dialog.Value = PaletteHelper.RoundDownToRowMultiple (palette.CurrentPalette.Colors.Count, rows);
+		paletteSizeSpinner.Value = PaletteHelper.RoundDownToRowMultiple (palette.CurrentPalette.Colors.Count, rows);
+
+		Gtk.SpinButton recentCountSpinner = Gtk.SpinButton.NewWithRange (0, PaletteHelper.MAX_RECENT_COLOR_COUNT, rows);
+		recentCountSpinner.SetActivatesDefaultImmediate (true);
+		recentCountSpinner.Value = PaletteHelper.NormalizeRecentColorCount (palette.MaxRecentlyUsedColor, rows);
+
+		Gtk.Grid grid = Gtk.Grid.New ();
+		grid.RowSpacing = 6;
+		grid.ColumnSpacing = 6;
+		grid.Attach (CreateLabel (Translations.GetString ("New palette size:")), 0, 0, 1, 1);
+		grid.Attach (paletteSizeSpinner, 1, 0, 1, 1);
+		grid.Attach (CreateLabel ($"{Translations.GetString ("Recently picked colors")} (0 = {Translations.GetString ("None")}):"), 0, 1, 1, 1);
+		grid.Attach (recentCountSpinner, 1, 1, 1, 1);
+
+		using Gtk.Dialog dialog = Gtk.Dialog.New ();
+		dialog.Title = Translations.GetString ("Resize Palette");
+		dialog.TransientFor = chrome.MainWindow;
+		dialog.Modal = true;
+		dialog.AddCancelOkButtons ();
+		dialog.SetDefaultResponse (Gtk.ResponseType.Ok);
+
+		Gtk.Box content = dialog.GetContentAreaBox ();
+		content.SetAllMargins (12);
+		content.Append (grid);
 
 		try {
 			Gtk.ResponseType response = await dialog.RunAsync ();
 			if (response != Gtk.ResponseType.Ok) return null;
-			return dialog.Value;
+			return (paletteSizeSpinner.GetValueAsInt (), recentCountSpinner.GetValueAsInt ());
 		} finally {
 			dialog.Destroy ();
+		}
+
+		static Gtk.Label CreateLabel (string text)
+		{
+			Gtk.Label label = Gtk.Label.New (text);
+			label.Halign = Gtk.Align.Start;
+			label.Hexpand = true;
+			return label;
 		}
 	}
 }

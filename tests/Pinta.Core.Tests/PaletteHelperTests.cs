@@ -48,6 +48,15 @@ internal sealed class PaletteHelperTests
 	public void RecentColorLimitAllowsTwentyFourColors ()
 		=> Assert.That (PaletteHelper.MAX_RECENT_COLOR_COUNT, Is.EqualTo (24));
 
+	[TestCase (0, 3, 0)]
+	[TestCase (7, 2, 6)]
+	[TestCase (8, 2, 8)]
+	[TestCase (8, 3, 6)]
+	[TestCase (24, 3, 24)]
+	[TestCase (25, 2, 24)]
+	public void RecentColorCountUsesCompleteColumns (int count, int rows, int expected)
+		=> Assert.That (PaletteHelper.NormalizeRecentColorCount (count, rows), Is.EqualTo (expected));
+
 	private static bool ColorsMatch (Color color, byte r, byte g, byte b)
 		=> (int) Math.Round (color.R * 255) == r
 			&& (int) Math.Round (color.G * 255) == g

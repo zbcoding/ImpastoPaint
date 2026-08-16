@@ -113,39 +113,48 @@ public sealed partial class PreferencesDialog
 
 		PintaColorButton canvasSurroundColorButton = PintaColorButton.New ();
 		canvasSurroundColorButton.Halign = Gtk.Align.Start;
-		canvasSurroundColorButton.Valign = Gtk.Align.Start;
-		canvasSurroundColorButton.WidthRequest = 40;
-		canvasSurroundColorButton.HeightRequest = 40;
+		canvasSurroundColorButton.Valign = Gtk.Align.Center;
+		canvasSurroundColorButton.Vexpand = false;
+		canvasSurroundColorButton.WidthRequest = 80;
 		canvasSurroundColorButton.TooltipText = Translations.GetString ("Choose color...");
 		canvasSurroundColorButton.OnClicked += ChooseCanvasSurroundColor;
 
-		Gtk.Grid grid = Gtk.Grid.New ();
-		grid.RowSpacing = SPACING;
-		grid.ColumnSpacing = SPACING;
-		grid.ColumnHomogeneous = false;
+		Gtk.Label defaultCanvasSizeLabel = CreateLabel (
+			Translations.GetString ("Default canvas size (on application open):"),
+			Gtk.Align.Start);
 
-		grid.Attach (CreateLabel (Translations.GetString ("Default canvas size (on application open):"), Gtk.Align.Start), 0, 0, 4, 1);
+		Gtk.Grid canvasSizeGrid = Gtk.Grid.New ();
+		canvasSizeGrid.Halign = Gtk.Align.Start;
+		canvasSizeGrid.RowSpacing = SPACING;
+		canvasSizeGrid.ColumnSpacing = SPACING;
+		canvasSizeGrid.ColumnHomogeneous = false;
 
-		grid.Attach (CreateLabel (Translations.GetString ("Width:"), Gtk.Align.End), 0, 1, 1, 1);
-		grid.Attach (widthSpinner, 1, 1, 1, 1);
-		grid.Attach (Gtk.Label.New (Translations.GetString ("pixels")), 2, 1, 1, 1);
-		grid.Attach (CreateResetButton (ResetCanvasWidth), 3, 1, 1, 1);
+		canvasSizeGrid.Attach (CreateLabel (Translations.GetString ("Width:"), Gtk.Align.End), 0, 0, 1, 1);
+		canvasSizeGrid.Attach (widthSpinner, 1, 0, 1, 1);
+		canvasSizeGrid.Attach (Gtk.Label.New (Translations.GetString ("pixels")), 2, 0, 1, 1);
+		canvasSizeGrid.Attach (CreateResetButton (ResetCanvasWidth), 3, 0, 1, 1);
 
-		grid.Attach (CreateLabel (Translations.GetString ("Height:"), Gtk.Align.End), 0, 2, 1, 1);
-		grid.Attach (heightSpinner, 1, 2, 1, 1);
-		grid.Attach (Gtk.Label.New (Translations.GetString ("pixels")), 2, 2, 1, 1);
-		grid.Attach (CreateResetButton (ResetCanvasHeight), 3, 2, 1, 1);
+		canvasSizeGrid.Attach (CreateLabel (Translations.GetString ("Height:"), Gtk.Align.End), 0, 1, 1, 1);
+		canvasSizeGrid.Attach (heightSpinner, 1, 1, 1, 1);
+		canvasSizeGrid.Attach (Gtk.Label.New (Translations.GetString ("pixels")), 2, 1, 1, 1);
+		canvasSizeGrid.Attach (CreateResetButton (ResetCanvasHeight), 3, 1, 1, 1);
 
-		grid.Attach (CreateLabel (Translations.GetString ("Canvas surround color:"), Gtk.Align.End), 0, 3, 1, 1);
-		grid.Attach (canvasSurroundColorButton, 1, 3, 2, 1);
-		grid.Attach (CreateResetButton (ResetCanvasSurroundColor), 3, 3, 1, 1);
+		Gtk.Grid canvasSurroundGrid = Gtk.Grid.New ();
+		canvasSurroundGrid.Halign = Gtk.Align.Start;
+		canvasSurroundGrid.Valign = Gtk.Align.Start;
+		canvasSurroundGrid.ColumnSpacing = SPACING;
+		canvasSurroundGrid.Attach (CreateLabel (Translations.GetString ("Canvas surround color:"), Gtk.Align.End), 0, 0, 1, 1);
+		canvasSurroundGrid.Attach (canvasSurroundColorButton, 1, 0, 1, 1);
+		canvasSurroundGrid.Attach (CreateResetButton (ResetCanvasSurroundColor), 2, 0, 1, 1);
 
 		Gtk.Box contentArea = this.GetContentAreaBox ();
 		contentArea.SetAllMargins (12);
 
 		Gtk.Box canvasPage = Gtk.Box.New (Gtk.Orientation.Vertical, SPACING);
 		canvasPage.SetAllMargins (12);
-		canvasPage.Append (grid);
+		canvasPage.Append (defaultCanvasSizeLabel);
+		canvasPage.Append (canvasSizeGrid);
+		canvasPage.Append (canvasSurroundGrid);
 
 		Gtk.CheckButton pasteExternalImagesCheckButton = Gtk.CheckButton.NewWithLabel (Translations.GetString ("Paste external images onto a new layer by default"));
 		Gtk.Box clipboardPage = Gtk.Box.New (Gtk.Orientation.Vertical, SPACING);
@@ -575,6 +584,7 @@ public sealed partial class PreferencesDialog
 	{
 		Gtk.Button result = Gtk.Button.New ();
 		result.IconName = "edit-undo-symbolic";
+		result.Valign = Gtk.Align.Center;
 		result.TooltipText = Translations.GetString ("Reset to default");
 		result.OnClicked += handler;
 		return result;

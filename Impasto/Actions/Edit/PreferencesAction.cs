@@ -47,6 +47,7 @@ internal sealed class PreferencesAction : IActionHandler
 			defaultCanvasSurroundColor,
 			settings.GetSetting (SettingNames.PASTE_EXTERNAL_IMAGES_TO_NEW_LAYER, false),
 			extendedPaletteRows,
+			PintaCore.Palette.MaxRecentlyUsedColor,
 			PintaCore.Palette.CurrentPalette.Colors.Count,
 			toolboxClassicLayout,
 			toolSettingsWrapRows,
@@ -92,6 +93,9 @@ internal sealed class PreferencesAction : IActionHandler
 				settings.PutSetting (SettingNames.EXTENDED_PALETTE_ROWS, dialog.ExtendedPaletteRows);
 				PintaCore.Palette.CurrentPalette.LoadDefault (dialog.ExtendedPaletteRows);
 			}
+
+			if (dialog.RecentColorsCount != PintaCore.Palette.RecentlyUsedColors.Count)
+				PintaCore.Palette.SetRecentlyUsedColorCount (dialog.RecentColorsCount);
 
 			if (dialog.PaletteSize != PintaCore.Palette.CurrentPalette.Colors.Count)
 				PintaCore.Palette.CurrentPalette.Resize (dialog.PaletteSize);

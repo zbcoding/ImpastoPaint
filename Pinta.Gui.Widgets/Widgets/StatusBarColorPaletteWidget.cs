@@ -96,7 +96,7 @@ public sealed partial class StatusBarColorPaletteWidget
 	private bool recent_colors_folded;
 	private bool swatches_folded;
 	public bool QuickColorsFolded => quick_colors_folded;
-	public bool RecentColorsFolded => recent_colors_folded;
+	public bool RecentColorsFolded => recent_colors_folded && palette.MaxRecentlyUsedColor > 0;
 	public bool SwatchesFolded => swatches_folded;
 
 	// Impasto: the wheel / float buttons only make sense while docked - the floating
@@ -629,7 +629,7 @@ public sealed partial class StatusBarColorPaletteWidget
 			show_image_chip = true;
 			swatch_size = PaletteWidget.SWATCH_SIZE;
 			quick_colors_folded = false;
-			recent_colors_folded = false;
+			recent_colors_folded = palette.MaxRecentlyUsedColor == 0;
 			swatches_folded = false;
 
 			// What the footer needs at the current state: the color content, the action

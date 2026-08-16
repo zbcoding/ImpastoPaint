@@ -77,16 +77,17 @@ internal static class PaletteWidget
 		int index,
 		RectangleD palette_bounds,
 		int maxColumns,
+		int rowCount,
 		bool recentColorPalette = false,
 		int swatchSize = SWATCH_SIZE)
 	{
-		int recent_cols = GetRecentColorColumns (palette.MaxRecentlyUsedColor);
-		int row = recentColorPalette ? index / recent_cols : index % PALETTE_ROWS;
-		int col = recentColorPalette ? index % recent_cols : index / PALETTE_ROWS;
+		int recent_cols = (palette.MaxRecentlyUsedColor + rowCount - 1) / rowCount;
+		int row = recentColorPalette ? index / recent_cols : index % rowCount;
+		int col = recentColorPalette ? index % recent_cols : index / rowCount;
 
 		int band = col / maxColumns;
 		int wrappedCol = col % maxColumns;
-		int wrappedRow = row + band * PALETTE_ROWS;
+		int wrappedRow = row + band * rowCount;
 
 		double x = palette_bounds.X + (wrappedCol * swatchSize);
 		double y = palette_bounds.Y + (wrappedRow * swatchSize);
@@ -99,6 +100,7 @@ internal static class PaletteWidget
 		PointD point,
 		RectangleD palette_bounds,
 		int maxColumns,
+		int rowCount,
 		bool recentColorPalette = false,
 		int swatchSize = SWATCH_SIZE)
 	{
@@ -108,7 +110,7 @@ internal static class PaletteWidget
 			: palette.CurrentPalette.Colors.Count;
 
 		for (int i = 0; i < max; i++)
-			if (GetWrappedSwatchBounds (palette, i, palette_bounds, maxColumns, recentColorPalette, swatchSize).ContainsPoint (point))
+			if (GetWrappedSwatchBounds (palette, i, palette_bounds, maxColumns, rowCount, recentColorPalette, swatchSize).ContainsPoint (point))
 				return i;
 
 		return -1;

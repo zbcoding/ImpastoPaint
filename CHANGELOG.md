@@ -26,8 +26,10 @@ Changes for the next release (0.0.2) go here.
   export is then autosaved less often - up to every five minutes - rather than stalling the
   interface every interval or being skipped for its size.
   Based on Pinta PR #2189 by: colin-i
-- The floating Colors window now has an image-sampling eyedropper, keeps recent and quick colors
-  on one row when its width permits, and supports changing a quick color with Ctrl-click or middle-click.
+- The floating Colors window now has a single-pixel image-sampling eyedropper, keeps recent and
+  quick colors on one row when its width permits, and supports changing a quick color with Ctrl-click or middle-click.
+- Settings now allows 0–24 recently picked colors; zero hides the section, with defaults of
+  eight colors for the two-row palette and twelve for the three-row palette.
 
 ### Fixed
 
@@ -37,6 +39,8 @@ Changes for the next release (0.0.2) go here.
 
 - The color wheel and float-window buttons now move with the status-bar palette when its color
   count or row count changes.
+- The floating Colors window now keeps its default recent colors in two rows and each default
+  quick palette in one row-band, and its swatches show the same click guidance as the footer.
 - The Add-in Manager labels Impasto's Gallery section as **Impasto Add-ins** instead of exposing
   its `raw.githubusercontent.com` download host.
 

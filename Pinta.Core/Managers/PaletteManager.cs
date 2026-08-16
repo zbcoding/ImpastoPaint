@@ -50,9 +50,6 @@ public sealed class PaletteManager : IPaletteService
 	private Color primary;
 	private Color secondary;
 
-	private const int STANDARD_RECENT_COLORS = 10;
-	// Twelve keeps a full 4x3 grid when the extended palette adds a third row.
-	private const int EXTENDED_RECENT_COLORS = 12;
 	private const string PALETTE_FILE = "palette.txt";
 
 	private readonly List<Color> recently_used;
@@ -62,10 +59,16 @@ public sealed class PaletteManager : IPaletteService
 		set => SetColor (true, value, true);
 	}
 
-	// The recently-used palette fills PALETTE_ROWS, so it holds more colors (and a
-	// third row) once the extended palette is enabled.
-	public int MaxRecentlyUsedColor
-		=> settings.GetSetting (SettingNames.EXTENDED_PALETTE_ROWS, false) ? EXTENDED_RECENT_COLORS : STANDARD_RECENT_COLORS;
+	public int MaxRecentlyUsedColor {
+		get {
+			bool extendedPaletteRows = settings.GetSetting (SettingNames.EXTENDED_PALETTE_ROWS, false);
+			int defaultCount = PaletteHelper.GetDefaultRecentColorCount (extendedPaletteRows);
+			return Math.Clamp (
+				settings.GetSetting (SettingNames.RECENT_COLORS_COUNT, defaultCount),
+				0,
+				PaletteHelper.MAX_RECENT_COLOR_COUNT);
+		}
+	}
 
 	public ReadOnlyCollection<Color> RecentlyUsedColors { get; }
 
@@ -82,13 +85,12 @@ public sealed class PaletteManager : IPaletteService
 		ISettingsService settings,
 		PaletteFormatManager paletteFormats)
 	{
-		List<Color> recentlyUsed = new (settings.GetSetting (SettingNames.EXTENDED_PALETTE_ROWS, false) ? EXTENDED_RECENT_COLORS : STANDARD_RECENT_COLORS);
-
-		recently_used = recentlyUsed;
-		RecentlyUsedColors = new ReadOnlyCollection<Color> (recentlyUsed);
-
 		this.settings = settings;
 		this.palette_formats = paletteFormats;
+
+		List<Color> recentlyUsed = new (MaxRecentlyUsedColor);
+		recently_used = recentlyUsed;
+		RecentlyUsedColors = new ReadOnlyCollection<Color> (recentlyUsed);
 
 		CurrentPalette = PaletteHelper.CreateDefault (settings.GetSetting (SettingNames.EXTENDED_PALETTE_ROWS, false));
 
@@ -107,6 +109,23 @@ public sealed class PaletteManager : IPaletteService
 	public void SwapColors ()
 	{
 		(SecondaryColor, PrimaryColor) = (PrimaryColor, SecondaryColor);
+	}
+
+	public void SetRecentlyUsedColorCount (int count)
+	{
+		ArgumentOutOfRangeException.ThrowIfNegative (count);
+		ArgumentOutOfRangeException.ThrowIfGreaterThan (count, PaletteHelper.MAX_RECENT_COLOR_COUNT);
+
+		settings.PutSetting (SettingNames.RECENT_COLORS_COUNT, count);
+
+		if (recently_used.Count > count)
+			recently_used.RemoveRange (count, recently_used.Count - count);
+		else if (recently_used.Count < count)
+			recently_used.AddRange (Enumerable.Repeat (new Color (.9, .9, .9), count - recently_used.Count));
+		else
+			return;
+
+		OnRecentColorsChanged ();
 	}
 
 	// This allows callers to bypass affecting the recently used list
@@ -129,6 +148,10 @@ public sealed class PaletteManager : IPaletteService
 	// The most recently used color is at index 0.
 	private void AddRecentlyUsedColor (Color color)
 	{
+		int maxRecentlyUsedColor = MaxRecentlyUsedColor;
+		if (maxRecentlyUsedColor == 0)
+			return;
+
 		// The color is already in the recently used list
 		if (recently_used.Contains (color)) {
 			// If it's already at the back, nothing to do
@@ -147,9 +170,9 @@ public sealed class PaletteManager : IPaletteService
 		// stays at MaxRecentlyUsedColor after the insert below. The count can exceed
 		// the limit if the extended-palette setting changed after the list was padded
 		// on startup, so clamp down to (max - 1) rather than testing for exact equality.
-		if (recently_used.Count > MaxRecentlyUsedColor - 1) {
-			int dropCount = recently_used.Count - (MaxRecentlyUsedColor - 1);
-			recently_used.RemoveRange (MaxRecentlyUsedColor - 1, dropCount);
+		if (recently_used.Count > maxRecentlyUsedColor - 1) {
+			int dropCount = recently_used.Count - (maxRecentlyUsedColor - 1);
+			recently_used.RemoveRange (maxRecentlyUsedColor - 1, dropCount);
 		}
 
 		recently_used.Insert (0, color);

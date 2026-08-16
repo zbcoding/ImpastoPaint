@@ -43,6 +43,7 @@ internal static class SettingNames
 	internal const string COLORS_FLOATING = "colors-floating";
 	// Impasto: add a third row of darker colors to the default palette.
 	internal const string EXTENDED_PALETTE_ROWS = "extended-palette-rows";
+	internal const string RECENT_COLORS_COUNT = "recent-colors-count";
 	internal const string LAST_DIALOG_DIRECTORY = "last-dialog-directory";
 	internal const string LAST_SELECTED_TOOL = "last-selected-tool";
 

@@ -36,6 +36,7 @@ internal static class SettingNames
 	internal const string PRIMARY_COLOR = "primary-color";
 	internal const string SECONDARY_COLOR = "secondary-color";
 	internal const string RECENT_COLORS = "recently-used-colors";
+	internal const string RECENT_COLORS_COUNT = "recent-colors-count";
 
 	// Impasto: add a third row of darker colors to the default palette.
 	internal const string EXTENDED_PALETTE_ROWS = "extended-palette-rows";

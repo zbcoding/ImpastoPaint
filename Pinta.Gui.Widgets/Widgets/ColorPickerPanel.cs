@@ -38,15 +38,18 @@ public sealed partial class ColorPickerPanel
 	const int SPACING = 6;
 	const int SWATCH_ICON_SIZE = 14;
 	const int DISPLAY_SIZE = 28;
-	// The floating panel is narrow (~220-500px). Cap the swatch grid at this many
-	// columns and wrap the rest into extra row-bands below, rather than growing
-	// wider than the panel or clipping.
-	const int MAX_SWATCH_COLUMNS = 10;
+	// Recent colors stay a compact 5x2 / 6x2 block. The default quick palettes
+	// are 17 columns in standard mode and 16 in extended mode, so a 17-column cap
+	// keeps either default on one 2- or 3-row band while still wrapping larger
+	// user palettes.
+	const int RECENT_SWATCH_ROWS = 2;
+	const int MAX_SWATCH_COLUMNS = 17;
 
 	public event EventHandler? EyedropperClicked;
 
 	private IPaletteService palette = null!; // NRT - set by factory method
 	private IChromeService chrome = null!;
+	private ISystemService system = null!;
 	private bool color_picker_active;
 	private bool primary_selected = true;
 	private SurfaceType surface_type = SurfaceType.HueAndSat;
@@ -61,6 +64,7 @@ public sealed partial class ColorPickerPanel
 	private Gtk.Entry hex_entry = null!;
 	private ColorPickerSlider[] sliders = null!;
 	private Gtk.DrawingArea swatch_recent = null!;
+	private Gtk.Box recent_swatch_row = null!;
 	private Gtk.DrawingArea swatch_palette = null!;
 
 	private Color CurrentColor {
@@ -71,7 +75,7 @@ public sealed partial class ColorPickerPanel
 	[System.Diagnostics.CodeAnalysis.MemberNotNull (
 		nameof (primary_display), nameof (secondary_display), nameof (show_value_check),
 		nameof (surface), nameof (surface_cursor), nameof (hex_entry), nameof (sliders),
-		nameof (swatch_recent), nameof (swatch_palette))]
+		nameof (swatch_recent), nameof (swatch_palette), nameof (recent_swatch_row))]
 	partial void Initialize ()
 	{
 		SetOrientation (Gtk.Orientation.Vertical);
@@ -90,8 +94,10 @@ public sealed partial class ColorPickerPanel
 			icon: StatusBarColorPaletteWidget.DrawClockIcon,
 			tooltip: Translations.GetString ("Recently picked colors"),
 			swatchArea: out swatch_recent);
+		recent_swatch_row = recentRow;
 		swatch_recent.SetDrawFunc ((_, g, _, _) => DrawRecentSwatches (g));
 		ConfigureSwatchClick (swatch_recent, recent: true);
+		ConfigureSwatchTooltip (swatch_recent, recent: true);
 
 		Gtk.Box paletteRow = BuildSwatchRow (
 			icon: StatusBarColorPaletteWidget.DrawPaletteIcon,
@@ -99,6 +105,7 @@ public sealed partial class ColorPickerPanel
 			swatchArea: out swatch_palette);
 		swatch_palette.SetDrawFunc ((_, g, _, _) => DrawQuickSwatches (g));
 		ConfigureSwatchClick (swatch_palette, recent: false);
+		ConfigureSwatchTooltip (swatch_palette, recent: false);
 
 		Gtk.FlowBox swatchRows = Gtk.FlowBox.New ();
 		swatchRows.SetOrientation (Gtk.Orientation.Horizontal);
@@ -330,6 +337,40 @@ public sealed partial class ColorPickerPanel
 		swatch.AddController (click);
 	}
 
+	private void ConfigureSwatchTooltip (Gtk.DrawingArea swatch, bool recent)
+	{
+		swatch.HasTooltip = true;
+		swatch.OnQueryTooltip += (_, args) => {
+			int index = GetSwatchIndex (recent, new PointD (args.X, args.Y));
+			if (index < 0)
+				return false;
+
+			Color color = recent
+				? palette.RecentlyUsedColors[index]
+				: palette.CurrentPalette.Colors[index];
+			string instructions = recent
+				? Translations.GetString ("Left click to set primary color. Right click to set secondary color.")
+				: Translations.GetString (
+					"Left click to set primary color. Right click to set secondary color. Middle click or press {0} and left click to choose palette color.",
+					system.CtrlLabel ());
+
+			args.Tooltip.SetText (Translations.GetString ("Color") + $": #{color.ToHex ()}\n\n" + instructions);
+			return true;
+		};
+	}
+
+	private int GetSwatchIndex (bool recent, PointD point)
+	{
+		int rowCount = recent ? RECENT_SWATCH_ROWS : PaletteWidget.PALETTE_ROWS;
+		return PaletteWidget.GetWrappedSwatchAtLocation (
+			palette,
+			point,
+			new RectangleD (),
+			MAX_SWATCH_COLUMNS,
+			rowCount,
+			recent);
+	}
+
 	private void DrawRecentSwatches (Context g)
 	{
 		var recent = palette.RecentlyUsedColors;
@@ -337,7 +378,7 @@ public sealed partial class ColorPickerPanel
 		int count = Math.Min (recent.Count, palette.MaxRecentlyUsedColor);
 		for (int i = 0; i < count; i++)
 			g.FillRectangle (
-				PaletteWidget.GetWrappedSwatchBounds (palette, i, new RectangleD (), MAX_SWATCH_COLUMNS, recentColorPalette: true),
+				PaletteWidget.GetWrappedSwatchBounds (palette, i, new RectangleD (), MAX_SWATCH_COLUMNS, RECENT_SWATCH_ROWS, recentColorPalette: true),
 				recent.ElementAt (i));
 	}
 
@@ -346,7 +387,7 @@ public sealed partial class ColorPickerPanel
 		Palette currentPalette = palette.CurrentPalette;
 		for (int i = 0; i < currentPalette.Colors.Count; i++)
 			g.FillRectangle (
-				PaletteWidget.GetWrappedSwatchBounds (palette, i, new RectangleD (), MAX_SWATCH_COLUMNS),
+				PaletteWidget.GetWrappedSwatchBounds (palette, i, new RectangleD (), MAX_SWATCH_COLUMNS, PaletteWidget.PALETTE_ROWS),
 				currentPalette.Colors[i]);
 	}
 
@@ -354,11 +395,12 @@ public sealed partial class ColorPickerPanel
 	// color count wraps into at MAX_SWATCH_COLUMNS.
 	private void UpdateSwatchSizes ()
 	{
-		int recentCols = PaletteWidget.GetRecentColorColumns (palette.MaxRecentlyUsedColor);
+		recent_swatch_row.Visible = palette.MaxRecentlyUsedColor > 0;
+		int recentCols = (palette.MaxRecentlyUsedColor + RECENT_SWATCH_ROWS - 1) / RECENT_SWATCH_ROWS;
 		int visibleRecentCols = Math.Min (Math.Max (1, recentCols), MAX_SWATCH_COLUMNS);
 		int recentBands = PaletteWidget.GetWrappedBandCount (recentCols, MAX_SWATCH_COLUMNS);
 		swatch_recent.WidthRequest = PaletteWidget.SWATCH_SIZE * visibleRecentCols;
-		swatch_recent.HeightRequest = PaletteWidget.SWATCH_SIZE * PaletteWidget.PALETTE_ROWS * recentBands;
+		swatch_recent.HeightRequest = PaletteWidget.SWATCH_SIZE * RECENT_SWATCH_ROWS * recentBands;
 
 		int quickCols = (palette.CurrentPalette.Colors.Count + PaletteWidget.PALETTE_ROWS - 1) / PaletteWidget.PALETTE_ROWS;
 		int visibleQuickCols = Math.Min (Math.Max (1, quickCols), MAX_SWATCH_COLUMNS);
@@ -371,7 +413,7 @@ public sealed partial class ColorPickerPanel
 	// as the docked bar's quick/recent swatches (StatusBarColorPaletteWidget).
 	private async void HandleSwatchClick (bool recent, PointD relPoint, uint button, Gdk.ModifierType state)
 	{
-		int index = PaletteWidget.GetWrappedSwatchAtLocation (palette, relPoint, new RectangleD (), MAX_SWATCH_COLUMNS, recent);
+		int index = GetSwatchIndex (recent, relPoint);
 		if (index < 0)
 			return;
 
@@ -417,10 +459,11 @@ public sealed partial class ColorPickerPanel
 		}
 	}
 
-	private void Configure (IPaletteService palette, IChromeService chrome)
+	private void Configure (IPaletteService palette, IChromeService chrome, ISystemService system)
 	{
 		this.palette = palette;
 		this.chrome = chrome;
+		this.system = system;
 
 		palette.PrimaryColorChanged += (_, _) => { if (!updating) RedrawAll (); };
 		palette.SecondaryColorChanged += (_, _) => { if (!updating) RedrawAll (); };
@@ -433,10 +476,10 @@ public sealed partial class ColorPickerPanel
 		updating = false;
 	}
 
-	public static ColorPickerPanel New (IPaletteService palette, IChromeService chrome)
+	public static ColorPickerPanel New (IPaletteService palette, IChromeService chrome, ISystemService system)
 	{
 		ColorPickerPanel panel = NewWithProperties ([]);
-		panel.Configure (palette, chrome);
+		panel.Configure (palette, chrome, system);
 		return panel;
 	}
 

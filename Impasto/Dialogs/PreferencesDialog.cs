@@ -21,6 +21,7 @@ public sealed partial class PreferencesDialog
 	private Gtk.CheckButton paste_external_images_to_new_layer_check_button;
 	private Gtk.CheckButton extended_palette_rows_check_button;
 	private Gtk.SpinButton palette_size_spinner;
+	private Gtk.SpinButton recent_colors_count_spinner;
 	private Gtk.CheckButton toolbox_classic_layout_check_button;
 	private Gtk.CheckButton tool_settings_wrap_rows_check_button;
 	private Gtk.CheckButton skip_rasterize_objects_dialog_check_button;
@@ -49,6 +50,7 @@ public sealed partial class PreferencesDialog
 	public bool PasteExternalImagesToNewLayer => paste_external_images_to_new_layer_check_button.Active;
 	public bool ExtendedPaletteRows => extended_palette_rows_check_button.Active;
 	public int PaletteSize => palette_size_spinner.GetValueAsInt ();
+	public int RecentColorsCount => recent_colors_count_spinner.GetValueAsInt ();
 	public bool ToolboxClassicLayout => toolbox_classic_layout_check_button.Active;
 	public bool ToolSettingsWrapRows => tool_settings_wrap_rows_check_button.Active;
 	public bool SkipRasterizeObjectsDialog => skip_rasterize_objects_dialog_check_button.Active;
@@ -60,7 +62,7 @@ public sealed partial class PreferencesDialog
 			: popover_hint_mode_essential_button.Active ? PopoverHintMode.Essential
 			: PopoverHintMode.None;
 
-	internal static PreferencesDialog New (ChromeManager chrome, int defaultCanvasWidth, int defaultCanvasHeight, Cairo.Color canvasSurroundColor, bool canvasSurroundColorIsDefault, Cairo.Color defaultCanvasSurroundColor, bool pasteExternalImagesToNewLayer, bool extendedPaletteRows, int paletteSize, bool toolboxClassicLayout, bool toolSettingsWrapRows, PopoverHintMode popoverHintMode, bool statusBarShowCursorPosition, bool statusBarShowImageSize, bool showMainToolBar, bool skipRasterizeObjectsDialog)
+	internal static PreferencesDialog New (ChromeManager chrome, int defaultCanvasWidth, int defaultCanvasHeight, Cairo.Color canvasSurroundColor, bool canvasSurroundColorIsDefault, Cairo.Color defaultCanvasSurroundColor, bool pasteExternalImagesToNewLayer, bool extendedPaletteRows, int recentColorsCount, int paletteSize, bool toolboxClassicLayout, bool toolSettingsWrapRows, PopoverHintMode popoverHintMode, bool statusBarShowCursorPosition, bool statusBarShowImageSize, bool showMainToolBar, bool skipRasterizeObjectsDialog)
 	{
 		PreferencesDialog dialog = NewWithProperties ([]);
 		dialog.canvas_width_spinner.Value = defaultCanvasWidth;
@@ -70,6 +72,7 @@ public sealed partial class PreferencesDialog
 		dialog.default_canvas_surround_color = defaultCanvasSurroundColor;
 		dialog.paste_external_images_to_new_layer_check_button.Active = pasteExternalImagesToNewLayer;
 		dialog.extended_palette_rows_check_button.Active = extendedPaletteRows;
+		dialog.recent_colors_count_spinner.Value = Math.Clamp (recentColorsCount, 0, PaletteHelper.MAX_RECENT_COLOR_COUNT);
 		int rows = PaletteHelper.GetPaletteRowCount ();
 		dialog.palette_size_spinner.Value = PaletteHelper.RoundDownToRowMultiple (paletteSize, rows);
 		dialog.toolbox_classic_layout_check_button.Active = toolboxClassicLayout;
@@ -89,6 +92,7 @@ public sealed partial class PreferencesDialog
 	[MemberNotNull (nameof (paste_external_images_to_new_layer_check_button))]
 	[MemberNotNull (nameof (extended_palette_rows_check_button))]
 	[MemberNotNull (nameof (palette_size_spinner))]
+	[MemberNotNull (nameof (recent_colors_count_spinner))]
 	[MemberNotNull (nameof (toolbox_classic_layout_check_button))]
 	[MemberNotNull (nameof (tool_settings_wrap_rows_check_button))]
 	[MemberNotNull (nameof (skip_rasterize_objects_dialog_check_button))]
@@ -179,6 +183,24 @@ public sealed partial class PreferencesDialog
 		extendedPaletteRow.Append (extendedPaletteRowsCheckButton);
 		extendedPaletteRow.Append (CreateResetButton (ResetExtendedPaletteRows));
 		popoverHintPage.Append (extendedPaletteRow);
+
+		Gtk.SpinButton recentColorsCountSpinner = Gtk.SpinButton.NewWithRange (0, PaletteHelper.MAX_RECENT_COLOR_COUNT, 1);
+		recentColorsCountSpinner.SetActivatesDefaultImmediate (true);
+		Gtk.Box recentColorsCountRow = Gtk.Box.New (Gtk.Orientation.Horizontal, SPACING);
+		Gtk.Label recentColorsCountLabel = Gtk.Label.New ($"{Translations.GetString ("Recently picked colors")} (0 = {Translations.GetString ("None")}):");
+		recentColorsCountLabel.Hexpand = true;
+		recentColorsCountLabel.Halign = Gtk.Align.Start;
+		recentColorsCountRow.Append (recentColorsCountLabel);
+		recentColorsCountRow.Append (recentColorsCountSpinner);
+		recentColorsCountRow.Append (CreateResetButton (ResetRecentColorsCount));
+		popoverHintPage.Append (recentColorsCountRow);
+
+		extendedPaletteRowsCheckButton.OnToggled += (_, _) => {
+			bool extendedPaletteRows = extendedPaletteRowsCheckButton.Active;
+			int previousDefault = PaletteHelper.GetDefaultRecentColorCount (!extendedPaletteRows);
+			if (recentColorsCountSpinner.GetValueAsInt () == previousDefault)
+				recentColorsCountSpinner.Value = PaletteHelper.GetDefaultRecentColorCount (extendedPaletteRows);
+		};
 
 		// Step by the row count so every column stays full - 2 normally, 3 once the
 		// extra darker row above is on.
@@ -273,6 +295,7 @@ public sealed partial class PreferencesDialog
 		paste_external_images_to_new_layer_check_button = pasteExternalImagesCheckButton;
 		extended_palette_rows_check_button = extendedPaletteRowsCheckButton;
 		palette_size_spinner = paletteSizeSpinner;
+		recent_colors_count_spinner = recentColorsCountSpinner;
 		toolbox_classic_layout_check_button = toolboxClassicLayoutCheckButton;
 		tool_settings_wrap_rows_check_button = toolSettingsWrapRowsCheckButton;
 		skip_rasterize_objects_dialog_check_button = skipRasterizeObjectsDialogCheckButton;
@@ -304,6 +327,9 @@ public sealed partial class PreferencesDialog
 
 	private void ResetPaletteSize (Gtk.Button sender, EventArgs e)
 		=> palette_size_spinner.Value = PaletteHelper.EnumerateDefaultColors (extended_palette_rows_check_button.Active).Count ();
+
+	private void ResetRecentColorsCount (Gtk.Button sender, EventArgs e)
+		=> recent_colors_count_spinner.Value = PaletteHelper.GetDefaultRecentColorCount (extended_palette_rows_check_button.Active);
 
 	private void ResetToolboxClassicLayout (Gtk.Button sender, EventArgs e)
 		=> toolbox_classic_layout_check_button.Active = false;
@@ -483,6 +509,11 @@ public sealed partial class PreferencesDialog
 		canvas_height_spinner.Value = settings.GetSetting (SettingNames.DEFAULT_CANVAS_HEIGHT, DefaultCanvasHeight);
 		paste_external_images_to_new_layer_check_button.Active = settings.GetSetting (SettingNames.PASTE_EXTERNAL_IMAGES_TO_NEW_LAYER, PasteExternalImagesToNewLayer);
 		extended_palette_rows_check_button.Active = settings.GetSetting (SettingNames.EXTENDED_PALETTE_ROWS, ExtendedPaletteRows);
+		int defaultRecentColorsCount = PaletteHelper.GetDefaultRecentColorCount (extended_palette_rows_check_button.Active);
+		recent_colors_count_spinner.Value = Math.Clamp (
+			settings.GetSetting (SettingNames.RECENT_COLORS_COUNT, defaultRecentColorsCount),
+			0,
+			PaletteHelper.MAX_RECENT_COLOR_COUNT);
 		toolbox_classic_layout_check_button.Active = settings.GetSetting (SettingNames.TOOLBOX_CLASSIC_LAYOUT, ToolboxClassicLayout);
 		tool_settings_wrap_rows_check_button.Active = settings.GetSetting (SettingNames.TOOL_SETTINGS_WRAP_ROWS, ToolSettingsWrapRows);
 		skip_rasterize_objects_dialog_check_button.Active = settings.GetSetting (SettingNames.SKIP_RASTERIZE_OBJECTS_DIALOG, SkipRasterizeObjectsDialog);

@@ -674,7 +674,7 @@ internal sealed class MainWindow
 		// ColorPickerDialog's "Choose Colors" UI (wheel/square surface, sliders, hex,
 		// swap display) plus recent/quick swatch rows, with no OK/Cancel and no dialog
 		// chrome; every change writes straight to the palette.
-		colors_picker_panel = ColorPickerPanel.New (PintaCore.Palette, PintaCore.Chrome);
+		colors_picker_panel = ColorPickerPanel.New (PintaCore.Palette, PintaCore.Chrome, PintaCore.System);
 		colors_picker_panel.MarginTop = 6;
 		colors_picker_panel.MarginBottom = 6;
 		colors_picker_panel.MarginStart = 6;

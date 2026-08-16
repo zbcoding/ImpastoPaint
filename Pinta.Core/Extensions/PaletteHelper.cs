@@ -8,6 +8,8 @@ namespace Pinta.Core;
 
 public static class PaletteHelper
 {
+	public const int MAX_RECENT_COLOR_COUNT = 24;
+
 	public static Palette CreateDefault (bool includeDarkRow = false)
 	{
 		return new (EnumerateDefaultColors (includeDarkRow));
@@ -17,6 +19,9 @@ public static class PaletteHelper
 	// palette, three when the extra darker row is enabled.
 	public static int GetPaletteRowCount ()
 		=> PintaCore.Settings.GetSetting (SettingNames.EXTENDED_PALETTE_ROWS, false) ? 3 : 2;
+
+	public static int GetDefaultRecentColorCount (bool extendedPaletteRows)
+		=> extendedPaletteRows ? 12 : 8;
 
 	// Rounds a palette size down to the nearest multiple of the row count (floored
 	// at one full row), so every column of the palette grid stays full.

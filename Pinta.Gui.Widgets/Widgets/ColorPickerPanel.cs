@@ -641,21 +641,25 @@ public sealed partial class ColorPickerPanel
 	/// </summary>
 	private static void DrawTransparentBackgroundCircle (Context g)
 	{
-		const int CHECKER_SIZE = 16;
+		const int CHECKER_SIZE = 12;
+		// Sit just inside the wheel and fade out before reaching it, so the wheel's own
+		// antialiased rim stays the outermost edge and no hard circle shows through.
+		const double INSET = 2;
+		const double FADE = 10;
+
+		double center = SURFACE_RADIUS + SURFACE_PADDING;
+		double radius = SURFACE_RADIUS - INSET;
+
 		using ImageSurface checkers = CairoExtensions.CreateTransparentBackgroundSurface (CHECKER_SIZE);
 		using SurfacePattern pattern = new (checkers) { Extend = Extend.Repeat };
 
-		g.Save ();
-		g.Arc (
-			SURFACE_RADIUS + SURFACE_PADDING,
-			SURFACE_RADIUS + SURFACE_PADDING,
-			SURFACE_RADIUS,
-			0,
-			2 * Math.PI);
-		g.Clip ();
+		using RadialGradient fade = new (center, center, 0, center, center, radius);
+		fade.AddColorStop (0, new Color (0, 0, 0, 1));
+		fade.AddColorStop (1 - FADE / radius, new Color (0, 0, 0, 1));
+		fade.AddColorStop (1, new Color (0, 0, 0, 0));
+
 		g.SetSource (pattern);
-		g.Paint ();
-		g.Restore ();
+		g.Mask (fade);
 	}
 
 	private void DrawSurfaceCursor (Context g)

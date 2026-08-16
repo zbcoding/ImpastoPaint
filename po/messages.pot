@@ -416,6 +416,22 @@ msgstr ""
 #: ../Pinta.Core/Actions/EditActions.cs:658
 #: ../Pinta.Gui.Addins/InstallDialog.cs:126
 #: ../Pinta.Gui.Widgets/Widgets/ColorPickerDialog.cs:496
+#. Translators: This tooltip lists CSS color syntax. Keep the code examples unchanged.
+#: ../Pinta.Gui.Widgets/Widgets/ColorPickerPanel.cs:257
+msgid ""
+"CSS color formats:\n"
+"HEX — #ff5733 or ff5733\n"
+"RGB — rgb(255 87 51)\n"
+"RGB with alpha — rgb(255 87 51 / 50%)\n"
+"HSL — hsl(11 100% 60%)\n"
+"HSL with alpha — hsl(11 100% 60% / 50%)\n"
+"OKLCH — oklch(65% 0.2 35)\n"
+"Named colors — any CSS color name, such as red, white, rebeccapurple, "
+"transparent, or currentColor\n"
+"\n"
+"currentColor uses the currently selected color."
+msgstr ""
+
 #: ../Pinta.Tools/Dialogs/TextPropertiesDialog.cs:265
 msgid "Cancel"
 msgstr ""
@@ -652,6 +668,10 @@ msgstr ""
 
 #: ../Pinta.Effects/Effects/OilPaintingEffect.cs:151
 msgid "Coarseness"
+msgstr ""
+
+#: ../Pinta.Gui.Widgets/Widgets/ColorPickerPanel.cs:269
+msgid "Code"
 msgstr ""
 
 #: ../Pinta.Core/Algorithms/PixelOps/UserBlendOps.cs:43

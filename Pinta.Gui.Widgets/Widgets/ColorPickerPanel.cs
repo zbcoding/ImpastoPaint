@@ -32,7 +32,7 @@ public sealed partial class ColorPickerPanel
 		SatAndVal,
 	}
 
-	const int SURFACE_RADIUS = 75;
+	const int SURFACE_RADIUS = 100;
 	const int SURFACE_PADDING = 10;
 	const int SLIDER_WIDTH = 150;
 	const int SPACING = 6;
@@ -59,7 +59,7 @@ public sealed partial class ColorPickerPanel
 	private Gtk.CheckButton show_value_check = null!;
 	private Gtk.DrawingArea surface = null!;
 	private Gtk.DrawingArea surface_cursor = null!;
-	private Gtk.Entry hex_entry = null!;
+	private Gtk.Entry code_entry = null!;
 	private ColorPickerSlider[] sliders = null!;
 	private Gtk.DrawingArea swatch_recent = null!;
 	private Gtk.Box recent_swatch_row = null!;
@@ -72,7 +72,7 @@ public sealed partial class ColorPickerPanel
 
 	[System.Diagnostics.CodeAnalysis.MemberNotNull (
 		nameof (primary_display), nameof (secondary_display), nameof (show_value_check),
-		nameof (surface), nameof (surface_cursor), nameof (hex_entry), nameof (sliders),
+		nameof (surface), nameof (surface_cursor), nameof (code_entry), nameof (sliders),
 		nameof (swatch_recent), nameof (swatch_palette), nameof (recent_swatch_row))]
 	partial void Initialize ()
 	{
@@ -197,10 +197,14 @@ public sealed partial class ColorPickerPanel
 		Gtk.ToggleButton satValToggle = Gtk.ToggleButton.NewWithLabel (Translations.GetString ("Sat & Value"));
 		satValToggle.FocusOnClick = false;
 
-		show_value_check = Gtk.CheckButton.NewWithLabel (Translations.GetString ("Show selection brightness in preview"));
+		Gtk.Image brightnessIcon = Gtk.Image.NewFromIconName (Resources.Icons.AdjustmentsBrightnessContrast);
+		brightnessIcon.AddCssClass ("dim-label");
+
+		show_value_check = Gtk.CheckButton.New ();
 		show_value_check.Active = true;
 		show_value_check.FocusOnClick = false;
-		show_value_check.TooltipText = Translations.GetString ("If enabled, the hue/saturation surface is drawn at your current selection's brightness; otherwise it is shown at full brightness.");
+		show_value_check.Child = brightnessIcon;
+		show_value_check.TooltipText = $"{Translations.GetString ("Show selection brightness in preview")}\n{Translations.GetString ("If enabled, the hue/saturation surface is drawn at your current selection's brightness; otherwise it is shown at full brightness.")}";
 
 		hueSatToggle.OnToggled += (_, _) => {
 			if (!hueSatToggle.Active) return;
@@ -246,24 +250,29 @@ public sealed partial class ColorPickerPanel
 		return box;
 	}
 
-	[System.Diagnostics.CodeAnalysis.MemberNotNull (nameof (hex_entry), nameof (sliders))]
+	[System.Diagnostics.CodeAnalysis.MemberNotNull (nameof (code_entry), nameof (sliders))]
 	private Gtk.Box BuildSliders ()
 	{
-		hex_entry = Gtk.Entry.New ();
-		hex_entry.MaxWidthChars = 10;
-		hex_entry.OnChanged += (sender, _) => {
+		// Translators: This tooltip lists CSS color syntax. Keep the code examples unchanged.
+		string codeTooltip = Translations.GetString ("CSS color formats:\nHEX — #ff5733 or ff5733\nRGB — rgb(255 87 51)\nRGB with alpha — rgb(255 87 51 / 50%)\nHSL — hsl(11 100% 60%)\nHSL with alpha — hsl(11 100% 60% / 50%)\nOKLCH — oklch(65% 0.2 35)\nNamed colors — any CSS color name, such as red, white, rebeccapurple, transparent, or currentColor\n\ncurrentColor uses the currently selected color.");
+
+		code_entry = Gtk.Entry.New ();
+		code_entry.Hexpand = true;
+		code_entry.OnChanged += (sender, _) => {
 			if (updating) return;
-			Color? parsed = Color.FromHex (sender.GetText ());
+			Color? parsed = Color.FromCssCode (sender.GetText (), CurrentColor);
 			if (parsed is not null)
 				CurrentColor = parsed.Value;
 		};
+		code_entry.TooltipText = codeTooltip;
 
-		Gtk.Label hexLabel = Gtk.Label.New (Translations.GetString ("Hex"));
-		hexLabel.WidthRequest = 50;
+		Gtk.Label codeLabel = Gtk.Label.New (Translations.GetString ("Code"));
+		codeLabel.WidthRequest = 50;
+		codeLabel.TooltipText = codeTooltip;
 
-		Gtk.Box hexBox = Gtk.Box.New (Gtk.Orientation.Horizontal, SPACING);
-		hexBox.Append (hexLabel);
-		hexBox.Append (hex_entry);
+		Gtk.Box codeBox = Gtk.Box.New (Gtk.Orientation.Horizontal, SPACING);
+		codeBox.Append (codeLabel);
+		codeBox.Append (code_entry);
 
 		sliders = [
 			CreateSlider (ColorPickerSlider.Component.Hue),
@@ -276,7 +285,7 @@ public sealed partial class ColorPickerPanel
 		];
 
 		Gtk.Box box = Gtk.Box.New (Gtk.Orientation.Vertical, SPACING);
-		box.Append (hexBox);
+		box.Append (codeBox);
 		box.Append (sliders[0]);
 		box.Append (sliders[1]);
 		box.Append (sliders[2]);
@@ -532,8 +541,8 @@ public sealed partial class ColorPickerPanel
 		foreach (var slider in sliders)
 			slider.Color = current;
 
-		if (!hex_entry.IsEditingText ())
-			hex_entry.SetText (current.ToHex ());
+		if (!code_entry.IsEditingText ())
+			code_entry.SetText (current.ToHex ());
 	}
 
 	private void DrawSurface (Context g)

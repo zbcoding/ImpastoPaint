@@ -84,6 +84,180 @@ public readonly record struct Color (
 		}
 	}
 
+	/// <summary>
+	/// Parses a CSS color, also accepting hexadecimal values without a leading hash.
+	/// </summary>
+	public static Color? FromCssCode (string code, Color currentColor)
+	{
+		string trimmedCode = code.Trim ();
+		if (trimmedCode.Length == 0)
+			return null;
+
+		if (trimmedCode.Equals ("currentColor", StringComparison.OrdinalIgnoreCase))
+			return currentColor;
+
+		if (trimmedCode.Equals ("transparent", StringComparison.OrdinalIgnoreCase))
+			return Transparent;
+
+		Color? hexColor = FromHex (trimmedCode);
+		if (hexColor is not null)
+			return hexColor;
+
+		if (TryParseOklch (trimmedCode, out Color oklchColor))
+			return oklchColor;
+
+		string parserCode =
+			NormalizeModernColorFunction (trimmedCode, "rgb", "rgba", hueComponent: false)
+			?? NormalizeModernColorFunction (trimmedCode, "hsl", "hsla", hueComponent: true)
+			?? trimmedCode.ToLowerInvariant ();
+
+		using Gdk.RGBA parsed = new ();
+		if (!parsed.Parse (parserCode))
+			return null;
+
+		return new (parsed.Red, parsed.Green, parsed.Blue, parsed.Alpha);
+	}
+
+	private static string? NormalizeModernColorFunction (
+		string code,
+		string functionName,
+		string alphaFunctionName,
+		bool hueComponent)
+	{
+		if (!TrySplitModernFunction (code, functionName, out string[] components, out bool hasAlpha, out double alpha))
+			return null;
+
+		if (components.Length != 3)
+			return null;
+
+		if (hueComponent) {
+			if (!TryParseCssAngle (components[0], out double hue))
+				return null;
+			components[0] = hue.ToString (CultureInfo.InvariantCulture);
+		}
+
+		string joinedComponents = string.Join (',', components);
+		if (!hasAlpha)
+			return $"{functionName}({joinedComponents})";
+
+		return $"{alphaFunctionName}({joinedComponents},{alpha.ToString (CultureInfo.InvariantCulture)})";
+	}
+
+	private static bool TryParseOklch (string code, out Color color)
+	{
+		color = default;
+		if (!TrySplitModernFunction (code, "oklch", out string[] components, out _, out double alpha))
+			return false;
+
+		if (components.Length != 3
+			|| !TryParsePercentageOrNumber (components[0], 1, out double lightness)
+			|| !TryParsePercentageOrNumber (components[1], 0.4, out double chroma)
+			|| !TryParseCssAngle (components[2], out double hue)
+			|| chroma < 0)
+			return false;
+
+		lightness = Math.Clamp (lightness, 0, 1);
+		double hueRadians = hue * Math.PI / 180;
+		double a = chroma * Math.Cos (hueRadians);
+		double b = chroma * Math.Sin (hueRadians);
+
+		double lRoot = lightness + 0.3963377774 * a + 0.2158037573 * b;
+		double mRoot = lightness - 0.1055613458 * a - 0.0638541728 * b;
+		double sRoot = lightness - 0.0894841775 * a - 1.2914855480 * b;
+		double l = lRoot * lRoot * lRoot;
+		double m = mRoot * mRoot * mRoot;
+		double s = sRoot * sRoot * sRoot;
+
+		double red = 4.0767416621 * l - 3.3077115913 * m + 0.2309699292 * s;
+		double green = -1.2684380046 * l + 2.6097574011 * m - 0.3413193965 * s;
+		double blue = -0.0041960863 * l - 0.7034186147 * m + 1.7076147010 * s;
+
+		color = new (
+			Math.Clamp (LinearToSrgb (red), 0, 1),
+			Math.Clamp (LinearToSrgb (green), 0, 1),
+			Math.Clamp (LinearToSrgb (blue), 0, 1),
+			alpha);
+		return true;
+	}
+
+	private static bool TrySplitModernFunction (
+		string code,
+		string functionName,
+		out string[] components,
+		out bool hasAlpha,
+		out double alpha)
+	{
+		components = [];
+		hasAlpha = false;
+		alpha = 1;
+
+		if (!code.StartsWith (functionName, StringComparison.OrdinalIgnoreCase)
+			|| code.Length <= functionName.Length + 2
+			|| code[functionName.Length] != '('
+			|| code[^1] != ')')
+			return false;
+
+		string body = code[(functionName.Length + 1)..^1];
+		if (body.Contains (','))
+			return false;
+
+		string[] colorAndAlpha = body.Split ('/', 2, StringSplitOptions.TrimEntries);
+		if (colorAndAlpha.Length == 2) {
+			hasAlpha = true;
+			if (!TryParsePercentageOrNumber (colorAndAlpha[1], 1, out alpha))
+				return false;
+			alpha = Math.Clamp (alpha, 0, 1);
+		}
+
+		components = colorAndAlpha[0].Split ((char[]?) null, StringSplitOptions.RemoveEmptyEntries);
+		return true;
+	}
+
+	private static bool TryParsePercentageOrNumber (string text, double percentageScale, out double value)
+	{
+		bool percentage = text.EndsWith ('%');
+		ReadOnlySpan<char> number = percentage ? text.AsSpan (0, text.Length - 1) : text.AsSpan ();
+		if (!double.TryParse (number, NumberStyles.Float, CultureInfo.InvariantCulture, out value)
+			|| !double.IsFinite (value))
+			return false;
+
+		if (percentage)
+			value = value / 100 * percentageScale;
+
+		return true;
+	}
+
+	private static bool TryParseCssAngle (string text, out double degrees)
+	{
+		double scale = 1;
+		int unitLength = 0;
+		if (text.EndsWith ("grad", StringComparison.OrdinalIgnoreCase)) {
+			scale = 0.9;
+			unitLength = 4;
+		} else if (text.EndsWith ("turn", StringComparison.OrdinalIgnoreCase)) {
+			scale = 360;
+			unitLength = 4;
+		} else if (text.EndsWith ("rad", StringComparison.OrdinalIgnoreCase)) {
+			scale = 180 / Math.PI;
+			unitLength = 3;
+		} else if (text.EndsWith ("deg", StringComparison.OrdinalIgnoreCase)) {
+			unitLength = 3;
+		}
+
+		ReadOnlySpan<char> number = text.AsSpan (0, text.Length - unitLength);
+		if (!double.TryParse (number, NumberStyles.Float, CultureInfo.InvariantCulture, out degrees)
+			|| !double.IsFinite (degrees))
+			return false;
+
+		degrees = (degrees * scale % 360 + 360) % 360;
+		return true;
+	}
+
+	private static double LinearToSrgb (double value) =>
+		value <= 0.0031308
+			? 12.92 * value
+			: 1.055 * Math.Pow (value, 1 / 2.4) - 0.055;
+
 	/// <param name="hex">
 	/// Hexadecimal color representation without the hash symbol
 	/// </param>

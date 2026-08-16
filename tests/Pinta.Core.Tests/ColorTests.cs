@@ -7,6 +7,9 @@ namespace Pinta.Core.Tests;
 [TestFixture]
 internal sealed class ColorTests
 {
+	[OneTimeSetUp]
+	public void InitializeGdk () => Gdk.Module.Initialize ();
+
 	[TestCase (1, 0, 0, 0, 1, 1)]
 	[TestCase (0, 1, 0, 120, 1, 1)]
 	[TestCase (0, 0, 1, 240, 1, 1)]
@@ -40,6 +43,41 @@ internal sealed class ColorTests
 		hc = new (Math.Round (hc.R, 4), Math.Round (hc.G, 4), Math.Round (hc.B, 4), Math.Round (hc.A, 4));
 		Color expectedColor = new (r, g, b, a);
 		Assert.That (hc, Is.EqualTo (expectedColor));
+	}
+
+	[TestCase ("#ff5733", 1, 0.3412, 0.2, 1)]
+	[TestCase ("ff5733", 1, 0.3412, 0.2, 1)]
+	[TestCase ("rgb(255 87 51)", 1, 0.3412, 0.2, 1)]
+	[TestCase ("rgb(255 87 51 / 50%)", 1, 0.3412, 0.2, 0.5)]
+	[TestCase ("hsl(11 100% 60%)", 1, 0.3467, 0.2, 1)]
+	[TestCase ("hsl(11 100% 60% / 50%)", 1, 0.3467, 0.2, 0.5)]
+	[TestCase ("oklch(65% 0.2 35)", 0.9394, 0.3236, 0.1669, 1)]
+	[TestCase ("rebeccapurple", 0.4, 0.2, 0.6, 1)]
+	[TestCase ("transparent", 0, 0, 0, 0)]
+	public void FromCssCode (string code, double r, double g, double b, double a)
+	{
+		Color actual = Color.FromCssCode (code, Color.Black)!.Value;
+		actual = new (
+			Math.Round (actual.R, 4),
+			Math.Round (actual.G, 4),
+			Math.Round (actual.B, 4),
+			Math.Round (actual.A, 4));
+		Assert.That (actual, Is.EqualTo (new Color (r, g, b, a)));
+	}
+
+	[Test]
+	public void FromCssCodeResolvesCurrentColor ()
+	{
+		Color current = new (0.1, 0.2, 0.3, 0.4);
+		Assert.That (Color.FromCssCode ("currentColor", current), Is.EqualTo (current));
+	}
+
+	[TestCase ("rgb(1 2)")]
+	[TestCase ("oklch(65% none 35)")]
+	[TestCase ("not-a-color")]
+	public void FromCssCodeRejectsInvalidInput (string code)
+	{
+		Assert.That (Color.FromCssCode (code, Color.Black), Is.Null);
 	}
 
 	[TestCase (0.6, 0, 0.3, 1.0, true, "99004CFF")]

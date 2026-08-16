@@ -3809,7 +3809,8 @@ msgstr ""
 #: ../Impasto/Actions/Edit/ResizePaletteAction.cs:91
 msgid ""
 "The colors you have edited will be replaced by the default palette for the "
-"new row count."
+"new row count. Keep them instead and the palette stays at its current number "
+"of rows."
 msgstr ""
 
 #: ../Impasto/Dialogs/PreferencesDialog.cs:499

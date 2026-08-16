@@ -88,7 +88,8 @@ internal sealed class ResizePaletteAction : IActionHandler
 
 		string primary = Translations.GetString ("Changing the number of palette rows resets the palette");
 		string secondary = Translations.GetString (
-			"The colors you have edited will be replaced by the default palette for the new row count.");
+			"The colors you have edited will be replaced by the default palette for the new row count. "
+			+ "Keep them instead and the palette stays at its current number of rows.");
 
 		using Adw.MessageDialog dialog = Adw.MessageDialog.New (chrome.MainWindow, primary, secondary);
 

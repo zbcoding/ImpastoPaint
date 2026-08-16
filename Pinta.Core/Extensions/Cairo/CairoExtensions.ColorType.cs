@@ -152,6 +152,42 @@ public readonly record struct Color (
 		return new (parsed.Red, parsed.Green, parsed.Blue, parsed.Alpha);
 	}
 
+	/// <summary>
+	/// Recognizes an empty color function such as "oklch()", which names a notation
+	/// without naming a color.
+	/// </summary>
+	public static bool TryParseCssFormatName (string code, out CssColorFormat format)
+	{
+		format = CssColorFormat.Hex;
+
+		string trimmedCode = code.Trim ();
+		if (!trimmedCode.EndsWith (')'))
+			return false;
+
+		int openParen = trimmedCode.IndexOf ('(');
+		if (openParen < 0 || trimmedCode[(openParen + 1)..^1].Trim ().Length > 0)
+			return false;
+
+		switch (trimmedCode[..openParen].Trim ().ToLowerInvariant ()) {
+			case "rgb":
+			case "rgba":
+				format = CssColorFormat.Rgb;
+				return true;
+			case "hsl":
+			case "hsla":
+				format = CssColorFormat.Hsl;
+				return true;
+			case "hwb":
+				format = CssColorFormat.Hwb;
+				return true;
+			case "oklch":
+				format = CssColorFormat.Oklch;
+				return true;
+			default:
+				return false;
+		}
+	}
+
 	private static string? NormalizeModernColorFunction (
 		string code,
 		string functionName,

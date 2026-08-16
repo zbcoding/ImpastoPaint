@@ -118,6 +118,27 @@ internal sealed class ColorTests
 		Assert.That (reparsed.A, Is.EqualTo (parsed.A).Within (0.01));
 	}
 
+	// An empty function names a notation without naming a color.
+	[TestCase ("rgb()", CssColorFormat.Rgb)]
+	[TestCase ("rgba()", CssColorFormat.Rgb)]
+	[TestCase ("hsl()", CssColorFormat.Hsl)]
+	[TestCase ("hwb()", CssColorFormat.Hwb)]
+	[TestCase ("oklch( )", CssColorFormat.Oklch)]
+	public void TryParseCssFormatName (string code, CssColorFormat expected)
+	{
+		Assert.That (Color.TryParseCssFormatName (code, out CssColorFormat format), Is.True);
+		Assert.That (format, Is.EqualTo (expected));
+	}
+
+	[TestCase ("oklch(65% 0.2 35)")]
+	[TestCase ("nope()")]
+	[TestCase ("#ff5733")]
+	[TestCase ("")]
+	public void TryParseCssFormatNameRejectsOtherInput (string code)
+	{
+		Assert.That (Color.TryParseCssFormatName (code, out _), Is.False);
+	}
+
 	[TestCase ("rgb(1 2)")]
 	[TestCase ("oklch(65% none 35)")]
 	[TestCase ("not-a-color")]

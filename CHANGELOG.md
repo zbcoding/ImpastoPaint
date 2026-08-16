@@ -33,7 +33,8 @@ Changes for the next release (0.0.2) go here.
   `currentColor`. Commas are optional wherever CSS allows them, so `rgb(255, 87, 51)` and
   `rgb(255 87 51)` both work. The box keeps writing back in whichever notation was last typed,
   so a color entered as `oklch(45% 0.1 3)` is still shown as OKLCH after the wheel or sliders
-  change it.
+  change it. Typing an empty function such as `oklch()` switches the box to that notation
+  without having to write out a color.
 - The primary and secondary color swatches in the floating Colors window are larger, matching the
   width of the swap and eyedropper buttons beneath them.
 - The hue/saturation wheel is now drawn over a circular checkerboard, and a second checkbox beside

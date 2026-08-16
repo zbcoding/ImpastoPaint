@@ -276,7 +276,7 @@ public sealed partial class ColorPickerPanel
 	private Gtk.Box BuildSliders ()
 	{
 		// Translators: This tooltip lists CSS color syntax. Keep the code examples unchanged.
-		string codeTooltip = Translations.GetString ("CSS color formats:\nHEX — #ff5733 or ff5733\nRGB — rgb(255 87 51)\nRGB with alpha — rgb(255 87 51 / 50%)\nHSL — hsl(11 100% 60%)\nHSL with alpha — hsl(11 100% 60% / 50%)\nHWB — hwb(11 20% 0%)\nHWB with alpha — hwb(11 20% 0% / 50%)\nOKLCH — oklch(65% 0.2 35)\nNamed colors — any CSS color name, such as red, white, rebeccapurple, transparent, or currentColor\n\nCommas are optional: rgb(255, 87, 51) and rgb(255 87 51) are equivalent.\ncurrentColor uses the currently selected color.");
+		string codeTooltip = Translations.GetString ("CSS color formats:\nHEX — #ff5733 or ff5733\nRGB — rgb(255 87 51)\nRGB with alpha — rgb(255 87 51 / 50%)\nHSL — hsl(11 100% 60%)\nHSL with alpha — hsl(11 100% 60% / 50%)\nHWB — hwb(11 20% 0%)\nHWB with alpha — hwb(11 20% 0% / 50%)\nOKLCH — oklch(65% 0.2 35)\nNamed colors — any CSS color name, such as red, white, rebeccapurple, transparent, or currentColor\n\nCommas are optional: rgb(255, 87, 51) and rgb(255 87 51) are equivalent.\ncurrentColor uses the currently selected color.\nType an empty function, such as oklch(), to show the current color in that format.");
 
 		code_entry = Gtk.Entry.New ();
 		code_entry.Hexpand = true;
@@ -286,6 +286,16 @@ public sealed partial class ColorPickerPanel
 			// Clearing the box abandons whichever notation was being echoed back.
 			if (sender.GetText ().Trim ().Length == 0) {
 				code_format = CssColorFormat.Hex;
+				return;
+			}
+
+			// An empty function such as "oklch()" names a notation without naming a
+			// color: adopt it and show the current color that way.
+			if (Color.TryParseCssFormatName (sender.GetText (), out CssColorFormat namedFormat)) {
+				code_format = namedFormat;
+				updating = true;
+				code_entry.SetText (CurrentColor.ToCssCode (code_format));
+				updating = false;
 				return;
 			}
 

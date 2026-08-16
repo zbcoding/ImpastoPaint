@@ -425,7 +425,9 @@ msgid ""
 "transparent, or currentColor\n"
 "\n"
 "Commas are optional: rgb(255, 87, 51) and rgb(255 87 51) are equivalent.\n"
-"currentColor uses the currently selected color."
+"currentColor uses the currently selected color.\n"
+"Type an empty function, such as oklch(), to show the current color in that "
+"format."
 msgstr ""
 
 #: ../Impasto/Actions/File/SaveDocumentImplementationAction.cs:97

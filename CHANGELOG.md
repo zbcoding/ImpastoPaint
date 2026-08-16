@@ -42,6 +42,9 @@ Changes for the next release (0.0.2) go here.
   swatches use the same checkerboard and follow the same checkbox.
 - Palette > Set Number of Colors now also sets the number of recently picked colors, so both
   counts can be changed without opening Settings.
+- Clicking the primary or secondary swatch in the status bar now opens the floating Colors
+  window, with that swatch selected, instead of the modal Choose Colors dialog. The status bar
+  keeps showing its colors while the window is open.
 - Settings now allows 0–24 recently picked colors in increments matching the palette's row count;
   zero hides the section, with defaults of eight colors for two rows and twelve for three rows.
 

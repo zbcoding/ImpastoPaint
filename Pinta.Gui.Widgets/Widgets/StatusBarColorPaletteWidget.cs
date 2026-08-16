@@ -37,7 +37,6 @@ namespace Pinta.Gui.Widgets;
 [GObject.Subclass<Gtk.DrawingArea>]
 public sealed partial class StatusBarColorPaletteWidget
 {
-	private static bool color_picker_active = false;
 
 	private readonly RectangleD primary_rect = new (4, 3, 24, 24);
 	private readonly RectangleD secondary_rect = new (17, 16, 24, 24);
@@ -58,6 +57,11 @@ public sealed partial class StatusBarColorPaletteWidget
 	public event EventHandler? ColorWheelClicked;
 	public RectangleD ColorWheelButtonRect => color_wheel_icon_rect;
 	public event EventHandler? FloatColorsClicked;
+	/// <summary>
+	/// Raised when a footer swatch is clicked, with true for primary and false for
+	/// secondary. The floating Colors window handles this in place of a modal picker.
+	/// </summary>
+	public event EventHandler<bool>? EditColorRequested;
 	// Right-clicking the float button asks for the "Reset window" popover.
 	public event EventHandler? ResetColorWindowClicked;
 	public RectangleD FloatColorsButtonRect => float_colors_icon_rect;
@@ -202,32 +206,7 @@ public sealed partial class StatusBarColorPaletteWidget
 			case WidgetElement.PrimaryColor:
 			case WidgetElement.SecondaryColor:
 
-				if (color_picker_active)
-					break;
-
-				color_picker_active = true;
-
-				try {
-					bool primarySelected = element switch {
-						WidgetElement.PrimaryColor => true,
-						WidgetElement.SecondaryColor => false,
-						_ => throw new UnreachableException ()
-					};
-
-					PaletteColors? choices = await RunColorPicker (primarySelected);
-
-					if (choices is null)
-						break;
-
-					if (palette.PrimaryColor != choices.Primary)
-						palette.PrimaryColor = choices.Primary;
-
-					if (palette.SecondaryColor != choices.Secondary)
-						palette.SecondaryColor = choices.Secondary;
-				} finally {
-					color_picker_active = false;
-				}
-
+				EditColorRequested?.Invoke (this, element == WidgetElement.PrimaryColor);
 				break;
 
 			case WidgetElement.SwapColors:

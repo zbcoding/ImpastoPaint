@@ -73,6 +73,19 @@ public sealed partial class ColorPickerPanel
 	private Gtk.Box recent_swatch_row = null!;
 	private Gtk.DrawingArea swatch_palette = null!;
 
+	/// <summary>
+	/// Which of the two palette colors the panel edits. Set by the footer swatches so
+	/// clicking one there continues editing that same color here.
+	/// </summary>
+	public bool SelectPrimary {
+		get => primary_selected;
+		set {
+			if (primary_selected == value) return;
+			primary_selected = value;
+			RedrawAll ();
+		}
+	}
+
 	private Color CurrentColor {
 		get => primary_selected ? palette.PrimaryColor : palette.SecondaryColor;
 		set => ApplyColor (value, addToRecent: false);

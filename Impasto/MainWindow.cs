@@ -704,17 +704,11 @@ internal sealed class MainWindow
 			};
 			colors_wheel_popover.Popup ();
 		};
-		// Defer to idle: floating reparents colors_palette itself, which must not happen
-		// while GTK is still dispatching the click on that same widget.
-		colors_palette.FloatColorsClicked += (_, _) => GLib.Functions.IdleAdd (
-			GLib.Constants.PRIORITY_DEFAULT_IDLE,
-			() => {
-				// Call directly - the Toggled event only fires on value *changes*,
-				// so a stale value would otherwise leave the button dead.
-				PintaCore.Actions.View.ColorsFloating.Value = true;
-				SetColorsFloating (true);
-				return false;
-			});
+		colors_palette.FloatColorsClicked += (_, _) => ShowFloatingColors (null);
+
+		// The footer's primary/secondary swatches open the same floating window rather
+		// than a separate modal picker, and select the swatch that was clicked.
+		colors_palette.EditColorRequested += (_, primarySelected) => ShowFloatingColors (primarySelected);
 
 		BuildColorsWindow ();
 
@@ -752,6 +746,21 @@ internal sealed class MainWindow
 	// monitor). The best we can do is give the window manager a fresh transient window each
 	// time it opens, which the WM places centered on Impasto - a "best guess" back inside the
 	// app. That is what BuildColorsWindow + RebuildColorsWindow provide.
+	// Defer to idle: floating reparents colors_palette itself, which must not happen
+	// while GTK is still dispatching the click on that same widget.
+	private void ShowFloatingColors (bool? selectPrimary) => GLib.Functions.IdleAdd (
+		GLib.Constants.PRIORITY_DEFAULT_IDLE,
+		() => {
+			if (selectPrimary.HasValue)
+				colors_picker_panel.SelectPrimary = selectPrimary.Value;
+
+			// Call directly - the Toggled event only fires on value *changes*,
+			// so a stale value would otherwise leave the button dead.
+			PintaCore.Actions.View.ColorsFloating.Value = true;
+			SetColorsFloating (true);
+			return false;
+		});
+
 	private void BuildColorsWindow ()
 	{
 		colors_window = Gtk.Window.New ();
@@ -808,16 +817,20 @@ internal sealed class MainWindow
 		if (!shown || floating)
 			colors_wheel_popover.Popdown ();
 
-		colors_dock.Visible = shown && !floating;
+		// The footer keeps its colors while the window floats - the swatches there are
+		// the way into the window, so they cannot vanish on being clicked.
+		colors_dock.Visible = shown;
 		colors_contents.Visible = shown && floating;
 
 		if (shown && floating) {
 			// Only rebuild when actually (re)opening - a fresh transient window is what makes
 			// the WM place it back inside Impasto, since we can't restore its last position.
-			if (!colors_window.Visible) {
+			if (!colors_window.Visible)
 				RebuildColorsWindow ();
-				colors_window.Present ();
-			}
+
+			// Present unconditionally, so clicking a footer swatch raises a window
+			// that is already open but buried behind the main one.
+			colors_window.Present ();
 		} else {
 			colors_window.Hide ();
 		}

@@ -281,6 +281,13 @@ public sealed partial class ColorPickerPanel
 		code_entry.Hexpand = true;
 		code_entry.OnChanged += (sender, _) => {
 			if (updating) return;
+
+			// Clearing the box abandons whichever notation was being echoed back.
+			if (sender.GetText ().Trim ().Length == 0) {
+				code_format = CssColorFormat.Hex;
+				return;
+			}
+
 			Color? parsed = Color.FromCssCode (sender.GetText (), CurrentColor, out CssColorFormat format);
 			if (parsed is null) return;
 			code_format = format;

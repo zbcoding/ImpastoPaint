@@ -62,11 +62,10 @@ public sealed class PaletteManager : IPaletteService
 	public int MaxRecentlyUsedColor {
 		get {
 			bool extendedPaletteRows = settings.GetSetting (SettingNames.EXTENDED_PALETTE_ROWS, false);
+			int rows = extendedPaletteRows ? 3 : 2;
 			int defaultCount = PaletteHelper.GetDefaultRecentColorCount (extendedPaletteRows);
-			return Math.Clamp (
-				settings.GetSetting (SettingNames.RECENT_COLORS_COUNT, defaultCount),
-				0,
-				PaletteHelper.MAX_RECENT_COLOR_COUNT);
+			int storedCount = settings.GetSetting (SettingNames.RECENT_COLORS_COUNT, defaultCount);
+			return PaletteHelper.NormalizeRecentColorCount (storedCount, rows);
 		}
 	}
 
@@ -116,12 +115,14 @@ public sealed class PaletteManager : IPaletteService
 		ArgumentOutOfRangeException.ThrowIfNegative (count);
 		ArgumentOutOfRangeException.ThrowIfGreaterThan (count, PaletteHelper.MAX_RECENT_COLOR_COUNT);
 
-		settings.PutSetting (SettingNames.RECENT_COLORS_COUNT, count);
+		int rows = settings.GetSetting (SettingNames.EXTENDED_PALETTE_ROWS, false) ? 3 : 2;
+		int normalizedCount = PaletteHelper.NormalizeRecentColorCount (count, rows);
+		settings.PutSetting (SettingNames.RECENT_COLORS_COUNT, normalizedCount);
 
-		if (recently_used.Count > count)
-			recently_used.RemoveRange (count, recently_used.Count - count);
-		else if (recently_used.Count < count)
-			recently_used.AddRange (Enumerable.Repeat (new Color (.9, .9, .9), count - recently_used.Count));
+		if (recently_used.Count > normalizedCount)
+			recently_used.RemoveRange (normalizedCount, recently_used.Count - normalizedCount);
+		else if (recently_used.Count < normalizedCount)
+			recently_used.AddRange (Enumerable.Repeat (new Color (.9, .9, .9), normalizedCount - recently_used.Count));
 		else
 			return;
 

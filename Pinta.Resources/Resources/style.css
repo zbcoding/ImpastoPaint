@@ -100,10 +100,10 @@ tooltip.background {
     background-color: @view_bg_color;
 }
 
-/* Impasto: the flyout entry hint is a popover standing in for a tooltip (a real tooltip
-   next to the flyout's grabbing popover freezes the pointer), so it wears the tooltip's
-   look - same background as the `tooltip.background` rule above, no popover shadow. */
-popover.toolbox-hint > contents {
+/* Impasto: hover hints implemented as non-grabbing popovers wear the tooltip's
+   opaque background and omit the normal popover shadow. */
+popover.toolbox-hint > contents,
+popover.color-swatch-tooltip > contents {
     background-color: @view_bg_color;
     color: @view_fg_color;
     border-radius: 6px;

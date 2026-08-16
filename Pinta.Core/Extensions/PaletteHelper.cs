@@ -23,6 +23,13 @@ public static class PaletteHelper
 	public static int GetDefaultRecentColorCount (bool extendedPaletteRows)
 		=> extendedPaletteRows ? 12 : 8;
 
+	public static int NormalizeRecentColorCount (int count, int rows)
+	{
+		ArgumentOutOfRangeException.ThrowIfNegativeOrZero (rows);
+		int clampedCount = Math.Clamp (count, 0, MAX_RECENT_COLOR_COUNT);
+		return clampedCount / rows * rows;
+	}
+
 	// Rounds a palette size down to the nearest multiple of the row count (floored
 	// at one full row), so every column of the palette grid stays full.
 	public static int RoundDownToRowMultiple (int size, int rows)

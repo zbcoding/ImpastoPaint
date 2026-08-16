@@ -38,11 +38,9 @@ public sealed partial class ColorPickerPanel
 	const int SPACING = 6;
 	const int SWATCH_ICON_SIZE = 14;
 	const int DISPLAY_SIZE = 28;
-	// Recent colors stay a compact 5x2 / 6x2 block. The default quick palettes
-	// are 17 columns in standard mode and 16 in extended mode, so a 17-column cap
-	// keeps either default on one 2- or 3-row band while still wrapping larger
-	// user palettes.
-	const int RECENT_SWATCH_ROWS = 2;
+	// Both swatch groups follow the configured 2- or 3-row palette. A 17-column
+	// cap keeps either default quick palette on one band while still wrapping
+	// larger user palettes.
 	const int MAX_SWATCH_COLUMNS = 17;
 
 	public event EventHandler? EyedropperClicked;
@@ -339,11 +337,33 @@ public sealed partial class ColorPickerPanel
 
 	private void ConfigureSwatchTooltip (Gtk.DrawingArea swatch, bool recent)
 	{
-		swatch.HasTooltip = true;
-		swatch.OnQueryTooltip += (_, args) => {
+		Gtk.Label caption = Gtk.Label.New (string.Empty);
+		caption.Halign = Gtk.Align.Start;
+		caption.Justify = Gtk.Justification.Left;
+		caption.Wrap = true;
+		caption.MaxWidthChars = 55;
+
+		Gtk.Popover popup = Gtk.Popover.New ();
+		popup.Autohide = false;
+		popup.CanTarget = false;
+		popup.HasArrow = false;
+		popup.Position = Gtk.PositionType.Bottom;
+		popup.AddCssClass ("color-swatch-tooltip");
+		popup.SetChild (caption);
+		popup.SetParent (swatch);
+
+		int visibleIndex = -1;
+		Gtk.EventControllerMotion motion = Gtk.EventControllerMotion.New ();
+		motion.OnMotion += (_, args) => {
 			int index = GetSwatchIndex (recent, new PointD (args.X, args.Y));
-			if (index < 0)
-				return false;
+			if (index < 0) {
+				popup.Popdown ();
+				visibleIndex = -1;
+				return;
+			}
+
+			if (index == visibleIndex)
+				return;
 
 			Color color = recent
 				? palette.RecentlyUsedColors[index]
@@ -354,14 +374,20 @@ public sealed partial class ColorPickerPanel
 					"Left click to set primary color. Right click to set secondary color. Middle click or press {0} and left click to choose palette color.",
 					system.CtrlLabel ());
 
-			args.Tooltip.SetText (Translations.GetString ("Color") + $": #{color.ToHex ()}\n\n" + instructions);
-			return true;
+			caption.SetText (Translations.GetString ("Color") + $": #{color.ToHex ()}\n\n" + instructions);
+			visibleIndex = index;
+			popup.Popup ();
 		};
+		motion.OnLeave += (_, _) => {
+			popup.Popdown ();
+			visibleIndex = -1;
+		};
+		swatch.AddController (motion);
 	}
 
 	private int GetSwatchIndex (bool recent, PointD point)
 	{
-		int rowCount = recent ? RECENT_SWATCH_ROWS : PaletteWidget.PALETTE_ROWS;
+		int rowCount = PaletteWidget.PALETTE_ROWS;
 		return PaletteWidget.GetWrappedSwatchAtLocation (
 			palette,
 			point,
@@ -378,7 +404,7 @@ public sealed partial class ColorPickerPanel
 		int count = Math.Min (recent.Count, palette.MaxRecentlyUsedColor);
 		for (int i = 0; i < count; i++)
 			g.FillRectangle (
-				PaletteWidget.GetWrappedSwatchBounds (palette, i, new RectangleD (), MAX_SWATCH_COLUMNS, RECENT_SWATCH_ROWS, recentColorPalette: true),
+				PaletteWidget.GetWrappedSwatchBounds (palette, i, new RectangleD (), MAX_SWATCH_COLUMNS, PaletteWidget.PALETTE_ROWS, recentColorPalette: true),
 				recent.ElementAt (i));
 	}
 
@@ -396,11 +422,12 @@ public sealed partial class ColorPickerPanel
 	private void UpdateSwatchSizes ()
 	{
 		recent_swatch_row.Visible = palette.MaxRecentlyUsedColor > 0;
-		int recentCols = (palette.MaxRecentlyUsedColor + RECENT_SWATCH_ROWS - 1) / RECENT_SWATCH_ROWS;
+		int recentRows = PaletteWidget.PALETTE_ROWS;
+		int recentCols = (palette.MaxRecentlyUsedColor + recentRows - 1) / recentRows;
 		int visibleRecentCols = Math.Min (Math.Max (1, recentCols), MAX_SWATCH_COLUMNS);
 		int recentBands = PaletteWidget.GetWrappedBandCount (recentCols, MAX_SWATCH_COLUMNS);
 		swatch_recent.WidthRequest = PaletteWidget.SWATCH_SIZE * visibleRecentCols;
-		swatch_recent.HeightRequest = PaletteWidget.SWATCH_SIZE * RECENT_SWATCH_ROWS * recentBands;
+		swatch_recent.HeightRequest = PaletteWidget.SWATCH_SIZE * recentRows * recentBands;
 
 		int quickCols = (palette.CurrentPalette.Colors.Count + PaletteWidget.PALETTE_ROWS - 1) / PaletteWidget.PALETTE_ROWS;
 		int visibleQuickCols = Math.Min (Math.Max (1, quickCols), MAX_SWATCH_COLUMNS);

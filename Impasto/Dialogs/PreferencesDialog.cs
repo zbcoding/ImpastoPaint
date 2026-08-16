@@ -72,8 +72,9 @@ public sealed partial class PreferencesDialog
 		dialog.default_canvas_surround_color = defaultCanvasSurroundColor;
 		dialog.paste_external_images_to_new_layer_check_button.Active = pasteExternalImagesToNewLayer;
 		dialog.extended_palette_rows_check_button.Active = extendedPaletteRows;
-		dialog.recent_colors_count_spinner.Value = Math.Clamp (recentColorsCount, 0, PaletteHelper.MAX_RECENT_COLOR_COUNT);
-		int rows = PaletteHelper.GetPaletteRowCount ();
+		int rows = extendedPaletteRows ? 3 : 2;
+		dialog.recent_colors_count_spinner.Adjustment!.StepIncrement = rows;
+		dialog.recent_colors_count_spinner.Value = PaletteHelper.NormalizeRecentColorCount (recentColorsCount, rows);
 		dialog.palette_size_spinner.Value = PaletteHelper.RoundDownToRowMultiple (paletteSize, rows);
 		dialog.toolbox_classic_layout_check_button.Active = toolboxClassicLayout;
 		dialog.tool_settings_wrap_rows_check_button.Active = toolSettingsWrapRows;
@@ -184,8 +185,16 @@ public sealed partial class PreferencesDialog
 		extendedPaletteRow.Append (CreateResetButton (ResetExtendedPaletteRows));
 		popoverHintPage.Append (extendedPaletteRow);
 
-		Gtk.SpinButton recentColorsCountSpinner = Gtk.SpinButton.NewWithRange (0, PaletteHelper.MAX_RECENT_COLOR_COUNT, 1);
+		int recentColorRows = PaletteHelper.GetPaletteRowCount ();
+		Gtk.SpinButton recentColorsCountSpinner = Gtk.SpinButton.NewWithRange (0, PaletteHelper.MAX_RECENT_COLOR_COUNT, recentColorRows);
 		recentColorsCountSpinner.SetActivatesDefaultImmediate (true);
+		recentColorsCountSpinner.OnValueChanged += (_, _) => {
+			int rows = extendedPaletteRowsCheckButton.Active ? 3 : 2;
+			int count = recentColorsCountSpinner.GetValueAsInt ();
+			int normalizedCount = PaletteHelper.NormalizeRecentColorCount (count, rows);
+			if (count != normalizedCount)
+				recentColorsCountSpinner.Value = normalizedCount;
+		};
 		Gtk.Box recentColorsCountRow = Gtk.Box.New (Gtk.Orientation.Horizontal, SPACING);
 		Gtk.Label recentColorsCountLabel = Gtk.Label.New ($"{Translations.GetString ("Recently picked colors")} (0 = {Translations.GetString ("None")}):");
 		recentColorsCountLabel.Hexpand = true;
@@ -197,9 +206,14 @@ public sealed partial class PreferencesDialog
 
 		extendedPaletteRowsCheckButton.OnToggled += (_, _) => {
 			bool extendedPaletteRows = extendedPaletteRowsCheckButton.Active;
+			int rows = extendedPaletteRows ? 3 : 2;
+			int recentColorsCount = recentColorsCountSpinner.GetValueAsInt ();
 			int previousDefault = PaletteHelper.GetDefaultRecentColorCount (!extendedPaletteRows);
-			if (recentColorsCountSpinner.GetValueAsInt () == previousDefault)
-				recentColorsCountSpinner.Value = PaletteHelper.GetDefaultRecentColorCount (extendedPaletteRows);
+			if (recentColorsCount == previousDefault)
+				recentColorsCount = PaletteHelper.GetDefaultRecentColorCount (extendedPaletteRows);
+
+			recentColorsCountSpinner.Adjustment!.StepIncrement = rows;
+			recentColorsCountSpinner.Value = PaletteHelper.NormalizeRecentColorCount (recentColorsCount, rows);
 		};
 
 		// Step by the row count so every column stays full - 2 normally, 3 once the
@@ -509,11 +523,12 @@ public sealed partial class PreferencesDialog
 		canvas_height_spinner.Value = settings.GetSetting (SettingNames.DEFAULT_CANVAS_HEIGHT, DefaultCanvasHeight);
 		paste_external_images_to_new_layer_check_button.Active = settings.GetSetting (SettingNames.PASTE_EXTERNAL_IMAGES_TO_NEW_LAYER, PasteExternalImagesToNewLayer);
 		extended_palette_rows_check_button.Active = settings.GetSetting (SettingNames.EXTENDED_PALETTE_ROWS, ExtendedPaletteRows);
+		int recentColorRows = extended_palette_rows_check_button.Active ? 3 : 2;
 		int defaultRecentColorsCount = PaletteHelper.GetDefaultRecentColorCount (extended_palette_rows_check_button.Active);
-		recent_colors_count_spinner.Value = Math.Clamp (
+		recent_colors_count_spinner.Adjustment!.StepIncrement = recentColorRows;
+		recent_colors_count_spinner.Value = PaletteHelper.NormalizeRecentColorCount (
 			settings.GetSetting (SettingNames.RECENT_COLORS_COUNT, defaultRecentColorsCount),
-			0,
-			PaletteHelper.MAX_RECENT_COLOR_COUNT);
+			recentColorRows);
 		toolbox_classic_layout_check_button.Active = settings.GetSetting (SettingNames.TOOLBOX_CLASSIC_LAYOUT, ToolboxClassicLayout);
 		tool_settings_wrap_rows_check_button.Active = settings.GetSetting (SettingNames.TOOL_SETTINGS_WRAP_ROWS, ToolSettingsWrapRows);
 		skip_rasterize_objects_dialog_check_button.Active = settings.GetSetting (SettingNames.SKIP_RASTERIZE_OBJECTS_DIALOG, SkipRasterizeObjectsDialog);

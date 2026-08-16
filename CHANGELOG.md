@@ -29,6 +29,10 @@ Changes for the next release (0.0.2) go here.
 
 ### Fixed
 
+- Autosave recovery now distinguishes process lifetimes when process IDs are reused, leaves
+  another running instance's partial exports untouched, and reports startup recovery errors.
+- The large-image memory warning's dimensions and estimate can now be translated.
+
 - The Add-in Manager labels Impasto's Gallery section as **Impasto Add-ins** instead of exposing
   its `raw.githubusercontent.com` download host.
 

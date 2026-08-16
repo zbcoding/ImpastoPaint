@@ -19,8 +19,12 @@ internal static class LargeImagePrompt
 			return true;
 
 		string primary = Translations.GetString ("This image size may slow down your computer");
+		// Translators: {0} and {1} are image dimensions; {2} is memory in megabytes.
 		string secondary = Translations.GetString (
-			$"{newSize.Width} x {newSize.Height} pixels needs about {pixels * 4 / (1024 * 1024)} MB of memory per layer, plus more for undo history.");
+			"{0} x {1} pixels needs about {2} MB of memory per layer, plus more for undo history.",
+			newSize.Width,
+			newSize.Height,
+			pixels * 4 / (1024 * 1024));
 
 		using Adw.MessageDialog dialog = Adw.MessageDialog.New (chrome.MainWindow, primary, secondary);
 

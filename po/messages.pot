@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-08-15 09:58-0500\n"
+"POT-Creation-Date: 2026-08-16 06:01-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -50,7 +50,7 @@ msgstr ""
 msgid "A triangle with equal sides, growing up or down from the first point."
 msgstr ""
 
-#: ../Impasto/MainWindow.cs:513
+#: ../Impasto/MainWindow.cs:530
 msgid "A_dd-ins"
 msgstr ""
 
@@ -103,7 +103,7 @@ msgid ""
 msgstr ""
 
 #: ../Impasto/Actions/Help/KeyboardShortcutsDialogAction.cs:181
-#: ../Impasto/MainWindow.cs:579
+#: ../Impasto/MainWindow.cs:596
 msgid "Adjustments"
 msgstr ""
 
@@ -581,7 +581,7 @@ msgstr ""
 msgid "Click and drag to navigate image."
 msgstr ""
 
-#: ../Impasto/MainWindow.cs:926
+#: ../Impasto/MainWindow.cs:943
 #: ../Pinta.Gui.Widgets/Widgets/StatusBarColorPaletteWidget.cs:812
 msgid "Click to reset primary and secondary color."
 msgstr ""
@@ -604,7 +604,7 @@ msgstr ""
 msgid "Click to select secondary color."
 msgstr ""
 
-#: ../Impasto/MainWindow.cs:917
+#: ../Impasto/MainWindow.cs:934
 #: ../Pinta.Gui.Widgets/Widgets/ColorPickerDialog.cs:365
 #: ../Pinta.Gui.Widgets/Widgets/ColorPickerPanel.cs:128
 #: ../Pinta.Gui.Widgets/Widgets/StatusBarColorPaletteWidget.cs:807
@@ -719,7 +719,7 @@ msgstr ""
 msgid "Coloring"
 msgstr ""
 
-#: ../Impasto/MainWindow.cs:735 ../Pinta.Core/Actions/ViewActions.cs:171
+#: ../Impasto/MainWindow.cs:752 ../Pinta.Core/Actions/ViewActions.cs:171
 msgid "Colors"
 msgstr ""
 
@@ -763,6 +763,10 @@ msgstr ""
 #. Translators: Gradient with the colors of blue and pink cotton candy
 #: ../Pinta.Effects/Utilities/GradientHelper.cs:39
 msgid "Cotton Candy"
+msgstr ""
+
+#: ../Impasto/MainWindow.cs:169
+msgid "Could not check for autosaved documents"
 msgstr ""
 
 #. Translators: {0} is the name of a layer, and {1} is the path to a .ora file.
@@ -1033,12 +1037,12 @@ msgid ""
 "to bake silently and skip the warning."
 msgstr ""
 
-#: ../Impasto/MainWindow.cs:511
+#: ../Impasto/MainWindow.cs:528
 msgid "Effe_cts"
 msgstr ""
 
 #: ../Impasto/Actions/Help/KeyboardShortcutsDialogAction.cs:182
-#: ../Impasto/MainWindow.cs:574
+#: ../Impasto/MainWindow.cs:591
 msgid "Effects"
 msgstr ""
 
@@ -1127,7 +1131,7 @@ msgstr ""
 msgid "Failed to export settings: {0}"
 msgstr ""
 
-#: ../Impasto/MainWindow.cs:402
+#: ../Impasto/MainWindow.cs:419
 msgid "Failed to initialize add-in"
 msgstr ""
 
@@ -1527,7 +1531,7 @@ msgid "If you don't save, all changes will be permanently lost."
 msgstr ""
 
 #: ../Impasto/Actions/Help/KeyboardShortcutsDialogAction.cs:180
-#: ../Impasto/MainWindow.cs:584 ../Pinta.Tools/Tools/ColorPickerTool.cs:265
+#: ../Impasto/MainWindow.cs:601 ../Pinta.Tools/Tools/ColorPickerTool.cs:265
 msgid "Image"
 msgstr ""
 
@@ -2046,7 +2050,7 @@ msgstr ""
 msgid "Magic Wand Select"
 msgstr ""
 
-#: ../Impasto/MainWindow.cs:569
+#: ../Impasto/MainWindow.cs:586
 msgid "Main Menu"
 msgstr ""
 
@@ -2588,11 +2592,11 @@ msgstr ""
 msgid "Paste text"
 msgstr ""
 
-#: ../Impasto/MainWindow.cs:561
+#: ../Impasto/MainWindow.cs:578
 msgid "Paste to Active Layer"
 msgstr ""
 
-#: ../Impasto/MainWindow.cs:562
+#: ../Impasto/MainWindow.cs:579
 msgid "Paste to New Layer"
 msgstr ""
 
@@ -3101,7 +3105,7 @@ msgstr ""
 msgid "Reset to image size"
 msgstr ""
 
-#: ../Impasto/MainWindow.cs:704
+#: ../Impasto/MainWindow.cs:721
 msgid "Reset window"
 msgstr ""
 
@@ -3724,7 +3728,7 @@ msgid "Text properties ({0})"
 msgstr ""
 
 #. Translators: {0} is the name of an add-in.
-#: ../Impasto/MainWindow.cs:399
+#: ../Impasto/MainWindow.cs:416
 #, csharp-format
 msgid "The '{0}' add-in may not be compatible with this version of Impasto"
 msgstr ""
@@ -3737,20 +3741,20 @@ msgstr ""
 msgid "The file had no keyboard shortcuts to import."
 msgstr ""
 
-#: ../Pinta.Core/Managers/AutosaveManager.cs:485
+#: ../Pinta.Core/Managers/AutosaveManager.cs:487
 msgid "The file is damaged or incomplete."
 msgstr ""
 
-#: ../Pinta.Core/Managers/AutosaveManager.cs:454
+#: ../Pinta.Core/Managers/AutosaveManager.cs:456
 msgid "The file is empty."
 msgstr ""
 
-#: ../Pinta.Core/Managers/AutosaveManager.cs:469
+#: ../Pinta.Core/Managers/AutosaveManager.cs:471
 msgid "The file is missing its layer information."
 msgstr ""
 
-#: ../Pinta.Core/Managers/AutosaveManager.cs:461
-#: ../Pinta.Core/Managers/AutosaveManager.cs:465
+#: ../Pinta.Core/Managers/AutosaveManager.cs:463
+#: ../Pinta.Core/Managers/AutosaveManager.cs:467
 msgid "The file is not an OpenRaster image."
 msgstr ""
 
@@ -3762,7 +3766,7 @@ msgstr ""
 msgid "The file no longer exists, or cannot be read."
 msgstr ""
 
-#: ../Pinta.Core/Managers/AutosaveManager.cs:451
+#: ../Pinta.Core/Managers/AutosaveManager.cs:453
 msgid "The file no longer exists."
 msgstr ""
 
@@ -4177,7 +4181,7 @@ msgid "Vertical red (R)"
 msgstr ""
 
 #: ../Impasto/Actions/Help/KeyboardShortcutsDialogAction.cs:179
-#: ../Impasto/MainWindow.cs:589
+#: ../Impasto/MainWindow.cs:606
 msgid "View"
 msgstr ""
 
@@ -4281,14 +4285,14 @@ msgstr ""
 msgid "Zoom to Selection"
 msgstr ""
 
-#: ../Impasto/MainWindow.cs:510
+#: ../Impasto/MainWindow.cs:527
 msgid "_Adjustments"
 msgstr ""
 
 #: ../Impasto/Actions/Edit/PasteAction.cs:224
 #: ../Impasto/Actions/File/CloseDocumentAction.cs:83
 #: ../Impasto/Actions/File/SaveDocumentImplementationAction.cs:295
-#: ../Impasto/Actions/Image/LargeImagePrompt.cs:30
+#: ../Impasto/Actions/Image/LargeImagePrompt.cs:34
 #: ../Impasto/Dialogs/ProgressDialog.cs:71
 #: ../Pinta.Core/Classes/Re-editable/ObjectRasterizer.cs:144
 #: ../Pinta.Core/Extensions/Gtk/GtkExtensions.Widget.cs:250
@@ -4296,7 +4300,7 @@ msgstr ""
 msgid "_Cancel"
 msgstr ""
 
-#: ../Impasto/Actions/Image/LargeImagePrompt.cs:31
+#: ../Impasto/Actions/Image/LargeImagePrompt.cs:35
 msgid "_Continue"
 msgstr ""
 
@@ -4305,19 +4309,19 @@ msgstr ""
 msgid "_Discard"
 msgstr ""
 
-#: ../Impasto/MainWindow.cs:506
+#: ../Impasto/MainWindow.cs:523
 msgid "_Edit"
 msgstr ""
 
-#: ../Impasto/MainWindow.cs:505
+#: ../Impasto/MainWindow.cs:522
 msgid "_File"
 msgstr ""
 
-#: ../Impasto/MainWindow.cs:515
+#: ../Impasto/MainWindow.cs:532
 msgid "_Help"
 msgstr ""
 
-#: ../Impasto/MainWindow.cs:509
+#: ../Impasto/MainWindow.cs:526
 msgid "_Image"
 msgstr ""
 
@@ -4344,11 +4348,11 @@ msgstr ""
 msgid "_Save"
 msgstr ""
 
-#: ../Impasto/MainWindow.cs:508
+#: ../Impasto/MainWindow.cs:525
 msgid "_View"
 msgstr ""
 
-#: ../Impasto/MainWindow.cs:514
+#: ../Impasto/MainWindow.cs:531
 msgid "_Window"
 msgstr ""
 
@@ -4461,6 +4465,14 @@ msgstr ""
 #: ../Pinta.Tools/Tools/TextTool.cs:2696
 #, csharp-format
 msgid "{0} to rotate"
+msgstr ""
+
+#. Translators: {0} and {1} are image dimensions; {2} is memory in megabytes.
+#: ../Impasto/Actions/Image/LargeImagePrompt.cs:24
+#, csharp-format
+msgid ""
+"{0} x {1} pixels needs about {2} MB of memory per layer, plus more for undo "
+"history."
 msgstr ""
 
 #. Translators: This specifies the format of the zoom percentage choices

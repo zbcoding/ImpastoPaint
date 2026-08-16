@@ -153,9 +153,26 @@ internal sealed class MainWindow
 		// Deferred so the prompt lands on a built window, after any files named on the
 		// command line have been opened.
 		GLib.Functions.IdleAdd (GLib.Constants.PRIORITY_DEFAULT_IDLE, () => {
-			_ = AutosaveRecoveryDialog.PromptAsync (window_shell.Window, PintaCore.Autosave);
+			PromptForAutosaveRecovery ();
 			return false;
 		});
+	}
+
+	private async void PromptForAutosaveRecovery ()
+	{
+		try {
+			await AutosaveRecoveryDialog.PromptAsync (window_shell.Window, PintaCore.Autosave);
+		} catch (Exception e) {
+			try {
+				await ErrorDialog.ShowError (
+					window_shell.Window,
+					Translations.GetString ("Could not check for autosaved documents"),
+					e.Message,
+					e.ToString ());
+			} catch (Exception dialogError) {
+				Console.Error.WriteLine ($"Failed to report autosave recovery error: {dialogError}");
+			}
+		}
 	}
 
 	private void Workspace_DocumentClosed (object? sender, DocumentEventArgs e)

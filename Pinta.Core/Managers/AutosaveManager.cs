@@ -16,6 +16,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.IO.Compression;
@@ -84,8 +85,8 @@ public sealed class AutosaveManager
 	private readonly WorkspaceManager workspace;
 
 	/// <summary>
-	/// Directory holding this session's autosaves. Named for the process so that a
-	/// second running instance neither overwrites nor deletes this one's files.
+	/// Directory holding this session's autosaves. Its process id and process start time
+	/// identify the owner without colliding with a later process that reuses the same id.
 	/// </summary>
 	private readonly string session_directory;
 
@@ -117,7 +118,7 @@ public sealed class AutosaveManager
 
 		session_directory = Path.Combine (
 			AutosaveRootDirectory (settings),
-			Environment.ProcessId.ToString (CultureInfo.InvariantCulture));
+			CreateSessionDirectoryName ());
 	}
 
 	public bool IsEnabled
@@ -353,8 +354,9 @@ public sealed class AutosaveManager
 
 		foreach (string directory in Directory.EnumerateDirectories (root)) {
 
-			// Our own session's files are live, not leftovers.
-			if (Path.GetFullPath (directory) == Path.GetFullPath (session_directory))
+			// Files owned by any running instance are still being written, not recoverable.
+			if (Path.GetFullPath (directory) == Path.GetFullPath (session_directory)
+				|| IsSessionOwnerAlive (directory))
 				continue;
 
 			// A failed export leaves its temporary file behind, and a session that never
@@ -485,6 +487,38 @@ public sealed class AutosaveManager
 			return Translations.GetString ("The file is damaged or incomplete.");
 		} catch (Exception e) {
 			return e.Message;
+		}
+	}
+
+	internal static string CreateSessionDirectoryName ()
+	{
+		using Process process = Process.GetCurrentProcess ();
+		return string.Join (
+			'-',
+			process.Id.ToString (CultureInfo.InvariantCulture),
+			process.StartTime.ToUniversalTime ().Ticks.ToString (CultureInfo.InvariantCulture));
+	}
+
+	internal static bool IsSessionOwnerAlive (string directory)
+	{
+		string[] owner = Path.GetFileName (directory).Split ('-');
+
+		if (owner.Length != 2
+			|| !int.TryParse (owner[0], NumberStyles.None, CultureInfo.InvariantCulture, out int processId)
+			|| !long.TryParse (owner[1], NumberStyles.None, CultureInfo.InvariantCulture, out long processStartTicks))
+			return false;
+
+		try {
+			using Process process = Process.GetProcessById (processId);
+			return !process.HasExited
+				&& process.StartTime.ToUniversalTime ().Ticks == processStartTicks;
+		} catch (ArgumentException) {
+			return false;
+		} catch (Exception e) {
+			// If the platform denies process inspection, preserving the directory is safer
+			// than deleting files that another instance may still be writing.
+			Console.Error.WriteLine ($"Failed to inspect autosave session owner: {e.Message}");
+			return true;
 		}
 	}
 

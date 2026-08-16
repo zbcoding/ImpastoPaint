@@ -54,6 +54,19 @@ internal sealed class AutosaveManagerTest
 	}
 
 	[Test]
+	public void ExitedProcessDoesNotOwnCrashedSessionDirectory ()
+	{
+		string staleSession = string.Join (
+			'-',
+			int.MaxValue.ToString (CultureInfo.InvariantCulture),
+			"1");
+
+		Assert.That (
+			AutosaveManager.IsSessionOwnerAlive (Path.Combine (directory, staleSession)),
+			Is.False);
+	}
+
+	[Test]
 	public void CompleteArchiveIsRecoverable ()
 	{
 		string path = WriteOra ("valid.ora", "image/openraster", includeStack: true);

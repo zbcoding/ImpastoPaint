@@ -60,6 +60,12 @@ internal sealed class ColorTests
 	[TestCase ("rgb(255, 87, 51)", 1, 0.3412, 0.2, 1)]
 	[TestCase ("rgb(255, 87, 51, 0.5)", 1, 0.3412, 0.2, 0.5)]
 	[TestCase ("hsl(11, 100%, 60%)", 1, 0.3467, 0.2, 1)]
+	// rgba()/hsla() are aliases of rgb()/hsl(), so either spelling takes either syntax.
+	[TestCase ("rgba(255 87 51 / 50%)", 1, 0.3412, 0.2, 0.5)]
+	[TestCase ("rgba(255, 87, 51, 0.5)", 1, 0.3412, 0.2, 0.5)]
+	[TestCase ("rgba(255 87 51)", 1, 0.3412, 0.2, 1)]
+	[TestCase ("hsla(11 100% 60% / 50%)", 1, 0.3467, 0.2, 0.5)]
+	[TestCase ("rgb(255 87 51 / 0.5)", 1, 0.3412, 0.2, 0.5)]
 	[TestCase ("rebeccapurple", 0.4, 0.2, 0.6, 1)]
 	[TestCase ("transparent", 0, 0, 0, 0)]
 	public void FromCssCode (string code, double r, double g, double b, double a)

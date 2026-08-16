@@ -64,6 +64,7 @@ public sealed partial class ColorPickerPanel
 	private Gtk.DrawingArea surface_cursor = null!;
 	private Gtk.Entry code_entry = null!;
 	private CssColorFormat code_format = CssColorFormat.Hex;
+	private bool applying_typed_code;
 	private ColorPickerSlider[] sliders = null!;
 	private Gtk.DrawingArea swatch_recent = null!;
 	private Gtk.Box recent_swatch_row = null!;
@@ -290,8 +291,17 @@ public sealed partial class ColorPickerPanel
 
 			Color? parsed = Color.FromCssCode (sender.GetText (), CurrentColor, out CssColorFormat format);
 			if (parsed is null) return;
+
 			code_format = format;
-			CurrentColor = parsed.Value;
+
+			// Suppress only the echo of what was just typed. Every other way of
+			// changing the color still rewrites the box, even while it holds focus.
+			applying_typed_code = true;
+			try {
+				CurrentColor = parsed.Value;
+			} finally {
+				applying_typed_code = false;
+			}
 		};
 		code_entry.TooltipText = codeTooltip;
 
@@ -570,7 +580,7 @@ public sealed partial class ColorPickerPanel
 		foreach (var slider in sliders)
 			slider.Color = current;
 
-		if (!code_entry.IsEditingText ())
+		if (!applying_typed_code)
 			code_entry.SetText (current.ToCssCode (code_format));
 	}
 

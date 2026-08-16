@@ -158,7 +158,13 @@ public readonly record struct Color (
 		string alphaFunctionName,
 		bool hueComponent)
 	{
-		if (!TrySplitModernFunction (code, functionName, out string[] components, out bool hasAlpha, out double alpha))
+		// CSS treats rgb()/rgba() and hsl()/hsla() as aliases, so either spelling may
+		// carry either syntax.
+		bool split =
+			TrySplitModernFunction (code, functionName, out string[] components, out bool hasAlpha, out double alpha)
+			|| TrySplitModernFunction (code, alphaFunctionName, out components, out hasAlpha, out alpha);
+
+		if (!split)
 			return null;
 
 		if (components.Length != 3)

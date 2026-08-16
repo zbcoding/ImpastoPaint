@@ -603,7 +603,9 @@ public sealed partial class ColorPickerPanel
 						double v = show_value_check.Active ? CurrentColor.ToHsv ().Val : 1;
 
 						double d = radius - magnitude;
-						double a = d < 1 ? d : 1;
+						// The outermost pixel fades out to antialias the circle's edge.
+						double edgeAlpha = d < 1 ? d : 1;
+						double a = edgeAlpha * (show_alpha_check.Active ? CurrentColor.A : 1);
 
 						data[drawSize.Width * y + x] = Color.FromHsv (h, s, v, a).ToColorBgra ();
 					}

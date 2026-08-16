@@ -77,10 +77,10 @@ internal sealed class ResizePaletteAction : IActionHandler
 	{
 		int rows = PaletteHelper.GetPaletteRowCount ();
 
-		Gtk.SpinButton rowCountSpinner = Gtk.SpinButton.NewWithRange (2, 3, 1);
-		rowCountSpinner.SetActivatesDefaultImmediate (true);
-		rowCountSpinner.Value = rows;
-		rowCountSpinner.TooltipText = Translations.GetString ("Three rows adds a darker shade of each color beneath the standard palette.");
+		Gtk.StringList rowCountModel = Gtk.StringList.New (["2", "3"]);
+		Gtk.DropDown rowCountDropdown = Gtk.DropDown.New (rowCountModel, expression: null);
+		rowCountDropdown.Selected = (uint) (rows - 2);
+		rowCountDropdown.TooltipText = Translations.GetString ("Three rows adds a darker shade of each color beneath the standard palette.");
 
 		// Both counts move in whole rows, so the quick colors and recent colors stay
 		// aligned with each other in the palette bar.
@@ -96,27 +96,27 @@ internal sealed class ResizePaletteAction : IActionHandler
 
 		// Changing the row count re-steps both size fields so they keep landing on
 		// full columns.
-		rowCountSpinner.OnValueChanged += (_, _) => {
-			int newRows = rowCountSpinner.GetValueAsInt ();
+		Gtk.DropDown.SelectedPropertyDefinition.Notify (rowCountDropdown, (_, _) => {
+			int newRows = GetRowCount ();
 			paletteSizeSpinner.Adjustment!.StepIncrement = newRows;
 			paletteSizeSpinner.Adjustment!.Lower = newRows;
 			paletteSizeSpinner.Value = PaletteHelper.RoundDownToRowMultiple (paletteSizeSpinner.GetValueAsInt (), newRows);
 			recentCountSpinner.Adjustment!.StepIncrement = newRows;
 			recentCountSpinner.Value = PaletteHelper.NormalizeRecentColorCount (recentCountSpinner.GetValueAsInt (), newRows);
-		};
+		});
 
 		Gtk.Grid grid = Gtk.Grid.New ();
 		grid.RowSpacing = 6;
 		grid.ColumnSpacing = 6;
 		grid.Attach (CreateLabel (Translations.GetString ("Palette rows:")), 0, 0, 1, 1);
-		grid.Attach (rowCountSpinner, 1, 0, 1, 1);
-		grid.Attach (CreateResetButton (() => rowCountSpinner.Value = 2), 2, 0, 1, 1);
+		grid.Attach (rowCountDropdown, 1, 0, 1, 1);
+		grid.Attach (CreateResetButton (() => rowCountDropdown.Selected = 0), 2, 0, 1, 1);
 		grid.Attach (CreateLabel (Translations.GetString ("New palette size:")), 0, 1, 1, 1);
 		grid.Attach (paletteSizeSpinner, 1, 1, 1, 1);
-		grid.Attach (CreateResetButton (() => paletteSizeSpinner.Value = DefaultPaletteSize (rowCountSpinner.GetValueAsInt ())), 2, 1, 1, 1);
+		grid.Attach (CreateResetButton (() => paletteSizeSpinner.Value = DefaultPaletteSize (GetRowCount ())), 2, 1, 1, 1);
 		grid.Attach (CreateLabel ($"{Translations.GetString ("Recently picked colors")} (0 = {Translations.GetString ("None")}):"), 0, 2, 1, 1);
 		grid.Attach (recentCountSpinner, 1, 2, 1, 1);
-		grid.Attach (CreateResetButton (() => recentCountSpinner.Value = PaletteHelper.GetDefaultRecentColorCount (rowCountSpinner.GetValueAsInt () == 3)), 2, 2, 1, 1);
+		grid.Attach (CreateResetButton (() => recentCountSpinner.Value = PaletteHelper.GetDefaultRecentColorCount (GetRowCount () == 3)), 2, 2, 1, 1);
 
 		using Gtk.Dialog dialog = Gtk.Dialog.New ();
 		dialog.Title = Translations.GetString ("Resize Palette");
@@ -132,10 +132,12 @@ internal sealed class ResizePaletteAction : IActionHandler
 		try {
 			Gtk.ResponseType response = await dialog.RunAsync ();
 			if (response != Gtk.ResponseType.Ok) return null;
-			return (rowCountSpinner.GetValueAsInt (), paletteSizeSpinner.GetValueAsInt (), recentCountSpinner.GetValueAsInt ());
+			return (GetRowCount (), paletteSizeSpinner.GetValueAsInt (), recentCountSpinner.GetValueAsInt ());
 		} finally {
 			dialog.Destroy ();
 		}
+
+		int GetRowCount () => (int) rowCountDropdown.Selected + 2;
 
 		static int DefaultPaletteSize (int rows)
 			=> PaletteHelper.EnumerateDefaultColors (rows == 3).Count ();

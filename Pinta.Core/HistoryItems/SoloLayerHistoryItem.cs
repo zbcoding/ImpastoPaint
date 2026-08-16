@@ -64,15 +64,15 @@ internal sealed class SoloLayerHistoryItem : BaseHistoryItem
 	}
 
 	public override void Undo ()
-		=> ApplyVisibility (useSoloState: false);
+		=> ApplyVisibility (useAfterState: false);
 
 	public override void Redo ()
-		=> ApplyVisibility (useSoloState: true);
+		=> ApplyVisibility (useAfterState: true);
 
-	private void ApplyVisibility (bool useSoloState)
+	private void ApplyVisibility (bool useAfterState)
 	{
 		foreach (var item in visibility)
-			item.Layer.Hidden = useSoloState ? item.After : item.Before;
+			item.Layer.Hidden = useAfterState ? item.After : item.Before;
 
 		if (Document is not { } document)
 			return;

@@ -50,7 +50,7 @@ public sealed class SoloLayerHistoryItemTests
 	}
 
 	[Test]
-	public void AlreadySolo_HasNoChanges ()
+	public void AlreadySolo_RedoShowsAllAndUndoRestoresSoloState ()
 	{
 		using ImageSurface bottomSurface = new (Format.Argb32, 1, 1);
 		using ImageSurface topSurface = new (Format.Argb32, 1, 1);
@@ -60,10 +60,20 @@ public sealed class SoloLayerHistoryItemTests
 
 		SoloLayerHistoryItem historyItem = new (
 			"icon",
-			"Solo Layer",
+			"Show All Layers",
 			[bottom, top],
 			bottom);
 
-		Assert.That (historyItem.HasChanges, Is.False);
+		historyItem.Redo ();
+		Assert.Multiple (() => {
+			Assert.That (bottom.Hidden, Is.False);
+			Assert.That (top.Hidden, Is.False);
+		});
+
+		historyItem.Undo ();
+		Assert.Multiple (() => {
+			Assert.That (bottom.Hidden, Is.False);
+			Assert.That (top.Hidden, Is.True);
+		});
 	}
 }

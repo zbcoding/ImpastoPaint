@@ -354,21 +354,29 @@ public sealed class AutosaveManager
 
 		foreach (string directory in Directory.EnumerateDirectories (root)) {
 
+			bool? ownerAlive = IsSessionOwnerAlive (directory);
+
 			// Files owned by any running instance are still being written, not recoverable.
 			if (Path.GetFullPath (directory) == Path.GetFullPath (session_directory)
-				|| IsSessionOwnerAlive (directory))
+				|| ownerAlive == true)
 				continue;
+
+			// Only sweep once the owner is known to have exited - an unknown owner may still
+			// be writing, but its finished autosaves are worth offering either way.
+			bool ownerExited = ownerAlive == false;
 
 			// A failed export leaves its temporary file behind, and a session that never
 			// managed to autosave leaves nothing but the directory. Neither is recoverable
 			// and nothing else will ever remove them, so sweep them up on the way past.
-			foreach (string partial in Directory.EnumerateFiles (directory, "*" + PARTIAL_EXTENSION))
-				Delete (partial);
+			if (ownerExited)
+				foreach (string partial in Directory.EnumerateFiles (directory, "*" + PARTIAL_EXTENSION))
+					Delete (partial);
 
 			string[] images = Directory.GetFiles (directory, "*" + IMAGE_EXTENSION);
 
 			if (images.Length == 0) {
-				DeleteDirectoryIfEmpty (directory);
+				if (ownerExited)
+					DeleteDirectoryIfEmpty (directory);
 				continue;
 			}
 
@@ -499,7 +507,12 @@ public sealed class AutosaveManager
 			process.StartTime.ToUniversalTime ().Ticks.ToString (CultureInfo.InvariantCulture));
 	}
 
-	internal static bool IsSessionOwnerAlive (string directory)
+	/// <summary>
+	/// Whether the instance that owns a session directory is still running, or null when the
+	/// platform will not say. Unknown owners keep their files: those are still worth offering
+	/// for recovery, but not worth deleting on a guess.
+	/// </summary>
+	internal static bool? IsSessionOwnerAlive (string directory)
 	{
 		string[] owner = Path.GetFileName (directory).Split ('-');
 
@@ -515,10 +528,8 @@ public sealed class AutosaveManager
 		} catch (ArgumentException) {
 			return false;
 		} catch (Exception e) {
-			// If the platform denies process inspection, preserving the directory is safer
-			// than deleting files that another instance may still be writing.
 			Console.Error.WriteLine ($"Failed to inspect autosave session owner: {e.Message}");
-			return true;
+			return null;
 		}
 	}
 

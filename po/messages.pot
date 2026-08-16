@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-08-16 06:01-0500\n"
+"POT-Creation-Date: 2026-08-16 17:37-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -30,19 +30,19 @@ msgstr ""
 msgid "..."
 msgstr ""
 
-#: ../Pinta.Tools/Tools/ColorPickerTool.cs:247
+#: ../Pinta.Tools/Tools/ColorPickerTool.cs:253
 msgid "3 x 3 Region"
 msgstr ""
 
-#: ../Pinta.Tools/Tools/ColorPickerTool.cs:248
+#: ../Pinta.Tools/Tools/ColorPickerTool.cs:254
 msgid "5 x 5 Region"
 msgstr ""
 
-#: ../Pinta.Tools/Tools/ColorPickerTool.cs:249
+#: ../Pinta.Tools/Tools/ColorPickerTool.cs:255
 msgid "7 x 7 Region"
 msgstr ""
 
-#: ../Pinta.Tools/Tools/ColorPickerTool.cs:250
+#: ../Pinta.Tools/Tools/ColorPickerTool.cs:256
 msgid "9 x 9 Region"
 msgstr ""
 
@@ -50,7 +50,7 @@ msgstr ""
 msgid "A triangle with equal sides, growing up or down from the first point."
 msgstr ""
 
-#: ../Impasto/MainWindow.cs:530
+#: ../Impasto/MainWindow.cs:531
 msgid "A_dd-ins"
 msgstr ""
 
@@ -63,8 +63,8 @@ msgid "About Impasto"
 msgstr ""
 
 #: ../Impasto/Actions/Edit/PasteAction.cs:175
-#: ../Pinta.Core/Actions/LayerActions.cs:64
-#: ../Pinta.Core/Actions/LayerActions.cs:483
+#: ../Pinta.Core/Actions/LayerActions.cs:72
+#: ../Pinta.Core/Actions/LayerActions.cs:578
 msgid "Add New Layer"
 msgstr ""
 
@@ -96,18 +96,18 @@ msgstr ""
 msgid "Added"
 msgstr ""
 
-#: ../Impasto/Dialogs/PreferencesDialog.cs:176
+#: ../Impasto/Dialogs/PreferencesDialog.cs:194
 msgid ""
 "Adds a darker shade of each color beneath the standard palette. The status "
 "bar grows taller to fit the extra row."
 msgstr ""
 
 #: ../Impasto/Actions/Help/KeyboardShortcutsDialogAction.cs:181
-#: ../Impasto/MainWindow.cs:596
+#: ../Impasto/MainWindow.cs:597
 msgid "Adjustments"
 msgstr ""
 
-#: ../Pinta.Tools/Tools/ColorPickerTool.cs:209
+#: ../Pinta.Tools/Tools/ColorPickerTool.cs:215
 msgid "After select"
 msgstr ""
 
@@ -242,19 +242,19 @@ msgstr ""
 msgid "Available in repository: {0}"
 msgstr ""
 
-#: ../Pinta.Tools/Tools/ColorPickerTool.cs:247
+#: ../Pinta.Tools/Tools/ColorPickerTool.cs:253
 msgid "Average the colors in a 3 x 3 area around the pointer."
 msgstr ""
 
-#: ../Pinta.Tools/Tools/ColorPickerTool.cs:248
+#: ../Pinta.Tools/Tools/ColorPickerTool.cs:254
 msgid "Average the colors in a 5 x 5 area around the pointer."
 msgstr ""
 
-#: ../Pinta.Tools/Tools/ColorPickerTool.cs:249
+#: ../Pinta.Tools/Tools/ColorPickerTool.cs:255
 msgid "Average the colors in a 7 x 7 area around the pointer."
 msgstr ""
 
-#: ../Pinta.Tools/Tools/ColorPickerTool.cs:250
+#: ../Pinta.Tools/Tools/ColorPickerTool.cs:256
 msgid "Average the colors in a 9 x 9 area around the pointer."
 msgstr ""
 
@@ -270,11 +270,11 @@ msgstr ""
 msgid "Background:"
 msgstr ""
 
-#: ../Impasto/Dialogs/PreferencesDialog.cs:260
+#: ../Impasto/Dialogs/PreferencesDialog.cs:309
 msgid "Backup"
 msgstr ""
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:656
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:660
 msgid "Bake this object into the layer's pixels; it stops being editable."
 msgstr ""
 
@@ -307,7 +307,7 @@ msgstr ""
 msgid "Blend Mode"
 msgstr ""
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:627
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:631
 msgid "Blend Mode:"
 msgstr ""
 
@@ -410,7 +410,7 @@ msgid "By percentage:"
 msgstr ""
 
 #. Translators: This tooltip lists CSS color syntax. Keep the code examples unchanged.
-#: ../Pinta.Gui.Widgets/Widgets/ColorPickerPanel.cs:257
+#: ../Pinta.Gui.Widgets/Widgets/ColorPickerPanel.cs:303
 msgid ""
 "CSS color formats:\n"
 "HEX — #ff5733 or ff5733\n"
@@ -433,7 +433,7 @@ msgstr ""
 #: ../Impasto/Actions/File/SaveDocumentImplementationAction.cs:97
 #: ../Impasto/Actions/Help/KeyboardShortcutsDialogAction.cs:108
 #: ../Impasto/Actions/Help/KeyboardShortcutsDialogAction.cs:121
-#: ../Impasto/Dialogs/PreferencesDialog.cs:364
+#: ../Impasto/Dialogs/PreferencesDialog.cs:417
 #: ../Pinta.Core/Actions/EditActions.cs:658
 #: ../Pinta.Gui.Addins/InstallDialog.cs:126
 #: ../Pinta.Gui.Widgets/Widgets/ColorPickerDialog.cs:496
@@ -450,7 +450,7 @@ msgstr ""
 msgid "Cannot be recovered: {0}"
 msgstr ""
 
-#: ../Impasto/Dialogs/PreferencesDialog.cs:257 ../Impasto/Pads/CanvasPad.cs:41
+#: ../Impasto/Dialogs/PreferencesDialog.cs:306 ../Impasto/Pads/CanvasPad.cs:41
 msgid "Canvas"
 msgstr ""
 
@@ -468,7 +468,7 @@ msgid ""
 "Double click to change the canvas size."
 msgstr ""
 
-#: ../Impasto/Dialogs/PreferencesDialog.cs:130
+#: ../Impasto/Dialogs/PreferencesDialog.cs:146
 msgid "Canvas surround color:"
 msgstr ""
 
@@ -535,26 +535,31 @@ msgstr ""
 msgid "Changed Shape Type"
 msgstr ""
 
+#: ../Impasto/Actions/Edit/ResizePaletteAction.cs:89
+msgid "Changing the number of palette rows resets the palette"
+msgstr ""
+
 #. Translators: Gradient that starts out off-white, like cherry blossoms against sunlight, then goes through pink, then light blue (like the sky) and finally transparent, blending with the background
 #: ../Pinta.Effects/Utilities/GradientHelper.cs:35
 msgid "Cherry Blossom"
 msgstr ""
 
-#: ../Impasto/Dialogs/PreferencesDialog.cs:344
+#: ../Impasto/Dialogs/PreferencesDialog.cs:397
 #: ../Pinta.Effects/Dialogs/Effects.LevelsDialog.cs:666
 #: ../Pinta.Gui.Widgets/Dialogs/SimpleEffectDialog.cs:366
 msgid "Choose Color"
 msgstr ""
 
-#: ../Pinta.Gui.Widgets/Widgets/StatusBarColorPaletteWidget.cs:848
+#: ../Pinta.Gui.Widgets/Widgets/StatusBarColorPaletteWidget.cs:840
 msgid "Choose Colors"
 msgstr ""
 
-#: ../Pinta.Gui.Widgets/Widgets/StatusBarColorPaletteWidget.cs:267
+#: ../Pinta.Gui.Widgets/Widgets/ColorPickerPanel.cs:570
+#: ../Pinta.Gui.Widgets/Widgets/StatusBarColorPaletteWidget.cs:246
 msgid "Choose Palette Color"
 msgstr ""
 
-#: ../Impasto/Dialogs/PreferencesDialog.cs:110
+#: ../Impasto/Dialogs/PreferencesDialog.cs:119
 msgid "Choose color..."
 msgstr ""
 
@@ -602,14 +607,14 @@ msgstr ""
 msgid "Click and drag to navigate image."
 msgstr ""
 
-#: ../Impasto/MainWindow.cs:943
-#: ../Pinta.Gui.Widgets/Widgets/StatusBarColorPaletteWidget.cs:812
+#: ../Impasto/MainWindow.cs:962
+#: ../Pinta.Gui.Widgets/Widgets/StatusBarColorPaletteWidget.cs:798
 msgid "Click to reset primary and secondary color."
 msgstr ""
 
 #: ../Pinta.Gui.Widgets/Widgets/ColorPickerDialog.cs:608
-#: ../Pinta.Gui.Widgets/Widgets/ColorPickerPanel.cs:114
-#: ../Pinta.Gui.Widgets/Widgets/StatusBarColorPaletteWidget.cs:800
+#: ../Pinta.Gui.Widgets/Widgets/ColorPickerPanel.cs:158
+#: ../Pinta.Gui.Widgets/Widgets/StatusBarColorPaletteWidget.cs:786
 msgid "Click to select primary color."
 msgstr ""
 
@@ -620,15 +625,15 @@ msgid ""
 msgstr ""
 
 #: ../Pinta.Gui.Widgets/Widgets/ColorPickerDialog.cs:613
-#: ../Pinta.Gui.Widgets/Widgets/ColorPickerPanel.cs:122
-#: ../Pinta.Gui.Widgets/Widgets/StatusBarColorPaletteWidget.cs:804
+#: ../Pinta.Gui.Widgets/Widgets/ColorPickerPanel.cs:166
+#: ../Pinta.Gui.Widgets/Widgets/StatusBarColorPaletteWidget.cs:790
 msgid "Click to select secondary color."
 msgstr ""
 
-#: ../Impasto/MainWindow.cs:934
+#: ../Impasto/MainWindow.cs:953
 #: ../Pinta.Gui.Widgets/Widgets/ColorPickerDialog.cs:365
-#: ../Pinta.Gui.Widgets/Widgets/ColorPickerPanel.cs:128
-#: ../Pinta.Gui.Widgets/Widgets/StatusBarColorPaletteWidget.cs:807
+#: ../Pinta.Gui.Widgets/Widgets/ColorPickerPanel.cs:172
+#: ../Pinta.Gui.Widgets/Widgets/StatusBarColorPaletteWidget.cs:793
 msgid "Click to switch between primary and secondary color."
 msgstr ""
 
@@ -642,7 +647,7 @@ msgstr ""
 #: ../Impasto/Dialogs/NewImageDialog.cs:430
 #: ../Impasto/Dialogs/NewImageDialog.cs:449
 #: ../Impasto/Dialogs/NewImageDialog.cs:545
-#: ../Impasto/Dialogs/PreferencesDialog.cs:258
+#: ../Impasto/Dialogs/PreferencesDialog.cs:307
 msgid "Clipboard"
 msgstr ""
 
@@ -675,13 +680,14 @@ msgstr ""
 msgid "Coarseness"
 msgstr ""
 
-#: ../Pinta.Gui.Widgets/Widgets/ColorPickerPanel.cs:269
+#: ../Pinta.Gui.Widgets/Widgets/ColorPickerPanel.cs:352
 msgid "Code"
 msgstr ""
 
 #: ../Pinta.Core/Algorithms/PixelOps/UserBlendOps.cs:43
 #: ../Pinta.Effects/Effects/DitheringEffect.cs:23
-#: ../Pinta.Gui.Widgets/Widgets/StatusBarColorPaletteWidget.cs:767
+#: ../Pinta.Gui.Widgets/Widgets/ColorPickerPanel.cs:469
+#: ../Pinta.Gui.Widgets/Widgets/StatusBarColorPaletteWidget.cs:753
 msgid "Color"
 msgstr ""
 
@@ -744,7 +750,7 @@ msgstr ""
 msgid "Coloring"
 msgstr ""
 
-#: ../Impasto/MainWindow.cs:752 ../Pinta.Core/Actions/ViewActions.cs:171
+#: ../Impasto/MainWindow.cs:767 ../Pinta.Core/Actions/ViewActions.cs:171
 msgid "Colors"
 msgstr ""
 
@@ -790,7 +796,7 @@ msgstr ""
 msgid "Cotton Candy"
 msgstr ""
 
-#: ../Impasto/MainWindow.cs:169
+#: ../Impasto/MainWindow.cs:170
 msgid "Could not check for autosaved documents"
 msgstr ""
 
@@ -885,16 +891,16 @@ msgstr ""
 msgid "Default"
 msgstr ""
 
-#: ../Impasto/Dialogs/PreferencesDialog.cs:118
+#: ../Impasto/Dialogs/PreferencesDialog.cs:123
 msgid "Default canvas size (on application open):"
 msgstr ""
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:665
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:669
 msgid "Delete"
 msgstr ""
 
-#: ../Pinta.Core/Actions/LayerActions.cs:71
-#: ../Pinta.Core/Actions/LayerActions.cs:465
+#: ../Pinta.Core/Actions/LayerActions.cs:79
+#: ../Pinta.Core/Actions/LayerActions.cs:560
 msgid "Delete Layer"
 msgstr ""
 
@@ -969,7 +975,7 @@ msgstr ""
 msgid "Dithering"
 msgstr ""
 
-#: ../Pinta.Tools/Tools/ColorPickerTool.cs:227
+#: ../Pinta.Tools/Tools/ColorPickerTool.cs:233
 msgid "Do not switch tool"
 msgstr ""
 
@@ -983,7 +989,7 @@ msgid "Download size: {0}"
 msgstr ""
 
 #: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:112
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:836
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:840
 msgid "Drag and drop to reorder"
 msgstr ""
 
@@ -1025,8 +1031,8 @@ msgstr ""
 msgid "Draws an ellipse or circle."
 msgstr ""
 
-#: ../Pinta.Core/Actions/LayerActions.cs:78
-#: ../Pinta.Core/Actions/LayerActions.cs:452
+#: ../Pinta.Core/Actions/LayerActions.cs:86
+#: ../Pinta.Core/Actions/LayerActions.cs:547
 msgid "Duplicate Layer"
 msgstr ""
 
@@ -1041,7 +1047,7 @@ msgstr ""
 #: ../Pinta.Effects/Effects/DentsEffect.cs:162
 #: ../Pinta.Effects/Effects/PolarInversionEffect.cs:99
 #: ../Pinta.Effects/Effects/TileEffect.cs:237
-#: ../Pinta.Effects/Effects/TwistEffect.cs:232
+#: ../Pinta.Effects/Effects/TwistEffect.cs:232 Polar Inversion dialog
 msgid "Edge Behavior"
 msgstr ""
 
@@ -1053,7 +1059,7 @@ msgstr ""
 msgid "Edit"
 msgstr ""
 
-#: ../Impasto/Dialogs/PreferencesDialog.cs:214
+#: ../Impasto/Dialogs/PreferencesDialog.cs:263
 msgid ""
 "Editable shapes and text stay editable on their own sub-layers. Operations "
 "that need flat pixels — cut, erase, crop, resize, rotate, flip, flatten — "
@@ -1062,12 +1068,12 @@ msgid ""
 "to bake silently and skip the warning."
 msgstr ""
 
-#: ../Impasto/MainWindow.cs:528
+#: ../Impasto/MainWindow.cs:529
 msgid "Effe_cts"
 msgstr ""
 
 #: ../Impasto/Actions/Help/KeyboardShortcutsDialogAction.cs:182
-#: ../Impasto/MainWindow.cs:591
+#: ../Impasto/MainWindow.cs:592
 msgid "Effects"
 msgstr ""
 
@@ -1126,15 +1132,15 @@ msgstr ""
 msgid "Expand"
 msgstr ""
 
-#: ../Impasto/Dialogs/PreferencesDialog.cs:363
+#: ../Impasto/Dialogs/PreferencesDialog.cs:416
 msgid "Export"
 msgstr ""
 
-#: ../Impasto/Dialogs/PreferencesDialog.cs:360
+#: ../Impasto/Dialogs/PreferencesDialog.cs:413
 msgid "Export Settings"
 msgstr ""
 
-#: ../Impasto/Dialogs/PreferencesDialog.cs:243
+#: ../Impasto/Dialogs/PreferencesDialog.cs:292
 msgid "Export Settings..."
 msgstr ""
 
@@ -1151,12 +1157,12 @@ msgstr ""
 msgid "Failed to access XDG Desktop Portals"
 msgstr ""
 
-#: ../Impasto/Dialogs/PreferencesDialog.cs:387
+#: ../Impasto/Dialogs/PreferencesDialog.cs:440
 #, csharp-format
 msgid "Failed to export settings: {0}"
 msgstr ""
 
-#: ../Impasto/MainWindow.cs:419
+#: ../Impasto/MainWindow.cs:420
 msgid "Failed to initialize add-in"
 msgstr ""
 
@@ -1168,7 +1174,7 @@ msgstr ""
 msgid "Failed to open image"
 msgstr ""
 
-#: ../Impasto/Dialogs/PreferencesDialog.cs:414
+#: ../Impasto/Dialogs/PreferencesDialog.cs:467
 #, csharp-format
 msgid "Failed to read settings file: {0}"
 msgstr ""
@@ -1314,7 +1320,7 @@ msgstr ""
 
 #: ../Pinta.Core/Actions/ImageActions.cs:84
 #: ../Pinta.Core/Actions/ImageActions.cs:291
-#: ../Pinta.Core/Actions/LayerActions.cs:98
+#: ../Pinta.Core/Actions/LayerActions.cs:106
 msgid "Flip Horizontal"
 msgstr ""
 
@@ -1336,12 +1342,12 @@ msgstr ""
 
 #: ../Pinta.Core/Actions/ImageActions.cs:90
 #: ../Pinta.Core/Actions/ImageActions.cs:276
-#: ../Pinta.Core/Actions/LayerActions.cs:104
+#: ../Pinta.Core/Actions/LayerActions.cs:112
 msgid "Flip Vertical"
 msgstr ""
 
 #: ../Pinta.Core/Actions/ViewActions.cs:177
-#: ../Pinta.Gui.Widgets/Widgets/StatusBarColorPaletteWidget.cs:780
+#: ../Pinta.Gui.Widgets/Widgets/StatusBarColorPaletteWidget.cs:766
 msgid "Float Colors"
 msgstr ""
 
@@ -1458,7 +1464,7 @@ msgstr ""
 
 #: ../Impasto/Dialogs/CanvasGridSettingsDialog.cs:125
 #: ../Impasto/Dialogs/NewImageDialog.cs:348
-#: ../Impasto/Dialogs/PreferencesDialog.cs:125
+#: ../Impasto/Dialogs/PreferencesDialog.cs:137
 #: ../Impasto/Dialogs/ResizeCanvasDialog.cs:87
 #: ../Impasto/Dialogs/ResizeImageDialog.cs:126
 msgid "Height:"
@@ -1469,7 +1475,6 @@ msgid "Help"
 msgstr ""
 
 #: ../Pinta.Gui.Widgets/Widgets/ColorPickerDialog.cs:302
-#: ../Pinta.Gui.Widgets/Widgets/ColorPickerPanel.cs:233
 msgid "Hex"
 msgstr ""
 
@@ -1532,7 +1537,7 @@ msgid "Hue"
 msgstr ""
 
 #: ../Pinta.Gui.Widgets/Widgets/ColorPickerDialog.cs:208
-#: ../Pinta.Gui.Widgets/Widgets/ColorPickerPanel.cs:165
+#: ../Pinta.Gui.Widgets/Widgets/ColorPickerPanel.cs:225
 msgid "Hue & Sat"
 msgstr ""
 
@@ -1545,14 +1550,13 @@ msgid "ICO files can not be larger than 256 x 256 pixels."
 msgstr ""
 
 #: ../Pinta.Gui.Widgets/Widgets/ColorPickerDialog.cs:193
-#: ../Pinta.Gui.Widgets/Widgets/ColorPickerPanel.cs:175
+#: ../Pinta.Gui.Widgets/Widgets/ColorPickerPanel.cs:239
 msgid ""
 "If enabled, the hue/saturation surface is drawn at your current selection's "
 "brightness; otherwise it is shown at full brightness."
 msgstr ""
 
-#. Translators: Explains the "Show selection opacity in preview" checkbox.
-#: ../Pinta.Gui.Widgets/Widgets/ColorPickerPanel.cs:220
+#: ../Pinta.Gui.Widgets/Widgets/ColorPickerPanel.cs:247
 msgid ""
 "If enabled, the hue/saturation surface is drawn at your current selection's "
 "opacity, letting the checkerboard behind it show through; otherwise it is "
@@ -1564,7 +1568,7 @@ msgid "If you don't save, all changes will be permanently lost."
 msgstr ""
 
 #: ../Impasto/Actions/Help/KeyboardShortcutsDialogAction.cs:180
-#: ../Impasto/MainWindow.cs:601 ../Pinta.Tools/Tools/ColorPickerTool.cs:265
+#: ../Impasto/MainWindow.cs:602 ../Pinta.Tools/Tools/ColorPickerTool.cs:271
 msgid "Image"
 msgstr ""
 
@@ -1581,7 +1585,7 @@ msgid "Image cannot be pasted"
 msgstr ""
 
 #: ../Impasto/Actions/File/OpenDocumentAction.cs:149
-#: ../Pinta.Core/Actions/LayerActions.cs:245
+#: ../Pinta.Core/Actions/LayerActions.cs:340
 msgid "Image files"
 msgstr ""
 
@@ -1595,7 +1599,7 @@ msgstr ""
 
 #: ../xdg/com.github.zbcoding.Impasto.desktop.in.h:1
 #: ../Impasto/Actions/Help/AboutDialogAction.cs:67 ../Impasto/Main.cs:71
-#: ../Impasto/MainWindow.cs:68
+#: ../Impasto/MainWindow.cs:69
 msgid "Impasto"
 msgstr ""
 
@@ -1649,31 +1653,31 @@ msgstr ""
 msgid "Impasto supports the following palette formats:"
 msgstr ""
 
-#: ../Impasto/Dialogs/PreferencesDialog.cs:469
+#: ../Impasto/Dialogs/PreferencesDialog.cs:522
 msgid "Import"
 msgstr ""
 
-#: ../Pinta.Core/Actions/LayerActions.cs:292
+#: ../Pinta.Core/Actions/LayerActions.cs:387
 msgid "Import From File"
 msgstr ""
 
-#: ../Impasto/Dialogs/PreferencesDialog.cs:465
+#: ../Impasto/Dialogs/PreferencesDialog.cs:518
 msgid "Import Keyboard Shortcuts?"
 msgstr ""
 
-#: ../Impasto/Dialogs/PreferencesDialog.cs:401
+#: ../Impasto/Dialogs/PreferencesDialog.cs:454
 msgid "Import Settings"
 msgstr ""
 
-#: ../Impasto/Dialogs/PreferencesDialog.cs:245
+#: ../Impasto/Dialogs/PreferencesDialog.cs:294
 msgid "Import Settings..."
 msgstr ""
 
-#: ../Pinta.Core/Actions/LayerActions.cs:92
+#: ../Pinta.Core/Actions/LayerActions.cs:100
 msgid "Import from File..."
 msgstr ""
 
-#: ../Impasto/Dialogs/PreferencesDialog.cs:452
+#: ../Impasto/Dialogs/PreferencesDialog.cs:505
 #, csharp-format
 msgid ""
 "Imported {0} setting(s); {1} entry(ies) were skipped (unrecognized or "
@@ -1803,11 +1807,11 @@ msgstr ""
 msgid "Justify"
 msgstr ""
 
-#: ../Impasto/Dialogs/PreferencesDialog.cs:468
+#: ../Impasto/Dialogs/PreferencesDialog.cs:521
 msgid "Keep Mine"
 msgstr ""
 
-#: ../Pinta.Tools/Tools/ColorPickerTool.cs:227
+#: ../Pinta.Tools/Tools/ColorPickerTool.cs:233
 msgid "Keep using the Color Picker after a color is chosen."
 msgstr ""
 
@@ -1816,11 +1820,11 @@ msgstr ""
 msgid "Keyboard Shortcuts"
 msgstr ""
 
-#: ../Impasto/Dialogs/PreferencesDialog.cs:448
+#: ../Impasto/Dialogs/PreferencesDialog.cs:501
 msgid "Keyboard shortcuts were imported, replacing your current ones."
 msgstr ""
 
-#: ../Impasto/Dialogs/PreferencesDialog.cs:449
+#: ../Impasto/Dialogs/PreferencesDialog.cs:502
 msgid "Keyboard shortcuts were left unchanged."
 msgstr ""
 
@@ -1842,7 +1846,7 @@ msgstr ""
 msgid "Lasso Select"
 msgstr ""
 
-#: ../Pinta.Tools/Tools/ColorPickerTool.cs:264
+#: ../Pinta.Tools/Tools/ColorPickerTool.cs:270
 msgid "Layer"
 msgstr ""
 
@@ -1855,7 +1859,7 @@ msgstr ""
 msgid "Layer Properties"
 msgstr ""
 
-#: ../Pinta.Core/Actions/LayerActions.cs:128
+#: ../Pinta.Core/Actions/LayerActions.cs:136
 msgid "Layer Properties..."
 msgstr ""
 
@@ -1961,12 +1965,14 @@ msgid ""
 "Right click to set secondary color."
 msgstr ""
 
-#: ../Pinta.Gui.Widgets/Widgets/StatusBarColorPaletteWidget.cs:795
+#: ../Pinta.Gui.Widgets/Widgets/ColorPickerPanel.cs:464
+#: ../Pinta.Gui.Widgets/Widgets/StatusBarColorPaletteWidget.cs:781
 msgid "Left click to set primary color. Right click to set secondary color."
 msgstr ""
 
 #. Translators: {0} is 'Ctrl', or a platform-specific key such as 'Command' on macOS.
-#: ../Pinta.Gui.Widgets/Widgets/StatusBarColorPaletteWidget.cs:787
+#: ../Pinta.Gui.Widgets/Widgets/ColorPickerPanel.cs:466
+#: ../Pinta.Gui.Widgets/Widgets/StatusBarColorPaletteWidget.cs:773
 #, csharp-format
 msgid ""
 "Left click to set primary color. Right click to set secondary color. Middle "
@@ -2083,7 +2089,7 @@ msgstr ""
 msgid "Magic Wand Select"
 msgstr ""
 
-#: ../Impasto/MainWindow.cs:586
+#: ../Impasto/MainWindow.cs:587
 msgid "Main Menu"
 msgstr ""
 
@@ -2122,8 +2128,8 @@ msgstr ""
 msgid "Menu Bar"
 msgstr ""
 
-#: ../Pinta.Core/Actions/LayerActions.cs:85
-#: ../Pinta.Core/Actions/LayerActions.cs:395
+#: ../Pinta.Core/Actions/LayerActions.cs:93
+#: ../Pinta.Core/Actions/LayerActions.cs:490
 msgid "Merge Layer Down"
 msgstr ""
 
@@ -2168,17 +2174,17 @@ msgstr ""
 msgid "Motion Blur"
 msgstr ""
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:784
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:788
 msgid "Move Layer"
 msgstr ""
 
-#: ../Pinta.Core/Actions/LayerActions.cs:122
-#: ../Pinta.Core/Actions/LayerActions.cs:372
+#: ../Pinta.Core/Actions/LayerActions.cs:130
+#: ../Pinta.Core/Actions/LayerActions.cs:467
 msgid "Move Layer Down"
 msgstr ""
 
-#: ../Pinta.Core/Actions/LayerActions.cs:116
-#: ../Pinta.Core/Actions/LayerActions.cs:350
+#: ../Pinta.Core/Actions/LayerActions.cs:124
+#: ../Pinta.Core/Actions/LayerActions.cs:445
 msgid "Move Layer Up"
 msgstr ""
 
@@ -2256,7 +2262,7 @@ msgstr ""
 msgid "New Screenshot..."
 msgstr ""
 
-#: ../Impasto/Actions/Edit/ResizePaletteAction.cs:73
+#: ../Impasto/Actions/Edit/ResizePaletteAction.cs:145
 msgid "New palette size:"
 msgstr ""
 
@@ -2274,7 +2280,9 @@ msgstr ""
 msgid "Noise"
 msgstr ""
 
+#: ../Impasto/Actions/Edit/ResizePaletteAction.cs:148
 #: ../Impasto/Actions/Help/KeyboardShortcutsDialogAction.cs:48
+#: ../Impasto/Dialogs/PreferencesDialog.cs:212
 #: ../Pinta.Core/Classes/KeyGesture.cs:31
 #: ../Pinta.Core/Extensions/Gtk/GtkExtensions.Interaction.cs:70
 msgid "None"
@@ -2402,7 +2410,7 @@ msgid "Number of threads to use for rendering"
 msgstr ""
 
 #: ../Impasto/Actions/Help/KeyboardShortcutsDialogAction.cs:124
-#: ../Impasto/Dialogs/PreferencesDialog.cs:506
+#: ../Impasto/Dialogs/PreferencesDialog.cs:565
 #: ../Pinta.Gui.Widgets/Widgets/ColorPickerDialog.cs:491
 #: ../Pinta.Tools/Dialogs/TextPropertiesDialog.cs:268
 msgid "OK"
@@ -2446,7 +2454,7 @@ msgid "Oil Painting"
 msgstr ""
 
 #: ../Impasto/Dialogs/LayerPropertiesDialog.cs:85
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:643
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:647
 #: ../Pinta.Gui.Widgets/Widgets/Layers/ObjectPropertiesDialog.cs:64
 msgid "Opacity:"
 msgstr ""
@@ -2469,7 +2477,7 @@ msgid "Open Image"
 msgstr ""
 
 #: ../Impasto/Actions/File/OpenDocumentAction.cs:111
-#: ../Pinta.Core/Actions/LayerActions.cs:263
+#: ../Pinta.Core/Actions/LayerActions.cs:358
 msgid "Open Image File"
 msgstr ""
 
@@ -2590,15 +2598,11 @@ msgstr ""
 msgid "Palette files"
 msgstr ""
 
-#: ../Impasto/Actions/Edit/ResizePaletteAction.cs:76
+#: ../Impasto/Actions/Edit/ResizePaletteAction.cs:142
 msgid "Palette rows:"
 msgstr ""
 
-#: ../Impasto/Actions/Edit/ResizePaletteAction.cs:79
-msgid "Three rows adds a darker shade of each color beneath the standard palette."
-msgstr ""
-
-#: ../Impasto/Dialogs/PreferencesDialog.cs:189
+#: ../Impasto/Dialogs/PreferencesDialog.cs:238
 msgid "Palette size:"
 msgstr ""
 
@@ -2625,7 +2629,7 @@ msgstr ""
 msgid "Paste Into New Layer"
 msgstr ""
 
-#: ../Impasto/Dialogs/PreferencesDialog.cs:141
+#: ../Impasto/Dialogs/PreferencesDialog.cs:159
 msgid "Paste external images onto a new layer by default"
 msgstr ""
 
@@ -2633,11 +2637,11 @@ msgstr ""
 msgid "Paste text"
 msgstr ""
 
-#: ../Impasto/MainWindow.cs:578
+#: ../Impasto/MainWindow.cs:579
 msgid "Paste to Active Layer"
 msgstr ""
 
-#: ../Impasto/MainWindow.cs:579
+#: ../Impasto/MainWindow.cs:580
 msgid "Paste to New Layer"
 msgstr ""
 
@@ -2724,7 +2728,7 @@ msgstr ""
 msgid "Please restart Impasto for the changes to take effect."
 msgstr ""
 
-#: ../Impasto/Actions/Edit/PreferencesAction.cs:86
+#: ../Impasto/Actions/Edit/PreferencesAction.cs:87
 msgid "Please restart Impasto for the toolbox layout change to take effect."
 msgstr ""
 
@@ -2774,7 +2778,7 @@ msgstr ""
 msgid "Polygon"
 msgstr ""
 
-#: ../Impasto/Dialogs/PreferencesDialog.cs:164
+#: ../Impasto/Dialogs/PreferencesDialog.cs:182
 msgid "Popover hints:"
 msgstr ""
 
@@ -2864,7 +2868,7 @@ msgstr ""
 msgid "Print"
 msgstr ""
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:660
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:664
 msgid "Properties..."
 msgstr ""
 
@@ -2882,8 +2886,8 @@ msgstr ""
 msgid "Quality: "
 msgstr ""
 
-#: ../Pinta.Gui.Widgets/Widgets/ColorPickerPanel.cs:92
-#: ../Pinta.Gui.Widgets/Widgets/StatusBarColorPaletteWidget.cs:774
+#: ../Pinta.Gui.Widgets/Widgets/ColorPickerPanel.cs:124
+#: ../Pinta.Gui.Widgets/Widgets/StatusBarColorPaletteWidget.cs:760
 msgid "Quick colors"
 msgstr ""
 
@@ -2970,11 +2974,11 @@ msgstr ""
 msgid "Raster — fuses to layer"
 msgstr ""
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:655
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:659
 msgid "Rasterize"
 msgstr ""
 
-#: ../Pinta.Core/Actions/LayerActions.cs:135
+#: ../Pinta.Core/Actions/LayerActions.cs:143
 msgid "Rasterize All Objects"
 msgstr ""
 
@@ -2990,7 +2994,7 @@ msgstr ""
 msgid "Re-edit existing text"
 msgstr ""
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:834
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:838
 msgid ""
 "Re-editable object: a live shape or text you can keep editing until you "
 "rasterize it."
@@ -3000,8 +3004,10 @@ msgstr ""
 msgid "Recently Used Colors"
 msgstr ""
 
-#: ../Pinta.Gui.Widgets/Widgets/ColorPickerPanel.cs:86
-#: ../Pinta.Gui.Widgets/Widgets/StatusBarColorPaletteWidget.cs:771
+#: ../Impasto/Actions/Edit/ResizePaletteAction.cs:148
+#: ../Impasto/Dialogs/PreferencesDialog.cs:212
+#: ../Pinta.Gui.Widgets/Widgets/ColorPickerPanel.cs:115
+#: ../Pinta.Gui.Widgets/Widgets/StatusBarColorPaletteWidget.cs:757
 msgid "Recently picked colors"
 msgstr ""
 
@@ -3077,7 +3083,7 @@ msgstr ""
 msgid "Rename Layer"
 msgstr ""
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:552
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:555
 msgid "Rename Layer..."
 msgstr ""
 
@@ -3136,8 +3142,9 @@ msgstr ""
 msgid "Reset to Default"
 msgstr ""
 
+#: ../Impasto/Actions/Edit/ResizePaletteAction.cs:188
 #: ../Impasto/Actions/Help/KeyboardShortcutsDialogAction.cs:446
-#: ../Impasto/Dialogs/PreferencesDialog.cs:528
+#: ../Impasto/Dialogs/PreferencesDialog.cs:588
 msgid "Reset to default"
 msgstr ""
 
@@ -3169,7 +3176,7 @@ msgstr ""
 msgid "Resize Image..."
 msgstr ""
 
-#: ../Impasto/Actions/Edit/ResizePaletteAction.cs:71
+#: ../Impasto/Actions/Edit/ResizePaletteAction.cs:153
 msgid "Resize Palette"
 msgstr ""
 
@@ -3177,12 +3184,12 @@ msgstr ""
 msgid "Resize text (drag corner, changes font size)"
 msgstr ""
 
-#: ../Impasto/Actions/Edit/PreferencesAction.cs:85
+#: ../Impasto/Actions/Edit/PreferencesAction.cs:86
 #: ../Impasto/Actions/View/MenuBarToggledAction.cs:39
 msgid "Restart Impasto"
 msgstr ""
 
-#: ../Pinta.Tools/Tools/ColorPickerTool.cs:228
+#: ../Pinta.Tools/Tools/ColorPickerTool.cs:234
 msgid "Return to the tool that was active before the Color Picker."
 msgstr ""
 
@@ -3215,7 +3222,7 @@ msgstr ""
 msgid "Right click to move"
 msgstr ""
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:835
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:839
 msgid "Right-click to set blend mode and opacity, or open its properties"
 msgstr ""
 
@@ -3224,7 +3231,7 @@ msgstr ""
 msgid "Rotate / Zoom Layer"
 msgstr ""
 
-#: ../Pinta.Core/Actions/LayerActions.cs:110
+#: ../Pinta.Core/Actions/LayerActions.cs:118
 msgid "Rotate / Zoom Layer..."
 msgstr ""
 
@@ -3302,15 +3309,15 @@ msgstr ""
 msgid "Rulers"
 msgstr ""
 
-#: ../Pinta.Tools/Tools/ColorPickerTool.cs:264
+#: ../Pinta.Tools/Tools/ColorPickerTool.cs:270
 msgid "Sample from the current layer only."
 msgstr ""
 
-#: ../Pinta.Tools/Tools/ColorPickerTool.cs:246
+#: ../Pinta.Tools/Tools/ColorPickerTool.cs:252
 msgid "Sample the exact color of the pixel under the pointer."
 msgstr ""
 
-#: ../Pinta.Tools/Tools/ColorPickerTool.cs:210
+#: ../Pinta.Tools/Tools/ColorPickerTool.cs:216
 msgid "Sampling"
 msgstr ""
 
@@ -3320,7 +3327,7 @@ msgid "Sat"
 msgstr ""
 
 #: ../Pinta.Gui.Widgets/Widgets/ColorPickerDialog.cs:198
-#: ../Pinta.Gui.Widgets/Widgets/ColorPickerPanel.cs:169
+#: ../Pinta.Gui.Widgets/Widgets/ColorPickerPanel.cs:229
 msgid "Sat & Value"
 msgstr ""
 
@@ -3361,7 +3368,7 @@ msgstr ""
 msgid "Save changes to image \"{0}\" before closing?"
 msgstr ""
 
-#: ../Impasto/Dialogs/PreferencesDialog.cs:250
+#: ../Impasto/Dialogs/PreferencesDialog.cs:299
 msgid ""
 "Save your settings and preferences to a file, or load them from a previously "
 "exported file."
@@ -3415,7 +3422,8 @@ msgstr ""
 msgid "Selection: top-left corner in pixels, then its width and height."
 msgstr ""
 
-#: ../Pinta.Tools/Tools/ColorPickerTool.cs:265
+#: ../Pinta.Gui.Widgets/Widgets/ColorPickerPanel.cs:183
+#: ../Pinta.Tools/Tools/ColorPickerTool.cs:271
 msgid ""
 "Selects the color in view. Sample from the composited image, including all "
 "visible layers."
@@ -3443,12 +3451,12 @@ msgstr ""
 msgid "Set Number of Colors"
 msgstr ""
 
-#: ../Impasto/Dialogs/PreferencesDialog.cs:263
-#: ../Impasto/Dialogs/PreferencesDialog.cs:505
+#: ../Impasto/Dialogs/PreferencesDialog.cs:312
+#: ../Impasto/Dialogs/PreferencesDialog.cs:564
 msgid "Settings"
 msgstr ""
 
-#: ../Impasto/Dialogs/PreferencesDialog.cs:394
+#: ../Impasto/Dialogs/PreferencesDialog.cs:447
 msgid "Settings files"
 msgstr ""
 
@@ -3507,7 +3515,7 @@ msgstr ""
 
 #: ../Pinta.Core/Extensions/Gtk/GtkExtensions.Widget.cs:106
 #: ../Pinta.Gui.Widgets/Widgets/ColorPickerDialog.cs:366
-#: ../Pinta.Gui.Widgets/Widgets/StatusBarColorPaletteWidget.cs:808
+#: ../Pinta.Gui.Widgets/Widgets/StatusBarColorPaletteWidget.cs:794
 #: ../Pinta.Gui.Widgets/Widgets/ToolBoxWidget.cs:231
 msgid "Shortcut key"
 msgstr ""
@@ -3550,7 +3558,7 @@ msgstr ""
 msgid "Show Points"
 msgstr ""
 
-#: ../Impasto/Dialogs/PreferencesDialog.cs:175
+#: ../Impasto/Dialogs/PreferencesDialog.cs:193
 msgid "Show a third row of darker colors in the palette"
 msgstr ""
 
@@ -3562,28 +3570,28 @@ msgstr ""
 msgid "Show an arrowhead at the start point."
 msgstr ""
 
-#: ../Pinta.Gui.Widgets/Widgets/StatusBarColorPaletteWidget.cs:777
+#: ../Pinta.Gui.Widgets/Widgets/StatusBarColorPaletteWidget.cs:763
 msgid "Show color wheel"
 msgstr ""
 
-#: ../Impasto/Dialogs/PreferencesDialog.cs:229
+#: ../Impasto/Dialogs/PreferencesDialog.cs:278
 msgid "Show cursor position in the status bar"
 msgstr ""
 
-#: ../Impasto/Dialogs/PreferencesDialog.cs:236
+#: ../Impasto/Dialogs/PreferencesDialog.cs:285
 msgid "Show image size and aspect ratio in the status bar"
 msgstr ""
 
-#: ../Impasto/Dialogs/PreferencesDialog.cs:221
+#: ../Impasto/Dialogs/PreferencesDialog.cs:270
 msgid "Show quick access toolbar"
 msgstr ""
 
 #: ../Pinta.Gui.Widgets/Widgets/ColorPickerDialog.cs:191
-#: ../Pinta.Gui.Widgets/Widgets/ColorPickerPanel.cs:172
+#: ../Pinta.Gui.Widgets/Widgets/ColorPickerPanel.cs:239
 msgid "Show selection brightness in preview"
 msgstr ""
 
-#: ../Pinta.Gui.Widgets/Widgets/ColorPickerPanel.cs:220
+#: ../Pinta.Gui.Widgets/Widgets/ColorPickerPanel.cs:247
 msgid "Show selection opacity in preview"
 msgstr ""
 
@@ -3601,7 +3609,7 @@ msgstr ""
 msgid "Sierra Lite"
 msgstr ""
 
-#: ../Pinta.Tools/Tools/ColorPickerTool.cs:246
+#: ../Pinta.Tools/Tools/ColorPickerTool.cs:252
 msgid "Single Pixel"
 msgstr ""
 
@@ -3613,7 +3621,7 @@ msgstr ""
 msgid "Size: "
 msgstr ""
 
-#: ../Impasto/Dialogs/PreferencesDialog.cs:213
+#: ../Impasto/Dialogs/PreferencesDialog.cs:262
 msgid "Skip the \"Rasterize Objects?\" confirmation"
 msgstr ""
 
@@ -3661,7 +3669,7 @@ msgstr ""
 msgid "Solo Layer {0}"
 msgstr ""
 
-#: ../Pinta.Tools/Tools/ColorPickerTool.cs:214
+#: ../Pinta.Tools/Tools/ColorPickerTool.cs:220
 msgid "Source"
 msgstr ""
 
@@ -3722,7 +3730,7 @@ msgstr ""
 msgid "Switch between right and equilateral triangle while drawing"
 msgstr ""
 
-#: ../Pinta.Tools/Tools/ColorPickerTool.cs:229
+#: ../Pinta.Tools/Tools/ColorPickerTool.cs:235
 msgid "Switch to Pencil tool"
 msgstr ""
 
@@ -3731,11 +3739,11 @@ msgstr ""
 msgid "Switch to document {0}"
 msgstr ""
 
-#: ../Pinta.Tools/Tools/ColorPickerTool.cs:228
+#: ../Pinta.Tools/Tools/ColorPickerTool.cs:234
 msgid "Switch to previous tool"
 msgstr ""
 
-#: ../Pinta.Tools/Tools/ColorPickerTool.cs:229
+#: ../Pinta.Tools/Tools/ColorPickerTool.cs:235
 msgid "Switch to the Pencil tool, ready to draw with the picked color."
 msgstr ""
 
@@ -3789,7 +3797,7 @@ msgid "Text properties ({0})"
 msgstr ""
 
 #. Translators: {0} is the name of an add-in.
-#: ../Impasto/MainWindow.cs:416
+#: ../Impasto/MainWindow.cs:417
 #, csharp-format
 msgid "The '{0}' add-in may not be compatible with this version of Impasto"
 msgstr ""
@@ -3798,24 +3806,30 @@ msgstr ""
 msgid "The clipboard does not contain an image."
 msgstr ""
 
-#: ../Impasto/Dialogs/PreferencesDialog.cs:446
+#: ../Impasto/Actions/Edit/ResizePaletteAction.cs:91
+msgid ""
+"The colors you have edited will be replaced by the default palette for the "
+"new row count."
+msgstr ""
+
+#: ../Impasto/Dialogs/PreferencesDialog.cs:499
 msgid "The file had no keyboard shortcuts to import."
 msgstr ""
 
-#: ../Pinta.Core/Managers/AutosaveManager.cs:487
+#: ../Pinta.Core/Managers/AutosaveManager.cs:495
 msgid "The file is damaged or incomplete."
 msgstr ""
 
-#: ../Pinta.Core/Managers/AutosaveManager.cs:456
+#: ../Pinta.Core/Managers/AutosaveManager.cs:464
 msgid "The file is empty."
 msgstr ""
 
-#: ../Pinta.Core/Managers/AutosaveManager.cs:471
+#: ../Pinta.Core/Managers/AutosaveManager.cs:479
 msgid "The file is missing its layer information."
 msgstr ""
 
-#: ../Pinta.Core/Managers/AutosaveManager.cs:463
-#: ../Pinta.Core/Managers/AutosaveManager.cs:467
+#: ../Pinta.Core/Managers/AutosaveManager.cs:471
+#: ../Pinta.Core/Managers/AutosaveManager.cs:475
 msgid "The file is not an OpenRaster image."
 msgstr ""
 
@@ -3827,7 +3841,7 @@ msgstr ""
 msgid "The file no longer exists, or cannot be read."
 msgstr ""
 
-#: ../Pinta.Core/Managers/AutosaveManager.cs:453
+#: ../Pinta.Core/Managers/AutosaveManager.cs:461
 msgid "The file no longer exists."
 msgstr ""
 
@@ -3861,7 +3875,7 @@ msgstr ""
 msgid "The installation has completed with warnings."
 msgstr ""
 
-#: ../Impasto/Dialogs/PreferencesDialog.cs:222
+#: ../Impasto/Dialogs/PreferencesDialog.cs:271
 msgid ""
 "The row of icon buttons below the menu bar (New, Open, Save, Undo, Redo, "
 "Cut, Copy, Paste, and so on)."
@@ -3906,11 +3920,11 @@ msgstr ""
 msgid "Third-Party Notices"
 msgstr ""
 
-#: ../Impasto/Dialogs/PreferencesDialog.cs:419
+#: ../Impasto/Dialogs/PreferencesDialog.cs:472
 msgid "This does not look like a valid settings file."
 msgstr ""
 
-#: ../Impasto/Dialogs/PreferencesDialog.cs:466
+#: ../Impasto/Dialogs/PreferencesDialog.cs:519
 msgid ""
 "This file also contains keyboard shortcut overrides. Importing them will "
 "overwrite your current keyboard-shortcuts.json."
@@ -3927,6 +3941,11 @@ msgstr ""
 #: ../Impasto/Actions/Help/KeyboardShortcutsDialogAction.cs:107
 msgid ""
 "This resets every command, tool, and tool binding shortcut to its default."
+msgstr ""
+
+#: ../Impasto/Actions/Edit/ResizePaletteAction.cs:114
+msgid ""
+"Three rows adds a darker shade of each color beneath the standard palette."
 msgstr ""
 
 #: ../Pinta.Effects/Effects/TileEffect.cs:28
@@ -4001,7 +4020,7 @@ msgstr ""
 msgid "Tools"
 msgstr ""
 
-#: ../Impasto/Dialogs/PreferencesDialog.cs:198
+#: ../Impasto/Dialogs/PreferencesDialog.cs:247
 msgid ""
 "Tools fill one column instead of the sectioned 2-column grid, overflowing "
 "into another column once it runs out of vertical space. Requires a restart."
@@ -4109,7 +4128,7 @@ msgstr ""
 msgid "Type"
 msgstr ""
 
-#: ../Impasto/Dialogs/PreferencesDialog.cs:259
+#: ../Impasto/Dialogs/PreferencesDialog.cs:308
 msgid "UI"
 msgstr ""
 
@@ -4209,7 +4228,7 @@ msgid ""
 "quality for final quality, large images, and large angles."
 msgstr ""
 
-#: ../Impasto/Dialogs/PreferencesDialog.cs:197
+#: ../Impasto/Dialogs/PreferencesDialog.cs:246
 msgid "Use thin column toolbox layout"
 msgstr ""
 
@@ -4242,7 +4261,7 @@ msgid "Vertical red (R)"
 msgstr ""
 
 #: ../Impasto/Actions/Help/KeyboardShortcutsDialogAction.cs:179
-#: ../Impasto/MainWindow.cs:606
+#: ../Impasto/MainWindow.cs:607
 msgid "View"
 msgstr ""
 
@@ -4264,7 +4283,7 @@ msgstr ""
 msgid "Warmth"
 msgstr ""
 
-#: ../Impasto/Dialogs/PreferencesDialog.cs:206
+#: ../Impasto/Dialogs/PreferencesDialog.cs:255
 msgid ""
 "When the window is too narrow for all of the current tool's settings, they "
 "continue on another row instead of scrolling horizontally."
@@ -4277,7 +4296,7 @@ msgstr ""
 #: ../Impasto/Dialogs/CanvasGridSettingsDialog.cs:121
 #: ../Impasto/Dialogs/CanvasGridSettingsDialog.cs:134
 #: ../Impasto/Dialogs/NewImageDialog.cs:340
-#: ../Impasto/Dialogs/PreferencesDialog.cs:120
+#: ../Impasto/Dialogs/PreferencesDialog.cs:132
 #: ../Impasto/Dialogs/ResizeCanvasDialog.cs:80
 #: ../Impasto/Dialogs/ResizeImageDialog.cs:123
 msgid "Width:"
@@ -4296,7 +4315,7 @@ msgstr ""
 msgid "Wrap"
 msgstr ""
 
-#: ../Impasto/Dialogs/PreferencesDialog.cs:205
+#: ../Impasto/Dialogs/PreferencesDialog.cs:254
 msgid "Wrap tool settings onto extra rows"
 msgstr ""
 
@@ -4346,7 +4365,7 @@ msgstr ""
 msgid "Zoom to Selection"
 msgstr ""
 
-#: ../Impasto/MainWindow.cs:527
+#: ../Impasto/MainWindow.cs:528
 msgid "_Adjustments"
 msgstr ""
 
@@ -4370,20 +4389,24 @@ msgstr ""
 msgid "_Discard"
 msgstr ""
 
-#: ../Impasto/MainWindow.cs:523
+#: ../Impasto/MainWindow.cs:524
 msgid "_Edit"
 msgstr ""
 
-#: ../Impasto/MainWindow.cs:522
+#: ../Impasto/MainWindow.cs:523
 msgid "_File"
 msgstr ""
 
-#: ../Impasto/MainWindow.cs:532
+#: ../Impasto/MainWindow.cs:533
 msgid "_Help"
 msgstr ""
 
-#: ../Impasto/MainWindow.cs:526
+#: ../Impasto/MainWindow.cs:527
 msgid "_Image"
+msgstr ""
+
+#: ../Impasto/Actions/Edit/ResizePaletteAction.cs:98
+msgid "_Keep Colors"
 msgstr ""
 
 #: ../Impasto/Dialogs/AutosaveRecoveryDialog.cs:70
@@ -4405,15 +4428,19 @@ msgstr ""
 msgid "_Recover"
 msgstr ""
 
+#: ../Impasto/Actions/Edit/ResizePaletteAction.cs:99
+msgid "_Reset Palette"
+msgstr ""
+
 #: ../Impasto/Actions/File/CloseDocumentAction.cs:85
 msgid "_Save"
 msgstr ""
 
-#: ../Impasto/MainWindow.cs:525
+#: ../Impasto/MainWindow.cs:526
 msgid "_View"
 msgstr ""
 
-#: ../Impasto/MainWindow.cs:531
+#: ../Impasto/MainWindow.cs:532
 msgid "_Window"
 msgstr ""
 
@@ -4429,8 +4456,8 @@ msgstr ""
 #: ../Impasto/Dialogs/CanvasGridSettingsDialog.cs:127
 #: ../Impasto/Dialogs/CanvasGridSettingsDialog.cs:136
 #: ../Impasto/Dialogs/NewImageDialog.cs:288
-#: ../Impasto/Dialogs/PreferencesDialog.cs:122
-#: ../Impasto/Dialogs/PreferencesDialog.cs:127
+#: ../Impasto/Dialogs/PreferencesDialog.cs:134
+#: ../Impasto/Dialogs/PreferencesDialog.cs:139
 #: ../Impasto/Dialogs/ResizeCanvasDialog.cs:106
 #: ../Impasto/Dialogs/ResizeCanvasDialog.cs:110
 #: ../Impasto/Dialogs/ResizeImageDialog.cs:135
@@ -4528,7 +4555,6 @@ msgstr ""
 msgid "{0} to rotate"
 msgstr ""
 
-#. Translators: {0} and {1} are image dimensions; {2} is memory in megabytes.
 #: ../Impasto/Actions/Image/LargeImagePrompt.cs:24
 #, csharp-format
 msgid ""

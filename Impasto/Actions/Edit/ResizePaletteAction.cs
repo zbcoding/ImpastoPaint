@@ -62,7 +62,11 @@ internal sealed class ResizePaletteAction : IActionHandler
 		if (!response.HasValue) return;
 
 		bool extendedRows = response.Value.paletteRows == 3;
-		if (extendedRows != PintaCore.Settings.GetSetting (SettingNames.EXTENDED_PALETTE_ROWS, false)) {
+		bool wasExtendedRows = PintaCore.Settings.GetSetting (SettingNames.EXTENDED_PALETTE_ROWS, false);
+
+		// The two default palettes order their columns differently, so a row change has to
+		// reload the defaults for the columns to line up - which throws away edited swatches.
+		if (extendedRows != wasExtendedRows && await ConfirmPaletteReset (wasExtendedRows)) {
 			PintaCore.Settings.PutSetting (SettingNames.EXTENDED_PALETTE_ROWS, extendedRows);
 			palette.CurrentPalette.LoadDefault (extendedRows);
 		}
@@ -71,6 +75,33 @@ internal sealed class ResizePaletteAction : IActionHandler
 
 		if (response.Value.recentColorCount != palette.MaxRecentlyUsedColor)
 			palette.SetRecentlyUsedColorCount (response.Value.recentColorCount);
+	}
+
+	/// <summary>
+	/// Asks before a row change discards edited swatches. An untouched palette is still
+	/// the defaults, so there is nothing to lose and nothing to ask about.
+	/// </summary>
+	private async Task<bool> ConfirmPaletteReset (bool wasExtendedRows)
+	{
+		if (palette.CurrentPalette.Colors.SequenceEqual (PaletteHelper.EnumerateDefaultColors (wasExtendedRows)))
+			return true;
+
+		string primary = Translations.GetString ("Changing the number of palette rows resets the palette");
+		string secondary = Translations.GetString (
+			"The colors you have edited will be replaced by the default palette for the new row count.");
+
+		using Adw.MessageDialog dialog = Adw.MessageDialog.New (chrome.MainWindow, primary, secondary);
+
+		const string keep_response = "keep";
+		const string reset_response = "reset";
+
+		dialog.AddResponse (keep_response, Translations.GetString ("_Keep Colors"));
+		dialog.AddResponse (reset_response, Translations.GetString ("_Reset Palette"));
+		dialog.SetResponseAppearance (reset_response, Adw.ResponseAppearance.Destructive);
+		dialog.CloseResponse = keep_response;
+		dialog.DefaultResponse = keep_response;
+
+		return await dialog.RunAsync () == reset_response;
 	}
 
 	private async Task<(int paletteRows, int paletteSize, int recentColorCount)?> PromptResize ()

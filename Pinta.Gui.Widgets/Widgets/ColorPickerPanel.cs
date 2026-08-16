@@ -320,9 +320,14 @@ public sealed partial class ColorPickerPanel
 				// Defer: rewriting the entry from inside its own change signal is an
 				// edit nested in the user's keystroke, which GTK refuses to undo-group.
 				GLib.Functions.IdleAdd (GLib.Constants.PRIORITY_DEFAULT_IDLE, () => {
+					// The window can close between the keystroke and this callback.
+					if (!code_entry.GetRealized ())
+						return false;
+
+					bool wasUpdating = updating;
 					updating = true;
 					code_entry.SetText (CurrentColor.ToCssCode (code_format));
-					updating = false;
+					updating = wasUpdating;
 					return false;
 				});
 				return;

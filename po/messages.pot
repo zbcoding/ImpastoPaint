@@ -3645,6 +3645,17 @@ msgstr ""
 msgid "Softness"
 msgstr ""
 
+#: ../Pinta.Core/Actions/LayerActions.cs:149
+#: ../Pinta.Core/Actions/LayerActions.cs:308
+msgid "Solo Layer"
+msgstr ""
+
+#. Translators: {0} is a layer number from 1 to 5, counting up from the bottom layer.
+#: ../Pinta.Core/Actions/LayerActions.cs:172
+#, csharp-format
+msgid "Solo Layer {0}"
+msgstr ""
+
 #: ../Pinta.Tools/Tools/ColorPickerTool.cs:214
 msgid "Source"
 msgstr ""

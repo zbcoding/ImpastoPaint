@@ -44,6 +44,14 @@ public sealed class LayerActions
 	public Command MoveLayerDown { get; }
 	public Command Properties { get; }
 	public Command RasterizeAllObjects { get; }
+	public Command SoloLayer1 { get; }
+	public Command SoloLayer2 { get; }
+	public Command SoloLayer3 { get; }
+	public Command SoloLayer4 { get; }
+	public Command SoloLayer5 { get; }
+
+	private readonly Command solo_layer;
+	private readonly Command[] solo_layer_commands;
 
 	private readonly ChromeManager chrome;
 	private readonly ImageConverterManager image_formats;
@@ -136,12 +144,45 @@ public sealed class LayerActions
 			null,
 			Resources.Icons.ImageFlatten);
 
+		solo_layer = new Command (
+			"sololayer",
+			Translations.GetString ("Solo Layer"),
+			null,
+			Resources.StandardIcons.ViewReveal);
+
+		SoloLayer1 = CreateSoloLayerCommand (1);
+		SoloLayer2 = CreateSoloLayerCommand (2);
+		SoloLayer3 = CreateSoloLayerCommand (3);
+		SoloLayer4 = CreateSoloLayerCommand (4);
+		SoloLayer5 = CreateSoloLayerCommand (5);
+		solo_layer_commands = [SoloLayer1, SoloLayer2, SoloLayer3, SoloLayer4, SoloLayer5];
+
 		this.chrome = chrome;
 		image_formats = imageFormats;
 		recent_files = recentFiles;
 		this.tools = tools;
 		this.workspace = workspace;
 		this.image = image;
+	}
+
+	private static Command CreateSoloLayerCommand (int layerNumber)
+		=> new (
+			$"sololayer{layerNumber}",
+			// Translators: {0} is a layer number from 1 to 5, counting up from the bottom layer.
+			Translations.GetString ("Solo Layer {0}", layerNumber),
+			null,
+			Resources.StandardIcons.ViewReveal,
+			shortcuts: [$"<Primary>{layerNumber}"]);
+
+	public Gio.MenuItem CreateSoloLayerMenuItem (UserLayer layer)
+	{
+		int layerIndex = workspace.ActiveDocument.Layers.IndexOf (layer);
+		Command command = layerIndex >= 0 && layerIndex < solo_layer_commands.Length
+			? solo_layer_commands[layerIndex]
+			: solo_layer;
+
+		// The row identifies the layer; the indexed action supplies its current shortcut.
+		return Gio.MenuItem.New (solo_layer.Label, command.FullName);
 	}
 
 	public void RegisterActions (Gtk.Application app)
@@ -160,6 +201,12 @@ public sealed class LayerActions
 			Properties,
 
 			RasterizeAllObjects,
+			solo_layer,
+			SoloLayer1,
+			SoloLayer2,
+			SoloLayer3,
+			SoloLayer4,
+			SoloLayer5,
 
 			MoveLayerDown,
 			MoveLayerUp]);
@@ -177,6 +224,11 @@ public sealed class LayerActions
 		FlipVertical.Activated += HandlePintaCoreActionsLayersFlipVerticalActivated;
 		ImportFromFile.Activated += HandlePintaCoreActionsLayersImportFromFileActivated;
 		RasterizeAllObjects.Activated += HandleRasterizeAllObjectsActivated;
+		solo_layer.Activated += HandleSoloLayerActivated;
+		for (int i = 0; i < solo_layer_commands.Length; ++i) {
+			int layerIndex = i;
+			solo_layer_commands[i].Activated += (_, _) => HandleSoloLayerActivated (layerIndex);
+		}
 
 		workspace.LayerAdded += EnableOrDisableLayerActions;
 		workspace.LayerRemoved += EnableOrDisableLayerActions;
@@ -204,6 +256,10 @@ public sealed class LayerActions
 	{
 		Document? activeDoc = workspace.ActiveDocumentOrDefault;
 
+		solo_layer.Sensitive = activeDoc is not null;
+		for (int i = 0; i < solo_layer_commands.Length; ++i)
+			solo_layer_commands[i].Sensitive = activeDoc?.Layers.UserLayers.Count > i;
+
 		bool hasMultipleLayers = activeDoc?.Layers.UserLayers.Count > 1;
 		DeleteLayer.Sensitive = hasMultipleLayers;
 
@@ -222,6 +278,43 @@ public sealed class LayerActions
 		MoveLayerUp.Sensitive = (activeDoc != null
 				&& activeDoc.Layers.CurrentUserLayerIndex < activeDoc.Layers.UserLayers.Count - 1)
 			|| LayerObjectSelection.MoveSelectedObject?.Invoke (1, true) == true;
+	}
+
+	private void HandleSoloLayerActivated (object sender, EventArgs e)
+	{
+		if (workspace.ActiveDocumentOrDefault is not { } document)
+			return;
+
+		SoloLayer (document, document.Layers.CurrentUserLayer);
+	}
+
+	private void HandleSoloLayerActivated (int layerIndex)
+	{
+		if (workspace.ActiveDocumentOrDefault is not { } document
+			|| layerIndex >= document.Layers.UserLayers.Count)
+			return;
+
+		SoloLayer (document, document.Layers.UserLayers[layerIndex]);
+	}
+
+	private void SoloLayer (Document document, UserLayer layer)
+	{
+		tools.Commit ();
+
+		if (!ReferenceEquals (document.Layers.CurrentUserLayer, layer))
+			document.Layers.SetCurrentUserLayer (layer);
+
+		SoloLayerHistoryItem historyItem = new (
+			Resources.StandardIcons.ViewReveal,
+			Translations.GetString ("Solo Layer"),
+			document.Layers.UserLayers,
+			layer);
+
+		if (!historyItem.HasChanges)
+			return;
+
+		document.History.PushNewItem (historyItem);
+		historyItem.Redo ();
 	}
 
 	private Gtk.FileFilter CreateImagesFileFilter ()

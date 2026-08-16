@@ -535,6 +535,9 @@ public sealed partial class LayersListViewItemWidget
 
 		LayerActions actions = PintaCore.Actions.Layers;
 
+		Gio.Menu visibilitySection = Gio.Menu.New ();
+		visibilitySection.AppendItem (actions.CreateSoloLayerMenuItem (item.UserLayer!));
+
 		Gio.Menu operationsSection = Gio.Menu.New ();
 		operationsSection.AppendItem (actions.DeleteLayer.CreateMenuItem ());
 		operationsSection.AppendItem (actions.DuplicateLayer.CreateMenuItem ());
@@ -553,6 +556,7 @@ public sealed partial class LayersListViewItemWidget
 		propertiesSection.AppendItem (actions.Properties.CreateMenuItem ());
 
 		Gio.Menu menu = Gio.Menu.New ();
+		menu.AppendSection (null, visibilitySection);
 		menu.AppendSection (null, operationsSection);
 		menu.AppendSection (null, flipSection);
 

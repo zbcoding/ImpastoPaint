@@ -112,6 +112,10 @@ public sealed partial class PreferencesDialog
 		heightSpinner.SetActivatesDefaultImmediate (true);
 
 		PintaColorButton canvasSurroundColorButton = PintaColorButton.New ();
+		canvasSurroundColorButton.Halign = Gtk.Align.Start;
+		canvasSurroundColorButton.Valign = Gtk.Align.Start;
+		canvasSurroundColorButton.WidthRequest = 40;
+		canvasSurroundColorButton.HeightRequest = 40;
 		canvasSurroundColorButton.TooltipText = Translations.GetString ("Choose color...");
 		canvasSurroundColorButton.OnClicked += ChooseCanvasSurroundColor;
 

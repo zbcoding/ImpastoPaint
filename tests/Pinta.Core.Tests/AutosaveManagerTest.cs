@@ -1,3 +1,5 @@
+using System;
+using System.Globalization;
 using System.IO;
 using System.IO.Compression;
 using System.Text;
@@ -26,6 +28,30 @@ internal sealed class AutosaveManagerTest
 	[TearDown]
 	public void RemoveWorkingDirectory ()
 		=> Directory.Delete (directory, recursive: true);
+
+	[Test]
+	public void CurrentSessionDirectoryHasLiveOwner ()
+	{
+		string session = AutosaveManager.CreateSessionDirectoryName ();
+
+		Assert.That (
+			session,
+			Does.StartWith (Environment.ProcessId.ToString (CultureInfo.InvariantCulture) + "-"));
+		Assert.That (AutosaveManager.IsSessionOwnerAlive (Path.Combine (directory, session)), Is.True);
+	}
+
+	[Test]
+	public void ReusedProcessIdDoesNotOwnCrashedSessionDirectory ()
+	{
+		string staleSession = string.Join (
+			'-',
+			Environment.ProcessId.ToString (CultureInfo.InvariantCulture),
+			"0");
+
+		Assert.That (
+			AutosaveManager.IsSessionOwnerAlive (Path.Combine (directory, staleSession)),
+			Is.False);
+	}
 
 	[Test]
 	public void CompleteArchiveIsRecoverable ()

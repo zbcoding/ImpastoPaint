@@ -22,8 +22,6 @@ public sealed class SoloLayerHistoryItemTests
 		UserLayer top = new (topSurface) { Hidden = false };
 
 		SoloLayerHistoryItem historyItem = new (
-			"icon",
-			"Solo Layer",
 			[bottom, middle, top],
 			middle);
 
@@ -59,8 +57,6 @@ public sealed class SoloLayerHistoryItemTests
 		UserLayer top = new (topSurface) { Hidden = true };
 
 		SoloLayerHistoryItem historyItem = new (
-			"icon",
-			"Show All Layers",
 			[bottom, top],
 			bottom);
 

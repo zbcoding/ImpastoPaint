@@ -249,6 +249,7 @@ Pinta.Core/HistoryItems/RasterizeObjectsHistoryItem.cs
 Pinta.Core/HistoryItems/ResizeHistoryItem.cs
 Pinta.Core/HistoryItems/SelectionHistoryItem.cs
 Pinta.Core/HistoryItems/SimpleHistoryItem.cs
+Pinta.Core/HistoryItems/SoloLayerHistoryItem.cs
 Pinta.Core/HistoryItems/SwapLayersHistoryItem.cs
 Pinta.Core/HistoryItems/TextHistoryItem.cs
 Pinta.Core/HistoryItems/UpdateLayerPropertiesHistoryItem.cs

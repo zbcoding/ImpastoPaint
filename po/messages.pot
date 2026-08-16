@@ -3522,6 +3522,11 @@ msgstr ""
 msgid "Shortcut keys:"
 msgstr ""
 
+#: ../Pinta.Core/Actions/LayerActions.cs:185
+#: ../Pinta.Core/HistoryItems/SoloLayerHistoryItem.cs:26
+msgid "Show All Layers"
+msgstr ""
+
 #: ../Impasto/Dialogs/CanvasGridSettingsDialog.cs:101
 msgid "Show Axonometric Grid"
 msgstr ""
@@ -3646,7 +3651,7 @@ msgid "Softness"
 msgstr ""
 
 #: ../Pinta.Core/Actions/LayerActions.cs:149
-#: ../Pinta.Core/Actions/LayerActions.cs:308
+#: ../Pinta.Core/HistoryItems/SoloLayerHistoryItem.cs:27
 msgid "Solo Layer"
 msgstr ""
 

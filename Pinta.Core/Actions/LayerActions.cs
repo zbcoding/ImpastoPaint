@@ -176,13 +176,17 @@ public sealed class LayerActions
 
 	public Gio.MenuItem CreateSoloLayerMenuItem (UserLayer layer)
 	{
-		int layerIndex = workspace.ActiveDocument.Layers.IndexOf (layer);
+		Document document = workspace.ActiveDocument;
+		int layerIndex = document.Layers.IndexOf (layer);
 		Command command = layerIndex >= 0 && layerIndex < solo_layer_commands.Length
 			? solo_layer_commands[layerIndex]
 			: solo_layer;
+		string label = SoloLayerHistoryItem.IsSoloState (document.Layers.UserLayers, layer)
+			? Translations.GetString ("Show All Layers")
+			: solo_layer.Label;
 
 		// The row identifies the layer; the indexed action supplies its current shortcut.
-		return Gio.MenuItem.New (solo_layer.Label, command.FullName);
+		return Gio.MenuItem.New (label, command.FullName);
 	}
 
 	public void RegisterActions (Gtk.Application app)
@@ -305,8 +309,6 @@ public sealed class LayerActions
 			document.Layers.SetCurrentUserLayer (layer);
 
 		SoloLayerHistoryItem historyItem = new (
-			Resources.StandardIcons.ViewReveal,
-			Translations.GetString ("Solo Layer"),
 			document.Layers.UserLayers,
 			layer);
 

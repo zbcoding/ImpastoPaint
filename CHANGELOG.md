@@ -51,7 +51,8 @@ Changes for the next release (0.0.2) go here.
 - Settings now allows 0–24 recently picked colors in increments matching the palette's row count;
   zero hides the section, with defaults of eight colors for two rows and twelve for three rows.
 - Layers can now be made exclusively visible from their context menu. Ctrl+1 through Ctrl+5
-  solo the bottom five layers, and these shortcuts can be changed in Keyboard Shortcuts.
+  solo the bottom five layers; repeating the action shows all layers again. These shortcuts
+  can be changed in Keyboard Shortcuts.
 
 ### Fixed
 

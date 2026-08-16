@@ -2462,6 +2462,14 @@ msgstr "Palettilähde"
 msgid "Palette files"
 msgstr "Palettitiedostot"
 
+#: ../Impasto/Actions/Edit/ResizePaletteAction.cs:76
+msgid "Palette rows:"
+msgstr ""
+
+#: ../Impasto/Actions/Edit/ResizePaletteAction.cs:79
+msgid "Three rows adds a darker shade of each color beneath the standard palette."
+msgstr ""
+
 #: ../Pinta/Dialogs/PreferencesDialog.cs:185
 msgid "Palette size:"
 msgstr ""

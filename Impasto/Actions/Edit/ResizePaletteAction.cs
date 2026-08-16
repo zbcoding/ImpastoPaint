@@ -25,6 +25,7 @@
 // THE SOFTWARE.
 
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Pinta.Core;
 
@@ -57,8 +58,14 @@ internal sealed class ResizePaletteAction : IActionHandler
 
 	private async void Activated (object sender, EventArgs e)
 	{
-		(int paletteSize, int recentColorCount)? response = await PromptResize ();
+		(int paletteRows, int paletteSize, int recentColorCount)? response = await PromptResize ();
 		if (!response.HasValue) return;
+
+		bool extendedRows = response.Value.paletteRows == 3;
+		if (extendedRows != PintaCore.Settings.GetSetting (SettingNames.EXTENDED_PALETTE_ROWS, false)) {
+			PintaCore.Settings.PutSetting (SettingNames.EXTENDED_PALETTE_ROWS, extendedRows);
+			palette.CurrentPalette.LoadDefault (extendedRows);
+		}
 
 		palette.CurrentPalette.Resize (response.Value.paletteSize);
 
@@ -66,9 +73,14 @@ internal sealed class ResizePaletteAction : IActionHandler
 			palette.SetRecentlyUsedColorCount (response.Value.recentColorCount);
 	}
 
-	private async Task<(int paletteSize, int recentColorCount)?> PromptResize ()
+	private async Task<(int paletteRows, int paletteSize, int recentColorCount)?> PromptResize ()
 	{
 		int rows = PaletteHelper.GetPaletteRowCount ();
+
+		Gtk.SpinButton rowCountSpinner = Gtk.SpinButton.NewWithRange (2, 3, 1);
+		rowCountSpinner.SetActivatesDefaultImmediate (true);
+		rowCountSpinner.Value = rows;
+		rowCountSpinner.TooltipText = Translations.GetString ("Three rows adds a darker shade of each color beneath the standard palette.");
 
 		// Both counts move in whole rows, so the quick colors and recent colors stay
 		// aligned with each other in the palette bar.
@@ -82,13 +94,29 @@ internal sealed class ResizePaletteAction : IActionHandler
 		recentCountSpinner.SetActivatesDefaultImmediate (true);
 		recentCountSpinner.Value = PaletteHelper.NormalizeRecentColorCount (palette.MaxRecentlyUsedColor, rows);
 
+		// Changing the row count re-steps both size fields so they keep landing on
+		// full columns.
+		rowCountSpinner.OnValueChanged += (_, _) => {
+			int newRows = rowCountSpinner.GetValueAsInt ();
+			paletteSizeSpinner.Adjustment!.StepIncrement = newRows;
+			paletteSizeSpinner.Adjustment!.Lower = newRows;
+			paletteSizeSpinner.Value = PaletteHelper.RoundDownToRowMultiple (paletteSizeSpinner.GetValueAsInt (), newRows);
+			recentCountSpinner.Adjustment!.StepIncrement = newRows;
+			recentCountSpinner.Value = PaletteHelper.NormalizeRecentColorCount (recentCountSpinner.GetValueAsInt (), newRows);
+		};
+
 		Gtk.Grid grid = Gtk.Grid.New ();
 		grid.RowSpacing = 6;
 		grid.ColumnSpacing = 6;
-		grid.Attach (CreateLabel (Translations.GetString ("New palette size:")), 0, 0, 1, 1);
-		grid.Attach (paletteSizeSpinner, 1, 0, 1, 1);
-		grid.Attach (CreateLabel ($"{Translations.GetString ("Recently picked colors")} (0 = {Translations.GetString ("None")}):"), 0, 1, 1, 1);
-		grid.Attach (recentCountSpinner, 1, 1, 1, 1);
+		grid.Attach (CreateLabel (Translations.GetString ("Palette rows:")), 0, 0, 1, 1);
+		grid.Attach (rowCountSpinner, 1, 0, 1, 1);
+		grid.Attach (CreateResetButton (() => rowCountSpinner.Value = 2), 2, 0, 1, 1);
+		grid.Attach (CreateLabel (Translations.GetString ("New palette size:")), 0, 1, 1, 1);
+		grid.Attach (paletteSizeSpinner, 1, 1, 1, 1);
+		grid.Attach (CreateResetButton (() => paletteSizeSpinner.Value = DefaultPaletteSize (rowCountSpinner.GetValueAsInt ())), 2, 1, 1, 1);
+		grid.Attach (CreateLabel ($"{Translations.GetString ("Recently picked colors")} (0 = {Translations.GetString ("None")}):"), 0, 2, 1, 1);
+		grid.Attach (recentCountSpinner, 1, 2, 1, 1);
+		grid.Attach (CreateResetButton (() => recentCountSpinner.Value = PaletteHelper.GetDefaultRecentColorCount (rowCountSpinner.GetValueAsInt () == 3)), 2, 2, 1, 1);
 
 		using Gtk.Dialog dialog = Gtk.Dialog.New ();
 		dialog.Title = Translations.GetString ("Resize Palette");
@@ -104,10 +132,13 @@ internal sealed class ResizePaletteAction : IActionHandler
 		try {
 			Gtk.ResponseType response = await dialog.RunAsync ();
 			if (response != Gtk.ResponseType.Ok) return null;
-			return (paletteSizeSpinner.GetValueAsInt (), recentCountSpinner.GetValueAsInt ());
+			return (rowCountSpinner.GetValueAsInt (), paletteSizeSpinner.GetValueAsInt (), recentCountSpinner.GetValueAsInt ());
 		} finally {
 			dialog.Destroy ();
 		}
+
+		static int DefaultPaletteSize (int rows)
+			=> PaletteHelper.EnumerateDefaultColors (rows == 3).Count ();
 
 		static Gtk.Label CreateLabel (string text)
 		{
@@ -115,6 +146,15 @@ internal sealed class ResizePaletteAction : IActionHandler
 			label.Halign = Gtk.Align.Start;
 			label.Hexpand = true;
 			return label;
+		}
+
+		static Gtk.Button CreateResetButton (Action reset)
+		{
+			Gtk.Button button = Gtk.Button.New ();
+			button.IconName = "edit-undo-symbolic";
+			button.TooltipText = Translations.GetString ("Reset to default");
+			button.OnClicked += (_, _) => reset ();
+			return button;
 		}
 	}
 }

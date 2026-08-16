@@ -12,6 +12,9 @@ Changes for the next release (0.0.2) go here.
 
 ### Added
 
+- The Resize Palette dialog now sets the number of palette rows (2 or 3, default 2), and each
+  field has a button that restores its default.
+
 - The Add-in Manager Gallery now includes an Impasto repository with a packaged, source-visible
   sample add-in that demonstrates one effect and one custom tool.
 

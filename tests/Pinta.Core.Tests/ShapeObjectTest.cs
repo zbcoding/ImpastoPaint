@@ -9,6 +9,14 @@ namespace Pinta.Core.Tests;
 [TestFixture]
 internal sealed class ShapeObjectTest
 {
+	// Without this the cairo entry points resolve to nothing and every RequireCairo test below is
+	// silently skipped, which hides regressions exactly as well as having no test at all.
+	[OneTimeSetUp]
+	public void Init ()
+	{
+		Cairo.Module.Initialize ();
+	}
+
 	[Test]
 	public void ClonePreservesEditableGeometryAndStyle ()
 	{

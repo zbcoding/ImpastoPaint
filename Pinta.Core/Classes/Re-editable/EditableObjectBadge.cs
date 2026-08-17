@@ -11,14 +11,21 @@ namespace Pinta.Core;
 /// </summary>
 public static class EditableObjectBadge
 {
+	public const string ObjectLabel = "Obj.";
+	public const string EffectLabel = "Fx";
+
 	public const double Width = 26;
 	public const double Height = 14;
 
 	// A muted, slightly transparent grey — reads as an affordance (like a cursor), not as artwork.
 	public static readonly Color CanvasColor = new (0.35, 0.35, 0.35, 0.75);
 
-	/// <summary>Draws the badge with its top-left corner at <paramref name="topLeft"/>.</summary>
-	public static void Draw (Context g, PointD topLeft, Color color)
+	/// <summary>
+	/// Draws the badge with its top-left corner at <paramref name="topLeft"/>. The label says which
+	/// kind of live child the row holds: an object that contributes pixels, or an effect that
+	/// modifies what is beneath it.
+	/// </summary>
+	public static void Draw (Context g, PointD topLeft, Color color, string label = ObjectLabel)
 	{
 		const double r = 3.5;
 		double x = topLeft.X, y = topLeft.Y;
@@ -36,12 +43,12 @@ public static class EditableObjectBadge
 		g.SetSourceColor (color);
 		g.Stroke ();
 
-		// "Obj." label (Cairo toy font is fine for a tiny fixed overlay).
+		// Label (Cairo toy font is fine for a tiny fixed overlay).
 		g.SelectFontFace ("sans-serif", FontSlant.Normal, FontWeight.Bold);
 		g.SetFontSize (9);
 		g.MoveTo (x + 4, y + Height - 3.5);
 		g.SetSourceColor (color);
-		g.ShowText ("Obj.");
+		g.ShowText (label);
 
 		g.Restore ();
 	}

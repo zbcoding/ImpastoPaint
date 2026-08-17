@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Cairo;
 using NUnit.Framework;
 using Pinta.Core;
 
@@ -17,6 +18,29 @@ internal sealed class ModifierNodeInstantiationTest
 		=> typeof (InkSketchEffect).Assembly
 			.GetTypes ()
 			.Where (t => !t.IsAbstract && typeof (BaseEffect).IsAssignableFrom (t));
+
+	// Banding must not change what the effect produces. A tileable effect rendered in one call and
+	// the same effect rendered in per-core horizontal bands have to agree pixel for pixel, or the
+	// speed-up would show up as seams across the canvas.
+	[Test]
+	public void TiledRenderMatchesTheSingleCallRender ()
+	{
+		IServiceProvider services = Utilities.CreateMockServices ();
+		InvertColorsEffect effect = new (services);
+		Assert.That (effect.IsTileable, Is.True, "test relies on this effect taking the banded path");
+
+		ImageSurface input = Utilities.LoadImage ("blackandwhite1.png");
+
+		ImageSurface whole = CairoExtensions.CreateImageSurface (Format.Argb32, input.Width, input.Height);
+		effect.Render (input, whole, [new RectangleI (0, 0, input.Width, input.Height)]);
+		whole.MarkDirty ();
+
+		EffectModifierNode node = EffectModifierNode.FromEffect (effect, clip: null, services);
+		ImageSurface banded = EffectModifierNode.CopyOf (input);
+		node.Apply (banded);
+
+		Assert.That (banded.GetReadOnlyPixelData ().SequenceEqual (whole.GetReadOnlyPixelData ()), Is.True);
+	}
 
 	[TestCaseSource (nameof (ShippedEffectTypes))]
 	public void EveryEffectCanBeCopiedIntoANode (Type effectType)

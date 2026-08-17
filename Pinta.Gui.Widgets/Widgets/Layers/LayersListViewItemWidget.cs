@@ -474,6 +474,9 @@ public sealed partial class LayersListViewItemWidget
 	private Gtk.CheckButton visible_button;
 	private Gtk.DrawingArea object_badge;
 
+	// Which badge the current row shows: "Obj." for a shape/text, "Fx" for a layer effect.
+	private string badge_label = EditableObjectBadge.ObjectLabel;
+
 	public static LayersListViewItemWidget New ()
 		=> NewWithProperties ([]);
 
@@ -672,8 +675,14 @@ public sealed partial class LayersListViewItemWidget
 		blendScroll.WidthRequest = 180;
 		blendScroll.SetChild (blendList);
 
+		// A modifier has no pixels of its own, so its blend mode mixes the effect's result back into
+		// the unmodified input — the same control, a different thing being blended.
+		bool isModifier = row.ModifierNode is not null;
+
 		Gtk.Label blendLabel = Gtk.Label.New (Translations.GetString ("Blend Mode:"));
 		blendLabel.Halign = Gtk.Align.Start;
+		if (isModifier)
+			blendLabel.SetTooltipText (Translations.GetString ("How the effect's result is mixed back into the image it was applied to."));
 		box.Append (blendLabel);
 		box.Append (blendScroll);
 
@@ -688,7 +697,12 @@ public sealed partial class LayersListViewItemWidget
 		scale.OnValueChanged += (_, _) => row.SetObjectOpacity (scale.GetValue () / 100.0);
 
 		Gtk.Box opacityBox = Gtk.Box.New (Gtk.Orientation.Horizontal, 6);
-		opacityBox.Append (Gtk.Label.New (Translations.GetString ("Opacity:")));
+		// On a modifier the same value is effect strength: 0 leaves the image untouched.
+		Gtk.Label opacityLabel = Gtk.Label.New (
+			isModifier ? Translations.GetString ("Strength:") : Translations.GetString ("Opacity:"));
+		if (isModifier)
+			opacityLabel.SetTooltipText (Translations.GetString ("How much of the effect is applied. At 0 the layer looks as it did before."));
+		opacityBox.Append (opacityLabel);
 		opacityBox.Append (scale);
 		box.Append (opacityBox);
 
@@ -712,7 +726,9 @@ public sealed partial class LayersListViewItemWidget
 		// object is gone.
 		box.Append (MenuOption (
 			Translations.GetString ("Rasterize"),
-			Translations.GetString ("Bake this object into the layer's pixels; it stops being editable."),
+			isModifier
+				? Translations.GetString ("Bake this layer's effects and objects into its pixels; they stop being editable.")
+				: Translations.GetString ("Bake this object into the layer's pixels; it stops being editable."),
 			() => { popover.Popdown (); row.RasterizeObject (); }));
 
 		box.Append (MenuOption (
@@ -911,12 +927,18 @@ public sealed partial class LayersListViewItemWidget
 
 		if (isObject) {
 			// Object rows are always live/editable (rasterizing drops the object entirely), so they
-			// always get the "editable object" badge.
+			// always get a badge — "Obj." for something that contributes pixels, "Fx" for an effect
+			// that modifies everything beneath it.
+			badge_label = item.ModifierNode is not null ? EditableObjectBadge.EffectLabel : EditableObjectBadge.ObjectLabel;
 			object_badge.Visible = true;
 			object_badge.QueueDraw ();
-			SetTooltipText (Translations.GetString ("Re-editable object: a live shape or text you can keep editing until you rasterize it.")
-				+ "\n" + Translations.GetString ("Right-click to set blend mode and opacity, or open its properties") + "\n"
-				+ Translations.GetString ("Drag and drop to reorder"));
+			SetTooltipText (item.ModifierNode is not null
+				? Translations.GetString ("Layer effect: applies to everything below it on this layer, and stays editable.")
+					+ "\n" + Translations.GetString ("Right-click to change its settings, blending and strength") + "\n"
+					+ Translations.GetString ("Drag and drop to reorder")
+				: Translations.GetString ("Re-editable object: a live shape or text you can keep editing until you rasterize it.")
+					+ "\n" + Translations.GetString ("Right-click to set blend mode and opacity, or open its properties") + "\n"
+					+ Translations.GetString ("Drag and drop to reorder"));
 			return;
 		}
 
@@ -931,7 +953,7 @@ public sealed partial class LayersListViewItemWidget
 	/// <summary>
 	/// Draws the "Obj." badge at (0,0) of the object-badge drawing area, scaled to fit.
 	/// </summary>
-	private static void DrawObjectBadge (Context g, int width, int height)
+	private void DrawObjectBadge (Context g, int width, int height)
 	{
 		// Scale the badge down from its natural 26x14 to fit the allocated area, so it reads at the
 		// same visual size as other 16px dock markers rather than dominating the row.
@@ -941,7 +963,7 @@ public sealed partial class LayersListViewItemWidget
 		g.Save ();
 		g.Scale (scale, scale);
 		// Monochrome white so the badge stands out against the dock's grey row background.
-		EditableObjectBadge.Draw (g, new PointD (0, 0), new Color (1.0, 1.0, 1.0, 1.0));
+		EditableObjectBadge.Draw (g, new PointD (0, 0), new Color (1.0, 1.0, 1.0, 1.0), badge_label);
 		g.Restore ();
 	}
 

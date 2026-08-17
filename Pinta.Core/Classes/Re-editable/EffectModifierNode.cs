@@ -113,8 +113,7 @@ public sealed class EffectModifierNode : ILayerObject
 		using ImageSurface source = CopyOf (surface);
 		using ImageSurface rendered = CopyOf (surface);
 
-		RectangleI bounds = new (0, 0, surface.Width, surface.Height);
-		Effect.Render (source, rendered, [bounds]);
+		RenderTiled (source, rendered, new RectangleI (0, 0, surface.Width, surface.Height));
 		rendered.MarkDirty ();
 
 		using Context g = new (surface);
@@ -124,6 +123,32 @@ public sealed class EffectModifierNode : ILayerObject
 			g.Clip ();
 		}
 		g.BlendSurface (rendered, BlendMode, Math.Clamp (Opacity, 0, 1));
+	}
+
+	/// <summary>
+	/// Runs the effect across all cores when it allows it. A node re-renders on every visibility
+	/// toggle, undo and redo, and a single-threaded full-canvas pass through an expensive effect is
+	/// several seconds of frozen UI. Effects that accumulate across pixels declare themselves
+	/// non-tileable and still get one whole-region call.
+	/// </summary>
+	private void RenderTiled (ImageSurface source, ImageSurface destination, RectangleI bounds)
+	{
+		int threads = Math.Max (1, Environment.ProcessorCount);
+		if (!Effect.IsTileable || threads == 1 || bounds.Height < threads * 2) {
+			Effect.Render (source, destination, [bounds]);
+			return;
+		}
+
+		// Horizontal bands: contiguous rows keep each worker on its own stretch of the pixel buffer.
+		int bandHeight = (bounds.Height + threads - 1) / threads;
+		System.Threading.Tasks.Parallel.For (0, threads, band => {
+			int top = bounds.Y + (band * bandHeight);
+			int height = Math.Min (bandHeight, bounds.Bottom + 1 - top);
+			if (height <= 0)
+				return;
+
+			Effect.Render (source, destination, [new RectangleI (bounds.X, top, bounds.Width, height)]);
+		});
 	}
 
 	internal static ImageSurface CopyOf (ImageSurface source)

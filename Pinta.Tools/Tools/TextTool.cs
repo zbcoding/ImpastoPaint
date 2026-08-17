@@ -2160,7 +2160,7 @@ public sealed class TextTool : BaseTool
 		}
 
 		//Draw the re-edit rectangles as a tool-layer overlay so they never get saved.
-		DrawTextRectangles ();
+		DrawTextRectangles (showCursor);
 	}
 
 	/// <summary>
@@ -2204,9 +2204,8 @@ public sealed class TextTool : BaseTool
 	/// from the object surface the redraws above write to (see UserLayer.GetLayersToPaint), so text
 	/// drawn there would stay invisible until something else rebuilt the accumulator. Re-running the
 	/// accumulator walk is enough: a text object's engine is its own store, so it already holds what
-	/// was just typed or dragged.
-	/// ponytail: the caret is drawn only onto the object surface, so it is not visible while editing
-	/// text on a layer that has effects. Fixing that needs the caret on a tool overlay instead.
+	/// was just typed or dragged. The caret is not part of this — it is drawn on the tool layer (see
+	/// <see cref="DrawCursor"/>), which this walk does not touch.
 	/// </summary>
 	private void FoldObjectsIntoComposite (UserLayer layer)
 	{
@@ -2321,25 +2320,36 @@ public sealed class TextTool : BaseTool
 			PangoCairo.Functions.ShowLayout (g, layout.Layout);
 		}
 
-		if (isActive) {
+		g.Restore ();
+	}
 
-			RectangleI loc = layout.GetCursorLocation ();
-			Color color = engine.PrimaryColor;
+	/// <summary>
+	/// Draws the caret for the object being typed into, on the tool layer. It belongs there rather than
+	/// on the object surface: a layer carrying modifier nodes is painted from its composite, which the
+	/// accumulator rebuilds from the objects alone, so a caret drawn into the object surface was
+	/// overwritten and you typed blind.
+	/// </summary>
+	private void DrawCursor (Context g, TextObject obj)
+	{
+		layout.Engine = obj.Engine;
+		RectangleI loc = layout.GetCursorLocation ();
 
-			g.DrawLine (
-				new PointD (loc.X, loc.Y),
-				new PointD (loc.X, loc.Y + loc.Height),
-				color, 1);
-		}
-
+		g.Save ();
+		ApplyRotation (g, obj);
+		g.DrawLine (
+			new PointD (loc.X, loc.Y),
+			new PointD (loc.X, loc.Y + loc.Height),
+			obj.Engine.PrimaryColor,
+			1);
 		g.Restore ();
 	}
 
 	/// <summary>
 	/// Draws the dashed re-edit rectangles for every text object on the current
-	/// layer, on the tool layer, so they are shown on the canvas but never saved.
+	/// layer, on the tool layer, so they are shown on the canvas but never saved. The caret rides along
+	/// here for the same reason.
 	/// </summary>
-	private void DrawTextRectangles ()
+	private void DrawTextRectangles (bool showCursor = true)
 	{
 		if (!workspace.HasOpenDocuments)
 			return;
@@ -2405,6 +2415,11 @@ public sealed class TextTool : BaseTool
 				EditableObjectBadge.Draw (g, new PointD (minX, maxY + 3), EditableObjectBadge.CanvasColor);
 			}
 		}
+
+		// After the rectangles, so the caret is never hidden under a handle. Drawn even for an object
+		// with no text yet — that empty field is exactly where the caret has to be visible.
+		if (showCursor && is_editing && current_text_object is not null)
+			DrawCursor (g, current_text_object);
 
 		g.Restore ();
 

@@ -208,6 +208,34 @@ public sealed partial class LayersListViewItem
 		if (document is null || UserLayer is null || LiveObject is not { } obj)
 			return;
 
+		// A modifier node's pixels are not separable from the objects beneath it once the accumulator
+		// has run, so rasterizing one bakes the layer's whole stack. Say so before doing it.
+		if (obj is EffectModifierNode) {
+			if (!ObjectRasterizer.Confirm (
+				PintaCore.Chrome,
+				[Translations.GetString ("every effect and object on this layer")]))
+				return;
+
+			ImageSurface stackBaseBefore = UserLayer.Surface.Clone ();
+			ImageSurface stackObjectBefore = UserLayer.ObjectLayer.Layer.Surface.Clone ();
+			List<ILayerObject> stackObjectsBefore = Pinta.Core.ObjectOpacity.CloneAll (UserLayer.Objects);
+
+			if (!UserLayer.RasterizeModifierStack ())
+				return;
+
+			Pinta.Core.ObjectOpacity.RefreshLayer (PintaCore.Workspace, PintaCore.Chrome, UserLayer);
+			document.History.PushNewItem (
+				new RasterizeObjectsHistoryItem (
+					PintaCore.Workspace,
+					Resources.Icons.LayerMergeDown,
+					Translations.GetString ("Rasterize Layer Effects"),
+					stackBaseBefore,
+					stackObjectBefore,
+					stackObjectsBefore,
+					UserLayer));
+			return;
+		}
+
 		bool isText = obj is TextObject;
 		int kindIndex = UserLayer.UserLayerIndexOfKind (UserLayer, isText, ObjectIndex);
 		if (kindIndex < 0)
@@ -669,6 +697,17 @@ public sealed partial class LayersListViewItemWidget
 		// draws with its own section lines.
 		box.Append (Gtk.Separator.New (Gtk.Orientation.Horizontal));
 
+		// A modifier node reopens the effect's own configuration dialog. Editing settings in place is
+		// the whole point of a non-destructive node, so it goes above Rasterize.
+		if (row.ModifierNode is not null) {
+			EffectModifierNode node = row.ModifierNode;
+			UserLayer nodeLayer = row.UserLayer!;
+			box.Append (MenuOption (
+				Translations.GetString ("Effect Settings..."),
+				Translations.GetString ("Change this effect's settings; the layer re-renders with the new values."),
+				() => { popover.Popdown (); ReconfigureModifier (nodeLayer, node); }));
+		}
+
 		// Each closes the popover first; the OnClosed handler below skips its property history when the
 		// object is gone.
 		box.Append (MenuOption (
@@ -700,6 +739,30 @@ public sealed partial class LayersListViewItemWidget
 				row.PushObjectBlendModeHistory (beforeBlend);
 		};
 		popover.Popup ();
+	}
+
+	// Reopens a modifier node's effect dialog and re-renders the layer with whatever the user leaves
+	// behind. Deliberately not routed through LivePreviewManager: that path exists to add a new node,
+	// so reusing it here would stack a second copy of the effect on top of this one.
+	private static async void ReconfigureModifier (UserLayer layer, EffectModifierNode node)
+	{
+		if (!node.Effect.IsConfigurable)
+			return;
+
+		List<ILayerObject> objectsBefore = Pinta.Core.ObjectOpacity.CloneAll (layer.Objects);
+
+		if (!await node.Effect.LaunchConfiguration ())
+			return;
+
+		Pinta.Core.ObjectOpacity.RefreshLayer (PintaCore.Workspace, PintaCore.Chrome, layer);
+		PintaCore.Workspace.ActiveDocument.History.PushNewItem (
+			new LayerObjectsHistoryItem (
+				PintaCore.Workspace,
+				PintaCore.Chrome,
+				node.Effect.Icon,
+				node.Effect.Name,
+				layer,
+				objectsBefore));
 	}
 
 	// One row of the object popover's operations section, styled to read as a menu option rather than a

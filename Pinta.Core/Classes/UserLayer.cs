@@ -358,6 +358,34 @@ public sealed class UserLayer : Layer
 	}
 
 	/// <summary>
+	/// Bakes a modifier-carrying layer's whole stack into its base raster and drops every child. A
+	/// single modifier cannot be baked on its own: once the accumulator has run, the effect's pixels
+	/// are not separable from the objects beneath it, so rasterizing one node rasterizes the stack.
+	/// Returns false when the layer has no modifiers (the object-only path handles that case).
+	/// </summary>
+	public bool RasterizeModifierStack ()
+	{
+		if (Composite is null)
+			return false;
+
+		using (Context g = new (Surface)) {
+			g.Operator = Operator.Source;
+			g.SetSourceSurface (Composite, 0, 0);
+			g.Paint ();
+		}
+		Surface.MarkDirty ();
+
+		Objects.Clear ();
+		Composite = null;
+
+		foreach (ReEditableLayer rel in ReEditableLayers)
+			if (rel.IsLayerSetup)
+				rel.Layer.Surface.Clear ();
+
+		return true;
+	}
+
+	/// <summary>
 	/// Returns a list of the layers to paint for this top-level layer.
 	/// This includes the primary layer and any active re-editable layers.
 	/// </summary>

@@ -37,6 +37,19 @@ public sealed class EffectModifierNode : ILayerObject
 		Clip = clip;
 	}
 
+	/// <summary>
+	/// Builds a node from the live menu instance of an effect. The node gets its own effect instance
+	/// and its own copy of the parameters, so later menu use cannot rewrite a node already placed.
+	/// </summary>
+	public static EffectModifierNode FromEffect (BaseEffect effect, DocumentSelection? clip)
+	{
+		BaseEffect copy = (BaseEffect) Activator.CreateInstance (effect.GetType ())!;
+		if (effect.EffectData is not null)
+			copy.EffectData = effect.EffectData.Clone ();
+
+		return new (copy, clip);
+	}
+
 	/// <summary>The dock label: the user's name if they set one, otherwise the effect's own name.</summary>
 	public string DisplayName => string.IsNullOrEmpty (Name) ? Effect.Name : Name;
 

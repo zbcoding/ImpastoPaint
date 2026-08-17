@@ -102,6 +102,29 @@ internal sealed class EffectModifierNodeTest
 	}
 
 	[Test]
+	public void RasterizingWithoutAModifierIsANoOp ()
+	{
+		RequireCairo ();
+		UserLayer layer = new (OpaqueBlack (4));
+
+		// No composite means the object-only rasterize path owns the layer; baking here would wipe
+		// live shapes and text without going through their confirmation.
+		Assert.That (layer.RasterizeModifierStack (), Is.False);
+	}
+
+	[Test]
+	public void FromEffectTakesItsOwnCopyOfTheParameters ()
+	{
+		InvertTestEffect menuInstance = new ();
+		EffectModifierNode node = EffectModifierNode.FromEffect (menuInstance, clip: null);
+
+		// The menu keeps one long-lived instance per effect. A node sharing it would be rewritten
+		// the next time the user opened that effect's dialog from the menu.
+		Assert.That (node.Effect, Is.Not.SameAs (menuInstance));
+		Assert.That (node.Effect.EffectId, Is.EqualTo (menuInstance.EffectId), "identity survives the copy");
+	}
+
+	[Test]
 	public void CloneDoesNotAliasEffectParameters ()
 	{
 		EffectModifierNode node = new (new InvertTestEffect ()) { Opacity = 0.5, Name = "mine" };

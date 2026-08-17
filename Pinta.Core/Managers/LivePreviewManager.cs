@@ -29,6 +29,7 @@
 #endif
 
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using Cairo;
 using Debug = System.Diagnostics.Debug;
@@ -100,9 +101,6 @@ public sealed class LivePreviewManager : ILivePreview
 
 		string effectName = effect.Name;
 
-		SimpleHistoryItem historyItem = new (effect.Icon, effect.Name);
-		historyItem.TakeSnapshotOfLayer (doc.Layers.CurrentUserLayerIndex);
-
 		RenderHandle renderHandle = null!; // NRT: Assigned before first use
 
 		IProgressDialog dialog = chrome.ProgressDialog;
@@ -116,17 +114,19 @@ public sealed class LivePreviewManager : ILivePreview
 		try {
 			// Paint the pre-effect layer surface into into the working surface.
 			using Cairo.Context ctx = new (LivePreviewSurface);
-			layer.Draw (ctx, layer.Surface, 1);
+			layer.Draw (ctx, doc.Layers.CurrentUserLayer.Composite ?? layer.Surface, 1);
 
 			Debug.WriteLine (DateTime.Now.ToString ("HH:mm:ss:ffff") + "Start Live preview.");
 
 			if (effect.EffectData != null)
 				effect.EffectData.PropertyChanged += EffectData_PropertyChanged;
 
+			// Preview reads what the canvas currently shows for this layer — its accumulated composite
+			// when it already carries modifier nodes, otherwise its base raster.
 			renderHandle = AsyncEffectRenderer.Start (
 				settings,
 				effect,
-				layer.Surface,
+				doc.Layers.CurrentUserLayer.Composite ?? layer.Surface,
 				LivePreviewSurface);
 
 			using GLibTimer _ = GLib.Functions.TimeoutAdd (
@@ -173,15 +173,18 @@ public sealed class LivePreviewManager : ILivePreview
 			// Was not canceled, so finally apply
 			Debug.WriteLine ("Render completed without the user canceling");
 
-			using Cairo.Context context = new (layer.Surface);
+			// Impasto: applying an effect records an editable node rather than writing pixels, so the
+			// user can reopen its settings later. The rendered preview is discarded — the node's own
+			// Apply reproduces it inside the layer's accumulator. See
+			// docs-private/layer-effects-model.md.
+			UserLayer userLayer = doc.Layers.CurrentUserLayer;
+			List<ILayerObject> objectsBefore = ObjectOpacity.CloneAll (userLayer.Objects);
 
-			context.Save ();
-			workspace.ActiveDocument.Selection.Clip (context);
+			userLayer.Objects.Add (EffectModifierNode.FromEffect (effect, selection.Visible ? selection.Clone () : null));
+			ObjectOpacity.RefreshLayer (workspace, chrome, userLayer);
 
-			layer.DrawWithOperator (context, LivePreviewSurface, Cairo.Operator.Source);
-			context.Restore ();
-
-			workspace.ActiveDocument.History.PushNewItem (historyItem);
+			workspace.ActiveDocument.History.PushNewItem (
+				new LayerObjectsHistoryItem (workspace, chrome, effect.Icon, effect.Name, userLayer, objectsBefore));
 
 		} finally {
 

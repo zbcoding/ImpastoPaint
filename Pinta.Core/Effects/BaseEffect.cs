@@ -85,6 +85,13 @@ public abstract class BaseEffect
 	public const string DefaultMenuCategory = "General";
 
 	/// <summary>
+	/// Impasto: the stable identifier a saved layer-effect node is stored under. Defaults to the CLR
+	/// type name so add-ins work untouched; effects that ship here declare one explicitly, because a
+	/// type rename would otherwise orphan every document that used the effect.
+	/// </summary>
+	public virtual string EffectId => GetType ().Name;
+
+	/// <summary>
 	/// The user configurable data this effect uses.
 	/// </summary>
 	public EffectData? EffectData { get; set; }

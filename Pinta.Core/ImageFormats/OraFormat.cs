@@ -222,7 +222,12 @@ public sealed class OraFormat : IImageImporter, IImageExporter
 	private static void AddLayerEntries (ZipArchive archive, Document document)
 	{
 		for (int i = 0; i < document.Layers.UserLayers.Count; i++) {
-			using Pixbuf pb = document.Layers.UserLayers[i].Surface.ToPixbuf ();
+			// A layer carrying modifier nodes is written as its accumulated composite: the effects are
+			// baked into the saved raster so other editors see the right pixels. Once nodes round-trip
+			// (see docs-private/layer-effects-model.md), this must write the base raster instead, or
+			// loading would apply them a second time.
+			UserLayer userLayer = document.Layers.UserLayers[i];
+			using Pixbuf pb = (userLayer.Composite ?? userLayer.Surface).ToPixbuf ();
 			byte[] buf = pb.SaveToBuffer ("png");
 			ZipArchiveEntry layerEntry = archive.CreateEntry ($"data/layer{i}.png");
 			using Stream layerStream = layerEntry.Open ();

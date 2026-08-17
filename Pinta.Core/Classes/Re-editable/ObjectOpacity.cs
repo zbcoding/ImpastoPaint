@@ -175,11 +175,11 @@ public static class ObjectOpacity
 					RenderObject (accumulator, layer, obj, chrome);
 			}
 			accumulator.MarkDirty ();
-			layer.Composite = accumulator;
+			layer.SetComposite (accumulator);
 			return;
 		}
 
-		layer.Composite = null;
+		layer.SetComposite (null);
 		foreach (ILayerObject obj in layer.Objects)
 			RenderObject (surface, layer, obj, chrome);
 	}

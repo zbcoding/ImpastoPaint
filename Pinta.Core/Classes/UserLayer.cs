@@ -235,7 +235,21 @@ public sealed class UserLayer : Layer
 	/// already re-runs after any object change. Null when the layer has no modifiers, in which case
 	/// the original two-surface path renders the layer.
 	/// </summary>
-	public ImageSurface? Composite { get; internal set; }
+	public ImageSurface? Composite { get; private set; }
+
+	/// <summary>
+	/// Replaces the composite, disposing the surface it replaces. This runs per mouse move over a
+	/// layer with nodes, so leaving the old surface to the finalizer orphans Cairo memory fast.
+	/// Callers only ever borrow the composite for the duration of a paint, which cannot overlap this.
+	/// </summary>
+	internal void SetComposite (ImageSurface? composite)
+	{
+		if (ReferenceEquals (Composite, composite))
+			return;
+
+		Composite?.Dispose ();
+		Composite = composite;
+	}
 
 	public bool HasObjectSubNodes
 		=> Objects.Any (o => o is not ShapeObject s || !s.RasterizeOnFinalize);

@@ -42,6 +42,14 @@ public class BaseHistoryItem
 	/// </summary>
 	public Document? Document { get; internal set; }
 
+	/// <summary>
+	/// Passes this item's document to an item it owns. An owned item is never handed to
+	/// <see cref="DocumentHistory.PushNewItem"/>, so nothing else stamps it, and its Undo/Redo would
+	/// dereference a null document.
+	/// </summary>
+	protected void AdoptChild (BaseHistoryItem child)
+		=> child.Document = Document;
+
 	public BaseHistoryItem ()
 	{
 	}

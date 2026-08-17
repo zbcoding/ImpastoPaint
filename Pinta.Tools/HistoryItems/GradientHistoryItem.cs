@@ -23,6 +23,7 @@ public class GradientHistoryItem : BaseHistoryItem
 
 	public override void Undo ()
 	{
+		AdoptChild (surface);
 		surface.Undo ();
 		Swap ();
 		PintaCore.Tools.SetCurrentTool (tool);
@@ -30,6 +31,7 @@ public class GradientHistoryItem : BaseHistoryItem
 
 	public override void Redo ()
 	{
+		AdoptChild (surface);
 		surface.Redo ();
 		Swap ();
 	}

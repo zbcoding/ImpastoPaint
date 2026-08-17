@@ -175,6 +175,11 @@ public sealed class PaintBrushTool : BaseBrushTool
 		else
 			document.Workspace.Invalidate (document.ClampToImageSize (invalidate_rect));
 
+		// See FoldRasterIntoComposite: a layer with effect nodes is painted from its accumulated
+		// surface, so a live stroke on the raster alone would not appear until it was committed.
+		if (ObjectOpacity.FoldRasterIntoComposite (PintaCore.Chrome, document.Layers.CurrentUserLayer))
+			document.Workspace.Invalidate ();
+
 		if (active_brush.MillisecondsBeforeReapply != 0) {
 			open_repeating_draw_id = GLib.Functions.TimeoutAdd (GLib.Constants.PRIORITY_DEFAULT, active_brush.MillisecondsBeforeReapply, () => {
 				OnMouseMove (document, e);

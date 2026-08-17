@@ -102,6 +102,27 @@ public static class ObjectOpacity
 	}
 
 	/// <summary>
+	/// Folds a raster edit that was just made to <paramref name="layer"/>'s own surface into the
+	/// accumulated surface the canvas paints for a layer carrying modifier nodes, and no-ops for a
+	/// layer without them. Tools that paint straight onto the raster call this while dragging, or the
+	/// stroke stays invisible until something else rebuilds the composite.
+	/// <para>
+	/// Deliberately not <see cref="RefreshLayer"/>: this runs per mouse move, and the busy cursor and
+	/// shape-engine resync that one does are for one-off refreshes.
+	/// </para>
+	/// Returns true when it folded, which means the caller owes the canvas a whole-window invalidate:
+	/// an effect can move pixels well outside the edit's own bounds.
+	/// </summary>
+	public static bool FoldRasterIntoComposite (IChromeService chrome, UserLayer layer)
+	{
+		if (!layer.HasModifiers)
+			return false;
+
+		RenderLayerObjects (chrome, layer);
+		return true;
+	}
+
+	/// <summary>
 	/// Rebuilds the unified object surface (render + live-engine reload) without invalidating;
 	/// callers that redraw themselves use this.
 	/// </summary>

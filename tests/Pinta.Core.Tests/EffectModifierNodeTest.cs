@@ -8,6 +8,12 @@ namespace Pinta.Core.Tests;
 [TestFixture]
 internal sealed class EffectModifierNodeTest
 {
+	[OneTimeSetUp]
+	public void Init ()
+	{
+		Cairo.Module.Initialize ();
+	}
+
 	// A modifier applies to what is beneath it and nothing above it. That ordering is the whole point
 	// of putting these in the z-ordered object list, so it is what the test pins down: the same node
 	// over the same pixels must produce a different result depending on where it sits.

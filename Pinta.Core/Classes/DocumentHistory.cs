@@ -91,6 +91,8 @@ public sealed class DocumentHistory
 		if (newItem.CausesDirty)
 			document.IsDirty = true;
 
+		RefreshModifierComposites ();
+
 		HistoryItemAdded?.Invoke (this, new HistoryItemAddedEventArgs (newItem));
 	}
 
@@ -116,7 +118,27 @@ public sealed class DocumentHistory
 		if (Pointer == clean_pointer)
 			document.IsDirty = false;
 
+		RefreshModifierComposites ();
+
 		ActionUndone?.Invoke (this, EventArgs.Empty);
+	}
+
+	/// <summary>
+	/// Rebuilds the accumulated surface of every layer carrying modifier nodes. A layer with nodes is
+	/// painted from that surface rather than from its own raster (see UserLayer.GetLayersToPaint), so
+	/// any tool that draws straight onto the raster — gradient, brush, bucket, paste — leaves it
+	/// showing the pixels from before the edit. Every completed edit and every undo passes through
+	/// here, which makes this the one place that cannot be forgotten; a node whose input did not
+	/// change serves its cached render, so the rebuild is cheap when nothing moved.
+	/// </summary>
+	private void RefreshModifierComposites ()
+	{
+		bool folded = false;
+		foreach (UserLayer layer in document.Layers.UserLayers)
+			folded |= ObjectOpacity.FoldRasterIntoComposite (PintaCore.Chrome, layer);
+
+		if (folded)
+			document.Workspace.Invalidate ();
 	}
 
 	public void Redo ()
@@ -139,6 +161,8 @@ public sealed class DocumentHistory
 			document.IsDirty = false;
 		else if (item.CausesDirty)
 			document.IsDirty = true;
+
+		RefreshModifierComposites ();
 
 		ActionRedone?.Invoke (this, EventArgs.Empty);
 	}

@@ -149,6 +149,11 @@ public sealed class CloneStampTool : BaseBrushTool
 		last_point = e.Point;
 		surface_modified = true;
 		document.Workspace.Invalidate (dirtyRect);
+
+		// See FoldRasterIntoComposite: a layer with effect nodes is painted from its accumulated
+		// surface, so a live stroke on the raster alone would not appear until it was committed.
+		if (ObjectOpacity.FoldRasterIntoComposite (PintaCore.Chrome, document.Layers.CurrentUserLayer))
+			document.Workspace.Invalidate ();
 	}
 
 	protected override void OnMouseUp (Document document, ToolMouseEventArgs e)

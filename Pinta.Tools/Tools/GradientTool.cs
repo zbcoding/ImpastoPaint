@@ -261,6 +261,11 @@ public sealed class GradientTool : BaseTool
 
 		selection_bounds = selection_bounds.Inflated (5, 5);
 		document.Workspace.Invalidate (selection_bounds);
+
+		// The gradient went onto the layer's own raster, which is not what the canvas paints for a
+		// layer carrying effect nodes — without this the drag looks like it did nothing.
+		if (ObjectOpacity.FoldRasterIntoComposite (PintaCore.Chrome, document.Layers.CurrentUserLayer))
+			document.Workspace.Invalidate ();
 	}
 
 	public GradientData Data {

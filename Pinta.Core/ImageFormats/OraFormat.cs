@@ -235,12 +235,25 @@ public sealed class OraFormat : IImageImporter, IImageExporter
 	private static void AddLayerEntries (ZipArchive archive, Document document)
 	{
 		for (int i = 0; i < document.Layers.UserLayers.Count; i++) {
-			// The base raster, so the modifier nodes written alongside it (AddEffectEntry) apply once
-			// on load rather than twice. A layer whose nodes cannot round-trip is the exception: its
-			// effects are baked into the saved raster instead, and no nodes are written for it.
+			// Normally the base raster, so the modifier nodes written alongside it (AddEffectEntry)
+			// apply once on load rather than twice. A stack holding an effect that cannot be restored
+			// is baked up to and including that effect, and only that far - the nodes above it are
+			// still written as editable.
 			UserLayer userLayer = document.Layers.UserLayers[i];
-			ImageSurface saved = NodesRoundTrip (userLayer) ? userLayer.Surface : (userLayer.Composite ?? userLayer.Surface);
+			int cut = BakeThrough (userLayer);
+
+			ImageSurface? baked =
+				cut < 0 || BakesWholeLayer (userLayer)
+				? null
+				: ObjectOpacity.RenderObjectsThrough (PintaCore.Chrome, userLayer, cut);
+
+			ImageSurface saved =
+				cut < 0
+				? userLayer.Surface
+				: baked ?? userLayer.Composite ?? userLayer.Surface;
+
 			using Pixbuf pb = saved.ToPixbuf ();
+			baked?.Dispose ();
 			byte[] buf = pb.SaveToBuffer ("png");
 			ZipArchiveEntry layerEntry = archive.CreateEntry ($"data/layer{i}.png");
 			using Stream layerStream = layerEntry.Open ();
@@ -259,7 +272,7 @@ public sealed class OraFormat : IImageImporter, IImageExporter
 	private static void AddTextEntry (ZipArchive archive, Document document)
 	{
 		IReadOnlyList<UserLayer> layers = document.Layers.UserLayers;
-		if (!layers.Any (layer => layer.TextObjects.Count > 0))
+		if (!layers.Any (layer => layer.TextObjects.Count > 0 && !BakesWholeLayer (layer)))
 			return;
 
 		using MemoryStream ms = new ();
@@ -271,7 +284,7 @@ public sealed class OraFormat : IImageImporter, IImageExporter
 
 			for (int i = 0; i < layers.Count; i++) {
 				UserLayer layer = layers[i];
-				if (layer.TextObjects.Count == 0)
+				if (layer.TextObjects.Count == 0 || BakesWholeLayer (layer))
 					continue;
 
 				writer.WriteStartElement ("layer");
@@ -300,7 +313,7 @@ public sealed class OraFormat : IImageImporter, IImageExporter
 	private static void AddShapeEntry (ZipArchive archive, Document document)
 	{
 		IReadOnlyList<UserLayer> layers = document.Layers.UserLayers;
-		if (!layers.Any (layer => layer.ShapeObjects.Count > 0))
+		if (!layers.Any (layer => layer.ShapeObjects.Count > 0 && !BakesWholeLayer (layer)))
 			return;
 
 		using MemoryStream ms = new ();
@@ -310,7 +323,7 @@ public sealed class OraFormat : IImageImporter, IImageExporter
 
 			for (int i = 0; i < layers.Count; i++) {
 				UserLayer layer = layers[i];
-				if (layer.ShapeObjects.Count == 0)
+				if (layer.ShapeObjects.Count == 0 || BakesWholeLayer (layer))
 					continue;
 
 				writer.WriteStartElement ("layer");
@@ -338,34 +351,90 @@ public sealed class OraFormat : IImageImporter, IImageExporter
 	}
 
 	/// <summary>
-	/// Whether <paramref name="layer"/>'s modifier nodes can be written as editable nodes. An add-in
-	/// effect cannot: nothing guarantees the add-in is installed when the file is opened again, so the
-	/// layer is saved with its effects baked in. <see cref="EffectNodesToBake"/> is what the save path
-	/// warns about before it comes to that.
+	/// Whether a node's effect can be rebuilt when the file is opened again. An add-in's cannot:
+	/// nothing guarantees the add-in is installed then.
 	/// </summary>
-	public static bool NodesRoundTrip (UserLayer layer)
-		=> !layer.ModifierNodes.Any (node => AddinMenu.AddinNameOf (node.Effect.GetType ()) is not null);
+	private static bool CanRestore (EffectModifierNode node)
+		=> AddinMenu.AddinNameOf (node.Effect.GetType ()) is null;
 
 	/// <summary>
-	/// The effect names, in layer order, that saving <paramref name="document"/> as ORA would flatten
-	/// because they came from an add-in. Empty when everything round-trips.
+	/// The highest index in <paramref name="layer"/>'s object list that must be baked into the saved
+	/// raster, or -1 when the whole stack survives. Everything below a node that cannot be restored has
+	/// to be baked with it, because that node's output is what the objects above it were applied to;
+	/// everything above it is written as usual and still opens editable.
+	/// </summary>
+	private static int BakeThrough (UserLayer layer)
+	{
+		int cut = -1;
+
+		for (int i = 0; i < layer.Objects.Count; i++) {
+			if (layer.Objects[i] is EffectModifierNode node && !CanRestore (node))
+				cut = i;
+		}
+
+		return cut;
+	}
+
+	/// <summary>
+	/// True when the bake swallows a text or shape object. Those are restored from their own sidecar
+	/// entries, so a layer whose raster already contains them would draw them a second time on load.
+	/// Such a layer is written as its full composite with no sidecar entries of any kind - everything on
+	/// it becomes pixels, which is what baking means.
+	/// </summary>
+	private static bool BakesWholeLayer (UserLayer layer)
+	{
+		int cut = BakeThrough (layer);
+
+		for (int i = 0; i <= cut; i++) {
+			if (layer.Objects[i] is not EffectModifierNode)
+				return true;
+		}
+
+		return false;
+	}
+
+	/// <summary>Whether this layer contributes editable nodes to the saved file.</summary>
+	private static bool WritesEffectNodes (UserLayer layer)
+	{
+		if (BakesWholeLayer (layer))
+			return false;
+
+		for (int i = BakeThrough (layer) + 1; i < layer.Objects.Count; i++) {
+			if (layer.Objects[i] is EffectModifierNode)
+				return true;
+		}
+
+		return false;
+	}
+
+	/// <summary>
+	/// The names, in layer order, of everything saving <paramref name="document"/> as ORA would turn
+	/// into pixels: the add-in effects themselves and whatever sits below them in the same layer, which
+	/// cannot be separated from their output. Empty when the whole document round-trips.
 	/// </summary>
 	public static IReadOnlyList<string> EffectNodesToBake (Document document)
 	{
 		List<string> names = [];
+
 		foreach (UserLayer layer in document.Layers.UserLayers) {
-			foreach (EffectModifierNode node in layer.ModifierNodes) {
-				if (AddinMenu.AddinNameOf (node.Effect.GetType ()) is not null)
+			bool wholeLayer = BakesWholeLayer (layer);
+			int last = wholeLayer ? layer.Objects.Count - 1 : BakeThrough (layer);
+
+			for (int i = 0; i <= last; i++) {
+				if (layer.Objects[i] is EffectModifierNode node)
 					names.Add (node.DisplayName);
+				else if (wholeLayer)
+					names.Add (layer.Objects[i].Name);
 			}
 		}
+
 		return names;
 	}
 
 	private static void AddEffectEntry (ZipArchive archive, Document document)
 	{
 		IReadOnlyList<UserLayer> layers = document.Layers.UserLayers;
-		if (!layers.Any (layer => layer.HasModifiers && NodesRoundTrip (layer)))
+		if (!layers.Any (WritesEffectNodes))
 			return;
 
 		using MemoryStream ms = new ();
@@ -375,21 +444,25 @@ public sealed class OraFormat : IImageImporter, IImageExporter
 
 			for (int i = 0; i < layers.Count; i++) {
 				UserLayer layer = layers[i];
-				if (!layer.HasModifiers || !NodesRoundTrip (layer))
+				if (!WritesEffectNodes (layer))
 					continue;
+
+				// Objects at or below the cut are part of the saved raster now, so a surviving node's
+				// position has to be counted in the list that will exist on load, not this one.
+				int dropped = BakeThrough (layer) + 1;
 
 				writer.WriteStartElement ("layer");
 				writer.WriteAttributeString ("index", i.ToString ());
 
 				// The position in the layer's unified object list, not among the nodes: a modifier
 				// applies to what is below it, so its place relative to text and shapes is meaningful.
-				for (int position = 0; position < layer.Objects.Count; position++) {
+				for (int position = dropped; position < layer.Objects.Count; position++) {
 					if (layer.Objects[position] is not EffectModifierNode node)
 						continue;
 
 					writer.WriteStartElement ("effect");
 					writer.WriteAttributeString ("id", node.Effect.EffectId);
-					writer.WriteAttributeString ("position", position.ToString ());
+					writer.WriteAttributeString ("position", (position - dropped).ToString ());
 					writer.WriteAttributeString ("effect-name", node.Effect.Name);
 					WriteObjectCommon (writer, node);
 
@@ -426,7 +499,7 @@ public sealed class OraFormat : IImageImporter, IImageExporter
 
 	private static void AddManifestEntry (ZipArchive archive, Document document)
 	{
-		bool hasEffectNodes = document.Layers.UserLayers.Any (layer => layer.HasModifiers && NodesRoundTrip (layer));
+		bool hasEffectNodes = document.Layers.UserLayers.Any (WritesEffectNodes);
 
 		using MemoryStream ms = new ();
 		using (XmlTextWriter writer = new (ms, System.Text.Encoding.UTF8) { Formatting = Formatting.Indented }) {

@@ -163,6 +163,26 @@ public static class ObjectOpacity
 			RenderObject (surface, layer, obj, chrome);
 	}
 
+	/// <summary>
+	/// The accumulated surface for the objects up to and including <paramref name="throughIndex"/>, and
+	/// nothing above it. Used when saving has to bake part of a layer's stack into its raster because
+	/// one of the nodes cannot be restored on load; the caller owns the returned surface.
+	/// </summary>
+	public static ImageSurface RenderObjectsThrough (IChromeService chrome, UserLayer layer, int throughIndex)
+	{
+		ImageSurface accumulator = EffectModifierNode.CopyOf (layer.Surface);
+
+		for (int i = 0; i <= throughIndex && i < layer.Objects.Count; i++) {
+			if (layer.Objects[i] is EffectModifierNode node)
+				node.Apply (accumulator);
+			else
+				RenderObject (accumulator, layer, layer.Objects[i], chrome);
+		}
+
+		accumulator.MarkDirty ();
+		return accumulator;
+	}
+
 	private static void RenderObject (ImageSurface surface, UserLayer layer, ILayerObject obj, IChromeService chrome)
 	{
 		if (obj is ShapeObject shape)

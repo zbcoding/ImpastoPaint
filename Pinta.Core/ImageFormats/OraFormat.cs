@@ -351,11 +351,12 @@ public sealed class OraFormat : IImageImporter, IImageExporter
 	}
 
 	/// <summary>
-	/// Whether a node's effect can be rebuilt when the file is opened again. An add-in's cannot:
-	/// nothing guarantees the add-in is installed then.
+	/// Whether a node's effect can be rebuilt when the file is opened again. The effect answers for
+	/// itself (see <see cref="BaseEffect.SurvivesSaveAndReload"/>), so an add-in written against this
+	/// contract keeps its nodes editable and only the ones that cannot promise it are baked.
 	/// </summary>
 	private static bool CanRestore (EffectModifierNode node)
-		=> AddinMenu.AddinNameOf (node.Effect.GetType ()) is null;
+		=> node.Effect.SurvivesSaveAndReload;
 
 	/// <summary>
 	/// The highest index in <paramref name="layer"/>'s object list that must be baked into the saved
@@ -409,8 +410,8 @@ public sealed class OraFormat : IImageImporter, IImageExporter
 
 	/// <summary>
 	/// The names, in layer order, of everything saving <paramref name="document"/> as ORA would turn
-	/// into pixels: the add-in effects themselves and whatever sits below them in the same layer, which
-	/// cannot be separated from their output. Empty when the whole document round-trips.
+	/// into pixels: the effects that cannot be rebuilt on load and whatever sits below them in the same
+	/// layer, which cannot be separated from their output. Empty when the whole document round-trips.
 	/// </summary>
 	public static IReadOnlyList<string> EffectNodesToBake (Document document)
 	{

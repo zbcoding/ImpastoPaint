@@ -92,6 +92,20 @@ public abstract class BaseEffect
 	public virtual string EffectId => GetType ().Name;
 
 	/// <summary>
+	/// Impasto: whether a saved layer-effect node naming this effect can be rebuilt when the document
+	/// is opened again, so the node stays editable instead of being baked into the layer's pixels.
+	/// <para>
+	/// Effects that ship here say yes: their <see cref="EffectId"/> is fixed and a test covers their
+	/// settings surviving the round trip. An add-in says no by default, since nothing guarantees the
+	/// same add-in is installed next time and a document must not silently lose the pixels it showed.
+	/// An add-in that wants its nodes to stay editable overrides this and declares an explicit
+	/// <see cref="EffectId"/>, which together promise that <see cref="EffectData"/> is the whole of
+	/// the effect's input — anything held outside it is gone on reload.
+	/// </para>
+	/// </summary>
+	public virtual bool SurvivesSaveAndReload => AddinMenu.AddinNameOf (GetType ()) is null;
+
+	/// <summary>
 	/// The user configurable data this effect uses.
 	/// </summary>
 	public EffectData? EffectData { get; set; }

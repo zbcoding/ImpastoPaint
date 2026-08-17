@@ -45,7 +45,10 @@ public sealed partial class LayersListViewItem
 	// rather than the layer itself. Object rows support select, show/hide, rename and reorder.
 	public ShapeObject? ShapeObject { get; private set; }
 	public TextObject? TextObject { get; private set; }
-	public bool IsObjectRow => ShapeObject is not null || TextObject is not null;
+	// A modifier node (adjustment/effect) nested under UserLayer. Unlike a shape or text row, it
+	// applies to every row beneath it, which the label marks so the ordering reads correctly.
+	public EffectModifierNode? ModifierNode { get; private set; }
+	public bool IsObjectRow => ShapeObject is not null || TextObject is not null || ModifierNode is not null;
 
 	// Index of this object within its layer's ShapeObjects/TextObjects list. Used to select the shape
 	// by position rather than by reference, because ShapeEngineCollection.Store rebuilds ShapeObjects
@@ -80,8 +83,21 @@ public sealed partial class LayersListViewItem
 		return item;
 	}
 
+	public static LayersListViewItem NewModifierNode (Document doc, UserLayer userLayer, EffectModifierNode node, int index)
+	{
+		LayersListViewItem item = NewWithProperties ([]);
+		item.document = doc;
+		item.UserLayer = userLayer;
+		item.ModifierNode = node;
+		item.ObjectIndex = index;
+		return item;
+	}
+
 	public string Label {
 		get {
+			if (ModifierNode is not null)
+				// Translators: a layer effect row in the layers dock; it applies to everything below it.
+				return Translations.GetString ("▼ {0}", string.IsNullOrEmpty (ObjectName) ? ModifierNode.Effect.Name : ObjectName);
 			if (ShapeObject is not null)
 				return string.IsNullOrEmpty (ObjectName) ? ShapeTypeName (ShapeObject.ShapeType) : ObjectName;
 			if (TextObject is not null)

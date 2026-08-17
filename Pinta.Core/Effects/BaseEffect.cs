@@ -87,7 +87,7 @@ public abstract class BaseEffect
 	/// <summary>
 	/// The user configurable data this effect uses.
 	/// </summary>
-	public EffectData? EffectData { get; protected set; }
+	public EffectData? EffectData { get; set; }
 
 	/// <summary>
 	/// Launches the configuration dialog for this effect/adjustment.

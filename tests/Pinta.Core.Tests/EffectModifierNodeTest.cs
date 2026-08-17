@@ -1,0 +1,114 @@
+using System;
+using Cairo;
+using NUnit.Framework;
+using Pinta.Core;
+
+namespace Pinta.Core.Tests;
+
+[TestFixture]
+internal sealed class EffectModifierNodeTest
+{
+	// A modifier applies to what is beneath it and nothing above it. That ordering is the whole point
+	// of putting these in the z-ordered object list, so it is what the test pins down: the same node
+	// over the same pixels must produce a different result depending on where it sits.
+	private sealed class InvertTestEffect : BaseEffect
+	{
+		public override bool IsTileable => true;
+		public override string Name => "Invert (test)";
+
+		public override void Render (ImageSurface src, ImageSurface dst, ReadOnlySpan<RectangleI> rois)
+		{
+			Span<ColorBgra> dstData = dst.GetPixelData ();
+			ReadOnlySpan<ColorBgra> srcData = src.GetReadOnlyPixelData ();
+			for (int i = 0; i < dstData.Length; ++i) {
+				ColorBgra c = srcData[i];
+				dstData[i] = ColorBgra.FromBgra ((byte) (255 - c.B), (byte) (255 - c.G), (byte) (255 - c.R), c.A);
+			}
+		}
+	}
+
+	// Skips rather than fails when the native cairo-graphics library isn't present, matching
+	// ShapeObjectTest: a machine without it must not turn the suite red and hide real regressions.
+	private static void RequireCairo ()
+	{
+		try {
+			using ImageSurface _ = CairoExtensions.CreateImageSurface (Format.Argb32, 1, 1);
+		} catch (DllNotFoundException e) {
+			Assert.Ignore ($"Native cairo-graphics unavailable: {e.Message}");
+		}
+	}
+
+	private static ImageSurface OpaqueBlack (int size)
+	{
+		ImageSurface s = CairoExtensions.CreateImageSurface (Format.Argb32, size, size);
+		using Context g = new (s);
+		g.SetSourceRgba (0, 0, 0, 1);
+		g.Paint ();
+		s.MarkDirty ();
+		return s;
+	}
+
+	[Test]
+	public void ModifierAppliesToBaseRaster ()
+	{
+		RequireCairo ();
+		UserLayer layer = new (OpaqueBlack (4));
+		layer.Objects.Add (new EffectModifierNode (new InvertTestEffect ()));
+
+		ImageSurface accumulator = EffectModifierNode.CopyOf (layer.Surface);
+		((EffectModifierNode) layer.Objects[0]).Apply (accumulator);
+		accumulator.MarkDirty ();
+
+		ColorBgra result = accumulator.GetColorBgra (new PointI (1, 1));
+		Assert.That (result.R, Is.EqualTo (255), "black base raster inverted to white");
+	}
+
+	[Test]
+	public void HiddenModifierDoesNothing ()
+	{
+		RequireCairo ();
+		UserLayer layer = new (OpaqueBlack (4));
+		EffectModifierNode node = new (new InvertTestEffect ()) { Hidden = true };
+
+		ImageSurface accumulator = EffectModifierNode.CopyOf (layer.Surface);
+		node.Apply (accumulator);
+		accumulator.MarkDirty ();
+
+		Assert.That (accumulator.GetColorBgra (new PointI (1, 1)).R, Is.EqualTo (0), "hidden node left the pixels alone");
+	}
+
+	[Test]
+	public void ZeroOpacityMeansNoEffect ()
+	{
+		RequireCairo ();
+		UserLayer layer = new (OpaqueBlack (4));
+		EffectModifierNode node = new (new InvertTestEffect ()) { Opacity = 0 };
+
+		ImageSurface accumulator = EffectModifierNode.CopyOf (layer.Surface);
+		node.Apply (accumulator);
+		accumulator.MarkDirty ();
+
+		Assert.That (accumulator.GetColorBgra (new PointI (1, 1)).R, Is.EqualTo (0), "opacity is effect strength");
+	}
+
+	[Test]
+	public void LayerWithoutModifiersKeepsTheOriginalRenderPath ()
+	{
+		RequireCairo ();
+		UserLayer layer = new (OpaqueBlack (4));
+
+		Assert.That (layer.HasModifiers, Is.False);
+		Assert.That (layer.Composite, Is.Null, "no composite means GetLayersToPaint uses the two-surface path");
+	}
+
+	[Test]
+	public void CloneDoesNotAliasEffectParameters ()
+	{
+		EffectModifierNode node = new (new InvertTestEffect ()) { Opacity = 0.5, Name = "mine" };
+		EffectModifierNode copy = node.Clone ();
+
+		Assert.That (copy.Opacity, Is.EqualTo (0.5));
+		Assert.That (copy.Name, Is.EqualTo ("mine"));
+		Assert.That (copy.Effect, Is.Not.SameAs (node.Effect), "a duplicated layer must not share the original's effect instance");
+	}
+}

@@ -125,12 +125,34 @@ public static class ObjectOpacity
 	{
 		ImageSurface surface = layer.ObjectLayer.Layer.Surface;
 		surface.Clear ();
-		foreach (ILayerObject obj in layer.Objects) {
-			if (obj is ShapeObject shape)
-				LayerObjectSelection.RenderShape (surface, layer, shape);
-			else if (obj is TextObject text)
-				TextObjectRenderer.Render (surface, text, chrome, antialias: true);
+
+		if (layer.HasModifiers) {
+			// Accumulator path: modifiers apply to what is beneath them, so objects have to be folded
+			// into a copy of the base raster rather than drawn onto a separate transparent surface.
+			// The object surface stays cleared — GetLayersToPaint paints the composite instead.
+			ImageSurface accumulator = EffectModifierNode.CopyOf (layer.Surface);
+			foreach (ILayerObject obj in layer.Objects) {
+				if (obj is EffectModifierNode node)
+					node.Apply (accumulator);
+				else
+					RenderObject (accumulator, layer, obj, chrome);
+			}
+			accumulator.MarkDirty ();
+			layer.Composite = accumulator;
+			return;
 		}
+
+		layer.Composite = null;
+		foreach (ILayerObject obj in layer.Objects)
+			RenderObject (surface, layer, obj, chrome);
+	}
+
+	private static void RenderObject (ImageSurface surface, UserLayer layer, ILayerObject obj, IChromeService chrome)
+	{
+		if (obj is ShapeObject shape)
+			LayerObjectSelection.RenderShape (surface, layer, shape);
+		else if (obj is TextObject text)
+			TextObjectRenderer.Render (surface, text, chrome, antialias: true);
 	}
 
 	/// <summary>Clones a unified object list, preserving kind and order.</summary>
@@ -142,6 +164,8 @@ public static class ObjectOpacity
 				result.Add (s.Clone ());
 			else if (o is TextObject t)
 				result.Add (t.Clone ());
+			else if (o is EffectModifierNode n)
+				result.Add (n.Clone ());
 		}
 		return result;
 	}

@@ -220,6 +220,23 @@ public sealed class UserLayer : Layer
 	public ILayerObject? FindObjectAt (int index)
 		=> index >= 0 && index < Objects.Count ? Objects[index] : null;
 
+	/// <summary>The modifier nodes on this layer, in z-order.</summary>
+	public IReadOnlyList<EffectModifierNode> ModifierNodes => Objects.OfType<EffectModifierNode> ().ToList ();
+
+	/// <summary>
+	/// Whether this layer renders through the accumulator path. False keeps the original two-surface
+	/// composite (base raster + object surface) so a layer without modifiers renders exactly as before.
+	/// </summary>
+	public bool HasModifiers => Objects.Any (o => o is EffectModifierNode);
+
+	/// <summary>
+	/// The accumulated composite for a layer with modifiers: the base raster with every child applied
+	/// bottom-up. Built by <see cref="ObjectOpacity.RenderLayerObjects"/>, the single chokepoint that
+	/// already re-runs after any object change. Null when the layer has no modifiers, in which case
+	/// the original two-surface path renders the layer.
+	/// </summary>
+	public ImageSurface? Composite { get; internal set; }
+
 	public bool HasObjectSubNodes
 		=> Objects.Any (o => o is not ShapeObject s || !s.RasterizeOnFinalize);
 
@@ -346,6 +363,13 @@ public sealed class UserLayer : Layer
 	/// </summary>
 	public IEnumerable<Layer> GetLayersToPaint ()
 	{
+		// A layer carrying modifiers renders as one accumulated surface: its children are already
+		// folded in, so the base raster and object surfaces must not be painted a second time.
+		if (Composite is not null) {
+			yield return new Layer (Composite, Hidden, Opacity, Name) { BlendMode = BlendMode };
+			yield break;
+		}
+
 		yield return this;
 
 		foreach (ReEditableLayer rel in ReEditableLayers) {

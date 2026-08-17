@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using Cairo;
 using NUnit.Framework;
 using Pinta.Core;
@@ -71,17 +72,43 @@ internal sealed class ModifierNodeInstantiationTest
 			"a different input served a stale cached render");
 	}
 
+	// A saved effect node reloads by writing its settings back onto a fresh EffectData, one property at
+	// a time. A property whose type the serializer has no converter for is silently left at the
+	// effect's default, so the node reopens with settings the user never chose — this is the check that
+	// notices, for every shipped effect, before a user does.
+	[TestCaseSource (nameof (ShippedEffectTypes))]
+	public void EveryEffectSettingSurvivesASaveAndReload (Type effectType)
+	{
+		EffectData? data = NewEffect (effectType).EffectData;
+		if (data is null)
+			return; // An effect with no settings has nothing to round-trip.
+
+		IEnumerable<PropertyInfo> settings = data.GetType ()
+			.GetProperties (BindingFlags.Public | BindingFlags.Instance)
+			.Where (p => p.CanRead && p.CanWrite && p.GetIndexParameters ().Length == 0);
+
+		foreach (PropertyInfo setting in settings)
+			Assert.That (
+				EffectDataSerializer.CanSerialize (setting.PropertyType),
+				Is.True,
+				$"{effectType.Name}.{setting.Name} is a {setting.PropertyType.Name}, which no converter handles: it would reload as the default");
+	}
+
+	private static BaseEffect NewEffect (Type effectType)
+	{
+		IServiceProvider services = Utilities.CreateMockServices ();
+		try {
+			return (BaseEffect) Activator.CreateInstance (effectType, services)!;
+		} catch (MissingMethodException) {
+			return (BaseEffect) Activator.CreateInstance (effectType)!;
+		}
+	}
+
 	[TestCaseSource (nameof (ShippedEffectTypes))]
 	public void EveryEffectCanBeCopiedIntoANode (Type effectType)
 	{
 		IServiceProvider services = Utilities.CreateMockServices ();
-
-		BaseEffect menuInstance;
-		try {
-			menuInstance = (BaseEffect) Activator.CreateInstance (effectType, services)!;
-		} catch (MissingMethodException) {
-			menuInstance = (BaseEffect) Activator.CreateInstance (effectType)!;
-		}
+		BaseEffect menuInstance = NewEffect (effectType);
 
 		EffectModifierNode node = EffectModifierNode.FromEffect (menuInstance, clip: null, services);
 

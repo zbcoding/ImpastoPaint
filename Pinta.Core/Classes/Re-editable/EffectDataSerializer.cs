@@ -10,6 +10,7 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
 using System.Reflection;
 
 namespace Pinta.Core;
@@ -53,7 +54,78 @@ public static class EffectDataSerializer
 		[typeof (ColorBgra)] = new (
 			v => ((ColorBgra) v).BGRA.ToString (Format),
 			t => ColorBgra.FromUInt32 (uint.Parse (t, Format))),
+		[typeof (UnaryPixelOps.Level)] = new (WriteLevel, ReadLevel),
+		[typeof (SortedList<int, int>[])] = new (WriteControlPoints, ReadControlPoints),
 	};
+
+	// Levels' input/output ranges and per-channel gamma (the lookup table it drives is derived).
+	// Written as the five constructor arguments in order, because the four colour setters clamp
+	// against each other: setting them one at a time would drag the values around.
+	private static string WriteLevel (object value)
+	{
+		UnaryPixelOps.Level level = (UnaryPixelOps.Level) value;
+		return string.Join (',',
+			level.ColorInLow.BGRA.ToString (Format),
+			level.ColorInHigh.BGRA.ToString (Format),
+			level.ColorOutLow.BGRA.ToString (Format),
+			level.ColorOutHigh.BGRA.ToString (Format),
+			level.GetGamma (0).ToString (Format),
+			level.GetGamma (1).ToString (Format),
+			level.GetGamma (2).ToString (Format));
+	}
+
+	private static object ReadLevel (string text)
+	{
+		string[] parts = text.Split (',');
+		if (parts.Length != 7)
+			throw new FormatException ($"Expected 7 comma-separated level values, got \"{text}\"");
+
+		ColorBgra Colour (int index) => ColorBgra.FromUInt32 (uint.Parse (parts[index], Format));
+		float[] gamma = [
+			float.Parse (parts[4], Format),
+			float.Parse (parts[5], Format),
+			float.Parse (parts[6], Format),
+		];
+
+		return new UnaryPixelOps.Level (Colour (0), Colour (1), gamma, Colour (2), Colour (3));
+	}
+
+	// Curves' control points: one curve per channel (luminosity has a single curve, RGB has three),
+	// each a set of input:output pairs. Channels are separated by ';' and points by ',' — neither
+	// character can appear in an integer, so the split needs no escaping.
+	private static string WriteControlPoints (object value)
+	{
+		SortedList<int, int>[] channels = (SortedList<int, int>[]) value;
+		return string.Join (';',
+			Array.ConvertAll (channels, channel => channel is null
+				? string.Empty
+				: string.Join (',', channel.Select (point => $"{point.Key}:{point.Value}"))));
+	}
+
+	private static object ReadControlPoints (string text)
+	{
+		return Array.ConvertAll (text.Split (';'), channel => {
+			SortedList<int, int> points = [];
+			if (channel.Length == 0)
+				return points;
+
+			foreach (string point in channel.Split (',')) {
+				string[] pair = point.Split (':');
+				if (pair.Length != 2)
+					throw new FormatException ($"Expected an input:output control point, got \"{point}\"");
+				points[int.Parse (pair[0], Format)] = int.Parse (pair[1], Format);
+			}
+
+			return points;
+		});
+	}
+
+	/// <summary>
+	/// Whether a property of this type survives a save and reload. Effect data holding a type that
+	/// does not reloads that one property with the effect's default.
+	/// </summary>
+	public static bool CanSerialize (Type type)
+		=> TryConverterFor (type, out _);
 
 	private static string Pair (double first, double second)
 		=> $"{first.ToString (Format)},{second.ToString (Format)}";

@@ -106,4 +106,64 @@ internal sealed class EffectDataSerializerTest
 		Assert.That (restored.Count, Is.EqualTo (9));
 		Assert.That (restored.Amount, Is.EqualTo (0));
 	}
+
+	private sealed class LevelsShapedData : EffectData
+	{
+		public UnaryPixelOps.Level Levels { get; set; } = new ();
+	}
+
+	// Levels' input/output ranges and gamma are what the user actually dialled in; the lookup table is
+	// derived from them. The four colours clamp against each other when set individually, so this is
+	// really a check that reloading rebuilds the level in one step instead of four.
+	[Test]
+	public void ALevelKeepsItsRangesAndGamma ()
+	{
+		UnaryPixelOps.Level level = new (
+			ColorBgra.FromBgra (10, 20, 30, 255),
+			ColorBgra.FromBgra (200, 210, 220, 255),
+			[0.5f, 1.0f, 2.5f],
+			ColorBgra.FromBgra (5, 6, 7, 255),
+			ColorBgra.FromBgra (240, 245, 250, 255));
+
+		LevelsShapedData restored = new ();
+		EffectDataSerializer.ApplyText (restored, EffectDataSerializer.ToText (new LevelsShapedData { Levels = level }));
+
+		Assert.Multiple (() => {
+			Assert.That (restored.Levels.ColorInLow.BGRA, Is.EqualTo (level.ColorInLow.BGRA));
+			Assert.That (restored.Levels.ColorInHigh.BGRA, Is.EqualTo (level.ColorInHigh.BGRA));
+			Assert.That (restored.Levels.ColorOutLow.BGRA, Is.EqualTo (level.ColorOutLow.BGRA));
+			Assert.That (restored.Levels.ColorOutHigh.BGRA, Is.EqualTo (level.ColorOutHigh.BGRA));
+			for (int channel = 0; channel < 3; channel++)
+				Assert.That (restored.Levels.GetGamma (channel), Is.EqualTo (level.GetGamma (channel)));
+		});
+	}
+
+	private sealed class CurvesShapedData : EffectData
+	{
+		public SortedList<int, int>[]? ControlPoints { get; set; }
+	}
+
+	// Curves is one curve per channel, and a channel the user never touched is empty rather than
+	// absent — so the per-channel split has to survive even when a curve carries no points.
+	[Test]
+	public void CurveControlPointsKeepTheirChannelsAndPoints ()
+	{
+		SortedList<int, int>[] curves = [
+			new () { [0] = 0, [128] = 200, [255] = 255 },
+			[],
+			new () { [64] = 32 },
+		];
+
+		CurvesShapedData restored = new ();
+		EffectDataSerializer.ApplyText (restored, EffectDataSerializer.ToText (new CurvesShapedData { ControlPoints = curves }));
+
+		Assert.That (restored.ControlPoints, Is.Not.Null);
+		SortedList<int, int>[] reloaded = restored.ControlPoints!;
+		Assert.That (reloaded, Has.Length.EqualTo (3));
+		Assert.Multiple (() => {
+			Assert.That (reloaded[0], Is.EqualTo (curves[0]));
+			Assert.That (reloaded[1], Is.Empty);
+			Assert.That (reloaded[2], Is.EqualTo (curves[2]));
+		});
+	}
 }

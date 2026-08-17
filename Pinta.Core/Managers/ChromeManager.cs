@@ -35,6 +35,12 @@ public interface IChromeService
 {
 	Gtk.Window MainWindow { get; }
 
+	/// <summary>
+	/// Shows the progress cursor. Set around any work that blocks the main loop long enough for the
+	/// window to look frozen — re-rendering a layer's effect stack, for one.
+	/// </summary>
+	bool MainWindowBusy { get; set; }
+
 	Task<bool> LaunchSimpleEffectDialog (
 		Gtk.Window parent,
 		BaseEffect effect,

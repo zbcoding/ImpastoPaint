@@ -42,6 +42,35 @@ internal sealed class ModifierNodeInstantiationTest
 		Assert.That (banded.GetReadOnlyPixelData ().SequenceEqual (whole.GetReadOnlyPixelData ()), Is.True);
 	}
 
+	// Toggling a node's visibility, undo and redo all feed the effect an identical input. Re-running
+	// an expensive effect there is what made the dock feel frozen, so the second render must come
+	// from the cache — and must still be the same pixels.
+	[Test]
+	public void RepeatRenderOfTheSameInputIsCachedAndIdentical ()
+	{
+		IServiceProvider services = Utilities.CreateMockServices ();
+		InvertColorsEffect effect = new (services);
+		EffectModifierNode node = EffectModifierNode.FromEffect (effect, clip: null, services);
+
+		ImageSurface input = Utilities.LoadImage ("blackandwhite1.png");
+
+		ImageSurface first = EffectModifierNode.CopyOf (input);
+		node.Apply (first);
+
+		ImageSurface second = EffectModifierNode.CopyOf (input);
+		node.Apply (second);
+
+		Assert.That (second.GetReadOnlyPixelData ().SequenceEqual (first.GetReadOnlyPixelData ()), Is.True);
+
+		// A changed input must not serve the cached render.
+		ImageSurface other = Utilities.LoadImage ("bulge1.png");
+		ImageSurface third = EffectModifierNode.CopyOf (other);
+		node.Apply (third);
+
+		Assert.That (third.GetReadOnlyPixelData ().SequenceEqual (first.GetReadOnlyPixelData ()), Is.False,
+			"a different input served a stale cached render");
+	}
+
 	[TestCaseSource (nameof (ShippedEffectTypes))]
 	public void EveryEffectCanBeCopiedIntoANode (Type effectType)
 	{

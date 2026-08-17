@@ -107,7 +107,23 @@ public static class ObjectOpacity
 	/// </summary>
 	public static void RefreshLayerNoInvalidate (IChromeService chrome, UserLayer layer)
 	{
-		RenderLayerObjects (chrome, layer);
+		// Re-running an effect stack is the one refresh slow enough to look like a freeze, so show the
+		// progress cursor across it. Set unconditionally rather than timed: a render fast enough to be
+		// invisible costs one cursor assignment, and a slow one always shows something.
+		bool showBusy = layer.HasModifiers;
+		if (showBusy) {
+			chrome.MainWindowBusy = true;
+			// The render below blocks the main loop, so without pumping it once the new cursor would
+			// only be painted after the work it is meant to cover had already finished.
+			GLib.MainContext.Default ().Iteration (false);
+		}
+
+		try {
+			RenderLayerObjects (chrome, layer);
+		} finally {
+			if (showBusy)
+				chrome.MainWindowBusy = false;
+		}
 
 		// Resync the active shape engine's live edits to the rebuilt surface — beware: the engine's
 		// reload path calls back into RenderLayerObjects, so it must not loop (see RenderLayerObjects).

@@ -7,6 +7,8 @@ namespace Pinta.Effects;
 
 internal sealed class MockChromeManager : IChromeService
 {
+	public bool MainWindowBusy { get; set; }
+
 	public Gtk.Window MainWindow => throw new NotImplementedException ();
 
 	public Task<bool> LaunchSimpleEffectDialog (

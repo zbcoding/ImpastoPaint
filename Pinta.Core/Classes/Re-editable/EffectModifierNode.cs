@@ -108,13 +108,7 @@ public sealed class EffectModifierNode : ILayerObject
 		if (Hidden || Opacity <= 0)
 			return;
 
-		// Deliberately not ImageSurface.Clone(): that signals the workspace that a surface was cloned
-		// (a history/autosave seam), which must not fire on a render pass that runs on every paint.
-		using ImageSurface source = CopyOf (surface);
-		using ImageSurface rendered = CopyOf (surface);
-
-		RenderTiled (source, rendered, new RectangleI (0, 0, surface.Width, surface.Height));
-		rendered.MarkDirty ();
+		using ImageSurface rendered = Render (surface);
 
 		using Context g = new (surface);
 		if (Clip is not null) {
@@ -123,6 +117,84 @@ public sealed class EffectModifierNode : ILayerObject
 			g.Clip ();
 		}
 		g.BlendSurface (rendered, BlendMode, Math.Clamp (Opacity, 0, 1));
+	}
+
+	// The last render this node produced, with a fingerprint of the pixels it was produced from and
+	// the parameter version it used. Toggling a node's visibility, undoing, redoing or changing a
+	// node above it all feed the effect the exact same input, so the expensive pass runs once.
+	private ImageSurface? cached_output;
+	private ulong cached_input_fingerprint;
+	private int cached_data_version;
+
+	// Bumped whenever the effect's settings change, so a reopened dialog invalidates the cache.
+	private int data_version;
+	private EffectData? watched_data;
+
+	/// <summary>Drops the cached render. Call when the node's effect or settings changed out of band.</summary>
+	public void InvalidateCache ()
+	{
+		cached_output?.Dispose ();
+		cached_output = null;
+	}
+
+	private ImageSurface Render (ImageSurface input)
+	{
+		WatchEffectData ();
+
+		ulong fingerprint = Fingerprint (input);
+		if (cached_output is not null
+			&& cached_input_fingerprint == fingerprint
+			&& cached_data_version == data_version
+			&& cached_output.Width == input.Width
+			&& cached_output.Height == input.Height)
+			return CopyOf (cached_output);
+
+		// Deliberately not ImageSurface.Clone(): that signals the workspace that a surface was cloned
+		// (a history/autosave seam), which must not fire on a render pass that runs on every paint.
+		using ImageSurface source = CopyOf (input);
+		ImageSurface rendered = CopyOf (input);
+
+		RenderTiled (source, rendered, new RectangleI (0, 0, input.Width, input.Height));
+		rendered.MarkDirty ();
+
+		cached_output?.Dispose ();
+		cached_output = CopyOf (rendered);
+		cached_input_fingerprint = fingerprint;
+		cached_data_version = data_version;
+
+		return rendered;
+	}
+
+	private void WatchEffectData ()
+	{
+		if (ReferenceEquals (watched_data, Effect.EffectData))
+			return;
+
+		if (watched_data is not null)
+			watched_data.PropertyChanged -= EffectDataChanged;
+
+		watched_data = Effect.EffectData;
+		if (watched_data is not null)
+			watched_data.PropertyChanged += EffectDataChanged;
+
+		data_version++;
+	}
+
+	private void EffectDataChanged (object? sender, System.ComponentModel.PropertyChangedEventArgs e)
+		=> data_version++;
+
+	// Cheap content fingerprint (FNV-1a over the pixel buffer). Reading the buffer costs a fraction
+	// of what the effects worth caching cost, and comparing content rather than tracking every edit
+	// site means no code path can silently leave a stale render on screen.
+	private static ulong Fingerprint (ImageSurface surface)
+	{
+		ReadOnlySpan<byte> bytes = System.Runtime.InteropServices.MemoryMarshal.AsBytes (surface.GetReadOnlyPixelData ());
+
+		ulong hash = 14695981039346656037;
+		foreach (byte b in bytes)
+			hash = (hash ^ b) * 1099511628211;
+
+		return hash;
 	}
 
 	/// <summary>

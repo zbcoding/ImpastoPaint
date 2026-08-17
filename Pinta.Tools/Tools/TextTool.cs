@@ -2132,7 +2132,7 @@ public sealed class TextTool : BaseTool
 					obj.TextBounds = r;
 					allBounds = allBounds.Union (r);
 
-					DrawTextObject (userLayer, obj, showCursor && obj == current_text_object);
+					DrawTextObject (userLayer, obj);
 					break;
 			}
 		}
@@ -2191,7 +2191,7 @@ public sealed class TextTool : BaseTool
 					obj.PreviousTextBounds = obj.TextBounds;
 					obj.TextBounds = r;
 
-					DrawTextObject (layer, obj, isActive: false);
+					DrawTextObject (layer, obj);
 					break;
 			}
 		}
@@ -2229,14 +2229,13 @@ public sealed class TextTool : BaseTool
 	/// </summary>
 	/// <param name="layer">The layer to draw onto.</param>
 	/// <param name="obj">The text object to draw.</param>
-	/// <param name="isActive">Whether this is the object being actively edited (draws cursor and selection).</param>
-	private void DrawTextObject (UserLayer layer, TextObject obj, bool isActive)
+	private void DrawTextObject (UserLayer layer, TextObject obj)
 		=> ObjectOpacity.Draw (
 			layer.ObjectLayer.Layer.Surface,
 			obj,
-			target => DrawTextObjectOpaque (target, obj, isActive));
+			target => DrawTextObjectOpaque (target, obj));
 
-	private void DrawTextObjectOpaque (ImageSurface surf, TextObject obj, bool isActive)
+	private void DrawTextObjectOpaque (ImageSurface surf, TextObject obj)
 	{
 		TextEngine engine = obj.Engine;
 		layout.Engine = engine;
@@ -2261,18 +2260,6 @@ public sealed class TextTool : BaseTool
 		PangoCairo.Functions.ContextSetFontOptions (chrome.MainWindow.GetPangoContext (), options);
 
 		ApplyRotation (g, obj);
-
-		// Selected text highlight (only for the active object).
-		if (isActive) {
-			Color c = new (
-				R: 0.7,
-				G: 0.8,
-				B: 0.9,
-				A: 0.5);
-
-			foreach (RectangleI rect in layout.GetSelectionRectangles ())
-				g.FillRectangle (rect.ToDouble (), c);
-		}
 
 		//Clip Raster-mode text to the editing selection on every render — preview and the
 		//final commit render alike — so the portion outside the selection is never drawn and
@@ -2320,6 +2307,29 @@ public sealed class TextTool : BaseTool
 			PangoCairo.Functions.ShowLayout (g, layout.Layout);
 		}
 
+		g.Restore ();
+	}
+
+	/// <summary>
+	/// Draws the highlight behind the selected text of the object being typed into, on the tool layer
+	/// and for the same reason as <see cref="DrawCursor"/>: the accumulator rebuilds a modifier layer's
+	/// composite from the objects alone, so a highlight drawn into the object surface was overwritten.
+	/// It also keeps the highlight out of a raster-mode commit, which bakes the object surface.
+	/// </summary>
+	private void DrawSelectionHighlight (Context g, TextObject obj)
+	{
+		layout.Engine = obj.Engine;
+
+		Color highlight = new (
+			R: 0.7,
+			G: 0.8,
+			B: 0.9,
+			A: 0.5);
+
+		g.Save ();
+		ApplyRotation (g, obj);
+		foreach (RectangleI rect in layout.GetSelectionRectangles ())
+			g.FillRectangle (rect.ToDouble (), highlight);
 		g.Restore ();
 	}
 
@@ -2416,10 +2426,12 @@ public sealed class TextTool : BaseTool
 			}
 		}
 
-		// After the rectangles, so the caret is never hidden under a handle. Drawn even for an object
+		// After the rectangles, so neither is hidden under a handle. Drawn even for an object
 		// with no text yet — that empty field is exactly where the caret has to be visible.
-		if (showCursor && is_editing && current_text_object is not null)
+		if (showCursor && is_editing && current_text_object is not null) {
+			DrawSelectionHighlight (g, current_text_object);
 			DrawCursor (g, current_text_object);
+		}
 
 		g.Restore ();
 

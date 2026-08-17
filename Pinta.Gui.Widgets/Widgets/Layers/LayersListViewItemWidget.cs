@@ -877,9 +877,19 @@ public sealed partial class LayersListViewItemWidget
 		if (insert == from)
 			return false;
 
-		source.MoveObjectTo (insert);
+		AfterDrop (() => source.MoveObjectTo (insert));
 		return true;
 	}
+
+	// Runs the reorder once GTK has finished with the drop, rather than inside the drop handler.
+	// Moving an object rebuilds the dock's rows — which destroys the very widget whose drop handler is
+	// running, and selecting the moved row can start a text edit that pumps the main loop. GTK then
+	// begins a second drop while the first is still active and aborts the process on an assertion.
+	private static void AfterDrop (System.Action reorder)
+		=> GLib.Functions.IdleAdd (GLib.Constants.PRIORITY_DEFAULT, () => {
+			reorder ();
+			return false;
+		});
 
 	private bool DropLayerRow (LayersListViewItem source, bool dropAbove)
 	{
@@ -901,13 +911,16 @@ public sealed partial class LayersListViewItemWidget
 		if (insert == from)
 			return false;
 
-		MoveLayerHistoryItem hist = new (
-			Resources.StandardIcons.LayerMoveUp,
-			Translations.GetString ("Move Layer"),
-			from,
-			insert);
-		doc.History.PushNewItem (hist);
-		hist.Redo ();
+		// Deferred for the same reason as the object reorder above.
+		AfterDrop (() => {
+			MoveLayerHistoryItem hist = new (
+				Resources.StandardIcons.LayerMoveUp,
+				Translations.GetString ("Move Layer"),
+				from,
+				insert);
+			doc.History.PushNewItem (hist);
+			hist.Redo ();
+		});
 		return true;
 	}
 

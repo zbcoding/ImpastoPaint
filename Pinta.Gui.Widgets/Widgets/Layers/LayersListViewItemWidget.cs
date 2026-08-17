@@ -116,6 +116,15 @@ public sealed partial class LayersListViewItem
 
 	public bool Visible => IsObjectRow ? !ObjectHidden : !UserLayer?.Hidden ?? false;
 
+	/// <summary>
+	/// Whether this object row is the bottom one under its layer, which ends the hierarchy line with
+	/// an elbow instead of carrying it on down. Object rows are listed top-first, so the bottom row is
+	/// the one at index 0 of the layer's object list.
+	/// ponytail: index 0 may be a rasterize-on-finalize shape that gets no row, in which case the line
+	/// runs one row too far; give the row its position in the child model if that ever shows.
+	/// </summary>
+	public bool IsLastObjectRow => IsObjectRow && ObjectIndex == 0;
+
 	public string TooltipText {
 		get {
 			if (UserLayer is null)
@@ -473,6 +482,7 @@ public sealed partial class LayersListViewItemWidget
 	private Gtk.Label item_label;
 	private Gtk.CheckButton visible_button;
 	private Gtk.DrawingArea object_badge;
+	private Gtk.DrawingArea tree_line;
 
 	// Which badge the current row shows: "Obj." for a shape/text, "Fx" for a layer effect.
 	private string badge_label = EditableObjectBadge.ObjectLabel;
@@ -484,6 +494,7 @@ public sealed partial class LayersListViewItemWidget
 	[MemberNotNull (nameof (item_label))]
 	[MemberNotNull (nameof (visible_button))]
 	[MemberNotNull (nameof (object_badge))]
+	[MemberNotNull (nameof (tree_line))]
 	partial void Initialize ()
 	{
 		Gtk.DrawingArea itemThumbnail = Gtk.DrawingArea.New ();
@@ -510,6 +521,14 @@ public sealed partial class LayersListViewItemWidget
 		objectBadge.HeightRequest = (int) EditableObjectBadge.Height;
 		objectBadge.Halign = Gtk.Align.Start;
 		objectBadge.Visible = false;
+
+		// Hierarchy line, shown only on object rows: it runs down from the parent layer row and turns
+		// in towards this row's badge, so a sub-row reads as belonging to the layer above it. The
+		// TreeExpander's indentation is to the left of this, so the line sits between the two.
+		Gtk.DrawingArea treeLine = Gtk.DrawingArea.New ();
+		treeLine.SetDrawFunc ((area, context, width, height) => DrawTreeLine (context, width, height));
+		treeLine.WidthRequest = 10;
+		treeLine.Visible = false;
 
 		Gtk.GestureClick menuGesture = Gtk.GestureClick.New ();
 		menuGesture.SetButton (Gdk.Constants.BUTTON_SECONDARY);
@@ -540,6 +559,7 @@ public sealed partial class LayersListViewItemWidget
 
 		SetOrientation (Gtk.Orientation.Horizontal);
 
+		Append (treeLine);
 		Append (visibleButton);
 		Append (objectBadge);
 		Append (itemLabel);
@@ -551,6 +571,7 @@ public sealed partial class LayersListViewItemWidget
 		item_label = itemLabel;
 		visible_button = visibleButton;
 		object_badge = objectBadge;
+		tree_line = treeLine;
 	}
 
 	// A row is "bound" when it is showing a layer of an open document. Layer-only operations
@@ -927,6 +948,14 @@ public sealed partial class LayersListViewItemWidget
 		item_thumbnail.SetVisible (!isObject);
 		visible_button.SetActive (item.Visible);
 
+		// Widgets are recycled between rows, so both states have to be set explicitly.
+		if (isObject)
+			AddCssClass (ObjectRowCssClass);
+		else
+			RemoveCssClass (ObjectRowCssClass);
+		tree_line.SetVisible (isObject);
+		tree_line.QueueDraw ();
+
 		if (isObject) {
 			// Object rows are always live/editable (rasterizing drops the object entirely), so they
 			// always get a badge — "Obj." for something that contributes pixels, "Fx" for an effect
@@ -950,6 +979,38 @@ public sealed partial class LayersListViewItemWidget
 
 		thumbnail_surface = null;
 		item_thumbnail.QueueDraw ();
+	}
+
+	// Styles an object sub-row as a child of its layer (tinted background, smaller label). Defined in
+	// Pinta.Resources' style.css.
+	private const string ObjectRowCssClass = "layer-object-row";
+
+	/// <summary>
+	/// Draws the hierarchy line for an object row: a vertical run down the left of the row, plus a
+	/// horizontal turn towards the row's content. The bottom row of a layer stops the vertical at the
+	/// turn, so the group visibly ends there.
+	/// </summary>
+	private void DrawTreeLine (Context g, int width, int height)
+	{
+		if (item is null || !item.IsObjectRow)
+			return;
+
+		// Half-pixel offsets keep a 1px line crisp.
+		double x = Math.Floor (width / 2.0) + 0.5;
+		double mid = Math.Floor (height / 2.0) + 0.5;
+		bool isLast = item.IsLastObjectRow;
+
+		g.Save ();
+		g.SetSourceColor (new Color (0.5, 0.5, 0.5, 0.8));
+		g.LineWidth = 1;
+
+		g.MoveTo (x, 0);
+		g.LineTo (x, isLast ? mid : height);
+		g.MoveTo (x, mid);
+		g.LineTo (width, mid);
+		g.Stroke ();
+
+		g.Restore ();
 	}
 
 	/// <summary>

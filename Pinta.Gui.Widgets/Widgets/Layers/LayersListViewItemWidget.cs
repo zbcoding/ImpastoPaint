@@ -713,7 +713,9 @@ public sealed partial class LayersListViewItemWidget
 
 		// A modifier node reopens the effect's own configuration dialog. Editing settings in place is
 		// the whole point of a non-destructive node, so it goes above Rasterize.
-		if (row.ModifierNode is not null) {
+		// Offered only when the effect has settings to show: a node whose effect this build cannot
+		// supply (see UnavailableEffect) has none, and the option would do nothing.
+		if (row.ModifierNode is not null && row.ModifierNode.Effect.IsConfigurable) {
 			EffectModifierNode node = row.ModifierNode;
 			UserLayer nodeLayer = row.UserLayer!;
 			box.Append (MenuOption (

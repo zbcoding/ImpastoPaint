@@ -37,6 +37,7 @@ internal sealed class SaveDocumentImplmentationAction : IActionHandler
 {
 	const string RESPONSE_CANCEL = "cancel";
 	const string RESPONSE_FLATTEN = "flatten";
+	const string RESPONSE_SAVE = "save";
 
 	private readonly FileActions file;
 	private readonly ImageActions image;
@@ -229,6 +230,10 @@ internal sealed class SaveDocumentImplmentationAction : IActionHandler
 			return false;
 		}
 
+		if (!await ConfirmBakeEffectNodes (document, format)) {
+			return false;
+		}
+
 		// Commit any pending changes
 		tools.Commit ();
 
@@ -310,5 +315,38 @@ internal sealed class SaveDocumentImplmentationAction : IActionHandler
 			image.Flatten.Activate ();
 		}
 		return true;
+	}
+
+	/// <summary>
+	/// Impasto: warns before saving a document whose layer-effect nodes cannot be written as editable
+	/// nodes, which is any effect that came from an add-in - nothing guarantees the add-in is present
+	/// when the file is opened again. Only the written file is affected: the nodes stay live and
+	/// editable in the open document either way.
+	/// </summary>
+	private async Task<bool> ConfirmBakeEffectNodes (Document document, FormatDescriptor format)
+	{
+		// Every other format is a flattened export already, so it has nothing extra to warn about.
+		if (!format.Extensions.Contains ("ora"))
+			return true;
+
+		IReadOnlyList<string> baked = OraFormat.EffectNodesToBake (document);
+		if (baked.Count == 0)
+			return true;
+
+		string heading = Translations.GetString ("Some effects cannot be saved as editable. Save anyway?");
+		string body = Translations.GetString (
+			"These effects come from add-ins and will be part of the saved image's pixels instead, so reopening the file will not let you change their settings. They stay editable in this window.")
+			+ "\n\n"
+			+ string.Join ("\n", baked.Distinct ());
+
+		using Adw.MessageDialog dialog = Adw.MessageDialog.New (chrome.MainWindow, heading, body);
+		dialog.AddResponse (RESPONSE_CANCEL, Translations.GetString ("_Cancel"));
+		dialog.AddResponse (RESPONSE_SAVE, Translations.GetString ("Save"));
+		dialog.SetResponseAppearance (RESPONSE_SAVE, Adw.ResponseAppearance.Suggested);
+
+		dialog.CloseResponse = RESPONSE_CANCEL;
+		dialog.DefaultResponse = RESPONSE_SAVE;
+
+		return await dialog.RunAsync () != RESPONSE_CANCEL;
 	}
 }

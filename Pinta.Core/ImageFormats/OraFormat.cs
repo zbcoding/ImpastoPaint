@@ -45,6 +45,12 @@ public sealed class OraFormat : IImageImporter, IImageExporter
 	private const string TEXT_ENTRY_PATH = "data/impasto-text.xml";
 	private const string SHAPE_ENTRY_PATH = "data/impasto-shapes.xml";
 	private const string SHAPE_IMAGE_PREFIX = "data/impasto-shapes-layer";
+	private const string EFFECT_ENTRY_PATH = "data/impasto-effects.xml";
+	private const string MANIFEST_ENTRY_PATH = "impasto/manifest.xml";
+
+	// Version of Impasto's own sidecar layout, bumped when an entry's shape changes in a way an older
+	// build cannot read. Independent of the OpenRaster spec version written into stack.xml.
+	private const string IMPASTO_FORMAT_VERSION = "1";
 
 	public Document Import (Gio.File file)
 	{
@@ -137,6 +143,7 @@ public sealed class OraFormat : IImageImporter, IImageExporter
 		// Restore any editable text objects saved in the sidecar entry.
 		LoadTextEntry (zipfile, newDocument);
 		LoadShapeEntry (zipfile, newDocument);
+		LoadEffectEntry (zipfile, newDocument);
 
 		return newDocument;
 	}
@@ -171,6 +178,10 @@ public sealed class OraFormat : IImageImporter, IImageExporter
 		writer.WriteAttributeString ("w", layers[0].Surface.Width.ToString ());
 		writer.WriteAttributeString ("h", layers[0].Surface.Height.ToString ());
 		writer.WriteAttributeString ("version", "0.0.5"); // Current version of the spec.
+
+		// Identifies what produced the file. Readers ignore attributes they don't know, and Impasto's
+		// own sidecar entries are described in impasto/manifest.xml.
+		writer.WriteAttributeString ("generator", $"Impasto {PintaCore.ApplicationVersion}");
 
 		writer.WriteStartElement ("stack");
 
@@ -207,6 +218,8 @@ public sealed class OraFormat : IImageImporter, IImageExporter
 		AddStackEntry (archive, document);
 		AddTextEntry (archive, document);
 		AddShapeEntry (archive, document);
+		AddEffectEntry (archive, document);
+		AddManifestEntry (archive, document);
 		AddMergedImage (archive, flattened);
 		AddThumbnail (archive, flattened);
 	}
@@ -222,12 +235,12 @@ public sealed class OraFormat : IImageImporter, IImageExporter
 	private static void AddLayerEntries (ZipArchive archive, Document document)
 	{
 		for (int i = 0; i < document.Layers.UserLayers.Count; i++) {
-			// A layer carrying modifier nodes is written as its accumulated composite: the effects are
-			// baked into the saved raster so other editors see the right pixels. Once nodes round-trip
-			// (see docs-private/layer-effects-model.md), this must write the base raster instead, or
-			// loading would apply them a second time.
+			// The base raster, so the modifier nodes written alongside it (AddEffectEntry) apply once
+			// on load rather than twice. A layer whose nodes cannot round-trip is the exception: its
+			// effects are baked into the saved raster instead, and no nodes are written for it.
 			UserLayer userLayer = document.Layers.UserLayers[i];
-			using Pixbuf pb = (userLayer.Composite ?? userLayer.Surface).ToPixbuf ();
+			ImageSurface saved = NodesRoundTrip (userLayer) ? userLayer.Surface : (userLayer.Composite ?? userLayer.Surface);
+			using Pixbuf pb = saved.ToPixbuf ();
 			byte[] buf = pb.SaveToBuffer ("png");
 			ZipArchiveEntry layerEntry = archive.CreateEntry ($"data/layer{i}.png");
 			using Stream layerStream = layerEntry.Open ();
@@ -324,6 +337,189 @@ public sealed class OraFormat : IImageImporter, IImageExporter
 		shapeStream.Write (shapeXml, 0, shapeXml.Length);
 	}
 
+	/// <summary>
+	/// Whether <paramref name="layer"/>'s modifier nodes can be written as editable nodes. An add-in
+	/// effect cannot: nothing guarantees the add-in is installed when the file is opened again, so the
+	/// layer is saved with its effects baked in. <see cref="EffectNodesToBake"/> is what the save path
+	/// warns about before it comes to that.
+	/// </summary>
+	public static bool NodesRoundTrip (UserLayer layer)
+		=> !layer.ModifierNodes.Any (node => AddinMenu.AddinNameOf (node.Effect.GetType ()) is not null);
+
+	/// <summary>
+	/// The effect names, in layer order, that saving <paramref name="document"/> as ORA would flatten
+	/// because they came from an add-in. Empty when everything round-trips.
+	/// </summary>
+	public static IReadOnlyList<string> EffectNodesToBake (Document document)
+	{
+		List<string> names = [];
+		foreach (UserLayer layer in document.Layers.UserLayers) {
+			foreach (EffectModifierNode node in layer.ModifierNodes) {
+				if (AddinMenu.AddinNameOf (node.Effect.GetType ()) is not null)
+					names.Add (node.DisplayName);
+			}
+		}
+		return names;
+	}
+
+	private static void AddEffectEntry (ZipArchive archive, Document document)
+	{
+		IReadOnlyList<UserLayer> layers = document.Layers.UserLayers;
+		if (!layers.Any (layer => layer.HasModifiers && NodesRoundTrip (layer)))
+			return;
+
+		using MemoryStream ms = new ();
+		using (XmlTextWriter writer = new (ms, System.Text.Encoding.UTF8) { Formatting = Formatting.Indented }) {
+			writer.WriteStartElement ("impasto-effects");
+			writer.WriteAttributeString ("version", IMPASTO_FORMAT_VERSION);
+
+			for (int i = 0; i < layers.Count; i++) {
+				UserLayer layer = layers[i];
+				if (!layer.HasModifiers || !NodesRoundTrip (layer))
+					continue;
+
+				writer.WriteStartElement ("layer");
+				writer.WriteAttributeString ("index", i.ToString ());
+
+				// The position in the layer's unified object list, not among the nodes: a modifier
+				// applies to what is below it, so its place relative to text and shapes is meaningful.
+				for (int position = 0; position < layer.Objects.Count; position++) {
+					if (layer.Objects[position] is not EffectModifierNode node)
+						continue;
+
+					writer.WriteStartElement ("effect");
+					writer.WriteAttributeString ("id", node.Effect.EffectId);
+					writer.WriteAttributeString ("position", position.ToString ());
+					writer.WriteAttributeString ("effect-name", node.Effect.Name);
+					WriteObjectCommon (writer, node);
+
+					foreach ((string property, string value) in EffectParameters (node.Effect)) {
+						writer.WriteStartElement ("param");
+						writer.WriteAttributeString ("name", property);
+						writer.WriteAttributeString ("value", value);
+						writer.WriteEndElement ();
+					}
+
+					WriteClip (writer, node.Clip);
+					writer.WriteEndElement (); // effect
+				}
+
+				writer.WriteEndElement (); // layer
+			}
+
+			writer.WriteEndElement (); // impasto-effects
+		}
+
+		// See AddTextEntry: the writer closed this stream when it was disposed.
+		byte[] effectXml = ms.ToArray ();
+		ZipArchiveEntry effectEntry = archive.CreateEntry (EFFECT_ENTRY_PATH);
+		using Stream effectStream = effectEntry.Open ();
+		effectStream.Write (effectXml, 0, effectXml.Length);
+	}
+
+	// An effect this build cannot run keeps the parameter text it was loaded with, so re-saving a
+	// document written by a newer Impasto does not strip settings this one never understood.
+	private static IReadOnlyDictionary<string, string> EffectParameters (BaseEffect effect)
+		=> effect is UnavailableEffect unavailable
+			? unavailable.SavedParameters
+			: EffectDataSerializer.ToText (effect.EffectData);
+
+	private static void AddManifestEntry (ZipArchive archive, Document document)
+	{
+		bool hasEffectNodes = document.Layers.UserLayers.Any (layer => layer.HasModifiers && NodesRoundTrip (layer));
+
+		using MemoryStream ms = new ();
+		using (XmlTextWriter writer = new (ms, System.Text.Encoding.UTF8) { Formatting = Formatting.Indented }) {
+			writer.WriteStartElement ("impasto-manifest");
+			writer.WriteAttributeString ("version", IMPASTO_FORMAT_VERSION);
+			writer.WriteAttributeString ("app", "Impasto");
+			writer.WriteAttributeString ("app-version", PintaCore.ApplicationVersion);
+
+			// Space-separated feature names, so a reader can tell what a file uses without parsing
+			// every sidecar entry. Absent features are simply not listed.
+			if (hasEffectNodes)
+				writer.WriteAttributeString ("features", "layer-effects");
+
+			writer.WriteEndElement ();
+		}
+
+		byte[] manifestXml = ms.ToArray ();
+		ZipArchiveEntry manifestEntry = archive.CreateEntry (MANIFEST_ENTRY_PATH);
+		using Stream manifestStream = manifestEntry.Open ();
+		manifestStream.Write (manifestXml, 0, manifestXml.Length);
+	}
+
+	private static void LoadEffectEntry (ZipArchive zipfile, Document document)
+	{
+		ZipArchiveEntry? entry = zipfile.GetEntry (EFFECT_ENTRY_PATH);
+		if (entry is null)
+			return;
+
+		XmlDocument xml = new ();
+		xml.Load (entry.Open ());
+		XmlElement root = xml.DocumentElement!;
+
+		foreach (XmlElement layerElement in root.GetElementsByTagName ("layer")) {
+			if (!int.TryParse (GetAttribute (layerElement, "index", "-1"), out int index)
+				|| index < 0 || index >= document.Layers.UserLayers.Count)
+				continue;
+
+			UserLayer layer = document.Layers.UserLayers[index];
+
+			foreach (XmlElement effectElement in layerElement.GetElementsByTagName ("effect")) {
+				EffectModifierNode? node = ReadEffectNode (effectElement);
+				if (node is null)
+					continue;
+
+				// The saved position counts every object on the layer. Text and shapes are restored
+				// first, so it usually lands where it was; a stale index clamps to the end rather than
+				// throwing. ponytail: good enough while text and shapes each load as their own pass. If
+				// the three entries ever merge into one ordered list, insert straight from that order.
+				int position = int.TryParse (GetAttribute (effectElement, "position", "-1"), out int saved) ? saved : -1;
+				if (position < 0 || position > layer.Objects.Count)
+					position = layer.Objects.Count;
+
+				layer.Objects.Insert (position, node);
+			}
+
+			if (layer.HasModifiers)
+				ObjectOpacity.RefreshLayerNoInvalidate (PintaCore.Chrome, layer);
+		}
+	}
+
+	private static EffectModifierNode? ReadEffectNode (XmlElement element)
+	{
+		try {
+			string effectId = GetAttribute (element, "id", "");
+			if (effectId.Length == 0)
+				return null;
+
+			Dictionary<string, string> parameters = [];
+			foreach (XmlElement paramElement in element.GetElementsByTagName ("param"))
+				parameters[GetAttribute (paramElement, "name", "")] = GetAttribute (paramElement, "value", "");
+
+			BaseEffect? registered = PintaCore.Effects.FindEffectById (effectId);
+
+			EffectModifierNode node;
+			if (registered is null) {
+				// An effect this build does not supply: the node stays, inert, carrying its identifier
+				// and parameters so a re-save preserves them.
+				node = new (new UnavailableEffect (effectId, GetAttribute (element, "effect-name", ""), parameters));
+			} else {
+				node = EffectModifierNode.FromEffect (registered, clip: null, PintaCore.Services);
+				EffectDataSerializer.ApplyText (node.Effect.EffectData, parameters);
+			}
+
+			node.Clip = ReadClip (element);
+			ReadObjectCommon (element, node);
+
+			return node;
+		} catch {
+			// A malformed node shouldn't prevent the document from loading.
+			return null;
+		}
+	}
+
 	// The per-object sub-node properties every object kind shares (see ILayerObject), written and
 	// read in one place so shapes and text can't drift apart on the round-trip.
 	private static void WriteObjectCommon (XmlTextWriter writer, ILayerObject obj)
@@ -374,23 +570,30 @@ public sealed class OraFormat : IImageImporter, IImageExporter
 			writer.WriteEndElement ();
 		}
 
-		// The frozen draw-time selection clip (integer polygon rings). Persisting it keeps a
-		// partially-clipped shape looking clipped after save/reopen instead of rendering in full.
-		if (shape.Clip is not null) {
-			writer.WriteStartElement ("clip");
-			foreach (List<IntPoint> polygon in shape.Clip.SelectionPolygons) {
-				writer.WriteStartElement ("poly");
-				foreach (IntPoint pt in polygon) {
-					writer.WriteStartElement ("pt");
-					writer.WriteAttributeString ("x", pt.X.ToString ());
-					writer.WriteAttributeString ("y", pt.Y.ToString ());
-					writer.WriteEndElement ();
-				}
+		WriteClip (writer, shape.Clip);
+
+		writer.WriteEndElement ();
+	}
+
+	// The frozen draw-time selection clip (integer polygon rings). Persisting it keeps a partially
+	// clipped shape - or a modifier node applied to a selection - covering the same area after
+	// save/reopen instead of applying to the whole layer. Writes nothing when there was no clip.
+	private static void WriteClip (XmlTextWriter writer, DocumentSelection? clip)
+	{
+		if (clip is null)
+			return;
+
+		writer.WriteStartElement ("clip");
+		foreach (List<IntPoint> polygon in clip.SelectionPolygons) {
+			writer.WriteStartElement ("poly");
+			foreach (IntPoint pt in polygon) {
+				writer.WriteStartElement ("pt");
+				writer.WriteAttributeString ("x", pt.X.ToString ());
+				writer.WriteAttributeString ("y", pt.Y.ToString ());
 				writer.WriteEndElement ();
 			}
 			writer.WriteEndElement ();
 		}
-
 		writer.WriteEndElement ();
 	}
 

@@ -41,6 +41,11 @@ public sealed class EffectsManager
 	private readonly Dictionary<Type, Command> effects;
 	private readonly Dictionary<Type, string> effects_categories;
 
+	// Impasto: the registered instance of every effect and adjustment, by EffectId. Loading a saved
+	// layer-effect node needs the effect the id names, and the menu instance is the one place that
+	// knows how the effect was constructed (see EffectModifierNode.FromEffect).
+	private readonly Dictionary<string, BaseEffect> effects_by_id = [];
+
 	private readonly ActionManager action_manager;
 	private readonly ChromeManager chrome_manager;
 	private readonly LivePreviewManager live_preview_manager;
@@ -102,6 +107,7 @@ public sealed class EffectsManager
 		}
 
 		adjustments.Add (adjustmentType, action);
+		effects_by_id[adjustment.EffectId] = adjustment;
 	}
 
 	/// <summary>
@@ -139,6 +145,7 @@ public sealed class EffectsManager
 
 		effects.Add (effectType, action);
 		effects_categories.Add (effectType, category);
+		effects_by_id[effect.EffectId] = effect;
 	}
 
 	/// <summary>
@@ -157,6 +164,7 @@ public sealed class EffectsManager
 		effects.Remove (effectType);
 		action_manager.Effects.RemoveEffect (category, action);
 		effects_categories.Remove (effectType);
+		RemoveFromIdLookup (effectType);
 	}
 
 	/// <summary>
@@ -172,12 +180,30 @@ public sealed class EffectsManager
 
 		adjustments.Remove (adjustmentType);
 		action_manager.Adjustments.Actions.Remove (action);
+		RemoveFromIdLookup (adjustmentType);
 
 		if (adjustment_keys.Remove (adjustmentType, out string? resolvedKey)) {
 			action_manager.Addins.Menu.ResolvePath (MainMenu.Adjustments, resolvedKey, out _).Remove (action);
 			action_manager.Addins.Menu.PruneEmpty (MainMenu.Adjustments, resolvedKey);
 		} else {
 			chrome_manager.AdjustmentsMenu.Remove (action);
+		}
+	}
+
+	/// <summary>
+	/// Impasto: the registered effect or adjustment with this identifier, or null when nothing here
+	/// supplies it. Used to rebuild a saved layer-effect node.
+	/// </summary>
+	public BaseEffect? FindEffectById (string effectId)
+		=> effects_by_id.TryGetValue (effectId, out BaseEffect? effect) ? effect : null;
+
+	private void RemoveFromIdLookup (Type effectType)
+	{
+		foreach ((string id, BaseEffect effect) in effects_by_id) {
+			if (effect.GetType () == effectType) {
+				effects_by_id.Remove (id);
+				return;
+			}
 		}
 	}
 }

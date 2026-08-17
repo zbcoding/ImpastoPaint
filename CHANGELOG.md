@@ -54,6 +54,12 @@ Changes for the next release (0.0.2) go here.
 - Layers can now be made exclusively visible from their context menu. Ctrl+1 through Ctrl+5
   solo the bottom five layers; repeating the action shows all layers again. These shortcuts
   can be changed in Keyboard Shortcuts.
+- Editable layer effects are now saved. An `.ora` file written by Impasto keeps each layer's
+  effect nodes - their settings, strength, blend mode, name, position in the layer and the
+  selection they were applied to - so reopening the file leaves every effect still editable.
+  Other applications still see the flattened image. An effect from an add-in cannot be restored
+  this way, so saving warns and lists what will become part of the layer's pixels instead, and an
+  effect this build does not have is kept inert with its settings rather than failing the open.
 
 ### Fixed
 

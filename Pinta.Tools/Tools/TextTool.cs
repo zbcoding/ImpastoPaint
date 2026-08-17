@@ -253,6 +253,13 @@ public sealed class TextTool : BaseTool
 			//toggle below). CanFocus=false keeps the keyboard on the text input as a dropdown item is
 			//chosen, instead of letting Space re-open the menu.
 			text_mode_btn.CanFocus = false;
+
+			// Justify only has an effect on area (flow) text, which has a fixed width to
+			// fill. In point mode there's no box, so disable the Justify button.
+			text_mode_btn.SelectedItemChanged += (_, _) => {
+				if (justify_alignment_btn is not null)
+					justify_alignment_btn.Sensitive = AreaMode;
+			};
 		}
 
 		tb.Append (text_mode_btn);
@@ -530,6 +537,7 @@ public sealed class TextTool : BaseTool
 			justify_alignment_btn.TooltipText = Translations.GetString ("Justify");
 			justify_alignment_btn.CanFocus = false;
 			justify_alignment_btn.Active = alignment == TextAlignment.Justify;
+			justify_alignment_btn.Sensitive = AreaMode;
 			justify_alignment_btn.OnToggled += HandleJustifyAlignmentButtonToggled;
 		}
 
@@ -1356,6 +1364,12 @@ public sealed class TextTool : BaseTool
 						Pango.FontDescription font = obj.Engine.Font.Copy ()!;
 						font.SetSize (PangoExtensions.UnitsFromPixels (newSize));
 						obj.Engine.SetFont (font, obj.Engine.Alignment, obj.Engine.Underline);
+
+						// Keep the toolbar's font description in sync with the resized font, so a
+						// later toolbar change (e.g. alignment) doesn't re-apply the stale
+						// pre-resize size via UpdateFont().
+						if (font_button is not null)
+							font_button.FontDesc = font.Copy ()!;
 						break;
 					}
 			}

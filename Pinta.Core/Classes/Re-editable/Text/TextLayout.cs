@@ -27,6 +27,8 @@
 using System;
 using System.Collections.Immutable;
 using System.Security;
+using System.Text;
+
 
 namespace Pinta.Core;
 
@@ -127,7 +129,8 @@ public sealed class TextLayout
 
 	private void OnEngineModified (object? sender, EventArgs e)
 	{
-		string? markup = SecurityElement.Escape (engine.ToString ());
+		string text = engine.ToString ();
+		string? markup = SecurityElement.Escape (text);
 
 		if (engine.Underline)
 			markup = $"<u>{markup}</u>";
@@ -147,14 +150,79 @@ public sealed class TextLayout
 				break;
 		}
 
-		Layout.SetJustify (engine.Alignment == TextAlignment.Justify);
-
+		Layout.SetJustify (false);
+		Layout.SetJustifyLastLine (false);
 		Layout.SetFontDescription (engine.Font);
 
 		// Area (flow) text wraps to a fixed width; point text (WrapWidth 0) uses -1 to
 		// grow to its natural width and only break on user-entered newlines.
 		Layout.SetWidth (engine.WrapWidth > 0 ? PangoExtensions.UnitsFromPixels (engine.WrapWidth) : -1);
-
 		Layout.SetMarkup (markup, -1);
+
+		bool justify =
+			engine.Alignment == TextAlignment.Justify
+			&& engine.WrapWidth > 0
+			&& IsFlowJustificationSpacingAcceptable (text);
+		Layout.SetJustify (justify);
 	}
+
+	private bool IsFlowJustificationSpacingAcceptable (string text)
+		=> IsFlowJustificationSpacingAcceptable (Layout, text, engine.WrapWidth);
+
+	internal static bool IsFlowJustificationSpacingAcceptable (
+		Pango.Layout layout,
+		string text,
+		int wrapWidth)
+	{
+		byte[] utf8Text = Encoding.UTF8.GetBytes (text);
+		int lineCount = layout.GetLineCount ();
+		int layoutWidth = PangoExtensions.UnitsFromPixels (wrapWidth);
+
+		for (int lineIndex = 0; lineIndex < lineCount - 1; lineIndex++) {
+			using Pango.LayoutLine line = layout.GetLineReadonly (lineIndex)!;
+			using Pango.LayoutLine nextLine = layout.GetLineReadonly (lineIndex + 1)!;
+
+			// Pango already leaves the final line in each paragraph unjustified.
+			if (nextLine.GetIsParagraphStart ())
+				continue;
+
+			int lineStart = line.GetStartIndex ();
+			int lineEnd = lineStart + line.GetLength ();
+			line.GetExtents (out _, out Pango.Rectangle logical);
+
+			int firstSpaceIndex = -1;
+			int spaceCount = 0;
+			for (int byteIndex = lineStart; byteIndex < lineEnd; byteIndex++) {
+				// Pango's Latin justification stretches ordinary inter-word spaces.
+				if (utf8Text[byteIndex] != (byte) ' ')
+					continue;
+
+				if (firstSpaceIndex < 0)
+					firstSpaceIndex = byteIndex;
+				spaceCount++;
+			}
+
+			long naturalSpaceWidth = 0;
+			if (firstSpaceIndex >= 0) {
+				layout.IndexToPos (firstSpaceIndex, out RectangleI space);
+				naturalSpaceWidth = (long) Math.Abs (space.Width) * spaceCount;
+			}
+
+			// With no inter-word spaces, Pango has nothing on this Latin line to stretch.
+			if (!IsJustificationSpacingAcceptable (layoutWidth, logical.Width, naturalSpaceWidth))
+				return false;
+		}
+
+		return true;
+	}
+
+	// ponytail: Pango cannot cap one visual line. Falling back for the whole object
+	// keeps rendering, cursor, and selection geometry together; a shared per-line
+	// layout model is the upgrade path.
+	internal static bool IsJustificationSpacingAcceptable (
+		int layoutWidth,
+		int lineWidth,
+		long naturalSpaceWidth)
+		=> naturalSpaceWidth == 0
+			|| Math.Max (0L, (long) layoutWidth - lineWidth) <= naturalSpaceWidth;
 }

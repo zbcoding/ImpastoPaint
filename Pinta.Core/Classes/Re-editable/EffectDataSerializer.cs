@@ -127,6 +127,27 @@ public static class EffectDataSerializer
 	public static bool CanSerialize (Type type)
 		=> TryConverterFor (type, out _);
 
+	/// <summary>
+	/// The names of <paramref name="data"/>'s settings that no converter covers, in declaration order,
+	/// and empty when every setting round-trips. This is what turns an effect's
+	/// <see cref="BaseEffect.SurvivesSaveAndReload"/> claim into something checkable: a node whose
+	/// effect claims the settings survive but holds one of these would reload with a different
+	/// picture than the one that was saved.
+	/// </summary>
+	public static IReadOnlyList<string> UnsupportedSettings (EffectData? data)
+	{
+		if (data is null)
+			return [];
+
+		List<string> unsupported = [];
+		foreach (PropertyInfo property in Properties (data.GetType ())) {
+			if (!TryConverterFor (property.PropertyType, out _))
+				unsupported.Add (property.Name);
+		}
+
+		return unsupported;
+	}
+
 	private static string Pair (double first, double second)
 		=> $"{first.ToString (Format)},{second.ToString (Format)}";
 

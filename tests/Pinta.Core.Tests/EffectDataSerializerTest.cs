@@ -166,4 +166,29 @@ internal sealed class EffectDataSerializerTest
 			Assert.That (reloaded[2], Is.EqualTo (curves[2]));
 		});
 	}
+
+	// SurvivesSaveAndReload is a promise an add-in makes about its own data, and OraFormat.CanRestore
+	// only keeps a node editable when the promise holds. What makes it checkable is naming the
+	// settings that would come back as defaults, so a node claiming more than it can deliver is baked
+	// rather than reopened showing different pixels.
+	[Test]
+	public void UnsupportedSettingsNamesOnlyTheSettingsThatCannotRoundTrip ()
+	{
+		Assert.Multiple (() => {
+			Assert.That (
+				EffectDataSerializer.UnsupportedSettings (Populated ()),
+				Is.EqualTo (new[] { nameof (SampleData.Table) }),
+				"the array has no converter and every other property does");
+
+			Assert.That (
+				EffectDataSerializer.UnsupportedSettings (new CurvesShapedData ()),
+				Is.Empty,
+				"a claim over fully covered data has to hold");
+
+			Assert.That (
+				EffectDataSerializer.UnsupportedSettings (null),
+				Is.Empty,
+				"an effect with no data at all promises nothing and loses nothing");
+		});
+	}
 }

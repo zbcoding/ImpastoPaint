@@ -356,7 +356,22 @@ public sealed class OraFormat : IImageImporter, IImageExporter
 	/// contract keeps its nodes editable and only the ones that cannot promise it are baked.
 	/// </summary>
 	private static bool CanRestore (EffectModifierNode node)
-		=> node.Effect.SurvivesSaveAndReload;
+	{
+		if (!node.Effect.SurvivesSaveAndReload)
+			return false;
+
+		// The claim is checked, not taken on trust: a setting no converter covers would come back as
+		// the effect's default, so the node would reopen showing different pixels than were saved.
+		// Baking keeps the picture and costs only the node's editability.
+		IReadOnlyList<string> unsupported = EffectDataSerializer.UnsupportedSettings (node.Effect.EffectData);
+		if (unsupported.Count == 0)
+			return true;
+
+		Console.Error.WriteLine (
+			$"Effect \"{node.Effect.Name}\" claims its nodes survive a save and reload, but " +
+			$"{string.Join (", ", unsupported)} cannot be serialized; baking the node instead.");
+		return false;
+	}
 
 	/// <summary>
 	/// The highest index in <paramref name="layer"/>'s object list that must be baked into the saved

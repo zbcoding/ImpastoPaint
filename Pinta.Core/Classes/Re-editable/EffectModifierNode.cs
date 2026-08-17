@@ -31,23 +31,54 @@ public sealed class EffectModifierNode : ILayerObject
 	public string Name { get; set; } = string.Empty;
 	public BlendMode BlendMode { get; set; } = BlendMode.Normal;
 
-	public EffectModifierNode (BaseEffect effect, DocumentSelection? clip = null)
+	// Kept so Clone can build another instance of the effect the same way this one was built.
+	private readonly IServiceProvider? services;
+
+	public EffectModifierNode (BaseEffect effect, DocumentSelection? clip = null, IServiceProvider? services = null)
 	{
 		Effect = effect;
 		Clip = clip;
+		this.services = services;
 	}
 
 	/// <summary>
 	/// Builds a node from the live menu instance of an effect. The node gets its own effect instance
 	/// and its own copy of the parameters, so later menu use cannot rewrite a node already placed.
 	/// </summary>
-	public static EffectModifierNode FromEffect (BaseEffect effect, DocumentSelection? clip)
+	public static EffectModifierNode FromEffect (BaseEffect effect, DocumentSelection? clip, IServiceProvider? services = null)
+		=> new (CopyOf (effect, services), clip, services);
+
+	/// <summary>
+	/// A second instance of <paramref name="effect"/> carrying a copy of its parameters. Most effects
+	/// take the service provider they were registered with, a few take nothing, so both shapes are
+	/// tried. An effect whose constructor takes something else falls back to sharing the instance:
+	/// the node still renders correctly, but editing its settings also moves the menu's copy.
+	/// </summary>
+	private static BaseEffect CopyOf (BaseEffect effect, IServiceProvider? services)
 	{
-		BaseEffect copy = (BaseEffect) Activator.CreateInstance (effect.GetType ())!;
-		if (effect.EffectData is not null)
+		BaseEffect copy = Instantiate (effect.GetType (), services) ?? effect;
+
+		if (!ReferenceEquals (copy, effect) && effect.EffectData is not null)
 			copy.EffectData = effect.EffectData.Clone ();
 
-		return new (copy, clip);
+		return copy;
+	}
+
+	private static BaseEffect? Instantiate (Type type, IServiceProvider? services)
+	{
+		if (services is not null) {
+			try {
+				return (BaseEffect?) Activator.CreateInstance (type, services);
+			} catch (MissingMethodException) {
+				// Falls through to the parameterless shape.
+			}
+		}
+
+		try {
+			return (BaseEffect?) Activator.CreateInstance (type);
+		} catch (MissingMethodException) {
+			return null;
+		}
 	}
 
 	/// <summary>The dock label: the user's name if they set one, otherwise the effect's own name.</summary>
@@ -59,11 +90,7 @@ public sealed class EffectModifierNode : ILayerObject
 	/// </summary>
 	public EffectModifierNode Clone ()
 	{
-		BaseEffect effectCopy = (BaseEffect) Activator.CreateInstance (Effect.GetType ())!;
-		if (Effect.EffectData is not null)
-			effectCopy.EffectData = Effect.EffectData.Clone ();
-
-		return new (effectCopy, Clip) {
+		return new (CopyOf (Effect, services), Clip, services) {
 			Opacity = Opacity,
 			Hidden = Hidden,
 			Name = Name,

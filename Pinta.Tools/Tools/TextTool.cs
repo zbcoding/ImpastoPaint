@@ -2142,6 +2142,8 @@ public sealed class TextTool : BaseTool
 			cursorBounds = layout.GetCursorLocation ().Inflated (2, 10);
 		}
 
+		FoldObjectsIntoComposite (userLayer);
+
 		InflateAndInvalidate (allBounds);
 		workspace.Invalidate (old_cursor_bounds);
 		workspace.Invalidate (cursorBounds);
@@ -2193,6 +2195,28 @@ public sealed class TextTool : BaseTool
 					break;
 			}
 		}
+
+		FoldObjectsIntoComposite (layer);
+	}
+
+	/// <summary>
+	/// A layer carrying modifier nodes is painted from <see cref="UserLayer.Composite"/> rather than
+	/// from the object surface the redraws above write to (see UserLayer.GetLayersToPaint), so text
+	/// drawn there would stay invisible until something else rebuilt the accumulator. Re-running the
+	/// accumulator walk is enough: a text object's engine is its own store, so it already holds what
+	/// was just typed or dragged.
+	/// ponytail: the caret is drawn only onto the object surface, so it is not visible while editing
+	/// text on a layer that has effects. Fixing that needs the caret on a tool overlay instead.
+	/// </summary>
+	private void FoldObjectsIntoComposite (UserLayer layer)
+	{
+		if (!layer.HasModifiers)
+			return;
+
+		ObjectOpacity.RenderLayerObjects (PintaCore.Chrome, layer);
+
+		// Whole canvas: an effect can move pixels outside the text's own bounds.
+		workspace.Invalidate ();
 	}
 
 	/// <summary>

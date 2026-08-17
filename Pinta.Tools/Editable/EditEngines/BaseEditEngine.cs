@@ -1822,6 +1822,18 @@ public abstract class BaseEditEngine
 			}
 		}
 
+		// A layer carrying modifier nodes is painted from UserLayer.Composite, not from the object
+		// surface just drawn (see UserLayer.GetLayersToPaint), so the live geometry has to be folded
+		// into the accumulator or it stays invisible until something else rebuilds it. The accumulator
+		// renders shapes from the stored objects, which the live engines have not written back yet, so
+		// persist them first. Whole-canvas invalidation because an effect can move pixels anywhere,
+		// which the geometry's own dirty rect does not cover.
+		if (layer.HasModifiers) {
+			PersistShapeObjects (layer);
+			ObjectOpacity.RenderLayerObjects (PintaCore.Chrome, layer);
+			workspace.Invalidate ();
+		}
+
 		return totalDirty ?? RectangleD.Zero;
 	}
 

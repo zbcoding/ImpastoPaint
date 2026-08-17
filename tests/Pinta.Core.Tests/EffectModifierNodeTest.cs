@@ -48,6 +48,33 @@ internal sealed class EffectModifierNodeTest
 		return s;
 	}
 
+	// A third-party effect that throws must cost its own contribution and nothing else: a node
+	// re-renders on every stroke, undo and visibility toggle, so a propagating exception would take
+	// the application down in the middle of someone's editing session.
+	private sealed class ThrowingTestEffect : BaseEffect
+	{
+		public override bool IsTileable => true;
+		public override string Name => "Throws (test)";
+
+		public override void Render (ImageSurface src, ImageSurface dst, ReadOnlySpan<RectangleI> rois)
+			=> throw new ArgumentOutOfRangeException (nameof (rois), "as an add-in effect might");
+	}
+
+	[Test]
+	public void FailingEffectLeavesThePixelsAloneInsteadOfThrowing ()
+	{
+		RequireCairo ();
+		UserLayer layer = new (OpaqueBlack (4));
+		EffectModifierNode node = new (new ThrowingTestEffect ());
+
+		ImageSurface accumulator = EffectModifierNode.CopyOf (layer.Surface);
+		Assert.DoesNotThrow (() => node.Apply (accumulator));
+		accumulator.MarkDirty ();
+
+		ColorBgra result = accumulator.GetColorBgra (new PointI (1, 1));
+		Assert.That (result.R, Is.EqualTo (0), "the base raster is untouched");
+	}
+
 	[Test]
 	public void ModifierAppliesToBaseRaster ()
 	{

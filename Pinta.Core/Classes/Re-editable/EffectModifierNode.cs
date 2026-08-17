@@ -154,7 +154,17 @@ public sealed class EffectModifierNode : ILayerObject
 		using ImageSurface source = CopyOf (input);
 		ImageSurface rendered = CopyOf (input);
 
-		RenderTiled (source, rendered, new RectangleI (0, 0, input.Width, input.Height));
+		try {
+			RenderTiled (source, rendered, new RectangleI (0, 0, input.Width, input.Height));
+		} catch (Exception e) {
+			// A node re-renders on every paint stroke, undo and visibility toggle, so an effect that
+			// throws would otherwise take the application down mid-edit - and add-in effects are code
+			// this build cannot vouch for. The node contributes nothing instead, loudly.
+			Console.Error.WriteLine ($"Effect \"{Effect.Name}\" failed while rendering a layer effect node: {e}");
+			rendered.Dispose ();
+			rendered = CopyOf (input);
+		}
+
 		rendered.MarkDirty ();
 
 		cached_output?.Dispose ();
@@ -206,7 +216,14 @@ public sealed class EffectModifierNode : ILayerObject
 	private void RenderTiled (ImageSurface source, ImageSurface destination, RectangleI bounds)
 	{
 		int threads = Math.Max (1, Environment.ProcessorCount);
-		if (!Effect.IsTileable || threads == 1 || bounds.Height < threads * 2) {
+
+		// Banding hands the effect a region it would never see when applied destructively, one band per
+		// core. Effects that ship here are rendered that way and checked; an add-in's is not, and one
+		// that derives a value from the region it is given (a drag length, a wavelength) can compute
+		// nonsense - or throw - on a band a fraction of the canvas height. Its own IsTileable claim is
+		// about independence per pixel, not about region size, so pay the single-threaded pass instead.
+		bool ownEffect = AddinMenu.AddinNameOf (Effect.GetType ()) is null;
+		if (!Effect.IsTileable || !ownEffect || threads == 1 || bounds.Height < threads * 2) {
 			Effect.Render (source, destination, [bounds]);
 			return;
 		}

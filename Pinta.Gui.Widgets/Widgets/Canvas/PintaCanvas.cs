@@ -379,7 +379,11 @@ internal sealed partial class PintaCanvas
 	// mask left to a separate view: the mask paints over the live layer, so the user sees the result.
 	private void DrawMaskEditingIndicator (Gtk.Snapshot snapshot, Graphene.Rect canvasViewBounds)
 	{
-		if (LayerMaskSelection.ActiveMaskLayer is null)
+		// Only the document that owns the layer being mask-edited shows the border; a mask selected
+		// in one document's dock must not paint a border on every other open document's canvas.
+		if (LayerMaskSelection.ActiveMaskLayer is not { } activeLayer)
+			return;
+		if (document.Layers.IndexOf (activeLayer) < 0)
 			return;
 
 		int width = document.ImageSize.Width;
@@ -584,6 +588,10 @@ internal sealed partial class PintaCanvas
 	{
 		// Remove the animation event handler to avoid leaks
 		GLib.Source.Remove (selection_animation_timer_id);
+
+		// This is a static, process-wide event; a per-document canvas must drop off it when the
+		// document closes, or every canvas ever opened is retained and keeps queueing redraws.
+		LayerMaskSelection.MaskEditingChanged -= QueueUpdate;
 
 		base.Dispose ();
 	}

@@ -157,7 +157,7 @@ public sealed class EffectModifierNode : ILayerModifierNode
 		ImageSurface rendered = CopyOf (input);
 
 		try {
-			RenderTiled (source, rendered, new RectangleI (0, 0, input.Width, input.Height));
+			RenderTiled (source, rendered, RenderBoundsIn (input));
 		} catch (Exception e) {
 			// A node re-renders on every paint stroke, undo and visibility toggle, so an effect that
 			// throws would otherwise take the application down mid-edit - and add-in effects are code
@@ -175,6 +175,21 @@ public sealed class EffectModifierNode : ILayerModifierNode
 		cached_data_version = data_version;
 
 		return rendered;
+	}
+
+	// The region handed to the effect. The live preview runs the effect over the selection's bounding
+	// box (LivePreviewManager.RenderBounds), so a node that rendered the whole canvas would place a
+	// region-dependent effect - a twist's centre, a polar inversion's origin - somewhere other than
+	// where the dialog showed it. Clipping the output afterwards cannot undo that. Rendering the same
+	// box the preview used makes what is committed what was previewed, and costs less on a small clip.
+	private RectangleI RenderBoundsIn (ImageSurface input)
+	{
+		RectangleI canvas = new (0, 0, input.Width, input.Height);
+
+		if (Clip is null)
+			return canvas;
+
+		return Clip.GetBounds ().ToInt ().Intersect (canvas);
 	}
 
 	private void WatchEffectData ()

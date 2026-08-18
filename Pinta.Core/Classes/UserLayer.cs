@@ -359,6 +359,18 @@ public sealed class UserLayer : Layer
 			if (shape.IsPartialEllipse)
 				shape.PartialEllipseCenter = xform.TransformPoint (shape.PartialEllipseCenter);
 		}
+
+		// A modifier node's clip is the selection the user drew against the pixels being transformed
+		// here, so it has to travel with them — a flipped layer whose effect zone stayed put leaves the
+		// effect over content it was never applied to. Frozen means "does not follow the live
+		// selection", not "immune to the layer moving underneath it".
+		foreach (ILayerModifierNode node in ModifierNodes) {
+			if (node.Clip is null)
+				continue;
+
+			node.Clip = node.Clip.Transform (xform);
+			node.InvalidateCache ();
+		}
 	}
 
 	/// <summary>

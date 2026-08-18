@@ -34,6 +34,11 @@ public sealed class MoveSelectedTool : BaseTransformTool
 {
 	private MovePixelsHistoryItem? hist;
 	private DocumentSelection? original_selection;
+
+	// Set when the user declined the rasterize prompt below. The gesture has already begun by then
+	// (BaseTransformTool sets is_dragging before calling OnStartTransform), so the move is neutered
+	// here rather than unwound there.
+	private bool move_declined;
 	private readonly Matrix original_transform = CairoExtensions.CreateIdentityMatrix ();
 
 	private readonly SystemManager system_manager;
@@ -75,6 +80,21 @@ public sealed class MoveSelectedTool : BaseTransformTool
 			document.Selection.CreateRectangleSelection (imageBounds);
 		}
 
+		// The lift below reads the layer's base raster and clears the moved region from it. Effect
+		// nodes, shapes and text are not in that raster — the canvas shows them through the layer's
+		// composite — so without this the drag carries un-effected pixels away, leaves the node
+		// applying over the hole it left, and moves nothing at all when the selection covered a text
+		// or shape object. Bake what the selection reaches, then lift.
+		move_declined = !ObjectRasterizer.PrepareForSelectionRasterOp (
+			document,
+			PintaCore.Workspace,
+			PintaCore.Chrome,
+			document.Layers.CurrentUserLayer,
+			document.Selection);
+
+		if (move_declined)
+			return;
+
 		original_selection = document.Selection.Clone ();
 		original_transform.InitMatrix (document.Layers.SelectionLayer.Transform);
 
@@ -113,6 +133,9 @@ public sealed class MoveSelectedTool : BaseTransformTool
 	{
 		base.OnUpdateTransform (document, transform);
 
+		if (move_declined)
+			return;
+
 		document.Selection = original_selection!.Transform (transform); // NRT - Set in OnStartTransform
 		document.Selection.Visible = true;
 
@@ -125,6 +148,11 @@ public sealed class MoveSelectedTool : BaseTransformTool
 	protected override void OnFinishTransform (Document document, Matrix transform)
 	{
 		base.OnFinishTransform (document, transform);
+
+		if (move_declined) {
+			move_declined = false;
+			return;
+		}
 
 		// Also transform the base selection used for the various select modes.
 		var prev_selection = document.PreviousSelection;

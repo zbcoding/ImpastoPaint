@@ -157,6 +157,9 @@ public sealed class LayerTransformNode : ILayerModifierNode
 
 	ILayerModifierNode ILayerModifierNode.CloneModifier () => Clone ();
 
+	// ponytail: this node renders from its data on every Apply, so there is nothing to drop.
+	public void InvalidateCache () { }
+
 	public void Apply (ImageSurface surface)
 	{
 		if (!IsActive)

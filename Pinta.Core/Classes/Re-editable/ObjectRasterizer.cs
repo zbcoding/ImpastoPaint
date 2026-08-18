@@ -43,8 +43,12 @@ public static class ObjectRasterizer
 		}
 	}
 
+	// RectangleD.Right and .Bottom are the last pixel, not one past it, so two regions that share only
+	// their edge pixel still overlap. Testing with < instead missed exactly that pixel, which meant a
+	// selection abutting an object's edge skipped the bake and let the following raster op write over
+	// pixels that were still being drawn from an object.
 	private static bool Overlaps (in RectangleD a, in RectangleD b)
-		=> a.Left < b.Right && a.Right > b.Left && a.Top < b.Bottom && a.Bottom > b.Top;
+		=> a.Left <= b.Right && a.Right >= b.Left && a.Top <= b.Bottom && a.Bottom >= b.Top;
 
 	/// <summary>
 	/// Indices of the Object-mode shapes on <paramref name="layer"/> that a deselect would fuse into
@@ -270,6 +274,72 @@ public static class ObjectRasterizer
 			RasterizeAllObjects (doc, workspace, chrome, layer, confirm: false, historyGroup: historyGroup);
 
 		return true;
+	}
+
+	/// <summary>
+	/// Makes <paramref name="layer"/> safe for a destructive raster operation confined to
+	/// <paramref name="selection"/> — cut, erase, or lifting the pixels out to move them. Every such
+	/// operation reads and writes the base raster, but what the user sees is the layer's composite, so
+	/// anything living outside the base raster has to be baked into it first or the operation acts on
+	/// pixels nobody is looking at.
+	/// <para>
+	/// Modifier nodes force a whole-stack bake: the accumulator has already folded the objects beneath
+	/// them into the same pixels, so there is no per-region subset to take. Shapes and text alone stay
+	/// separable, and only the ones the selection overlaps are baked. Prompts before either, listing
+	/// what stops being editable; returns false only when the user cancels, in which case nothing was
+	/// baked and the caller must abort.
+	/// </para>
+	/// </summary>
+	public static bool PrepareForSelectionRasterOp (
+		Document doc,
+		IWorkspaceService workspace,
+		IChromeService chrome,
+		UserLayer layer,
+		DocumentSelection selection,
+		CompoundHistoryItem? historyGroup = null)
+	{
+		if (!layer.HasAnyObjects)
+			return true;
+
+		RectangleD region = selection.GetBounds ();
+
+		if (layer.HasModifiers && SelectionReachesAnyModifier (layer, region)) {
+			List<string> labels = DescribeAll (layer).ToList ();
+			if (labels.Count > 0 && !Confirm (chrome, labels))
+				return false;
+
+			RasterizeModifierStack (doc, workspace, chrome, layer, historyGroup);
+			return true;
+		}
+
+		FindIntersecting (layer, region, out List<int> shapeIndices, out List<int> textIndices);
+
+		if (shapeIndices.Count == 0 && textIndices.Count == 0)
+			return true; // the selection misses every object; nothing to bake.
+
+		List<string> objectLabels = Describe (layer, shapeIndices, textIndices).ToList ();
+		if (!Confirm (chrome, objectLabels))
+			return false;
+
+		RasterizeSubset (doc, workspace, chrome, layer, shapeIndices, textIndices, historyGroup: historyGroup);
+		return true;
+	}
+
+	// A node with no clip modifies the whole layer, so any selection reaches it. A clipped one is
+	// reached when the selection overlaps the region it was applied to. Bounding boxes rather than
+	// exact paths: over-baking a near miss costs the user an editable node, which the prompt tells
+	// them about, while under-baking silently corrupts the pixels the operation then writes.
+	public static bool SelectionReachesAnyModifier (UserLayer layer, in RectangleD region)
+	{
+		foreach (ILayerModifierNode node in layer.ModifierNodes) {
+			if (node.Clip is null)
+				return true;
+
+			if (Overlaps (region, node.Clip.GetBounds ()))
+				return true;
+		}
+
+		return false;
 	}
 
 	/// <summary>

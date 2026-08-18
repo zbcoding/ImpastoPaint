@@ -410,31 +410,14 @@ public sealed class EditActions
 		);
 	}
 
-	// Rasterizes only the live Object-mode shapes/text that the selection overlaps, so a following
-	// destructive raster op (cut/erase) touches their pixels while objects elsewhere on the layer stay
-	// editable. Prompts the user first, listing what will be baked. Returns false only if the user
-	// cancels the prompt (the caller must then abort the op); true when there was nothing to rasterize
-	// or the bake was confirmed and done.
+	// Bakes whatever the selection overlaps that does not live in the base raster, so the following
+	// destructive raster op (cut/erase) acts on the pixels the user can see. Returns false only if the
+	// user cancels the prompt, in which case the caller must abort the op.
 	private bool RasterizeSelectionObjects (Document doc)
-	{
-		UserLayer layer = doc.Layers.CurrentUserLayer;
-		if (!layer.HasAnyObjects)
-			return true;
-
-		ObjectRasterizer.FindIntersecting (
-			layer, doc.Selection.GetBounds (),
-			out List<int> shapeIndices, out List<int> textIndices);
-
-		if (shapeIndices.Count == 0 && textIndices.Count == 0)
-			return true; // selection misses every object; nothing to bake.
-
-		var labels = ObjectRasterizer.Describe (layer, shapeIndices, textIndices).ToList ();
-		if (!ObjectRasterizer.Confirm (chrome, labels))
-			return false;
-
-		ObjectRasterizer.RasterizeSubset (doc, workspace, chrome, layer, shapeIndices, textIndices);
-		return true;
-	}
+		=> ObjectRasterizer.PrepareForSelectionRasterOp (
+			doc, workspace, chrome,
+			doc.Layers.CurrentUserLayer,
+			doc.Selection);
 
 	private void HandlePintaCoreActionsEditDeselectActivated (object sender, EventArgs e)
 	{

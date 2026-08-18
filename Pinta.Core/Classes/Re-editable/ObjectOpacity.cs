@@ -35,8 +35,19 @@ public interface ILayerObject
 public interface ILayerModifierNode : ILayerObject
 {
 	string DisplayName { get; }
+
+	/// <summary>
+	/// The selection frozen at the moment the node was created, or null when it applies to the whole
+	/// layer. Exposed here because a destructive layer transform has to carry it along with the
+	/// pixels it was drawn against (see <see cref="UserLayer.ApplyTransform"/>).
+	/// </summary>
+	DocumentSelection? Clip { get; set; }
+
 	void Apply (ImageSurface surface);
 	ILayerModifierNode CloneModifier ();
+
+	/// <summary>Drops any cached render. Call after changing the node's clip or settings out of band.</summary>
+	void InvalidateCache ();
 }
 
 public static class ObjectOpacity

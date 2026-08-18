@@ -389,11 +389,14 @@ public sealed class ToolManager : IEnumerable<BaseTool>, IToolService
 		// to bake the transform; once accepted the stroke proceeds on the plain layer, cancelled it is
 		// swallowed. Tools that don't write to the current layer (selection, picker, zoom, pan) are
 		// left alone.
-		if (CurrentTool?.WritesToCurrentLayer == true && document.Layers.CurrentUserLayer.HasActiveTransform) {
-			if (!ObjectRasterizer.ConfirmRasterizeToPaint (PintaCore.Chrome, document.Layers.CurrentUserLayer))
+		if (CurrentTool?.WritesToCurrentLayer == true
+			&& args.MouseButton != MouseButton.Middle // middle button is pan, not a stroke
+			&& document.Layers.CurrentUserLayer is { } paintLayer
+			&& paintLayer.HasActiveTransform) {
+			if (!ObjectRasterizer.ConfirmRasterizeToPaint (PintaCore.Chrome, paintLayer))
 				return;
-			ObjectRasterizer.RasterizeModifierStack (
-				document, PintaCore.Workspace, PintaCore.Chrome, document.Layers.CurrentUserLayer);
+			if (!ObjectRasterizer.RasterizeModifierStack (document, PintaCore.Workspace, PintaCore.Chrome, paintLayer))
+				return; // the bake failed; do not let the stroke land on a still-transformed layer
 		}
 
 		if (!TryMouseDownPanOverride (document, args))

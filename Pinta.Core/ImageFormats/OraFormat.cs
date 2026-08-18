@@ -395,14 +395,15 @@ public sealed class OraFormat : IImageImporter, IImageExporter
 	/// True when the bake swallows a text or shape object. Those are restored from their own sidecar
 	/// entries, so a layer whose raster already contains them would draw them a second time on load.
 	/// Such a layer is written as its full composite with no sidecar entries of any kind - everything on
-	/// it becomes pixels, which is what baking means.
+	/// it becomes pixels, which is what baking means. A transform node below the cut is just baked with
+	/// the rest (it has no competing sidecar), so it does not force the whole layer down.
 	/// </summary>
 	private static bool BakesWholeLayer (UserLayer layer)
 	{
 		int cut = BakeThrough (layer);
 
 		for (int i = 0; i <= cut; i++) {
-			if (layer.Objects[i] is not EffectModifierNode)
+			if (layer.Objects[i] is ShapeObject or TextObject)
 				return true;
 		}
 

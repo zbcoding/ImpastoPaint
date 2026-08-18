@@ -496,10 +496,13 @@ public sealed class LayerActions
 
 		// A layer with modifier nodes composites its children into one accumulated surface, so a
 		// merge has to bake the stacks into plain raster first — otherwise the pixels a modifier
-		// produced would be lost when the layers fuse. Both layers are confirmed together before
-		// anything is baked, so a cancel cannot leave the source half-baked with no undo entry.
+		// produced would be lost when the layers fuse. Only modifier-carrying layers are baked;
+		// plain shapes/text keep the pre-existing copy-down behavior. Both layers are confirmed
+		// together before anything is baked, so a cancel cannot leave the source half-baked with no
+		// undo entry.
 		UserLayer sourceLayer = doc.Layers.CurrentUserLayer;
-		if (!ObjectRasterizer.RasterizeLayers (doc, workspace, chrome, [sourceLayer, bottomLayer], hist))
+		List<UserLayer> modifierLayers = new UserLayer[] { sourceLayer, bottomLayer }.Where (l => l.HasModifiers).ToList ();
+		if (!ObjectRasterizer.RasterizeLayers (doc, workspace, chrome, modifierLayers, hist))
 			return;
 
 		Cairo.ImageSurface oldBottomSurface = bottomLayer.Surface.Clone ();

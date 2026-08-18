@@ -176,6 +176,9 @@ public sealed class LayerTransformNode : ILayerModifierNode
 		if (BlendMode == BlendMode.Normal) {
 			// A transform moves pixels and can leave the canvas bare, so Normal has to replace the
 			// target (SOURCE) rather than composite over it — otherwise the unmoved pixels stay.
+			// Tradeoff: at Opacity < 1 SOURCE fades the moved pixels toward transparent (revealing
+			// what is beneath the layer) instead of blending toward the untransformed content. That
+			// is deliberate — no single operator can both clear the gaps and fade to the original.
 			g.Operator = Operator.Source;
 			g.SetSourceSurface (transformed, 0, 0);
 			g.PaintWithAlpha (Math.Clamp (Opacity, 0, 1));
@@ -204,6 +207,15 @@ public sealed class LayerTransformNode : ILayerModifierNode
 			Data.PerspectiveBottomLeftHorizontal,
 			Data.PerspectiveBottomLeftVertical);
 
+		// A persisted value can carry NaN (corrupted XML parses as a double), and NaN never fails a
+		// magnitude comparison, so the singular-matrix guard would not trip. Fall back to a no-op
+		// (leave the pixels alone) rather than silently rendering the whole layer transparent.
+		if (!double.IsFinite (topLeft.X) || !double.IsFinite (topLeft.Y)
+			|| !double.IsFinite (topRight.X) || !double.IsFinite (topRight.Y)
+			|| !double.IsFinite (bottomRight.X) || !double.IsFinite (bottomRight.Y)
+			|| !double.IsFinite (bottomLeft.X) || !double.IsFinite (bottomLeft.Y))
+			return false;
+
 		Span<double> inverse = stackalloc double[9];
 		if (!TryHomography (
 			[topLeft, topRight, bottomRight, bottomLeft],
@@ -211,20 +223,27 @@ public sealed class LayerTransformNode : ILayerModifierNode
 			inverse))
 			return false;
 
-		ReadOnlySpan<ColorBgra> sourceData = source.GetReadOnlyPixelData ();
-		Span<ColorBgra> destinationData = destination.GetPixelData ();
-		for (int y = 0; y < height; y++) {
+		// Rows are independent, so the per-pixel inverse sample parallelizes across cores — a node
+		// re-renders on every stroke, undo and visibility toggle, same as the effect path. The
+		// solved values are hoisted to plain locals because the stackalloc span cannot be captured.
+		double i0 = inverse[0], i1 = inverse[1], i2 = inverse[2];
+		double i3 = inverse[3], i4 = inverse[4], i5 = inverse[5];
+		double i6 = inverse[6], i7 = inverse[7], i8 = inverse[8];
+
+		System.Threading.Tasks.Parallel.For (0, height, y => {
+			Span<ColorBgra> destinationRow = destination.GetPixelData ();
+			ReadOnlySpan<ColorBgra> sourceRow = source.GetReadOnlyPixelData ();
 			int row = y * width;
 			for (int x = 0; x < width; x++) {
-				double denominator = (inverse[6] * x) + (inverse[7] * y) + inverse[8];
+				double denominator = (i6 * x) + (i7 * y) + i8;
 				if (Math.Abs (denominator) < 1e-12)
 					continue;
 
-				double sourceX = ((inverse[0] * x) + (inverse[1] * y) + inverse[2]) / denominator;
-				double sourceY = ((inverse[3] * x) + (inverse[4] * y) + inverse[5]) / denominator;
-				destinationData[row + x] = Sample (source, sourceData, width, height, sourceX, sourceY);
+				double sourceX = ((i0 * x) + (i1 * y) + i2) / denominator;
+				double sourceY = ((i3 * x) + (i4 * y) + i5) / denominator;
+				destinationRow[row + x] = Sample (source, sourceRow, width, height, sourceX, sourceY);
 			}
-		}
+		});
 
 		destination.MarkDirty ();
 		return true;

@@ -30,13 +30,18 @@ public static class TransformNodeDialog
 			new PintaLocalizer (),
 			workspace);
 
-		// Live preview: the layer re-renders with the node applied as the sliders move. The node is
-		// already attached (see the callers), so a refresh reflects the edited transform.
-		dialog.EffectDataChanged += (_, _) => ObjectOpacity.RefreshLayerNoInvalidate (chrome, layer);
+		// Live preview: the layer re-renders with the node applied as the sliders move (the node is
+		// already attached, see the callers), and the canvas repaints. Held in a local so the
+		// unsubscribe below detaches the same delegate instance.
+		System.ComponentModel.PropertyChangedEventHandler onChanged = (_, _) => {
+			ObjectOpacity.RefreshLayerNoInvalidate (chrome, layer);
+			workspace.Invalidate ();
+		};
+		dialog.EffectDataChanged += onChanged;
 
 		Gtk.ResponseType response = await dialog.RunAsync ();
 		dialog.Destroy ();
-		dialog.EffectDataChanged -= (_, _) => ObjectOpacity.RefreshLayerNoInvalidate (chrome, layer);
+		dialog.EffectDataChanged -= onChanged;
 		return response == Gtk.ResponseType.Ok;
 	}
 
@@ -66,6 +71,7 @@ public static class TransformNodeDialog
 
 		workspace.ActiveDocument.History.PushNewItem (
 			new LayerObjectsHistoryItem (workspace, chrome, icon, title, layer, objectsBefore));
+		workspace.Invalidate ();
 	}
 
 	/// <summary>

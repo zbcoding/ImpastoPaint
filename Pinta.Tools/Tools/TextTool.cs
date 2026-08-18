@@ -130,7 +130,6 @@ public sealed class TextTool : BaseTool
 	private PointI last_mouse_position = new (0, 0);
 
 	public override bool UsesPaintColors => true;
-	public override bool WritesToCurrentLayer => true;
 	public override string Name
 		=> Translations.GetString ("Text");
 

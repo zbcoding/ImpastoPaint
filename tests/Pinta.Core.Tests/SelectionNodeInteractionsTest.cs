@@ -347,6 +347,55 @@ internal sealed class SelectionNodeInteractionsTest
 		});
 	}
 
+	// The reported Move Selected Pixels case: one rectangle spans pixels inside a clipped effect and
+	// plain pixels outside it. Accepting the rasterize warning must bake before the tool copies from
+	// the base raster; otherwise the lifted rectangle is uniformly un-effected, and clearing it pulls
+	// the apparent effect away from the source region.
+	[Test]
+	public void LiftingAcrossAClippedNodeCarriesEffectedAndPlainPixels ()
+	{
+		UserLayer layer = LayerFilledWith (1.0);
+		layer.Objects.Add (new EffectModifierNode (
+			new InvertEffect (),
+			RectangleSelection (new RectangleD (0, 0, 4, Height))));
+		ObjectOpacity.RenderLayerObjects (chrome: null!, layer);
+
+		DocumentSelection lifted = RectangleSelection (new RectangleD (2, 0, 6, 4));
+		Assert.That (
+			ObjectRasterizer.SelectionReachesAnyModifier (layer, lifted.GetBounds ()),
+			Is.True,
+			"the rasterize warning is required when any part of the move reaches the clipped node");
+
+		// The accepted-warning branch of PrepareForSelectionRasterOp bakes the whole modifier stack
+		// before MoveSelectedTool copies these pixels to SelectionLayer.
+		Assert.That (layer.RasterizeModifierStack (), Is.True);
+		Assert.That (layer.HasModifiers, Is.False);
+
+		using ImageSurface liftedPixels = CairoExtensions.CreateImageSurface (Format.Argb32, Width, Height);
+		using (Context selectionContext = new (liftedPixels)) {
+			selectionContext.AppendPath (lifted.SelectionPath);
+			selectionContext.FillRule = FillRule.EvenOdd;
+			selectionContext.SetSourceSurface (layer.Surface, 0, 0);
+			selectionContext.Clip ();
+			selectionContext.Paint ();
+		}
+
+		ObjectOpacity.LiftSelectionFromRaster (chrome: null!, layer, lifted);
+
+		Assert.Multiple (() => {
+			Assert.That (liftedPixels.GetColorBgra (new PointI (3, 1)).R, Is.EqualTo (0),
+				"the lifted portion inside the effect zone carries the baked effect");
+			Assert.That (liftedPixels.GetColorBgra (new PointI (6, 1)).R, Is.EqualTo (255),
+				"the same lifted rectangle also carries its plain pixels");
+			Assert.That (layer.Surface.GetColorBgra (new PointI (3, 1)).A, Is.EqualTo (0),
+				"the affected portion is removed from the source during the drag");
+			Assert.That (layer.Surface.GetColorBgra (new PointI (6, 1)).A, Is.EqualTo (0),
+				"the plain portion is removed from the source during the drag");
+			Assert.That (layer.Surface.GetColorBgra (new PointI (1, 1)).R, Is.EqualTo (0),
+				"baked effect pixels outside the moved rectangle stay behind");
+		});
+	}
+
 	// The same lift on a layer the canvas paints directly must not conjure a composite: one there
 	// would make GetLayersToPaint skip the layer's own raster.
 	[Test]

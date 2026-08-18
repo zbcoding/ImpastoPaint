@@ -221,13 +221,16 @@ public sealed class UserLayer : Layer
 		=> index >= 0 && index < Objects.Count ? Objects[index] : null;
 
 	/// <summary>The modifier nodes on this layer, in z-order.</summary>
-	public IReadOnlyList<EffectModifierNode> ModifierNodes => Objects.OfType<EffectModifierNode> ().ToList ();
+	public IReadOnlyList<ILayerModifierNode> ModifierNodes => Objects.OfType<ILayerModifierNode> ().ToList ();
+
+	/// <summary>Whether this layer contains an enabled, non-identity transform.</summary>
+	public bool HasActiveTransform => Objects.OfType<LayerTransformNode> ().Any (node => node.IsActive);
 
 	/// <summary>
 	/// Whether this layer renders through the accumulator path. False keeps the original two-surface
 	/// composite (base raster + object surface) so a layer without modifiers renders exactly as before.
 	/// </summary>
-	public bool HasModifiers => Objects.Any (o => o is EffectModifierNode);
+	public bool HasModifiers => Objects.Any (o => o is ILayerModifierNode);
 
 	/// <summary>
 	/// The accumulated composite for a layer with modifiers: the base raster with every child applied
@@ -390,7 +393,7 @@ public sealed class UserLayer : Layer
 		Surface.MarkDirty ();
 
 		Objects.Clear ();
-		Composite = null;
+		SetComposite (null);
 
 		foreach (ReEditableLayer rel in ReEditableLayers)
 			if (rel.IsLayerSetup)

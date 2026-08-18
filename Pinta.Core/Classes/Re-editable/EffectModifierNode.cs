@@ -12,7 +12,7 @@ using Cairo;
 
 namespace Pinta.Core;
 
-public sealed class EffectModifierNode : ILayerObject
+public sealed class EffectModifierNode : ILayerModifierNode
 {
 	/// <summary>
 	/// The effect this node runs. Its <see cref="BaseEffect.EffectData"/> is this node's own copy —
@@ -97,6 +97,8 @@ public sealed class EffectModifierNode : ILayerObject
 			BlendMode = BlendMode,
 		};
 	}
+
+	ILayerModifierNode ILayerModifierNode.CloneModifier () => Clone ();
 
 	/// <summary>
 	/// Runs the effect over <paramref name="surface"/> in place, honouring Hidden, the frozen clip,

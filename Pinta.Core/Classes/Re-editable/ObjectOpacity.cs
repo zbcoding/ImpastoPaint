@@ -31,6 +31,14 @@ public interface ILayerObject
 	BlendMode BlendMode { get; set; }
 }
 
+/// <summary>A layer child that transforms the accumulated pixels beneath it.</summary>
+public interface ILayerModifierNode : ILayerObject
+{
+	string DisplayName { get; }
+	void Apply (ImageSurface surface);
+	ILayerModifierNode CloneModifier ();
+}
+
 public static class ObjectOpacity
 {
 	/// <summary>
@@ -169,7 +177,7 @@ public static class ObjectOpacity
 			// The object surface stays cleared — GetLayersToPaint paints the composite instead.
 			ImageSurface accumulator = EffectModifierNode.CopyOf (layer.Surface);
 			foreach (ILayerObject obj in layer.Objects) {
-				if (obj is EffectModifierNode node)
+				if (obj is ILayerModifierNode node)
 					node.Apply (accumulator);
 				else
 					RenderObject (accumulator, layer, obj, chrome);
@@ -194,7 +202,7 @@ public static class ObjectOpacity
 		ImageSurface accumulator = EffectModifierNode.CopyOf (layer.Surface);
 
 		for (int i = 0; i <= throughIndex && i < layer.Objects.Count; i++) {
-			if (layer.Objects[i] is EffectModifierNode node)
+			if (layer.Objects[i] is ILayerModifierNode node)
 				node.Apply (accumulator);
 			else
 				RenderObject (accumulator, layer, layer.Objects[i], chrome);
@@ -221,8 +229,8 @@ public static class ObjectOpacity
 				result.Add (s.Clone ());
 			else if (o is TextObject t)
 				result.Add (t.Clone ());
-			else if (o is EffectModifierNode n)
-				result.Add (n.Clone ());
+			else if (o is ILayerModifierNode n)
+				result.Add (n.CloneModifier ());
 		}
 		return result;
 	}

@@ -107,12 +107,10 @@ public sealed class InvertHistoryItem : BaseHistoryItem
 				doc.RotateImageCW ();
 				break;
 			case InvertType.FlipLayerHorizontal:
-				doc.Layers[layer_index].FlipHorizontal ();
-				PintaCore.Workspace.Invalidate ();
+				FlipLayer (doc, layer_index, horizontal: true);
 				break;
 			case InvertType.FlipLayerVertical:
-				doc.Layers[layer_index].FlipVertical ();
-				PintaCore.Workspace.Invalidate ();
+				FlipLayer (doc, layer_index, horizontal: false);
 				break;
 		}
 	}
@@ -141,14 +139,22 @@ public sealed class InvertHistoryItem : BaseHistoryItem
 				doc.RotateImageCCW ();
 				break;
 			case InvertType.FlipLayerHorizontal:
-				doc.Layers[layer_index].FlipHorizontal ();
-				PintaCore.Workspace.Invalidate ();
+				FlipLayer (doc, layer_index, horizontal: true);
 				break;
 			case InvertType.FlipLayerVertical:
-				doc.Layers[layer_index].FlipVertical ();
-				PintaCore.Workspace.Invalidate ();
+				FlipLayer (doc, layer_index, horizontal: false);
 				break;
 		}
+	}
+
+	// A layer flip mirrors the raster, the mask and the live shapes and text together, and mirroring
+	// is its own inverse — so undo and redo are the same call, with no stored state.
+	private static void FlipLayer (Document doc, int layerIndex, bool horizontal)
+	{
+		UserLayer layer = doc.Layers[layerIndex];
+		layer.FlipContents (horizontal);
+		ObjectOpacity.RefreshLayer (PintaCore.Workspace, PintaCore.Chrome, layer);
+		LayerObjectSelection.RaiseObjectsChanged ();
 	}
 }
 

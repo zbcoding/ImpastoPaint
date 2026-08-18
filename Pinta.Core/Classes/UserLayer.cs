@@ -361,6 +361,37 @@ public sealed class UserLayer : Layer
 		}
 	}
 
+	/// <summary>
+	/// Mirrors everything the layer owns — base raster, mask, live shapes and text — about the
+	/// canvas centre. Destructive for the raster, but the live objects keep their identity: their
+	/// geometry is mirrored rather than baked, so they stay editable and a second flip puts them
+	/// back exactly. That involution is what lets the flip's history item undo by re-flipping,
+	/// with no stored positions. Callers re-render the object surface afterwards.
+	/// </summary>
+	public void FlipContents (bool horizontal)
+	{
+		Size size = new (Surface.Width, Surface.Height);
+
+		// Handles raster, re-editable sublayer surfaces, the mask and shape control points.
+		ApplyTransform (
+			horizontal
+				? CairoExtensions.CreateMatrix (-1, 0, 0, 1, size.Width, 0)
+				: CairoExtensions.CreateMatrix (1, 0, 0, -1, 0, size.Height),
+			size,
+			size);
+
+		// Text is mirrored by position, not by glyph: mirroring the rendering would leave the text
+		// unreadable while still claiming to be editable. The anchor moves so the block lands where
+		// its mirror image would, and the rotation flips sign so a rotated block stays consistent.
+		foreach (TextObject text in TextObjects) {
+			PointI origin = text.Engine.Origin;
+			text.Engine.Origin = horizontal
+				? new PointI (size.Width - origin.X - text.TextBounds.Width, origin.Y)
+				: new PointI (origin.X, size.Height - origin.Y - text.TextBounds.Height);
+			text.Rotation = -text.Rotation;
+		}
+	}
+
 	public void Rotate (
 		DegreesAngle angle,
 		Size old_size,
@@ -453,7 +484,12 @@ public sealed class UserLayer : Layer
 
 		Objects.Clear ();
 		SetComposite (null);
-		DropMask (); // the mask is baked into the composite; leaving it would re-apply it on the next render.
+
+		// An applying mask is part of the composite just baked, so it has to go or it would be
+		// re-applied on the next render. A hidden mask contributed nothing, so dropping it would
+		// only destroy pixels the user is holding on to — it survives the bake.
+		if (Mask is { Hidden: false })
+			DropMask ();
 
 		foreach (ReEditableLayer rel in ReEditableLayers)
 			if (rel.IsLayerSetup)

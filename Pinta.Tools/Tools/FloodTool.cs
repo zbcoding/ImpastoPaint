@@ -90,7 +90,14 @@ public abstract class FloodTool : BaseTool
 		if (!currentRegion.ContainsPoint (pos.X, pos.Y) && LimitToSelection)
 			return;
 
-		var surface = document.Layers.CurrentPaintSurface;
+		// Sample the pixels the user can see: for a layer with effects, a transform or a mask that is
+		// the composite, not the raster the fill lands in. While the mask itself is the paint target,
+		// the mask surface *is* what is being edited, so that one is sampled directly.
+		UserLayer currentLayer = document.Layers.CurrentUserLayer;
+		Cairo.ImageSurface surface =
+			document.Layers.CurrentMaskIsTarget
+			? document.Layers.CurrentPaintSurface
+			: currentLayer.Composite ?? currentLayer.Surface;
 		var stencilBuffer = new BitMask (surface.Width, surface.Height);
 		var tol = (int) (Tolerance * Tolerance * 256);
 

@@ -293,7 +293,7 @@ public static class ObjectRasterizer
 		// rasterizing "everything" on such a layer means baking the whole stack at once — the same
 		// step the dock's per-node Rasterize performs.
 		if (layer.HasModifiers) {
-			List<string> labels = [.. layer.ModifierNodes.Select (m => m.DisplayName)];
+			List<string> labels = BakeLabels (layer);
 			if (confirm && labels.Count > 0 && !Confirm (chrome, labels))
 				return false;
 			return RasterizeModifierStack (doc, workspace, chrome, layer, historyGroup);
@@ -319,9 +319,10 @@ public static class ObjectRasterizer
 		// geometry ops, where a bake is expected. Here one stray click would silently destroy a
 		// non-destructive transform, which is destructive enough to always ask about.
 		const int max_listed = 12;
-		string list = string.Join ("\n", layer.ModifierNodes.Take (max_listed).Select (m => "• " + m.DisplayName));
-		if (layer.ModifierNodes.Count > max_listed)
-			list += "\n" + Translations.GetString ("…and {0} more", layer.ModifierNodes.Count - max_listed);
+		List<string> labels = BakeLabels (layer);
+		string list = string.Join ("\n", labels.Take (max_listed).Select (l => "• " + l));
+		if (labels.Count > max_listed)
+			list += "\n" + Translations.GetString ("…and {0} more", labels.Count - max_listed);
 
 		string body = Translations.GetString ("Painting on a transformed layer is blocked while the transform is active. Rasterize the transform to paint here? The transform and everything beneath it become part of the layer's pixels.")
 			+ "\n\n" + list;
@@ -359,7 +360,7 @@ public static class ObjectRasterizer
 		List<string> labels = [];
 		foreach (UserLayer layer in affected) {
 			if (layer.HasModifiers)
-				labels.AddRange (layer.ModifierNodes.Select (m => m.DisplayName));
+				labels.AddRange (BakeLabels (layer));
 			else
 				labels.AddRange (DescribeAll (layer));
 		}
@@ -414,9 +415,26 @@ public static class ObjectRasterizer
 		return true;
 	}
 
+	/// <summary>
+	/// What baking a modifier-carrying layer's stack would make permanent: its modifier nodes, plus
+	/// its mask when the mask is applying (the bake folds the mask into the pixels and drops it, so
+	/// a prompt that named only the nodes understated what the user was about to lose).
+	/// </summary>
+	private static List<string> BakeLabels (UserLayer layer)
+	{
+		List<string> labels = [.. layer.ModifierNodes.Select (node => node.DisplayName)];
+		if (layer.Mask is { Hidden: false })
+			labels.Add (Translations.GetString ("Layer Mask"));
+		return labels;
+	}
+
+	// Everything on the layer a bake would make permanent, modifier nodes included. Leaving the
+	// nodes out made a layer whose only children were effects or transforms describe itself as
+	// empty, so crop / resize / flatten baked them with no rasterize notice at all.
 	private static IEnumerable<string> DescribeAll (UserLayer layer)
 		=> Describe (
 			layer,
 			[.. Enumerable.Range (0, layer.ShapeObjects.Count)],
-			[.. Enumerable.Range (0, layer.TextObjects.Count)]);
+			[.. Enumerable.Range (0, layer.TextObjects.Count)])
+		.Concat (layer.ModifierNodes.Select (node => node.DisplayName));
 }

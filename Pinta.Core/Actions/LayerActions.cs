@@ -437,11 +437,7 @@ public sealed class LayerActions
 
 		tools.Commit ();
 
-		AppendTransformNode (
-			doc.Layers.CurrentUserLayer,
-			new LayerTransformData { FlipVertical = true },
-			Resources.Icons.LayerFlipVertical,
-			Translations.GetString ("Flip Vertical"));
+		FlipCurrentLayer (doc, horizontal: false);
 	}
 
 	private void HandlePintaCoreActionsLayersFlipHorizontalActivated (object sender, EventArgs e)
@@ -450,24 +446,27 @@ public sealed class LayerActions
 
 		tools.Commit ();
 
-		AppendTransformNode (
-			doc.Layers.CurrentUserLayer,
-			new LayerTransformData { FlipHorizontal = true },
-			Resources.Icons.LayerFlipHorizontal,
-			Translations.GetString ("Flip Horizontal"));
+		FlipCurrentLayer (doc, horizontal: true);
 	}
 
-	// A layer flip is a non-destructive transform node: it stays editable in the dock and is baked
-	// only when a later raster op needs plain pixels. One history item records the whole addition.
-	private void AppendTransformNode (UserLayer layer, LayerTransformData data, string icon, string text)
+	// A layer flip mirrors the layer's pixels. It stays destructive rather than becoming a transform
+	// node: a node would force every later render through the accumulator, block painting behind a
+	// rasterize prompt, and hide the flip from other ORA readers — a steep price for one of the
+	// cheapest operations in the app. Live shapes and text are not rasterized either; they are
+	// mirrored along with the raster (UserLayer.FlipContents) and so survive the flip editable.
+	// Mirroring is its own inverse, which is why one InvertHistoryItem undoes the whole thing.
+	private void FlipCurrentLayer (Document doc, bool horizontal)
 	{
-		List<ILayerObject> objectsBefore = ObjectOpacity.CloneAll (layer.Objects);
+		UserLayer layer = doc.Layers.CurrentUserLayer;
 
-		layer.Objects.Add (new LayerTransformNode (data) { Name = text });
+		layer.FlipContents (horizontal);
 		ObjectOpacity.RefreshLayer (workspace, chrome, layer);
+		LayerObjectSelection.RaiseObjectsChanged ();
 
-		workspace.ActiveDocument.History.PushNewItem (
-			new LayerObjectsHistoryItem (workspace, chrome, icon, text, layer, objectsBefore));
+		doc.History.PushNewItem (
+			new InvertHistoryItem (
+				horizontal ? InvertType.FlipLayerHorizontal : InvertType.FlipLayerVertical,
+				doc.Layers.IndexOf (layer)));
 	}
 
 	private void HandlePintaCoreActionsLayersMoveLayerUpActivated (object sender, EventArgs e)

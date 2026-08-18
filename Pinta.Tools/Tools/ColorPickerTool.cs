@@ -199,7 +199,11 @@ public class ColorPickerTool : BaseTool
 	private ColorBgra GetPixel (Document document, PointI position)
 	{
 		if (SampleLayerOnly)
-			return document.Layers.CurrentUserLayer.Surface.GetColorBgra (position);
+			// The composite is what the canvas paints for a layer carrying effects, a transform or a
+			// mask; its own Surface is the input to that stack, so sampling it would return the colour
+			// underneath everything the user can see.
+			return (document.Layers.CurrentUserLayer.Composite ?? document.Layers.CurrentUserLayer.Surface)
+				.GetColorBgra (position);
 		else
 			return document.GetComputedPixel (position);
 	}

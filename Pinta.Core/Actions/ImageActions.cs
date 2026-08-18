@@ -243,8 +243,31 @@ public sealed class ImageActions
 			hist.Push (new DeleteLayerHistoryItem (string.Empty, string.Empty, doc.Layers.UserLayers[i], i));
 
 		// With a single layer the rasterize above was the whole job; FlattenLayers throws below 2 layers.
-		if (doc.Layers.UserLayers.Count > 1)
+		if (doc.Layers.UserLayers.Count > 1) {
+			// The flattened image is composited from what the canvas paints, so an applying mask on
+			// the bottom layer is already baked into those pixels. Leaving the mask on the layer
+			// would apply it a second time on the next render. (A hidden mask contributed nothing to
+			// the flattened pixels, so it stays.)
+			UserLayer bottom = doc.Layers.UserLayers[0];
+			ImageSurface? bottomMask =
+				bottom.Mask is { Hidden: false } mask
+				? mask.Surface.Clone ()
+				: null;
+
 			doc.Layers.FlattenLayers ();
+
+			if (bottomMask is not null) {
+				hist.Push (
+					new LayerMaskHistoryItem (
+						workspace,
+						string.Empty,
+						string.Empty,
+						bottom,
+						beforeSurface: bottomMask,
+						afterSurface: null));
+				bottom.DropMask ();
+			}
+		}
 
 		hist.Push (new SimpleHistoryItem (string.Empty, string.Empty, oldBottomSurface, 0));
 

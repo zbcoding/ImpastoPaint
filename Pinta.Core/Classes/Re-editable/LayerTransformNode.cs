@@ -230,18 +230,29 @@ public sealed class LayerTransformNode : ILayerModifierNode
 		double i3 = inverse[3], i4 = inverse[4], i5 = inverse[5];
 		double i6 = inverse[6], i7 = inverse[7], i8 = inverse[8];
 
-		System.Threading.Tasks.Parallel.For (0, height, y => {
-			Span<ColorBgra> destinationRow = destination.GetPixelData ();
-			ReadOnlySpan<ColorBgra> sourceRow = source.GetReadOnlyPixelData ();
-			int row = y * width;
-			for (int x = 0; x < width; x++) {
-				double denominator = (i6 * x) + (i7 * y) + i8;
-				if (Math.Abs (denominator) < 1e-12)
-					continue;
+		// The two buffers are fetched once per band rather than once per row: the rows a band owns are
+		// contiguous and disjoint from every other band's, so one lookup covers all of them.
+		int threads = Math.Max (1, Environment.ProcessorCount);
+		int bandHeight = (height + threads - 1) / threads;
 
-				double sourceX = ((i0 * x) + (i1 * y) + i2) / denominator;
-				double sourceY = ((i3 * x) + (i4 * y) + i5) / denominator;
-				destinationRow[row + x] = Sample (source, sourceRow, width, height, sourceX, sourceY);
+		System.Threading.Tasks.Parallel.For (0, threads, band => {
+			int top = band * bandHeight;
+			int bottom = Math.Min (top + bandHeight, height);
+
+			Span<ColorBgra> destinationPixels = destination.GetPixelData ();
+			ReadOnlySpan<ColorBgra> sourcePixels = source.GetReadOnlyPixelData ();
+
+			for (int y = top; y < bottom; y++) {
+				int row = y * width;
+				for (int x = 0; x < width; x++) {
+					double denominator = (i6 * x) + (i7 * y) + i8;
+					if (Math.Abs (denominator) < 1e-12)
+						continue;
+
+					double sourceX = ((i0 * x) + (i1 * y) + i2) / denominator;
+					double sourceY = ((i3 * x) + (i4 * y) + i5) / denominator;
+					destinationPixels[row + x] = Sample (source, sourcePixels, width, height, sourceX, sourceY);
+				}
 			}
 		});
 

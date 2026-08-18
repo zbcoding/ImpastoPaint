@@ -240,6 +240,24 @@ internal sealed class LayerMaskTest
 			"the baked raster carries the masked result");
 	}
 
+	// A hidden mask contributes nothing to the composite, so baking the stack has nothing of it to
+	// fold in — dropping it anyway would destroy pixels the user deliberately parked out of the way.
+	[Test]
+	public void RasterizeModifierStackKeepsAHiddenMask ()
+	{
+		UserLayer layer = LayerWithPixel (4, 4, new PointI (1, 1));
+		layer.CreateMask ();
+		FillMask (layer, 128);
+		layer.Mask!.Hidden = true;
+		layer.Objects.Add (new LayerTransformNode (new LayerTransformData { FlipHorizontal = true }));
+		ObjectOpacity.RenderLayerObjects (chrome: null!, layer);
+
+		Assert.That (layer.RasterizeModifierStack (), Is.True);
+		Assert.That (layer.HasMask, Is.True, "a hidden mask was never applied, so a bake must not consume it");
+		Assert.That (layer.Surface.GetColorBgra (new PointI (2, 1)).A, Is.EqualTo (255),
+			"the baked raster carries the transform, unmasked");
+	}
+
 	// A duplicated mask is an independent copy: painting the copy must not change the original.
 	[Test]
 	public void MaskCloneDoesNotShareItsSurface ()

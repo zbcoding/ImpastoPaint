@@ -118,7 +118,7 @@ public sealed partial class LayersListView
 			return null;
 
 		UserLayer layer = item.UserLayer;
-		if (!layer.HasObjectSubNodes)
+		if (!HasSubRows (layer))
 			return null;
 
 		if (!child_models.TryGetValue (layer, out Gio.ListStore? store)) {
@@ -136,6 +136,12 @@ public sealed partial class LayersListView
 			return;
 
 		store.RemoveMultiple (0, store.GetNItems ());
+
+		// The mask row comes first: the mask applies last (on top of everything, in this top-first
+		// list). It is a slot on the layer, not a z-ordered object, so it has no position among them.
+		if (layer.HasMask)
+			store.Append (LayersListViewItem.NewMaskRow (active_document, layer));
+
 		// The unified z-ordered object list — shapes and text interleaved. Skip Rasterize-on-finalize
 		// shapes: they are transient and fuse the moment you move on; showing them as a sub-node that
 		// then vanishes is confusing. ObjectIndex is the position in layer.Objects so cross-kind DnD
@@ -179,6 +185,11 @@ public sealed partial class LayersListView
 		widget.SetItem (model_item);
 	}
 
+	// A layer expands to a tree of sub-rows when it holds editable objects (shapes/text/modifiers)
+	// or a mask — either one is worth a row under the layer.
+	private static bool HasSubRows (UserLayer layer)
+		=> layer.HasObjectSubNodes || layer.HasMask;
+
 	// The item at a flattened tree position, or null if out of range.
 	private LayersListViewItem? ItemAt (uint position)
 	{
@@ -210,6 +221,10 @@ public sealed partial class LayersListView
 			LayersListViewItem? item = ItemAt (sel);
 			if (item?.UserLayer is not { } layer)
 				return;
+
+			// Selecting the mask row makes the mask the paint target; anything else (a layer row, an
+			// object row, a different layer) sends painting back to the layer raster.
+			LayerMaskSelection.SetActiveMaskLayer (item.IsMaskRow ? layer : null);
 
 			last_object_row = item.IsObjectRow ? (layer, item.ObjectIndex) : null;
 
@@ -267,6 +282,10 @@ public sealed partial class LayersListView
 		// Clear out old items and rebuild.
 		list_model.RemoveMultiple (0, list_model.GetNItems ());
 		child_models.Clear ();
+
+		// Mask editing belongs to a document's dock selection; a stale mask target from the previous
+		// document would redirect paint strokes to a layer that is no longer on screen.
+		LayerMaskSelection.SetActiveMaskLayer (null);
 
 		active_document = doc;
 		if (doc is null)
@@ -346,7 +365,7 @@ public sealed partial class LayersListView
 	// be replaced (which loses the dock selection — see the caller).
 	private bool RefreshRow (uint position, UserLayer layer)
 	{
-		if (!layer.HasObjectSubNodes)
+		if (!HasSubRows (layer))
 			return DropChildModel (position, layer);
 
 		// A layer that had no child model yet was not expandable, so the tree must re-run the child

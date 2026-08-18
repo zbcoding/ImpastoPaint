@@ -112,6 +112,9 @@ internal sealed partial class PintaCanvas
 		document.Workspace.ViewSizeChanged += OnViewSizeChanged;
 		document.Workspace.CanvasInvalidated += OnCanvasInvalidated;
 		document.SelectionChanged += (_, _) => QueueSelectionUpdate ();
+
+		// Redraw the mask-editing border when the user picks a different paint target in the dock.
+		LayerMaskSelection.MaskEditingChanged += QueueUpdate;
 	}
 
 	/// <summary>
@@ -184,6 +187,7 @@ internal sealed partial class PintaCanvas
 		DrawCanvasGrid (snapshot, canvasViewBounds);
 		DrawCanvasAxonometricGrid (snapshot, canvasViewBounds);
 		DrawSnapGuides (snapshot, canvasViewBounds);
+		DrawMaskEditingIndicator (snapshot, canvasViewBounds);
 
 		// In the future, this would be cleaner to implement as a custom widget once gir.core supports virtual methods
 		// (in particular, zooming might be easier when we have control over the size allocation)
@@ -364,6 +368,38 @@ internal sealed partial class PintaCanvas
 		stroke.SetDash ([4.0f / scale, 4.0f / scale]);
 
 		Gdk.RGBA color = new () { Red = 0.2f, Green = 0.5f, Blue = 1.0f, Alpha = 0.5f };
+		snapshot.AppendStroke (pathBuilder.ToPath (), stroke, color);
+
+		snapshot.Restore ();
+		snapshot.Pop ();
+	}
+
+	// A coloured border around the canvas image while the user is editing a layer's mask. It answers
+	// "your strokes are painting the mask, not the layer" without replacing the image with the greyscale
+	// mask left to a separate view: the mask paints over the live layer, so the user sees the result.
+	private void DrawMaskEditingIndicator (Gtk.Snapshot snapshot, Graphene.Rect canvasViewBounds)
+	{
+		if (LayerMaskSelection.ActiveMaskLayer is null)
+			return;
+
+		int width = document.ImageSize.Width;
+		int height = document.ImageSize.Height;
+
+		Gsk.PathBuilder pathBuilder = Gsk.PathBuilder.New ();
+		pathBuilder.MoveTo (0, 0);
+		pathBuilder.LineTo (width, 0);
+		pathBuilder.LineTo (width, height);
+		pathBuilder.LineTo (0, height);
+		pathBuilder.LineTo (0, 0);
+
+		snapshot.PushClip (canvasViewBounds);
+		snapshot.Save ();
+
+		float scale = (float) document.Workspace.Scale;
+		snapshot.Scale (scale, scale);
+
+		Gsk.Stroke stroke = Gsk.Stroke.New (lineWidth: 2.0f / scale);
+		Gdk.RGBA color = new () { Red = 0.1f, Green = 0.6f, Blue = 1.0f, Alpha = 0.9f };
 		snapshot.AppendStroke (pathBuilder.ToPath (), stroke, color);
 
 		snapshot.Restore ();

@@ -84,7 +84,7 @@ public sealed class FreeformShapeTool : BaseBrushTool
 	protected override void OnMouseDown (Document document, ToolMouseEventArgs e)
 	{
 		surface_modified = false;
-		undo_surface = document.Layers.CurrentUserLayer.Surface.Clone ();
+		undo_surface = document.Layers.CurrentPaintSurface.Clone ();
 		path = null;
 
 		document.Layers.ToolLayer.Clear ();
@@ -191,7 +191,7 @@ public sealed class FreeformShapeTool : BaseBrushTool
 		}
 
 		if (surface_modified && undo_surface != null)
-			document.History.PushNewItem (new SimpleHistoryItem (Icon, Name, undo_surface, document.Layers.CurrentUserLayerIndex));
+			document.History.PushNewItem (new SimpleHistoryItem (Icon, Name, undo_surface, document.Layers.CurrentUserLayerIndex, document.Layers.CurrentMaskIsTarget));
 
 		undo_surface = null;
 		surface_modified = false;

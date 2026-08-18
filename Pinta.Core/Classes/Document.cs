@@ -210,7 +210,7 @@ public sealed class Document
 
 	public Context CreateClippedContext ()
 	{
-		Context g = new (Layers.CurrentUserLayer.Surface);
+		Context g = new (Layers.CurrentPaintSurface);
 		Selection.Clip (g);
 		return g;
 	}
@@ -247,8 +247,16 @@ public sealed class Document
 	// Flip image horizontally
 	public void FlipImageHorizontal ()
 	{
-		foreach (var layer in Layers.UserLayers)
+		foreach (UserLayer layer in Layers.UserLayers) {
 			layer.FlipHorizontal ();
+			// The layer flip swaps the raster in place; the mask must flip with it or it would
+			// keep hiding the wrong pixels. (Image flips run after RasterizeAllLayersForResize, so
+			// a modifier layer has already baked its stack — and mask — into the raster.)
+			layer.Mask?.ApplyTransform (
+				CairoExtensions.CreateMatrix (-1, 0, 0, 1, layer.Surface.Width, 0),
+				new (layer.Surface.Width, layer.Surface.Height),
+				new (layer.Surface.Width, layer.Surface.Height));
+		}
 
 		Workspace.Invalidate ();
 	}
@@ -256,8 +264,13 @@ public sealed class Document
 	// Flip image vertically
 	public void FlipImageVertical ()
 	{
-		foreach (var layer in Layers.UserLayers)
+		foreach (UserLayer layer in Layers.UserLayers) {
 			layer.FlipVertical ();
+			layer.Mask?.ApplyTransform (
+				CairoExtensions.CreateMatrix (1, 0, 0, -1, 0, layer.Surface.Height),
+				new (layer.Surface.Width, layer.Surface.Height),
+				new (layer.Surface.Width, layer.Surface.Height));
+		}
 
 		Workspace.Invalidate ();
 	}

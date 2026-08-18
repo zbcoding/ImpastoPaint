@@ -47,6 +47,7 @@ public sealed class PencilTool : BaseTool
 
 	public override bool UsesPaintColors => true;
 	public override bool WritesToCurrentLayer => true;
+	public override bool PaintsMaskSurface => true;
 	public override string Name => Translations.GetString ("Pencil");
 	public override string Icon => Pinta.Resources.Icons.ToolPencil;
 	public override string StatusBarText => Translations.GetString (
@@ -64,7 +65,7 @@ public sealed class PencilTool : BaseTool
 			return;
 
 		surface_modified = false;
-		undo_surface = document.Layers.CurrentUserLayer.Surface.Clone ();
+		undo_surface = document.Layers.CurrentPaintSurface.Clone ();
 		mouse_button = e.MouseButton;
 
 		Color tool_color;
@@ -106,7 +107,7 @@ public sealed class PencilTool : BaseTool
 	protected override void OnMouseUp (Document document, ToolMouseEventArgs e)
 	{
 		if (undo_surface != null && surface_modified)
-			document.History.PushNewItem (new SimpleHistoryItem (Icon, Name, undo_surface, document.Layers.CurrentUserLayerIndex));
+			document.History.PushNewItem (new SimpleHistoryItem (Icon, Name, undo_surface, document.Layers.CurrentUserLayerIndex, document.Layers.CurrentMaskIsTarget));
 
 		surface_modified = false;
 		undo_surface = null;

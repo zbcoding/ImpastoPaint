@@ -131,7 +131,7 @@ public sealed class EraserTool : BaseBrushTool
 			case EraserType.Smooth:
 
 				EraseSmooth (
-					document.Layers.CurrentUserLayer.Surface,
+					document.Layers.CurrentPaintSurface,
 					g,
 					lastPointD,
 					newPointD);

@@ -65,6 +65,9 @@ public abstract class BaseBrushTool : BaseTool
 	public override bool WritesToCurrentLayer
 		=> true;
 
+	public override bool PaintsMaskSurface
+		=> true;
+
 	protected override void OnBuildToolBar (Box tb)
 	{
 		base.OnBuildToolBar (tb);
@@ -80,7 +83,7 @@ public abstract class BaseBrushTool : BaseTool
 			return;
 
 		surface_modified = false;
-		undo_surface = document.Layers.CurrentUserLayer.Surface.Clone ();
+		undo_surface = document.Layers.CurrentPaintSurface.Clone ();
 		mouse_button = e.MouseButton;
 
 		OnMouseMove (document, e);
@@ -89,7 +92,7 @@ public abstract class BaseBrushTool : BaseTool
 	protected override void OnMouseUp (Document document, ToolMouseEventArgs e)
 	{
 		if (undo_surface != null && surface_modified) {
-			document.History.PushNewItem (new SimpleHistoryItem (Icon, Name, undo_surface, document.Layers.CurrentUserLayerIndex));
+			document.History.PushNewItem (new SimpleHistoryItem (Icon, Name, undo_surface, document.Layers.CurrentUserLayerIndex, document.Layers.CurrentMaskIsTarget));
 		}
 
 		surface_modified = false;

@@ -34,6 +34,7 @@ public class CompoundHistoryItem : BaseHistoryItem
 	protected List<BaseHistoryItem> history_stack = [];
 	private List<ImageSurface>? snapshots;
 	private List<(ReEditableLayer layer, ImageSurface snapshot)>? sublayer_snapshots;
+	private List<(UserLayer layer, ImageSurface? snapshot, bool hidden)>? mask_snapshots;
 
 	public CompoundHistoryItem () : base ()
 	{
@@ -72,11 +73,14 @@ public class CompoundHistoryItem : BaseHistoryItem
 	{
 		snapshots = [];
 		sublayer_snapshots = [];
+		mask_snapshots = [];
 		foreach (UserLayer item in PintaCore.Workspace.ActiveDocument.Layers.UserLayers) {
 			snapshots.Add (item.Surface.Clone ());
 			foreach (ReEditableLayer rel in item.ReEditableLayers)
 				if (rel.IsLayerSetup)
 					sublayer_snapshots.Add ((rel, rel.Layer.Surface.Clone ()));
+			if (item.Mask is { } mask)
+				mask_snapshots.Add ((item, mask.Surface.Clone (), mask.Hidden));
 		}
 	}
 
@@ -95,6 +99,14 @@ public class CompoundHistoryItem : BaseHistoryItem
 		foreach (var (layer, snapshot) in sublayer_snapshots!) // NRT - Set in StartSnapshotOfImage
 			history_stack.Add (new ReEditableSurfaceHistoryItem (layer, snapshot));
 		sublayer_snapshots.Clear ();
+
+		// The mask surface is resized alongside the base too (UserLayer.ResizeCanvas / Resize /
+		// Crop / ApplyTransform), so it must come back with it on undo — otherwise ApplyMask reads a
+		// surface of the new size against a base of the old size, or the mask stays at the new
+		// geometry over the old pixels.
+		foreach (var (layer, snapshot, hidden) in mask_snapshots!) // NRT - Set in StartSnapshotOfImage
+			history_stack.Add (new MaskSurfaceHistoryItem (layer, snapshot, hidden));
+		mask_snapshots.Clear ();
 	}
 
 	// Swaps a re-editable sublayer's surface with a stored snapshot. Full-surface swap (not a diff):
@@ -120,6 +132,46 @@ public class CompoundHistoryItem : BaseHistoryItem
 			ImageSurface current = layer.Layer.Surface;
 			layer.Layer.Surface = surface;
 			surface = current;
+		}
+	}
+
+	// Swaps a layer's mask slot (surface + hidden flag) with the stored snapshot, presence included.
+	// Same shape as ReEditableSurfaceHistoryItem: full swap, since a mask is at most one canvas.
+	private sealed class MaskSurfaceHistoryItem : BaseHistoryItem
+	{
+		private readonly UserLayer layer;
+		private ImageSurface? surface;
+		private bool hidden;
+		private bool had_mask;
+
+		public MaskSurfaceHistoryItem (UserLayer layer, ImageSurface? snapshot, bool hidden)
+			: base (string.Empty, string.Empty)
+		{
+			this.layer = layer;
+			surface = snapshot;
+			this.hidden = hidden;
+			had_mask = snapshot is not null;
+		}
+
+		public override void Undo () => Swap ();
+		public override void Redo () => Swap ();
+
+		private void Swap ()
+		{
+			ImageSurface? current = layer.Mask?.Surface;
+			bool currentHidden = layer.Mask?.Hidden ?? false;
+			bool currentHad = layer.Mask is not null;
+
+			if (had_mask) {
+				layer.ReplaceMaskSurface (surface!);
+				layer.Mask!.Hidden = hidden;
+			} else {
+				layer.DropMask ();
+			}
+
+			surface = current;
+			hidden = currentHidden;
+			had_mask = currentHad;
 		}
 	}
 }

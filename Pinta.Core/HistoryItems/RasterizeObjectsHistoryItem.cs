@@ -26,6 +26,12 @@ public sealed class RasterizeObjectsHistoryItem : BaseHistoryItem
 
 	List<ILayerObject> objects;
 
+	// The layer mask's pre-bake state, restored on undo: a stack bake (RasterizeModifierStack) drops
+	// the mask along with the objects, so undo has to put it back or the layer renders unmasked.
+	ImageSurface? mask_surface;
+	bool mask_hidden;
+	bool had_mask;
+
 	/// <param name="passedBaseSurface">The layer's base raster before baking.</param>
 	/// <param name="passedObjectSurface">The layer's ObjectLayer surface before baking.</param>
 	/// <param name="passedObjects">The layer's unified object list before baking.</param>
@@ -52,6 +58,10 @@ public sealed class RasterizeObjectsHistoryItem : BaseHistoryItem
 			object_surface = passedObjectSurface;
 
 		objects = ObjectOpacity.CloneAll (passedObjects);
+
+		had_mask = user_layer.Mask is not null;
+		mask_surface = user_layer.Mask?.Surface.Clone ();
+		mask_hidden = user_layer.Mask?.Hidden ?? false;
 	}
 
 	public override void Undo () => Swap ();
@@ -67,11 +77,33 @@ public sealed class RasterizeObjectsHistoryItem : BaseHistoryItem
 		user_layer.Objects.Clear ();
 		user_layer.Objects.AddRange (old);
 
+		SwapMask ();
+
 		// Rebuild the shape edit engine's live engines from the restored object list so the active
 		// layer doesn't recomposite stale/empty engines over the restored surface.
 		LayerObjectSelection.RequestShapeReload (user_layer);
 
 		workspace.Invalidate ();
+	}
+
+	// Toggles the mask slot between the stored (pre-bake) state and whatever is on the layer now.
+	// Reference hand-off, not a clone: each swap moves the surface between this item and the layer.
+	private void SwapMask ()
+	{
+		ImageSurface? liveSurface = user_layer.Mask?.Surface;
+		bool liveHidden = user_layer.Mask?.Hidden ?? false;
+		bool liveHad = user_layer.Mask is not null;
+
+		if (had_mask) {
+			user_layer.ReplaceMaskSurface (mask_surface!);
+			user_layer.Mask!.Hidden = mask_hidden;
+		} else {
+			user_layer.DropMask ();
+		}
+
+		had_mask = liveHad;
+		mask_surface = liveSurface;
+		mask_hidden = liveHidden;
 	}
 
 	private static void SwapSurface (SurfaceDiff? diff, ref ImageSurface? stored, ImageSurface current, System.Action<ImageSurface> setter)

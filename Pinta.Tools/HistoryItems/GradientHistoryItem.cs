@@ -11,13 +11,13 @@ public class GradientHistoryItem : BaseHistoryItem
 
 	private GradientData gradient_data;
 
-	public GradientHistoryItem (string icon, string text, ImageSurface passedUserSurface, int layerIndex, GradientData passedData, GradientTool passedTool) : base (icon, text)
+	public GradientHistoryItem (string icon, string text, ImageSurface passedUserSurface, int layerIndex, GradientData passedData, GradientTool passedTool, bool targetIsMask = false) : base (icon, text)
 	{
 		tool = passedTool;
 
 		gradient_data = passedData;
 
-		surface = new SimpleHistoryItem (string.Empty, string.Empty, passedUserSurface, layerIndex);
+		surface = new SimpleHistoryItem (string.Empty, string.Empty, passedUserSurface, layerIndex, targetIsMask);
 	}
 
 

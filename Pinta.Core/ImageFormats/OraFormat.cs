@@ -144,6 +144,7 @@ public sealed class OraFormat : IImageImporter, IImageExporter
 		LoadTextEntry (zipfile, newDocument);
 		LoadShapeEntry (zipfile, newDocument);
 		LoadEffectEntry (zipfile, newDocument);
+		LoadMaskEntries (zipfile, newDocument);
 
 		return newDocument;
 	}
@@ -219,6 +220,7 @@ public sealed class OraFormat : IImageImporter, IImageExporter
 		AddTextEntry (archive, document);
 		AddShapeEntry (archive, document);
 		AddEffectEntry (archive, document);
+		AddMaskEntries (archive, document);
 		AddManifestEntry (archive, document);
 		AddMergedImage (archive, flattened);
 		AddThumbnail (archive, flattened);
@@ -530,9 +532,70 @@ public sealed class OraFormat : IImageImporter, IImageExporter
 			? unavailable.SavedParameters
 			: EffectDataSerializer.ToText (effect.EffectData);
 
+	/// <summary>
+	/// Writes each layer's mask as its own PNG entry (<c>data/layerN-mask.png</c>, or
+	/// <c>-mask-hidden.png</c> when the mask is disabled, so a hidden mask reopens hidden). The
+	/// layer's own PNG is written unmasked, so the mask applies exactly once on load. A layer that
+	/// bakes whole (an unrestorable effect swallowed its objects) is written as its composite, which
+	/// already includes the mask — no separate mask entry, or it would be masked twice.
+	/// </summary>
+	private static void AddMaskEntries (ZipArchive archive, Document document)
+	{
+		for (int i = 0; i < document.Layers.UserLayers.Count; i++) {
+			UserLayer layer = document.Layers.UserLayers[i];
+			if (layer.Mask is null || BakesWholeLayer (layer))
+				continue;
+
+			using Pixbuf pb = layer.Mask.Surface.ToPixbuf ();
+			byte[] buf = pb.SaveToBuffer ("png");
+			string entryName = layer.Mask.Hidden
+				? $"data/layer{i}-mask-hidden.png"
+				: $"data/layer{i}-mask.png";
+			ZipArchiveEntry entry = archive.CreateEntry (entryName);
+			using Stream stream = entry.Open ();
+			stream.Write (buf, 0, buf.Length);
+		}
+	}
+
+	/// <summary>Whether the document writes any mask entries to the saved file (for the manifest).</summary>
+	private static bool WritesMasks (Document document)
+		=> document.Layers.UserLayers.Any (l => l.Mask is not null && !BakesWholeLayer (l));
+
+	private static void LoadMaskEntries (ZipArchive zipfile, Document document)
+	{
+		for (int i = 0; i < document.Layers.UserLayers.Count; i++) {
+			ZipArchiveEntry? entry = zipfile.GetEntry ($"data/layer{i}-mask.png");
+			bool hidden = false;
+			if (entry is null) {
+				entry = zipfile.GetEntry ($"data/layer{i}-mask-hidden.png");
+				hidden = true;
+			}
+			if (entry is null)
+				continue;
+
+			UserLayer layer = document.Layers.UserLayers[i];
+			LayerMask mask = layer.CreateMask ();
+			mask.Hidden = hidden;
+
+			string temporaryFile = System.IO.Path.GetTempFileName ();
+			using (Stream input = entry.Open ())
+			using (Stream output = File.Open (temporaryFile, FileMode.Create, FileAccess.Write))
+				input.CopyTo (output);
+
+			using Pixbuf pb = Pixbuf.NewFromFile (temporaryFile)!;
+			using Context g = new (mask.Surface);
+			g.DrawPixbuf (pb, PointD.Zero);
+			try { File.Delete (temporaryFile); } catch { }
+
+			// The mask changes the layer's rendered result (it applies last), so re-render.
+			ObjectOpacity.RefreshLayerNoInvalidate (PintaCore.Chrome, layer);
+		}
+	}
+
 	private static void AddManifestEntry (ZipArchive archive, Document document)
 	{
 		bool hasEffectNodes = document.Layers.UserLayers.Any (WritesEffectNodes);
+		bool hasMasks = WritesMasks (document);
 
 		using MemoryStream ms = new ();
 		using (XmlTextWriter writer = new (ms, System.Text.Encoding.UTF8) { Formatting = Formatting.Indented }) {
@@ -543,8 +606,13 @@ public sealed class OraFormat : IImageImporter, IImageExporter
 
 			// Space-separated feature names, so a reader can tell what a file uses without parsing
 			// every sidecar entry. Absent features are simply not listed.
+			List<string> features = [];
 			if (hasEffectNodes)
-				writer.WriteAttributeString ("features", "layer-effects");
+				features.Add ("layer-effects");
+			if (hasMasks)
+				features.Add ("layer-masks");
+			if (features.Count > 0)
+				writer.WriteAttributeString ("features", string.Join (" ", features));
 
 			writer.WriteEndElement ();
 		}

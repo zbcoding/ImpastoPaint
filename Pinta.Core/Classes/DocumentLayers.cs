@@ -39,6 +39,15 @@ public sealed class DocumentLayers
 	public UserLayer CurrentUserLayer => user_layers[CurrentUserLayerIndex];
 
 	/// <summary>
+	/// The surface raster paint tools draw into for the current layer: its own raster, or its mask
+	/// when the mask row is the active edit target (see <see cref="UserLayer.PaintSurface"/>).
+	/// </summary>
+	public ImageSurface CurrentPaintSurface => CurrentUserLayer.PaintSurface;
+
+	/// <summary>Whether paint tools are currently drawing onto the current layer's mask.</summary>
+	public bool CurrentMaskIsTarget => LayerMaskSelection.IsActiveMaskLayer (CurrentUserLayer);
+
+	/// <summary>
 	/// Gets the index of the currently selected user created layer.
 	/// </summary>
 	public int CurrentUserLayerIndex { get; private set; } = -1;
@@ -212,6 +221,10 @@ public sealed class DocumentLayers
 		// Live objects (shapes/text) are part of the layer, so a duplicate gets its own copies.
 		// The caller re-renders the new layer's object surface from them.
 		layer.Objects.AddRange (ObjectOpacity.CloneAll (source.Objects));
+
+		// The mask travels with the layer as an independent copy (its own surface).
+		if (source.Mask is { } sourceMask)
+			layer.Mask = sourceMask.CloneSurface ();
 
 		user_layers.Insert (++CurrentUserLayerIndex, layer);
 

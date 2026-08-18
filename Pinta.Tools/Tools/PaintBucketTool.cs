@@ -70,11 +70,11 @@ public sealed class PaintBucketTool : FloodTool
 		using Context tool_layer_ctx = new (surf) {
 			Operator = Operator.Source
 		};
-		tool_layer_ctx.SetSourceSurface (document.Layers.CurrentUserLayer.Surface, 0, 0);
+		tool_layer_ctx.SetSourceSurface (document.Layers.CurrentPaintSurface, 0, 0);
 		tool_layer_ctx.Paint ();
 
 		var hist = new SimpleHistoryItem (Icon, Name);
-		hist.TakeSnapshotOfLayer (document.Layers.CurrentUserLayer);
+		hist.TakeSnapshotOfLayer (document.Layers.CurrentUserLayer, document.Layers.CurrentMaskIsTarget);
 
 		var color = fill_color.ToColorBgra ();
 		var width = surf.Width;

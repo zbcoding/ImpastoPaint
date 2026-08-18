@@ -14,6 +14,7 @@ public static class EditableObjectBadge
 	public const string ObjectLabel = "Obj.";
 	public const string EffectLabel = "Fx";
 	public const string TransformLabel = "Tr";
+	public const string MaskLabel = "M";
 
 	public const double Width = 26;
 	public const double Height = 14;

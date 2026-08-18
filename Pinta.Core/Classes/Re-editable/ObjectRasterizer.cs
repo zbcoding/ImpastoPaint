@@ -293,7 +293,8 @@ public static class ObjectRasterizer
 		// rasterizing "everything" on such a layer means baking the whole stack at once — the same
 		// step the dock's per-node Rasterize performs.
 		if (layer.HasModifiers) {
-			if (confirm && !Confirm (chrome, [.. layer.ModifierNodes.Select (m => m.DisplayName)]))
+			List<string> labels = [.. layer.ModifierNodes.Select (m => m.DisplayName)];
+			if (confirm && labels.Count > 0 && !Confirm (chrome, labels))
 				return false;
 			return RasterizeModifierStack (doc, workspace, chrome, layer, historyGroup);
 		}

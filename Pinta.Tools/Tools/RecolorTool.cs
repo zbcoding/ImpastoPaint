@@ -110,7 +110,7 @@ public class RecolorTool : BaseBrushTool
 		if (document.Workspace.PointInCanvas (e.PointDouble))
 			surface_modified = true;
 
-		var surf = document.Layers.CurrentUserLayer.Surface;
+		var surf = document.Layers.CurrentPaintSurface;
 		var tmp_layer = document.Layers.ToolLayer.Surface;
 
 		int roiPadding = BrushWidth + 2;

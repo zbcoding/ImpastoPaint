@@ -153,8 +153,12 @@ Pinta.Core/Classes/Point.cs
 Pinta.Core/Classes/RandomSeed.cs
 Pinta.Core/Classes/Rectangle.cs
 Pinta.Core/Classes/Re-editable/EditableObjectBadge.cs
-Pinta.Core/Classes/Re-editable/LayerTransformNode.cs
+Pinta.Core/Classes/Re-editable/EffectDataSerializer.cs
+Pinta.Core/Classes/Re-editable/EffectModifierNode.cs
+Pinta.Core/Classes/Re-editable/LayerMask.cs
+Pinta.Core/Classes/Re-editable/LayerMaskSelection.cs
 Pinta.Core/Classes/Re-editable/LayerObjectSelection.cs
+Pinta.Core/Classes/Re-editable/LayerTransformNode.cs
 Pinta.Core/Classes/Re-editable/ObjectOpacity.cs
 Pinta.Core/Classes/Re-editable/ObjectPropertyHistoryItem.cs
 Pinta.Core/Classes/Re-editable/ObjectRasterizer.cs
@@ -165,6 +169,7 @@ Pinta.Core/Classes/Re-editable/Text/TextLayout.cs
 Pinta.Core/Classes/Re-editable/Text/TextObject.cs
 Pinta.Core/Classes/Re-editable/Text/TextObjectRenderer.cs
 Pinta.Core/Classes/Re-editable/Text/TextPosition.cs
+Pinta.Core/Classes/Re-editable/UnavailableEffect.cs
 Pinta.Core/Classes/RenderHandle.cs
 Pinta.Core/Classes/ScaleFactor.cs
 Pinta.Core/Classes/Scanline.cs
@@ -243,6 +248,8 @@ Pinta.Core/HistoryItems/CompoundHistoryItem.cs
 Pinta.Core/HistoryItems/DeleteLayerHistoryItem.cs
 Pinta.Core/HistoryItems/FinishPixelsHistoryItem.cs
 Pinta.Core/HistoryItems/InvertHistoryItem.cs
+Pinta.Core/HistoryItems/LayerMaskHistoryItem.cs
+Pinta.Core/HistoryItems/LayerObjectsHistoryItem.cs
 Pinta.Core/HistoryItems/MoveLayerHistoryItem.cs
 Pinta.Core/HistoryItems/MovePixelsHistoryItem.cs
 Pinta.Core/HistoryItems/PasteHistoryItem.cs

@@ -232,6 +232,53 @@ public sealed class UserLayer : Layer
 	/// </summary>
 	public bool HasModifiers => Objects.Any (o => o is ILayerModifierNode);
 
+	/// <summary>The layer's mask slot, or null when the layer has no mask.</summary>
+	public LayerMask? Mask { get; internal set; }
+
+	/// <summary>Whether this layer has a mask slot at all (whether or not it is hidden).</summary>
+	public bool HasMask => Mask is not null;
+
+	/// <summary>
+	/// Whether this layer renders through the accumulator path: it has modifier nodes, or an enabled
+	/// mask. Either one composites all of the layer's content into one surface, which is where the
+	/// mask is applied last.
+	/// </summary>
+	public bool NeedsComposite => HasModifiers || (Mask is not null && !Mask.Hidden);
+
+	/// <summary>
+	/// The surface raster paint tools draw into: the layer's own raster, or its mask's surface when
+	/// the mask row is the active edit target. Reads the current mask-selection state so a tool that
+	/// calls this per stroke retargets live as the user picks between the layer and its mask.
+	/// </summary>
+	public ImageSurface PaintSurface
+		=> LayerMaskSelection.IsActiveMaskLayer (this) && Mask is not null
+			? Mask.Surface
+			: Surface;
+
+	/// <summary>Creates (or returns) the layer's mask: a fresh, fully transparent surface sized to the layer.</summary>
+	public LayerMask CreateMask ()
+	{
+		if (Mask is not null)
+			return Mask;
+
+		ImageSurface surface = CairoExtensions.CreateImageSurface (Surface.Format, Surface.Width, Surface.Height);
+		Mask = new LayerMask (surface);
+		return Mask;
+	}
+
+	/// <summary>Removes the layer's mask slot entirely, so the layer renders unmasked.</summary>
+	public void DropMask ()
+		=> Mask = null;
+
+	/// <summary>Replaces the mask's surface with <paramref name="surface"/>, creating the mask if absent.</summary>
+	internal void ReplaceMaskSurface (ImageSurface surface)
+	{
+		if (Mask is null)
+			Mask = new LayerMask (surface);
+		else
+			Mask.Surface = surface;
+	}
+
 	/// <summary>
 	/// The accumulated composite for a layer with modifiers: the base raster with every child applied
 	/// bottom-up. Built by <see cref="ObjectOpacity.RenderLayerObjects"/>, the single chokepoint that
@@ -294,6 +341,12 @@ public sealed class UserLayer : Layer
 				rel.Layer.ApplyTransform (xform, old_size, new_size);
 		}
 
+		// The mask is part of the layer's raster geometry, so a destructive transform moves it too —
+		// otherwise it would stay glued to the old pixel positions. (A non-destructive transform node
+		// is not routed here; the mask applies last, after the node, and is left in place.)
+		if (Mask is { } mask)
+			mask.ApplyTransform (xform, old_size, new_size);
+
 		// Shapes are stored as vector control points (the source of truth) that get
 		// redrawn from scratch, so transforming only the raster above isn't enough —
 		// the next redraw would clobber it with the un-transformed points.
@@ -330,6 +383,8 @@ public sealed class UserLayer : Layer
 		foreach (ReEditableLayer rel in ReEditableLayers)
 			if (rel.IsLayerSetup)
 				rel.Layer.Crop (rect, selection);
+
+		Mask?.Crop (rect);
 	}
 
 	public override void ResizeCanvas (Size newSize, Anchor anchor)
@@ -339,6 +394,8 @@ public sealed class UserLayer : Layer
 		foreach (ReEditableLayer rel in ReEditableLayers)
 			if (rel.IsLayerSetup)
 				rel.Layer.ResizeCanvas (newSize, anchor);
+
+		Mask?.ResizeCanvas (newSize, anchor);
 	}
 
 	public override void Resize (Size newSize, ResamplingMode resamplingMode)
@@ -348,6 +405,8 @@ public sealed class UserLayer : Layer
 		foreach (ReEditableLayer rel in ReEditableLayers)
 			if (rel.IsLayerSetup)
 				rel.Layer.Resize (newSize, resamplingMode);
+
+		Mask?.Resize (newSize, resamplingMode);
 	}
 
 	/// <summary>
@@ -394,6 +453,7 @@ public sealed class UserLayer : Layer
 
 		Objects.Clear ();
 		SetComposite (null);
+		DropMask (); // the mask is baked into the composite; leaving it would re-apply it on the next render.
 
 		foreach (ReEditableLayer rel in ReEditableLayers)
 			if (rel.IsLayerSetup)

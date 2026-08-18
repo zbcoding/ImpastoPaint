@@ -1828,7 +1828,7 @@ public abstract class BaseEditEngine
 		// renders shapes from the stored objects, which the live engines have not written back yet, so
 		// persist them first. Whole-canvas invalidation because an effect can move pixels anywhere,
 		// which the geometry's own dirty rect does not cover.
-		if (layer.HasModifiers) {
+		if (layer.NeedsComposite) {
 			PersistShapeObjects (layer);
 			ObjectOpacity.RenderLayerObjects (PintaCore.Chrome, layer);
 			workspace.Invalidate ();

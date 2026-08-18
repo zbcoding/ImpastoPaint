@@ -33,14 +33,18 @@ public sealed class SimpleHistoryItem : BaseHistoryItem
 	private readonly SurfaceDiff? surface_diff;
 	ImageSurface? old_surface;
 	int layer_index;
+	// When true, this item snapshots and restores the layer's mask surface instead of its raster.
+	// Set by paint tools while the user is editing a layer's mask (see UserLayer.PaintSurface).
+	private bool target_is_mask;
 
-	public SimpleHistoryItem (string icon, string text, ImageSurface oldSurface, int layerIndex) : base (icon, text)
+	public SimpleHistoryItem (string icon, string text, ImageSurface oldSurface, int layerIndex, bool targetIsMask = false) : base (icon, text)
 	{
 		var doc = PintaCore.Workspace.ActiveDocument;
 
 		layer_index = layerIndex;
+		target_is_mask = targetIsMask;
 
-		surface_diff = SurfaceDiff.Create (oldSurface, doc.Layers[layer_index].Surface);
+		surface_diff = SurfaceDiff.Create (oldSurface, TargetSurface (doc));
 
 		// If the diff was too big, store the original surface, else, dispose it
 		if (surface_diff == null)
@@ -66,14 +70,18 @@ public sealed class SimpleHistoryItem : BaseHistoryItem
 		var doc = this.Document!;
 
 		// Grab the original surface
-		ImageSurface surf = doc.Layers[layer_index].Surface;
+		ImageSurface surf = TargetSurface (doc);
 
 		if (surface_diff != null) {
 			surface_diff.ApplyAndSwap (surf);
 			PintaCore.Workspace.Invalidate (surface_diff.GetBounds ());
 		} else {
 			// Undo to the "old" surface
-			doc.Layers[layer_index].Surface = old_surface!; // NRT - Will be not-null if surface_diff is null
+			UserLayer layer = doc.Layers[layer_index];
+			if (target_is_mask)
+				layer.ReplaceMaskSurface (old_surface!);
+			else
+				layer.Surface = old_surface!; // NRT - Will be not-null if surface_diff is null
 
 			// Store the original surface for Redo
 			old_surface = surf;
@@ -82,19 +90,32 @@ public sealed class SimpleHistoryItem : BaseHistoryItem
 		}
 	}
 
+	// The surface this item swaps: the layer's raster, or its mask when target_is_mask.
+	private ImageSurface TargetSurface (Document doc)
+	{
+		UserLayer layer = doc.Layers[layer_index];
+		return target_is_mask
+			? (layer.Mask?.Surface ?? layer.Surface)
+			: layer.Surface;
+	}
+
 	public void TakeSnapshotOfLayer (int layerIndex)
 	{
 		var doc = PintaCore.Workspace.ActiveDocument;
 
 		layer_index = layerIndex;
+		target_is_mask = false;
 		old_surface = doc.Layers[layerIndex].Surface.Clone ();
 	}
 
-	public void TakeSnapshotOfLayer (UserLayer layer)
+	public void TakeSnapshotOfLayer (UserLayer layer, bool targetIsMask = false)
 	{
 		var doc = PintaCore.Workspace.ActiveDocument;
 
 		layer_index = doc.Layers.IndexOf (layer);
-		old_surface = layer.Surface.Clone ();
+		target_is_mask = targetIsMask;
+		old_surface = (targetIsMask
+			? (layer.Mask?.Surface ?? layer.Surface)
+			: layer.Surface).Clone ();
 	}
 }

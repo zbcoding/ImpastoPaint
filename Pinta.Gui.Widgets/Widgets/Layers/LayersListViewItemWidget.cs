@@ -48,6 +48,10 @@ public sealed partial class LayersListViewItem
 	// A modifier node (adjustment/effect/transform) nested under UserLayer. Unlike a shape or text
 	// row, it applies to every row beneath it, which the label marks so the ordering reads correctly.
 	public ILayerModifierNode? ModifierNode { get; private set; }
+	// A mask row stands for the layer's mask slot (see UserLayer.Mask). It is displayed like an
+	// object sub-row (no thumbnail, tinted, badge) but is not a z-ordered object: it applies to the
+	// whole layer, is not draggable, and has no opacity/blend/property editor.
+	public bool IsMaskRow { get; private set; }
 	public bool IsObjectRow => ShapeObject is not null || TextObject is not null || ModifierNode is not null;
 
 	// Index of this object within its layer's ShapeObjects/TextObjects list. Used to select the shape
@@ -93,8 +97,23 @@ public sealed partial class LayersListViewItem
 		return item;
 	}
 
+	public static LayersListViewItem NewMaskRow (Document doc, UserLayer userLayer)
+	{
+		LayersListViewItem item = NewWithProperties ([]);
+		item.document = doc;
+		item.UserLayer = userLayer;
+		item.IsMaskRow = true;
+		item.ObjectIndex = -1;
+		return item;
+	}
+
+	/// <summary>Whether the mask this row stands for is hidden (disabled).</summary>
+	public bool MaskHidden => UserLayer?.Mask?.Hidden ?? false;
+
 	public string Label {
 		get {
+			if (IsMaskRow)
+				return Translations.GetString ("Layer Mask");
 			if (ModifierNode is not null)
 				// Translators: a layer modifier row in the layers dock; it applies to everything below it.
 				return Translations.GetString ("▼ {0}", ModifierNode.DisplayName);
@@ -114,7 +133,7 @@ public sealed partial class LayersListViewItem
 		_ => Translations.GetString ("Shape"),
 	};
 
-	public bool Visible => IsObjectRow ? !ObjectHidden : !UserLayer?.Hidden ?? false;
+	public bool Visible => IsObjectRow ? !ObjectHidden : IsMaskRow ? !MaskHidden : !UserLayer?.Hidden ?? false;
 
 	/// <summary>
 	/// Whether this object row is the bottom one under its layer, which ends the hierarchy line with
@@ -123,7 +142,10 @@ public sealed partial class LayersListViewItem
 	/// ponytail: index 0 may be a rasterize-on-finalize shape that gets no row, in which case the line
 	/// runs one row too far; give the row its position in the child model if that ever shows.
 	/// </summary>
-	public bool IsLastObjectRow => IsObjectRow && ObjectIndex == 0;
+	public bool IsLastObjectRow
+		=> IsObjectRow
+			? ObjectIndex == 0
+			: IsMaskRow && !(UserLayer?.HasObjectSubNodes ?? false);
 
 	public string TooltipText {
 		get {
@@ -177,6 +199,11 @@ public sealed partial class LayersListViewItem
 
 		if (IsObjectRow) {
 			SetObjectHidden (!visible);
+			return;
+		}
+
+		if (IsMaskRow) {
+			SetMaskHidden (!visible);
 			return;
 		}
 
@@ -295,6 +322,36 @@ public sealed partial class LayersListViewItem
 		LayerObjectSelection.RaiseObjectsChanged ();
 	}
 
+	/// <summary>
+	/// Removes this layer's mask entirely, as one undoable step. Ends mask editing (the mask row is
+	/// gone, so the paint tools return to the layer raster).
+	/// </summary>
+	public void DeleteMask ()
+	{
+		if (UserLayer is null || !UserLayer.HasMask)
+			return;
+
+		UserLayer layer = UserLayer;
+		LayerMask mask = layer.Mask!;
+
+		LayerMaskHistoryItem hist = new (
+			PintaCore.Workspace,
+			Resources.Icons.LayerDelete,
+			Translations.GetString ("Delete Layer Mask"),
+			layer,
+			beforeSurface: mask.Surface.Clone (),
+			afterSurface: null,
+			beforeHidden: mask.Hidden);
+
+		LayerMaskSelection.SetActiveMaskLayer (null);
+		layer.DropMask ();
+
+		Pinta.Core.ObjectOpacity.RefreshLayer (PintaCore.Workspace, PintaCore.Chrome, layer);
+		document?.History.PushNewItem (hist);
+
+		LayerObjectSelection.RaiseObjectsChanged ();
+	}
+
 	/// <summary>Current opacity (0..1) of the object this row represents.</summary>
 	public double ObjectOpacity
 		=> LiveObject?.Opacity ?? 1.0;
@@ -310,6 +367,31 @@ public sealed partial class LayersListViewItem
 	/// <summary>Current blend mode of the object this row represents.</summary>
 	public BlendMode ObjectBlendMode
 		=> LiveObject?.BlendMode ?? BlendMode.Normal;
+
+	/// <summary>
+	/// Toggles the mask this row represents between hidden (disabled) and active, as one undoable
+	/// step. A hidden mask lets the layer render unmasked without deleting the mask.
+	/// </summary>
+	public void SetMaskHidden (bool hidden)
+	{
+		if (UserLayer is null || UserLayer.Mask is null)
+			return;
+
+		if (UserLayer.Mask.Hidden == hidden)
+			return;
+
+		// The mask visibility is a plain one-field swap: Undo applies the opposite state.
+		UserLayer.Mask.Hidden = hidden;
+
+		Pinta.Core.ObjectOpacity.RefreshLayer (PintaCore.Workspace, PintaCore.Chrome, UserLayer);
+
+		document?.History.PushNewItem (
+			new LayerMaskVisibleHistoryItem (
+				PintaCore.Workspace,
+				Resources.Icons.LayerProperties,
+				hidden ? Translations.GetString ("Hide Layer Mask") : Translations.GetString ("Show Layer Mask"),
+				UserLayer, hidden));
+	}
 
 	/// <summary>
 	/// Applies an opacity to this row's object and re-renders, with no history item — used for the
@@ -580,7 +662,7 @@ public sealed partial class LayersListViewItemWidget
 		=> row?.UserLayer is not null && PintaCore.Workspace.HasOpenDocuments;
 
 	private static bool IsLayerRow ([NotNullWhen (true)] LayersListViewItem? row)
-		=> IsBoundRow (row) && !row.IsObjectRow;
+		=> IsBoundRow (row) && !row.IsObjectRow && !row.IsMaskRow;
 
 	private void MenuGesture_OnPressed (
 		Gtk.GestureClick _,
@@ -592,6 +674,12 @@ public sealed partial class LayersListViewItemWidget
 		// Object sub-rows get their own small editor popover instead of the layer menu.
 		if (item.IsObjectRow) {
 			ShowObjectPopover (item);
+			return;
+		}
+
+		// A mask sub-row gets its own minimal popover (delete; the mask has no blend/opacity).
+		if (item.IsMaskRow) {
+			ShowMaskPopover (item);
 			return;
 		}
 
@@ -633,6 +721,13 @@ public sealed partial class LayersListViewItemWidget
 			Gio.Menu objectsSection = Gio.Menu.New ();
 			objectsSection.AppendItem (actions.RasterizeAllObjects.CreateMenuItem ());
 			menu.AppendSection (null, objectsSection);
+		}
+
+		// A layer with no mask yet can gain one here; once it has one, the mask sub-row handles it.
+		if (!item.UserLayer!.HasMask) {
+			Gio.Menu maskSection = Gio.Menu.New ();
+			maskSection.AppendItem (actions.AddLayerMask.CreateMenuItem ());
+			menu.AppendSection (null, maskSection);
 		}
 
 		menu.AppendSection (null, propertiesSection);
@@ -782,6 +877,34 @@ public sealed partial class LayersListViewItemWidget
 			if (row.ObjectBlendMode != beforeBlend)
 				row.PushObjectBlendModeHistory (beforeBlend);
 		};
+		popover.Popup ();
+	}
+
+	// Right-clicking a mask sub-row: delete the mask (the only operation a mask has beyond painting
+	// and show/hide). A mask is an alpha channel, not an object with blend/opacity/properties, so it
+	// gets a one-button popover instead of the object editor.
+	private void ShowMaskPopover (LayersListViewItem row)
+	{
+		Gtk.Box box = Gtk.Box.New (Gtk.Orientation.Vertical, 6);
+		box.SetAllMargins (6);
+
+		Gtk.Label hint = Gtk.Label.New (Translations.GetString (
+			"Paint on the canvas to reveal the layer; erase to hide it. Right-click the row again for options."));
+		hint.Wrap = true;
+		hint.MaxWidthChars = 36;
+		hint.Halign = Gtk.Align.Start;
+		box.Append (hint);
+
+		Gtk.Popover popover = Gtk.Popover.New ();
+		popover.SetChild (box);
+
+		box.Append (Gtk.Separator.New (Gtk.Orientation.Horizontal));
+		box.Append (MenuOption (
+			Translations.GetString ("Delete Mask"),
+			Translations.GetString ("Remove this layer's mask; the layer renders unmasked."),
+			() => { popover.Popdown (); row.DeleteMask (); }));
+
+		popover.SetParent (this);
 		popover.Popup ();
 	}
 
@@ -960,9 +1083,9 @@ public sealed partial class LayersListViewItemWidget
 
 		item_label.SetText (item.Label);
 
-		// Object rows get no thumbnail (the TreeExpander supplies their indentation), but they do
-		// keep the visibility checkbox — it toggles the object's own Hidden flag.
-		bool isObject = item.IsObjectRow;
+		// Object and mask rows get no thumbnail (the TreeExpander supplies their indentation), but
+		// they do keep the visibility checkbox — it toggles the object's/mask's own Hidden flag.
+		bool isObject = item.IsObjectRow || item.IsMaskRow;
 		item_thumbnail.SetVisible (!isObject);
 		visible_button.SetActive (item.Visible);
 
@@ -975,6 +1098,18 @@ public sealed partial class LayersListViewItemWidget
 		tree_line.QueueDraw ();
 
 		if (isObject) {
+			if (item.IsMaskRow) {
+				// A mask row carries the "M" badge and a mask-specific tooltip; it marks the layer's
+				// alpha channel, which applies to the whole layer.
+				badge_label = EditableObjectBadge.MaskLabel;
+				object_badge.Visible = true;
+				object_badge.QueueDraw ();
+				SetTooltipText (Translations.GetString ("Layer mask: an alpha channel applied to the whole layer.")
+					+ "\n" + Translations.GetString ("Select this row to paint the mask; paint reveals, erase hides")
+					+ "\n" + Translations.GetString ("Right-click to delete the mask"));
+				return;
+			}
+
 			// Object rows are always live/editable (rasterizing drops the object entirely), so they
 			// always get a badge — "Obj." for something that contributes pixels, "Fx" for an effect,
 			// "Tr" for a transform, each marking what kind of modifier the row is.
@@ -1016,7 +1151,7 @@ public sealed partial class LayersListViewItemWidget
 	/// </summary>
 	private void DrawTreeLine (Context g, int width, int height)
 	{
-		if (item is null || !item.IsObjectRow)
+		if (item is null || (!item.IsObjectRow && !item.IsMaskRow))
 			return;
 
 		// Half-pixel offsets keep a 1px line crisp.

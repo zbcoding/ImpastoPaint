@@ -59,6 +59,7 @@ public sealed class GradientTool : BaseTool
 
 	public override bool UsesPaintColors => true;
 	public override bool WritesToCurrentLayer => true;
+	public override bool PaintsMaskSurface => true;
 	public override string Name => Translations.GetString ("Gradient");
 	public override string Icon => Pinta.Resources.Icons.ToolGradient;
 	public override string StatusBarText => Translations.GetString ("Click and drag to draw gradient from primary to secondary color." +
@@ -91,7 +92,7 @@ public sealed class GradientTool : BaseTool
 			return;
 
 		undo_data = this.Data;
-		undo_surface = document.Layers.CurrentUserLayer.Surface.Clone ();
+		undo_surface = document.Layers.CurrentPaintSurface.Clone ();
 
 		if (handle.BeginDrag (e.PointDouble)) {
 			SetCursor (DefaultCursor);
@@ -129,7 +130,7 @@ public sealed class GradientTool : BaseTool
 				? Translations.GetString ("Gradient Created")
 				: Translations.GetString ("Gradient Modified");
 			document.History.PushNewItem (new GradientHistoryItem (Icon, name, undo_surface,
-				document.Layers.CurrentUserLayerIndex, undo_data!.Value, this));
+				document.Layers.CurrentUserLayerIndex, undo_data!.Value, this, document.Layers.CurrentMaskIsTarget));
 		}
 
 		is_newly_created = false;
@@ -186,9 +187,9 @@ public sealed class GradientTool : BaseTool
 
 		if (document != null) {
 			undo_data = Data;
-			undo_surface = document.Layers.CurrentUserLayer.Surface.Clone ();
+			undo_surface = document.Layers.CurrentPaintSurface.Clone ();
 			document.History.PushNewItem (new GradientHistoryItem (Icon, Name + " " + Translations.GetString ("Finalized"), undo_surface,
-						document.Layers.CurrentUserLayerIndex, undo_data!.Value, this));
+						document.Layers.CurrentUserLayerIndex, undo_data!.Value, this, document.Layers.CurrentMaskIsTarget));
 		}
 		handle.Active = false;
 

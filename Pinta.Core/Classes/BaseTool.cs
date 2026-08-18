@@ -337,6 +337,15 @@ public abstract class BaseTool
 		=> false;
 
 	/// <summary>
+	/// Whether this tool's strokes land on the layer's mask surface when the mask row is selected
+	/// (see <see cref="UserLayer.PaintSurface"/>). On for the raster paint tools; off for tools that
+	/// move selection content, whose commit always targets the layer's own raster even while the
+	/// mask is the active paint target.
+	/// </summary>
+	public virtual bool PaintsMaskSurface
+		=> false;
+
+	/// <summary>
 	/// Called when Alt+Mouse Scroll is used over the canvas and <see cref="SupportsMouseScroll"/>
 	/// is true. Return 'true' if the scroll is handled, or 'false' to allow other components
 	/// to handle it.

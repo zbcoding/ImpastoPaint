@@ -54,6 +54,9 @@ public abstract class FloodTool : BaseTool
 	public override bool WritesToCurrentLayer
 		=> true;
 
+	public override bool PaintsMaskSurface
+		=> true;
+
 	protected bool IsGlobalMode => ModeDropDown.SelectedItem.GetTagOrDefault (false);
 	protected float Tolerance => (float) (ToleranceSlider.GetValue () / 100);
 	protected virtual bool CalculatePolygonSet => true;
@@ -87,7 +90,7 @@ public abstract class FloodTool : BaseTool
 		if (!currentRegion.ContainsPoint (pos.X, pos.Y) && LimitToSelection)
 			return;
 
-		var surface = document.Layers.CurrentUserLayer.Surface;
+		var surface = document.Layers.CurrentPaintSurface;
 		var stencilBuffer = new BitMask (surface.Width, surface.Height);
 		var tol = (int) (Tolerance * Tolerance * 256);
 

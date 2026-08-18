@@ -392,6 +392,11 @@ public sealed class ToolManager : IEnumerable<BaseTool>, IToolService
 		if (CurrentTool?.WritesToCurrentLayer == true
 			&& args.MouseButton != MouseButton.Middle // middle button is pan, not a stroke
 			&& document.Layers.CurrentUserLayer is { } paintLayer
+			// A paint tool drawing on the mask writes to the mask surface, which is applied after
+			// the transform, so it needs no rasterize-to-paint guard — the transform does not affect
+			// it. Tools that don't paint the mask (e.g. move selection) still write the layer raster
+			// and keep the guard.
+			&& !(document.Layers.CurrentMaskIsTarget && CurrentTool!.PaintsMaskSurface)
 			&& paintLayer.HasActiveTransform) {
 			if (!ObjectRasterizer.ConfirmRasterizeToPaint (PintaCore.Chrome, paintLayer))
 				return;

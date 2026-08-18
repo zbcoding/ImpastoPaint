@@ -123,7 +123,7 @@ public static class ObjectOpacity
 	/// </summary>
 	public static bool FoldRasterIntoComposite (IChromeService chrome, UserLayer layer)
 	{
-		if (!layer.HasModifiers)
+		if (!layer.NeedsComposite)
 			return false;
 
 		RenderLayerObjects (chrome, layer);
@@ -171,7 +171,7 @@ public static class ObjectOpacity
 		ImageSurface surface = layer.ObjectLayer.Layer.Surface;
 		surface.Clear ();
 
-		if (layer.HasModifiers) {
+		if (layer.NeedsComposite) {
 			// Accumulator path: modifiers apply to what is beneath them, so objects have to be folded
 			// into a copy of the base raster rather than drawn onto a separate transparent surface.
 			// The object surface stays cleared — GetLayersToPaint paints the composite instead.
@@ -182,6 +182,11 @@ public static class ObjectOpacity
 				else
 					RenderObject (accumulator, layer, obj, chrome);
 			}
+
+			// The mask applies last, after every child, to the whole accumulated result.
+			if (layer.Mask is { Hidden: false } mask)
+				LayerMask.ApplyMask (accumulator, mask.Surface);
+
 			accumulator.MarkDirty ();
 			layer.SetComposite (accumulator);
 			return;

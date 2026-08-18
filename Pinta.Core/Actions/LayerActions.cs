@@ -44,6 +44,7 @@ public sealed class LayerActions
 	public Command MoveLayerDown { get; }
 	public Command Properties { get; }
 	public Command RasterizeAllObjects { get; }
+	public Command AddLayerMask { get; }
 	public Command SoloLayer1 { get; }
 	public Command SoloLayer2 { get; }
 	public Command SoloLayer3 { get; }
@@ -144,6 +145,12 @@ public sealed class LayerActions
 			null,
 			Resources.Icons.ImageFlatten);
 
+		AddLayerMask = new Command (
+			"addlayermask",
+			Translations.GetString ("Add Layer Mask"),
+			null,
+			Resources.Icons.LayerNew);
+
 		solo_layer = new Command (
 			"sololayer",
 			Translations.GetString ("Solo Layer"),
@@ -205,6 +212,7 @@ public sealed class LayerActions
 			Properties,
 
 			RasterizeAllObjects,
+			AddLayerMask,
 			solo_layer,
 			SoloLayer1,
 			SoloLayer2,
@@ -228,6 +236,7 @@ public sealed class LayerActions
 		FlipVertical.Activated += HandlePintaCoreActionsLayersFlipVerticalActivated;
 		ImportFromFile.Activated += HandlePintaCoreActionsLayersImportFromFileActivated;
 		RasterizeAllObjects.Activated += HandleRasterizeAllObjectsActivated;
+		AddLayerMask.Activated += HandleAddLayerMaskActivated;
 		solo_layer.Activated += HandleSoloLayerActivated;
 		for (int i = 0; i < solo_layer_commands.Length; ++i) {
 			int layerIndex = i;
@@ -254,6 +263,34 @@ public sealed class LayerActions
 		tools.Commit ();
 
 		ObjectRasterizer.RasterizeAllObjects (doc, workspace, chrome, doc.Layers.CurrentUserLayer);
+	}
+
+	// Adds a mask slot to the current layer, as one undoable step. The freshly added mask is fully
+	// transparent, so it hides the layer until the user paints reveal into it. Selecting the new
+	// mask row (the dock updates on the history push) makes it the paint target.
+	private void HandleAddLayerMaskActivated (object sender, EventArgs e)
+	{
+		Document doc = workspace.ActiveDocument;
+		UserLayer layer = doc.Layers.CurrentUserLayer;
+
+		tools.Commit ();
+
+		if (layer.HasMask)
+			return;
+
+		LayerMask mask = layer.CreateMask ();
+
+		// Capture the post-change (empty) mask for redo; undo restores "no mask".
+		LayerMaskHistoryItem hist = new (
+			workspace,
+			Resources.Icons.LayerNew,
+			Translations.GetString ("Add Layer Mask"),
+			layer,
+			beforeSurface: null,
+			afterSurface: mask.Surface.Clone ());
+
+		ObjectOpacity.RefreshLayer (workspace, chrome, layer);
+		doc.History.PushNewItem (hist);
 	}
 
 	private void EnableOrDisableLayerActions (object? sender, EventArgs e)
@@ -501,8 +538,19 @@ public sealed class LayerActions
 		// together before anything is baked, so a cancel cannot leave the source half-baked with no
 		// undo entry.
 		UserLayer sourceLayer = doc.Layers.CurrentUserLayer;
+		// A layer with modifier nodes composites its content into one accumulated surface, so a merge
+		// has to bake the stack into plain raster first — otherwise the pixels a modifier produced
+		// would be lost when the layers fuse. Both layers are confirmed together, once.
 		List<UserLayer> modifierLayers = new UserLayer[] { sourceLayer, bottomLayer }.Where (l => l.HasModifiers).ToList ();
 		if (!ObjectRasterizer.RasterizeLayers (doc, workspace, chrome, modifierLayers, hist))
+			return;
+
+		// The source's mask also renders through the composite (it applies last), and merge paints
+		// only the base raster, so a mask-carrying source has to bake its mask into the pixels or the
+		// merge drops it. The bottom layer's mask is left alone: it keeps applying to the merged
+		// result, which is what merging into a masked layer should do.
+		if (sourceLayer.HasMask && !sourceLayer.HasModifiers
+			&& !ObjectRasterizer.RasterizeModifierStack (doc, workspace, chrome, sourceLayer, hist))
 			return;
 
 		Cairo.ImageSurface oldBottomSurface = bottomLayer.Surface.Clone ();

@@ -2223,7 +2223,7 @@ public sealed class TextTool : BaseTool
 	/// </summary>
 	private void FoldObjectsIntoComposite (UserLayer layer)
 	{
-		if (!layer.HasModifiers)
+		if (!layer.NeedsComposite)
 			return;
 
 		ObjectOpacity.RenderLayerObjects (PintaCore.Chrome, layer);

@@ -327,6 +327,16 @@ public abstract class BaseTool
 		=> false;
 
 	/// <summary>
+	/// Whether starting a stroke on the canvas writes pixels to the current layer's own raster
+	/// (rather than only to the selection / tool layer / an additive object). Off for selection,
+	/// picker, zoom, pan and move-selection tools; on for every tool whose stroke lands in
+	/// <c>UserLayer.Surface</c>. Used to block painting on a layer with an active transform node,
+	/// whose canvas output is a derived composite that a local-space stroke cannot be placed in.
+	/// </summary>
+	public virtual bool WritesToCurrentLayer
+		=> false;
+
+	/// <summary>
 	/// Called when Alt+Mouse Scroll is used over the canvas and <see cref="SupportsMouseScroll"/>
 	/// is true. Return 'true' if the scroll is handled, or 'false' to allow other components
 	/// to handle it.

@@ -59,6 +59,9 @@ public sealed class MoveSelectedTool : BaseTransformTool
 	public override Gdk.Key ShortcutKey => new (Gdk.Constants.KEY_M);
 	public override int Priority => 5;
 
+	public override bool WritesToCurrentLayer
+		=> true;
+
 	protected override RectangleD GetSourceRectangle (Document document)
 		=> document.Selection.GetBounds ();
 

@@ -153,6 +153,7 @@ Pinta.Core/Classes/Point.cs
 Pinta.Core/Classes/RandomSeed.cs
 Pinta.Core/Classes/Rectangle.cs
 Pinta.Core/Classes/Re-editable/EditableObjectBadge.cs
+Pinta.Core/Classes/Re-editable/LayerTransformNode.cs
 Pinta.Core/Classes/Re-editable/LayerObjectSelection.cs
 Pinta.Core/Classes/Re-editable/ObjectOpacity.cs
 Pinta.Core/Classes/Re-editable/ObjectPropertyHistoryItem.cs
@@ -374,6 +375,7 @@ Pinta.Gui.Widgets/Dialogs/MemberReflector.cs
 Pinta.Gui.Widgets/Dialogs/PintaLocalizer.cs
 Pinta.Gui.Widgets/Dialogs/ReflectionHelper.cs
 Pinta.Gui.Widgets/Dialogs/SimpleEffectDialog.cs
+Pinta.Gui.Widgets/Dialogs/TransformNodeDialog.cs
 Pinta.Gui.Widgets/Widgets/AnglePickerGraphic.cs
 Pinta.Gui.Widgets/Widgets/AnglePickerWidget.cs
 Pinta.Gui.Widgets/Widgets/Canvas/CanvasRenderer.cs

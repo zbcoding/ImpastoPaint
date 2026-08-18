@@ -51,6 +51,9 @@ public abstract class FloodTool : BaseTool
 
 	public FloodTool (IServiceProvider services) : base (services) { }
 
+	public override bool WritesToCurrentLayer
+		=> true;
+
 	protected bool IsGlobalMode => ModeDropDown.SelectedItem.GetTagOrDefault (false);
 	protected float Tolerance => (float) (ToleranceSlider.GetValue () / 100);
 	protected virtual bool CalculatePolygonSet => true;

@@ -58,6 +58,7 @@ public sealed class GradientTool : BaseTool
 	}
 
 	public override bool UsesPaintColors => true;
+	public override bool WritesToCurrentLayer => true;
 	public override string Name => Translations.GetString ("Gradient");
 	public override string Icon => Pinta.Resources.Icons.ToolGradient;
 	public override string StatusBarText => Translations.GetString ("Click and drag to draw gradient from primary to secondary color." +

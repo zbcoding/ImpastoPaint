@@ -416,7 +416,7 @@ public sealed class OraFormat : IImageImporter, IImageExporter
 			return false;
 
 		for (int i = BakeThrough (layer) + 1; i < layer.Objects.Count; i++) {
-			if (layer.Objects[i] is EffectModifierNode)
+			if (layer.Objects[i] is ILayerModifierNode)
 				return true;
 		}
 
@@ -437,7 +437,7 @@ public sealed class OraFormat : IImageImporter, IImageExporter
 			int last = wholeLayer ? layer.Objects.Count - 1 : BakeThrough (layer);
 
 			for (int i = 0; i <= last; i++) {
-				if (layer.Objects[i] is EffectModifierNode node)
+				if (layer.Objects[i] is ILayerModifierNode node)
 					names.Add (node.DisplayName);
 				else if (wholeLayer)
 					names.Add (layer.Objects[i].Name);
@@ -473,24 +473,40 @@ public sealed class OraFormat : IImageImporter, IImageExporter
 				// The position in the layer's unified object list, not among the nodes: a modifier
 				// applies to what is below it, so its place relative to text and shapes is meaningful.
 				for (int position = dropped; position < layer.Objects.Count; position++) {
-					if (layer.Objects[position] is not EffectModifierNode node)
-						continue;
+					if (layer.Objects[position] is EffectModifierNode node) {
+						writer.WriteStartElement ("effect");
+						writer.WriteAttributeString ("id", node.Effect.EffectId);
+						writer.WriteAttributeString ("position", (position - dropped).ToString ());
+						writer.WriteAttributeString ("effect-name", node.Effect.Name);
+						WriteObjectCommon (writer, node);
 
-					writer.WriteStartElement ("effect");
-					writer.WriteAttributeString ("id", node.Effect.EffectId);
-					writer.WriteAttributeString ("position", (position - dropped).ToString ());
-					writer.WriteAttributeString ("effect-name", node.Effect.Name);
-					WriteObjectCommon (writer, node);
+						foreach ((string property, string value) in EffectParameters (node.Effect)) {
+							writer.WriteStartElement ("param");
+							writer.WriteAttributeString ("name", property);
+							writer.WriteAttributeString ("value", value);
+							writer.WriteEndElement ();
+						}
 
-					foreach ((string property, string value) in EffectParameters (node.Effect)) {
-						writer.WriteStartElement ("param");
-						writer.WriteAttributeString ("name", property);
-						writer.WriteAttributeString ("value", value);
-						writer.WriteEndElement ();
+						WriteClip (writer, node.Clip);
+						writer.WriteEndElement (); // effect
+					} else if (layer.Objects[position] is LayerTransformNode transform) {
+						// A transform always survives a round trip: it is deterministic, so no bake
+						// decision is needed. It is its own element so an older Impasto that does not
+						// know it simply skips it (see the format-version guard in the manifest).
+						writer.WriteStartElement ("transform");
+						writer.WriteAttributeString ("position", (position - dropped).ToString ());
+						WriteObjectCommon (writer, transform);
+
+						foreach ((string property, string value) in EffectDataSerializer.ToText (transform.Data)) {
+							writer.WriteStartElement ("param");
+							writer.WriteAttributeString ("name", property);
+							writer.WriteAttributeString ("value", value);
+							writer.WriteEndElement ();
+						}
+
+						WriteClip (writer, transform.Clip);
+						writer.WriteEndElement (); // transform
 					}
-
-					WriteClip (writer, node.Clip);
-					writer.WriteEndElement (); // effect
 				}
 
 				writer.WriteEndElement (); // layer
@@ -555,8 +571,15 @@ public sealed class OraFormat : IImageImporter, IImageExporter
 
 			UserLayer layer = document.Layers.UserLayers[index];
 
-			foreach (XmlElement effectElement in layerElement.GetElementsByTagName ("effect")) {
-				EffectModifierNode? node = ReadEffectNode (effectElement);
+			// Both kinds of modifier are children of the layer element; iterating them in document
+			// order (not by GetElementsByTagName, which would regroup the kinds) preserves how an
+			// effect and a transform were interleaved, and each saved position pins the exact index.
+			foreach (XmlElement element in layerElement.ChildNodes.OfType<System.Xml.XmlElement> ()) {
+				ILayerModifierNode? node = element.Name switch {
+					"effect" => ReadEffectNode (element),
+					"transform" => ReadTransformNode (element),
+					_ => null,
+				};
 				if (node is null)
 					continue;
 
@@ -564,7 +587,7 @@ public sealed class OraFormat : IImageImporter, IImageExporter
 				// first, so it usually lands where it was; a stale index clamps to the end rather than
 				// throwing. ponytail: good enough while text and shapes each load as their own pass. If
 				// the three entries ever merge into one ordered list, insert straight from that order.
-				int position = int.TryParse (GetAttribute (effectElement, "position", "-1"), out int saved) ? saved : -1;
+				int position = int.TryParse (GetAttribute (element, "position", "-1"), out int saved) ? saved : -1;
 				if (position < 0 || position > layer.Objects.Count)
 					position = layer.Objects.Count;
 
@@ -617,6 +640,25 @@ public sealed class OraFormat : IImageImporter, IImageExporter
 		writer.WriteAttributeString ("hidden", obj.Hidden ? "1" : "0");
 		writer.WriteAttributeString ("object-opacity", obj.Opacity.ToString (GetFormat ()));
 		writer.WriteAttributeString ("object-blend", ((int) obj.BlendMode).ToString ());
+	}
+
+	private static LayerTransformNode? ReadTransformNode (XmlElement element)
+	{
+		try {
+			LayerTransformData data = new ();
+			Dictionary<string, string> parameters = [];
+			foreach (XmlElement paramElement in element.GetElementsByTagName ("param"))
+				parameters[GetAttribute (paramElement, "name", "")] = GetAttribute (paramElement, "value", "");
+			EffectDataSerializer.ApplyText (data, parameters);
+
+			LayerTransformNode node = new (data);
+			node.Clip = ReadClip (element);
+			ReadObjectCommon (element, node);
+			return node;
+		} catch {
+			// A malformed node shouldn't prevent the document from loading.
+			return null;
+		}
 	}
 
 	private static void ReadObjectCommon (XmlElement element, ILayerObject obj)

@@ -288,8 +288,15 @@ public static class ObjectRasterizer
 		if (!layer.HasAnyObjects)
 			return true;
 
-		if (confirm && !Confirm (chrome, [.. DescribeAll (layer)]))
-			return false;
+		// A layer with modifier nodes renders from its accumulated composite, which already folds in
+		// every shape and text beneath them. Its pixels are not separable into individual objects, so
+		// rasterizing "everything" on such a layer means baking the whole stack at once — the same
+		// step the dock's per-node Rasterize performs.
+		if (layer.HasModifiers) {
+			if (confirm && !Confirm (chrome, [.. layer.ModifierNodes.Select (m => m.DisplayName)]))
+				return false;
+			return RasterizeModifierStack (doc, workspace, chrome, layer, historyGroup);
+		}
 
 		RasterizeSubset (
 			doc, workspace, chrome, layer,
@@ -297,6 +304,112 @@ public static class ObjectRasterizer
 			[.. Enumerable.Range (0, layer.TextObjects.Count)],
 			historyGroup: historyGroup);
 
+		return true;
+	}
+
+	/// <summary>
+	/// Prompts before letting a paint stroke bake a transformed layer's stack. The transform node
+	/// makes the layer render from its composite, so a freehand stroke drawn in local raster space
+	/// cannot sit correctly under the transform; the only way to paint is to rasterize it first.
+	/// </summary>
+	public static bool ConfirmRasterizeToPaint (IChromeService chrome, UserLayer layer)
+	{
+		// Deliberately NOT gated behind SKIP_RASTERIZE_OBJECTS_DIALOG: that opt-out is for the routine
+		// geometry ops, where a bake is expected. Here one stray click would silently destroy a
+		// non-destructive transform, which is destructive enough to always ask about.
+		const int max_listed = 12;
+		string list = string.Join ("\n", layer.ModifierNodes.Take (max_listed).Select (m => "• " + m.DisplayName));
+		if (layer.ModifierNodes.Count > max_listed)
+			list += "\n" + Translations.GetString ("…and {0} more", layer.ModifierNodes.Count - max_listed);
+
+		string body = Translations.GetString ("Painting on a transformed layer is blocked while the transform is active. Rasterize the transform to paint here? The transform and everything beneath it become part of the layer's pixels.")
+			+ "\n\n" + list;
+
+		using Adw.MessageDialog dialog = Adw.MessageDialog.New (
+			chrome.MainWindow,
+			Translations.GetString ("Rasterize to Paint?"),
+			body);
+
+		const string cancel_response = "cancel";
+		const string rasterize_response = "rasterize";
+		dialog.AddResponse (cancel_response, Translations.GetString ("_Cancel"));
+		dialog.AddResponse (rasterize_response, Translations.GetString ("_Rasterize"));
+		dialog.SetResponseAppearance (rasterize_response, Adw.ResponseAppearance.Destructive);
+		dialog.CloseResponse = cancel_response;
+		dialog.DefaultResponse = rasterize_response;
+
+		return dialog.RunBlocking () == rasterize_response;
+	}
+
+	/// <summary>
+	/// Confirms once for everything <paramref name="layers"/> would bake, then bakes each affected
+	/// layer without prompting again, all into <paramref name="historyGroup"/>. Confirming before any
+	/// mutation means a cancel cannot leave a half-baked layer with no undo entry.
+	/// </summary>
+	public static bool RasterizeLayers (
+		Document doc,
+		IWorkspaceService workspace,
+		IChromeService chrome,
+		IReadOnlyList<UserLayer> layers,
+		CompoundHistoryItem historyGroup)
+	{
+		List<UserLayer> affected = layers.Where (l => l.HasAnyObjects).ToList ();
+
+		List<string> labels = [];
+		foreach (UserLayer layer in affected) {
+			if (layer.HasModifiers)
+				labels.AddRange (layer.ModifierNodes.Select (m => m.DisplayName));
+			else
+				labels.AddRange (DescribeAll (layer));
+		}
+
+		if (labels.Count > 0 && !Confirm (chrome, labels))
+			return false;
+
+		foreach (UserLayer layer in affected)
+			RasterizeAllObjects (doc, workspace, chrome, layer, confirm: false, historyGroup: historyGroup);
+
+		return true;
+	}
+
+	/// <summary>
+	/// Bakes a modifier-carrying layer's whole stack into its base raster and drops every child, as
+	/// one undoable step. Used by the geometry operations (crop / resize / rotate / flatten) and by
+	/// the dock's per-node Rasterize, which all funnel through <see cref="RasterizeAllObjects"/>.
+	/// </summary>
+	public static bool RasterizeModifierStack (
+		Document doc,
+		IWorkspaceService workspace,
+		IChromeService chrome,
+		UserLayer layer,
+		CompoundHistoryItem? historyGroup = null)
+	{
+		ImageSurface baseBefore = layer.Surface.Clone ();
+		ImageSurface objectBefore = layer.ObjectLayer.Layer.Surface.Clone ();
+		List<ILayerObject> objectsBefore = ObjectOpacity.CloneAll (layer.Objects);
+
+		// Ensure the composite reflects any raster edit made since the last render, then bake it.
+		ObjectOpacity.RefreshLayerNoInvalidate (chrome, layer);
+		if (!layer.RasterizeModifierStack ())
+			return false;
+
+		ObjectOpacity.RefreshLayer (workspace, chrome, layer);
+
+		RasterizeObjectsHistoryItem item = new (
+			workspace,
+			Resources.Icons.ImageFlatten,
+			Translations.GetString ("Rasterize Layer Effects"),
+			baseBefore, objectBefore,
+			objectsBefore, layer);
+
+		if (historyGroup is not null)
+			historyGroup.Push (item);
+		else
+			doc.History.PushNewItem (item);
+
+		doc.Layers.ToolLayer.Clear ();
+		LayerObjectSelection.RaiseObjectsChanged ();
+		workspace.Invalidate ();
 		return true;
 	}
 

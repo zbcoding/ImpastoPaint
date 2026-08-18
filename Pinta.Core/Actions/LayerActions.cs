@@ -400,14 +400,11 @@ public sealed class LayerActions
 
 		tools.Commit ();
 
-		// Flipping only mirrors raster pixels, so live objects must become pixels first (or the user
-		// cancels and nothing happens).
-		if (!ObjectRasterizer.RasterizeAllObjects (doc, workspace, chrome, doc.Layers.CurrentUserLayer))
-			return;
-
-		doc.Layers.CurrentUserLayer.FlipVertical ();
-		doc.Workspace.Invalidate ();
-		doc.History.PushNewItem (new InvertHistoryItem (InvertType.FlipLayerVertical, doc.Layers.CurrentUserLayerIndex));
+		AppendTransformNode (
+			doc.Layers.CurrentUserLayer,
+			new LayerTransformData { FlipVertical = true },
+			Resources.Icons.LayerFlipVertical,
+			Translations.GetString ("Flip Vertical"));
 	}
 
 	private void HandlePintaCoreActionsLayersFlipHorizontalActivated (object sender, EventArgs e)
@@ -416,12 +413,24 @@ public sealed class LayerActions
 
 		tools.Commit ();
 
-		if (!ObjectRasterizer.RasterizeAllObjects (doc, workspace, chrome, doc.Layers.CurrentUserLayer))
-			return;
+		AppendTransformNode (
+			doc.Layers.CurrentUserLayer,
+			new LayerTransformData { FlipHorizontal = true },
+			Resources.Icons.LayerFlipHorizontal,
+			Translations.GetString ("Flip Horizontal"));
+	}
 
-		doc.Layers.CurrentUserLayer.FlipHorizontal ();
-		doc.Workspace.Invalidate ();
-		doc.History.PushNewItem (new InvertHistoryItem (InvertType.FlipLayerHorizontal, doc.Layers.CurrentUserLayerIndex));
+	// A layer flip is a non-destructive transform node: it stays editable in the dock and is baked
+	// only when a later raster op needs plain pixels. One history item records the whole addition.
+	private void AppendTransformNode (UserLayer layer, LayerTransformData data, string icon, string text)
+	{
+		List<ILayerObject> objectsBefore = ObjectOpacity.CloneAll (layer.Objects);
+
+		layer.Objects.Add (new LayerTransformNode (data) { Name = text });
+		ObjectOpacity.RefreshLayer (workspace, chrome, layer);
+
+		workspace.ActiveDocument.History.PushNewItem (
+			new LayerObjectsHistoryItem (workspace, chrome, icon, text, layer, objectsBefore));
 	}
 
 	private void HandlePintaCoreActionsLayersMoveLayerUpActivated (object sender, EventArgs e)
@@ -480,14 +489,23 @@ public sealed class LayerActions
 
 		int bottomLayerIndex = doc.Layers.CurrentUserLayerIndex - 1;
 		UserLayer bottomLayer = doc.Layers.UserLayers[bottomLayerIndex];
-		Cairo.ImageSurface oldBottomSurface = bottomLayer.Surface.Clone ();
-		Cairo.ImageSurface oldBottomObjectSurface = bottomLayer.ObjectLayer.Layer.Surface.Clone ();
-		var oldBottomObjects = ObjectOpacity.CloneAll (bottomLayer.Objects);
-		bool mergedObjects = doc.Layers.CurrentUserLayer.HasAnyObjects;
 
 		CompoundHistoryItem hist = new (
 			Resources.Icons.LayerMergeDown,
 			Translations.GetString ("Merge Layer Down"));
+
+		// A layer with modifier nodes composites its children into one accumulated surface, so a
+		// merge has to bake the stacks into plain raster first — otherwise the pixels a modifier
+		// produced would be lost when the layers fuse. Both layers are confirmed together before
+		// anything is baked, so a cancel cannot leave the source half-baked with no undo entry.
+		UserLayer sourceLayer = doc.Layers.CurrentUserLayer;
+		if (!ObjectRasterizer.RasterizeLayers (doc, workspace, chrome, [sourceLayer, bottomLayer], hist))
+			return;
+
+		Cairo.ImageSurface oldBottomSurface = bottomLayer.Surface.Clone ();
+		Cairo.ImageSurface oldBottomObjectSurface = bottomLayer.ObjectLayer.Layer.Surface.Clone ();
+		var oldBottomObjects = ObjectOpacity.CloneAll (bottomLayer.Objects);
+		bool mergedObjects = doc.Layers.CurrentUserLayer.HasAnyObjects;
 
 		DeleteLayerHistoryItem h1 = new (
 			string.Empty,

@@ -46,6 +46,7 @@ public sealed class PencilTool : BaseTool
 	}
 
 	public override bool UsesPaintColors => true;
+	public override bool WritesToCurrentLayer => true;
 	public override string Name => Translations.GetString ("Pencil");
 	public override string Icon => Pinta.Resources.Icons.ToolPencil;
 	public override string StatusBarText => Translations.GetString (

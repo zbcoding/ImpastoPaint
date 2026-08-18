@@ -62,6 +62,9 @@ public abstract class BaseBrushTool : BaseTool
 	public override bool SupportsMouseScroll
 		=> true;
 
+	public override bool WritesToCurrentLayer
+		=> true;
+
 	protected override void OnBuildToolBar (Box tb)
 	{
 		base.OnBuildToolBar (tb);

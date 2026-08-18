@@ -383,6 +383,19 @@ public sealed class ToolManager : IEnumerable<BaseTool>, IToolService
 	{
 		if (PintaCore.LivePreview.IsEnabled)
 			return;
+
+		// A paint stroke on a layer with an active transform node would draw into the local raster,
+		// which the canvas does not paint for that layer — it paints the transformed composite. Offer
+		// to bake the transform; once accepted the stroke proceeds on the plain layer, cancelled it is
+		// swallowed. Tools that don't write to the current layer (selection, picker, zoom, pan) are
+		// left alone.
+		if (CurrentTool?.WritesToCurrentLayer == true && document.Layers.CurrentUserLayer.HasActiveTransform) {
+			if (!ObjectRasterizer.ConfirmRasterizeToPaint (PintaCore.Chrome, document.Layers.CurrentUserLayer))
+				return;
+			ObjectRasterizer.RasterizeModifierStack (
+				document, PintaCore.Workspace, PintaCore.Chrome, document.Layers.CurrentUserLayer);
+		}
+
 		if (!TryMouseDownPanOverride (document, args))
 			CurrentTool?.DoMouseDown (document, ApplySnapping (args));
 	}

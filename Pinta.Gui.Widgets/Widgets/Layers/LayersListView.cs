@@ -150,7 +150,7 @@ public sealed partial class LayersListView
 				store.Append (LayersListViewItem.NewTextObject (active_document, layer, text, i));
 			else if (layer.Objects[i] is ShapeObject shape && !shape.RasterizeOnFinalize)
 				store.Append (LayersListViewItem.NewShapeObject (active_document, layer, shape, i));
-			else if (layer.Objects[i] is EffectModifierNode node)
+			else if (layer.Objects[i] is ILayerModifierNode node)
 				store.Append (LayersListViewItem.NewModifierNode (active_document, layer, node, i));
 		}
 	}

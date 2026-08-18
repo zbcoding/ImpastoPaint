@@ -45,9 +45,9 @@ public sealed partial class LayersListViewItem
 	// rather than the layer itself. Object rows support select, show/hide, rename and reorder.
 	public ShapeObject? ShapeObject { get; private set; }
 	public TextObject? TextObject { get; private set; }
-	// A modifier node (adjustment/effect) nested under UserLayer. Unlike a shape or text row, it
-	// applies to every row beneath it, which the label marks so the ordering reads correctly.
-	public EffectModifierNode? ModifierNode { get; private set; }
+	// A modifier node (adjustment/effect/transform) nested under UserLayer. Unlike a shape or text
+	// row, it applies to every row beneath it, which the label marks so the ordering reads correctly.
+	public ILayerModifierNode? ModifierNode { get; private set; }
 	public bool IsObjectRow => ShapeObject is not null || TextObject is not null || ModifierNode is not null;
 
 	// Index of this object within its layer's ShapeObjects/TextObjects list. Used to select the shape
@@ -83,7 +83,7 @@ public sealed partial class LayersListViewItem
 		return item;
 	}
 
-	public static LayersListViewItem NewModifierNode (Document doc, UserLayer userLayer, EffectModifierNode node, int index)
+	public static LayersListViewItem NewModifierNode (Document doc, UserLayer userLayer, ILayerModifierNode node, int index)
 	{
 		LayersListViewItem item = NewWithProperties ([]);
 		item.document = doc;
@@ -96,8 +96,8 @@ public sealed partial class LayersListViewItem
 	public string Label {
 		get {
 			if (ModifierNode is not null)
-				// Translators: a layer effect row in the layers dock; it applies to everything below it.
-				return Translations.GetString ("▼ {0}", string.IsNullOrEmpty (ObjectName) ? ModifierNode.Effect.Name : ObjectName);
+				// Translators: a layer modifier row in the layers dock; it applies to everything below it.
+				return Translations.GetString ("▼ {0}", ModifierNode.DisplayName);
 			if (ShapeObject is not null)
 				return string.IsNullOrEmpty (ObjectName) ? ShapeTypeName (ShapeObject.ShapeType) : ObjectName;
 			if (TextObject is not null)
@@ -219,7 +219,7 @@ public sealed partial class LayersListViewItem
 
 		// A modifier node's pixels are not separable from the objects beneath it once the accumulator
 		// has run, so rasterizing one bakes the layer's whole stack. Say so before doing it.
-		if (obj is EffectModifierNode) {
+		if (obj is ILayerModifierNode) {
 			if (!ObjectRasterizer.Confirm (
 				PintaCore.Chrome,
 				[Translations.GetString ("every effect and object on this layer")]))
@@ -732,17 +732,22 @@ public sealed partial class LayersListViewItemWidget
 		// draws with its own section lines.
 		box.Append (Gtk.Separator.New (Gtk.Orientation.Horizontal));
 
-		// A modifier node reopens the effect's own configuration dialog. Editing settings in place is
-		// the whole point of a non-destructive node, so it goes above Rasterize.
-		// Offered only when the effect has settings to show: a node whose effect this build cannot
-		// supply (see UnavailableEffect) has none, and the option would do nothing.
-		if (row.ModifierNode is not null && row.ModifierNode.Effect.IsConfigurable) {
-			EffectModifierNode node = row.ModifierNode;
+		// A modifier row reopens its own configuration dialog: a transform through the numeric
+		// dialog, an effect through its effect dialog. Editing settings in place is the whole point
+		// of a non-destructive node, so it goes above Rasterize.
+		if (row.ModifierNode is ILayerModifierNode modifier) {
 			UserLayer nodeLayer = row.UserLayer!;
-			box.Append (MenuOption (
-				Translations.GetString ("Effect Settings..."),
-				Translations.GetString ("Change this effect's settings; the layer re-renders with the new values."),
-				() => { popover.Popdown (); ReconfigureModifier (nodeLayer, node); }));
+			if (modifier is LayerTransformNode transform) {
+				box.Append (MenuOption (
+					Translations.GetString ("Transform Settings..."),
+					Translations.GetString ("Change this transform's settings; the layer re-renders with the new values."),
+					async () => { popover.Popdown (); await TransformNodeDialog.Edit (PintaCore.Chrome, PintaCore.Workspace, nodeLayer, transform, Resources.Icons.LayerRotateZoom); }));
+			} else if (modifier is EffectModifierNode effect && effect.Effect.IsConfigurable) {
+				box.Append (MenuOption (
+					Translations.GetString ("Effect Settings..."),
+					Translations.GetString ("Change this effect's settings; the layer re-renders with the new values."),
+					() => { popover.Popdown (); ReconfigureModifier (nodeLayer, effect); }));
+			}
 		}
 
 		// Each closes the popover first; the OnClosed handler below skips its property history when the
@@ -971,13 +976,19 @@ public sealed partial class LayersListViewItemWidget
 
 		if (isObject) {
 			// Object rows are always live/editable (rasterizing drops the object entirely), so they
-			// always get a badge — "Obj." for something that contributes pixels, "Fx" for an effect
-			// that modifies everything beneath it.
-			badge_label = item.ModifierNode is not null ? EditableObjectBadge.EffectLabel : EditableObjectBadge.ObjectLabel;
+			// always get a badge — "Obj." for something that contributes pixels, "Fx" for an effect,
+			// "Tr" for a transform, each marking what kind of modifier the row is.
+			badge_label = item.ModifierNode switch {
+				LayerTransformNode => EditableObjectBadge.TransformLabel,
+				not null => EditableObjectBadge.EffectLabel,
+				null => EditableObjectBadge.ObjectLabel,
+			};
 			object_badge.Visible = true;
 			object_badge.QueueDraw ();
 			SetTooltipText (item.ModifierNode is not null
-				? Translations.GetString ("Layer effect: applies to everything below it on this layer, and stays editable.")
+				? (item.ModifierNode is LayerTransformNode
+					? Translations.GetString ("Layer transform: applies to everything below it on this layer, and stays editable.")
+					: Translations.GetString ("Layer effect: applies to everything below it on this layer, and stays editable."))
 					+ "\n" + Translations.GetString ("Right-click to change its settings, blending and strength") + "\n"
 					+ Translations.GetString ("Drag and drop to reorder")
 				: Translations.GetString ("Re-editable object: a live shape or text you can keep editing until you rasterize it.")

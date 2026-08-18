@@ -316,6 +316,52 @@ internal sealed class SelectionNodeInteractionsTest
 		});
 	}
 
+	// Move Selected Pixels lifts pixels by clearing them out of the base raster. When the selection
+	// misses every node nothing is baked, so the layer keeps rendering from its composite — and the
+	// lift has to fold or the emptied region goes on showing the pixels the drag carried away. That
+	// was the bug: dragging a region outside the effect zone rendered nothing until the mouse was
+	// released and the history push rebuilt the composite.
+	[Test]
+	public void LiftingOutsideEveryClippedNodeShowsTheHoleImmediately ()
+	{
+		UserLayer layer = LayerFilledWith (1.0);
+		layer.Objects.Add (new EffectModifierNode (new InvertEffect (), RectangleSelection (new RectangleD (0, 0, 4, Height))));
+		ObjectOpacity.RenderLayerObjects (chrome: null!, layer);
+
+		DocumentSelection lifted = RectangleSelection (new RectangleD (8, 0, 4, 4));
+
+		Assert.That (
+			ObjectRasterizer.PrepareForSelectionRasterOp (doc: null!, workspace: null!, chrome: null!, layer, lifted),
+			Is.True,
+			"a selection clear of every node needs no bake");
+		Assert.That (layer.NeedsComposite, Is.True,
+			"the node survived, so the canvas is still painting the composite rather than the raster");
+
+		ObjectOpacity.LiftSelectionFromRaster (chrome: null!, layer, lifted);
+
+		Assert.Multiple (() => {
+			Assert.That (CompositeAt (layer, 9, 1).A, Is.EqualTo (0),
+				"the lifted region has to read as empty mid-drag, not after the mouse is released");
+			Assert.That (CompositeAt (layer, 1, 1).R, Is.EqualTo (0), "and the node still inverts its own zone");
+			Assert.That (CompositeAt (layer, 13, 1).A, Is.EqualTo (255), "pixels outside the selection stay put");
+		});
+	}
+
+	// The same lift on a layer the canvas paints directly must not conjure a composite: one there
+	// would make GetLayersToPaint skip the layer's own raster.
+	[Test]
+	public void LiftingFromALayerWithoutNodesLeavesItOnTheDirectRasterPath ()
+	{
+		UserLayer layer = LayerFilledWith (1.0);
+
+		ObjectOpacity.LiftSelectionFromRaster (chrome: null!, layer, RectangleSelection (new RectangleD (8, 0, 4, 4)));
+
+		Assert.Multiple (() => {
+			Assert.That (layer.Composite, Is.Null);
+			Assert.That (layer.Surface.GetColorBgra (new PointI (9, 1)).A, Is.EqualTo (0), "the pixels were still lifted");
+		});
+	}
+
 	private static ShapeObject ShapeAt (PointD from, PointD to)
 	{
 		ShapeObject shape = new () { ShapeType = ShapeObjectType.OpenLineCurveSeries, BrushWidth = 1 };

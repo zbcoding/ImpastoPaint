@@ -117,13 +117,13 @@ public sealed class MoveSelectedTool : BaseTransformTool
 			selection_ctx.Clip ();
 			selection_ctx.Paint ();
 
-			var surf = document.Layers.CurrentUserLayer.Surface;
-
-			using Context surf_ctx = new (surf);
-			surf_ctx.AppendPath (document.Selection.SelectionPath);
-			surf_ctx.FillRule = FillRule.EvenOdd;
-			surf_ctx.Operator = Cairo.Operator.Clear;
-			surf_ctx.Fill ();
+			// Clears the lifted region from the raster and folds the hole into the layer's composite;
+			// without the fold, a drag that missed every effect node (so nothing was baked above)
+			// showed no movement until the composite was rebuilt on mouse release.
+			ObjectOpacity.LiftSelectionFromRaster (
+				PintaCore.Chrome,
+				document.Layers.CurrentUserLayer,
+				document.Selection);
 		}
 
 		document.Workspace.Invalidate ();

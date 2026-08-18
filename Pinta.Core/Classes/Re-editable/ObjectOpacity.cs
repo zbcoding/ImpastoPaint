@@ -142,6 +142,26 @@ public static class ObjectOpacity
 	}
 
 	/// <summary>
+	/// Lifts <paramref name="selection"/>'s pixels out of <paramref name="layer"/>'s base raster —
+	/// the clear half of Move Selected Pixels, after the pixels have been copied to the selection
+	/// layer — and folds the hole into the composite. The fold is the point: when the selection
+	/// misses every modifier node nothing is baked, so the layer still renders from its composite
+	/// and a cleared raster alone would keep showing the pixels the drag is carrying away.
+	/// </summary>
+	public static void LiftSelectionFromRaster (IChromeService chrome, UserLayer layer, DocumentSelection selection)
+	{
+		using (Context g = new (layer.Surface)) {
+			g.AppendPath (selection.SelectionPath);
+			g.FillRule = FillRule.EvenOdd;
+			g.Operator = Operator.Clear;
+			g.Fill ();
+		}
+		layer.Surface.MarkDirty ();
+
+		FoldRasterIntoComposite (chrome, layer);
+	}
+
+	/// <summary>
 	/// Rebuilds the unified object surface (render + live-engine reload) without invalidating;
 	/// callers that redraw themselves use this.
 	/// </summary>

@@ -119,6 +119,13 @@ internal sealed class SelectionNodeInteractionsTest
 		return selection;
 	}
 
+	private static DocumentSelection EllipseSelection (RectangleD r)
+	{
+		DocumentSelection selection = new ();
+		selection.CreateEllipseSelection (r);
+		return selection;
+	}
+
 	private static ColorBgra CompositeAt (UserLayer layer, int x, int y)
 	{
 		Assert.That (layer.Composite, Is.Not.Null, "a layer carrying modifier nodes renders from its composite");
@@ -259,7 +266,7 @@ internal sealed class SelectionNodeInteractionsTest
 		layer.Objects.Add (new EffectModifierNode (new InvertEffect ()));
 
 		Assert.That (
-			ObjectRasterizer.SelectionReachesAnyModifier (layer, new RectangleD (0, 0, 1, 1)),
+			ObjectRasterizer.SelectionReachesAnyModifier (layer, RectangleSelection (new RectangleD (0, 0, 1, 1))),
 			Is.True);
 	}
 
@@ -271,14 +278,30 @@ internal sealed class SelectionNodeInteractionsTest
 
 		Assert.Multiple (() => {
 			Assert.That (
-				ObjectRasterizer.SelectionReachesAnyModifier (layer, new RectangleD (8, 0, 4, 4)),
+				ObjectRasterizer.SelectionReachesAnyModifier (layer, RectangleSelection (new RectangleD (8, 0, 4, 4))),
 				Is.False,
 				"nothing to bake, so no prompt and the raster op runs untouched");
 			Assert.That (
-				ObjectRasterizer.SelectionReachesAnyModifier (layer, new RectangleD (3, 3, 4, 4)),
+				ObjectRasterizer.SelectionReachesAnyModifier (layer, RectangleSelection (new RectangleD (3, 3, 4, 4))),
 				Is.True,
 				"a one-pixel overlap is still an overlap");
 		});
+	}
+
+	[Test]
+	public void EllipseSelectionBoundsDoNotReachAClippedNodeOutsideTheEllipse ()
+	{
+		UserLayer layer = LayerFilledWith (0);
+		layer.Objects.Add (new EffectModifierNode (
+			new InvertEffect (),
+			RectangleSelection (new RectangleD (0, 0, 1, 1))));
+
+		DocumentSelection ellipse = EllipseSelection (new RectangleD (0, 0, 10, 8));
+
+		Assert.That (
+			ObjectRasterizer.SelectionReachesAnyModifier (layer, ellipse),
+			Is.False,
+			"the selection's rectangular bounds overlap the node, but its selected pixels do not");
 	}
 
 	// Several small zones from repeated select-and-apply is the normal way this list grows. Reaching
@@ -292,8 +315,8 @@ internal sealed class SelectionNodeInteractionsTest
 
 		Assert.Multiple (() => {
 			Assert.That (layer.ModifierNodes, Has.Count.EqualTo (4));
-			Assert.That (ObjectRasterizer.SelectionReachesAnyModifier (layer, new RectangleD (12, 0, 2, 2)), Is.True);
-			Assert.That (ObjectRasterizer.SelectionReachesAnyModifier (layer, new RectangleD (2, 4, 2, 2)), Is.False);
+			Assert.That (ObjectRasterizer.SelectionReachesAnyModifier (layer, RectangleSelection (new RectangleD (12, 0, 2, 2))), Is.True);
+			Assert.That (ObjectRasterizer.SelectionReachesAnyModifier (layer, RectangleSelection (new RectangleD (2, 4, 2, 2))), Is.False);
 		});
 	}
 
@@ -362,7 +385,7 @@ internal sealed class SelectionNodeInteractionsTest
 
 		DocumentSelection lifted = RectangleSelection (new RectangleD (2, 0, 6, 4));
 		Assert.That (
-			ObjectRasterizer.SelectionReachesAnyModifier (layer, lifted.GetBounds ()),
+			ObjectRasterizer.SelectionReachesAnyModifier (layer, lifted),
 			Is.True,
 			"the rasterize warning is required when any part of the move reaches the clipped node");
 

@@ -302,8 +302,7 @@ public static class ObjectRasterizer
 			return true;
 
 		RectangleD region = selection.GetBounds ();
-
-		if (layer.HasModifiers && SelectionReachesAnyModifier (layer, region)) {
+		if (layer.HasModifiers && SelectionReachesAnyModifier (layer, selection, region)) {
 			List<string> labels = DescribeAll (layer).ToList ();
 			if (labels.Count > 0 && !Confirm (chrome, labels))
 				return false;
@@ -325,17 +324,34 @@ public static class ObjectRasterizer
 		return true;
 	}
 
-	// A node with no clip modifies the whole layer, so any selection reaches it. A clipped one is
-	// reached when the selection overlaps the region it was applied to. Bounding boxes rather than
-	// exact paths: over-baking a near miss costs the user an editable node, which the prompt tells
-	// them about, while under-baking silently corrupts the pixels the operation then writes.
-	public static bool SelectionReachesAnyModifier (UserLayer layer, in RectangleD region)
+	// A node with no clip modifies the whole layer, so any selection reaches it. For a clipped node,
+	// reject disjoint bounds cheaply, then intersect the actual selection polygons. Bounds alone are
+	// insufficient for ellipses and lassos: their empty corners can overlap without sharing pixels.
+	public static bool SelectionReachesAnyModifier (UserLayer layer, DocumentSelection selection)
+		=> SelectionReachesAnyModifier (layer, selection, selection.GetBounds ());
+
+	private static bool SelectionReachesAnyModifier (
+		UserLayer layer,
+		DocumentSelection selection,
+		in RectangleD selectionBounds)
 	{
+		Clipper clipper = new ();
+		List<List<IntPoint>> intersection = [];
+
 		foreach (ILayerModifierNode node in layer.ModifierNodes) {
 			if (node.Clip is null)
 				return true;
 
-			if (Overlaps (region, node.Clip.GetBounds ()))
+			if (!Overlaps (selectionBounds, node.Clip.GetBounds ()))
+				continue;
+
+			clipper.Clear ();
+			intersection.Clear ();
+			clipper.AddPaths (selection.SelectionPolygons, PolyType.ptSubject, true);
+			clipper.AddPaths (node.Clip.SelectionPolygons, PolyType.ptClip, true);
+			clipper.Execute (ClipType.ctIntersection, intersection);
+
+			if (intersection.Count > 0)
 				return true;
 		}
 

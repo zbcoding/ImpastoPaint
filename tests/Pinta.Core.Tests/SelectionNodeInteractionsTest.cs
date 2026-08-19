@@ -333,13 +333,17 @@ internal sealed class SelectionNodeInteractionsTest
 	}
 
 	[Test]
-	public void OnlyAnActualFullImageSelectionContainsTheImageBounds ()
+	public void OnlyAnActualFullImageSelectionOmitsTheFrozenObjectClip ()
 	{
+		Size imageSize = new (Width, Height);
 		RectangleD imageBounds = new (0, 0, Width, Height);
+		DocumentSelection ellipse = EllipseSelection (imageBounds);
+		DocumentSelection? ellipseClip = ellipse.CreateFrozenObjectClip (imageSize);
 
 		Assert.Multiple (() => {
-			Assert.That (RectangleSelection (imageBounds).Contains (imageBounds), Is.True);
-			Assert.That (EllipseSelection (imageBounds).Contains (imageBounds), Is.False);
+			Assert.That (RectangleSelection (imageBounds).CreateFrozenObjectClip (imageSize), Is.Null);
+			Assert.That (ellipseClip, Is.Not.Null);
+			Assert.That (ellipseClip, Is.Not.SameAs (ellipse), "the shape owns a frozen selection snapshot");
 		});
 	}
 

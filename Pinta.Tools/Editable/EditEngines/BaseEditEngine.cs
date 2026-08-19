@@ -1879,7 +1879,6 @@ public abstract class BaseEditEngine
 	/// so this has no handle side effects and can be called for every shape when rebuilding the
 	/// shared ShapeLayer surface.
 	/// </summary>
-
 	protected RectangleD DrawShapeGeometry (ShapeEngine engine, ImageSurface surface)
 	{
 		RectangleD dirty = RectangleD.Zero;

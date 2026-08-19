@@ -1,4 +1,6 @@
+using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Pinta.Core;
 
@@ -7,6 +9,11 @@ namespace Pinta.Core;
 /// tools from the toolbar instead. It keeps the plain chip's contents and size - the
 /// "Tool:" label and the current tool's icon - and adds a triangle and an outline that
 /// lights up on hover, so it reads as a menu rather than a label.
+///
+/// <para>
+/// The menu is the toolbox laid out sideways: the same sections in the same order, two
+/// tools per row, tall enough to show them all without scrolling.
+/// </para>
 /// </summary>
 [GObject.Subclass<Gtk.MenuButton>]
 public sealed partial class ToolSelectorButton
@@ -14,13 +21,22 @@ public sealed partial class ToolSelectorButton
 	// Draws the chip's border, radius and padding on the button, so the toolbar keeps its height.
 	private const string SELECTOR_CLASS = "tool-selector-button";
 
-	// Every tool in one list is taller than a short screen, so the list scrolls instead.
-	private const int MAX_MENU_HEIGHT = 420;
+	// Spans the width of both columns, so a section heading reads as a heading.
+	private const string SECTION_HEADING_CLASS = "tool-selector-section";
+
+	private const int MENU_COLUMNS = 2;
+
+	// Share of the window the menu may occupy before its sections start scrolling.
+	private const double MENU_HEIGHT_SHARE = 0.85;
+
+	// Used until the main window has been given its size.
+	private const int FALLBACK_MENU_HEIGHT = 600;
 
 	private ToolManager tools = null!; // NRT - set in the factory method
 
 	private readonly Gtk.Image current_icon = Gtk.Image.New ();
 	private readonly Gtk.Box entries = Gtk.Box.New (Gtk.Orientation.Vertical, 0);
+	private readonly Gtk.ScrolledWindow menu_scroll = Gtk.ScrolledWindow.New ();
 
 	// The checkmark on each entry, so activating a tool moves the mark without rebuilding
 	// the list - which only happens when the set of tools or their shortcuts changes.
@@ -38,15 +54,17 @@ public sealed partial class ToolSelectorButton
 		Valign = Gtk.Align.Center;
 		CanFocus = false;
 
-		Gtk.ScrolledWindow scroll = Gtk.ScrolledWindow.New ();
-		scroll.Child = entries;
-		scroll.HscrollbarPolicy = Gtk.PolicyType.Never;
-		scroll.PropagateNaturalHeight = true;
-		scroll.PropagateNaturalWidth = true;
-		scroll.MaxContentHeight = MAX_MENU_HEIGHT;
+		menu_scroll.Child = entries;
+		menu_scroll.HscrollbarPolicy = Gtk.PolicyType.Never;
+		menu_scroll.PropagateNaturalHeight = true;
+		menu_scroll.PropagateNaturalWidth = true;
+		menu_scroll.MaxContentHeight = FALLBACK_MENU_HEIGHT;
 
 		Gtk.Popover popover = Gtk.Popover.New ();
-		popover.SetChild (scroll);
+		popover.SetChild (menu_scroll);
+		// The window can be resized between two openings, so the menu takes its share of
+		// whatever height the window has now.
+		popover.OnShow += (_, _) => UpdateMenuHeight ();
 		Popover = popover;
 	}
 
@@ -71,6 +89,8 @@ public sealed partial class ToolSelectorButton
 
 		if (tools.CurrentTool is BaseTool current)
 			ShowTool (current);
+
+		UpdateMenuHeight (); // A sane height even before the window reports one.
 	}
 
 	/// <summary>
@@ -86,37 +106,80 @@ public sealed partial class ToolSelectorButton
 			mark.Visible = entryTool == tool;
 	}
 
+	/// <summary>
+	/// The menu takes most of the window's height, so every section is in view at once. The
+	/// height is fixed rather than a ceiling: a short list would otherwise collapse the menu
+	/// back to a stub, and a long one still scrolls.
+	/// </summary>
+	private void UpdateMenuHeight ()
+	{
+		int windowHeight = PintaCore.Chrome.MainWindow.GetHeight ();
+
+		int menuHeight = windowHeight > 0
+			? (int) (windowHeight * MENU_HEIGHT_SHARE)
+			: FALLBACK_MENU_HEIGHT;
+
+		menu_scroll.MinContentHeight = menuHeight;
+		menu_scroll.MaxContentHeight = menuHeight;
+	}
+
 	private void RebuildEntries ()
 	{
 		entries.RemoveAll ();
 		selected_marks.Clear ();
 
-		foreach (BaseTool tool in tools) {
+		for (int section = 0; section < ToolSections.Count; section++) {
 
-			Gtk.Box row = Gtk.Box.New (Gtk.Orientation.Horizontal, 6);
-			row.Append (Gtk.Image.NewFromIconName (IconNameFor (tool)));
+			BaseTool[] members = tools.Where (t => ToolSections.IndexOf (t) == section).ToArray ();
 
-			Gtk.Label name = Gtk.Label.New (tool.Name);
-			name.Halign = Gtk.Align.Start;
-			name.Hexpand = true;
-			row.Append (name);
+			// An empty section draws no heading, so the add-in one only appears once an
+			// add-in tool is installed.
+			if (members.Length == 0)
+				continue;
 
-			Gtk.Image selectedMark = Gtk.Image.NewFromIconName (Resources.StandardIcons.ObjectSelect);
-			selectedMark.Visible = tools.CurrentTool == tool;
-			row.Append (selectedMark);
-			selected_marks[tool] = selectedMark;
+			Gtk.Label heading = Gtk.Label.New (ToolSections.NameOf (section));
+			heading.Halign = Gtk.Align.Start;
+			heading.SetCssClasses ([SECTION_HEADING_CLASS, AdwaitaStyles.Heading, AdwaitaStyles.DimLabel]);
+			entries.Append (heading);
 
-			Gtk.Button entry = Gtk.Button.New ();
-			entry.SetCssClasses ([AdwaitaStyles.Flat]);
-			entry.TooltipText = TooltipFor (tool);
-			entry.SetChild (row);
-			entry.OnClicked += (_, _) => {
-				Popover?.Popdown ();
-				tools.SetCurrentTool (tool);
-			};
+			Gtk.FlowBox grid = Gtk.FlowBox.New ();
+			grid.SetOrientation (Gtk.Orientation.Horizontal);
+			grid.MinChildrenPerLine = MENU_COLUMNS;
+			grid.MaxChildrenPerLine = MENU_COLUMNS;
+			grid.Homogeneous = true; // Both columns as wide as the longest tool name.
+			grid.SelectionMode = Gtk.SelectionMode.None;
+			entries.Append (grid);
 
-			entries.Append (entry);
+			foreach (BaseTool tool in members)
+				grid.Append (CreateEntry (tool));
 		}
+	}
+
+	private Gtk.Button CreateEntry (BaseTool tool)
+	{
+		Gtk.Box row = Gtk.Box.New (Gtk.Orientation.Horizontal, 6);
+		row.Append (Gtk.Image.NewFromIconName (IconNameFor (tool)));
+
+		Gtk.Label name = Gtk.Label.New (tool.Name);
+		name.Halign = Gtk.Align.Start;
+		name.Hexpand = true;
+		row.Append (name);
+
+		Gtk.Image selectedMark = Gtk.Image.NewFromIconName (Resources.StandardIcons.ObjectSelect);
+		selectedMark.Visible = tools.CurrentTool == tool;
+		row.Append (selectedMark);
+		selected_marks[tool] = selectedMark;
+
+		Gtk.Button entry = Gtk.Button.New ();
+		entry.SetCssClasses ([AdwaitaStyles.Flat]);
+		entry.TooltipText = TooltipFor (tool);
+		entry.SetChild (row);
+		entry.OnClicked += (_, _) => {
+			Popover?.Popdown ();
+			tools.SetCurrentTool (tool);
+		};
+
+		return entry;
 	}
 
 	/// <summary>

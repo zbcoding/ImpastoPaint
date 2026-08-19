@@ -1,8 +1,9 @@
 # Toolbox layout reference
 
-The application's own tools are assigned to a section by `Priority`. An add-in's tools are
-placed by where they came from instead, so a plugin never appears inside a group of related
-built-ins:
+`Pinta.Core.ToolSections` owns the grouping, so the toolbox column and the tool dropdown
+always agree. The application's own tools are assigned to a section by `Priority`. An add-in's
+tools are placed by where they came from instead, so a plugin never appears inside a group of
+related built-ins:
 
 | Section | Priorities | Tools |
 |---|---|---|
@@ -15,8 +16,9 @@ built-ins:
 | Retouch | rest | Clone Stamp, Recolor |
 | Add-ins | n/a | every tool an add-in ships, whatever priority it picks |
 
-`Priority` still orders the add-in section, and an empty section draws no separator, so the
-divider appears only once an add-in tool is installed.
+`Priority` still orders the add-in section, and an empty section is skipped — no separator in
+the toolbox, no heading in the dropdown — so it appears only once an add-in tool is installed.
+Section names are only rendered by the dropdown; the toolbox divides with separators.
 
 Stacks are declared in `stack_definitions` as priority groups. Adding the selection stack
 (rectangle + ellipse marquee) is one array entry, no new code. Only the application's tools
@@ -31,9 +33,11 @@ with its icon, name and shortcut key, and hides the toolbox column. The chip and
 are the same size, so the toolbar keeps its height either way. The setting only drives
 `View ▸ Tool Box` when it changes, so showing both at once stays possible afterwards.
 
-The dropdown's entries are rebuilt when a tool is added or removed and when shortcuts change;
-activating a tool only moves the checkmark. Sections, stacks and pinning are toolbox concepts
-and have no equivalent here — the list is flat.
+The menu is the toolbox laid out sideways: the same sections in the same order, each with its
+name as a heading and its tools two per row, and the whole menu sized to 85% of the window's
+height on opening so every section is in view. Entries are rebuilt when a tool is added or
+removed and when shortcuts change; activating a tool only moves the checkmark. Stacks and
+pinning are toolbox concepts with no equivalent here — every tool gets its own entry.
 
 ## Footer layout reference
 

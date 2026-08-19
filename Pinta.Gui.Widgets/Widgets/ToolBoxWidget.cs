@@ -12,27 +12,6 @@ namespace Pinta.Gui.Widgets;
 public sealed partial class ToolBoxWidget
 {
 	/// <summary>
-	/// Upper bound (inclusive) of the tool priorities belonging to each section. These cover
-	/// the tools the application ships; an add-in's tools are placed by
-	/// <see cref="addin_section"/> instead, whatever priority they pick.
-	/// </summary>
-	private static readonly int[] section_bounds = [
-		8,   // Move
-		12,  // View (zoom, pan)
-		20,  // Select
-		36,  // Paint
-		46,  // Shapes
-		int.MaxValue, // Retouch, plus anything else the application ships
-	];
-
-	/// <summary>
-	/// Add-in tools get the trailing section, below every built-in one. Grouping them by
-	/// priority instead would drop them into a section of related built-ins - or into a
-	/// stack's flyout - where nothing distinguishes them from the application's own tools.
-	/// </summary>
-	private static readonly int addin_section = section_bounds.Length;
-
-	/// <summary>
 	/// Tool priorities that collapse into one button with a flyout. The stack shows the
 	/// icon of whichever member is currently selected.
 	/// </summary>
@@ -62,9 +41,9 @@ public sealed partial class ToolBoxWidget
 	// group would force a choice. Activating this dummy leader turns the whole section off.
 	private readonly Gtk.ToggleButton pinned_toggle_group = Gtk.ToggleButton.New ();
 
-	// One box per built-in section, plus the add-in section at the end.
-	private readonly Gtk.FlowBox[] sections = new Gtk.FlowBox[section_bounds.Length + 1];
-	private readonly Gtk.Separator[] separators = new Gtk.Separator[section_bounds.Length];
+	// One box per section, in the order ToolSections lists them.
+	private readonly Gtk.FlowBox[] sections = new Gtk.FlowBox[ToolSections.Count];
+	private readonly Gtk.Separator[] separators = new Gtk.Separator[ToolSections.Count - 1];
 
 	// Impasto: pinned tools get a copy in a highlighted section at the top of the toolbox.
 	// They stay in their original spot as well - pinning copies, it doesn't move.
@@ -185,8 +164,7 @@ public sealed partial class ToolBoxWidget
 	}
 
 	/// <summary>
-	/// The section a tool's button belongs in. An add-in's tools take the add-in section
-	/// regardless of priority; the application's own are placed by <see cref="section_bounds"/>.
+	/// The section a tool's button belongs in, as <see cref="ToolSections"/> groups them.
 	///
 	/// <para>
 	/// In classic layout every tool shares section 0, so the sections below it never
@@ -194,19 +172,7 @@ public sealed partial class ToolBoxWidget
 	/// </para>
 	/// </summary>
 	internal int SectionIndex (BaseTool tool)
-	{
-		if (classic_layout)
-			return 0;
-
-		if (AddinMenu.AddinNameOf (tool.GetType ()) is not null)
-			return addin_section;
-
-		for (int i = 0; i < section_bounds.Length; i++)
-			if (tool.Priority <= section_bounds[i])
-				return i;
-
-		return section_bounds.Length - 1;
-	}
+		=> classic_layout ? 0 : ToolSections.IndexOf (tool);
 
 	/// <summary>
 	/// The stack a tool collapses into, or null when it has its own button. Only the

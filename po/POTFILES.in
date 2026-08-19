@@ -178,6 +178,7 @@ Pinta.Core/Classes/SplineInterpolator.cs
 Pinta.Core/Classes/SurfaceDiff.cs
 Pinta.Core/Classes/ToolOption/IntegerOption.cs
 Pinta.Core/Classes/ToolOption/ToolOption.cs
+Pinta.Core/Classes/ToolSections.cs
 Pinta.Core/Classes/Translations.cs
 Pinta.Core/Classes/UserLayer.cs
 Pinta.Core/Delegates/AsyncEventHandler.cs

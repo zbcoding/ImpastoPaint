@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Cairo;
 using NUnit.Framework;
 
@@ -129,6 +130,22 @@ internal abstract class DocumentHarness
 	{
 		DocumentSelection selection = new ();
 		selection.CreateRectangleSelection (new RectangleD (region.X, region.Y, region.Width, region.Height));
+		return selection;
+	}
+
+	/// <summary>An elliptical selection inscribed in <paramref name="region"/>: the same bounding box, less area.</summary>
+	protected static DocumentSelection EllipseIn (RectangleI region)
+	{
+		DocumentSelection selection = new ();
+		selection.CreateEllipseSelection (new RectangleD (region.X, region.Y, region.Width, region.Height));
+		return selection;
+	}
+
+	/// <summary>An arbitrary selection outline, for the concave and notched cases a rectangle cannot express.</summary>
+	protected static DocumentSelection PolygonSelection (params PointI[] points)
+	{
+		DocumentSelection selection = new ();
+		selection.SelectionPolygons.Add ([.. points.Select (p => new ClipperLib.IntPoint (p.X, p.Y))]);
 		return selection;
 	}
 

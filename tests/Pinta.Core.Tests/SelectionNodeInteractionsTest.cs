@@ -410,6 +410,75 @@ internal sealed class SelectionNodeInteractionsTest
 		});
 	}
 
+	// The selection side of FindIntersecting is exact (above); the object side is not — a shape is
+	// reduced to its bounding box. A diagonal stroke's box covers ground the stroke never inks, so a
+	// selection that touches only that empty ground still bakes it.
+	//
+	// This is deliberate and the direction matters: over-baking costs the user an editable shape and
+	// the prompt says so, while under-baking lets the raster operation that follows write over pixels
+	// the object was still drawing. Pinned here so that tightening it to exact geometry is a decision
+	// someone makes on purpose rather than a cleanup that quietly swaps the safe error for the unsafe
+	// one.
+	[Test]
+	public void AShapeIsJudgedByItsBoundingBoxNotItsInk ()
+	{
+		UserLayer layer = LayerFilledWith (0);
+		layer.Objects.Add (ShapeAt (new PointD (0, 0), new PointD (8, 8)));
+
+		// Sits in the diagonal's bounding box, well clear of the line itself.
+		ObjectRasterizer.FindIntersecting (
+			layer, RectangleSelection (new RectangleD (6, 0, 2, 2)),
+			out List<int> shapeIndices, out List<int> textIndices);
+
+		Assert.Multiple (() => {
+			Assert.That (shapeIndices, Is.EqualTo (new[] { 0 }), "conservative: the box overlaps, so the shape bakes");
+			Assert.That (textIndices, Is.Empty);
+		});
+	}
+
+	// The same over-approximation on the deselect path. A shape lying inside an elliptical clip, but
+	// whose bounding box pokes out of it, is reported as clipped and fuses on deselect. It errs the
+	// same way and for the same reason: a shape kept editable while a clip still cuts it would keep an
+	// invisible boundary the user cannot see or edit.
+	[Test]
+	public void AShapeInsideAnEllipticalClipStillBakesWhenItsBoxPokesOut ()
+	{
+		DocumentSelection ellipse = EllipseSelection (new RectangleD (0, 0, Width, Height));
+
+		// A diagonal from the ellipse's left edge to its top edge. Every point of the line is inside
+		// the curve; the corner of the box that encloses it is not.
+		ShapeObject diagonal = ShapeAt (new PointD (1, 4), new PointD (8, 1));
+		diagonal.Clip = ellipse;
+
+		UserLayer layer = LayerFilledWith (0);
+		layer.Objects.Add (diagonal);
+
+		Assert.That (
+			ObjectRasterizer.ClipContainsShape (diagonal),
+			Is.False,
+			"the shape's bounding box leaves the ellipse, so containment is answered conservatively");
+		Assert.That (
+			ObjectRasterizer.FindClippedShapesOnDeselect (layer),
+			Is.EqualTo (new[] { 0 }),
+			"and so it fuses on deselect rather than keeping an invisible clip");
+	}
+
+	// A shape whose bounding box lies wholly inside a rectangular clip is contained, and stays
+	// editable through a deselect. The counterpart to the case above: the conservative answer must
+	// still be able to say yes, or every clipped shape would bake and the distinction would be dead.
+	[Test]
+	public void AShapeWellInsideItsClipStaysEditableOnDeselect ()
+	{
+		ShapeObject small = ShapeAt (new PointD (2, 2), new PointD (4, 4));
+		small.Clip = RectangleSelection (new RectangleD (0, 0, 8, 8));
+
+		UserLayer layer = LayerFilledWith (0);
+		layer.Objects.Add (small);
+
+		Assert.That (ObjectRasterizer.ClipContainsShape (small), Is.True);
+		Assert.That (ObjectRasterizer.FindClippedShapesOnDeselect (layer), Is.Empty);
+	}
+
 	// Move Selected Pixels lifts pixels by clearing them out of the base raster. When the selection
 	// misses every node nothing is baked, so the layer keeps rendering from its composite — and the
 	// lift has to fold or the emptied region goes on showing the pixels the drag carried away. That

@@ -9,8 +9,8 @@ namespace Pinta.Core.Tests;
 /// <summary>
 /// A layer mask is a slot on the layer (UserLayer.Mask), not a z-ordered child: its alpha multiplies
 /// the layer's accumulated result, last. These pin the slot's behaviour — rendering, the paint-target
-/// seam, geometry and baking — without needing the GTK-backed managers (the same limitation that keeps
-/// OraFormat and DocumentHistory untested).
+/// seam, geometry and baking — against a bare UserLayer, with no managers involved. The mask's
+/// behaviour across a history step is covered by NodeHistoryTest, which runs a whole document.
 /// </summary>
 [TestFixture]
 internal sealed class LayerMaskTest
@@ -21,12 +21,9 @@ internal sealed class LayerMaskTest
 		Cairo.Module.Initialize ();
 	}
 
-	// LayerMaskHistoryItem's restore path re-renders through PintaCore (RefreshLayer), which the Core
-	// suite cannot touch — the same constraint that keeps DocumentHistory and OraFormat untested. Its
-	// restore-uses-a-copy property is enforced by the Set method's CopyOf, reviewed rather than tested.
-	// The undo/redo paths of SimpleHistoryItem (mask target) and CompoundHistoryItem (mask snapshot)
-	// are covered by the same limitation; the reference-hand-off there matches the pre-existing
-	// surface-swap pattern.
+	// LayerMaskHistoryItem's restore path re-renders through PintaCore, so it is exercised from
+	// DocumentHarness instead (see NodeHistoryTest.UndoOfAMaskLeavesTheNodeStackIntact), which brings
+	// the managers up headless. What stays here is the slot's own behaviour, which needs no document.
 
 	private static UserLayer LayerWithPixel (int width, int height, PointI point)
 	{

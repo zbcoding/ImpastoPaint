@@ -41,6 +41,7 @@ public sealed class DocumentSelection
 
 	public List<List<IntPoint>> SelectionPolygons { get; set; } = [];
 	public Clipper SelectionClipper { get; } = new ();
+	private readonly List<List<IntPoint>> rectangle_query_result = [];
 
 	/// <summary>
 	/// Bounding rectangle which is used by tools to display interactive
@@ -403,28 +404,32 @@ public sealed class DocumentSelection
 	/// Returns whether any part of <paramref name="region"/> lies inside the actual selection.
 	/// </summary>
 	public bool Intersects (RectangleD region)
-	{
-		Clipper clipper = new ();
-		clipper.AddPaths (SelectionPolygons, PolyType.ptSubject, true);
-		clipper.AddPath (CreateRectanglePolygon (region), PolyType.ptClip, true);
-
-		List<List<IntPoint>> intersection = [];
-		clipper.Execute (ClipType.ctIntersection, intersection);
-		return intersection.Count > 0;
-	}
+		=> ExecuteRectangleQuery (region, ClipType.ctIntersection, regionIsSubject: false) > 0;
 
 	/// <summary>
 	/// Returns whether the actual selection contains all of <paramref name="region"/>.
 	/// </summary>
 	public bool Contains (RectangleD region)
-	{
-		Clipper clipper = new ();
-		clipper.AddPath (CreateRectanglePolygon (region), PolyType.ptSubject, true);
-		clipper.AddPaths (SelectionPolygons, PolyType.ptClip, true);
+		=> ExecuteRectangleQuery (region, ClipType.ctDifference, regionIsSubject: true) == 0;
 
-		List<List<IntPoint>> difference = [];
-		clipper.Execute (ClipType.ctDifference, difference);
-		return difference.Count == 0;
+	private int ExecuteRectangleQuery (RectangleD region, ClipType clipType, bool regionIsSubject)
+	{
+		SelectionClipper.Clear ();
+		rectangle_query_result.Clear ();
+
+		List<IntPoint> rectangle = CreateRectanglePolygon (region);
+		if (regionIsSubject) {
+			SelectionClipper.AddPath (rectangle, PolyType.ptSubject, true);
+			SelectionClipper.AddPaths (SelectionPolygons, PolyType.ptClip, true);
+		} else {
+			SelectionClipper.AddPaths (SelectionPolygons, PolyType.ptSubject, true);
+			SelectionClipper.AddPath (rectangle, PolyType.ptClip, true);
+		}
+
+		SelectionClipper.Execute (clipType, rectangle_query_result);
+		int resultCount = rectangle_query_result.Count;
+		SelectionClipper.Clear ();
+		return resultCount;
 	}
 
 	/// <summary>

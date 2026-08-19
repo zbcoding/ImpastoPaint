@@ -332,7 +332,6 @@ internal sealed class SelectionNodeInteractionsTest
 			"arbitrary selection polygons use their selected area rather than their rectangular bounds");
 	}
 
-
 	[Test]
 	public void OnlyAnActualFullImageSelectionContainsTheImageBounds ()
 	{
@@ -384,6 +383,8 @@ internal sealed class SelectionNodeInteractionsTest
 	{
 		UserLayer layer = LayerFilledWith (0);
 		layer.Objects.Add (ShapeAt (new PointD (Width - 2, 0), new PointD (Width - 1, 1)));
+		// This path reads only TextBounds. Bypass TextEngine's native Pango constructor so the
+		// geometry regression remains runnable in the headless Core test environment.
 		TextEngine textEngine = (TextEngine) System.Runtime.CompilerServices.RuntimeHelpers.GetUninitializedObject (typeof (TextEngine));
 		layer.Objects.Add (new TextObject (textEngine) {
 			TextBounds = new RectangleI (Width - 2, 0, 1, 1),

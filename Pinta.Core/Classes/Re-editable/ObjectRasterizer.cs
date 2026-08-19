@@ -20,25 +20,29 @@ namespace Pinta.Core;
 public static class ObjectRasterizer
 {
 	/// <summary>
-	/// Returns the indices of the shapes/text objects on <paramref name="layer"/> whose bounds overlap
-	/// <paramref name="region"/> (a selection's bounding box). Used to rasterize only what an op touches.
+	/// Returns the indices of the shapes/text objects whose bounds overlap the actual
+	/// <paramref name="selection"/>. Used to rasterize only what an operation touches.
 	/// </summary>
 	public static void FindIntersecting (
 		UserLayer layer,
-		RectangleD region,
+		DocumentSelection selection,
 		out List<int> shapeIndices,
 		out List<int> textIndices)
 	{
 		shapeIndices = [];
 		textIndices = [];
+		RectangleD selectionBounds = selection.GetBounds ();
 
-		for (int i = 0; i < layer.ShapeObjects.Count; ++i)
-			if (Overlaps (region, layer.ShapeObjects[i].GetApproximateBounds ()))
+		for (int i = 0; i < layer.ShapeObjects.Count; ++i) {
+			RectangleD shapeBounds = layer.ShapeObjects[i].GetApproximateBounds ();
+			if (Overlaps (selectionBounds, shapeBounds) && selection.Intersects (shapeBounds))
 				shapeIndices.Add (i);
+		}
 
 		for (int i = 0; i < layer.TextObjects.Count; ++i) {
 			RectangleI b = layer.TextObjects[i].TextBounds;
-			if (Overlaps (region, new (b.X, b.Y, b.Width, b.Height)))
+			RectangleD textBounds = new (b.X, b.Y, b.Width, b.Height);
+			if (Overlaps (selectionBounds, textBounds) && selection.Intersects (textBounds))
 				textIndices.Add (i);
 		}
 	}
@@ -311,7 +315,7 @@ public static class ObjectRasterizer
 			return true;
 		}
 
-		FindIntersecting (layer, region, out List<int> shapeIndices, out List<int> textIndices);
+		FindIntersecting (layer, selection, out List<int> shapeIndices, out List<int> textIndices);
 
 		if (shapeIndices.Count == 0 && textIndices.Count == 0)
 			return true; // the selection misses every object; nothing to bake.

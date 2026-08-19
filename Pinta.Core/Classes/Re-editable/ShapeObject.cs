@@ -133,8 +133,10 @@ public sealed class ShapeObject : ILayerObject
 
 	/// <summary>
 	/// Approximate on-canvas bounds from the control-point positions, padded by the stroke width.
-	/// Used only to decide whether a selection overlaps this shape (rasterize-on-touch), so a rough
-	/// bounding box that errs slightly large is fine. ponytail: control-point bbox + brush pad.
+	/// Rasterize-on-touch intersects the actual selection with this box, so empty corners of a
+	/// non-rectangular selection do not count. The shape side still deliberately errs large.
+	/// ponytail: control-point bbox + brush pad; render an alpha mask if shape-side false positives
+	/// become costly.
 	/// </summary>
 	public RectangleD GetApproximateBounds ()
 	{

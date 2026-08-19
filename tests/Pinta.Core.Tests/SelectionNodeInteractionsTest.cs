@@ -370,7 +370,7 @@ internal sealed class SelectionNodeInteractionsTest
 		layer.Objects.Add (ShapeAt (new PointD (12, 4), new PointD (14, 6)));
 
 		ObjectRasterizer.FindIntersecting (
-			layer, new RectangleD (0, 0, 5, 5),
+			layer, RectangleSelection (new RectangleD (0, 0, 5, 5)),
 			out List<int> shapeIndices, out List<int> textIndices);
 
 		Assert.Multiple (() => {
@@ -396,7 +396,7 @@ internal sealed class SelectionNodeInteractionsTest
 			new (0, 0));
 
 		ObjectRasterizer.FindIntersecting (
-			layer, triangle.GetBounds (),
+			layer, triangle,
 			out List<int> shapeIndices, out List<int> textIndices);
 
 		Assert.Multiple (() => {

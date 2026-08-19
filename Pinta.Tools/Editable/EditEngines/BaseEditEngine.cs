@@ -1885,9 +1885,8 @@ public abstract class BaseEditEngine
 	/// </summary>
 	private static bool SelectionIsWholeImage (Document doc)
 	{
-		RectangleD b = doc.Selection.GetBounds ();
-		Size img = doc.ImageSize;
-		return b.X <= 0 && b.Y <= 0 && b.Right >= img.Width && b.Bottom >= img.Height;
+		Size imageSize = doc.ImageSize;
+		return doc.Selection.Contains (new RectangleD (0, 0, imageSize.Width, imageSize.Height));
 	}
 
 	protected RectangleD DrawShapeGeometry (ShapeEngine engine, ImageSurface surface)

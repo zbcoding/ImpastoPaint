@@ -400,6 +400,34 @@ public sealed class DocumentSelection
 	}
 
 	/// <summary>
+	/// Returns whether any part of <paramref name="region"/> lies inside the actual selection.
+	/// </summary>
+	public bool Intersects (RectangleD region)
+	{
+		Clipper clipper = new ();
+		clipper.AddPaths (SelectionPolygons, PolyType.ptSubject, true);
+		clipper.AddPath (CreateRectanglePolygon (region), PolyType.ptClip, true);
+
+		List<List<IntPoint>> intersection = [];
+		clipper.Execute (ClipType.ctIntersection, intersection);
+		return intersection.Count > 0;
+	}
+
+	/// <summary>
+	/// Returns whether the actual selection contains all of <paramref name="region"/>.
+	/// </summary>
+	public bool Contains (RectangleD region)
+	{
+		Clipper clipper = new ();
+		clipper.AddPath (CreateRectanglePolygon (region), PolyType.ptSubject, true);
+		clipper.AddPaths (SelectionPolygons, PolyType.ptClip, true);
+
+		List<List<IntPoint>> difference = [];
+		clipper.Execute (ClipType.ctDifference, difference);
+		return difference.Count == 0;
+	}
+
+	/// <summary>
 	/// Resets the selection.
 	/// </summary>
 	public void Clear ()

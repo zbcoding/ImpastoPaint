@@ -41,7 +41,8 @@ public sealed class DocumentSelection
 
 	public List<List<IntPoint>> SelectionPolygons { get; set; } = [];
 	public Clipper SelectionClipper { get; } = new ();
-	private readonly List<List<IntPoint>> rectangle_query_result = [];
+	private Clipper? rectangle_query_clipper;
+	private List<List<IntPoint>>? rectangle_query_result;
 
 	/// <summary>
 	/// Bounding rectangle which is used by tools to display interactive
@@ -414,21 +415,23 @@ public sealed class DocumentSelection
 
 	private int ExecuteRectangleQuery (RectangleD region, ClipType clipType, bool regionIsSubject)
 	{
-		SelectionClipper.Clear ();
-		rectangle_query_result.Clear ();
+		Clipper clipper = rectangle_query_clipper ??= new ();
+		List<List<IntPoint>> result = rectangle_query_result ??= [];
+		clipper.Clear ();
+		result.Clear ();
 
 		List<IntPoint> rectangle = CreateRectanglePolygon (region);
 		if (regionIsSubject) {
-			SelectionClipper.AddPath (rectangle, PolyType.ptSubject, true);
-			SelectionClipper.AddPaths (SelectionPolygons, PolyType.ptClip, true);
+			clipper.AddPath (rectangle, PolyType.ptSubject, true);
+			clipper.AddPaths (SelectionPolygons, PolyType.ptClip, true);
 		} else {
-			SelectionClipper.AddPaths (SelectionPolygons, PolyType.ptSubject, true);
-			SelectionClipper.AddPath (rectangle, PolyType.ptClip, true);
+			clipper.AddPaths (SelectionPolygons, PolyType.ptSubject, true);
+			clipper.AddPath (rectangle, PolyType.ptClip, true);
 		}
 
-		SelectionClipper.Execute (clipType, rectangle_query_result);
-		int resultCount = rectangle_query_result.Count;
-		SelectionClipper.Clear ();
+		clipper.Execute (clipType, result);
+		int resultCount = result.Count;
+		clipper.Clear ();
 		return resultCount;
 	}
 

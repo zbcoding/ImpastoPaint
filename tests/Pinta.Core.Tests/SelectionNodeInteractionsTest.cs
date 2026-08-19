@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Cairo;
+using ClipperLib;
 using NUnit.Framework;
 
 namespace Pinta.Core.Tests;
@@ -123,6 +124,13 @@ internal sealed class SelectionNodeInteractionsTest
 	{
 		DocumentSelection selection = new ();
 		selection.CreateEllipseSelection (r);
+		return selection;
+	}
+
+	private static DocumentSelection PolygonSelection (params IntPoint[] points)
+	{
+		DocumentSelection selection = new ();
+		selection.SelectionPolygons.Add ([.. points]);
 		return selection;
 	}
 
@@ -302,6 +310,26 @@ internal sealed class SelectionNodeInteractionsTest
 			ObjectRasterizer.SelectionReachesAnyModifier (layer, ellipse),
 			Is.False,
 			"the selection's rectangular bounds overlap the node, but its selected pixels do not");
+	}
+
+	[Test]
+	public void CustomPolygonSelectionBoundsDoNotReachAClippedNodeOutsideThePolygon ()
+	{
+		UserLayer layer = LayerFilledWith (0);
+		layer.Objects.Add (new EffectModifierNode (
+			new InvertEffect (),
+			RectangleSelection (new RectangleD (7, 0, 1, 1))));
+
+		DocumentSelection triangle = PolygonSelection (
+			new (0, 0),
+			new (8, 8),
+			new (0, 8),
+			new (0, 0));
+
+		Assert.That (
+			ObjectRasterizer.SelectionReachesAnyModifier (layer, triangle),
+			Is.False,
+			"arbitrary selection polygons use their selected area rather than their rectangular bounds");
 	}
 
 	// Several small zones from repeated select-and-apply is the normal way this list grows. Reaching

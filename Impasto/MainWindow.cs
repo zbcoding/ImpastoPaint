@@ -622,6 +622,7 @@ internal sealed class MainWindow
 		tool_toolbar.HeightRequest = 42;
 
 		PintaCore.Tools.WrapToolBarRows = PintaCore.Settings.GetSetting (SettingNames.TOOL_SETTINGS_WRAP_ROWS, true);
+		PintaCore.Tools.UseToolSelectorDropDown = PintaCore.Settings.GetSetting (SettingNames.TOOL_SELECTOR_DROPDOWN, false);
 
 		PintaCore.Chrome.InitializeToolToolBar (tool_toolbar);
 	}

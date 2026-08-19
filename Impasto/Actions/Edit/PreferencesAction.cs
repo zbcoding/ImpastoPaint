@@ -37,6 +37,7 @@ internal sealed class PreferencesAction : IActionHandler
 		bool extendedPaletteRows = settings.GetSetting (SettingNames.EXTENDED_PALETTE_ROWS, false);
 		bool toolboxClassicLayout = settings.GetSetting (SettingNames.TOOLBOX_CLASSIC_LAYOUT, false);
 		bool toolSettingsWrapRows = settings.GetSetting (SettingNames.TOOL_SETTINGS_WRAP_ROWS, true);
+		bool toolSelectorDropDown = settings.GetSetting (SettingNames.TOOL_SELECTOR_DROPDOWN, false);
 
 		using PreferencesDialog dialog = PreferencesDialog.New (
 			chrome,
@@ -51,6 +52,7 @@ internal sealed class PreferencesAction : IActionHandler
 			PintaCore.Palette.CurrentPalette.Colors.Count,
 			toolboxClassicLayout,
 			toolSettingsWrapRows,
+			toolSelectorDropDown,
 			(PopoverHintMode) settings.GetSetting (SettingNames.POPOVER_HINT_MODE, (int) PopoverHintMode.All),
 			settings.GetSetting (SettingNames.STATUSBAR_SHOW_CURSOR_POSITION, true),
 			settings.GetSetting (SettingNames.STATUSBAR_SHOW_IMAGE_SIZE, true),
@@ -71,11 +73,19 @@ internal sealed class PreferencesAction : IActionHandler
 			settings.PutSetting (SettingNames.STATUSBAR_SHOW_IMAGE_SIZE, dialog.StatusBarShowImageSize);
 			settings.PutSetting (SettingNames.TOOL_SETTINGS_WRAP_ROWS, dialog.ToolSettingsWrapRows);
 			PintaCore.Tools.WrapToolBarRows = dialog.ToolSettingsWrapRows;
+			settings.PutSetting (SettingNames.TOOL_SELECTOR_DROPDOWN, dialog.ToolSelectorDropDown);
+			PintaCore.Tools.UseToolSelectorDropDown = dialog.ToolSelectorDropDown;
 			settings.PutSetting (SettingNames.SKIP_RASTERIZE_OBJECTS_DIALOG, dialog.SkipRasterizeObjectsDialog);
 			settings.PutSetting (SettingNames.TOOLBAR_SHOWN, dialog.ShowMainToolBar);
 			chrome.MainToolBar?.SetVisible (dialog.ShowMainToolBar);
 			PintaCore.Actions.SetStatusBarCursorPositionVisible (dialog.StatusBarShowCursorPosition);
 			PintaCore.Actions.SetStatusBarImageSizeVisible (dialog.StatusBarShowImageSize);
+
+			// The dropdown replaces the tool box, so turning it on hides the column of tool
+			// buttons and turning it off brings them back. Only on the change: View > Tool Box
+			// stays in charge afterwards, for showing both at once.
+			if (dialog.ToolSelectorDropDown != toolSelectorDropDown)
+				PintaCore.Actions.View.ToolBox.Value = !dialog.ToolSelectorDropDown;
 
 			// The toolbox is only ever built once at startup, so a layout change needs a
 			// restart to take effect - only mention that when it actually changed.

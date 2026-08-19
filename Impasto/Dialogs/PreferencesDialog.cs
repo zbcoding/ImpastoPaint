@@ -24,6 +24,7 @@ public sealed partial class PreferencesDialog
 	private Gtk.SpinButton recent_colors_count_spinner;
 	private Gtk.CheckButton toolbox_classic_layout_check_button;
 	private Gtk.CheckButton tool_settings_wrap_rows_check_button;
+	private Gtk.CheckButton tool_selector_dropdown_check_button;
 	private Gtk.CheckButton skip_rasterize_objects_dialog_check_button;
 	private Gtk.CheckButton show_main_toolbar_check_button;
 	private Gtk.CheckButton statusbar_show_cursor_position_check_button;
@@ -53,6 +54,7 @@ public sealed partial class PreferencesDialog
 	public int RecentColorsCount => recent_colors_count_spinner.GetValueAsInt ();
 	public bool ToolboxClassicLayout => toolbox_classic_layout_check_button.Active;
 	public bool ToolSettingsWrapRows => tool_settings_wrap_rows_check_button.Active;
+	public bool ToolSelectorDropDown => tool_selector_dropdown_check_button.Active;
 	public bool SkipRasterizeObjectsDialog => skip_rasterize_objects_dialog_check_button.Active;
 	public bool ShowMainToolBar => show_main_toolbar_check_button.Active;
 	public bool StatusBarShowCursorPosition => statusbar_show_cursor_position_check_button.Active;
@@ -62,7 +64,7 @@ public sealed partial class PreferencesDialog
 			: popover_hint_mode_essential_button.Active ? PopoverHintMode.Essential
 			: PopoverHintMode.None;
 
-	internal static PreferencesDialog New (ChromeManager chrome, int defaultCanvasWidth, int defaultCanvasHeight, Cairo.Color canvasSurroundColor, bool canvasSurroundColorIsDefault, Cairo.Color defaultCanvasSurroundColor, bool pasteExternalImagesToNewLayer, bool extendedPaletteRows, int recentColorsCount, int paletteSize, bool toolboxClassicLayout, bool toolSettingsWrapRows, PopoverHintMode popoverHintMode, bool statusBarShowCursorPosition, bool statusBarShowImageSize, bool showMainToolBar, bool skipRasterizeObjectsDialog)
+	internal static PreferencesDialog New (ChromeManager chrome, int defaultCanvasWidth, int defaultCanvasHeight, Cairo.Color canvasSurroundColor, bool canvasSurroundColorIsDefault, Cairo.Color defaultCanvasSurroundColor, bool pasteExternalImagesToNewLayer, bool extendedPaletteRows, int recentColorsCount, int paletteSize, bool toolboxClassicLayout, bool toolSettingsWrapRows, bool toolSelectorDropDown, PopoverHintMode popoverHintMode, bool statusBarShowCursorPosition, bool statusBarShowImageSize, bool showMainToolBar, bool skipRasterizeObjectsDialog)
 	{
 		PreferencesDialog dialog = NewWithProperties ([]);
 		dialog.canvas_width_spinner.Value = defaultCanvasWidth;
@@ -78,6 +80,7 @@ public sealed partial class PreferencesDialog
 		dialog.palette_size_spinner.Value = PaletteHelper.RoundDownToRowMultiple (paletteSize, rows);
 		dialog.toolbox_classic_layout_check_button.Active = toolboxClassicLayout;
 		dialog.tool_settings_wrap_rows_check_button.Active = toolSettingsWrapRows;
+		dialog.tool_selector_dropdown_check_button.Active = toolSelectorDropDown;
 		dialog.skip_rasterize_objects_dialog_check_button.Active = skipRasterizeObjectsDialog;
 		dialog.show_main_toolbar_check_button.Active = showMainToolBar;
 		dialog.SetPopoverHintMode (popoverHintMode);
@@ -96,6 +99,7 @@ public sealed partial class PreferencesDialog
 	[MemberNotNull (nameof (recent_colors_count_spinner))]
 	[MemberNotNull (nameof (toolbox_classic_layout_check_button))]
 	[MemberNotNull (nameof (tool_settings_wrap_rows_check_button))]
+	[MemberNotNull (nameof (tool_selector_dropdown_check_button))]
 	[MemberNotNull (nameof (skip_rasterize_objects_dialog_check_button))]
 	[MemberNotNull (nameof (show_main_toolbar_check_button))]
 	[MemberNotNull (nameof (statusbar_show_cursor_position_check_button))]
@@ -259,6 +263,14 @@ public sealed partial class PreferencesDialog
 		toolSettingsWrapRowsRow.Append (CreateResetButton (ResetToolSettingsWrapRows));
 		popoverHintPage.Append (toolSettingsWrapRowsRow);
 
+		Gtk.CheckButton toolSelectorDropDownCheckButton = Gtk.CheckButton.NewWithLabel (Translations.GetString ("Pick tools from a dropdown instead of the tool box"));
+		toolSelectorDropDownCheckButton.TooltipText = Translations.GetString ("Hides the column of tool buttons and turns the tool name shown above the canvas into a dropdown that picks the tool. The tool box can still be shown again from the View menu.");
+		Gtk.Box toolSelectorDropDownRow = Gtk.Box.New (Gtk.Orientation.Horizontal, SPACING);
+		toolSelectorDropDownCheckButton.Hexpand = true;
+		toolSelectorDropDownRow.Append (toolSelectorDropDownCheckButton);
+		toolSelectorDropDownRow.Append (CreateResetButton (ResetToolSelectorDropDown));
+		popoverHintPage.Append (toolSelectorDropDownRow);
+
 		Gtk.CheckButton skipRasterizeObjectsDialogCheckButton = Gtk.CheckButton.NewWithLabel (Translations.GetString ("Skip the \"Rasterize Objects?\" confirmation"));
 		skipRasterizeObjectsDialogCheckButton.TooltipText = Translations.GetString ("Editable shapes and text stay editable on their own sub-layers. Operations that need flat pixels — cut, erase, crop, resize, rotate, flip, flatten — first bake them into the layer, which cannot be undone without also undoing the operation. Normally a dialog warns you before this happens; turn this on to bake silently and skip the warning.");
 		Gtk.Box skipRasterizeObjectsDialogRow = Gtk.Box.New (Gtk.Orientation.Horizontal, SPACING);
@@ -325,6 +337,7 @@ public sealed partial class PreferencesDialog
 		recent_colors_count_spinner = recentColorsCountSpinner;
 		toolbox_classic_layout_check_button = toolboxClassicLayoutCheckButton;
 		tool_settings_wrap_rows_check_button = toolSettingsWrapRowsCheckButton;
+		tool_selector_dropdown_check_button = toolSelectorDropDownCheckButton;
 		skip_rasterize_objects_dialog_check_button = skipRasterizeObjectsDialogCheckButton;
 		show_main_toolbar_check_button = showMainToolBarCheckButton;
 		statusbar_show_cursor_position_check_button = statusbarShowCursorPositionCheckButton;
@@ -363,6 +376,9 @@ public sealed partial class PreferencesDialog
 
 	private void ResetToolSettingsWrapRows (Gtk.Button sender, EventArgs e)
 		=> tool_settings_wrap_rows_check_button.Active = true;
+
+	private void ResetToolSelectorDropDown (Gtk.Button sender, EventArgs e)
+		=> tool_selector_dropdown_check_button.Active = false;
 
 	private void ResetSkipRasterizeObjectsDialog (Gtk.Button sender, EventArgs e)
 		=> skip_rasterize_objects_dialog_check_button.Active = false;
@@ -544,6 +560,7 @@ public sealed partial class PreferencesDialog
 			recentColorRows);
 		toolbox_classic_layout_check_button.Active = settings.GetSetting (SettingNames.TOOLBOX_CLASSIC_LAYOUT, ToolboxClassicLayout);
 		tool_settings_wrap_rows_check_button.Active = settings.GetSetting (SettingNames.TOOL_SETTINGS_WRAP_ROWS, ToolSettingsWrapRows);
+		tool_selector_dropdown_check_button.Active = settings.GetSetting (SettingNames.TOOL_SELECTOR_DROPDOWN, ToolSelectorDropDown);
 		skip_rasterize_objects_dialog_check_button.Active = settings.GetSetting (SettingNames.SKIP_RASTERIZE_OBJECTS_DIALOG, SkipRasterizeObjectsDialog);
 		show_main_toolbar_check_button.Active = settings.GetSetting (SettingNames.TOOLBAR_SHOWN, ShowMainToolBar);
 		statusbar_show_cursor_position_check_button.Active = settings.GetSetting (SettingNames.STATUSBAR_SHOW_CURSOR_POSITION, StatusBarShowCursorPosition);

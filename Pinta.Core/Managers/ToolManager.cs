@@ -266,7 +266,7 @@ public sealed class ToolManager : IEnumerable<BaseTool>, IToolService
 	// When wrapping is off the same groups go into the horizontally scrolling row instead.
 	private void BuildToolBar (BaseTool tool)
 	{
-		chrome_manager.ToolToolBar.Append (ToolNameChip);
+		chrome_manager.ToolToolBar.Append (use_tool_selector_drop_down ? ToolSelector : ToolNameChip);
 		chrome_manager.ToolToolBar.Append (ToolSeparator);
 
 		tool.DoBuildToolBar (ToolWidgetsBox);
@@ -545,6 +545,8 @@ public sealed class ToolManager : IEnumerable<BaseTool>, IToolService
 	private Gtk.ScrolledWindow? tool_widgets_scroll;
 	private Adw.WrapBox? tool_widgets_wrap;
 	private bool wrap_tool_bar_rows = true;
+	private ToolSelectorButton? tool_selector;
+	private bool use_tool_selector_drop_down;
 
 	// Draws the border: the tool name chip, and the tool settings area as a whole.
 	private const string TOOL_SETTING_GROUP_CLASS = "tool-setting-group";
@@ -587,6 +589,27 @@ public sealed class ToolManager : IEnumerable<BaseTool>, IToolService
 		}
 	}
 
+	/// <summary>
+	/// Impasto: pick the tool from a dropdown in place of the tool name chip, for users who
+	/// hide the tool box. The chip and the dropdown are the same size, so the toolbar does
+	/// not change height when this is switched.
+	/// </summary>
+	public bool UseToolSelectorDropDown {
+		get => use_tool_selector_drop_down;
+		set {
+			if (use_tool_selector_drop_down == value)
+				return;
+
+			use_tool_selector_drop_down = value;
+
+			if (CurrentTool is not BaseTool tool)
+				return;
+
+			ClearToolBar ();
+			BuildToolBar (tool);
+		}
+	}
+
 	private Gtk.Label ToolLabel => tool_label ??= Gtk.Label.New (string.Format (" {0}:  ", Translations.GetString ("Tool")));
 	private Gtk.Image ToolImage => tool_image ??= Gtk.Image.New ();
 	private Gtk.Separator ToolSeparator => tool_sep ??= GtkExtensions.CreateToolBarSeparator ();
@@ -620,6 +643,9 @@ public sealed class ToolManager : IEnumerable<BaseTool>, IToolService
 			return tool_name_chip;
 		}
 	}
+
+	// Impasto: the same chip as a dropdown, built only for users who turn it on.
+	private ToolSelectorButton ToolSelector => tool_selector ??= ToolSelectorButton.New (this);
 
 	// Scroll the toolbar contents if they are very long (e.g. the line/curve tool).
 	private Gtk.ScrolledWindow ToolWidgetsScroll {

@@ -61,6 +61,11 @@ Changes for the next release (0.0.2) go here.
   this way, so saving warns and lists what will become part of the layer's pixels instead, and an
   effect this build does not have is kept inert with its settings rather than failing the open.
 
+- Settings > UI can now hide the tool box and pick tools from a dropdown instead: the tool chip
+  above the canvas keeps its size but becomes a menu of every tool, marked with a triangle,
+  listing each tool's icon, name and shortcut key. Turning the setting on hides the column of
+  tool buttons and turning it off brings it back; View > Tool Box can still show both at once.
+
 ### Fixed
 
 - Autosave recovery now distinguishes process lifetimes when process IDs are reused, leaves

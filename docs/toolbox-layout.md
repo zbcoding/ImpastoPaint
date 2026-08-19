@@ -23,6 +23,18 @@ Stacks are declared in `stack_definitions` as priority groups. Adding the select
 stack: an add-in tool that picked a stacked priority would otherwise be hidden inside that
 stack's flyout, reachable only by finding the member marker on someone else's button.
 
+## Dropdown instead of the toolbox
+
+`Settings ▸ UI ▸ Pick tools from a dropdown instead of the tool box` swaps the tool name chip
+above the canvas for `ToolSelectorButton`, a menu of every registered tool in `Priority` order
+with its icon, name and shortcut key, and hides the toolbox column. The chip and the dropdown
+are the same size, so the toolbar keeps its height either way. The setting only drives
+`View ▸ Tool Box` when it changes, so showing both at once stays possible afterwards.
+
+The dropdown's entries are rebuilt when a tool is added or removed and when shortcuts change;
+activating a tool only moves the checkmark. Sections, stacks and pinning are toolbox concepts
+and have no equivalent here — the list is flat.
+
 ## Footer layout reference
 
 The status bar is one row, left to right: color palette (expands to fill), then the chips,

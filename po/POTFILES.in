@@ -302,6 +302,7 @@ Pinta.Core/PopoverHintMode.cs
 Pinta.Core/SettingNames.cs
 Pinta.Core/Widgets/FontFamilyDropDown.cs
 Pinta.Core/Widgets/ToolBarDropDownButton.cs
+Pinta.Core/Widgets/ToolSelectorButton.cs
 Pinta.Docking/Dock.cs
 Pinta.Docking/DockItem.cs
 Pinta.Docking/DockNotebook.cs

@@ -38,6 +38,8 @@ internal static class SettingNames
 	// Impasto: wrap the tool settings onto extra rows when the window is too narrow,
 	// instead of scrolling them horizontally.
 	internal const string TOOL_SETTINGS_WRAP_ROWS = "tool-settings-wrap-rows";
+	// Impasto: hide the tool box and pick tools from a dropdown in the tool name chip.
+	internal const string TOOL_SELECTOR_DROPDOWN = "tool-selector-dropdown";
 	// Impasto: skip the "Rasterize Objects?" confirmation dialog. Mirrors Pinta.Core.SettingNames.
 	internal const string SKIP_RASTERIZE_OBJECTS_DIALOG = "skip-rasterize-objects-dialog";
 	internal const string COLORS_FLOATING = "colors-floating";

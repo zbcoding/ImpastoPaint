@@ -332,6 +332,18 @@ internal sealed class SelectionNodeInteractionsTest
 			"arbitrary selection polygons use their selected area rather than their rectangular bounds");
 	}
 
+
+	[Test]
+	public void OnlyAnActualFullImageSelectionContainsTheImageBounds ()
+	{
+		RectangleD imageBounds = new (0, 0, Width, Height);
+
+		Assert.Multiple (() => {
+			Assert.That (RectangleSelection (imageBounds).Contains (imageBounds), Is.True);
+			Assert.That (EllipseSelection (imageBounds).Contains (imageBounds), Is.False);
+		});
+	}
+
 	// Several small zones from repeated select-and-apply is the normal way this list grows. Reaching
 	// any one of them bakes the whole stack, because the accumulator has already fused their output.
 	[Test]
@@ -364,6 +376,32 @@ internal sealed class SelectionNodeInteractionsTest
 		Assert.Multiple (() => {
 			Assert.That (shapeIndices, Is.EqualTo (new[] { 0 }), "the far shape stays editable");
 			Assert.That (textIndices, Is.Empty);
+		});
+	}
+
+	[Test]
+	public void CustomSelectionDoesNotReachShapesOrTextInAnEmptyBoundingCorner ()
+	{
+		UserLayer layer = LayerFilledWith (0);
+		layer.Objects.Add (ShapeAt (new PointD (Width - 2, 0), new PointD (Width - 1, 1)));
+		TextEngine textEngine = (TextEngine) System.Runtime.CompilerServices.RuntimeHelpers.GetUninitializedObject (typeof (TextEngine));
+		layer.Objects.Add (new TextObject (textEngine) {
+			TextBounds = new RectangleI (Width - 2, 0, 1, 1),
+		});
+
+		DocumentSelection triangle = PolygonSelection (
+			new (0, 0),
+			new (Width, Height),
+			new (0, Height),
+			new (0, 0));
+
+		ObjectRasterizer.FindIntersecting (
+			layer, triangle.GetBounds (),
+			out List<int> shapeIndices, out List<int> textIndices);
+
+		Assert.Multiple (() => {
+			Assert.That (shapeIndices, Is.Empty, "the shape lies only in an empty corner of the selection bounds");
+			Assert.That (textIndices, Is.Empty, "the text lies only in an empty corner of the selection bounds");
 		});
 	}
 

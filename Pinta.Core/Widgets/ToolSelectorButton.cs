@@ -21,12 +21,17 @@ public sealed partial class ToolSelectorButton
 	// Draws the chip's border, radius and padding on the button, so the toolbar keeps its height.
 	private const string SELECTOR_CLASS = "tool-selector-button";
 
-	// Spans the width of both columns, so a section heading reads as a heading.
+	// One per section, above its heading; smaller than the entries so the tools stay the focus.
 	private const string SECTION_HEADING_CLASS = "tool-selector-section";
+
+	// Spaces the rules dividing the sections inside the menu.
+	private const string MENU_CLASS = "tool-selector-menu";
 
 	private const int MENU_COLUMNS = 2;
 
-	// Share of the window the menu may occupy before its sections start scrolling.
+	// Share of the window the menu may grow to before it starts scrolling. The built-in
+	// sections fit inside this on an ordinary screen; a small screen, or enough add-in tools,
+	// scrolls instead of running off the window.
 	private const double MENU_HEIGHT_SHARE = 0.85;
 
 	// Used until the main window has been given its size.
@@ -62,6 +67,7 @@ public sealed partial class ToolSelectorButton
 
 		Gtk.Popover popover = Gtk.Popover.New ();
 		popover.SetChild (menu_scroll);
+		popover.AddCssClass (MENU_CLASS);
 		// The window can be resized between two openings, so the menu takes its share of
 		// whatever height the window has now.
 		popover.OnShow += (_, _) => UpdateMenuHeight ();
@@ -107,20 +113,17 @@ public sealed partial class ToolSelectorButton
 	}
 
 	/// <summary>
-	/// The menu takes most of the window's height, so every section is in view at once. The
-	/// height is fixed rather than a ceiling: a short list would otherwise collapse the menu
-	/// back to a stub, and a long one still scrolls.
+	/// The menu grows to its sections and no further: a ceiling, not a fixed height, so it
+	/// neither leaves blank space below the last section nor runs off a short screen. Setting
+	/// the ceiling alone keeps GTK's min &lt;= max invariant, which a minimum would break here.
 	/// </summary>
 	private void UpdateMenuHeight ()
 	{
 		int windowHeight = PintaCore.Chrome.MainWindow.GetHeight ();
 
-		int menuHeight = windowHeight > 0
+		menu_scroll.MaxContentHeight = windowHeight > 0
 			? (int) (windowHeight * MENU_HEIGHT_SHARE)
 			: FALLBACK_MENU_HEIGHT;
-
-		menu_scroll.MinContentHeight = menuHeight;
-		menu_scroll.MaxContentHeight = menuHeight;
 	}
 
 	private void RebuildEntries ()
@@ -137,9 +140,14 @@ public sealed partial class ToolSelectorButton
 			if (members.Length == 0)
 				continue;
 
+			// A rule between sections, as the toolbox column divides them. None above the
+			// first: it would read as a line under the menu's own top edge.
+			if (entries.GetFirstChild () is not null)
+				entries.Append (Gtk.Separator.New (Gtk.Orientation.Horizontal));
+
 			Gtk.Label heading = Gtk.Label.New (ToolSections.NameOf (section));
 			heading.Halign = Gtk.Align.Start;
-			heading.SetCssClasses ([SECTION_HEADING_CLASS, AdwaitaStyles.Heading, AdwaitaStyles.DimLabel]);
+			heading.SetCssClasses ([SECTION_HEADING_CLASS, AdwaitaStyles.DimLabel]);
 			entries.Append (heading);
 
 			Gtk.FlowBox grid = Gtk.FlowBox.New ();

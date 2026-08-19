@@ -33,11 +33,17 @@ with its icon, name and shortcut key, and hides the toolbox column. The chip and
 are the same size, so the toolbar keeps its height either way. The setting only drives
 `View ▸ Tool Box` when it changes, so showing both at once stays possible afterwards.
 
-The menu is the toolbox laid out sideways: the same sections in the same order, each with its
-name as a heading and its tools two per row, and the whole menu sized to 85% of the window's
-height on opening so every section is in view. Entries are rebuilt when a tool is added or
-removed and when shortcuts change; activating a tool only moves the checkmark. Stacks and
-pinning are toolbox concepts with no equivalent here — every tool gets its own entry.
+The menu is the toolbox laid out sideways: the same sections in the same order, divided by the
+same rules, each under a small dim heading — deliberately quieter than the entries, so the tools
+stay the focus — with its tools two per row. The menu grows to its content and no further, up to
+a ceiling of 85% of the window's height recomputed each time it opens, so it leaves no blank
+space below the last section and scrolls instead of overflowing a short screen or a long list of
+add-in tools. Only the ceiling is set: a matching minimum would break GTK's
+`min_content_height <= max_content_height` assertion as the window grows.
+
+Entries are rebuilt when a tool is added or removed and when shortcuts change; activating a tool
+only moves the checkmark. Stacks and pinning are toolbox concepts with no equivalent here —
+every tool gets its own entry.
 
 ## Footer layout reference
 

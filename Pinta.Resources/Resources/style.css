@@ -85,10 +85,16 @@
     background-color: alpha(@window_fg_color, 0.08);
 }
 
-/* Impasto: section heading inside the tool dropdown. Indented to the entries' text and
-   spaced off the section above it, so the groups read apart without separators. */
+/* Impasto: section heading inside the tool dropdown. Deliberately smaller than the entries
+   it labels, so the tool buttons stay the focus, and indented to their text. */
 .tool-selector-section {
-    margin: 8px 6px 2px 6px;
+    font-size: 0.78em;
+    margin: 2px 6px 1px 6px;
+}
+
+/* Impasto: the rule dividing the dropdown's sections, as the toolbox column divides them. */
+.tool-selector-menu separator {
+    margin: 4px 0px 0px 0px;
 }
 
 /* Impasto: keep the settings clear of the tool name chip and of the toolbox column's

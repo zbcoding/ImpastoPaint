@@ -63,9 +63,10 @@ Changes for the next release (0.0.2) go here.
 
 - Settings > UI can now hide the tool box and pick tools from a dropdown instead: the tool chip
   above the canvas keeps its size but becomes a menu of every tool, marked with a triangle. The
-  menu is the toolbox laid out sideways — the same groups in the same order, each under its own
-  heading, two tools per row, and as tall as most of the window so every group is in view — with
-  each tool's icon, name and shortcut key. Turning the setting on hides the column of tool
+  menu is the toolbox laid out sideways — the same groups in the same order, divided by the same
+  rules, each under a small heading, two tools per row — with each tool's icon, name and shortcut
+  key. It is as tall as its groups need and no taller, scrolling only on a short screen or with
+  many add-in tools installed. Turning the setting on hides the column of tool
   buttons and turning it off brings it back; View > Tool Box can still show both at once.
 
 ### Fixed

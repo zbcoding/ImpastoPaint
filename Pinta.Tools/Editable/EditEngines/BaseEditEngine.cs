@@ -1296,7 +1296,7 @@ public abstract class BaseEditEngine
 			newEngine.RasterizeOnFinalize = rasterize_shapes;
 			// Freeze the current selection onto the shape (null when the whole image is selected) so it
 			// stays clipped to it on every later render, not re-clipped to whatever selection is live.
-			newEngine.Clip = SelectionIsWholeImage (doc) ? null : doc.Selection.Clone ();
+			newEngine.Clip = doc.Selection.CreateFrozenObjectClip (doc.ImageSize);
 			SEngines.Add (newEngine);
 
 			//Select the new shape.
@@ -1879,15 +1879,6 @@ public abstract class BaseEditEngine
 	/// so this has no handle side effects and can be called for every shape when rebuilding the
 	/// shared ShapeLayer surface.
 	/// </summary>
-	/// <summary>
-	/// True when the document's selection covers the whole image (i.e. there is no real partial
-	/// selection). Used to decide whether a newly drawn shape needs a frozen clip at all.
-	/// </summary>
-	private static bool SelectionIsWholeImage (Document doc)
-	{
-		Size imageSize = doc.ImageSize;
-		return doc.Selection.Contains (new RectangleD (0, 0, imageSize.Width, imageSize.Height));
-	}
 
 	protected RectangleD DrawShapeGeometry (ShapeEngine engine, ImageSurface surface)
 	{

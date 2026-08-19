@@ -413,6 +413,16 @@ public sealed class DocumentSelection
 	public bool Contains (RectangleD region)
 		=> ExecuteRectangleQuery (region, ClipType.ctDifference, regionIsSubject: true) == 0;
 
+	/// <summary>
+	/// Returns a frozen copy for clipping a new editable object, or null when this selection already
+	/// covers the whole image and clipping would have no effect.
+	/// </summary>
+	public DocumentSelection? CreateFrozenObjectClip (Size imageSize)
+	{
+		RectangleD imageBounds = new (0, 0, imageSize.Width, imageSize.Height);
+		return Contains (imageBounds) ? null : Clone ();
+	}
+
 	private int ExecuteRectangleQuery (RectangleD region, ClipType clipType, bool regionIsSubject)
 	{
 		Clipper clipper = rectangle_query_clipper ??= new ();

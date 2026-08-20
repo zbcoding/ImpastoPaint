@@ -272,6 +272,12 @@ public sealed class WorkspaceManager : IWorkspaceService
 			OnActiveDocumentChanged (EventArgs.Empty);
 		} else {
 			open_documents.Remove (document);
+
+			// Everything above the removed document shifts down a slot, so the active index has to
+			// follow it or it stops naming the active document - and names nothing at all once the
+			// active document was the last one in the list.
+			if (index < active_document_index)
+				active_document_index--;
 		}
 
 		document.Layers.LayerAdded -= Document_LayerAdded;

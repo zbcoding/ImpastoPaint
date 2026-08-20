@@ -70,7 +70,10 @@ internal abstract class DocumentHarness
 	[TearDown]
 	public void CloseDocument ()
 	{
-		PintaCore.Workspace.CloseDocument (Document);
+		// A test about closing documents may have closed this one itself; teardown is not the
+		// place to be strict about that.
+		if (PintaCore.Workspace.OpenDocuments.Contains (Document))
+			PintaCore.Workspace.CloseDocument (Document);
 	}
 
 	// --- The scene ------------------------------------------------------------------------------

@@ -312,6 +312,13 @@ public sealed class DocumentSelection
 				y: (long) (oneMinusTCubed * y0 + oneMinusTSquaredTimesTTimesThree * y1 + oneMinusTTimesTSquaredTimesThree * y2 + tCubed * y3)
 			);
 		}
+
+		// t stops short of 1, so the curve's own end point was never emitted — and the next curve
+		// deliberately skips its start point to avoid duplicating it. Every vertex of an ellipse
+		// except the first was therefore missing, leaving its bounds a pixel short on the sides the
+		// truncation rounds inward: a 16x16 ellipse selection measured 16x15, and cropping to one
+		// cropped a row short.
+		yield return new (x: (long) x3, y: (long) y3);
 	}
 
 	/// <summary>

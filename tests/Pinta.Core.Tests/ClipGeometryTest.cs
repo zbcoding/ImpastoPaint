@@ -143,4 +143,18 @@ internal sealed class ClipGeometryTest : DocumentHarness
 	}
 
 
+
+	// The ellipse is stored as a sampled polygon, and the sampling stopped just short of each curve's
+	// end point — so three of the four vertices were never in the polygon at all and its bounds came
+	// out a pixel short wherever the coordinate truncation rounded inward. Cropping to an ellipse
+	// selection dropped a row of pixels because of it.
+	[TestCase (4, 4, 24, 24)]
+	[TestCase (0, 0, 16, 16)]
+	[TestCase (3, 7, 15, 9)]
+	public void AnEllipseSpansTheBoxItWasInscribedIn (int x, int y, int width, int height)
+	{
+		RectangleI box = new (x, y, width, height);
+
+		Assert.That (EllipseIn (box).GetBounds ().ToInt (), Is.EqualTo (box));
+	}
 }

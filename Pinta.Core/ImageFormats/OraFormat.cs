@@ -140,10 +140,16 @@ public sealed class OraFormat : IImageImporter, IImageExporter
 			}
 		}
 
-		// Restore any editable text objects saved in the sidecar entry.
-		LoadTextEntry (zipfile, newDocument);
-		LoadShapeEntry (zipfile, newDocument);
-		LoadEffectEntry (zipfile, newDocument);
+		// Restore any editable objects saved in the sidecar entries. Each entry holds one kind, so
+		// they arrive grouped by kind; the position each object carries is what puts the layer back
+		// into the single z-order it was saved in.
+		Dictionary<ILayerObject, int> positions = [];
+
+		LoadTextEntry (zipfile, newDocument, positions);
+		LoadShapeEntry (zipfile, newDocument, positions);
+		LoadEffectEntry (zipfile, newDocument, positions);
+		ApplySavedOrder (newDocument, positions);
+
 		LoadMaskEntries (zipfile, newDocument);
 
 		return newDocument;
@@ -292,8 +298,17 @@ public sealed class OraFormat : IImageImporter, IImageExporter
 				writer.WriteStartElement ("layer");
 				writer.WriteAttributeString ("index", i.ToString ());
 
-				foreach (TextObject obj in layer.TextObjects) {
+				// Objects at or below the cut are part of the saved raster now, so a position has
+				// to be counted in the list that will exist on load, not this one. Same basis as
+				// AddEffectEntry uses, because the three entries rebuild one shared list.
+				int dropped = BakeThrough (layer) + 1;
+
+				for (int position = dropped; position < layer.Objects.Count; position++) {
+					if (layer.Objects[position] is not TextObject obj)
+						continue;
+
 					writer.WriteStartElement ("text");
+					writer.WriteAttributeString ("position", (position - dropped).ToString ());
 					WriteTextObject (writer, obj);
 					writer.WriteEndElement ();
 				}
@@ -330,8 +345,12 @@ public sealed class OraFormat : IImageImporter, IImageExporter
 
 				writer.WriteStartElement ("layer");
 				writer.WriteAttributeString ("index", i.ToString ());
-				foreach (ShapeObject shape in layer.ShapeObjects)
-					WriteShapeObject (writer, shape);
+				// See AddTextEntry: positions are counted in the list that will exist on load.
+				int dropped = BakeThrough (layer) + 1;
+
+				for (int position = dropped; position < layer.Objects.Count; position++)
+					if (layer.Objects[position] is ShapeObject shape)
+						WriteShapeObject (writer, shape, position - dropped);
 				writer.WriteEndElement ();
 
 				using ImageSurface shapeOverlay = layer.CreateShapeOverlay ();
@@ -623,7 +642,7 @@ public sealed class OraFormat : IImageImporter, IImageExporter
 		manifestStream.Write (manifestXml, 0, manifestXml.Length);
 	}
 
-	private static void LoadEffectEntry (ZipArchive zipfile, Document document)
+	private static void LoadEffectEntry (ZipArchive zipfile, Document document, Dictionary<ILayerObject, int> positions)
 	{
 		ZipArchiveEntry? entry = zipfile.GetEntry (EFFECT_ENTRY_PATH);
 		if (entry is null)
@@ -652,19 +671,51 @@ public sealed class OraFormat : IImageImporter, IImageExporter
 				if (node is null)
 					continue;
 
-				// The saved position counts every object on the layer. Text and shapes are restored
-				// first, so it usually lands where it was; a stale index clamps to the end rather than
-				// throwing. ponytail: good enough while text and shapes each load as their own pass. If
-				// the three entries ever merge into one ordered list, insert straight from that order.
-				int position = int.TryParse (GetAttribute (element, "position", "-1"), out int saved) ? saved : -1;
-				if (position < 0 || position > layer.Objects.Count)
-					position = layer.Objects.Count;
-
-				layer.Objects.Insert (position, node);
+				layer.Objects.Add (node);
+				positions[node] = SavedPosition (element);
 			}
 
 			if (layer.HasModifiers)
 				ObjectOpacity.RefreshLayerNoInvalidate (PintaCore.Chrome, layer);
+		}
+	}
+
+	/// <summary>
+	/// Where an object sat in its layer's list when the file was written, or -1 for an entry from
+	/// before positions were recorded - those keep the order their own sidecar listed them in.
+	/// </summary>
+	private static int SavedPosition (XmlElement element)
+		=> int.TryParse (GetAttribute (element, "position", "-1"), out int saved) ? saved : -1;
+
+	/// <summary>
+	/// Rebuilds each layer's object list in the order the objects were saved in. The sidecars are
+	/// read one kind at a time, so without this a layer that interleaved text, shapes and modifiers
+	/// comes back with them regrouped - which changes what is drawn over what, and what a modifier
+	/// applies to.
+	/// </summary>
+	private static void ApplySavedOrder (Document document, Dictionary<ILayerObject, int> positions)
+	{
+		if (positions.Count == 0)
+			return;
+
+		foreach (UserLayer layer in document.Layers.UserLayers) {
+
+			// Objects with no saved position sort last in the order they loaded, which is what an
+			// older file gets: no worse than before, and no worse than the entries it was written with.
+			List<ILayerObject> ordered = layer.Objects
+				.Select ((obj, loaded) => (obj, saved: positions.TryGetValue (obj, out int p) && p >= 0 ? p : int.MaxValue, loaded))
+				.OrderBy (o => o.saved)
+				.ThenBy (o => o.loaded)
+				.Select (o => o.obj)
+				.ToList ();
+
+			if (ordered.SequenceEqual (layer.Objects))
+				continue;
+
+			layer.Objects.Clear ();
+			layer.Objects.AddRange (ordered);
+
+			ObjectOpacity.RefreshLayerNoInvalidate (PintaCore.Chrome, layer);
 		}
 	}
 
@@ -738,9 +789,10 @@ public sealed class OraFormat : IImageImporter, IImageExporter
 		obj.BlendMode = (BlendMode) int.Parse (GetAttribute (element, "object-blend", "0"));
 	}
 
-	private static void WriteShapeObject (XmlTextWriter writer, ShapeObject shape)
+	private static void WriteShapeObject (XmlTextWriter writer, ShapeObject shape, int position)
 	{
 		writer.WriteStartElement ("shape");
+		writer.WriteAttributeString ("position", position.ToString ());
 		writer.WriteAttributeString ("type", ((int) shape.ShapeType).ToString ());
 		WriteObjectCommon (writer, shape);
 		writer.WriteAttributeString ("antialias", shape.AntiAliasing ? "1" : "0");
@@ -807,7 +859,7 @@ public sealed class OraFormat : IImageImporter, IImageExporter
 		writer.WriteEndElement ();
 	}
 
-	private static void LoadShapeEntry (ZipArchive zipfile, Document document)
+	private static void LoadShapeEntry (ZipArchive zipfile, Document document, Dictionary<ILayerObject, int> positions)
 	{
 		ZipArchiveEntry? entry = zipfile.GetEntry (SHAPE_ENTRY_PATH);
 		if (entry is null)
@@ -823,8 +875,11 @@ public sealed class OraFormat : IImageImporter, IImageExporter
 			UserLayer layer = document.Layers.UserLayers[index];
 			foreach (XmlElement shapeElement in layerElement.GetElementsByTagName ("shape")) {
 				ShapeObject? shape = ReadShapeObject (shapeElement);
-				if (shape is not null)
-					layer.AddShape (shape);
+				if (shape is null)
+					continue;
+
+				layer.AddShape (shape);
+				positions[shape] = SavedPosition (shapeElement);
 			}
 
 			ZipArchiveEntry? imageEntry = zipfile.GetEntry ($"{SHAPE_IMAGE_PREFIX}{index}.png");
@@ -942,7 +997,7 @@ public sealed class OraFormat : IImageImporter, IImageExporter
 		foreach (string line in engine.Lines)
 			writer.WriteElementString ("line", line);
 	}
-	private static void LoadTextEntry (ZipArchive zipfile, Document document)
+	private static void LoadTextEntry (ZipArchive zipfile, Document document, Dictionary<ILayerObject, int> positions)
 	{
 		ZipArchiveEntry? entry = zipfile.GetEntry (TEXT_ENTRY_PATH);
 		if (entry is null)
@@ -966,6 +1021,7 @@ public sealed class OraFormat : IImageImporter, IImageExporter
 					continue;
 
 				layer.AddText (obj);
+				positions[obj] = SavedPosition (textElement);
 			}
 
 			//Render the restored objects so they are visible before the text tool ever activates.

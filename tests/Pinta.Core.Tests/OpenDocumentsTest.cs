@@ -61,13 +61,42 @@ internal sealed class OpenDocumentsTest : DocumentHarness
 		Document second = OpenAnotherDocument ();
 		Document third = OpenAnotherDocument ();
 
-		// SetActiveDocument, not ActivateDocument: activating opens a document, and would add this
-		// one to the list a second time.
-		PintaCore.Workspace.SetActiveDocument (PintaCore.Workspace.OpenDocuments.IndexOf (second));
+		PintaCore.Workspace.ActivateDocument (second);
 		PintaCore.Workspace.CloseDocument (third);
 
 		Assert.That (PintaCore.Workspace.ActiveDocument, Is.SameAs (second));
 		Assert.That (PintaCore.Workspace.OpenDocuments, Is.EqualTo (new[] { first, second }));
+	}
+
+	/// <summary>
+	/// Activating is how a document is opened, and it was also the only way to switch to one that is
+	/// already open - which listed it a second time, subscribed to its events a second time so every
+	/// one of them fired twice, and gave it a second entry in the Window menu.
+	/// </summary>
+	[Test]
+	public void ActivatingAnOpenDocumentSwitchesToItRatherThanOpeningItAgain ()
+	{
+		Document first = Document;
+		Document second = OpenAnotherDocument ();
+
+		int layerEvents = 0;
+		void Count (object? sender, System.EventArgs e) => layerEvents++;
+		PintaCore.Workspace.LayerAdded += Count;
+
+		try {
+			PintaCore.Workspace.ActivateDocument (first);
+
+			Assert.Multiple (() => {
+				Assert.That (PintaCore.Workspace.ActiveDocument, Is.SameAs (first));
+				Assert.That (PintaCore.Workspace.OpenDocuments, Is.EqualTo (new[] { first, second }));
+			});
+
+			first.Layers.AddNewLayer (string.Empty);
+
+			Assert.That (layerEvents, Is.EqualTo (1), "the document is subscribed to once, not twice");
+		} finally {
+			PintaCore.Workspace.LayerAdded -= Count;
+		}
 	}
 
 	private Document OpenAnotherDocument ()

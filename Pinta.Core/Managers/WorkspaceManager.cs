@@ -210,8 +210,20 @@ public sealed class WorkspaceManager : IWorkspaceService
 	public ReadOnlyCollection<Document> OpenDocuments { get; }
 	public bool HasOpenDocuments => active_document_index >= 0;
 
+	/// <summary>
+	/// Opens a document and makes it the active one. A document that is already open is switched to
+	/// instead: opening it a second time would list it twice, subscribe to its events twice so every
+	/// one fired twice, and add a second entry for it to the Window menu.
+	/// </summary>
 	public void ActivateDocument (Document document)
 	{
+		int alreadyOpen = open_documents.IndexOf (document);
+
+		if (alreadyOpen >= 0) {
+			SetActiveDocument (alreadyOpen);
+			return;
+		}
+
 		document.Layers.LayerAdded += Document_LayerAdded;
 		document.Layers.LayerRemoved += Document_LayerRemoved;
 		document.Layers.SelectedLayerChanged += Document_SelectedLayerChanged;

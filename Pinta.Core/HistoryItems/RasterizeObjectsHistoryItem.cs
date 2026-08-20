@@ -35,6 +35,12 @@ public sealed class RasterizeObjectsHistoryItem : BaseHistoryItem
 	/// <param name="passedBaseSurface">The layer's base raster before baking.</param>
 	/// <param name="passedObjectSurface">The layer's ObjectLayer surface before baking.</param>
 	/// <param name="passedObjects">The layer's unified object list before baking.</param>
+	/// <param name="passedMask">
+	/// The layer's mask as it was before the bake. Only needed by a caller that bakes the whole
+	/// modifier stack, since that drops an applying mask before this item is constructed — reading the
+	/// layer then would record "there was no mask" and undo would never put it back. Omit it when the
+	/// mask is still on the layer.
+	/// </param>
 	public RasterizeObjectsHistoryItem (
 		IWorkspaceService workspace,
 		string icon,
@@ -42,7 +48,8 @@ public sealed class RasterizeObjectsHistoryItem : BaseHistoryItem
 		ImageSurface passedBaseSurface,
 		ImageSurface passedObjectSurface,
 		IReadOnlyList<ILayerObject> passedObjects,
-		UserLayer passedUserLayer
+		UserLayer passedUserLayer,
+		LayerMask? passedMask = null
 	)
 		: base (icon, text)
 	{
@@ -59,9 +66,10 @@ public sealed class RasterizeObjectsHistoryItem : BaseHistoryItem
 
 		objects = ObjectOpacity.CloneAll (passedObjects);
 
-		had_mask = user_layer.Mask is not null;
-		mask_surface = user_layer.Mask?.Surface.Clone ();
-		mask_hidden = user_layer.Mask?.Hidden ?? false;
+		LayerMask? maskBefore = passedMask ?? user_layer.Mask;
+		had_mask = maskBefore is not null;
+		mask_surface = maskBefore?.Surface.Clone ();
+		mask_hidden = maskBefore?.Hidden ?? false;
 	}
 
 	public override void Undo () => Swap ();
@@ -78,6 +86,13 @@ public sealed class RasterizeObjectsHistoryItem : BaseHistoryItem
 		user_layer.Objects.AddRange (old);
 
 		SwapMask ();
+
+		// Redoing a bake leaves the layer with no modifiers and no applying mask, but the accumulated
+		// surface an undo had rebuilt is still hanging on the layer — and GetLayersToPaint paints that
+		// surface whenever it exists, so the canvas would go on showing the pre-bake picture. (The
+		// other direction is safe: DocumentHistory rebuilds composites after every step.)
+		if (!user_layer.NeedsComposite)
+			user_layer.SetComposite (null);
 
 		// Rebuild the shape edit engine's live engines from the restored object list so the active
 		// layer doesn't recomposite stale/empty engines over the restored surface.

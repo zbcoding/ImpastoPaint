@@ -148,6 +148,61 @@ internal sealed class NodeHistoryTest : DocumentHarness
 		Assert.That (Shown (Only, 0, 0).B, Is.EqualTo (255));
 	}
 
+	// An op that bakes the layer's stack folds an applying mask into the pixels and drops it. Undo
+	// restores the objects from the same history item, so it has to restore the mask with them — the
+	// item records the mask after the bake has already dropped it unless the caller hands over the
+	// one it captured beforehand, which read as "this layer never had a mask" and lost it for good.
+	[Test]
+	public void UndoOfAFlipRestoresTheMaskTheBakeDropped ()
+	{
+		AddObject (Only, Invert (), "Invert");
+
+		LayerMask mask = Only.CreateMask ();
+		Fill (mask.Surface, ColorBgra.FromBgra (128, 128, 128, 128));
+		Refresh (Only);
+		Document.History.PushNewItem (
+			new LayerMaskHistoryItem (PintaCore.Workspace, string.Empty, "Add Mask", Only, null, mask.Surface));
+
+		FlipImageHorizontally ();
+		Assert.That (Only.HasMask, Is.False, "the flip baked the stack, mask included");
+
+		Document.History.Undo ();
+
+		Assert.Multiple (() => {
+			Assert.That (Only.HasMask, Is.True, "undo has to give the mask back, not only the node");
+			Assert.That (Only.Objects.Count, Is.EqualTo (1));
+			Assert.That (Shown (Only, 0, 0).B, Is.EqualTo (128), "cyan under the half mask, as before the flip");
+		});
+	}
+
+	// The layer renders from its accumulated surface whenever it has one, so redoing a bake has to
+	// drop the surface the undo rebuilt. Leaving it behind painted the pre-bake picture over pixels
+	// that had already been baked and flipped — the raster was right and the canvas was a step behind.
+	[Test]
+	public void RedoOfAFlipStopsPaintingTheCompositeTheUndoRebuilt ()
+	{
+		AddObject (Only, Invert (), "Invert");
+
+		FlipImageHorizontally ();
+		ColorBgra flipped = Shown (Only, 0, 0);
+
+		Document.History.Undo ();
+		Assert.That (Only.Composite, Is.Not.Null, "undo puts the node back, so the layer renders from its composite again");
+
+		Document.History.Redo ();
+
+		Assert.Multiple (() => {
+			Assert.That (Only.Composite, Is.Null, "a baked layer has no stack left to accumulate");
+			Assert.That (Shown (Only, 0, 0), Is.EqualTo (flipped), "and the canvas shows the flipped, baked pixels");
+		});
+	}
+
+	private static void FlipImageHorizontally ()
+	{
+		PintaCore.Actions.Image.FlipHorizontal.Sensitive = true;
+		PintaCore.Actions.Image.FlipHorizontal.Activate ();
+	}
+
 	// IsDirty decides whether closing prompts, so getting it wrong loses work silently. Undoing back
 	// to where the document was last clean has to clear it, not just moving forward set it.
 	[Test]

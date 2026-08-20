@@ -489,6 +489,7 @@ public static class ObjectRasterizer
 		ImageSurface baseBefore = layer.Surface.Clone ();
 		ImageSurface objectBefore = layer.ObjectLayer.Layer.Surface.Clone ();
 		List<ILayerObject> objectsBefore = ObjectOpacity.CloneAll (layer.Objects);
+		LayerMask? maskBefore = layer.Mask;
 
 		// Ensure the composite reflects any raster edit made since the last render, then bake it.
 		ObjectOpacity.RefreshLayerNoInvalidate (chrome, layer);
@@ -502,7 +503,7 @@ public static class ObjectRasterizer
 			Resources.Icons.ImageFlatten,
 			Translations.GetString ("Rasterize Layer Effects"),
 			baseBefore, objectBefore,
-			objectsBefore, layer);
+			objectsBefore, layer, maskBefore);
 
 		if (historyGroup is not null)
 			historyGroup.Push (item);

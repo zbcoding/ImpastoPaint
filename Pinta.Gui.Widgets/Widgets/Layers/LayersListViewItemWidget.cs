@@ -255,6 +255,7 @@ public sealed partial class LayersListViewItem
 			ImageSurface stackBaseBefore = UserLayer.Surface.Clone ();
 			ImageSurface stackObjectBefore = UserLayer.ObjectLayer.Layer.Surface.Clone ();
 			List<ILayerObject> stackObjectsBefore = Pinta.Core.ObjectOpacity.CloneAll (UserLayer.Objects);
+			LayerMask? stackMaskBefore = UserLayer.Mask;
 
 			if (!UserLayer.RasterizeModifierStack ())
 				return;
@@ -268,7 +269,8 @@ public sealed partial class LayersListViewItem
 					stackBaseBefore,
 					stackObjectBefore,
 					stackObjectsBefore,
-					UserLayer));
+					UserLayer,
+					stackMaskBefore));
 			return;
 		}
 

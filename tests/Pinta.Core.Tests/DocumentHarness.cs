@@ -184,6 +184,10 @@ internal abstract class DocumentHarness
 		public override bool IsTileable => true;
 		public override string Name => "Invert (test)";
 
+		// A test-local effect type cannot be found again by an importer, so a node holding one has
+		// to be baked into the raster rather than written out to be restored.
+		public override bool SurvivesSaveAndReload => false;
+
 		public override void Render (ImageSurface src, ImageSurface dst, ReadOnlySpan<RectangleI> rois)
 			=> PerPixel (src, dst, rois, c => ColorBgra.FromBgra ((byte) (255 - c.B), (byte) (255 - c.G), (byte) (255 - c.R), c.A));
 	}
@@ -192,6 +196,10 @@ internal abstract class DocumentHarness
 	{
 		public override bool IsTileable => true;
 		public override string Name => "Halve (test)";
+
+		// A test-local effect type cannot be found again by an importer, so a node holding one has
+		// to be baked into the raster rather than written out to be restored.
+		public override bool SurvivesSaveAndReload => false;
 
 		public override void Render (ImageSurface src, ImageSurface dst, ReadOnlySpan<RectangleI> rois)
 			=> PerPixel (src, dst, rois, c => ColorBgra.FromBgra ((byte) (c.B / 2), (byte) (c.G / 2), (byte) (c.R / 2), c.A));

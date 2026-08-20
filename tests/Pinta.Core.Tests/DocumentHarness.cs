@@ -50,13 +50,27 @@ internal abstract class DocumentHarness
 		// survival through history — not about how its geometry is rasterized (ShapeObjectTest and the
 		// Tools suite own that), so a deterministic stand-in renderer is what they want anyway.
 		LayerObjectSelection.ShapeRenderer = RenderShapeForTest;
+
+		// The Image menu's ops (crop, rotate, flatten) attach their handlers in PintaCore.Initialize,
+		// which the harness does not run — it also loads shortcuts and wants a real application. Every
+		// fixture shares the one static PintaCore, so registering twice would run each op twice.
+		if (!image_handlers_registered) {
+			PintaCore.Actions.Image.RegisterHandlers ();
+			image_handlers_registered = true;
+		}
 	}
+
+	private static bool image_handlers_registered;
 
 	// A fresh document per test, activated because history items reach for
 	// PintaCore.Workspace.ActiveDocument, and closed again so no test sees another's stack.
 	[SetUp]
 	public void OpenDocument ()
 	{
+		// Ops that bake objects ask for confirmation through a blocking dialog no headless run can
+		// answer. Accepting is the default here; a test about the cancel branch sets its own answer.
+		ObjectRasterizer.ConfirmPrompt = _ => true;
+
 		Document = new Document (
 			PintaCore.Actions,
 			PintaCore.Tools,
@@ -70,10 +84,23 @@ internal abstract class DocumentHarness
 	[TearDown]
 	public void CloseDocument ()
 	{
+		ObjectRasterizer.ConfirmPrompt = null;
+
 		// A test about closing documents may have closed this one itself; teardown is not the
 		// place to be strict about that.
 		if (PintaCore.Workspace.OpenDocuments.Contains (Document))
 			PintaCore.Workspace.CloseDocument (Document);
+	}
+
+	/// <summary>
+	/// Crops to the current selection through the menu action, the only way in. The action is
+	/// insensitive until the app's own handler sees a visible selection, and a disabled Gio action
+	/// swallows Activate without a word, so it is enabled here.
+	/// </summary>
+	protected static void CropToSelection ()
+	{
+		PintaCore.Actions.Image.CropToSelection.Sensitive = true;
+		PintaCore.Actions.Image.CropToSelection.Activate ();
 	}
 
 	// --- The scene ------------------------------------------------------------------------------

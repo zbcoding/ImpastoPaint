@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Cairo;
 using NUnit.Framework;
 
@@ -17,29 +18,6 @@ internal sealed class DocumentResizeTest : DocumentHarness
 	private static readonly Color ShapeFill = new (0, 0, 1, 1);
 
 	private UserLayer Only => Layer (0);
-
-	[OneTimeSetUp]
-	public void SkipTheRasterizePrompt ()
-	{
-		// The bake asks for confirmation through a blocking Adw dialog, which a headless run cannot
-		// answer. This is the same opt-out the user has in Settings → UI. The cancel branch — nothing
-		// baked, nothing resized — has no seam to drive it from here and stays untested.
-		PintaCore.Settings.PutSetting (SettingNames.SKIP_RASTERIZE_OBJECTS_DIALOG, true);
-
-		// Crop lives on a menu action, and its handler is only attached by PintaCore.Initialize, which
-		// the harness does not run (it also loads shortcuts and would want a real app). Attaching this
-		// one set of handlers is all the crop cases need.
-		PintaCore.Actions.Image.RegisterHandlers ();
-	}
-
-	// Crop to selection lives on the menu action rather than on Document, so it is driven the way the
-	// menu drives it. The action is insensitive until the app's own handler sees a visible selection;
-	// a disabled Gio action swallows Activate silently, so the test enables it itself.
-	private static void Crop ()
-	{
-		PintaCore.Actions.Image.CropToSelection.Sensitive = true;
-		PintaCore.Actions.Image.CropToSelection.Activate ();
-	}
 
 	// A red raster with a blue square sitting on it as a live shape object, not as pixels.
 	private void PaintSceneWithLiveShape (RectangleI square)
@@ -151,13 +129,55 @@ internal sealed class DocumentResizeTest : DocumentHarness
 		PaintSceneWithLiveShape (new RectangleI (8, 8, 8, 8));
 
 		Document.Selection.CreateRectangleSelection (new RectangleD (8, 8, 16, 16));
-		Crop ();
+		CropToSelection ();
 
 		Assert.Multiple (() => {
 			Assert.That (Document.ImageSize, Is.EqualTo (new Size (16, 16)));
 			Assert.That (Only.Objects, Is.Empty, "the shape must have been baked before the crop");
 			Assert.That (Shown (Only, 1, 1).B, Is.EqualTo (255), "the shape's corner pixel was at (8,8) and is now the origin");
 			Assert.That (Shown (Only, 12, 12).R, Is.EqualTo (255), "the raster past the shape came along with it");
+		});
+	}
+
+	// Cancelling the prompt must leave the document exactly as it was. The half-done outcome is the
+	// one that would hurt: objects baked into pixels, with the resize the bake was for abandoned.
+	[Test]
+	public void CancellingTheRasterizePromptBakesNothingAndResizesNothing ()
+	{
+		PaintSceneWithLiveShape (new RectangleI (0, 0, 16, 16));
+		int stepsBefore = Document.History.Pointer;
+
+		List<string> asked = [];
+		ObjectRasterizer.ConfirmPrompt = labels => { asked.AddRange (labels); return false; };
+
+		Document.ResizeImage (new Size (64, 64), ResamplingMode.NearestNeighbor);
+
+		Assert.Multiple (() => {
+			Assert.That (asked, Is.Not.Empty, "the prompt has to name what the resize would make permanent");
+			Assert.That (Document.ImageSize, Is.EqualTo (new Size (CanvasSize, CanvasSize)));
+			Assert.That (Only.ShapeObjects.Count, Is.EqualTo (1), "the shape stays editable");
+			Assert.That (Shown (Only, 4, 4).B, Is.EqualTo (255));
+			Assert.That (Document.History.Pointer, Is.EqualTo (stepsBefore),
+				"an abandoned resize must not leave a history item behind");
+		});
+	}
+
+	// Crop reaches the prompt through the menu action rather than through Document, and has its own
+	// early return to get wrong.
+	[Test]
+	public void CancellingTheRasterizePromptCropsNothing ()
+	{
+		PaintSceneWithLiveShape (new RectangleI (8, 8, 8, 8));
+		int stepsBefore = Document.History.Pointer;
+
+		ObjectRasterizer.ConfirmPrompt = _ => false;
+		Document.Selection.CreateRectangleSelection (new RectangleD (8, 8, 16, 16));
+		CropToSelection ();
+
+		Assert.Multiple (() => {
+			Assert.That (Document.ImageSize, Is.EqualTo (new Size (CanvasSize, CanvasSize)));
+			Assert.That (Only.ShapeObjects.Count, Is.EqualTo (1), "the shape stays editable");
+			Assert.That (Document.History.Pointer, Is.EqualTo (stepsBefore));
 		});
 	}
 
@@ -172,13 +192,11 @@ internal sealed class DocumentResizeTest : DocumentHarness
 
 		Document.Selection = EllipseIn (new RectangleI (8, 8, 16, 16));
 
-		// The ellipse's path bounds come out a pixel short of the rectangle it was inscribed in
-		// (16x15 here), so the expected size is read off the selection rather than assumed.
-		Size boundingBox = Document.GetSelectedBounds (true).Size;
-		Crop ();
+		CropToSelection ();
 
 		Assert.Multiple (() => {
-			Assert.That (Document.ImageSize, Is.EqualTo (boundingBox), "the crop takes the bounding box");
+			Assert.That (Document.ImageSize, Is.EqualTo (new Size (16, 16)),
+				"the crop takes the bounding box, all 16 rows of it");
 			Assert.That (Shown (Only, 8, 8).R, Is.EqualTo (255), "the middle of the ellipse is inside the path and stays");
 			Assert.That (Shown (Only, 0, 0).A, Is.EqualTo (0), "the box's corner is outside the path and has to be cleared");
 		});

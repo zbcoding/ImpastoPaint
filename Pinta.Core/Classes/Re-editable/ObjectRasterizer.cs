@@ -10,6 +10,7 @@
 // baking is: render the chosen objects onto the base raster, drop them from the object lists, then
 // re-render the object surfaces from what remains.
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Cairo;
@@ -124,12 +125,21 @@ public static class ObjectRasterizer
 		_ => Translations.GetString ("Shape"),
 	};
 
+	/// <summary>Stands in for the rasterize prompt when set; see the note in <see cref="Confirm"/>.</summary>
+	internal static Func<IReadOnlyList<string>, bool>? ConfirmPrompt { get; set; }
+
 	/// <summary>
 	/// Prompts the user to confirm rasterizing the listed objects. Returns true if they accept. Runs a
 	/// nested loop (blocking) so it fits the synchronous action handlers that call it.
 	/// </summary>
 	public static bool Confirm (IChromeService chrome, IReadOnlyList<string> labels)
 	{
+		// The prompt below blocks on a dialog, which a headless run cannot answer, leaving the branch
+		// where the user cancels — and the caller must abort having changed nothing — undrivable from a
+		// test. Null in the app, which gets the dialog.
+		if (ConfirmPrompt is not null)
+			return ConfirmPrompt (labels);
+
 		// Opt-out: users who know the operations rasterize objects can silence the prompt (Settings → UI).
 		if (PintaCore.Settings.GetSetting (SettingNames.SKIP_RASTERIZE_OBJECTS_DIALOG, false))
 			return true;

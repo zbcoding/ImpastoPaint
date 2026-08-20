@@ -81,7 +81,7 @@ public sealed class AutosaveManager
 
 	private readonly ChromeManager chrome;
 	private readonly ImageConverterManager image_formats;
-	private readonly SettingsManager settings;
+	private readonly ISettingsService settings;
 	private readonly WorkspaceManager workspace;
 
 	/// <summary>
@@ -105,8 +105,12 @@ public sealed class AutosaveManager
 	private uint retry_timer_id;
 	private bool autosave_scheduled;
 
+	// The interval the running timer was armed at, so a tick can notice the setting changing
+	// underneath it. Meaningless while timer_id is 0.
+	private int armed_interval_seconds;
+
 	public AutosaveManager (
-		SettingsManager settings,
+		ISettingsService settings,
 		WorkspaceManager workspace,
 		ImageConverterManager imageFormats,
 		ChromeManager chrome)
@@ -124,6 +128,9 @@ public sealed class AutosaveManager
 	public bool IsEnabled
 		=> settings.GetSetting (SettingNames.AUTOSAVE_ENABLED, true);
 
+	/// <summary>The running timer's identifier, or 0 when autosaving has not been started.</summary>
+	internal uint TimerId => timer_id;
+
 	/// <summary>Seconds between autosaves. Never less than 10, to bound the cost.</summary>
 	public int IntervalSeconds
 		=> Math.Max (10, settings.GetSetting (SettingNames.AUTOSAVE_INTERVAL, 60));
@@ -132,14 +139,20 @@ public sealed class AutosaveManager
 	/// Begins autosaving. Call once the main window exists, since exporting needs a
 	/// parent window for any error dialog.
 	/// </summary>
+	/// <remarks>
+	/// The timer runs whether or not autosaving is enabled; each tick asks. That is what lets
+	/// the setting be turned back on mid-session without a restart.
+	/// </remarks>
 	public void Start ()
 	{
-		if (timer_id != 0 || !IsEnabled)
+		if (timer_id != 0)
 			return;
+
+		armed_interval_seconds = IntervalSeconds;
 
 		timer_id = GLib.Functions.TimeoutAdd (
 			GLib.Constants.PRIORITY_DEFAULT_IDLE,
-			(uint) IntervalSeconds * 1000,
+			(uint) armed_interval_seconds * 1000,
 			OnTimerTick);
 	}
 
@@ -172,13 +185,24 @@ public sealed class AutosaveManager
 		}
 	}
 
-	private bool OnTimerTick ()
+	/// <returns>Whether the timer keeps running, i.e. false once it has been re-armed.</returns>
+	internal bool OnTimerTick ()
 	{
-		// The interval only says autosaving is due. When it actually happens is decided by
-		// TryAutosave, which waits for a moment that won't interrupt the user.
-		ScheduleAutosave ();
+		// Both settings are read here rather than at Start, so changing either one in the
+		// settings dialog takes effect on the next tick instead of on the next launch.
+		if (IsEnabled)
+			// The interval only says autosaving is due. When it actually happens is decided by
+			// TryAutosave, which waits for a moment that won't interrupt the user.
+			ScheduleAutosave ();
 
-		return true;
+		if (IntervalSeconds == armed_interval_seconds)
+			return true;
+
+		// A timer's interval is fixed once added, so a new one replaces it.
+		timer_id = 0;
+		Start ();
+
+		return false;
 	}
 
 	/// <summary>
@@ -203,11 +227,15 @@ public sealed class AutosaveManager
 		// must not begin in the middle of a brush stroke, a drag, or any other gesture.
 		// Strokes end, so this defers the work rather than skipping it.
 		if (IsPointerButtonHeld ()) {
-			retry_timer_id = GLib.Functions.TimeoutAdd (GLib.Constants.PRIORITY_LOW, RETRY_MILLISECONDS, () => {
-				retry_timer_id = 0;
-				ScheduleAutosave ();
-				return false;
-			});
+
+			// One retry at a time. The interval timer keeps firing throughout a long stroke,
+			// and each tick would otherwise add a retry that outlives the one before it.
+			if (retry_timer_id == 0)
+				retry_timer_id = GLib.Functions.TimeoutAdd (GLib.Constants.PRIORITY_LOW, RETRY_MILLISECONDS, () => {
+					retry_timer_id = 0;
+					ScheduleAutosave ();
+					return false;
+				});
 
 			return false;
 		}
@@ -248,6 +276,11 @@ public sealed class AutosaveManager
 		if (format?.Exporter is null)
 			return;
 
+		AutosaveDirtyDocuments (format.Exporter);
+	}
+
+	internal void AutosaveDirtyDocuments (IImageExporter exporter)
+	{
 		// Documents closed since the last tick keep neither their slot nor their file.
 		foreach (Document closed in document_slots.Keys.Except (workspace.OpenDocuments).ToArray ())
 			Forget (closed);
@@ -269,7 +302,19 @@ public sealed class AutosaveManager
 				continue;
 			}
 
-			Autosave (document, format.Exporter);
+			// One document that cannot be exported - a corrupt surface, a full disk, a
+			// permission the user revoked - must not cost every document after it in the
+			// list its autosave, which is what an exception escaping this loop would do.
+			try {
+				Autosave (document, exporter);
+			} catch (Exception e) {
+				Console.Error.WriteLine ($"Failed to autosave '{document.DisplayName}': {e}");
+
+				// Left out of autosaved_states so the next attempt still happens, but held
+				// off for an interval so a document that always fails is not always retried.
+				next_autosave_times[document] = DateTime.UtcNow.AddSeconds (IntervalSeconds);
+				continue;
+			}
 
 			autosaved_states[document] = state;
 		}
@@ -533,6 +578,6 @@ public sealed class AutosaveManager
 		}
 	}
 
-	private static string AutosaveRootDirectory (SettingsManager settings)
+	private static string AutosaveRootDirectory (ISettingsService settings)
 		=> Path.Combine (settings.GetUserSettingsDirectory (), AUTOSAVE_DIRECTORY);
 }

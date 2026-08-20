@@ -2,6 +2,8 @@
 .env*
 
 AGENTS.md
+.agents/skills
+skills-lock.json
 CLAUDE.md
 .claude/settings.local.json
 
@@ -61,3 +63,4 @@ repo/
 # autotools build outputs
 impasto-*.tar.gz
 publish/
+.empryo

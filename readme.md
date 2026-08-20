@@ -7,6 +7,13 @@ It runs on Linux, Windows, and macOS.
 
 ![The text tool, with the UI preferences dialog open](docs/screenshots/impasto-text-tool.png)
 
+![A shape control point held on the canvas centre line, with the guide drawn while dragging](docs/screenshots/impasto-snap-to-grid.png)
+
+What you draw snaps: to the canvas grid, to the units the rulers are drawn in, or - when neither
+is shown - to the canvas edges and centre lines. Shapes, text and selections snap by their whole
+bounding box rather than by the corner under the pointer, and the guide a point is being held
+against is drawn for as long as the drag lasts. Ctrl+Alt+G turns it off and on.
+
 Impasto is licensed under the MIT License (see `license-mit.txt`). Third-party
 attributions, notices, and license texts are in `THIRD-PARTY-NOTICES.md`.
 

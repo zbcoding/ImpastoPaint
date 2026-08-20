@@ -60,6 +60,8 @@ Changes for the next release (0.0.2) go here.
   Other applications still see the flattened image. An effect from an add-in cannot be restored
   this way, so saving warns and lists what will become part of the layer's pixels instead, and an
   effect this build does not have is kept inert with its settings rather than failing the open.
+- The Text Tool's Justify button is now disabled in Point mode, where justification has no
+  effect because point text has no fixed width to fill.
 
 - Settings > UI can now hide the tool box and pick tools from a dropdown instead: the tool chip
   above the canvas keeps its size but becomes a menu of every tool, marked with a triangle. The
@@ -69,8 +71,74 @@ Changes for the next release (0.0.2) go here.
   many add-in tools installed. Turning the setting on hides the column of tool
   buttons and turning it off brings it back; View > Tool Box can still show both at once.
 
+- Adjustments and effects can now be applied as editable nodes on a layer rather than being burned
+  into its pixels. A node keeps the settings it was run with, a strength, a blend mode, a name and
+  the selection it covered, and it can be reordered, re-edited, hidden or removed at any time. Each
+  node's render is cached, so re-editing one only recomputes the nodes above it, and a long render
+  shows a busy cursor. Nodes appear in the Layers dock marked `Fx`. An operation that has to work
+  on flat pixels - merging, flattening, a Layer menu transform, a canvas resize - asks first, then
+  bakes only the nodes it must.
+- Layers can now carry an editable transform node, so a layer can be moved, scaled or rotated
+  without resampling its pixels until something forces the bake.
+- Layers can now carry an editable mask. The mask is painted like any other surface, shows its own
+  border on the canvas, and is saved and restored with the document.
+- Shapes and text objects now appear as their own rows beneath their layer in the Layers dock,
+  so a layer's contents can be selected and reordered from the same place as the layers.
+- Levels and Curves keep their settings across a save and reload, and an effect can declare
+  whether its nodes survive that round trip; the claim is checked before it is trusted.
+- Tool input now snaps to the canvas grid or to the units the rulers are drawn in, whichever is
+  shown, including the axonometric lattice and the tick spacing the rulers actually chose at the
+  current zoom. Canvas edges and centre lines act as a fallback when no grid or ruler is visible,
+  and the guide a point is being held against is drawn while the drag lasts. A dragged shape, a
+  moved text object and a moved selection all snap by their whole bounding box rather than by the
+  corner under the pointer. Snapping toggles with Ctrl+Alt+G.
+- The canvas grid lines can now be given any color and opacity, chosen with Impasto's own color
+  picker.
+- A shape can now be rotated by alt-dragging one of its control points; the pointer changes to a
+  rotate cursor and the angle is shown while dragging.
+- Add-ins now get a place of their own throughout the interface: their menu items live under an
+  Add-ins container, their tools sit in a separate toolbox section whose tooltips name the add-in
+  the tool came from, and an add-in can ship its own icons. Add-in compatibility is versioned
+  separately from Impasto's own release number, so an add-in built against one release keeps
+  working, and a faulty add-in is contained instead of taking the application down with it.
+- Entry fields in a flyout now explain themselves in a caption popover.
+- An image or canvas resize large enough to slow the machine down now asks for confirmation first,
+  showing the resulting dimensions and the memory estimate.
+- The zoom and move-selection cursors are now drawn at 2x for high-density displays.
+
 ### Fixed
 
+- Undoing the bake that a flip, rotate or resize performs now restores the layer's mask, which the
+  bake had been dropping for good, and redoing it no longer leaves the pre-bake image painted over
+  the baked pixels.
+- An ellipse selection now closes at every vertex of its polygon, so its bounds match the box it
+  was drawn in. Cropping to an ellipse had been coming up a pixel short along one edge.
+- Opening a file that is already open now switches to that document instead of opening a second
+  copy of it.
+- Shapes and text objects keep their stacking order across a save and reload.
+- Closing a document below the active one no longer changes which document is in front.
+- Autosaving keeps running after a single document is closed or a single setting is changed.
+- Effects, adjustments and object selection now agree with a non-rectangular selection, rather than
+  treating its bounding box as the selected area.
+- Raster strokes, live shapes, the text caret and the text selection highlight all show on a layer
+  that carries effect nodes.
+- Undoing a gradient no longer throws, and dragging a layer or object row onto another no longer
+  crashes.
+- A resize past the size the graphics driver can upload no longer crashes; the confirmation
+  dialog reports the limit instead.
+- A tool whose icon cannot be resolved now draws a stand-in rather than an empty button, and both
+  copies of a pinned tool light up together.
+- Enum settings are kept across launches.
+- Toggling a soloed layer now shows all layers again, and justification spacing in flowing text
+  is bounded so a short line cannot stretch without limit.
+- A file that cannot be opened is reported in plain words instead of the raw GLib error text.
+
+- Moving selected pixels on a layer with effect nodes now follows the pointer while dragging when
+  the selection lies outside every effect's zone. The move had only appeared once the mouse button
+  was released.
+- Text objects no longer jump in font size when the alignment (or another toolbar setting) is
+  changed after drag-resizing the text: the toolbar's font description is now kept in sync with
+  the resized font, so a later toolbar change no longer re-applies the stale pre-resize size.
 - Autosave recovery now distinguishes process lifetimes when process IDs are reused, leaves
   another running instance's partial exports untouched, and reports startup recovery errors.
 - The large-image memory warning's dimensions and estimate can now be translated.

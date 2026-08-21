@@ -443,6 +443,46 @@ public sealed class UserLayer : Layer
 		Mask?.ResizeCanvas (newSize, anchor);
 	}
 
+	/// <summary>
+	/// Shifts every live shape/text object's coordinates by <paramref name="delta"/>, the same anchor
+	/// offset <see cref="ResizeCanvas"/> paints the raster and re-editable surfaces at. Used when a
+	/// canvas resize only grows the canvas: nothing is cropped away, so the objects can keep their
+	/// identity and stay editable instead of being baked to pixels first. Only valid on a layer with
+	/// no modifier nodes (<see cref="HasModifiers"/>) — a node's Apply can depend on the layer's
+	/// current size (e.g. a transform node's pivot), which a coordinate shift alone cannot preserve.
+	/// </summary>
+	public void TranslateObjects (PointD delta)
+	{
+		PointI deltaInt = delta.ToInt ();
+
+		foreach (ShapeObject shape in ShapeObjects) {
+			foreach (ShapeControlPoint cp in shape.ControlPoints)
+				cp.Position += delta;
+
+			if (shape.IsPartialEllipse)
+				shape.PartialEllipseCenter += delta;
+
+			if (shape.Clip is { } clip)
+				shape.Clip = clip.Transform (TranslationMatrix (delta));
+		}
+
+		foreach (TextObject text in TextObjects) {
+			text.Engine.Origin += deltaInt;
+			text.TextBounds = Translated (text.TextBounds, deltaInt);
+			text.PreviousTextBounds = Translated (text.PreviousTextBounds, deltaInt);
+		}
+	}
+
+	private static Matrix TranslationMatrix (PointD delta)
+	{
+		Matrix xform = CairoExtensions.CreateIdentityMatrix ();
+		xform.Translate (delta.X, delta.Y);
+		return xform;
+	}
+
+	private static RectangleI Translated (RectangleI rect, PointI delta)
+		=> new (rect.X + delta.X, rect.Y + delta.Y, rect.Width, rect.Height);
+
 	public override void Resize (Size newSize, ResamplingMode resamplingMode)
 	{
 		base.Resize (newSize, resamplingMode);

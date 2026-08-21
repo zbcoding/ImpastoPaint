@@ -232,11 +232,7 @@ public class Layer : ObservableObject
 			newSize.Width,
 			newSize.Height);
 
-		PointI delta = new (
-			X: Surface.Width - newSize.Width,
-			Y: Surface.Height - newSize.Height);
-
-		PointD anchorPoint = GetAnchorPoint (delta, anchor);
+		PointD anchorPoint = GetAnchorOffset (new Size (Surface.Width, Surface.Height), newSize, anchor);
 
 		using Context g = new (dest);
 
@@ -246,6 +242,15 @@ public class Layer : ObservableObject
 		Surface = dest;
 	}
 
+	/// <summary>
+	/// Where <see cref="ResizeCanvas"/> paints the old raster's origin inside the new, differently
+	/// sized canvas for a given anchor. Shared with <see cref="UserLayer.TranslateObjects"/> so a live
+	/// object shifts by exactly the offset the raster underneath it just moved by.
+	/// </summary>
+	internal static PointD GetAnchorOffset (Size oldSize, Size newSize, Anchor anchor)
+		=> GetAnchorPoint (new PointI (oldSize.Width - newSize.Width, oldSize.Height - newSize.Height), anchor);
+
+	// delta is old size minus new size, so it is negative on the axes that grow.
 	private static PointD GetAnchorPoint (PointI delta, Anchor anchor)
 		=> anchor switch {
 			Anchor.NW => new (0, 0),

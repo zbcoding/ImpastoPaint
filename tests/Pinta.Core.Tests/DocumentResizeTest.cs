@@ -5,12 +5,16 @@ using NUnit.Framework;
 namespace Pinta.Core.Tests;
 
 /// <summary>
-/// The document-level coordinate changes: image resize, canvas resize, crop. Each one transforms
-/// raster pixels only, so each bakes every layer's live objects first — an un-baked shape, text run
-/// or modifier node keeps vector coordinates the transform never touched and snaps back to its old
-/// placement on the next redraw. What these pin is that contract: the objects are gone afterwards,
-/// their ink landed where the transform says it should, and one undo puts both the old size and the
-/// objects back, because the bakes and the transform share a single compound history item.
+/// The document-level coordinate changes: image resize, canvas resize, crop. Image resize, crop, and
+/// a canvas resize that shrinks any dimension all transform raster pixels in a way a live object's
+/// vector coordinates cannot follow, so each bakes every layer's objects first — otherwise an
+/// un-baked shape, text run or modifier node would keep its old coordinates and snap back to its old
+/// placement on the next redraw. A canvas resize that only grows is the exception: nothing is
+/// cropped away, so a layer with just shapes/text keeps them live and shifts their coordinates by the
+/// same anchor offset the raster moves by instead (a modifier node still bakes there too, since one
+/// can depend on the layer's current size when it renders). Either way, one undo puts both the old
+/// size and the objects back, because the bakes/shifts and the resize share a single compound history
+/// item.
 /// </summary>
 [TestFixture]
 internal sealed class DocumentResizeTest : DocumentHarness
@@ -68,10 +72,10 @@ internal sealed class DocumentResizeTest : DocumentHarness
 	}
 
 	// Growing the canvas anchored north-west moves nothing: the old pixels keep their coordinates and
-	// the new region is empty. The shape is baked all the same, since its coordinates would survive a
-	// move to any other anchor.
+	// the new region is empty. The shape's control points do not need to move either, so it stays a
+	// live object instead of being baked.
 	[Test]
-	public void ResizingTheCanvasKeepsAnchoredPixelsAndBakesObjects ()
+	public void ResizingTheCanvasNorthWestGrowsWithoutBakingObjects ()
 	{
 		PaintSceneWithLiveShape (new RectangleI (0, 0, 16, 16));
 
@@ -79,10 +83,50 @@ internal sealed class DocumentResizeTest : DocumentHarness
 
 		Assert.Multiple (() => {
 			Assert.That (Document.ImageSize, Is.EqualTo (new Size (48, 48)));
-			Assert.That (Only.Objects, Is.Empty, "the shape must have been baked before the canvas grew");
+			Assert.That (Only.ShapeObjects.Count, Is.EqualTo (1), "growing crops nothing away, so the shape stays editable");
 			Assert.That (Shown (Only, 4, 4).B, Is.EqualTo (255), "anchored north-west, the shape's ink does not move");
 			Assert.That (Shown (Only, 20, 20).R, Is.EqualTo (255), "and neither does the raster under it");
 			Assert.That (Shown (Only, 40, 40).A, Is.EqualTo (0), "the canvas grew into empty pixels");
+		});
+	}
+
+	// A centred grow moves the old raster's origin, not just the new empty region, so the live shape
+	// has to move with it to still land on the pixels it used to cover.
+	[Test]
+	public void ResizingTheCanvasCentredTranslatesLiveObjectsToMatchTheRaster ()
+	{
+		PaintSceneWithLiveShape (new RectangleI (0, 0, 16, 16));
+
+		Document.ResizeCanvas (new Size (48, 48), Anchor.Center, compoundAction: null);
+
+		Assert.Multiple (() => {
+			Assert.That (Document.ImageSize, Is.EqualTo (new Size (48, 48)));
+			Assert.That (Only.ShapeObjects.Count, Is.EqualTo (1), "growing crops nothing away, so the shape stays editable");
+			Assert.That (Shown (Only, 12, 12).B, Is.EqualTo (255),
+				"centring an 32x32-to-48x48 grow shifts old content by (8,8); the shape's corner has to follow");
+			Assert.That (Shown (Only, 4, 4).A, Is.EqualTo (0), "the shape's old, un-shifted position is empty now");
+		});
+	}
+
+	// A shape drawn inside a selection keeps a frozen Clip in canvas coordinates (see ShapeObject.Clip)
+	// — that has to move by the same offset as the shape's own control points, or growing the canvas
+	// would leave the shape clipped to a region it was never drawn relative to.
+	[Test]
+	public void ResizingTheCanvasTranslatesAShapesFrozenClipToMatch ()
+	{
+		Fill (Only.Surface, Red);
+		ShapeObject shape = Box (ShapeFill, new RectangleI (0, 0, 16, 16));
+		shape.Clip = SelectionOf (new RectangleI (0, 0, 8, 8));
+		AddObject (Only, shape, "Box");
+
+		Assert.That (Shown (Only, 2, 2).B, Is.EqualTo (255), "the scene has to start clipped to the top-left 8x8");
+		Assert.That (Shown (Only, 12, 12).B, Is.EqualTo (0), "outside the clip, the shape's own fill must not show yet");
+
+		Document.ResizeCanvas (new Size (48, 48), Anchor.Center, compoundAction: null);
+
+		Assert.Multiple (() => {
+			Assert.That (Shown (Only, 10, 10).B, Is.EqualTo (255), "the clip has to move by the same (8,8) offset as the shape");
+			Assert.That (Shown (Only, 2, 2).B, Is.EqualTo (0), "and no longer show at the old, un-shifted position");
 		});
 	}
 
@@ -91,44 +135,96 @@ internal sealed class DocumentResizeTest : DocumentHarness
 	{
 		PaintSceneWithLiveShape (new RectangleI (0, 0, 16, 16));
 
-		Document.ResizeCanvas (new Size (48, 48), Anchor.NW, compoundAction: null);
+		Document.ResizeCanvas (new Size (48, 48), Anchor.Center, compoundAction: null);
 		Document.History.Undo ();
 
 		Assert.Multiple (() => {
 			Assert.That (Document.ImageSize, Is.EqualTo (new Size (CanvasSize, CanvasSize)));
 			Assert.That (Only.ShapeObjects.Count, Is.EqualTo (1), "the shape has to come back editable, not as baked pixels");
+			Assert.That (Shown (Only, 4, 4).B, Is.EqualTo (255), "undo has to move the shape back, not just the canvas size");
+		});
+	}
+
+	// A layer with a modifier node still bakes on a grow: an EffectModifierNode's clip is a frozen
+	// selection whose coordinates a resize does not rewrite, so it would go on masking the wrong
+	// region if it survived un-baked (same as the non-grow case below).
+	[Test]
+	public void GrowingTheCanvasStillBakesLayersWithModifierNodes ()
+	{
+		Fill (Only.Surface, Red);
+		AddObject (Only, Invert (SelectionOf (new RectangleI (0, 0, 16, 16))), "Invert");
+
+		Document.ResizeCanvas (new Size (48, 48), Anchor.NW, compoundAction: null);
+
+		Assert.Multiple (() => {
+			Assert.That (Document.ImageSize, Is.EqualTo (new Size (48, 48)));
+			Assert.That (Only.HasModifiers, Is.False, "the node has to be baked; its clip cannot follow the grow");
+			Assert.That (Shown (Only, 4, 4).B, Is.EqualTo (255), "the inverted region is still there, now as pixels");
+		});
+	}
+
+	// Shrinking on either axis can crop content away, which a coordinate shift cannot express, so it
+	// keeps baking everything up front rather than trying to translate what remains.
+	[Test]
+	public void ShrinkingTheCanvasStillBakesObjects ()
+	{
+		PaintSceneWithLiveShape (new RectangleI (0, 0, 16, 16));
+
+		Document.ResizeCanvas (new Size (16, 16), Anchor.NW, compoundAction: null);
+
+		Assert.Multiple (() => {
+			Assert.That (Document.ImageSize, Is.EqualTo (new Size (16, 16)));
+			Assert.That (Only.Objects, Is.Empty, "the shape must have been baked before the canvas shrank");
+			Assert.That (Shown (Only, 4, 4).B, Is.EqualTo (255));
+		});
+	}
+
+	// Growing one axis while shrinking the other still risks cropping content on the shrinking axis,
+	// so it has to take the bake path, not the translate one that a pure grow takes.
+	[Test]
+	public void ResizingWithOneDimensionShrinkingStillBakesObjects ()
+	{
+		PaintSceneWithLiveShape (new RectangleI (0, 0, 16, 16));
+
+		Document.ResizeCanvas (new Size (48, 16), Anchor.NW, compoundAction: null);
+
+		Assert.Multiple (() => {
+			Assert.That (Document.ImageSize, Is.EqualTo (new Size (48, 16)));
+			Assert.That (Only.Objects, Is.Empty, "one shrinking axis is enough to require the bake");
 			Assert.That (Shown (Only, 4, 4).B, Is.EqualTo (255));
 		});
 	}
 
 	// Paste-and-expand drives ResizeCanvas with its own compound history item (so the paste and the
 	// resize undo together), which used to skip the bake entirely — the shape kept its old vector
-	// coordinates while the raster shifted under it, so the object rendered off from its own layer's
-	// pixels instead of at the anchored position the resize gave everything else.
+	// coordinates while the raster shifted under it, so it rendered off from its own layer's pixels
+	// instead of at the anchored position the resize gave everything else. The fix for that is what a
+	// grow resize does for every caller now: translate the shape's coordinates by the same offset.
 	[Test]
-	public void ResizingTheCanvasAsPartOfACompoundActionStillBakesObjects ()
+	public void ResizingTheCanvasAsPartOfACompoundActionTranslatesObjectsToMatch ()
 	{
 		PaintSceneWithLiveShape (new RectangleI (0, 0, 16, 16));
 
 		CompoundHistoryItem pasteAction = new (Resources.Icons.ImageResizeCanvas, "Paste Into New Layer");
-		Document.ResizeCanvas (new Size (48, 48), Anchor.NW, pasteAction);
+		Document.ResizeCanvas (new Size (48, 48), Anchor.Center, pasteAction);
 		Document.History.PushNewItem (pasteAction);
 
 		Assert.Multiple (() => {
 			Assert.That (Document.ImageSize, Is.EqualTo (new Size (48, 48)));
-			Assert.That (Only.Objects, Is.Empty, "the shape must have been baked, same as a standalone canvas resize");
-			Assert.That (Shown (Only, 4, 4).B, Is.EqualTo (255), "anchored north-west, the shape's ink does not move");
-			Assert.That (Shown (Only, 40, 40).A, Is.EqualTo (0), "the canvas grew into empty pixels");
+			Assert.That (Only.ShapeObjects.Count, Is.EqualTo (1), "the shape must have stayed live, same as a standalone grow");
+			Assert.That (Shown (Only, 12, 12).B, Is.EqualTo (255), "and shifted by the same (8,8) offset as the raster");
 		});
 	}
 
 	// ResizeCanvas returns whether it actually happened. A caller mid-way through a larger action (the
-	// paste-and-expand flow, via a compound action) has to check that: nothing resized or moved, so
-	// carrying on regardless would silently land the rest of that action on the original-sized canvas.
+	// paste-and-expand flow, via a compound action) has to check that: nothing resized, baked or
+	// moved, so carrying on regardless would silently land the rest of that action on the
+	// original-sized canvas. A modifier node is what still prompts on a grow, so this scene needs one.
 	[Test]
 	public void CancellingTheRasterizePromptReportsFailureAndResizesNothing ()
 	{
-		PaintSceneWithLiveShape (new RectangleI (0, 0, 16, 16));
+		Fill (Only.Surface, Red);
+		AddObject (Only, Invert (SelectionOf (new RectangleI (0, 0, 16, 16))), "Invert");
 
 		ObjectRasterizer.ConfirmPrompt = _ => false;
 		CompoundHistoryItem pasteAction = new (Resources.Icons.ImageResizeCanvas, "Paste Into New Layer");
@@ -137,7 +233,7 @@ internal sealed class DocumentResizeTest : DocumentHarness
 		Assert.Multiple (() => {
 			Assert.That (resized, Is.False, "a caller has to be able to tell the resize did not happen");
 			Assert.That (Document.ImageSize, Is.EqualTo (new Size (CanvasSize, CanvasSize)));
-			Assert.That (Only.ShapeObjects.Count, Is.EqualTo (1), "the shape stays editable, nothing was baked");
+			Assert.That (Only.HasModifiers, Is.True, "the modifier node stays live, nothing was baked");
 		});
 	}
 

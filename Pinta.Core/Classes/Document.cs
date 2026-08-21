@@ -25,6 +25,8 @@
 // THE SOFTWARE.
 
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Cairo;
 
@@ -348,14 +350,22 @@ public sealed class Document
 
 		tools.Commit ();
 
-		// Bake live objects to pixels first so the resize acts on plain raster — vector shapes/text keep
-		// their old coords and would snap back otherwise (and, unbaked, land pointing at the wrong pixels
-		// once the anchor shifts the raster underneath them). The bakes and the resize are bundled into
-		// one compound history item so a single undo reverts everything — the caller's compound action
-		// when this is part of a larger op (e.g. paste enlarging the canvas), otherwise one made here.
+		// Growing loses no pixels on either axis, so a layer with only shapes/text can keep them live
+		// instead of baking: TranslateObjects below shifts their coordinates by the same anchor offset
+		// the raster moves by. Shrinking on either axis can crop content away, which a coordinate shift
+		// cannot express, so that still bakes everything first as before.
+		bool growsOnly = newSize.Width >= ImageSize.Width && newSize.Height >= ImageSize.Height;
+
+		// The bakes and the resize are bundled into one compound history item so a single undo reverts
+		// everything — the caller's compound action when this is part of a larger op (e.g. paste
+		// enlarging the canvas), otherwise one made here.
 		CompoundHistoryItem bakeGroup = compoundAction
 			?? new CompoundHistoryItem (Resources.Icons.ImageResizeCanvas, Translations.GetString ("Resize Canvas"));
-		if (!ObjectRasterizer.RasterizeAllLayersForResize (this, workspace, PintaCore.Chrome, bakeGroup))
+
+		bool rasterized = growsOnly
+			? ObjectRasterizer.RasterizeModifiersForGrowResize (this, workspace, PintaCore.Chrome, bakeGroup)
+			: ObjectRasterizer.RasterizeAllLayersForResize (this, workspace, PintaCore.Chrome, bakeGroup);
+		if (!rasterized)
 			return false;
 
 		ResizeHistoryItem hist = new (workspace, ImageSize) {
@@ -366,6 +376,7 @@ public sealed class Document
 		hist.StartSnapshotOfImage ();
 
 		double scale = Workspace.Scale;
+		Size oldSize = ImageSize;
 
 		ImageSize = newSize;
 
@@ -373,6 +384,18 @@ public sealed class Document
 			layer.ResizeCanvas (newSize, anchor);
 
 		hist.FinishSnapshotOfImage ();
+
+		if (growsOnly) {
+			// Whatever still has live objects here was left un-baked above (no modifier nodes), so its
+			// coordinates need to move with the raster it sits on.
+			List<UserLayer> shifted = [.. Layers.UserLayers.Where (l => l.HasAnyObjects)];
+			if (shifted.Count > 0) {
+				PointD delta = Layer.GetAnchorOffset (oldSize, newSize, anchor);
+				foreach (UserLayer layer in shifted)
+					layer.TranslateObjects (delta);
+				hist.Push (new TranslateObjectsHistoryItem (shifted, delta));
+			}
+		}
 
 		if (compoundAction is not null)
 			compoundAction.Push (hist);

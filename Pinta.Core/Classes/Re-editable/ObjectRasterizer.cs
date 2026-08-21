@@ -291,6 +291,32 @@ public static class ObjectRasterizer
 	}
 
 	/// <summary>
+	/// Bakes only the modifier-carrying layers, ahead of a canvas resize that grows every dimension
+	/// (or leaves it unchanged). Growing crops nothing away, so a layer with just shapes/text can keep
+	/// them live — <see cref="UserLayer.TranslateObjects"/> shifts their coordinates by the same anchor
+	/// offset the raster moves by instead. A modifier node can still depend on the layer's current
+	/// size when it renders (a transform node's pivot, for one), so those layers are baked all the
+	/// same. No-op, no prompt, when no layer on the document has any modifier nodes.
+	/// </summary>
+	public static bool RasterizeModifiersForGrowResize (
+		Document doc,
+		IWorkspaceService workspace,
+		IChromeService chrome,
+		CompoundHistoryItem? historyGroup = null)
+	{
+		List<UserLayer> layersWithModifiers = [.. doc.Layers.UserLayers.Where (l => l.HasModifiers)];
+
+		List<string> labels = [.. layersWithModifiers.SelectMany (BakeLabels)];
+		if (labels.Count > 0 && !Confirm (chrome, labels))
+			return false;
+
+		foreach (UserLayer layer in layersWithModifiers)
+			RasterizeAllObjects (doc, workspace, chrome, layer, confirm: false, historyGroup: historyGroup);
+
+		return true;
+	}
+
+	/// <summary>
 	/// Makes <paramref name="layer"/> safe for a destructive raster operation confined to
 	/// <paramref name="selection"/> — cut, erase, or lifting the pixels out to move them. Every such
 	/// operation reads and writes the base raster, but what the user sees is the layer's composite, so

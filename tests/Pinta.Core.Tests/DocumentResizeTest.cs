@@ -122,6 +122,25 @@ internal sealed class DocumentResizeTest : DocumentHarness
 		});
 	}
 
+	// ResizeCanvas returns whether it actually happened. A caller mid-way through a larger action (the
+	// paste-and-expand flow, via a compound action) has to check that: nothing resized or moved, so
+	// carrying on regardless would silently land the rest of that action on the original-sized canvas.
+	[Test]
+	public void CancellingTheRasterizePromptReportsFailureAndResizesNothing ()
+	{
+		PaintSceneWithLiveShape (new RectangleI (0, 0, 16, 16));
+
+		ObjectRasterizer.ConfirmPrompt = _ => false;
+		CompoundHistoryItem pasteAction = new (Resources.Icons.ImageResizeCanvas, "Paste Into New Layer");
+		bool resized = Document.ResizeCanvas (new Size (48, 48), Anchor.NW, pasteAction);
+
+		Assert.Multiple (() => {
+			Assert.That (resized, Is.False, "a caller has to be able to tell the resize did not happen");
+			Assert.That (Document.ImageSize, Is.EqualTo (new Size (CanvasSize, CanvasSize)));
+			Assert.That (Only.ShapeObjects.Count, Is.EqualTo (1), "the shape stays editable, nothing was baked");
+		});
+	}
+
 	// A modifier node's clip is a frozen selection in canvas coordinates. Nothing rewrites it, so a
 	// node that outlived a resize would go on masking the region those coordinates used to name. The
 	// bake is what makes that impossible, and this is the case that says so in pixels.

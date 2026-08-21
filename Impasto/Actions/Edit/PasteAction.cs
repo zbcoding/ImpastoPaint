@@ -154,7 +154,11 @@ internal sealed class PasteAction : IActionHandler
 					Height: Math.Max (canvas_size.Height, cb_image.Height)
 				);
 
-				workspace.ResizeCanvas (newSize, Pinta.Core.Anchor.Center, paste_action);
+				// False means the user backed out of the rasterize-objects prompt the resize needed -
+				// nothing was resized (or baked), so the paste has to abort too rather than land on the
+				// still-original-sized canvas as if Preserve had been chosen instead of Expand.
+				if (!workspace.ResizeCanvas (newSize, Pinta.Core.Anchor.Center, paste_action))
+					return;
 				actions.View.UpdateCanvasScale ();
 
 			} else if (response != Gtk.ResponseType.Reject) // cancelled

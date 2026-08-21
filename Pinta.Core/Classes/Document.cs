@@ -333,13 +333,18 @@ public sealed class Document
 	/// Optionally, the history item for resizing the canvas can be added to
 	/// a CompoundHistoryItem if it is part of a larger action (e.g. pasting an image).
 	/// </param>
-	public void ResizeCanvas (
+	/// <returns>
+	/// False if the user cancelled the rasterize-objects prompt this resize required, in which case
+	/// nothing was resized (or baked) and a caller mid-way through a larger action (e.g. paste) must
+	/// abort that action too rather than carry on as if the resize had happened.
+	/// </returns>
+	public bool ResizeCanvas (
 		Size newSize,
 		Anchor anchor,
 		CompoundHistoryItem? compoundAction)
 	{
 		if (ImageSize == newSize)
-			return;
+			return true;
 
 		tools.Commit ();
 
@@ -351,7 +356,7 @@ public sealed class Document
 		CompoundHistoryItem bakeGroup = compoundAction
 			?? new CompoundHistoryItem (Resources.Icons.ImageResizeCanvas, Translations.GetString ("Resize Canvas"));
 		if (!ObjectRasterizer.RasterizeAllLayersForResize (this, workspace, PintaCore.Chrome, bakeGroup))
-			return;
+			return false;
 
 		ResizeHistoryItem hist = new (workspace, ImageSize) {
 			Icon = Resources.Icons.ImageResizeCanvas,
@@ -379,6 +384,7 @@ public sealed class Document
 		ResetSelectionPaths ();
 
 		Workspace.Scale = scale;
+		return true;
 	}
 
 	public void ResizeImage (

@@ -97,13 +97,13 @@ public static class WorkspaceServiceExtensions
 		workspace.ActiveDocument.ResizeImage (newSize, resamplingMode);
 	}
 
-	public static void ResizeCanvas (
+	public static bool ResizeCanvas (
 		this IWorkspaceService workspace,
 		Size newSize,
 		Anchor anchor,
 		CompoundHistoryItem? compoundAction)
 	{
-		workspace.ActiveDocument.ResizeCanvas (newSize, anchor, compoundAction);
+		return workspace.ActiveDocument.ResizeCanvas (newSize, anchor, compoundAction);
 	}
 
 	public static void CloseActiveDocument (this WorkspaceManager workspace)

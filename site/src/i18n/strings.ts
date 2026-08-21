@@ -47,6 +47,7 @@ export interface Dict {
   footerGithub: string;
   footerReleases: string;
   footerIssues: string;
+  aiTranslatedLabel: string;
 }
 
 export const strings: Record<Lang, Dict> = {
@@ -107,6 +108,7 @@ export const strings: Record<Lang, Dict> = {
     footerGithub: 'GitHub',
     footerReleases: 'Releases',
     footerIssues: 'Bug Reports & Issues',
+    aiTranslatedLabel: 'AI-translated',
   },
   es: {
     metaDescription:
@@ -166,6 +168,7 @@ export const strings: Record<Lang, Dict> = {
     footerGithub: 'GitHub',
     footerReleases: 'Versiones',
     footerIssues: 'Errores e incidencias',
+    aiTranslatedLabel: 'Traducción automática',
   },
   fr: {
     metaDescription:
@@ -226,6 +229,7 @@ export const strings: Record<Lang, Dict> = {
     footerGithub: 'GitHub',
     footerReleases: 'Versions',
     footerIssues: 'Bugs et problèmes',
+    aiTranslatedLabel: 'Traduction automatique',
   },
   de: {
     metaDescription:
@@ -285,6 +289,7 @@ export const strings: Record<Lang, Dict> = {
     footerGithub: 'GitHub',
     footerReleases: 'Releases',
     footerIssues: 'Fehler & Probleme',
+    aiTranslatedLabel: 'Maschinelle Übersetzung',
   },
   ja: {
     metaDescription:
@@ -343,6 +348,7 @@ export const strings: Record<Lang, Dict> = {
     footerGithub: 'GitHub',
     footerReleases: 'リリース',
     footerIssues: 'バグ報告・Issue',
+    aiTranslatedLabel: 'AI翻訳',
   },
   'zh-cn': {
     metaDescription:
@@ -398,5 +404,6 @@ export const strings: Record<Lang, Dict> = {
     footerGithub: 'GitHub',
     footerReleases: '发布版本',
     footerIssues: 'Bug 反馈与 Issues',
+    aiTranslatedLabel: 'AI 翻译',
   },
 };

@@ -29,12 +29,12 @@ const langEntries = Object.entries(languages) as [Lang, (typeof languages)[Lang]
         <a href="#platforms">{t.navGet}</a>
         <a href="#docs">{t.navDocs}</a>
         <details class="lang-dd">
-          <summary>{languages[lang].name}</summary>
+          <summary>{languages[lang].name}{lang !== 'en' && <abbr class="ai-badge" title={t.aiTranslatedLabel}>AI</abbr>}</summary>
           <ul>
             {langEntries.map(([code, info]) => (
               code === lang
-                ? <li class="current" aria-current="true">{info.name}</li>
-                : <li><a href={`${base}${localePath(code)}`}>{info.name}</a></li>
+                ? <li class="current" aria-current="true">{info.name}{code !== 'en' && <abbr class="ai-badge" title={t.aiTranslatedLabel}>AI</abbr>}</li>
+                : <li><a href={`${base}${localePath(code)}`}>{info.name}{code !== 'en' && <abbr class="ai-badge" title={t.aiTranslatedLabel}>AI</abbr>}</a></li>
             ))}
           </ul>
         </details>
@@ -145,6 +145,7 @@ const langEntries = Object.entries(languages) as [Lang, (typeof languages)[Lang]
   .lang-dd li.current { color: var(--fg); font-weight: 600; padding: 0.35rem 0.6rem; }
   .lang-dd a { display: block; padding: 0.35rem 0.6rem; border-radius: 5px; white-space: nowrap; }
   .lang-dd a:hover { background: var(--bg); color: var(--fg); }
+  .ai-badge { display: inline-block; margin-left: 0.4rem; padding: 0.05rem 0.4rem; border-radius: 5px; background: var(--accent); color: #1a1305; font-size: 0.62rem; font-weight: 800; letter-spacing: 0.03em; text-decoration: none; vertical-align: middle; cursor: help; }
 
   .hero { text-align: center; padding: 4.5rem 0 3.5rem; }
   .hero-logo { margin: 0 auto 1.5rem; }

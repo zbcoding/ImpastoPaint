@@ -111,29 +111,11 @@ public static class ShapeEngineCollection
 	}
 
 	public static void Store (UserLayer layer, IReadOnlyList<ShapeEngine> engines)
-	{
 		// Rebuild the layer's shape objects in place, preserving the position of each shape relative
-		// to the text objects it may be interleaved with (cross-kind z-order survives a persist).
-		var newShapes = engines.Where (e => e.ParentLayer == layer).Select (e => e.ToShapeObject ()).ToList ();
-
-		List<ILayerObject> rebuilt = [];
-		int shapeIdx = 0;
-		foreach (ILayerObject o in layer.Objects) {
-			if (o is ShapeObject) {
-				if (shapeIdx < newShapes.Count)
-					rebuilt.Add (newShapes[shapeIdx++]);
-			} else {
-				rebuilt.Add (o);
-			}
-		}
-
-		// Shapes beyond the old count are brand new (freshly drawn), not reordered survivors, so they
-		// insert at the bottom like any other new addition -- below everything, including modifiers.
-		rebuilt.InsertRange (0, newShapes.Skip (shapeIdx));
-
-		layer.Objects.Clear ();
-		layer.Objects.AddRange (rebuilt);
-	}
+		// to the text objects it may be interleaved with (cross-kind z-order survives a persist), and
+		// inserting anything past the old count - freshly drawn shapes, not reordered survivors - at
+		// the bottom. UserLayer owns that merge; this is just the ShapeEngine -> ShapeObject leg of it.
+		=> layer.ReplaceShapes (engines.Where (e => e.ParentLayer == layer).Select (e => e.ToShapeObject ()).ToList ());
 
 	private static Arrow ToArrow (ShapeArrow arrow)
 		=> new (arrow.Show, arrow.Size, arrow.AngleOffset, arrow.LengthOffset);

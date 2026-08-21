@@ -32,6 +32,16 @@ internal sealed class DocumentResizeTest : DocumentHarness
 			"the scene has to start with the shape on screen, or the resize has nothing to bake");
 	}
 
+	private static bool HasInk (UserLayer layer, RectangleI region)
+	{
+		for (int y = region.Top; y <= region.Bottom; ++y)
+			for (int x = region.Left; x <= region.Right; ++x)
+				if (Shown (layer, x, y).A != 0)
+					return true;
+
+		return false;
+	}
+
 	// Doubling the image scales the raster, and the shape has to be baked into that raster before the
 	// scale runs: its control points are canvas coordinates the scale never rewrites, so a surviving
 	// shape would re-render at its old size over the enlarged pixels.
@@ -127,6 +137,30 @@ internal sealed class DocumentResizeTest : DocumentHarness
 		Assert.Multiple (() => {
 			Assert.That (Shown (Only, 10, 10).B, Is.EqualTo (255), "the clip has to move by the same (8,8) offset as the shape");
 			Assert.That (Shown (Only, 2, 2).B, Is.EqualTo (0), "and no longer show at the old, un-shifted position");
+		});
+	}
+
+	// TranslateObjects has its own, separate loop for text (a TextObject's Engine.Origin is not a
+	// ShapeObject control point). Unlike a shape, an in-progress text edit holds a direct reference
+	// into UserLayer.Objects rather than a copy, so there is no SEngines-style stale-copy risk for
+	// text — but the coordinate shift itself still needs its own regression pin.
+	[Test]
+	public void ResizingTheCanvasCentredTranslatesTextObjectsToMatchTheRaster ()
+	{
+		PointI origin = new (2, 2);
+		TextObject caption = Text ("Hi", origin);
+		AddObject (Only, caption, "Text");
+		Assert.That (HasInk (Only, new RectangleI (0, 0, 12, 12)), Is.True,
+			"the scene has to start with visible text, or there is nothing to prove moved");
+
+		Document.ResizeCanvas (new Size (48, 48), Anchor.Center, compoundAction: null);
+
+		Assert.Multiple (() => {
+			Assert.That (Only.TextObjects.Count, Is.EqualTo (1), "growing crops nothing away, so the text stays editable");
+			Assert.That (caption.Engine.Origin, Is.EqualTo (new PointI (origin.X + 8, origin.Y + 8)),
+				"centring an 32x32-to-48x48 grow shifts old content by (8,8); the text's origin has to follow");
+			Assert.That (HasInk (Only, new RectangleI (8, 8, 12, 12)), Is.True, "and the shifted origin has to still render");
+			Assert.That (HasInk (Only, new RectangleI (0, 0, 6, 6)), Is.False, "the old, un-shifted position is empty now");
 		});
 	}
 
@@ -242,6 +276,35 @@ internal sealed class DocumentResizeTest : DocumentHarness
 			Assert.That (Document.ImageSize, Is.EqualTo (new Size (48, 48)));
 			Assert.That (Only.ShapeObjects.Count, Is.EqualTo (1), "the shape must have stayed live, same as a standalone grow");
 			Assert.That (Shown (Only, 12, 12).B, Is.EqualTo (255), "and shifted by the same (8,8) offset as the raster");
+		});
+	}
+
+	// The original bug behind the whole compound-action branch: a caller-supplied compound history
+	// item used to make ResizeCanvas skip the bake outright (not just skip it for shapes/text once
+	// grow-without-baking was added), so a modifier node on the layer being pasted onto would survive
+	// un-baked and end up applying to the wrong pixels once the raster shifted under it. One undo of
+	// the compound action has to restore the node along with the size, same as a standalone resize.
+	[Test]
+	public void ResizingTheCanvasAsPartOfACompoundActionStillBakesModifierNodes ()
+	{
+		Fill (Only.Surface, Red);
+		AddObject (Only, Invert (SelectionOf (new RectangleI (0, 0, 16, 16))), "Invert");
+
+		CompoundHistoryItem pasteAction = new (Resources.Icons.ImageResizeCanvas, "Paste Into New Layer");
+		bool resized = Document.ResizeCanvas (new Size (48, 48), Anchor.NW, pasteAction);
+		Document.History.PushNewItem (pasteAction);
+
+		Assert.Multiple (() => {
+			Assert.That (resized, Is.True);
+			Assert.That (Document.ImageSize, Is.EqualTo (new Size (48, 48)));
+			Assert.That (Only.HasModifiers, Is.False, "the node has to be baked even when driven through a compound action");
+			Assert.That (Shown (Only, 4, 4).B, Is.EqualTo (255), "the inverted region is still there, now as pixels");
+		});
+
+		Document.History.Undo ();
+		Assert.Multiple (() => {
+			Assert.That (Document.ImageSize, Is.EqualTo (new Size (CanvasSize, CanvasSize)));
+			Assert.That (Only.HasModifiers, Is.True, "one undo of the compound action has to bring the node back too");
 		});
 	}
 

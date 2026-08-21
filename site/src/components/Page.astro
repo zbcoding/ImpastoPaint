@@ -60,20 +60,31 @@ const langEntries = Object.entries(languages) as [Lang, (typeof languages)[Lang]
       <h2>{t.screenshotsH2}</h2>
       <div class="shots">
         <figure>
-          <img src={`${base}/assets/screenshot-object-layers.png`} alt={t.shot1Alt} loading="lazy" />
+          <button type="button" class="shot-btn" data-full={`${base}/assets/screenshot-object-layers.png`}>
+            <img src={`${base}/assets/screenshot-object-layers.png`} alt={t.shot1Alt} loading="lazy" />
+          </button>
           <figcaption>{t.shot1Caption}</figcaption>
         </figure>
         <figure>
-          <img src={`${base}/assets/screenshot-text-tool.png`} alt={t.shot2Alt} loading="lazy" />
+          <button type="button" class="shot-btn" data-full={`${base}/assets/screenshot-text-tool.png`}>
+            <img src={`${base}/assets/screenshot-text-tool.png`} alt={t.shot2Alt} loading="lazy" />
+          </button>
           <figcaption>{t.shot2Caption}</figcaption>
         </figure>
         <figure>
-          <img src={`${base}/assets/screenshot-snap-to-grid.png`} alt={t.shot3Alt} loading="lazy" />
+          <button type="button" class="shot-btn" data-full={`${base}/assets/screenshot-snap-to-grid.png`}>
+            <img src={`${base}/assets/screenshot-snap-to-grid.png`} alt={t.shot3Alt} loading="lazy" />
+          </button>
           <figcaption>{t.shot3Caption}</figcaption>
         </figure>
       </div>
     </div>
   </section>
+
+  <dialog id="lightbox" class="lightbox">
+    <button type="button" class="lightbox-close" aria-label={t.closeLightbox}>&times;</button>
+    <img id="lightbox-img" src="" alt="" />
+  </dialog>
 
   <section id="about" class="section alt">
     <div class="wrap prose">
@@ -157,7 +168,8 @@ const langEntries = Object.entries(languages) as [Lang, (typeof languages)[Lang]
   .btn { display: inline-block; padding: 0.75rem 1.5rem; border-radius: 8px; text-decoration: none; font-weight: 600; border: 1px solid transparent; }
   .btn-primary { background: var(--accent); color: #1a1305; }
   .btn-ghost { border-color: var(--border); color: var(--fg); }
-  .btn-small { padding: 0.45rem 1rem; font-size: 0.9rem; border: 1px solid var(--border); color: var(--fg); border-radius: 6px; }
+  .btn-small { padding: 0.45rem 1rem; font-size: 0.9rem; border: 1px solid transparent; background: var(--accent); color: #1a1305; border-radius: 6px; }
+  .btn-small:hover { opacity: 0.85; }
 
   .section { padding: 3.5rem 0; }
   .section.alt { background: var(--bg-raised); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
@@ -167,8 +179,27 @@ const langEntries = Object.entries(languages) as [Lang, (typeof languages)[Lang]
 
   .shots { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1.5rem; }
   .shots figure { margin: 0; border: 1px solid var(--border); border-radius: 10px; overflow: hidden; background: var(--bg-raised); }
-  .shots img { width: 100%; }
+  .shots img { width: 100%; display: block; }
   .shots figcaption { padding: 0.75rem 1rem; color: var(--fg-muted); font-size: 0.9rem; }
+  .shot-btn { display: block; width: 100%; padding: 0; border: none; background: none; cursor: zoom-in; }
+
+  .lightbox { border: none; background: transparent; padding: 0; max-width: 94vw; max-height: 94vh; }
+  .lightbox[open] { display: flex; align-items: center; justify-content: center; }
+  .lightbox::backdrop { background: rgba(0, 0, 0, 0.75); }
+  .lightbox img { display: block; max-width: 94vw; max-height: 94vh; border-radius: 8px; }
+  .lightbox-close {
+    position: absolute; top: 0.5rem; right: 0.5rem; width: 2.75rem; height: 2.75rem;
+    display: flex; align-items: center; justify-content: center; padding: 0;
+    border: none; border-radius: 50%; background: var(--accent); color: #1a1305;
+    font-size: 1.5rem; line-height: 1; cursor: pointer; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.4);
+  }
+  .lightbox-close:hover { opacity: 0.85; }
+
+  @media (max-width: 600px) {
+    .lightbox { max-width: 100vw; max-height: 100vh; width: 100vw; height: 100vh; }
+    .lightbox img { max-width: 100vw; max-height: 100vh; border-radius: 0; object-fit: contain; }
+    .lightbox-close { top: calc(env(safe-area-inset-top, 0px) + 0.5rem); right: calc(env(safe-area-inset-right, 0px) + 0.5rem); }
+  }
 
   .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1.25rem; }
   .card { border: 1px solid var(--border); border-radius: 10px; padding: 1.5rem; background: var(--bg-raised); }
@@ -179,3 +210,23 @@ const langEntries = Object.entries(languages) as [Lang, (typeof languages)[Lang]
   .site-footer nav { display: flex; gap: 1.25rem; }
   .site-footer a { color: var(--fg-muted); }
 </style>
+
+<script>
+  const lightbox = document.getElementById('lightbox') as HTMLDialogElement;
+  const lightboxImg = document.getElementById('lightbox-img') as HTMLImageElement;
+  const lightboxClose = document.querySelector('.lightbox-close') as HTMLButtonElement;
+
+  document.querySelectorAll<HTMLButtonElement>('.shot-btn').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      lightboxImg.src = btn.dataset.full ?? '';
+      lightboxImg.alt = btn.querySelector('img')?.alt ?? '';
+      lightbox.showModal();
+    });
+  });
+
+  lightboxClose.addEventListener('click', () => lightbox.close());
+
+  lightbox.addEventListener('click', (e) => {
+    if (e.target === lightbox) lightbox.close();
+  });
+</script>

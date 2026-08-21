@@ -48,6 +48,7 @@ export interface Dict {
   footerReleases: string;
   footerIssues: string;
   aiTranslatedLabel: string;
+  closeLightbox: string;
 }
 
 export const strings: Record<Lang, Dict> = {
@@ -109,6 +110,7 @@ export const strings: Record<Lang, Dict> = {
     footerReleases: 'Releases',
     footerIssues: 'Bug Reports & Issues',
     aiTranslatedLabel: 'AI-translated',
+    closeLightbox: 'Close',
   },
   es: {
     metaDescription:
@@ -169,6 +171,7 @@ export const strings: Record<Lang, Dict> = {
     footerReleases: 'Versiones',
     footerIssues: 'Errores e incidencias',
     aiTranslatedLabel: 'Traducción automática',
+    closeLightbox: 'Cerrar',
   },
   fr: {
     metaDescription:
@@ -230,6 +233,7 @@ export const strings: Record<Lang, Dict> = {
     footerReleases: 'Versions',
     footerIssues: 'Bugs et problèmes',
     aiTranslatedLabel: 'Traduction automatique',
+    closeLightbox: 'Fermer',
   },
   de: {
     metaDescription:
@@ -290,6 +294,7 @@ export const strings: Record<Lang, Dict> = {
     footerReleases: 'Releases',
     footerIssues: 'Fehler & Probleme',
     aiTranslatedLabel: 'Maschinelle Übersetzung',
+    closeLightbox: 'Schließen',
   },
   ja: {
     metaDescription:
@@ -349,6 +354,7 @@ export const strings: Record<Lang, Dict> = {
     footerReleases: 'リリース',
     footerIssues: 'バグ報告・Issue',
     aiTranslatedLabel: 'AI翻訳',
+    closeLightbox: '閉じる',
   },
   'zh-cn': {
     metaDescription:
@@ -405,5 +411,6 @@ export const strings: Record<Lang, Dict> = {
     footerReleases: '发布版本',
     footerIssues: 'Bug 反馈与 Issues',
     aiTranslatedLabel: 'AI 翻译',
+    closeLightbox: '关闭',
   },
 };

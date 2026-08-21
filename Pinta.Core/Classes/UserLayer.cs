@@ -91,11 +91,13 @@ public sealed class UserLayer : Layer
 	/// <summary>The text objects, in z-order (filtered view of <see cref="Objects"/>).</summary>
 	public IReadOnlyList<TextObject> TextObjects => Objects.OfType<TextObject> ().ToList ();
 
-	/// <summary>Adds a text object on top (end of <see cref="Objects"/>).</summary>
-	public void AddText (TextObject text) => Objects.Add (text);
+	/// <summary>Adds a text object at the bottom (start of <see cref="Objects"/>), so any existing
+	/// modifier keeps applying to it, matching history order.</summary>
+	public void AddText (TextObject text) => Objects.Insert (0, text);
 
-	/// <summary>Adds a shape object on top (end of <see cref="Objects"/>).</summary>
-	public void AddShape (ShapeObject shape) => Objects.Add (shape);
+	/// <summary>Adds a shape object at the bottom (start of <see cref="Objects"/>), so any existing
+	/// modifier keeps applying to it, matching history order.</summary>
+	public void AddShape (ShapeObject shape) => Objects.Insert (0, shape);
 
 	/// <summary>Removes an object; returns whether it was present.</summary>
 	public bool RemoveObject (ILayerObject obj) => Objects.Remove (obj);

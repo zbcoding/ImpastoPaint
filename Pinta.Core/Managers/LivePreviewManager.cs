@@ -180,7 +180,7 @@ public sealed class LivePreviewManager : ILivePreview
 			UserLayer userLayer = doc.Layers.CurrentUserLayer;
 			List<ILayerObject> objectsBefore = ObjectOpacity.CloneAll (userLayer.Objects);
 
-			userLayer.Objects.Add (EffectModifierNode.FromEffect (effect, selection.Visible ? selection.Clone () : null, PintaCore.Services));
+			userLayer.Objects.Insert (0, EffectModifierNode.FromEffect (effect, selection.Visible ? selection.Clone () : null, PintaCore.Services));
 			ObjectOpacity.RefreshLayer (workspace, chrome, userLayer);
 
 			workspace.ActiveDocument.History.PushNewItem (

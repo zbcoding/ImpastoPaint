@@ -35,6 +35,14 @@ internal abstract class DocumentHarness
 	[OneTimeSetUp]
 	public void InitializeCore ()
 	{
+		// Every fixture shares the one static PintaCore, so this only needs to happen once per run —
+		// re-running it per fixture would leave the previous fixture's Application and Window to be
+		// finalized off the main thread at process exit, which GTK does not tolerate (crashes the
+		// test host during shutdown instead of quietly collecting garbage).
+		if (core_initialized)
+			return;
+		core_initialized = true;
+
 		Gtk.Module.Initialize ();
 		Cairo.Module.Initialize ();
 
@@ -52,15 +60,11 @@ internal abstract class DocumentHarness
 		LayerObjectSelection.ShapeRenderer = RenderShapeForTest;
 
 		// The Image menu's ops (crop, rotate, flatten) attach their handlers in PintaCore.Initialize,
-		// which the harness does not run — it also loads shortcuts and wants a real application. Every
-		// fixture shares the one static PintaCore, so registering twice would run each op twice.
-		if (!image_handlers_registered) {
-			PintaCore.Actions.Image.RegisterHandlers ();
-			image_handlers_registered = true;
-		}
+		// which the harness does not run — it also loads shortcuts and wants a real application.
+		PintaCore.Actions.Image.RegisterHandlers ();
 	}
 
-	private static bool image_handlers_registered;
+	private static bool core_initialized;
 
 	// A fresh document per test, activated because history items reach for
 	// PintaCore.Workspace.ActiveDocument, and closed again so no test sees another's stack.

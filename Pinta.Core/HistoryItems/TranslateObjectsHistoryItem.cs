@@ -22,13 +22,19 @@ public sealed class TranslateObjectsHistoryItem : BaseHistoryItem
 
 	public override void Undo ()
 	{
-		foreach (UserLayer layer in layers)
+		foreach (UserLayer layer in layers) {
 			layer.TranslateObjects (new PointD (-delta.X, -delta.Y));
+			// Same reload a shape tool needs after the forward shift below - its own copy of the
+			// shapes' control points (SEngines) has to be rebuilt from the just-moved ShapeObjects.
+			LayerObjectSelection.RequestShapeReload (layer);
+		}
 	}
 
 	public override void Redo ()
 	{
-		foreach (UserLayer layer in layers)
+		foreach (UserLayer layer in layers) {
 			layer.TranslateObjects (delta);
+			LayerObjectSelection.RequestShapeReload (layer);
+		}
 	}
 }

@@ -130,6 +130,35 @@ internal sealed class DocumentResizeTest : DocumentHarness
 		});
 	}
 
+	// A shape tool keeps its own live copy of a layer's shapes' control points while editing
+	// (Pinta.Tools' SEngines), built once from UserLayer.Objects and not automatically kept in sync
+	// with it. TranslateObjects only moves UserLayer.Objects, so the resize (and its undo/redo) has to
+	// ask for a reload through this seam — the same one ObjectRasterizer already uses after a bake —
+	// or a shape tool's next redraw uses the stale, pre-resize control points.
+	[Test]
+	public void ResizingTheCanvasRequestsAShapeReloadOnResizeUndoAndRedo ()
+	{
+		PaintSceneWithLiveShape (new RectangleI (0, 0, 16, 16));
+
+		List<UserLayer> reloaded = [];
+		void OnReload (UserLayer layer) => reloaded.Add (layer);
+		LayerObjectSelection.ShapeReloadRequested += OnReload;
+		try {
+			Document.ResizeCanvas (new Size (48, 48), Anchor.Center, compoundAction: null);
+			Assert.That (reloaded, Does.Contain (Only), "the resize itself has to request a reload");
+
+			reloaded.Clear ();
+			Document.History.Undo ();
+			Assert.That (reloaded, Does.Contain (Only), "undoing the shift has to request a reload too");
+
+			reloaded.Clear ();
+			Document.History.Redo ();
+			Assert.That (reloaded, Does.Contain (Only), "and so does redoing it");
+		} finally {
+			LayerObjectSelection.ShapeReloadRequested -= OnReload;
+		}
+	}
+
 	[Test]
 	public void OneUndoOfACanvasResizeRestoresBothTheSizeAndTheObjects ()
 	{

@@ -391,8 +391,15 @@ public sealed class Document
 			List<UserLayer> shifted = [.. Layers.UserLayers.Where (l => l.HasAnyObjects)];
 			if (shifted.Count > 0) {
 				PointD delta = Layer.GetAnchorOffset (oldSize, newSize, anchor);
-				foreach (UserLayer layer in shifted)
+				foreach (UserLayer layer in shifted) {
 					layer.TranslateObjects (delta);
+					// A shape tool keeps its own live copy of a layer's shapes' control points while
+					// editing (Pinta.Tools' SEngines) — TranslateObjects only moved UserLayer.Objects,
+					// so without this the tool's copy is left pointing at the pre-resize coordinates and
+					// the next redraw through it snaps the shape back. Same seam ObjectRasterizer uses
+					// after a bake, for the same reason: the object list changed from outside the tool.
+					LayerObjectSelection.RequestShapeReload (layer);
+				}
 				hist.Push (new TranslateObjectsHistoryItem (shifted, delta));
 			}
 		}

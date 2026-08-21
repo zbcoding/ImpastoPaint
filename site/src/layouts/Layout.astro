@@ -1,14 +1,19 @@
 ---
+import { languages, localePath, type Lang } from '../i18n/languages';
+
 export interface Props {
+  lang: Lang;
   title: string;
   description: string;
 }
-const { title, description } = Astro.props;
+const { lang, title, description } = Astro.props;
 const base = import.meta.env.BASE_URL;
+const siteOrigin = Astro.site ? Astro.site.origin : '';
 const canonical = new URL(Astro.url.pathname, Astro.site);
+const langEntries = Object.entries(languages) as [Lang, (typeof languages)[Lang]][];
 ---
 <!doctype html>
-<html lang="en">
+<html lang={languages[lang].hreflang}>
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -17,9 +22,15 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
     <link rel="canonical" href={canonical} />
     <link rel="icon" type="image/svg+xml" href={`${base}/assets/impasto-logo.svg`} />
 
+    {langEntries.map(([code, info]) => (
+      <link rel="alternate" hreflang={info.hreflang} href={`${siteOrigin}${base}${localePath(code)}`} />
+    ))}
+    <link rel="alternate" hreflang="x-default" href={`${siteOrigin}${base}/`} />
+
     <meta property="og:type" content="website" />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
+    <meta property="og:locale" content={languages[lang].og} />
     <meta property="og:image" content={new URL(`${base}/assets/screenshot-object-layers.png`, Astro.site)} />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content={title} />

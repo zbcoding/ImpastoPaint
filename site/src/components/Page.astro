@@ -1,0 +1,180 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { languages, localePath, type Lang } from '../i18n/languages';
+import { strings } from '../i18n/strings';
+
+export interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const t = strings[lang];
+
+const base = import.meta.env.BASE_URL;
+const releases = 'https://github.com/zbcoding/ImpastoPaint/releases';
+const repo = 'https://github.com/zbcoding/ImpastoPaint';
+const pintaUrl = 'https://github.com/PintaProject/Pinta';
+
+const langEntries = Object.entries(languages) as [Lang, (typeof languages)[Lang]][];
+---
+<Layout lang={lang} title={`Impasto — ${t.heroH1}`} description={t.metaDescription}>
+  <header class="site-header">
+    <div class="wrap row">
+      <a href={`${base}${localePath(lang)}`} class="brand">
+        <img src={`${base}/assets/impasto-logo.svg`} width="32" height="32" alt="" />
+        <span>Impasto</span>
+      </a>
+      <nav class="row nav-row">
+        <a href="#screenshots">{t.navScreenshots}</a>
+        <a href="#about">{t.navAbout}</a>
+        <a href="#platforms">{t.navGet}</a>
+        <a href="#docs">{t.navDocs}</a>
+        <details class="lang-dd">
+          <summary>{languages[lang].name}</summary>
+          <ul>
+            {langEntries.map(([code, info]) => (
+              code === lang
+                ? <li class="current" aria-current="true">{info.name}</li>
+                : <li><a href={`${base}${localePath(code)}`}>{info.name}</a></li>
+            ))}
+          </ul>
+        </details>
+      </nav>
+    </div>
+  </header>
+
+  <section class="hero">
+    <div class="wrap">
+      <img src={`${base}/assets/impasto-logo.svg`} width="96" height="96" alt="Impasto application icon, a paint palette with a loaded brush" class="hero-logo" />
+      <h1>{t.heroH1}</h1>
+      <p class="lede">{t.heroLede}</p>
+      <div class="cta-row">
+        <a class="btn btn-primary" href={releases}>{t.ctaDownload}</a>
+        <a class="btn btn-ghost" href={repo}>{t.ctaSource}</a>
+      </div>
+      <p class="fine">{t.heroFine}</p>
+    </div>
+  </section>
+
+  <section id="screenshots" class="section">
+    <div class="wrap">
+      <h2>{t.screenshotsH2}</h2>
+      <div class="shots">
+        <figure>
+          <img src={`${base}/assets/screenshot-object-layers.png`} alt={t.shot1Alt} loading="lazy" />
+          <figcaption>{t.shot1Caption}</figcaption>
+        </figure>
+        <figure>
+          <img src={`${base}/assets/screenshot-text-tool.png`} alt={t.shot2Alt} loading="lazy" />
+          <figcaption>{t.shot2Caption}</figcaption>
+        </figure>
+        <figure>
+          <img src={`${base}/assets/screenshot-snap-to-grid.png`} alt={t.shot3Alt} loading="lazy" />
+          <figcaption>{t.shot3Caption}</figcaption>
+        </figure>
+      </div>
+    </div>
+  </section>
+
+  <section id="about" class="section alt">
+    <div class="wrap prose">
+      <h2>{t.aboutH2}</h2>
+      <p>{t.aboutFeaturesP}</p>
+      <p>{t.aboutOriginPre} <a href={pintaUrl}>{t.aboutPintaLink}</a>{t.aboutOriginMid} <strong>{t.aboutPdn}</strong>{t.aboutOriginPost}</p>
+    </div>
+  </section>
+
+  <section id="platforms" class="section">
+    <div class="wrap">
+      <h2>{t.platformsH2}</h2>
+      <div class="cards">
+        <div class="card">
+          <h3>{t.linuxH3}</h3>
+          <p>{t.linuxPPre} <code>{t.linuxCode}</code> {t.linuxPPost}</p>
+          <a class="btn btn-small" href={releases}>{t.linuxCta}</a>
+        </div>
+        <div class="card">
+          <h3>{t.windowsH3}</h3>
+          <p>{t.windowsP}</p>
+          <a class="btn btn-small" href={releases}>{t.windowsCta}</a>
+        </div>
+        <div class="card">
+          <h3>{t.macosH3}</h3>
+          <p>{t.macosP}</p>
+          <a class="btn btn-small" href={releases}>{t.macosCta}</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="docs" class="section alt">
+    <div class="wrap prose">
+      <h2>{t.docsH2}</h2>
+      <p>{t.docsIntro} <a href={`${repo}#readme`}>{t.docsReadme}</a> {t.docsMid} <a href={`${repo}/tree/main/docs`}>{t.docsFolder}</a> {t.docsOutro}</p>
+    </div>
+  </section>
+
+  <footer class="site-footer">
+    <div class="wrap row">
+      <p>{t.footerLicense}</p>
+      <nav>
+        <a href={repo}>{t.footerGithub}</a>
+        <a href={releases}>{t.footerReleases}</a>
+        <a href={`${repo}/issues`}>{t.footerIssues}</a>
+      </nav>
+    </div>
+  </footer>
+</Layout>
+
+<style>
+  .wrap { max-width: 1040px; margin: 0 auto; padding: 0 1.5rem; }
+  .row { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem; }
+
+  .site-header { border-bottom: 1px solid var(--border); padding: 1rem 0; position: sticky; top: 0; background: rgba(20, 21, 26, 0.9); backdrop-filter: blur(6px); z-index: 10; }
+  .brand { display: flex; align-items: center; gap: 0.5rem; font-weight: 700; font-size: 1.15rem; color: var(--fg); text-decoration: none; }
+  .nav-row { gap: 1.25rem; flex-wrap: wrap; justify-content: flex-end; flex: 1; }
+  .site-header nav a { color: var(--fg-muted); text-decoration: none; font-size: 0.95rem; }
+  .site-header nav a:hover { color: var(--fg); }
+
+  .lang-dd { position: relative; font-size: 0.95rem; }
+  .lang-dd summary { list-style: none; cursor: pointer; color: var(--fg-muted); border: 1px solid var(--border); border-radius: 6px; padding: 0.3rem 0.65rem; }
+  .lang-dd summary::-webkit-details-marker { display: none; }
+  .lang-dd summary::after { content: ' \25BE'; }
+  .lang-dd summary:hover { color: var(--fg); }
+  .lang-dd ul { position: absolute; right: 0; top: calc(100% + 0.4rem); margin: 0; padding: 0.4rem; list-style: none; background: var(--bg-raised); border: 1px solid var(--border); border-radius: 8px; min-width: 8.5rem; box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35); }
+  .lang-dd li { padding: 0; }
+  .lang-dd li.current { color: var(--fg); font-weight: 600; padding: 0.35rem 0.6rem; }
+  .lang-dd a { display: block; padding: 0.35rem 0.6rem; border-radius: 5px; white-space: nowrap; }
+  .lang-dd a:hover { background: var(--bg); color: var(--fg); }
+
+  .hero { text-align: center; padding: 4.5rem 0 3.5rem; }
+  .hero-logo { margin: 0 auto 1.5rem; }
+  .hero h1 { font-size: clamp(1.9rem, 4vw, 2.75rem); margin: 0 0 1rem; }
+  .lede { max-width: 640px; margin: 0 auto 2rem; color: var(--fg-muted); font-size: 1.1rem; }
+  .cta-row { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; }
+  .fine { margin-top: 1.25rem; color: var(--fg-muted); font-size: 0.9rem; }
+
+  .btn { display: inline-block; padding: 0.75rem 1.5rem; border-radius: 8px; text-decoration: none; font-weight: 600; border: 1px solid transparent; }
+  .btn-primary { background: var(--accent); color: #1a1305; }
+  .btn-ghost { border-color: var(--border); color: var(--fg); }
+  .btn-small { padding: 0.45rem 1rem; font-size: 0.9rem; border: 1px solid var(--border); color: var(--fg); border-radius: 6px; }
+
+  .section { padding: 3.5rem 0; }
+  .section.alt { background: var(--bg-raised); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+  .section h2 { font-size: 1.6rem; margin-bottom: 1.5rem; }
+  .prose { max-width: 720px; }
+  .prose p { color: var(--fg-muted); }
+
+  .shots { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1.5rem; }
+  .shots figure { margin: 0; border: 1px solid var(--border); border-radius: 10px; overflow: hidden; background: var(--bg-raised); }
+  .shots img { width: 100%; }
+  .shots figcaption { padding: 0.75rem 1rem; color: var(--fg-muted); font-size: 0.9rem; }
+
+  .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1.25rem; }
+  .card { border: 1px solid var(--border); border-radius: 10px; padding: 1.5rem; background: var(--bg-raised); }
+  .card h3 { margin-top: 0; }
+  .card p { color: var(--fg-muted); min-height: 4.5em; }
+
+  .site-footer { padding: 2rem 0 3rem; color: var(--fg-muted); font-size: 0.9rem; }
+  .site-footer nav { display: flex; gap: 1.25rem; }
+  .site-footer a { color: var(--fg-muted); }
+</style>

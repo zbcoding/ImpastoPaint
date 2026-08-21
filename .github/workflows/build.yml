@@ -46,7 +46,7 @@ jobs:
     - name: Install Apt Dependencies
       run: |
         sudo apt update
-        sudo apt install autotools-dev autoconf-archive gettext intltool libadwaita-1-dev
+        sudo apt install autotools-dev autoconf-archive gettext intltool libadwaita-1-dev xvfb
     - name: Generate Tarball
       run: |
         ./autogen.sh
@@ -63,7 +63,10 @@ jobs:
         make build
     - name: Test
       working-directory: ${{env.BUILD_DIR}}
-      run: make test
+      # GTK4 opens the default display eagerly during Application/Window setup - even though
+      # the test harness never realizes a window, without a display at all it aborts the whole
+      # test host instead of degrading gracefully.
+      run: xvfb-run --auto-servernum make test
     - name: Verify code formatting
       if: matrix.dotnet_version == '10.0.x'
       run: dotnet format --no-restore --verify-no-changes

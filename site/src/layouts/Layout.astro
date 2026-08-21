@@ -1,0 +1,77 @@
+---
+export interface Props {
+  title: string;
+  description: string;
+}
+const { title, description } = Astro.props;
+const base = import.meta.env.BASE_URL;
+const canonical = new URL(Astro.url.pathname, Astro.site);
+---
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    <link rel="icon" type="image/svg+xml" href={`${base}/assets/impasto-logo.svg`} />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:image" content={new URL(`${base}/assets/screenshot-object-layers.png`, Astro.site)} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+
+    <script type="application/ld+json" set:html={JSON.stringify({
+      '@context': 'https://schema.org',
+      '@type': 'SoftwareApplication',
+      name: 'Impasto',
+      applicationCategory: 'GraphicsApplication',
+      operatingSystem: 'Linux, Windows, macOS',
+      description,
+      offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
+      downloadUrl: 'https://github.com/zbcoding/ImpastoPaint/releases',
+    })} />
+  </head>
+  <body>
+    <slot />
+  </body>
+</html>
+
+<style is:global>
+  :root {
+    color-scheme: dark;
+    --bg: #14151a;
+    --bg-raised: #1c1e26;
+    --fg: #eef0f5;
+    --fg-muted: #a6acbf;
+    --accent: #e2843f;
+    --accent-2: #7fb3ff;
+    --border: #2b2e3a;
+    font-family: -apple-system, "Segoe UI", Roboto, Ubuntu, sans-serif;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--fg);
+    line-height: 1.55;
+  }
+
+  a { color: var(--accent-2); }
+
+  img { max-width: 100%; display: block; }
+
+  code {
+    background: var(--bg-raised);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 0.1em 0.4em;
+    font-size: 0.9em;
+  }
+</style>

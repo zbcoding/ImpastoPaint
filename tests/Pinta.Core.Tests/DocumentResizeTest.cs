@@ -101,6 +101,27 @@ internal sealed class DocumentResizeTest : DocumentHarness
 		});
 	}
 
+	// Paste-and-expand drives ResizeCanvas with its own compound history item (so the paste and the
+	// resize undo together), which used to skip the bake entirely — the shape kept its old vector
+	// coordinates while the raster shifted under it, so the object rendered off from its own layer's
+	// pixels instead of at the anchored position the resize gave everything else.
+	[Test]
+	public void ResizingTheCanvasAsPartOfACompoundActionStillBakesObjects ()
+	{
+		PaintSceneWithLiveShape (new RectangleI (0, 0, 16, 16));
+
+		CompoundHistoryItem pasteAction = new (Resources.Icons.ImageResizeCanvas, "Paste Into New Layer");
+		Document.ResizeCanvas (new Size (48, 48), Anchor.NW, pasteAction);
+		Document.History.PushNewItem (pasteAction);
+
+		Assert.Multiple (() => {
+			Assert.That (Document.ImageSize, Is.EqualTo (new Size (48, 48)));
+			Assert.That (Only.Objects, Is.Empty, "the shape must have been baked, same as a standalone canvas resize");
+			Assert.That (Shown (Only, 4, 4).B, Is.EqualTo (255), "anchored north-west, the shape's ink does not move");
+			Assert.That (Shown (Only, 40, 40).A, Is.EqualTo (0), "the canvas grew into empty pixels");
+		});
+	}
+
 	// A modifier node's clip is a frozen selection in canvas coordinates. Nothing rewrites it, so a
 	// node that outlived a resize would go on masking the region those coordinates used to name. The
 	// bake is what makes that impossible, and this is the case that says so in pixels.

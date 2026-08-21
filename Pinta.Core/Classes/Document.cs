@@ -344,13 +344,13 @@ public sealed class Document
 		tools.Commit ();
 
 		// Bake live objects to pixels first so the resize acts on plain raster — vector shapes/text keep
-		// their old coords and would snap back otherwise. The bakes and the resize are bundled into one
-		// compound history item so a single undo reverts everything. Skipped when part of a larger
-		// compound action (e.g. paste enlarging the canvas), which owns its own history.
-		CompoundHistoryItem? bakeGroup = compoundAction is null
-			? new CompoundHistoryItem (Resources.Icons.ImageResizeCanvas, Translations.GetString ("Resize Canvas"))
-			: null;
-		if (bakeGroup is not null && !ObjectRasterizer.RasterizeAllLayersForResize (this, workspace, PintaCore.Chrome, bakeGroup))
+		// their old coords and would snap back otherwise (and, unbaked, land pointing at the wrong pixels
+		// once the anchor shifts the raster underneath them). The bakes and the resize are bundled into
+		// one compound history item so a single undo reverts everything — the caller's compound action
+		// when this is part of a larger op (e.g. paste enlarging the canvas), otherwise one made here.
+		CompoundHistoryItem bakeGroup = compoundAction
+			?? new CompoundHistoryItem (Resources.Icons.ImageResizeCanvas, Translations.GetString ("Resize Canvas"));
+		if (!ObjectRasterizer.RasterizeAllLayersForResize (this, workspace, PintaCore.Chrome, bakeGroup))
 			return;
 
 		ResizeHistoryItem hist = new (workspace, ImageSize) {
@@ -372,7 +372,7 @@ public sealed class Document
 		if (compoundAction is not null)
 			compoundAction.Push (hist);
 		else {
-			bakeGroup!.Push (hist);
+			bakeGroup.Push (hist);
 			Workspace.History.PushNewItem (bakeGroup);
 		}
 

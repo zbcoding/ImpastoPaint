@@ -126,8 +126,10 @@ public static class ShapeEngineCollection
 				rebuilt.Add (o);
 			}
 		}
-		for (; shapeIdx < newShapes.Count; ++shapeIdx)
-			rebuilt.Add (newShapes[shapeIdx]);
+
+		// Shapes beyond the old count are brand new (freshly drawn), not reordered survivors, so they
+		// insert at the bottom like any other new addition -- below everything, including modifiers.
+		rebuilt.InsertRange (0, newShapes.Skip (shapeIdx));
 
 		layer.Objects.Clear ();
 		layer.Objects.AddRange (rebuilt);

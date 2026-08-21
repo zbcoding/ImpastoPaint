@@ -54,4 +54,36 @@ internal sealed class LayerObjectInsertionOrderTest : DocumentHarness
 		Assert.That (shown.G, Is.EqualTo (0));
 		Assert.That (shown.B, Is.EqualTo (255));
 	}
+
+	/// <summary>
+	/// The path a shape tool actually uses to persist a freshly drawn shape is
+	/// <c>ShapeEngineCollection.Store</c> (in Pinta.Tools, not reachable from this project), not
+	/// <see cref="UserLayer.AddShape"/> - that only covers a caller adding one shape directly. Store
+	/// shares its "new entries beyond the old count" rebuild with <see cref="UserLayer.ReplaceShapes"/>
+	/// here in Core, which is what this pins: drawing two shapes (an old count of 0, then 2) after an
+	/// effect must not leave them appended above it.
+	/// </summary>
+	[Test]
+	public void ShapesBeyondTheOldCountInsertBelowAnExistingEffectOnReplace ()
+	{
+		UserLayer layer = Layer (0);
+		Fill (layer.Surface, Red);
+
+		EffectModifierNode invert = Invert ();
+		AddObject (layer, invert, "Invert");
+
+		// What ShapeEngineCollection.Store hands ReplaceShapes after two ellipses are drawn: the old
+		// shape list (empty) plus the newly drawn ones, in draw order.
+		ShapeObject first = Box (new Color (0, 1, 0, 1), new RectangleI (0, 0, CanvasSize - 1, CanvasSize - 1));
+		ShapeObject second = Box (new Color (0, 1, 0, 1), new RectangleI (0, 0, CanvasSize - 1, CanvasSize - 1));
+		layer.ReplaceShapes ([first, second]);
+
+		Assert.That (layer.Objects, Is.EqualTo (new ILayerObject[] { first, second, invert }),
+			"newly drawn shapes should land below the effect that was already there, in draw order");
+
+		Refresh (layer);
+		ColorBgra shown = Shown (layer, 4, 4);
+		Assert.That ((shown.R, shown.G, shown.B), Is.EqualTo (((byte) 255, (byte) 0, (byte) 255)),
+			"the effect above them should still be reaching what they drew");
+	}
 }

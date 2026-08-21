@@ -119,7 +119,8 @@ public sealed class UserLayer : Layer
 	/// Replaces every shape object on the layer with <paramref name="shapes"/>, in place: each shape
 	/// keeps its position relative to the text objects it was interleaved with (cross-kind z-order
 	/// and cross-kind reorder survive a shape only persist/undo). New shapes beyond the old count are
-	/// appended on top.
+	/// brand new (freshly drawn), not reordered survivors, so they insert at the bottom like any other
+	/// new addition -- below everything, including modifiers.
 	/// </summary>
 	public void ReplaceShapes (IReadOnlyList<ShapeObject> shapes)
 	{
@@ -133,14 +134,14 @@ public sealed class UserLayer : Layer
 				rebuilt.Add (o);
 			}
 		}
-		for (; shapeIdx < shapes.Count; ++shapeIdx)
-			rebuilt.Add (shapes[shapeIdx]);
+		rebuilt.InsertRange (0, shapes.Skip (shapeIdx));
 
 		Objects.Clear ();
 		Objects.AddRange (rebuilt);
 	}
 
-	/// <summary>Replaces every text object on the layer with <paramref name="texts"/>, in place.</summary>
+	/// <summary>Replaces every text object on the layer with <paramref name="texts"/>, in place. New
+	/// text beyond the old count inserts at the bottom, same as <see cref="ReplaceShapes"/>.</summary>
 	public void ReplaceText (IReadOnlyList<TextObject> texts)
 	{
 		List<ILayerObject> rebuilt = [];
@@ -153,8 +154,7 @@ public sealed class UserLayer : Layer
 				rebuilt.Add (o);
 			}
 		}
-		for (; textIdx < texts.Count; ++textIdx)
-			rebuilt.Add (texts[textIdx]);
+		rebuilt.InsertRange (0, texts.Skip (textIdx));
 
 		Objects.Clear ();
 		Objects.AddRange (rebuilt);

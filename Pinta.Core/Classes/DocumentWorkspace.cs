@@ -286,7 +286,11 @@ public sealed class DocumentWorkspace
 			: document.ImageSize.Height / rect.Height;
 
 		actions.View.ZoomComboBox.ComboBox.GetEntry ().SetText (ViewActions.ToPercent (ratio));
-		GLib.MainContext.Default ().Iteration (false); //Force update of scrollbar upper before recenter
+		// Force update of scrollbar upper before recenter. An unrealized combo box (headless test
+		// harness) has no display to pump, and on some platforms pumping the loop off the display's
+		// own thread crashes outright.
+		if (actions.View.ZoomComboBox.ComboBox.GetRealized ())
+			GLib.MainContext.Default ().Iteration (false);
 
 		PointD newPoint = new (
 			X: rect.X + rect.Width / 2,

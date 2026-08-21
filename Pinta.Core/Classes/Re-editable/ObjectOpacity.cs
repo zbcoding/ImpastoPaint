@@ -174,8 +174,11 @@ public static class ObjectOpacity
 		if (showBusy) {
 			chrome.MainWindowBusy = true;
 			// The render below blocks the main loop, so without pumping it once the new cursor would
-			// only be painted after the work it is meant to cover had already finished.
-			GLib.MainContext.Default ().Iteration (false);
+			// only be painted after the work it is meant to cover had already finished. An unrealized
+			// window (headless test harness) has no cursor to paint and no display to pump, and on
+			// some platforms pumping the loop off the display's own thread crashes outright.
+			if (chrome.MainWindow.GetRealized ())
+				GLib.MainContext.Default ().Iteration (false);
 		}
 
 		try {

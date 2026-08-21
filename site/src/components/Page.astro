@@ -9,7 +9,7 @@ export interface Props {
 const { lang } = Astro.props;
 const t = strings[lang];
 
-const base = import.meta.env.BASE_URL;
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 const releases = 'https://github.com/zbcoding/ImpastoPaint/releases';
 const repo = 'https://github.com/zbcoding/ImpastoPaint';
 const pintaUrl = 'https://github.com/PintaProject/Pinta';

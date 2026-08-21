@@ -1,10 +1,9 @@
 // @ts-check
 import { defineConfig } from 'astro/config';
 
-// Project page on GitHub Pages: https://zbcoding.github.io/ImpastoPaint/
+// Custom domain via GitHub Pages: https://impastopaint.com/
 export default defineConfig({
-  site: 'https://zbcoding.github.io',
-  base: '/ImpastoPaint',
+  site: 'https://impastopaint.com',
   // 'ignore' (Astro's default) accepts a request with or without the
   // trailing slash instead of 404ing/redirecting on the one it doesn't
   // expect — matters because GitHub Pages serves directory-style output

@@ -11,7 +11,9 @@ export type Lang = keyof typeof languages;
 
 export const defaultLang: Lang = 'en';
 
-/** Path (relative to the site base) for the given language's home page. */
+/** Path (relative to the site base) for the given language's home page.
+ *  No trailing slash on non-default locales — astro.config.mjs sets
+ *  trailingSlash: 'never', so /es/ (with a slash) 404s. */
 export function localePath(lang: Lang): string {
-  return lang === defaultLang ? '/' : `/${lang}/`;
+  return lang === defaultLang ? '/' : `/${lang}`;
 }

@@ -46,7 +46,7 @@ jobs:
     - name: Install Apt Dependencies
       run: |
         sudo apt update
-        sudo apt install autotools-dev autoconf-archive gettext intltool libadwaita-1-dev xvfb
+        sudo apt install autotools-dev autoconf-archive gettext intltool libadwaita-1-dev xvfb fonts-liberation
     - name: Generate Tarball
       run: |
         ./autogen.sh

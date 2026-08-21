@@ -26,7 +26,7 @@ internal sealed class TextLayoutTest
 		Pango.FontMap fontMap = PangoCairo.FontMapHelper.GetDefault ();
 		using Pango.Context context = fontMap.CreateContext ();
 		using Pango.Layout layout = Pango.Layout.New (context);
-		layout.SetFontDescription (Pango.FontDescription.FromString ("Sans 12"));
+		layout.SetFontDescription (Pango.FontDescription.FromString ("Liberation Sans 12"));
 		layout.SetWidth (PangoExtensions.UnitsFromPixels (wrapWidth));
 		layout.SetText (text, -1);
 

@@ -750,6 +750,46 @@ public abstract class BaseEditEngine
 		DrawActiveShape (true, false, true, false, false); // Draw the current state.
 	}
 
+	// One command per configurable binding. Two bindings, AddPointExact and CreateNewAtPoint, share
+	// the same action (add an exact point) but stay distinct commands: each is independently
+	// rebindable, and collapsing them would lose that.
+	// internal (not private): the binding table is exercised directly by a table test - see
+	// tests/Pinta.Tools.Tests/KeyDispatchTest.cs.
+	internal enum ShapeKeyCommand
+	{
+		DeletePoint,
+		Finalize,
+		AddPointExact,
+		AddPoint,
+		SelectPrevPoint,
+		SelectNextPoint,
+		CreateNewAtPoint,
+		MovePointLeft,
+		MovePointRight,
+		MovePointUp,
+		MovePointDown,
+		BrushDecreaseWidth,
+		BrushIncreaseWidth,
+	}
+
+	// Order matters: if two bindings were ever configured to the same gesture, the first match here
+	// wins, exactly as the previous if-chain did.
+	internal static readonly (ToolBindingDescriptor Binding, ShapeKeyCommand Command)[] shape_key_bindings = [
+		(KeyboardShortcutManager.ShapeDeletePoint, ShapeKeyCommand.DeletePoint),
+		(KeyboardShortcutManager.ShapeFinalize, ShapeKeyCommand.Finalize),
+		(KeyboardShortcutManager.ShapeAddPointExact, ShapeKeyCommand.AddPointExact),
+		(KeyboardShortcutManager.ShapeAddPoint, ShapeKeyCommand.AddPoint),
+		(KeyboardShortcutManager.ShapeSelectPrevPoint, ShapeKeyCommand.SelectPrevPoint),
+		(KeyboardShortcutManager.ShapeSelectNextPoint, ShapeKeyCommand.SelectNextPoint),
+		(KeyboardShortcutManager.ShapeCreateNewAtPoint, ShapeKeyCommand.CreateNewAtPoint),
+		(KeyboardShortcutManager.ShapeMovePointLeft, ShapeKeyCommand.MovePointLeft),
+		(KeyboardShortcutManager.ShapeMovePointRight, ShapeKeyCommand.MovePointRight),
+		(KeyboardShortcutManager.ShapeMovePointUp, ShapeKeyCommand.MovePointUp),
+		(KeyboardShortcutManager.ShapeMovePointDown, ShapeKeyCommand.MovePointDown),
+		(KeyboardShortcutManager.BrushDecreaseWidth, ShapeKeyCommand.BrushDecreaseWidth),
+		(KeyboardShortcutManager.BrushIncreaseWidth, ShapeKeyCommand.BrushIncreaseWidth),
+	];
+
 	public virtual bool HandleKeyDown (Document document, ToolKeyEventArgs e)
 	{
 		bool IsBinding (ToolBindingDescriptor binding)
@@ -757,119 +797,67 @@ public abstract class BaseEditEngine
 		bool IsDefault (ToolBindingDescriptor binding)
 			=> PintaCore.Shortcuts.GetToolBinding (binding) == binding.DefaultGesture;
 
-		if (IsBinding (KeyboardShortcutManager.ShapeDeletePoint)) {
-			HandleDelete ();
-			return true;
+		// Whatever the user's configured gesture for a command currently is - default or customized.
+		foreach ((ToolBindingDescriptor binding, ShapeKeyCommand command) in shape_key_bindings) {
+			if (IsBinding (binding)) {
+				ExecuteShapeKeyCommand (command, e);
+				return true;
+			}
 		}
 
-		if (IsBinding (KeyboardShortcutManager.ShapeFinalize)) {
-			CommitShapeEditing ();
-			return true;
-		}
-
-		if (IsBinding (KeyboardShortcutManager.ShapeAddPointExact)) {
-			HandleSpace (e, exact: true);
-			return true;
-		}
-
-		if (IsBinding (KeyboardShortcutManager.ShapeAddPoint)) {
-			HandleSpace (e);
-			return true;
-		}
-
-		if (IsBinding (KeyboardShortcutManager.ShapeSelectPrevPoint)) {
-			HandleLeft (e, selectPoint: true);
-			return true;
-		}
-
-		if (IsBinding (KeyboardShortcutManager.ShapeSelectNextPoint)) {
-			HandleRight (e, selectPoint: true);
-			return true;
-		}
-
-		if (IsBinding (KeyboardShortcutManager.ShapeCreateNewAtPoint)) {
-			HandleSpace (e, exact: true);
-			return true;
-		}
-
-		if (IsBinding (KeyboardShortcutManager.ShapeMovePointLeft)) {
-			HandleLeft (e);
-			return true;
-		}
-
-		if (IsBinding (KeyboardShortcutManager.ShapeMovePointRight)) {
-			HandleRight (e);
-			return true;
-		}
-
-		if (IsBinding (KeyboardShortcutManager.ShapeMovePointUp)) {
-			HandleUp ();
-			return true;
-		}
-
-		if (IsBinding (KeyboardShortcutManager.ShapeMovePointDown)) {
-			HandleDown ();
-			return true;
-		}
-
-		if (IsBinding (KeyboardShortcutManager.BrushDecreaseWidth)) {
-			BrushWidth--;
-			return true;
-		}
-
-		if (IsBinding (KeyboardShortcutManager.BrushIncreaseWidth)) {
-			BrushWidth++;
-			return true;
-		}
-
+		// Fallback: the small set of hardcoded keys a shape tool responds to even with no binding
+		// configured for them - but only while that command's binding is still at its default, so a
+		// command moved elsewhere no longer fires from its old physical key (the loop above already
+		// handles wherever it moved to). Some keys (KP_Enter) alias a binding's default gesture rather
+		// than equal it, which is exactly what IsBinding above cannot express.
 		Gdk.Key keyPressed = e.Key;
 		switch (keyPressed.Value) {
 			case Gdk.Constants.KEY_Delete:
 				if (!IsDefault (KeyboardShortcutManager.ShapeDeletePoint))
 					return false;
-				HandleDelete ();
+				ExecuteShapeKeyCommand (ShapeKeyCommand.DeletePoint, e);
 				return true;
 			case Gdk.Constants.KEY_Return:
 			case Gdk.Constants.KEY_KP_Enter:
 				if (!IsDefault (KeyboardShortcutManager.ShapeFinalize))
 					return false;
-				CommitShapeEditing ();
+				ExecuteShapeKeyCommand (ShapeKeyCommand.Finalize, e);
 				return true;
 			case Gdk.Constants.KEY_space:
 				if (!IsDefault (KeyboardShortcutManager.ShapeAddPoint) ||
 					(e.IsControlPressed && !IsDefault (KeyboardShortcutManager.ShapeAddPointExact)))
 					return false;
-				HandleSpace (e);
+				ExecuteShapeKeyCommand (ShapeKeyCommand.AddPoint, e);
 				return true;
 			case Gdk.Constants.KEY_Up:
 				if (!IsDefault (KeyboardShortcutManager.ShapeMovePointUp))
 					return false;
-				HandleUp ();
+				ExecuteShapeKeyCommand (ShapeKeyCommand.MovePointUp, e);
 				return true;
 			case Gdk.Constants.KEY_Down:
 				if (!IsDefault (KeyboardShortcutManager.ShapeMovePointDown))
 					return false;
-				HandleDown ();
+				ExecuteShapeKeyCommand (ShapeKeyCommand.MovePointDown, e);
 				return true;
 			case Gdk.Constants.KEY_Left:
 				if (!IsDefault (KeyboardShortcutManager.ShapeMovePointLeft))
 					return false;
-				HandleLeft (e);
+				ExecuteShapeKeyCommand (ShapeKeyCommand.MovePointLeft, e);
 				return true;
 			case Gdk.Constants.KEY_Right:
 				if (!IsDefault (KeyboardShortcutManager.ShapeMovePointRight))
 					return false;
-				HandleRight (e);
+				ExecuteShapeKeyCommand (ShapeKeyCommand.MovePointRight, e);
 				return true;
 			case Gdk.Constants.KEY_bracketleft:
 				if (!IsDefault (KeyboardShortcutManager.BrushDecreaseWidth))
 					return false;
-				BrushWidth--;
+				ExecuteShapeKeyCommand (ShapeKeyCommand.BrushDecreaseWidth, e);
 				return true;
 			case Gdk.Constants.KEY_bracketright:
 				if (!IsDefault (KeyboardShortcutManager.BrushIncreaseWidth))
 					return false;
-				BrushWidth++;
+				ExecuteShapeKeyCommand (ShapeKeyCommand.BrushIncreaseWidth, e);
 				return true;
 			default:
 				if (keyPressed.IsControlKey ()) {
@@ -879,6 +867,26 @@ public abstract class BaseEditEngine
 				} else {
 					return false;
 				}
+		}
+	}
+
+	private void ExecuteShapeKeyCommand (ShapeKeyCommand command, ToolKeyEventArgs e)
+	{
+		switch (command) {
+			case ShapeKeyCommand.DeletePoint: HandleDelete (); break;
+			case ShapeKeyCommand.Finalize: CommitShapeEditing (); break;
+			case ShapeKeyCommand.AddPointExact: HandleSpace (e, exact: true); break;
+			case ShapeKeyCommand.AddPoint: HandleSpace (e); break;
+			case ShapeKeyCommand.SelectPrevPoint: HandleLeft (e, selectPoint: true); break;
+			case ShapeKeyCommand.SelectNextPoint: HandleRight (e, selectPoint: true); break;
+			case ShapeKeyCommand.CreateNewAtPoint: HandleSpace (e, exact: true); break;
+			case ShapeKeyCommand.MovePointLeft: HandleLeft (e); break;
+			case ShapeKeyCommand.MovePointRight: HandleRight (e); break;
+			case ShapeKeyCommand.MovePointUp: HandleUp (); break;
+			case ShapeKeyCommand.MovePointDown: HandleDown (); break;
+			case ShapeKeyCommand.BrushDecreaseWidth: BrushWidth--; break;
+			case ShapeKeyCommand.BrushIncreaseWidth: BrushWidth++; break;
+			default: throw new ArgumentOutOfRangeException (nameof (command));
 		}
 	}
 

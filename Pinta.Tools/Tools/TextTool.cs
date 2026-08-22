@@ -1498,14 +1498,11 @@ public sealed class TextTool : BaseTool
 		UpdateMouseCursor (document);
 
 		if (!is_editing) {
-			if (IsBinding (KeyboardShortcutManager.TextDecreaseFontSize, e)) {
-				font_size.Adjustment!.Value--;
-				return true;
-			}
-
-			if (IsBinding (KeyboardShortcutManager.TextIncreaseFontSize, e)) {
-				font_size.Adjustment!.Value++;
-				return true;
+			foreach ((ToolBindingDescriptor binding, FontSizeCommand command) in font_size_bindings) {
+				if (IsBinding (binding, e)) {
+					ExecuteFontSizeCommand (command);
+					return true;
+				}
 			}
 		}
 
@@ -1654,12 +1651,12 @@ public sealed class TextTool : BaseTool
 				case Gdk.Constants.KEY_bracketleft:
 					if (!IsDefaultBinding (KeyboardShortcutManager.TextDecreaseFontSize))
 						return false;
-					font_size.Adjustment!.Value--;
+					ExecuteFontSizeCommand (FontSizeCommand.Decrease);
 					return true;
 				case Gdk.Constants.KEY_bracketright:
 					if (!IsDefaultBinding (KeyboardShortcutManager.TextIncreaseFontSize))
 						return false;
-					font_size.Adjustment!.Value++;
+					ExecuteFontSizeCommand (FontSizeCommand.Increase);
 					return true;
 			}
 		}
@@ -1680,96 +1677,141 @@ public sealed class TextTool : BaseTool
 	private static bool IsDefaultBinding (ToolBindingDescriptor binding)
 		=> PintaCore.Shortcuts.GetToolBinding (binding) == binding.DefaultGesture;
 
+	internal enum FontSizeCommand { Decrease, Increase }
+
+	internal static readonly (ToolBindingDescriptor Binding, FontSizeCommand Command)[] font_size_bindings = [
+		(KeyboardShortcutManager.TextDecreaseFontSize, FontSizeCommand.Decrease),
+		(KeyboardShortcutManager.TextIncreaseFontSize, FontSizeCommand.Increase),
+	];
+
+	private void ExecuteFontSizeCommand (FontSizeCommand command)
+	{
+		switch (command) {
+			case FontSizeCommand.Decrease: font_size.Adjustment!.Value--; break;
+			case FontSizeCommand.Increase: font_size.Adjustment!.Value++; break;
+			default: throw new ArgumentOutOfRangeException (nameof (command));
+		}
+	}
+
+	// One value per binding TryHandleConfiguredBinding recognizes. Its own bindings act uniformly
+	// (run the action, return true, and let OnKeyDown's trailing "if (keyHandled) RedrawText" run) -
+	// unlike the physical-key fallback switch below, whose per-key cases read live Ctrl/Shift state
+	// and (for Escape and Ctrl+Z specifically) return straight out of OnKeyDown, skipping that
+	// trailing redraw. Those are real behavioral differences, not copy-paste - the two dispatch
+	// mechanisms are deliberately left separate rather than forced through one shared switch, since
+	// several of the fallback's cases cannot reproduce the binding path's behavior with the same
+	// code (see docs-private/refactor.md T6 flags).
+	internal enum TextKeyCommand
+	{
+		StopEditing,
+		NewLine,
+		Backspace,
+		Delete,
+		MoveLeft,
+		MoveRight,
+		MoveUp,
+		MoveDown,
+		MoveHome,
+		MoveEnd,
+		Undo,
+		Italic,
+		Bold,
+		Underline,
+		SelectAll,
+		Paste,
+		Copy,
+	}
+
+	// Order matters: if two bindings were ever configured to the same gesture, the first match here
+	// wins, exactly as the previous if-chain did.
+	internal static readonly (ToolBindingDescriptor Binding, TextKeyCommand Command)[] text_key_bindings = [
+		(KeyboardShortcutManager.TextStopEditing, TextKeyCommand.StopEditing),
+		(KeyboardShortcutManager.TextNewLine, TextKeyCommand.NewLine),
+		(KeyboardShortcutManager.TextBackspace, TextKeyCommand.Backspace),
+		(KeyboardShortcutManager.TextDelete, TextKeyCommand.Delete),
+		(KeyboardShortcutManager.TextMoveLeft, TextKeyCommand.MoveLeft),
+		(KeyboardShortcutManager.TextMoveRight, TextKeyCommand.MoveRight),
+		(KeyboardShortcutManager.TextMoveUp, TextKeyCommand.MoveUp),
+		(KeyboardShortcutManager.TextMoveDown, TextKeyCommand.MoveDown),
+		(KeyboardShortcutManager.TextMoveHome, TextKeyCommand.MoveHome),
+		(KeyboardShortcutManager.TextMoveEnd, TextKeyCommand.MoveEnd),
+		(KeyboardShortcutManager.TextUndo, TextKeyCommand.Undo),
+		(KeyboardShortcutManager.TextItalic, TextKeyCommand.Italic),
+		(KeyboardShortcutManager.TextBold, TextKeyCommand.Bold),
+		(KeyboardShortcutManager.TextUnderline, TextKeyCommand.Underline),
+		(KeyboardShortcutManager.TextSelectAll, TextKeyCommand.SelectAll),
+		(KeyboardShortcutManager.TextPaste, TextKeyCommand.Paste),
+		(KeyboardShortcutManager.TextCopy, TextKeyCommand.Copy),
+	];
+
 	private bool TryHandleConfiguredBinding (Document document, ToolKeyEventArgs e)
 	{
-		if (IsBinding (KeyboardShortcutManager.TextStopEditing, e)) {
-			CommitCurrentText ();
-			return true;
-		}
+		foreach ((ToolBindingDescriptor binding, TextKeyCommand command) in text_key_bindings) {
+			if (!IsBinding (binding, e))
+				continue;
 
-		if (IsBinding (KeyboardShortcutManager.TextNewLine, e)) {
-			CurrentTextEngine.PerformEnter ();
-			return true;
-		}
+			switch (command) {
+				case TextKeyCommand.StopEditing:
+					CommitCurrentText ();
+					break;
+				case TextKeyCommand.NewLine:
+					CurrentTextEngine.PerformEnter ();
+					break;
+				case TextKeyCommand.Backspace:
+					CurrentTextEngine.PerformBackspace (false);
+					break;
+				case TextKeyCommand.Delete:
+					CurrentTextEngine.PerformDelete ();
+					break;
+				case TextKeyCommand.MoveLeft:
+					CurrentTextEngine.PerformLeft (false, false);
+					break;
+				case TextKeyCommand.MoveRight:
+					CurrentTextEngine.PerformRight (false, false);
+					break;
+				case TextKeyCommand.MoveUp:
+					CurrentTextEngine.PerformUp (false);
+					break;
+				case TextKeyCommand.MoveDown:
+					CurrentTextEngine.PerformDown (false);
+					break;
+				case TextKeyCommand.MoveHome:
+					CurrentTextEngine.PerformHome (false, false);
+					break;
+				case TextKeyCommand.MoveEnd:
+					CurrentTextEngine.PerformEnd (false, false);
+					break;
+				case TextKeyCommand.Undo:
+					OnHandleUndo (document);
+					if (workspace.ActiveDocument.History.CanUndo)
+						workspace.ActiveDocument.History.Undo ();
+					break;
+				case TextKeyCommand.Italic:
+					italic_btn.Toggle ();
+					UpdateFont ();
+					break;
+				case TextKeyCommand.Bold:
+					weight_btn.SelectedIndex = weight_btn.SelectedIndex > 7 ? 5 : 8;
+					UpdateFont ();
+					break;
+				case TextKeyCommand.Underline:
+					underscore_btn.Toggle ();
+					UpdateFont ();
+					break;
+				case TextKeyCommand.SelectAll:
+					CurrentTextEngine.PerformHome (true, false);
+					CurrentTextEngine.PerformEnd (true, true);
+					break;
+				case TextKeyCommand.Paste:
+					PerformPasteAndRedraw ();
+					break;
+				case TextKeyCommand.Copy:
+					CurrentTextEngine.PerformCopy (GdkExtensions.GetDefaultClipboard ());
+					break;
+				default:
+					throw new ArgumentOutOfRangeException (nameof (command));
+			}
 
-		if (IsBinding (KeyboardShortcutManager.TextBackspace, e)) {
-			CurrentTextEngine.PerformBackspace (false);
-			return true;
-		}
-
-		if (IsBinding (KeyboardShortcutManager.TextDelete, e)) {
-			CurrentTextEngine.PerformDelete ();
-			return true;
-		}
-
-		if (IsBinding (KeyboardShortcutManager.TextMoveLeft, e)) {
-			CurrentTextEngine.PerformLeft (false, false);
-			return true;
-		}
-
-		if (IsBinding (KeyboardShortcutManager.TextMoveRight, e)) {
-			CurrentTextEngine.PerformRight (false, false);
-			return true;
-		}
-
-		if (IsBinding (KeyboardShortcutManager.TextMoveUp, e)) {
-			CurrentTextEngine.PerformUp (false);
-			return true;
-		}
-
-		if (IsBinding (KeyboardShortcutManager.TextMoveDown, e)) {
-			CurrentTextEngine.PerformDown (false);
-			return true;
-		}
-
-		if (IsBinding (KeyboardShortcutManager.TextMoveHome, e)) {
-			CurrentTextEngine.PerformHome (false, false);
-			return true;
-		}
-
-		if (IsBinding (KeyboardShortcutManager.TextMoveEnd, e)) {
-			CurrentTextEngine.PerformEnd (false, false);
-			return true;
-		}
-
-		if (IsBinding (KeyboardShortcutManager.TextUndo, e)) {
-			OnHandleUndo (document);
-			if (workspace.ActiveDocument.History.CanUndo)
-				workspace.ActiveDocument.History.Undo ();
-			return true;
-		}
-
-		if (IsBinding (KeyboardShortcutManager.TextItalic, e)) {
-			italic_btn.Toggle ();
-			UpdateFont ();
-			return true;
-		}
-
-		if (IsBinding (KeyboardShortcutManager.TextBold, e)) {
-			weight_btn.SelectedIndex = weight_btn.SelectedIndex > 7 ? 5 : 8;
-			UpdateFont ();
-			return true;
-		}
-
-		if (IsBinding (KeyboardShortcutManager.TextUnderline, e)) {
-			underscore_btn.Toggle ();
-			UpdateFont ();
-			return true;
-		}
-
-		if (IsBinding (KeyboardShortcutManager.TextSelectAll, e)) {
-			CurrentTextEngine.PerformHome (true, false);
-			CurrentTextEngine.PerformEnd (true, true);
-			return true;
-		}
-
-		if (IsBinding (KeyboardShortcutManager.TextPaste, e)) {
-			PerformPasteAndRedraw ();
-			return true;
-		}
-
-		if (IsBinding (KeyboardShortcutManager.TextCopy, e)) {
-			CurrentTextEngine.PerformCopy (GdkExtensions.GetDefaultClipboard ());
 			return true;
 		}
 

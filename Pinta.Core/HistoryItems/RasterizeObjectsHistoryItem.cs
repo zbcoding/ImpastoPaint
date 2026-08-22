@@ -72,6 +72,15 @@ public sealed class RasterizeObjectsHistoryItem : BaseHistoryItem
 		mask_hidden = maskBefore?.Hidden ?? false;
 	}
 
+	public RasterizeObjectsHistoryItem (
+		IWorkspaceService workspace,
+		string icon,
+		string text,
+		BakeSnapshot snapshot,
+		UserLayer passedUserLayer
+	) : this (workspace, icon, text, snapshot.Base, snapshot.Object, snapshot.Objects, passedUserLayer, snapshot.Mask)
+	{ }
+
 	public override void Undo () => Swap ();
 	public override void Redo () => Swap ();
 

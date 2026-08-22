@@ -252,10 +252,7 @@ public sealed partial class LayersListViewItem
 				[Translations.GetString ("every effect and object on this layer")]))
 				return;
 
-			ImageSurface stackBaseBefore = UserLayer.Surface.Clone ();
-			ImageSurface stackObjectBefore = UserLayer.ObjectLayer.Layer.Surface.Clone ();
-			List<ILayerObject> stackObjectsBefore = Pinta.Core.ObjectOpacity.CloneAll (UserLayer.Objects);
-			LayerMask? stackMaskBefore = UserLayer.Mask;
+			BakeSnapshot stackSnapshot = BakeSnapshot.Create (UserLayer, includeMask: true);
 
 			if (!UserLayer.RasterizeModifierStack ())
 				return;
@@ -266,11 +263,8 @@ public sealed partial class LayersListViewItem
 					PintaCore.Workspace,
 					Resources.Icons.LayerMergeDown,
 					Translations.GetString ("Rasterize Layer Effects"),
-					stackBaseBefore,
-					stackObjectBefore,
-					stackObjectsBefore,
-					UserLayer,
-					stackMaskBefore));
+					stackSnapshot,
+					UserLayer));
 			return;
 		}
 
@@ -301,9 +295,7 @@ public sealed partial class LayersListViewItem
 		if (document is null || UserLayer is null || LiveObject is not { } obj)
 			return;
 
-		ImageSurface baseBefore = UserLayer.Surface.Clone ();
-		ImageSurface objectBefore = UserLayer.ObjectLayer.Layer.Surface.Clone ();
-		List<ILayerObject> objectsBefore = Pinta.Core.ObjectOpacity.CloneAll (UserLayer.Objects);
+		BakeSnapshot snapshot = BakeSnapshot.Create (UserLayer);
 
 		UserLayer.RemoveObject (obj);
 		Pinta.Core.ObjectOpacity.RefreshLayer (PintaCore.Workspace, PintaCore.Chrome, UserLayer);
@@ -313,9 +305,7 @@ public sealed partial class LayersListViewItem
 				PintaCore.Workspace,
 				Resources.Icons.LayerDelete,
 				Translations.GetString ("Delete Object"),
-				baseBefore,
-				objectBefore,
-				objectsBefore,
+				snapshot,
 				UserLayer));
 
 		// The object's on-canvas editing chrome (handles, re-edit rectangles) lives on the tool layer

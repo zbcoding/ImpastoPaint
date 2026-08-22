@@ -18,6 +18,34 @@ using ClipperLib;
 
 namespace Pinta.Core;
 
+/// <summary>
+/// The pre-bake state every rasterize operation snapshots for its undo item: the layer's base
+/// raster, its object surface, and its object list. Include the mask only for a bake that folds it
+/// in (a modifier-stack bake) - otherwise undo would forget to restore it.
+/// </summary>
+public sealed class BakeSnapshot
+{
+	public ImageSurface Base { get; }
+	public ImageSurface Object { get; }
+	public List<ILayerObject> Objects { get; }
+	public LayerMask? Mask { get; }
+
+	private BakeSnapshot (ImageSurface baseSurface, ImageSurface objectSurface, List<ILayerObject> objects, LayerMask? mask)
+	{
+		Base = baseSurface;
+		Object = objectSurface;
+		Objects = objects;
+		Mask = mask;
+	}
+
+	public static BakeSnapshot Create (UserLayer layer, bool includeMask = false)
+		=> new (
+			layer.Surface.Clone (),
+			layer.ObjectLayer.Layer.Surface.Clone (),
+			ObjectOpacity.CloneAll (layer.Objects),
+			includeMask ? layer.Mask : null);
+}
+
 public static class ObjectRasterizer
 {
 	/// <summary>
@@ -144,18 +172,25 @@ public static class ObjectRasterizer
 		if (PintaCore.Settings.GetSetting (SettingNames.SKIP_RASTERIZE_OBJECTS_DIALOG, false))
 			return true;
 
+		string body = Translations.GetString ("To perform this action, these objects must be rasterized (baked into the layer's pixels and no longer editable):")
+			+ "\n\n" + FormatObjectList (labels);
+
+		return RunRasterizeConfirmDialog (chrome, Translations.GetString ("Rasterize Objects?"), body);
+	}
+
+	// Shared by Confirm and ConfirmRasterizeToPaint, whose dialogs differ only in title/body text.
+	private static string FormatObjectList (IReadOnlyList<string> labels)
+	{
 		const int max_listed = 12;
 		string list = string.Join ("\n", labels.Take (max_listed).Select (l => "• " + l));
 		if (labels.Count > max_listed)
 			list += "\n" + Translations.GetString ("…and {0} more", labels.Count - max_listed);
+		return list;
+	}
 
-		string body = Translations.GetString ("To perform this action, these objects must be rasterized (baked into the layer's pixels and no longer editable):")
-			+ "\n\n" + list;
-
-		using Adw.MessageDialog dialog = Adw.MessageDialog.New (
-			chrome.MainWindow,
-			Translations.GetString ("Rasterize Objects?"),
-			body);
+	private static bool RunRasterizeConfirmDialog (IChromeService chrome, string title, string body)
+	{
+		using Adw.MessageDialog dialog = Adw.MessageDialog.New (chrome.MainWindow, title, body);
 
 		const string cancel_response = "cancel";
 		const string rasterize_response = "rasterize";
@@ -186,9 +221,7 @@ public static class ObjectRasterizer
 			return false;
 
 		// Snapshot the full pre-bake state for undo (base + the object surface + the object list).
-		ImageSurface baseBefore = layer.Surface.Clone ();
-		ImageSurface objectBefore = layer.ObjectLayer.Layer.Surface.Clone ();
-		var objectsBefore = ObjectOpacity.CloneAll (layer.Objects);
+		BakeSnapshot snapshot = BakeSnapshot.Create (layer);
 
 		// Bake the chosen objects onto the base raster BEFORE removing them from the list — the
 		// renderers read by index.
@@ -240,26 +273,29 @@ public static class ObjectRasterizer
 			workspace,
 			Resources.Icons.ImageFlatten,
 			Translations.GetString ("Rasterize Objects"),
-			baseBefore, objectBefore,
-			objectsBefore, layer);
+			snapshot, layer);
 
-		// When part of a larger action (e.g. a resize), the bake is recorded into that action's
-		// compound item so the whole thing undoes in one step; otherwise it's its own history step.
+		PushBakeHistory (doc, workspace, historyGroup, item);
+		return true;
+	}
+
+	// When part of a larger action (e.g. a resize), the bake is recorded into that action's compound
+	// item so the whole thing undoes in one step; otherwise it's its own history step. Either way, the
+	// baked objects' on-canvas editing chrome (the text tool's dashed re-edit rectangles, handle dots
+	// and "Obj." badges) lives on the tool layer, which nothing else here touches — clear it so it
+	// doesn't hover over pixels that are no longer objects. The active tool redraws its own overlay on
+	// the next edit. ponytail: clear from Core rather than adding a per-tool seam; the tool layer is
+	// transient chrome by definition.
+	private static void PushBakeHistory (Document doc, IWorkspaceService workspace, CompoundHistoryItem? historyGroup, BaseHistoryItem item)
+	{
 		if (historyGroup is not null)
 			historyGroup.Push (item);
 		else
 			doc.History.PushNewItem (item);
 
-		// The baked objects' on-canvas editing chrome (the text tool's dashed re-edit rectangles,
-		// handle dots and "Obj." badges) lives on the tool layer, which nothing else here touches —
-		// clear it so it doesn't hover over pixels that are no longer objects. The active tool
-		// redraws its own overlay on the next edit. ponytail: clear from Core rather than adding a
-		// per-tool seam; the tool layer is transient chrome by definition.
 		doc.Layers.ToolLayer.Clear ();
 		LayerObjectSelection.RaiseObjectsChanged ();
-
 		workspace.Invalidate ();
-		return true;
 	}
 
 	/// <summary>
@@ -281,12 +317,20 @@ public static class ObjectRasterizer
 	{
 		List<string> labels = [.. doc.Layers.UserLayers.SelectMany (DescribeAll)];
 
+		return ConfirmThenBake (chrome, labels, () => {
+			foreach (UserLayer layer in doc.Layers.UserLayers)
+				RasterizeAllObjects (doc, workspace, chrome, layer, confirm: false, historyGroup: historyGroup);
+		});
+	}
+
+	// Shared by every "list what a bake would touch, confirm once, then perform it" call site: the
+	// bake only happens when the labels are empty (nothing to confirm) or the user accepts.
+	private static bool ConfirmThenBake (IChromeService chrome, IReadOnlyList<string> labels, Action bake)
+	{
 		if (labels.Count > 0 && !Confirm (chrome, labels))
 			return false;
 
-		foreach (UserLayer layer in doc.Layers.UserLayers)
-			RasterizeAllObjects (doc, workspace, chrome, layer, confirm: false, historyGroup: historyGroup);
-
+		bake ();
 		return true;
 	}
 
@@ -305,15 +349,12 @@ public static class ObjectRasterizer
 		CompoundHistoryItem? historyGroup = null)
 	{
 		List<UserLayer> layersWithModifiers = [.. doc.Layers.UserLayers.Where (l => l.HasModifiers)];
-
 		List<string> labels = [.. layersWithModifiers.SelectMany (BakeLabels)];
-		if (labels.Count > 0 && !Confirm (chrome, labels))
-			return false;
 
-		foreach (UserLayer layer in layersWithModifiers)
-			RasterizeAllObjects (doc, workspace, chrome, layer, confirm: false, historyGroup: historyGroup);
-
-		return true;
+		return ConfirmThenBake (chrome, labels, () => {
+			foreach (UserLayer layer in layersWithModifiers)
+				RasterizeAllObjects (doc, workspace, chrome, layer, confirm: false, historyGroup: historyGroup);
+		});
 	}
 
 	/// <summary>
@@ -344,11 +385,7 @@ public static class ObjectRasterizer
 		RectangleD region = selection.GetBounds ();
 		if (layer.HasModifiers && SelectionReachesAnyModifier (layer, selection, region)) {
 			List<string> labels = DescribeAll (layer).ToList ();
-			if (labels.Count > 0 && !Confirm (chrome, labels))
-				return false;
-
-			RasterizeModifierStack (doc, workspace, chrome, layer, historyGroup);
-			return true;
+			return ConfirmThenBake (chrome, labels, () => RasterizeModifierStack (doc, workspace, chrome, layer, historyGroup));
 		}
 
 		FindIntersecting (layer, selection, out List<int> shapeIndices, out List<int> textIndices);
@@ -357,11 +394,8 @@ public static class ObjectRasterizer
 			return true; // the selection misses every object; nothing to bake.
 
 		List<string> objectLabels = Describe (layer, shapeIndices, textIndices).ToList ();
-		if (!Confirm (chrome, objectLabels))
-			return false;
-
-		RasterizeSubset (doc, workspace, chrome, layer, shapeIndices, textIndices, historyGroup: historyGroup);
-		return true;
+		return ConfirmThenBake (chrome, objectLabels,
+			() => RasterizeSubset (doc, workspace, chrome, layer, shapeIndices, textIndices, historyGroup: historyGroup));
 	}
 
 	// A node with no clip modifies the whole layer, so any selection reaches it. For a clipped node,
@@ -444,29 +478,10 @@ public static class ObjectRasterizer
 		// Deliberately NOT gated behind SKIP_RASTERIZE_OBJECTS_DIALOG: that opt-out is for the routine
 		// geometry ops, where a bake is expected. Here one stray click would silently destroy a
 		// non-destructive transform, which is destructive enough to always ask about.
-		const int max_listed = 12;
-		List<string> labels = BakeLabels (layer);
-		string list = string.Join ("\n", labels.Take (max_listed).Select (l => "• " + l));
-		if (labels.Count > max_listed)
-			list += "\n" + Translations.GetString ("…and {0} more", labels.Count - max_listed);
-
 		string body = Translations.GetString ("Painting on a transformed layer is blocked while the transform is active. Rasterize the transform to paint here? The transform and everything beneath it become part of the layer's pixels.")
-			+ "\n\n" + list;
+			+ "\n\n" + FormatObjectList (BakeLabels (layer));
 
-		using Adw.MessageDialog dialog = Adw.MessageDialog.New (
-			chrome.MainWindow,
-			Translations.GetString ("Rasterize to Paint?"),
-			body);
-
-		const string cancel_response = "cancel";
-		const string rasterize_response = "rasterize";
-		dialog.AddResponse (cancel_response, Translations.GetString ("_Cancel"));
-		dialog.AddResponse (rasterize_response, Translations.GetString ("_Rasterize"));
-		dialog.SetResponseAppearance (rasterize_response, Adw.ResponseAppearance.Destructive);
-		dialog.CloseResponse = cancel_response;
-		dialog.DefaultResponse = rasterize_response;
-
-		return dialog.RunBlocking () == rasterize_response;
+		return RunRasterizeConfirmDialog (chrome, Translations.GetString ("Rasterize to Paint?"), body);
 	}
 
 	/// <summary>
@@ -491,13 +506,10 @@ public static class ObjectRasterizer
 				labels.AddRange (DescribeAll (layer));
 		}
 
-		if (labels.Count > 0 && !Confirm (chrome, labels))
-			return false;
-
-		foreach (UserLayer layer in affected)
-			RasterizeAllObjects (doc, workspace, chrome, layer, confirm: false, historyGroup: historyGroup);
-
-		return true;
+		return ConfirmThenBake (chrome, labels, () => {
+			foreach (UserLayer layer in affected)
+				RasterizeAllObjects (doc, workspace, chrome, layer, confirm: false, historyGroup: historyGroup);
+		});
 	}
 
 	/// <summary>
@@ -512,10 +524,7 @@ public static class ObjectRasterizer
 		UserLayer layer,
 		CompoundHistoryItem? historyGroup = null)
 	{
-		ImageSurface baseBefore = layer.Surface.Clone ();
-		ImageSurface objectBefore = layer.ObjectLayer.Layer.Surface.Clone ();
-		List<ILayerObject> objectsBefore = ObjectOpacity.CloneAll (layer.Objects);
-		LayerMask? maskBefore = layer.Mask;
+		BakeSnapshot snapshot = BakeSnapshot.Create (layer, includeMask: true);
 
 		// Ensure the composite reflects any raster edit made since the last render, then bake it.
 		ObjectOpacity.RefreshLayerNoInvalidate (chrome, layer);
@@ -528,17 +537,9 @@ public static class ObjectRasterizer
 			workspace,
 			Resources.Icons.ImageFlatten,
 			Translations.GetString ("Rasterize Layer Effects"),
-			baseBefore, objectBefore,
-			objectsBefore, layer, maskBefore);
+			snapshot, layer);
 
-		if (historyGroup is not null)
-			historyGroup.Push (item);
-		else
-			doc.History.PushNewItem (item);
-
-		doc.Layers.ToolLayer.Clear ();
-		LayerObjectSelection.RaiseObjectsChanged ();
-		workspace.Invalidate ();
+		PushBakeHistory (doc, workspace, historyGroup, item);
 		return true;
 	}
 

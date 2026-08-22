@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
+using System.Linq;
 using Cairo;
 
 namespace Pinta.Core;
@@ -110,6 +111,17 @@ public sealed class DocumentLayers
 		return layer;
 	}
 
+	// Scans past any name already in use (e.g. loaded from a file that named a layer
+	// "Layer 2" itself) instead of trusting the counter alone, which could collide.
+	private string NextLayerName ()
+	{
+		string name;
+		do {
+			// Translators: {0} is a unique id for new layers, e.g. "Layer 2".
+			name = Translations.GetString ("Layer {0}", layer_name_int++);
+		} while (user_layers.Any (l => l.Name == name));
+		return name;
+	}
 
 	/// <summary>
 	/// Disposes all user created and internal layers.
@@ -136,8 +148,7 @@ public sealed class DocumentLayers
 		int? width = null,
 		int? height = null)
 	{
-		// Translators: {0} is a unique id for new layers, e.g. "Layer 2".
-		name ??= Translations.GetString ("Layer {0}", layer_name_int++);
+		name ??= NextLayerName ();
 		width ??= document.ImageSize.Width;
 		height ??= document.ImageSize.Height;
 

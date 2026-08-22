@@ -115,8 +115,7 @@ public sealed class TextTool : BaseTool
 	private HitZone edit_hint_zone;
 	private TextObject? hover_hint_target;
 	private HitZone hover_hint_zone;
-	private Gtk.Popover? edit_hint_popover;
-	private Gtk.Label? edit_hint_label;
+	private readonly TransientHintPopover edit_hint_popover = new ();
 	//Delays showing the hover hint until the cursor has lingered for a moment.
 	private uint hover_hint_timeout_id = 0;
 
@@ -1022,16 +1021,7 @@ public sealed class TextTool : BaseTool
 			}
 		}
 
-		if (edit_hint_popover is not null) {
-			try {
-				edit_hint_popover.Popdown ();
-				edit_hint_popover.Unparent ();
-			} catch {
-				// Ignore if already closed.
-			}
-			edit_hint_popover = null;
-			edit_hint_label = null;
-		}
+		edit_hint_popover.Dispose ();
 		if (hover_hint_timeout_id != 0) {
 			GLib.Functions.SourceRemove (hover_hint_timeout_id);
 			hover_hint_timeout_id = 0;
@@ -2647,7 +2637,7 @@ public sealed class TextTool : BaseTool
 
 	private void UpdateEditHint (Document document, PointI mousePosition)
 	{
-		if (!workspace.HasOpenDocuments || !ShouldShowPopoverHint ()) {
+		if (!workspace.HasOpenDocuments || !TransientHintPopover.ShouldShow) {
 			HideEditHint ();
 			return;
 		}
@@ -2697,25 +2687,6 @@ public sealed class TextTool : BaseTool
 
 		string hint = zone == HitZone.Resize ? CornerHintText (obj.Engine.WrapWidth > 0) : EditHintText ();
 
-		if (edit_hint_popover is null) {
-			edit_hint_popover = Gtk.Popover.New ();
-			edit_hint_popover.Autohide = false;
-			edit_hint_popover.Position = Gtk.PositionType.Bottom;
-			edit_hint_popover.SetParent (canvas);
-			edit_hint_label = Gtk.Label.New (hint);
-			edit_hint_label.Wrap = true;
-			edit_hint_label.MaxWidthChars = 60;
-			edit_hint_popover.SetChild (edit_hint_label);
-		} else {
-			if (edit_hint_label is not null)
-				edit_hint_label.SetText (hint);
-			// Re-parent if canvas changed.
-			if (edit_hint_popover.GetParent () != canvas) {
-				edit_hint_popover.Unparent ();
-				edit_hint_popover.SetParent (canvas);
-			}
-		}
-
 		//Anchor the popover to the hovered corner for the resize hint. Otherwise,
 		//spawn it slightly below the center of the word (not the lower-right corner,
 		//which is an invisible corner when the object isn't focused/being edited).
@@ -2730,15 +2701,8 @@ public sealed class TextTool : BaseTool
 		}
 
 		PointD anchorView = workspace.ActiveWorkspace.CanvasPointToView (anchor);
-		Gdk.Rectangle pointing = new () {
-			X = (int) Math.Clamp (anchorView.X, 0, 10000),
-			Y = (int) Math.Clamp (anchorView.Y, 0, 10000),
-			Width = 1,
-			Height = 1
-		};
-		edit_hint_popover.PointingTo = pointing;
+		edit_hint_popover.Show (canvas, hint, anchorView);
 
-		edit_hint_popover.Popup ();
 		edit_hint_visible = true;
 		edit_hint_target = obj;
 		edit_hint_zone = zone;
@@ -2769,23 +2733,14 @@ public sealed class TextTool : BaseTool
 			hover_hint_timeout_id = 0;
 		}
 
-		if (!edit_hint_visible && edit_hint_popover is null)
+		if (!edit_hint_visible && !edit_hint_popover.Exists)
 			return;
 
-		if (edit_hint_popover is not null) {
-			try {
-				edit_hint_popover.Popdown ();
-			} catch {
-				// Ignore if already closed.
-			}
-		}
+		edit_hint_popover.Hide ();
 
 		edit_hint_visible = false;
 		edit_hint_target = null;
 	}
-
-	private static bool ShouldShowPopoverHint ()
-		=> PintaCore.Settings.GetSetting (SettingNames.POPOVER_HINT_MODE, (int) PopoverHintMode.All) != (int) PopoverHintMode.None;
 
 	#endregion
 

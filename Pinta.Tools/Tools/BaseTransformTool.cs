@@ -75,8 +75,7 @@ public abstract class BaseTransformTool : BaseTool
 	private uint nudge_hint_timeout_id = 0;
 	private bool nudge_hint_visible = false;
 	private string? last_nudge_hint;
-	private Gtk.Popover? nudge_popover;
-	private Gtk.Label? nudge_label;
+	private readonly TransientHintPopover nudge_popover = new ();
 
 	/// <summary>
 	/// Initializes a new instance of the <see cref="BaseTransformTool"/> class.
@@ -742,14 +741,7 @@ public abstract class BaseTransformTool : BaseTool
 		ClearNudgeState ();
 
 		// Fully detach popover to avoid holding parent reference.
-		if (nudge_popover is not null) {
-			try {
-				nudge_popover.Popdown ();
-				nudge_popover.Unparent ();
-			} catch { }
-			nudge_popover = null;
-			nudge_label = null;
-		}
+		nudge_popover.Dispose ();
 	}
 
 	/// <summary>
@@ -838,7 +830,7 @@ public abstract class BaseTransformTool : BaseTool
 			return;
 
 		Gtk.Widget canvas = workspace.ActiveWorkspace.Canvas;
-		if (!ShouldShowPopoverHint ()) {
+		if (!TransientHintPopover.ShouldShow) {
 			if (canvas.TooltipText is not null)
 				canvas.SetTooltipText (null);
 			return;
@@ -861,7 +853,7 @@ public abstract class BaseTransformTool : BaseTool
 	/// </summary>
 	private void ShowNudgeHint (Document document)
 	{
-		if (!workspace.HasOpenDocuments || !ShouldShowPopoverHint ())
+		if (!workspace.HasOpenDocuments || !TransientHintPopover.ShouldShow)
 			return;
 
 		ToolBindingDescriptor[] nudgeBindings = [
@@ -916,50 +908,20 @@ public abstract class BaseTransformTool : BaseTool
 			lowerRightCanvas = handle.Orientation.TransformPoint (lowerRightCanvas);
 		PointD lowerRightView = activeWs.CanvasPointToView (lowerRightCanvas);
 
-		// Create or reuse popover + label.
-		if (nudge_popover is null) {
-			nudge_popover = Gtk.Popover.New ();
-			nudge_popover.Autohide = false;
-			nudge_popover.Position = Gtk.PositionType.Bottom;
-			nudge_popover.SetParent (canvas);
-			nudge_label = Gtk.Label.New (hint);
-			nudge_label.Wrap = true;
-			nudge_label.MaxWidthChars = 60;
-			nudge_popover.SetChild (nudge_label);
-		} else {
-			if (nudge_label is not null)
-				nudge_label.SetText (hint);
-			// Re-parent if canvas changed.
-			if (nudge_popover.GetParent () != canvas) {
-				nudge_popover.Unparent ();
-				nudge_popover.SetParent (canvas);
-			}
-		}
-
 		// Anchor popover to lower-right of the nudge area.
 		// If mouse is elsewhere, popover still appears near content (fixes issue #2).
-		Gdk.Rectangle pointing = new () {
-			X = (int) Math.Clamp (lowerRightView.X, 0, 10000),
-			Y = (int) Math.Clamp (lowerRightView.Y, 0, 10000),
-			Width = 1,
-			Height = 1
-		};
-		nudge_popover.PointingTo = pointing;
+		nudge_popover.Show (canvas, hint, lowerRightView);
 
 		// Also set tooltip as fallback for accessibility / hover.
 		canvas.SetTooltipText (hint);
 
-		nudge_popover.Popup ();
 		last_nudge_hint = hint;
 		nudge_hint_visible = true;
 	}
 
-	private static bool ShouldShowPopoverHint ()
-		=> PintaCore.Settings.GetSetting (SettingNames.POPOVER_HINT_MODE, (int) PopoverHintMode.All) != (int) PopoverHintMode.None;
-
 	private void HideNudgeHint ()
 	{
-		if (!nudge_hint_visible && nudge_popover is null)
+		if (!nudge_hint_visible && !nudge_popover.Exists)
 			return;
 
 		if (workspace.HasOpenDocuments) {
@@ -976,13 +938,7 @@ public abstract class BaseTransformTool : BaseTool
 			}
 		}
 
-		if (nudge_popover is not null) {
-			try {
-				nudge_popover.Popdown ();
-			} catch {
-				// Ignore if already closed.
-			}
-		}
+		nudge_popover.Hide ();
 
 		nudge_hint_visible = false;
 		last_nudge_hint = null;

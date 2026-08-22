@@ -45,7 +45,7 @@ public sealed class CloneStampTool : BaseBrushTool
 
 	// Transient popover shown below the brush circle when the user tries to paint
 	// without an origin set. Parented to the canvas, like the healing-brush hint.
-	private Gtk.Popover? hint_popover;
+	private readonly TransientHintPopover hint_popover = new ();
 	private uint hint_timeout_id;
 
 	public CloneStampTool (IServiceProvider services) : base (services)
@@ -217,7 +217,7 @@ public sealed class CloneStampTool : BaseBrushTool
 	// with no origin set. Names the modifier (Ctrl) used to set the origin. Auto-dismisses.
 	private void ShowOriginHint (PointI canvasPoint)
 	{
-		if (!workspace.HasOpenDocuments || !ShouldShowPopoverHint ())
+		if (!workspace.HasOpenDocuments || !TransientHintPopover.ShouldShow)
 			return;
 
 		var ws = workspace.ActiveWorkspace;
@@ -226,42 +226,25 @@ public sealed class CloneStampTool : BaseBrushTool
 		double radius = Math.Max (1, BrushWidth / 2.0);
 		PointD belowCircle = ws.CanvasPointToView (new PointD (canvasPoint.X, canvasPoint.Y + radius));
 
-		if (hint_popover is null) {
-			hint_popover = Gtk.Popover.New ();
-			hint_popover.Autohide = false;
-			hint_popover.Position = Gtk.PositionType.Bottom;
-			hint_popover.SetParent (canvas);
-			var label = Gtk.Label.New (Translations.GetString (
-				"Hold {0} and click to set an origin point first.", system_manager.CtrlLabel ()));
-			label.Wrap = true;
-			label.MaxWidthChars = 40;
-			label.MarginTop = label.MarginBottom = 4;
-			label.MarginStart = label.MarginEnd = 8;
-			hint_popover.SetChild (label);
-		} else if (hint_popover.GetParent () != canvas) {
-			hint_popover.Unparent ();
-			hint_popover.SetParent (canvas);
-		}
-
-		hint_popover.PointingTo = new Gdk.Rectangle {
-			X = (int) Math.Clamp (belowCircle.X, 0, 100000),
-			Y = (int) Math.Clamp (belowCircle.Y, 0, 100000),
-			Width = 1,
-			Height = 1,
-		};
-		hint_popover.Popup ();
+		hint_popover.Show (
+			canvas,
+			Translations.GetString ("Hold {0} and click to set an origin point first.", system_manager.CtrlLabel ()),
+			belowCircle,
+			maxWidthChars: 40,
+			clampMax: 100_000,
+			configure: label => {
+				label.MarginTop = label.MarginBottom = 4;
+				label.MarginStart = label.MarginEnd = 8;
+			});
 
 		if (hint_timeout_id != 0)
 			GLib.Functions.SourceRemove (hint_timeout_id);
 		hint_timeout_id = GLib.Functions.TimeoutAdd (0, 2500, () => {
 			hint_timeout_id = 0;
-			hint_popover?.Popdown ();
+			hint_popover.Hide ();
 			return false;
 		});
 	}
-
-	private static bool ShouldShowPopoverHint ()
-		=> PintaCore.Settings.GetSetting (SettingNames.POPOVER_HINT_MODE, (int) PopoverHintMode.All) != (int) PopoverHintMode.None;
 
 	private void HideOriginHint ()
 	{
@@ -269,15 +252,12 @@ public sealed class CloneStampTool : BaseBrushTool
 			GLib.Functions.SourceRemove (hint_timeout_id);
 			hint_timeout_id = 0;
 		}
-		hint_popover?.Popdown ();
+		hint_popover.Hide ();
 	}
 
 	private void DisposeHint ()
 	{
 		HideOriginHint ();
-		if (hint_popover is not null) {
-			hint_popover.Unparent ();
-			hint_popover = null;
-		}
+		hint_popover.Dispose ();
 	}
 }

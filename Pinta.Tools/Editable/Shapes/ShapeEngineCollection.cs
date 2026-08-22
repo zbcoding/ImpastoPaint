@@ -135,7 +135,7 @@ public static class ShapeEngineCollection
 	/// <param name="closestShapeIndex">The index of the shape with the closest ControlPoint.</param>
 	/// <param name="closestIndex">The index of the closest ControlPoint.</param>
 	/// <param name="closestControlPoint">The closest ControlPoint to currentPoint.</param>
-	/// <param name="closestCPDistance">The closest ControlPoint's distance from currentPoint.</param>
+	/// <param name="closestDistanceSquared">The closest ControlPoint's squared distance from currentPoint.</param>
 	public static void FindClosestControlPoint (
 		this IReadOnlyList<ShapeEngine> source,
 		PointD reference,
@@ -213,7 +213,7 @@ public abstract class ShapeEngine : ILayerObject
 	public DocumentSelection? Clip { get; internal set; }
 
 	// Per-shape opacity (0..1), carried through the ShapeObject round-trip. Applied when the shape is
-	// composited into the layer's shape surface. See ObjectOpacity.
+	// composited into the layer's shared ObjectLayer surface. See ObjectOpacity.
 	public double Opacity { get; set; } = 1.0;
 
 	// Per-shape visibility, carried through the ShapeObject round-trip. A hidden shape renders
@@ -221,7 +221,7 @@ public abstract class ShapeEngine : ILayerObject
 	public bool Hidden { get; set; }
 
 	// Per-shape blend mode, carried through the ShapeObject round-trip. How this shape mixes with
-	// what is already on the layer's shape surface. See ObjectOpacity.Draw.
+	// what is already on the layer's shared ObjectLayer surface. See ObjectOpacity.Draw.
 	public BlendMode BlendMode { get; set; } = BlendMode.Normal;
 
 	public LineCap LineCap { get; set; }
@@ -250,7 +250,7 @@ public abstract class ShapeEngine : ILayerObject
 		else
 			DrawingLayer = drawing_layer;
 
-		// Object-layer system: the active layer's shapes composite through its shared ShapeLayer
+		// Object-layer system: the active layer's shapes composite through its shared ObjectLayer
 		// surface, not per-shape overlays. Keep this vestigial DrawingLayer out of the drawing loop
 		// so it never double-composites. ponytail: property kept only as engine identity/scratch;
 		// remove it wholesale once no ShapeEngine paths reference it.

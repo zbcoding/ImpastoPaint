@@ -1,5 +1,5 @@
 //
-// LayersListWidget.cs
+// LayersListView.cs
 //
 // Author:
 //       Jonathan Pobst <monkey@jpobst.com>

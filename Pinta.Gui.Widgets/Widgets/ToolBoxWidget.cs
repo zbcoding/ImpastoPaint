@@ -406,7 +406,7 @@ public sealed partial class ToolBoxWidget
 		stack.Current ??= tool;
 		tool_buttons[tool] = stack.Button;
 
-		SetStackTooltip (stack);
+		UpdateStackButtonName (stack);
 	}
 
 	/// <summary>
@@ -643,7 +643,7 @@ public sealed partial class ToolBoxWidget
 		}
 	}
 
-	private void SetStackTooltip (ToolStack stack)
+	private void UpdateStackButtonName (ToolStack stack)
 	{
 		// No tooltip on the group button - the flyout opens on hover, and each flyout entry
 		// carries its own hint.
@@ -697,7 +697,7 @@ public sealed partial class ToolBoxWidget
 		if (definition is not null && tool_stacks.TryGetValue (definition, out ToolStack? stack)) {
 			stack.Current = tool;
 			stack.Icon.SetFromIconName (IconNameFor (tool));
-			SetStackTooltip (stack);
+			UpdateStackButtonName (stack);
 		}
 
 		// A pinned tool has two buttons and they group separately, so both light. For a stacked
@@ -730,7 +730,7 @@ public sealed partial class ToolBoxWidget
 					stack.Current = stack.Members[0];
 
 				stack.Icon.SetFromIconName (IconNameFor (stack.Current));
-				SetStackTooltip (stack);
+				UpdateStackButtonName (stack);
 				UpdateSectionVisibility ();
 				return;
 			}

@@ -1,5 +1,5 @@
 //
-// HistoryTreeView.cs
+// LayersListViewItemWidget.cs
 //
 // Copyright (c) 2010 Jonathan Pobst
 //

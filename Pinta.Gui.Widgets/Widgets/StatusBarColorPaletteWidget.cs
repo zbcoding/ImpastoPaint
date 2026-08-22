@@ -779,7 +779,7 @@ public sealed partial class StatusBarColorPaletteWidget
 			case WidgetElement.SwapColors:
 				string label = Translations.GetString ("Click to switch between primary and secondary color.");
 				string shortcut_label = Translations.GetString ("Shortcut key");
-				text = $"{label} {shortcut_label}: {"X"}";
+				text = $"{label} {shortcut_label}: {PintaCore.Shortcuts.GetToolBinding (KeyboardShortcutManager.SwapColors).ToLabel ()}";
 				break;
 			case WidgetElement.ResetColors:
 				text = Translations.GetString ("Click to reset primary and secondary color.");

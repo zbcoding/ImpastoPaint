@@ -40,7 +40,7 @@ namespace Pinta;
 internal sealed class MainWindow
 {
 	readonly Adw.Application app;
-	// NRT - Created in OnActivated
+	// NRT - Created in CreateWindow
 	WindowShell window_shell = null!;
 	Gtk.Window colors_window = null!; // Impasto: floating Colors palette.
 	Gtk.Box colors_dock = null!;      // Impasto: its home in the status bar - the bar lives here always.
@@ -733,9 +733,9 @@ internal sealed class MainWindow
 		};
 
 		PintaCore.Actions.View.Colors.Toggled += (_, _) => UpdateColorsVisibility ();
-		PintaCore.Actions.View.ColorsFloating.Toggled += (value, _) => SetColorsFloating (value);
+		PintaCore.Actions.View.ColorsFloating.Toggled += (_, _) => UpdateColorsVisibility ();
 
-		SetColorsFloating (PintaCore.Actions.View.ColorsFloating.Value);
+		UpdateColorsVisibility ();
 	}
 
 	// GTK4/Wayland forbids an app from reading or setting its own window position, so we can't
@@ -754,7 +754,7 @@ internal sealed class MainWindow
 			// Call directly - the Toggled event only fires on value *changes*,
 			// so a stale value would otherwise leave the button dead.
 			PintaCore.Actions.View.ColorsFloating.Value = true;
-			SetColorsFloating (true);
+			UpdateColorsVisibility ();
 			return false;
 		});
 
@@ -777,7 +777,7 @@ internal sealed class MainWindow
 
 		colors_window.OnCloseRequest += (_, _) => {
 			PintaCore.Actions.View.ColorsFloating.Value = false;
-			SetColorsFloating (false);
+			UpdateColorsVisibility ();
 			return true;
 		};
 	}
@@ -798,13 +798,8 @@ internal sealed class MainWindow
 	{
 		RebuildColorsWindow ();
 		PintaCore.Actions.View.ColorsFloating.Value = true;
-		SetColorsFloating (true);
+		UpdateColorsVisibility ();
 	}
-
-	// The bar (colors_palette) and its docked popover (colors_wheel) never leave the
-	// dock any more - the floating window has its own live picker panel (colors_picker_panel,
-	// inside colors_contents) instead, so there is nothing left to reparent here.
-	private void SetColorsFloating (bool floating) => UpdateColorsVisibility ();
 
 	private void UpdateColorsVisibility ()
 	{

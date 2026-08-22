@@ -40,12 +40,12 @@ public sealed class UserLayer : Layer
 	//Special layers to be drawn on to keep things editable by drawing them separately from the UserLayers.
 	internal Collection<ReEditableLayer> ReEditableLayers { get; } = [];
 
-	//Call the base class constructor and setup the engines.
+	//Call the base class constructor and set up the object layer.
 	public UserLayer (ImageSurface surface)
 		: this (surface, false, 1f, "")
 	{ }
 
-	//Call the base class constructor and setup the engines.
+	//Call the base class constructor and set up the object layer.
 	public UserLayer (
 		ImageSurface surface,
 		bool hidden,

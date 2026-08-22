@@ -211,18 +211,13 @@ public sealed partial class StatusBarColorPaletteWidget
 
 			case WidgetElement.SwapColors:
 
-				Color temp = palette.PrimaryColor;
-
-				// Swapping should not trigger adding colors to recently used palette
-				palette.SetColor (true, palette.SecondaryColor, false);
-				palette.SetColor (false, temp, false);
+				palette.SwapColors ();
 
 				break;
 
 			case WidgetElement.ResetColors:
 
-				palette.PrimaryColor = new Color (0, 0, 0);
-				palette.SecondaryColor = new Color (1, 1, 1);
+				palette.ResetColors ();
 
 				break;
 
@@ -821,49 +816,25 @@ public sealed partial class StatusBarColorPaletteWidget
 	// instead of duplicating the dialog setup.
 	public Task<PaletteColors?> PickColorsAsync (bool primarySelected) => RunColorPicker (primarySelected);
 
-	private async Task<PaletteColors?> RunColorPicker (bool primarySelected)
-	{
-		using ColorPickerDialog colorPicker = ColorPickerDialog.New (
+	private Task<PaletteColors?> RunColorPicker (bool primarySelected)
+		=> ColorPickerDialog.PickColorsAsync (
 			chrome.MainWindow,
 			palette,
 			new PaletteColors (palette.PrimaryColor, palette.SecondaryColor),
 			primarySelected,
-			true,
+			livePalette: true,
 			Translations.GetString ("Choose Colors"));
 
-		Gtk.ResponseType response = await colorPicker.RunAsync ();
-
-		if (response != Gtk.ResponseType.Ok)
-			return null;
-
-		return (PaletteColors) colorPicker.Colors;
-	}
-
-
-	private async Task<SingleColor?> GetUserChosenColor (
+	private Task<SingleColor?> GetUserChosenColor (
 		SingleColor colors,
 		string title)
-	{
-		using ColorPickerDialog dialog = ColorPickerDialog.New (
+		=> ColorPickerDialog.PickColorsAsync (
 			chrome.MainWindow,
 			palette,
 			colors,
 			primarySelected: true,
-			false,
+			livePalette: false,
 			title);
-
-		try {
-			Gtk.ResponseType response = await dialog.RunAsync ();
-
-			if (response != Gtk.ResponseType.Ok)
-				return null;
-
-			return (SingleColor) dialog.Colors;
-
-		} finally {
-			dialog.Destroy ();
-		}
-	}
 
 	private WidgetElement GetElementAtPoint (PointD point)
 	{

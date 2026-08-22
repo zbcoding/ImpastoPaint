@@ -32,4 +32,12 @@ internal sealed class MockPalette : IPaletteService
 		else
 			SecondaryColor = color;
 	}
+
+	public void SwapColors () => (PrimaryColor, SecondaryColor) = (SecondaryColor, PrimaryColor);
+
+	public void ResetColors ()
+	{
+		PrimaryColor = Color.Black;
+		SecondaryColor = Color.White;
+	}
 }

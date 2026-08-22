@@ -948,19 +948,12 @@ internal sealed class MainWindow
 
 		Gtk.Button swap_button = Gtk.Button.NewWithLabel ("⇄");
 		swap_button.TooltipText = Translations.GetString ("Click to switch between primary and secondary color.");
-		swap_button.OnClicked += (_, _) => {
-			Cairo.Color temp = PintaCore.Palette.PrimaryColor;
-			PintaCore.Palette.SetColor (true, PintaCore.Palette.SecondaryColor, false);
-			PintaCore.Palette.SetColor (false, temp, false);
-		};
+		swap_button.OnClicked += (_, _) => PintaCore.Palette.SwapColors ();
 		box.Append (swap_button);
 
 		Gtk.Button reset_button = Gtk.Button.NewWithLabel ("↺");
 		reset_button.TooltipText = Translations.GetString ("Click to reset primary and secondary color.");
-		reset_button.OnClicked += (_, _) => {
-			PintaCore.Palette.PrimaryColor = new Cairo.Color (0, 0, 0);
-			PintaCore.Palette.SecondaryColor = new Cairo.Color (1, 1, 1);
-		};
+		reset_button.OnClicked += (_, _) => PintaCore.Palette.ResetColors ();
 		box.Append (reset_button);
 
 		return box;

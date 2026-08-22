@@ -3,6 +3,7 @@ using System.Collections.Immutable;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
+using System.Threading.Tasks;
 using Cairo;
 using Pinta.Core;
 
@@ -586,6 +587,29 @@ public sealed partial class ColorPickerDialog
 		ColorPickerDialog dialog = NewWithProperties ([]);
 		dialog.Configure (parentWindow, palette, adjustable, primarySelected, livePalette, windowTitle);
 		return dialog;
+	}
+
+	/// <summary>
+	/// Builds, runs, and tears down a color picker dialog in one call - the bootstrap every caller
+	/// that just wants a result (or null on Cancel) was hand-rolling. <typeparamref name="T"/> is
+	/// whichever <see cref="ColorPick"/> shape the caller passed in and expects back.
+	/// </summary>
+	public static async Task<T?> PickColorsAsync<T> (
+		Gtk.Window? parentWindow,
+		IPaletteService palette,
+		T initial,
+		bool primarySelected,
+		bool livePalette,
+		string windowTitle) where T : ColorPick
+	{
+		using ColorPickerDialog dialog = New (parentWindow, palette, initial, primarySelected, livePalette, windowTitle);
+
+		try {
+			Gtk.ResponseType response = await dialog.RunAsync ();
+			return response == Gtk.ResponseType.Ok ? (T) dialog.Colors : null;
+		} finally {
+			dialog.Destroy ();
+		}
 	}
 
 	ImmutableArray<Gtk.DrawingArea> CreateColorDisplays (ColorPick pick)

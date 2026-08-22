@@ -173,11 +173,7 @@ public sealed partial class ColorPickerPanel
 		Gtk.Button swapButton = Gtk.Button.NewFromIconName (Resources.StandardIcons.EditSwap);
 		swapButton.TooltipText = label;
 		swapButton.FocusOnClick = false;
-		swapButton.OnClicked += (_, _) => {
-			Color temp = palette.PrimaryColor;
-			palette.SetColor (true, palette.SecondaryColor, false);
-			palette.SetColor (false, temp, false);
-		};
+		swapButton.OnClicked += (_, _) => palette.SwapColors ();
 
 		Gtk.Button eyedropperButton = Gtk.Button.NewFromIconName (Resources.Icons.ToolColorPicker);
 		eyedropperButton.TooltipText = Translations.GetString ("Selects the color in view. Sample from the composited image, including all visible layers.");
@@ -561,19 +557,18 @@ public sealed partial class ColorPickerPanel
 			return;
 
 		color_picker_active = true;
-		using ColorPickerDialog dialog = ColorPickerDialog.New (
-			chrome.MainWindow,
-			palette,
-			new SingleColor (palette.CurrentPalette.Colors[index]),
-			primarySelected: true,
-			livePalette: false,
-			Translations.GetString ("Choose Palette Color"));
-
 		try {
-			if (await dialog.RunAsync () == Gtk.ResponseType.Ok)
-				palette.CurrentPalette.SetColor (index, ((SingleColor) dialog.Colors).Color);
+			SingleColor? chosen = await ColorPickerDialog.PickColorsAsync (
+				chrome.MainWindow,
+				palette,
+				new SingleColor (palette.CurrentPalette.Colors[index]),
+				primarySelected: true,
+				livePalette: false,
+				Translations.GetString ("Choose Palette Color"));
+
+			if (chosen is not null)
+				palette.CurrentPalette.SetColor (index, chosen.Color);
 		} finally {
-			dialog.Destroy ();
 			color_picker_active = false;
 		}
 	}

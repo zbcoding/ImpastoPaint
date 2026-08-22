@@ -40,6 +40,8 @@ public interface IPaletteService
 	int MaxRecentlyUsedColor { get; }
 	ReadOnlyCollection<Color> RecentlyUsedColors { get; }
 	void SetColor (bool setPrimary, Color color, bool addToRecent = true);
+	void SwapColors ();
+	void ResetColors ();
 	event EventHandler? PrimaryColorChanged;
 	event EventHandler? SecondaryColorChanged;
 	event EventHandler? RecentColorsChanged;
@@ -105,9 +107,19 @@ public sealed class PaletteManager : IPaletteService
 		};
 	}
 
+	// Bypasses the recently-used list: swapping the two colors already on the palette is not
+	// "picking a new color," and every caller expects the recent list to stay untouched.
 	public void SwapColors ()
 	{
-		(SecondaryColor, PrimaryColor) = (PrimaryColor, SecondaryColor);
+		Color temp = PrimaryColor;
+		SetColor (true, SecondaryColor, addToRecent: false);
+		SetColor (false, temp, addToRecent: false);
+	}
+
+	public void ResetColors ()
+	{
+		PrimaryColor = new Color (0, 0, 0);
+		SecondaryColor = new Color (1, 1, 1);
 	}
 
 	public void SetRecentlyUsedColorCount (int count)

@@ -269,26 +269,34 @@ public abstract class ShapeEngine : ILayerObject
 	{
 		DrawingLayer = src.DrawingLayer;
 		DrawingLayer.TryRemoveLayer (); // See note in the primary constructor.
-		Name = src.Name;
-		RasterizeOnFinalize = src.RasterizeOnFinalize;
-		Clip = src.Clip;
-		Opacity = src.Opacity;
-		Hidden = src.Hidden;
-		BlendMode = src.BlendMode;
 		ShapeType = src.ShapeType;
 		AntiAliasing = src.AntiAliasing;
 		Closed = src.Closed;
 		OutlineColor = src.OutlineColor;
 		FillColor = src.FillColor;
 		BrushWidth = src.BrushWidth;
-		FillStyle = src.FillStyle;
 		LineCap = src.LineCap;
 
-		// Don't clone the GeneratedPoints or OrganizedPoints, as they will be calculated.
-		ControlPoints = src.ControlPoints.Select (i => i.Clone ()).ToList ();
-		DashPattern = src.DashPattern;
-		DashSpacing = src.DashSpacing;
+		CopyMutableState (this, src);
 		parent_layer = null!; // NRT - This constructor needs to set parent_layer somehow as code expects it to be not-null
+	}
+
+	// Fields that live on ShapeEngine but aren't threaded through any constructor - both the copy
+	// ctor and Convert() must transfer this same set, or a conversion silently drops state (see
+	// docs-private/refactor.md T1).
+	private static void CopyMutableState (ShapeEngine dest, ShapeEngine src)
+	{
+		dest.Name = src.Name;
+		dest.RasterizeOnFinalize = src.RasterizeOnFinalize;
+		dest.Clip = src.Clip;
+		dest.Opacity = src.Opacity;
+		dest.Hidden = src.Hidden;
+		dest.BlendMode = src.BlendMode;
+		dest.FillStyle = src.FillStyle;
+		// Don't clone the GeneratedPoints or OrganizedPoints, as they will be calculated.
+		dest.ControlPoints = src.ControlPoints.Select (i => i.Clone ()).ToList ();
+		dest.DashPattern = src.DashPattern;
+		dest.DashSpacing = src.DashSpacing;
 	}
 
 	public abstract ShapeEngine Clone ();
@@ -355,14 +363,7 @@ public abstract class ShapeEngine : ILayerObject
 			),//Defaults to OpenLineCurveSeries.
 		};
 
-		// Don't clone the GeneratedPoints or OrganizedPoints, as they will be calculated.
-		clone.Name = Name;
-		clone.RasterizeOnFinalize = RasterizeOnFinalize;
-		clone.Opacity = Opacity;
-		clone.Hidden = Hidden;
-		clone.ControlPoints = ControlPoints.Select (i => i.Clone ()).ToList ();
-		clone.DashPattern = DashPattern;
-		clone.DashSpacing = DashSpacing;
+		CopyMutableState (clone, this);
 
 		// Add the new ShapeEngine instance at the specified index to
 		// ensure as transparent of a cloning as possible.

@@ -46,4 +46,76 @@ internal sealed class ShapeEngineCollectionTest : ToolsTestHarness
 		Assert.That ((shown.R, shown.G, shown.B), Is.EqualTo (((byte) 255, (byte) 0, (byte) 255)),
 			"the effect above them should still be reaching what they drew");
 	}
+
+	// Pins docs-private/refactor.md T1: Convert() copied only a hand-picked subset of ShapeEngine's
+	// post-construction fields, so converting a shape to another type (e.g. rectangle -> ellipse via
+	// the shape dropdown) silently reset its clip region, fill style, and blend mode.
+	[Test]
+	public void ConvertPreservesClipFillStyleBlendModeAndDash ()
+	{
+		UserLayer layer = Layer (0);
+
+		ShapeObject source = Box (ShapeFill, new RectangleI (0, 0, CanvasSize - 1, CanvasSize - 1));
+		DocumentSelection clip = SelectionOf (new RectangleI (0, 0, CanvasSize / 2, CanvasSize / 2));
+		source.Clip = clip;
+		source.FillStyle = 2;
+		source.BlendMode = BlendMode.Multiply;
+		source.DashPattern = "-.";
+		source.DashSpacing = 3;
+
+		ShapeEngine engine = LiveEngine (layer, source);
+		BaseEditEngine.SEngines.Clear ();
+		BaseEditEngine.SEngines.Add (engine);
+
+		ShapeEngine converted = engine.Convert (BaseEditEngine.ShapeTypes.Ellipse, 0);
+
+		Assert.Multiple (() => {
+			Assert.That (converted.Clip, Is.SameAs (clip));
+			Assert.That (converted.FillStyle, Is.EqualTo (2));
+			Assert.That (converted.BlendMode, Is.EqualTo (BlendMode.Multiply));
+			Assert.That (converted.DashPattern, Is.EqualTo ("-."));
+			Assert.That (converted.DashSpacing, Is.EqualTo (3));
+		});
+
+		BaseEditEngine.SEngines.Clear ();
+	}
+
+	// Pins docs-private/refactor.md T1: Create -> ToShapeObject -> Clone must round-trip every field
+	// so a shape reload or duplicate never quietly drops state the way Convert used to.
+	[Test]
+	public void CreateToShapeObjectCloneRoundTripsAllFields ()
+	{
+		UserLayer layer = Layer (0);
+
+		ShapeObject source = Box (ShapeFill, new RectangleI (0, 0, CanvasSize - 1, CanvasSize - 1));
+		DocumentSelection clip = SelectionOf (new RectangleI (0, 0, CanvasSize / 2, CanvasSize / 2));
+		source.Clip = clip;
+		source.FillStyle = 2;
+		source.BlendMode = BlendMode.Multiply;
+		source.DashPattern = "-.";
+		source.DashSpacing = 3;
+		source.Opacity = 0.5;
+		source.Hidden = true;
+
+		ShapeObject roundTripped = ShapeEngineCollection.Create (layer, source).ToShapeObject ();
+		ShapeObject cloned = roundTripped.Clone ();
+
+		Assert.Multiple (() => {
+			Assert.That (roundTripped.Clip, Is.SameAs (clip));
+			Assert.That (roundTripped.FillStyle, Is.EqualTo (2));
+			Assert.That (roundTripped.BlendMode, Is.EqualTo (BlendMode.Multiply));
+			Assert.That (roundTripped.DashPattern, Is.EqualTo ("-."));
+			Assert.That (roundTripped.DashSpacing, Is.EqualTo (3));
+			Assert.That (roundTripped.Opacity, Is.EqualTo (0.5));
+			Assert.That (roundTripped.Hidden, Is.True);
+
+			Assert.That (cloned.Clip, Is.SameAs (clip));
+			Assert.That (cloned.FillStyle, Is.EqualTo (2));
+			Assert.That (cloned.BlendMode, Is.EqualTo (BlendMode.Multiply));
+			Assert.That (cloned.DashPattern, Is.EqualTo ("-."));
+			Assert.That (cloned.DashSpacing, Is.EqualTo (3));
+			Assert.That (cloned.Opacity, Is.EqualTo (0.5));
+			Assert.That (cloned.Hidden, Is.True);
+		});
+	}
 }

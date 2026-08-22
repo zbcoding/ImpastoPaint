@@ -256,6 +256,10 @@ public static class Icons
 	public const string ToolDefault = "tool-default-symbolic";
 
 	public const string ToolCloneStamp = "tool-clonestamp-symbolic";
+	// No consumer in this repo - the private Impasto.Premium addin's HealingBrushTool/SmartPatchTool
+	// reference these directly (Pinta.Resources.Icons.ToolHealingBrush/.ToolSmartPatch) rather than
+	// vendoring their own icons, so removing either the constants or the SVGs below would break its
+	// build.
 	public const string ToolHealingBrush = "tool-healingbrush-symbolic";
 	public const string ToolSmartPatch = "tool-smartpatch-symbolic";
 	public const string ToolColorPicker = "tool-colorpicker-symbolic";

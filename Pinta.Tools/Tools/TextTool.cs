@@ -503,7 +503,7 @@ public sealed class TextTool : BaseTool
 			left_alignment_btn.TooltipText = Translations.GetString ("Left Align");
 			left_alignment_btn.CanFocus = false;
 			left_alignment_btn.Active = alignment == TextAlignment.Left;
-			left_alignment_btn.OnToggled += HandleLeftAlignmentButtonToggled;
+			left_alignment_btn.OnToggled += (_, _) => HandleAlignmentButtonToggled (left_alignment_btn);
 		}
 
 		tb.Append (left_alignment_btn);
@@ -514,7 +514,7 @@ public sealed class TextTool : BaseTool
 			center_alignment_btn.TooltipText = Translations.GetString ("Center Align");
 			center_alignment_btn.CanFocus = false;
 			center_alignment_btn.Active = alignment == TextAlignment.Center;
-			center_alignment_btn.OnToggled += HandleCenterAlignmentButtonToggled;
+			center_alignment_btn.OnToggled += (_, _) => HandleAlignmentButtonToggled (center_alignment_btn);
 		}
 
 		tb.Append (center_alignment_btn);
@@ -525,7 +525,7 @@ public sealed class TextTool : BaseTool
 			right_alignment_btn.TooltipText = Translations.GetString ("Right Align");
 			right_alignment_btn.CanFocus = false;
 			right_alignment_btn.Active = alignment == TextAlignment.Right;
-			right_alignment_btn.OnToggled += HandleRightAlignmentButtonToggled;
+			right_alignment_btn.OnToggled += (_, _) => HandleAlignmentButtonToggled (right_alignment_btn);
 		}
 
 		tb.Append (right_alignment_btn);
@@ -537,7 +537,7 @@ public sealed class TextTool : BaseTool
 			justify_alignment_btn.CanFocus = false;
 			justify_alignment_btn.Active = alignment == TextAlignment.Justify;
 			justify_alignment_btn.Sensitive = AreaMode;
-			justify_alignment_btn.OnToggled += HandleJustifyAlignmentButtonToggled;
+			justify_alignment_btn.OnToggled += (_, _) => HandleAlignmentButtonToggled (justify_alignment_btn);
 		}
 
 		tb.Append (justify_alignment_btn);
@@ -796,53 +796,19 @@ public sealed class TextTool : BaseTool
 			RedrawText (is_editing);
 	}
 
-	private void HandleLeftAlignmentButtonToggled (object? sender, EventArgs e)
+	// The four alignment buttons act as a radio group with no GTK radio-group backing: activating
+	// one deactivates the other three, and deactivating the only active one snaps it back active
+	// (there is always exactly one alignment selected).
+	private void HandleAlignmentButtonToggled (Gtk.ToggleButton toggled)
 	{
-		if (left_alignment_btn.Active) {
-			right_alignment_btn.Active = false;
-			center_alignment_btn.Active = false;
-			justify_alignment_btn.Active = false;
-		} else if (!right_alignment_btn.Active && !center_alignment_btn.Active && !justify_alignment_btn.Active) {
-			left_alignment_btn.Active = true;
-		}
+		Gtk.ToggleButton[] all = [left_alignment_btn, center_alignment_btn, right_alignment_btn, justify_alignment_btn];
 
-		UpdateFont ();
-	}
-
-	private void HandleCenterAlignmentButtonToggled (object? sender, EventArgs e)
-	{
-		if (center_alignment_btn.Active) {
-			right_alignment_btn.Active = false;
-			left_alignment_btn.Active = false;
-			justify_alignment_btn.Active = false;
-		} else if (!right_alignment_btn.Active && !left_alignment_btn.Active && !justify_alignment_btn.Active) {
-			center_alignment_btn.Active = true;
-		}
-
-		UpdateFont ();
-	}
-
-	private void HandleRightAlignmentButtonToggled (object? sender, EventArgs e)
-	{
-		if (right_alignment_btn.Active) {
-			center_alignment_btn.Active = false;
-			left_alignment_btn.Active = false;
-			justify_alignment_btn.Active = false;
-		} else if (!center_alignment_btn.Active && !left_alignment_btn.Active && !justify_alignment_btn.Active) {
-			right_alignment_btn.Active = true;
-		}
-
-		UpdateFont ();
-	}
-
-	private void HandleJustifyAlignmentButtonToggled (object? sender, EventArgs e)
-	{
-		if (justify_alignment_btn.Active) {
-			center_alignment_btn.Active = false;
-			left_alignment_btn.Active = false;
-			right_alignment_btn.Active = false;
-		} else if (!center_alignment_btn.Active && !left_alignment_btn.Active && !right_alignment_btn.Active) {
-			justify_alignment_btn.Active = true;
+		if (toggled.Active) {
+			foreach (Gtk.ToggleButton btn in all)
+				if (btn != toggled)
+					btn.Active = false;
+		} else if (!all.Any (btn => btn != toggled && btn.Active)) {
+			toggled.Active = true;
 		}
 
 		UpdateFont ();

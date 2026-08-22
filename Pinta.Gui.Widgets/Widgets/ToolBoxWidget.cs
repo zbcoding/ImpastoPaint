@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Pinta.Core;
@@ -541,43 +542,31 @@ public sealed partial class ToolBoxWidget
 	private void ShowPinMenu (Gtk.Widget anchor, BaseTool tool)
 	{
 		bool pinned = pinned_buttons.ContainsKey (tool);
-
-		Gtk.Button action = Gtk.Button.New ();
-		action.SetCssClasses ([AdwaitaStyles.Flat]);
-
-		Gtk.Box row = Gtk.Box.New (Gtk.Orientation.Horizontal, 6);
-		row.Append (Gtk.Image.NewFromIconName (Resources.StandardIcons.Pin));
-		row.Append (Gtk.Label.New (pinned
-			? Translations.GetString ("Unpin this item")
-			: Translations.GetString ("Pin this item")));
-		action.SetChild (row);
-
-		Gtk.Popover popover = Gtk.Popover.New ();
-		popover.SetChild (action);
-		popover.SetParent (anchor);
-		popover.Position = Gtk.PositionType.Right;
-		popover.OnClosed += (_, _) => {
-			open_pin_menu = null;
-			popover.Unparent ();
-		};
-
-		action.OnClicked += (_, _) => {
-			popover.Popdown ();
-			SetPinned (tool, !pinned);
-		};
-
-		open_pin_menu = popover;
-		popover.Popup ();
+		ShowPinMenu (
+			anchor,
+			pinned ? Translations.GetString ("Unpin this item") : Translations.GetString ("Pin this item"),
+			() => SetPinned (tool, !pinned));
 	}
 
 	private void ShowClearPinnedMenu (Gtk.Widget anchor)
+		=> ShowPinMenu (
+			anchor,
+			Translations.GetString ("Clear pinned tools"),
+			() => {
+				foreach (BaseTool tool in pinned_buttons.Keys.ToList ())
+					SetPinned (tool, false);
+			});
+
+	// The one-item pin popover both the per-tool "pin/unpin" menu and the toolbox-wide "clear
+	// pinned" menu show: a single flat button with a pin icon, closing itself on click.
+	private void ShowPinMenu (Gtk.Widget anchor, string labelText, Action onClicked)
 	{
 		Gtk.Button action = Gtk.Button.New ();
 		action.SetCssClasses ([AdwaitaStyles.Flat]);
 
 		Gtk.Box row = Gtk.Box.New (Gtk.Orientation.Horizontal, 6);
 		row.Append (Gtk.Image.NewFromIconName (Resources.StandardIcons.Pin));
-		row.Append (Gtk.Label.New (Translations.GetString ("Clear pinned tools")));
+		row.Append (Gtk.Label.New (labelText));
 		action.SetChild (row);
 
 		Gtk.Popover popover = Gtk.Popover.New ();
@@ -591,8 +580,7 @@ public sealed partial class ToolBoxWidget
 
 		action.OnClicked += (_, _) => {
 			popover.Popdown ();
-			foreach (BaseTool tool in pinned_buttons.Keys.ToList ())
-				SetPinned (tool, false);
+			onClicked ();
 		};
 
 		open_pin_menu = popover;

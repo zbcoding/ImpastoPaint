@@ -694,15 +694,17 @@ internal sealed class MainWindow
 		colors_wheel_popover.Position = Gtk.PositionType.Top;
 		colors_wheel_popover.SetParent (colors_palette);
 		colors_wheel_popover.Child = colors_popover_box;
-		colors_palette.ColorWheelClicked += (_, _) => {
-			RebuildColorPopoverSections ();
-			RectangleD r = colors_palette.ColorWheelButtonRect;
-			colors_wheel_popover.PointingTo = new Gdk.Rectangle {
+		static Gdk.Rectangle ToPointingRect (RectangleD r)
+			=> new () {
 				X = (int) r.X,
 				Y = (int) r.Y,
 				Width = (int) r.Width,
 				Height = (int) r.Height,
 			};
+
+		colors_palette.ColorWheelClicked += (_, _) => {
+			RebuildColorPopoverSections ();
+			colors_wheel_popover.PointingTo = ToPointingRect (colors_palette.ColorWheelButtonRect);
 			colors_wheel_popover.Popup ();
 		};
 		colors_palette.FloatColorsClicked += (_, _) => ShowFloatingColors (null);
@@ -726,13 +728,7 @@ internal sealed class MainWindow
 		};
 		reset_popover.SetChild (reset_button);
 		colors_palette.ResetColorWindowClicked += (_, _) => {
-			RectangleD r = colors_palette.FloatColorsButtonRect;
-			reset_popover.PointingTo = new Gdk.Rectangle {
-				X = (int) r.X,
-				Y = (int) r.Y,
-				Width = (int) r.Width,
-				Height = (int) r.Height,
-			};
+			reset_popover.PointingTo = ToPointingRect (colors_palette.FloatColorsButtonRect);
 			reset_popover.Popup ();
 		};
 

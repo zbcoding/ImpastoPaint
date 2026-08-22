@@ -608,14 +608,7 @@ public abstract class BaseEditEngine
 			UpdateOutlineWidthTooltip ();
 			PintaCore.Shortcuts.ShortcutsChanged += (_, _) => UpdateOutlineWidthTooltip ();
 
-			outline_width.OnValueChanged += (o, e) => {
-
-				ShapeEngine? selEngine = SelectedShapeEngine;
-				if (selEngine == null) return;
-				selEngine.BrushWidth = BrushWidth;
-				StorePreviousSettings ();
-				DrawActiveShape (false, false, true, false, false);
-			};
+			outline_width.OnValueChanged += (o, e) => HandleSelectedEngineChanged (engine => engine.BrushWidth = BrushWidth);
 		}
 
 		tb.Append (outline_width);
@@ -635,26 +628,25 @@ public abstract class BaseEditEngine
 			)
 		);
 
-		dpbBox.OnChanged += (o, e) => {
-			ShapeEngine? selEngine = SelectedShapeEngine;
-			if (selEngine == null) return;
-			selEngine.DashPattern = dpbBox.GetActiveText ()!;
-			StorePreviousSettings ();
-			DrawActiveShape (false, false, true, false, false);
-		};
+		dpbBox.OnChanged += (o, e) => HandleSelectedEngineChanged (engine => engine.DashPattern = dpbBox.GetActiveText ()!);
 
 		if (dash_pattern_box.SpacingComboBox is not null) {
 			int spacing = settings.GetSetting (SettingNames.DashSpacing (toolPrefix), 1);
 			dash_pattern_box.SpacingComboBox.ComboBox.Active = SpacingToIndex (spacing);
 
-			dash_pattern_box.SpacingComboBox.ComboBox.OnChanged += (o, e) => {
-				ShapeEngine? selEngine = SelectedShapeEngine;
-				if (selEngine == null) return;
-				selEngine.DashSpacing = DashSpacingSetting;
-				StorePreviousSettings ();
-				DrawActiveShape (false, false, true, false, false);
-			};
+			dash_pattern_box.SpacingComboBox.ComboBox.OnChanged += (o, e) => HandleSelectedEngineChanged (engine => engine.DashSpacing = DashSpacingSetting);
 		}
+	}
+
+	// Shared by every toolbar control that edits the selected shape's live engine: apply the
+	// change, persist it as the tool's new default, and redraw. Guards on there being a selection.
+	private void HandleSelectedEngineChanged (Action<ShapeEngine> apply)
+	{
+		ShapeEngine? selEngine = SelectedShapeEngine;
+		if (selEngine == null) return;
+		apply (selEngine);
+		StorePreviousSettings ();
+		DrawActiveShape (false, false, true, false, false);
 	}
 
 	// Maps a spacing multiplier back to its dropdown index (entries: "-,1-6,8,10").
@@ -730,17 +722,11 @@ public abstract class BaseEditEngine
 	public virtual bool HandleBeforeRedo ()
 		=> false;
 
-	public virtual void HandleAfterUndo ()
-	{
-		ShapeEngine? activeEngine = ActiveShapeEngine;
+	public virtual void HandleAfterUndo () => RedrawAfterHistoryChange ();
 
-		if (activeEngine != null)
-			UpdateToolbarSettings (activeEngine);
+	public virtual void HandleAfterRedo () => RedrawAfterHistoryChange ();
 
-		DrawActiveShape (true, false, true, false, false); // Draw the current state.
-	}
-
-	public virtual void HandleAfterRedo ()
+	private void RedrawAfterHistoryChange ()
 	{
 		ShapeEngine? activeEngine = ActiveShapeEngine;
 
@@ -892,14 +878,50 @@ public abstract class BaseEditEngine
 
 	private void HandleRight (ToolKeyEventArgs e, bool selectPoint = false)
 	{
+		if (selectPoint || e.IsControlPressed)
+			SelectSiblingPoint (+1);
+		else
+			NudgeSelectedPoint (1d, 0d);
+	}
+
+	private void HandleLeft (ToolKeyEventArgs e, bool selectPoint = false)
+	{
+		if (selectPoint || e.IsControlPressed)
+			SelectSiblingPoint (-1);
+		else
+			NudgeSelectedPoint (-1d, 0d);
+	}
+
+	private void HandleDown () => NudgeSelectedPoint (0d, 1d);
+
+	private void HandleUp () => NudgeSelectedPoint (0d, -1d);
+
+	//Moves the selected control point by (dx, dy).
+	private void NudgeSelectedPoint (double dx, double dy)
+	{
 		//Make sure a control point is selected.
 
 		if (SelectedPointIndex < 0)
 			return;
 
-		if (selectPoint || e.IsControlPressed) {
-			//Change the selected control point to be the following one.
+		PointD originalPosition = SelectedPoint!.Position; // NRT - Checked by SelectedPointIndex
+		SelectedPoint.Position = originalPosition with { X = originalPosition.X + dx, Y = originalPosition.Y + dy };
 
+		DrawActiveShape (true, false, true, false, false);
+	}
+
+	//Changes the selected control point to the next (+1) or previous (-1) one, wrapping around.
+	//The two directions guard the active-engine lookup differently (following the shape they
+	//always had): +1 skips entirely with no active engine, -1 still moves and only skips the
+	//wraparound reset - preserved rather than smoothed over.
+	private void SelectSiblingPoint (int direction)
+	{
+		//Make sure a control point is selected.
+
+		if (SelectedPointIndex < 0)
+			return;
+
+		if (direction > 0) {
 			ShapeEngine? activeEngine = ActiveShapeEngine;
 
 			if (activeEngine != null) {
@@ -910,24 +932,6 @@ public abstract class BaseEditEngine
 
 			}
 		} else {
-			//Move the selected control point.
-			PointD originalPosition = SelectedPoint!.Position; // NRT - Checked by SelectedPointIndex
-			SelectedPoint.Position = originalPosition with { X = originalPosition.X + 1d };
-		}
-
-		DrawActiveShape (true, false, true, false, false);
-	}
-
-	private void HandleLeft (ToolKeyEventArgs e, bool selectPoint = false)
-	{
-		//Make sure a control point is selected.
-
-		if (SelectedPointIndex < 0)
-			return;
-
-		if (selectPoint || e.IsControlPressed) {
-			//Change the selected control point to be the previous one.
-
 			--SelectedPointIndex;
 
 			if (SelectedPointIndex < 0) {
@@ -937,39 +941,7 @@ public abstract class BaseEditEngine
 					SelectedPointIndex = activeEngine.ControlPoints.Count - 1;
 
 			}
-		} else {
-			//Move the selected control point.
-			PointD originalPosition = SelectedPoint!.Position; // NRT - Checked by SelectedPointIndex
-			SelectedPoint.Position = originalPosition with { X = originalPosition.X - 1d };
 		}
-
-		DrawActiveShape (true, false, true, false, false);
-	}
-
-	private void HandleDown ()
-	{
-		//Make sure a control point is selected.
-
-		if (SelectedPointIndex < 0)
-			return;
-
-		//Move the selected control point.
-		PointD originalPosition = SelectedPoint!.Position; // NRT - Checked by SelectedPointIndex
-		SelectedPoint.Position = originalPosition with { Y = originalPosition.Y + 1d };
-
-		DrawActiveShape (true, false, true, false, false);
-	}
-
-	private void HandleUp ()
-	{
-		//Make sure a control point is selected.
-
-		if (SelectedPointIndex < 0)
-			return;
-
-		//Move the selected control point.
-		PointD originalPosition = SelectedPoint!.Position; // NRT - Checked by SelectedPointIndex
-		SelectedPoint.Position = originalPosition with { Y = originalPosition.Y - 1d };
 
 		DrawActiveShape (true, false, true, false, false);
 	}

@@ -282,22 +282,10 @@ public sealed partial class StatusBarColorPaletteWidget
 		if (!swatches_folded) {
 
 			// Draw Secondary color swatch
-
-			if (palette.SecondaryColor.A < 1)
-				g.FillRectangle (secondary_rect, checkeredPattern);
-
-			g.FillRectangle (secondary_rect, palette.SecondaryColor);
-			g.DrawRectangle (new RectangleD (secondary_rect.X + 1, secondary_rect.Y + 1, secondary_rect.Width - 2, secondary_rect.Height - 2), new Color (1, 1, 1), 1);
-			g.DrawRectangle (secondary_rect, new Color (0, 0, 0), 1);
+			DrawSwatch (g, secondary_rect, palette.SecondaryColor, checkeredPattern);
 
 			// Draw Primary color swatch
-
-			if (palette.PrimaryColor.A < 1)
-				g.FillRectangle (primary_rect, checkeredPattern);
-
-			g.FillRectangle (primary_rect, palette.PrimaryColor);
-			g.DrawRectangle (new RectangleD (primary_rect.X + 1, primary_rect.Y + 1, primary_rect.Width - 2, primary_rect.Height - 2), new Color (1, 1, 1), 1);
-			g.DrawRectangle (primary_rect, new Color (0, 0, 0), 1);
+			DrawSwatch (g, primary_rect, palette.PrimaryColor, checkeredPattern);
 
 			// Draw the swap icon.
 			DrawSwapIcon (g, cairo_fg_color);
@@ -318,32 +306,16 @@ public sealed partial class StatusBarColorPaletteWidget
 			// can transiently hold more if the extended-palette setting was just toggled.
 			int recent_count = Math.Min (recent.Count, palette.MaxRecentlyUsedColor);
 
-			for (int i = 0; i < recent_count; i++) {
-
-				RectangleD swatchBounds = PaletteWidget.GetSwatchBounds (palette, i, recent_palette_rect, true, swatch_size);
-				Color recentColor = recent.ElementAt (i);
-
-				if (recentColor.A < 1) // Only draw checkered pattern if there is transparency
-					g.FillRectangle (swatchBounds, checkeredPattern);
-
-				g.FillRectangle (swatchBounds, recentColor);
-			}
+			for (int i = 0; i < recent_count; i++)
+				DrawSwatchFill (g, PaletteWidget.GetSwatchBounds (palette, i, recent_palette_rect, true, swatch_size), recent.ElementAt (i), checkeredPattern);
 		}
 
 		// Draw color swatches
 		if (!quick_colors_folded) {
 			var currentPalette = palette.CurrentPalette;
 
-			for (int i = 0; i < currentPalette.Colors.Count; i++) {
-
-				RectangleD swatchBounds = PaletteWidget.GetSwatchBounds (palette, i, palette_rect, false, swatch_size);
-				Color paletteColor = currentPalette.Colors[i];
-
-				if (paletteColor.A < 1) // Only draw checkered pattern if there is transparency
-					g.FillRectangle (swatchBounds, checkeredPattern);
-
-				g.FillRectangle (swatchBounds, paletteColor);
-			}
+			for (int i = 0; i < currentPalette.Colors.Count; i++)
+				DrawSwatchFill (g, PaletteWidget.GetSwatchBounds (palette, i, palette_rect, false, swatch_size), currentPalette.Colors[i], checkeredPattern);
 		}
 
 		// Draw the wheel/float action buttons last so they sit on top of the color
@@ -353,6 +325,28 @@ public sealed partial class StatusBarColorPaletteWidget
 			DrawActionButtons (g);
 
 		g.Dispose ();
+	}
+
+	//Fills a swatch (checkered first if it has transparency) and outlines it in white-then-black,
+	//as the primary/secondary swatches at the left of the bar do.
+	private static void DrawSwatch (Context g, RectangleD rect, Color color, Pattern checkeredPattern)
+	{
+		if (color.A < 1)
+			g.FillRectangle (rect, checkeredPattern);
+
+		g.FillRectangle (rect, color);
+		g.DrawRectangle (new RectangleD (rect.X + 1, rect.Y + 1, rect.Width - 2, rect.Height - 2), new Color (1, 1, 1), 1);
+		g.DrawRectangle (rect, new Color (0, 0, 0), 1);
+	}
+
+	//Fills a swatch (checkered first if it has transparency) with no outline, as the recent/quick
+	//palette grids do.
+	private static void DrawSwatchFill (Context g, RectangleD rect, Color color, Pattern checkeredPattern)
+	{
+		if (color.A < 1) // Only draw checkered pattern if there is transparency
+			g.FillRectangle (rect, checkeredPattern);
+
+		g.FillRectangle (rect, color);
 	}
 
 	private void DrawSwapIcon (Context g, Color color)
@@ -661,23 +655,33 @@ public sealed partial class StatusBarColorPaletteWidget
 		// left margin instead.
 		double cursor_x = swatches_folded ? PaletteWidget.PALETTE_MARGIN : SWATCHES_SECTION_RIGHT;
 
-		// Recent-colors section: a separator, then a small clock icon column, then the
-		// recent swatches. Folds out after the quick colors section.
-		if (!recent_colors_folded) {
-			recent_separator_x = cursor_x;
-			recent_icon_rect = new RectangleD (
-				recent_separator_x + SECTION_GAP,
+		// Lays out one "separator, small icon column, swatch grid" section starting at
+		// cursorX, returning where the next section should start. Shared by the recent-colors
+		// and quick-colors sections below, which differ only in column count and which fields
+		// the result lands in.
+		(double SeparatorX, RectangleD IconRect, RectangleD ContentRect, double NextCursorX) LayoutSection (double cursorX, int columns)
+		{
+			double separatorX = cursorX;
+			RectangleD iconRect = new (
+				separatorX + SECTION_GAP,
 				2 + (swatch_height - ICON_SIZE) / 2.0,
 				ICON_SIZE,
 				ICON_SIZE);
-			double recent_swatches_x = recent_icon_rect.Right + SECTION_GAP;
+			double swatchesX = iconRect.Right + SECTION_GAP;
 
-			recent_palette_rect = new RectangleD (
-				recent_swatches_x,
+			RectangleD contentRect = new (
+				swatchesX,
 				swatch_y,
-				swatch_size * recent_cols,
+				swatch_size * columns,
 				swatch_size * PaletteWidget.PALETTE_ROWS);
-			cursor_x = recent_palette_rect.Right + SECTION_GAP;
+
+			return (separatorX, iconRect, contentRect, contentRect.Right + SECTION_GAP);
+		}
+
+		// Recent-colors section: a separator, then a small clock icon column, then the
+		// recent swatches. Folds out after the quick colors section.
+		if (!recent_colors_folded) {
+			(recent_separator_x, recent_icon_rect, recent_palette_rect, cursor_x) = LayoutSection (cursor_x, recent_cols);
 		} else {
 			recent_separator_x = -1;
 			recent_icon_rect = RectangleD.Zero;
@@ -687,24 +691,12 @@ public sealed partial class StatusBarColorPaletteWidget
 		// Palette section: a separator, then a small palette icon column, then the
 		// rainbow swatches. Folds out before the recent-colors section, since it's
 		// usually the wider of the two.
+		//
+		// The swatches are drawn for every palette color, so the clickable rect must cover
+		// them all - the action icons are hit-tested first, so they stay safe even if a long
+		// palette is drawn underneath them.
 		if (!quick_colors_folded) {
-			palette_separator_x = cursor_x;
-			palette_icon_rect = new RectangleD (
-				palette_separator_x + SECTION_GAP,
-				2 + (swatch_height - ICON_SIZE) / 2.0,
-				ICON_SIZE,
-				ICON_SIZE);
-			double palette_swatches_x = palette_icon_rect.Right + SECTION_GAP;
-
-			// The swatches are drawn for every palette color, so the clickable rect must
-			// cover them all - the action icons are hit-tested first, so they stay safe
-			// even if a long palette is drawn underneath them.
-			palette_rect = new RectangleD (
-				palette_swatches_x,
-				swatch_y,
-				swatch_size * PaletteColumns,
-				swatch_size * PaletteWidget.PALETTE_ROWS);
-			cursor_x = palette_rect.Right + SECTION_GAP;
+			(palette_separator_x, palette_icon_rect, palette_rect, cursor_x) = LayoutSection (cursor_x, PaletteColumns);
 		} else {
 			palette_separator_x = -1;
 			palette_icon_rect = RectangleD.Zero;

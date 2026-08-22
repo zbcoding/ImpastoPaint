@@ -1802,25 +1802,20 @@ public abstract class BaseEditEngine
 		// the next shape-tool redraw silently flipped it back — and with it the blend between the two.
 		RectangleD? totalDirty = null;
 		int shapeIndex = 0;
-		foreach (ILayerObject obj in layer.Objects) {
-			switch (obj) {
-				case ShapeObject shape:
-					if (shapeIndex < SEngines.Count) {
-						RectangleD dirty = DrawShapeGeometry (SEngines[shapeIndex], surface);
-						totalDirty = totalDirty?.Union (dirty) ?? dirty;
-					} else {
-						// No live engine yet (the list gained a shape the tool hasn't bound); render
-						// from the stored object so it still composites in the right place.
-						ShapeObjectRenderer.Render (surface, layer, shape);
-					}
-					shapeIndex++;
-					break;
-
-				case TextObject text:
-					TextObjectRenderer.Render (surface, text, PintaCore.Chrome, antialias: true);
-					break;
-			}
-		}
+		ObjectLayerRenderWalk.Walk (
+			layer,
+			renderShape: shape => {
+				if (shapeIndex < SEngines.Count) {
+					RectangleD dirty = DrawShapeGeometry (SEngines[shapeIndex], surface);
+					totalDirty = totalDirty?.Union (dirty) ?? dirty;
+				} else {
+					// No live engine yet (the list gained a shape the tool hasn't bound); render
+					// from the stored object so it still composites in the right place.
+					ShapeObjectRenderer.Render (surface, layer, shape);
+				}
+				shapeIndex++;
+			},
+			renderText: text => TextObjectRenderer.Render (surface, text, PintaCore.Chrome, antialias: true));
 
 		// A layer carrying modifier nodes is painted from UserLayer.Composite, not from the object
 		// surface just drawn (see UserLayer.GetLayersToPaint), so the live geometry has to be folded

@@ -2134,27 +2134,24 @@ public sealed class TextTool : BaseTool
 		RectangleI allBounds = RectangleI.Zero;
 		RectangleI cursorBounds = RectangleI.Zero;
 
-		foreach (ILayerObject o in userLayer.Objects) {
-			switch (o) {
-				case ShapeObject shape:
-					if (!shape.RasterizeOnFinalize)
-						LayerObjectSelection.RenderShape (surface, userLayer, shape);
-					break;
+		ObjectLayerRenderWalk.Walk (
+			userLayer,
+			renderShape: shape => {
+				if (!shape.RasterizeOnFinalize)
+					LayerObjectSelection.RenderShape (surface, userLayer, shape);
+			},
+			renderText: obj => {
+				// Skip empty objects, but keep rendering the caret for the one being typed into.
+				if (obj.IsEmpty && obj != current_text_object)
+					return;
 
-				case TextObject obj:
-					// Skip empty objects, but keep rendering the caret for the one being typed into.
-					if (obj.IsEmpty && obj != current_text_object)
-						continue;
+				RectangleI r = GetTextObjectBounds (obj);
+				obj.PreviousTextBounds = obj.TextBounds;
+				obj.TextBounds = r;
+				allBounds = allBounds.Union (r);
 
-					RectangleI r = GetTextObjectBounds (obj);
-					obj.PreviousTextBounds = obj.TextBounds;
-					obj.TextBounds = r;
-					allBounds = allBounds.Union (r);
-
-					DrawTextObject (userLayer, obj);
-					break;
-			}
-		}
+				DrawTextObject (userLayer, obj);
+			});
 
 		if (is_editing && current_text_object is not null) {
 			layout.Engine = current_text_object.Engine;
@@ -2195,25 +2192,22 @@ public sealed class TextTool : BaseTool
 		surface.Clear ();
 
 		// Unified z-order, for the same reason as RedrawText.
-		foreach (ILayerObject o in layer.Objects) {
-			switch (o) {
-				case ShapeObject shape:
-					if (!shape.RasterizeOnFinalize)
-						LayerObjectSelection.RenderShape (surface, layer, shape);
-					break;
+		ObjectLayerRenderWalk.Walk (
+			layer,
+			renderShape: shape => {
+				if (!shape.RasterizeOnFinalize)
+					LayerObjectSelection.RenderShape (surface, layer, shape);
+			},
+			renderText: obj => {
+				if (obj.IsEmpty)
+					return;
 
-				case TextObject obj:
-					if (obj.IsEmpty)
-						continue;
+				RectangleI r = GetTextObjectBounds (obj);
+				obj.PreviousTextBounds = obj.TextBounds;
+				obj.TextBounds = r;
 
-					RectangleI r = GetTextObjectBounds (obj);
-					obj.PreviousTextBounds = obj.TextBounds;
-					obj.TextBounds = r;
-
-					DrawTextObject (layer, obj);
-					break;
-			}
-		}
+				DrawTextObject (layer, obj);
+			});
 
 		FoldObjectsIntoComposite (layer);
 	}

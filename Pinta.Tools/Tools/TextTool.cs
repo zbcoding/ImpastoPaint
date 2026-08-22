@@ -1182,7 +1182,7 @@ public sealed class TextTool : BaseTool
 		// The object exists now but isn't pushed to history until commit, so tell the layers dock
 		// directly — otherwise its sub-node row only appears one history step later.
 		LayerObjectSelection.RaiseObjectsChanged ();
-		StartEditing (newObject);
+		StartEditing (newObject, isNewObject: true);
 		undo_objects = objectsBeforeAdd;
 		if (AreaMode) {
 			//Draw-the-box-first: give it a provisional width and let the drag define the
@@ -1858,7 +1858,11 @@ public sealed class TextTool : BaseTool
 
 	#region Start/Stop Editing
 
-	private void StartEditing (TextObject obj)
+	// isNewObject stamps the current palette colors onto a just-created object, so it starts out
+	// in whatever color the user has selected. Re-editing an existing object (a canvas click or a
+	// layers-dock sub-row click) must NOT do this — it would recolor already-typed text to whatever
+	// the palette happens to show, with no action from the user beyond selecting the object.
+	private void StartEditing (TextObject obj, bool isNewObject = false)
 	{
 		if (!workspace.HasOpenDocuments)
 			return;
@@ -1878,8 +1882,9 @@ public sealed class TextTool : BaseTool
 
 		CaptureUndoState ();
 
-		//Update Text Engine to use current colors of color palette
-		UpdateTextEngineColor ();
+		if (isNewObject)
+			//Update Text Engine to use current colors of color palette
+			UpdateTextEngineColor ();
 
 		//Show this object's own font/style in the toolbar, rather than whatever the
 		//toolbar last showed for a different object (or its defaults, for a brand new

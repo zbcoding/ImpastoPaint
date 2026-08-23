@@ -26,6 +26,7 @@
 
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Pinta.Resources;
 
 namespace Pinta.Core;
 
@@ -186,6 +187,43 @@ partial class GtkExtensions
 		dialog.Present ();
 
 		return completionSource.Task;
+	}
+
+	/// <summary>
+	/// Shared plumbing for the app's many cancel-or-confirm prompts: builds a MessageDialog with a
+	/// cancel response plus one confirm response (suggested or destructive appearance), runs it, and
+	/// returns whether the user confirmed. The few dialogs that need a third response, extra children,
+	/// or blocking runs stay hand-rolled.
+	/// </summary>
+	public static Task<bool> RunConfirmAsync (
+		Gtk.Window parent,
+		string heading,
+		string body,
+		string confirmLabel,
+		bool destructive = false)
+	{
+		const string cancel_response = "cancel";
+		const string confirm_response = "confirm";
+
+		Adw.MessageDialog dialog = Adw.MessageDialog.New (parent, heading, body);
+		dialog.AddResponse (cancel_response, Translations.GetString ("_Cancel"));
+		dialog.AddResponse (confirm_response, confirmLabel);
+		dialog.SetResponseAppearance (confirm_response, destructive ? Adw.ResponseAppearance.Destructive : Adw.ResponseAppearance.Suggested);
+		dialog.CloseResponse = cancel_response;
+
+		// A destructive action deliberately isn't the default; Enter then means cancel.
+		dialog.DefaultResponse = destructive ? cancel_response : confirm_response;
+
+		return RunAndCheckConfirmed (dialog, cancel_response, confirm_response);
+	}
+
+	private static async Task<bool> RunAndCheckConfirmed (
+		this Adw.MessageDialog dialog,
+		string cancel_response,
+		string confirm_response)
+	{
+		using (dialog)
+			return await dialog.RunAsync () == confirm_response;
 	}
 
 	public static Task<Gtk.ResponseType> RunAsync (this Gtk.Dialog dialog)

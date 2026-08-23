@@ -18,25 +18,18 @@ internal static class LargeImagePrompt
 		if (pixels <= WarnPixelCount)
 			return true;
 
-		string primary = Translations.GetString ("This image size may slow down your computer");
-		// Translators: {0} and {1} are image dimensions; {2} is memory in megabytes.
+		string primary = Translations.GetString ("This image size may slow down your computer");                // Translators: {0} and {1} are image dimensions; {2} is memory in megabytes.
 		string secondary = Translations.GetString (
 			"{0} x {1} pixels needs about {2} MB of memory per layer, plus more for undo history.",
 			newSize.Width,
 			newSize.Height,
 			pixels * 4 / (1024 * 1024));
 
-		using Adw.MessageDialog dialog = Adw.MessageDialog.New (chrome.MainWindow, primary, secondary);
-
-		const string cancel_response = "cancel";
-		const string continue_response = "continue";
-
-		dialog.AddResponse (cancel_response, Translations.GetString ("_Cancel"));
-		dialog.AddResponse (continue_response, Translations.GetString ("_Continue"));
-		dialog.SetResponseAppearance (continue_response, Adw.ResponseAppearance.Destructive);
-		dialog.CloseResponse = cancel_response;
-		dialog.DefaultResponse = cancel_response;
-
-		return await dialog.RunAsync () == continue_response;
+		return await GtkExtensions.RunConfirmAsync (
+			chrome.MainWindow,
+			primary,
+			secondary,
+			Translations.GetString ("_Continue"),
+			destructive: true);
 	}
 }

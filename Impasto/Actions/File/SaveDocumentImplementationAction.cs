@@ -35,10 +35,6 @@ namespace Pinta.Actions;
 
 internal sealed class SaveDocumentImplmentationAction : IActionHandler
 {
-	const string RESPONSE_CANCEL = "cancel";
-	const string RESPONSE_FLATTEN = "flatten";
-	const string RESPONSE_SAVE = "save";
-
 	private readonly FileActions file;
 	private readonly ImageActions image;
 	private readonly ChromeManager chrome;
@@ -296,17 +292,13 @@ internal sealed class SaveDocumentImplmentationAction : IActionHandler
 			string heading = Translations.GetString ("This format does not support layers. Flatten image?");
 			string body = Translations.GetString ("Flattening the image will merge all layers into a single layer.");
 
-			using Adw.MessageDialog dialog = Adw.MessageDialog.New (chrome.MainWindow, heading, body);
-			dialog.AddResponse (RESPONSE_CANCEL, Translations.GetString ("_Cancel"));
-			dialog.AddResponse (RESPONSE_FLATTEN, Translations.GetString ("Flatten"));
-			dialog.SetResponseAppearance (RESPONSE_FLATTEN, Adw.ResponseAppearance.Suggested);
+			bool confirmed = await GtkExtensions.RunConfirmAsync (
+				chrome.MainWindow,
+				heading,
+				body,
+				Translations.GetString ("Flatten"));
 
-			dialog.CloseResponse = RESPONSE_CANCEL;
-			dialog.DefaultResponse = RESPONSE_FLATTEN;
-
-			string response = await dialog.RunAsync ();
-
-			if (response == RESPONSE_CANCEL) {
+			if (!confirmed) {
 				return false;
 			}
 
@@ -339,14 +331,10 @@ internal sealed class SaveDocumentImplmentationAction : IActionHandler
 			+ "\n\n"
 			+ string.Join ("\n", baked.Distinct ());
 
-		using Adw.MessageDialog dialog = Adw.MessageDialog.New (chrome.MainWindow, heading, body);
-		dialog.AddResponse (RESPONSE_CANCEL, Translations.GetString ("_Cancel"));
-		dialog.AddResponse (RESPONSE_SAVE, Translations.GetString ("Save"));
-		dialog.SetResponseAppearance (RESPONSE_SAVE, Adw.ResponseAppearance.Suggested);
-
-		dialog.CloseResponse = RESPONSE_CANCEL;
-		dialog.DefaultResponse = RESPONSE_SAVE;
-
-		return await dialog.RunAsync () != RESPONSE_CANCEL;
+		return await GtkExtensions.RunConfirmAsync (
+			chrome.MainWindow,
+			heading,
+			body,
+			Translations.GetString ("Save"));
 	}
 }

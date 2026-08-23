@@ -55,6 +55,6 @@ public static class Translations
 
 	public static string GetString (string text, params object[] args)
 	{
-		return catalog?.GetString (text, args) ?? text;
+		return catalog?.GetString (text, args) ?? string.Format (text, args);
 	}
 }

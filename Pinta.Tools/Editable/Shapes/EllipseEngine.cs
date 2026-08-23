@@ -466,23 +466,7 @@ public sealed class EllipseEngine : ShapeEngine
 	}
 
 	private static IEnumerable<GeneratedPoint> GenerateCubicBezierCurvePoints (PointD p0, PointD p1, PointD p2, PointD p3, int cPIndex)
-	{
-		const double tInterval = .025d;
-		for (double t = 0d; t < 1d + tInterval; t += tInterval) {
-			double oneMinusT = 1d - t;
-			double oneMinusTSquared = oneMinusT * oneMinusT;
-			double oneMinusTCubed = oneMinusTSquared * oneMinusT;
-			double tSquared = t * t;
-			double tCubed = tSquared * t;
-			double oneMinusTSquaredTimesTTimesThree = oneMinusTSquared * t * 3d;
-			double oneMinusTTimesTSquaredTimesThree = oneMinusT * tSquared * 3d;
-			yield return new GeneratedPoint (
-				new PointD (
-					oneMinusTCubed * p0.X + oneMinusTSquaredTimesTTimesThree * p1.X + oneMinusTTimesTSquaredTimesThree * p2.X + tCubed * p3.X,
-					oneMinusTCubed * p0.Y + oneMinusTSquaredTimesTTimesThree * p1.Y + oneMinusTTimesTSquaredTimesThree * p2.Y + tCubed * p3.Y),
-				cPIndex);
-		}
-	}
+		=> CurveGeneration.CubicBezierSegment (p0, p1, p2, p3, cPIndex);
 
 	private IEnumerable<GeneratedPoint> CreatePoints ()
 	{
@@ -653,36 +637,12 @@ public sealed class EllipseEngine : ShapeEngine
 		double x2, double y2,
 		double x3, double y3,
 		int cPIndex)
-	{
 		//Generates points of partial Polygon containing the calculated Points in the curve.
-		for (double t = 0; t < 1d; t += tInterval) {
-			//There are 3 "layers" in a cubic Bezier curve's calculation. These "layers"
-			//must be calculated for each intermediate Point (for each value of t from
-			//tInterval to 1d). The Points in each "layer" store [the distance between
-			//two consecutive Points from the previous "layer" multiplied by the value
-			//of t (which is between 0d-1d)] plus [the position of the first Point of
-			//the two consecutive Points from the previous "layer"]. This must be
-			//calculated for the X and Y of every consecutive Point in every layer
-			//until the last Point possible is reached, which is the Point on the curve.
-
-			//Note: the code below is an optimized version of the commented explanation above.
-
-			double oneMinusT = 1d - t;
-			double oneMinusTSquared = oneMinusT * oneMinusT;
-			double oneMinusTCubed = oneMinusTSquared * oneMinusT;
-
-			double tSquared = t * t;
-			double tCubed = tSquared * t;
-
-			double oneMinusTSquaredTimesTTimesThree = oneMinusTSquared * t * 3d;
-			double oneMinusTTimesTSquaredTimesThree = oneMinusT * tSquared * 3d;
-
-			yield return new (
-				new PointD (
-					X: oneMinusTCubed * x0 + oneMinusTSquaredTimesTTimesThree * x1 + oneMinusTTimesTSquaredTimesThree * x2 + tCubed * x3,
-					Y: oneMinusTCubed * y0 + oneMinusTSquaredTimesTTimesThree * y1 + oneMinusTTimesTSquaredTimesThree * y2 + tCubed * y3),
-				cPIndex
-			);
-		}
-	}
+		=> CurveGeneration.CubicBezier (
+			tInterval,
+			new PointD (x0, y0),
+			new PointD (x1, y1),
+			new PointD (x2, y2),
+			new PointD (x3, y3),
+			cPIndex);
 }

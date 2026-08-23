@@ -195,42 +195,5 @@ public sealed class LineCurveSeriesEngine : ShapeEngine
 	/// <param name="cPIndex">The index of the previous ControlPoint to the generated points.</param>
 	/// <returns>The List of generated points.</returns>
 	private static IEnumerable<GeneratedPoint> GenerateCubicBezierCurvePoints (PointD p0, PointD p1, PointD p2, PointD p3, int cPIndex)
-	{
-		//Note: this must be low enough for mouse clicks to be properly considered on/off the curve at any given point.
-		const double tInterval = .025d;
-
-		//t will go from 0d to 1d at the interval of tInterval.
-		for (double t = 0d; t < 1d + tInterval; t += tInterval) {
-			//There are 3 "layers" in a cubic Bezier curve's calculation. These "layers"
-			//must be calculated for each intermediate Point (for each value of t from
-			//tInterval to 1d). The Points in each "layer" store [the distance between
-			//two consecutive Points from the previous "layer" multiplied by the value
-			//of t (which is between 0d-1d)] plus [the position of the first Point of
-			//the two consecutive Points from the previous "layer"]. This must be
-			//calculated for the X and Y of every consecutive Point in every layer
-			//until the last Point possible is reached, which is the Point on the curve.
-
-			//Note: the code below is an optimized version of the commented explanation above.
-
-			double oneMinusT = 1d - t;
-			double oneMinusTSquared = oneMinusT * oneMinusT;
-			double oneMinusTCubed = oneMinusTSquared * oneMinusT;
-
-			double tSquared = t * t;
-			double tCubed = tSquared * t;
-
-			double oneMinusTSquaredTimesTTimesThree = oneMinusTSquared * t * 3d;
-			double oneMinusTTimesTSquaredTimesThree = oneMinusT * tSquared * 3d;
-
-			//Resulting Point = (1 - t) ^ 3 * p0 + 3 * (1 - t) ^ 2 * t * p1 + 3 * (1 - t) * t ^ 2 * p2 + t ^ 3 * p3
-			//This is done for both the X and Y given a value t going from 0d to 1d at a very small interval
-			//and given 4 points p0, p1, p2, and p3, where p0 and p3 are end points and p1 and p2 are control points.
-
-			yield return new (
-				new PointD (
-					oneMinusTCubed * p0.X + oneMinusTSquaredTimesTTimesThree * p1.X + oneMinusTTimesTSquaredTimesThree * p2.X + tCubed * p3.X,
-					oneMinusTCubed * p0.Y + oneMinusTSquaredTimesTTimesThree * p1.Y + oneMinusTTimesTSquaredTimesThree * p2.Y + tCubed * p3.Y),
-				cPIndex);
-		}
-	}
+		=> CurveGeneration.CubicBezierSegment (p0, p1, p2, p3, cPIndex);
 }

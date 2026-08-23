@@ -1,4 +1,5 @@
 using System;
+using Cairo;
 using Pinta.Core;
 
 namespace Pinta.Gui.Widgets;
@@ -120,4 +121,53 @@ internal static class PaletteWidget
 	// maxColumns - used to size the containing widget.
 	public static int GetWrappedBandCount (int naturalColumns, int maxColumns)
 		=> Math.Max (1, (naturalColumns + maxColumns - 1) / maxColumns);
+
+	// The click semantics shared by every quick/recent swatch surface (the docked bar and the
+	// floating panel): left sets primary, right sets secondary, middle or Ctrl+left opens the
+	// edit dialog (quick colors only). Returns null when no swatch action applies.
+	public static SwatchClickAction? ClassifySwatchClick (
+		uint button,
+		bool isControlPressed,
+		bool recentColorPalette)
+	{
+		if (recentColorPalette)
+			return button switch {
+				GtkExtensions.MOUSE_LEFT_BUTTON => SwatchClickAction.SetPrimary,
+				GtkExtensions.MOUSE_RIGHT_BUTTON => SwatchClickAction.SetSecondary,
+				_ => null,
+			};
+
+		return button switch {
+			GtkExtensions.MOUSE_RIGHT_BUTTON => SwatchClickAction.SetSecondary,
+			GtkExtensions.MOUSE_LEFT_BUTTON when !isControlPressed => SwatchClickAction.SetPrimary,
+			GtkExtensions.MOUSE_MIDDLE_BUTTON or
+			GtkExtensions.MOUSE_LEFT_BUTTON => SwatchClickAction.EditColor,
+			_ => null,
+		};
+	}
+
+	public enum SwatchClickAction
+	{
+		SetPrimary,
+		SetSecondary,
+		EditColor,
+	}
+
+	internal static string RecentlyPickedColorsLabel => Translations.GetString ("Recently picked colors");
+
+	internal static string QuickColorsLabel => Translations.GetString ("Quick colors");
+
+	// Swatch hover instructions, shared by every swatch surface. Quick colors mention the
+	// middle-click / Ctrl+click edit gesture; recent colors don't have one.
+	internal static string GetSwatchInstructions (bool recentColorPalette)
+		=> recentColorPalette
+		? Translations.GetString ("Left click to set primary color. Right click to set secondary color.")
+		// Translators: {0} is 'Ctrl', or a platform-specific key such as 'Command' on macOS.
+		: Translations.GetString (
+			"Left click to set primary color. Right click to set secondary color. Middle click or press {0} and left click to choose palette color.",
+			PintaCore.System.CtrlLabel ());
+
+	// Standard swatch tooltip: the color's hex value followed by usage instructions.
+	internal static string BuildSwatchTooltip (Color color, string instructions)
+		=> Translations.GetString ("Color") + $": #{color.ToHex ()}\n\n" + instructions;
 }

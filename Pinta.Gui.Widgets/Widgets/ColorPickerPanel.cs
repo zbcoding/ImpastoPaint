@@ -52,7 +52,6 @@ public sealed partial class ColorPickerPanel
 
 	private IPaletteService palette = null!; // NRT - set by factory method
 	private IChromeService chrome = null!;
-	private ISystemService system = null!;
 	private bool color_picker_active;
 	private bool primary_selected = true;
 	private SurfaceType surface_type = SurfaceType.HueAndSat;
@@ -112,7 +111,7 @@ public sealed partial class ColorPickerPanel
 
 		Gtk.Box recentRow = BuildSwatchRow (
 			icon: StatusBarColorPaletteWidget.DrawClockIcon,
-			tooltip: Translations.GetString ("Recently picked colors"),
+			tooltip: PaletteWidget.RecentlyPickedColorsLabel,
 			swatchArea: out swatch_recent);
 		recent_swatch_row = recentRow;
 		swatch_recent.SetDrawFunc ((_, g, _, _) => DrawRecentSwatches (g));
@@ -121,7 +120,7 @@ public sealed partial class ColorPickerPanel
 
 		Gtk.Box paletteRow = BuildSwatchRow (
 			icon: StatusBarColorPaletteWidget.DrawPaletteIcon,
-			tooltip: Translations.GetString ("Quick colors"),
+			tooltip: PaletteWidget.QuickColorsLabel,
 			swatchArea: out swatch_palette);
 		swatch_palette.SetDrawFunc ((_, g, _, _) => DrawQuickSwatches (g));
 		ConfigureSwatchClick (swatch_palette, recent: false);
@@ -443,15 +442,10 @@ public sealed partial class ColorPickerPanel
 			Color color = recent
 				? palette.RecentlyUsedColors[index]
 				: palette.CurrentPalette.Colors[index];
-			string instructions = recent
-				? Translations.GetString ("Left click to set primary color. Right click to set secondary color.")
-				: Translations.GetString (
-					"Left click to set primary color. Right click to set secondary color. Middle click or press {0} and left click to choose palette color.",
-					system.CtrlLabel ());
 
 			popup.Show (
 				swatch,
-				Translations.GetString ("Color") + $": #{color.ToHex ()}\n\n" + instructions,
+				PaletteWidget.BuildSwatchTooltip (color, PaletteWidget.GetSwatchInstructions (recent)),
 				Gtk.PositionType.Bottom,
 				maxWidthChars: 55,
 				cssClass: "color-swatch-tooltip");
@@ -523,23 +517,27 @@ public sealed partial class ColorPickerPanel
 		if (index < 0)
 			return;
 
-		bool editQuickColor = !recent && (
-			button == GtkExtensions.MOUSE_MIDDLE_BUTTON ||
-			(button == GtkExtensions.MOUSE_LEFT_BUTTON && state.IsControlPressed ()));
+		switch (PaletteWidget.ClassifySwatchClick (button, state.IsControlPressed (), recent)) {
+			case PaletteWidget.SwatchClickAction.EditColor when !recent:
+				await EditQuickColor (index);
+				break;
 
-		if (editQuickColor) {
-			await EditQuickColor (index);
-			return;
+			case PaletteWidget.SwatchClickAction.SetSecondary: {
+					Color color = recent
+						? palette.RecentlyUsedColors.ElementAt (index)
+						: palette.CurrentPalette.Colors[index];
+					palette.SetColor (false, color, addToRecent: !recent);
+					break;
+				}
+
+			case PaletteWidget.SwatchClickAction.SetPrimary: {
+					Color color = recent
+						? palette.RecentlyUsedColors.ElementAt (index)
+						: palette.CurrentPalette.Colors[index];
+					palette.SetColor (true, color, addToRecent: !recent);
+					break;
+				}
 		}
-
-		Color color = recent
-			? palette.RecentlyUsedColors.ElementAt (index)
-			: palette.CurrentPalette.Colors[index];
-
-		if (button == GtkExtensions.MOUSE_RIGHT_BUTTON)
-			palette.SetColor (false, color, addToRecent: !recent);
-		else if (button == GtkExtensions.MOUSE_LEFT_BUTTON)
-			palette.SetColor (true, color, addToRecent: !recent);
 	}
 
 	private async Task EditQuickColor (int index)
@@ -549,12 +547,10 @@ public sealed partial class ColorPickerPanel
 
 		color_picker_active = true;
 		try {
-			SingleColor? chosen = await ColorPickerDialog.PickColorsAsync (
+			SingleColor? chosen = await ColorPickerDialog.PickSingleColorAsync (
 				chrome.MainWindow,
 				palette,
 				new SingleColor (palette.CurrentPalette.Colors[index]),
-				primarySelected: true,
-				livePalette: false,
 				Translations.GetString ("Choose Palette Color"));
 
 			if (chosen is not null)
@@ -568,7 +564,6 @@ public sealed partial class ColorPickerPanel
 	{
 		this.palette = palette;
 		this.chrome = chrome;
-		this.system = system;
 
 		palette.PrimaryColorChanged += (_, _) => { if (!updating) RedrawAll (); };
 		palette.SecondaryColorChanged += (_, _) => { if (!updating) RedrawAll (); };

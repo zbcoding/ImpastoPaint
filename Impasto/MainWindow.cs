@@ -694,18 +694,10 @@ internal sealed class MainWindow
 		colors_wheel_popover.Position = Gtk.PositionType.Top;
 		colors_wheel_popover.SetParent (colors_palette);
 		colors_wheel_popover.Child = colors_popover_box;
-		static Gdk.Rectangle ToPointingRect (RectangleD r)
-			=> new () {
-				X = (int) r.X,
-				Y = (int) r.Y,
-				Width = (int) r.Width,
-				Height = (int) r.Height,
-			};
 
 		colors_palette.ColorWheelClicked += (_, _) => {
 			RebuildColorPopoverSections ();
-			colors_wheel_popover.PointingTo = ToPointingRect (colors_palette.ColorWheelButtonRect);
-			colors_wheel_popover.Popup ();
+			ShowAnchoredPopover (colors_wheel_popover, colors_palette.ColorWheelButtonRect);
 		};
 		colors_palette.FloatColorsClicked += (_, _) => ShowFloatingColors (null);
 
@@ -727,10 +719,8 @@ internal sealed class MainWindow
 			ResetColorsWindow ();
 		};
 		reset_popover.SetChild (reset_button);
-		colors_palette.ResetColorWindowClicked += (_, _) => {
-			reset_popover.PointingTo = ToPointingRect (colors_palette.FloatColorsButtonRect);
-			reset_popover.Popup ();
-		};
+		colors_palette.ResetColorWindowClicked += (_, _) =>
+			ShowAnchoredPopover (reset_popover, colors_palette.FloatColorsButtonRect);
 
 		PintaCore.Actions.View.Colors.Toggled += (_, _) => UpdateColorsVisibility ();
 		PintaCore.Actions.View.ColorsFloating.Toggled += (_, _) => UpdateColorsVisibility ();
@@ -954,17 +944,26 @@ internal sealed class MainWindow
 		return box;
 	}
 
-	// Reuses the same color picker dialog as the bar's primary/secondary swatches
-	// (StatusBarColorPaletteWidget.PickColorsAsync), rather than duplicating its setup.
+	// Reuses the same modal picker as the bar's quick-color edit flow
+	// (StatusBarColorPaletteWidget.PickSingleColor), rather than duplicating its setup.
 	private async void MiniPickColor (bool primarySelected)
 	{
-		PaletteColors? choices = await colors_palette.PickColorsAsync (primarySelected);
-		if (choices is null)
+		SingleColor? chosen = await ColorPickerDialog.PickSingleColorAsync (
+			window_shell.Window,
+			PintaCore.Palette,
+			new SingleColor (primarySelected ? PintaCore.Palette.PrimaryColor : PintaCore.Palette.SecondaryColor),
+			Translations.GetString ("Choose Colors"));
+
+		if (chosen is null)
 			return;
-		if (PintaCore.Palette.PrimaryColor != choices.Primary)
-			PintaCore.Palette.PrimaryColor = choices.Primary;
-		if (PintaCore.Palette.SecondaryColor != choices.Secondary)
-			PintaCore.Palette.SecondaryColor = choices.Secondary;
+
+		if (primarySelected) {
+			if (PintaCore.Palette.PrimaryColor != chosen.Color)
+				PintaCore.Palette.PrimaryColor = chosen.Color;
+		} else {
+			if (PintaCore.Palette.SecondaryColor != chosen.Color)
+				PintaCore.Palette.SecondaryColor = chosen.Color;
+		}
 	}
 
 	private static Gtk.Button BuildMiniSwatchButton (Cairo.Color color, int size, Action onPrimary, Action onSecondary)
@@ -1197,4 +1196,17 @@ internal sealed class MainWindow
 		canvas_pad.Notebook.Items
 		.Where (i => ((CanvasWindow) i.Widget) == canvas_window)
 		.FirstOrDefault ();
+
+	// Points a popover at a bar-section rectangle (view coordinates) and opens it - the shared
+	// recipe for the color-wheel and reset-window popovers anchored to the palette bar.
+	private void ShowAnchoredPopover (Gtk.Popover popover, RectangleD anchorRect)
+	{
+		popover.PointingTo = new Gdk.Rectangle {
+			X = (int) anchorRect.X,
+			Y = (int) anchorRect.Y,
+			Width = (int) anchorRect.Width,
+			Height = (int) anchorRect.Height,
+		};
+		popover.Popup ();
+	}
 }

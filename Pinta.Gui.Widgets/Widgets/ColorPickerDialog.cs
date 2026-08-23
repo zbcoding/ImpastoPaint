@@ -612,6 +612,21 @@ public sealed partial class ColorPickerDialog
 		}
 	}
 
+	// The modal single-color variant used by every swatch-edit flow (dock bar, floating panel):
+	// one color in, one color out. The live-palette two-color picker stays on PickColorsAsync.
+	public static Task<SingleColor?> PickSingleColorAsync (
+		Gtk.Window? parentWindow,
+		IPaletteService palette,
+		SingleColor initial,
+		string windowTitle)
+		=> PickColorsAsync (
+			parentWindow,
+			palette,
+			initial,
+			primarySelected: true,
+			livePalette: false,
+			windowTitle);
+
 	ImmutableArray<Gtk.DrawingArea> CreateColorDisplays (ColorPick pick)
 	{
 		switch (pick) {

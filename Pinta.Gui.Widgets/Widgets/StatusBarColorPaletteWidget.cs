@@ -228,20 +228,22 @@ public sealed partial class StatusBarColorPaletteWidget
 				if (index < 0)
 					break;
 
-				bool isCtrlPressed = state.IsControlPressed ();
-				if (button == GtkExtensions.MOUSE_RIGHT_BUTTON) {
-					palette.SecondaryColor = palette.CurrentPalette.Colors[index];
-				} else if (button == GtkExtensions.MOUSE_LEFT_BUTTON && !isCtrlPressed) {
-					palette.PrimaryColor = palette.CurrentPalette.Colors[index];
-				} else if (button == GtkExtensions.MOUSE_MIDDLE_BUTTON ||
-					   (button == GtkExtensions.MOUSE_LEFT_BUTTON && isCtrlPressed)) {
-					SingleColor pick = new (palette.CurrentPalette.Colors[index]);
-					var colors = await GetUserChosenColor (
-						pick,
-						Translations.GetString ("Choose Palette Color"));
+				switch (PaletteWidget.ClassifySwatchClick (button, state.IsControlPressed (), recentColorPalette: false)) {
+					case PaletteWidget.SwatchClickAction.SetSecondary:
+						palette.SecondaryColor = palette.CurrentPalette.Colors[index];
+						break;
+					case PaletteWidget.SwatchClickAction.SetPrimary:
+						palette.PrimaryColor = palette.CurrentPalette.Colors[index];
+						break;
+					case PaletteWidget.SwatchClickAction.EditColor:
+						SingleColor pick = new (palette.CurrentPalette.Colors[index]);
+						SingleColor? chosen = await PickSingleColor (
+							pick,
+							Translations.GetString ("Choose Palette Color"));
 
-					if (colors != null)
-						palette.CurrentPalette.SetColor (index, colors.Color);
+						if (chosen != null)
+							palette.CurrentPalette.SetColor (index, chosen.Color);
+						break;
 				}
 
 				break;
@@ -255,10 +257,13 @@ public sealed partial class StatusBarColorPaletteWidget
 
 				Color recentColor = palette.RecentlyUsedColors.ElementAt (recent_index);
 
-				if (button == GtkExtensions.MOUSE_RIGHT_BUTTON) {
-					palette.SetColor (false, recentColor, false);
-				} else if (button == GtkExtensions.MOUSE_LEFT_BUTTON) {
-					palette.SetColor (true, recentColor, false);
+				switch (PaletteWidget.ClassifySwatchClick (button, state.IsControlPressed (), recentColorPalette: true)) {
+					case PaletteWidget.SwatchClickAction.SetSecondary:
+						palette.SetColor (false, recentColor, false);
+						break;
+					case PaletteWidget.SwatchClickAction.SetPrimary:
+						palette.SetColor (true, recentColor, false);
+						break;
 				}
 
 				break;
@@ -737,14 +742,12 @@ public sealed partial class StatusBarColorPaletteWidget
 		string? text = null;
 		PointD point = new (args.X, args.Y);
 
-		static string BuildColorTooltip (Color color, string tooltip) => Translations.GetString ("Color") + $": #{color.ToHex ()}\n\n" + tooltip;
-
 		switch (GetElementAtPoint (point)) {
 			case WidgetElement.RecentColorsIcon:
-				text = Translations.GetString ("Recently picked colors");
+				text = PaletteWidget.RecentlyPickedColorsLabel;
 				break;
 			case WidgetElement.PaletteIcon:
-				text = Translations.GetString ("Quick colors");
+				text = PaletteWidget.QuickColorsLabel;
 				break;
 			case WidgetElement.ColorWheel:
 				text = Translations.GetString ("Show color wheel");
@@ -754,27 +757,27 @@ public sealed partial class StatusBarColorPaletteWidget
 				break;
 			case WidgetElement.Palette:
 				int paletteIndex = PaletteWidget.GetSwatchAtLocation (palette, point, palette_rect, false, swatch_size);
-				if (paletteIndex >= 0) {
-					text = BuildColorTooltip (palette.CurrentPalette.Colors[paletteIndex],
-					// Translators: {0} is 'Ctrl', or a platform-specific key such as 'Command' on macOS.
-					Translations.GetString ("Left click to set primary color. Right click to set secondary color. Middle click or press {0} and left click to choose palette color.",
-						system.CtrlLabel ()));
-				}
+				if (paletteIndex >= 0)
+					text = PaletteWidget.BuildSwatchTooltip (
+						palette.CurrentPalette.Colors[paletteIndex],
+						PaletteWidget.GetSwatchInstructions (recentColorPalette: false));
 				break;
 			case WidgetElement.RecentColorsPalette:
 				int recentColorsIndex = PaletteWidget.GetSwatchAtLocation (palette, point, recent_palette_rect, true, swatch_size);
-				if (recentColorsIndex >= 0) {
-					text = BuildColorTooltip (palette.RecentlyUsedColors[recentColorsIndex],
-					Translations.GetString ("Left click to set primary color. Right click to set secondary color."));
-				}
+				if (recentColorsIndex >= 0)
+					text = PaletteWidget.BuildSwatchTooltip (
+						palette.RecentlyUsedColors[recentColorsIndex],
+						PaletteWidget.GetSwatchInstructions (recentColorPalette: true));
 				break;
 			case WidgetElement.PrimaryColor:
-				text = BuildColorTooltip (palette.PrimaryColor,
-				Translations.GetString ("Click to select primary color."));
+				text = PaletteWidget.BuildSwatchTooltip (
+					palette.PrimaryColor,
+					Translations.GetString ("Click to select primary color."));
 				break;
 			case WidgetElement.SecondaryColor:
-				text = BuildColorTooltip (palette.SecondaryColor,
-				Translations.GetString ("Click to select secondary color."));
+				text = PaletteWidget.BuildSwatchTooltip (
+					palette.SecondaryColor,
+					Translations.GetString ("Click to select secondary color."));
 				break;
 			case WidgetElement.SwapColors:
 				string label = Translations.GetString ("Click to switch between primary and secondary color.");
@@ -811,29 +814,16 @@ public sealed partial class StatusBarColorPaletteWidget
 		QueueDraw ();
 	}
 
-	// Exposed so the color-wheel popover's folded-in primary/secondary mini section
-	// (MainWindow) can reuse the same color picker dialog as the bar's swatches,
-	// instead of duplicating the dialog setup.
-	public Task<PaletteColors?> PickColorsAsync (bool primarySelected) => RunColorPicker (primarySelected);
-
-	private Task<PaletteColors?> RunColorPicker (bool primarySelected)
-		=> ColorPickerDialog.PickColorsAsync (
-			chrome.MainWindow,
-			palette,
-			new PaletteColors (palette.PrimaryColor, palette.SecondaryColor),
-			primarySelected,
-			livePalette: true,
-			Translations.GetString ("Choose Colors"));
-
-	private Task<SingleColor?> GetUserChosenColor (
-		SingleColor colors,
+	// The modal single-color picker behind the quick-color edit flow. Exposed so the color-wheel
+	// popover's folded-in primary/secondary mini section (MainWindow) can reuse the same dialog
+	// setup as the bar's swatches.
+	public Task<SingleColor?> PickSingleColor (
+		SingleColor initial,
 		string title)
-		=> ColorPickerDialog.PickColorsAsync (
+		=> ColorPickerDialog.PickSingleColorAsync (
 			chrome.MainWindow,
 			palette,
-			colors,
-			primarySelected: true,
-			livePalette: false,
+			initial,
 			title);
 
 	private WidgetElement GetElementAtPoint (PointD point)

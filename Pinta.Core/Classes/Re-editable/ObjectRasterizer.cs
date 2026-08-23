@@ -300,6 +300,30 @@ public static class ObjectRasterizer
 	}
 
 	/// <summary>
+	/// Removes one object from its layer and records the removal (a plain swap of the base surface,
+	/// the object surface, and the object list) as an undoable step. Also used by the layers dock's
+	/// per-row Delete.
+	/// </summary>
+	public static void RemoveObject (
+		Document doc,
+		IWorkspaceService workspace,
+		IChromeService chrome,
+		UserLayer layer,
+		ILayerObject obj,
+		string icon,
+		string historyTitle)
+	{
+		BakeSnapshot snapshot = BakeSnapshot.Create (layer);
+
+		layer.RemoveObject (obj);
+		ObjectOpacity.RefreshLayer (workspace, chrome, layer);
+
+		PushBakeHistory (
+			doc, workspace, null,
+			new RasterizeObjectsHistoryItem (workspace, icon, historyTitle, snapshot, layer));
+	}
+
+	/// <summary>
 	/// Bakes every layer's live objects into its base raster before a coordinate-changing op (crop /
 	/// canvas resize / image resize). Those ops only transform raster pixels, but an object's geometry
 	/// is vector control points the resize never touches — so an un-baked object would snap back to its
@@ -517,13 +541,18 @@ public static class ObjectRasterizer
 	/// Bakes a modifier-carrying layer's whole stack into its base raster and drops every child, as
 	/// one undoable step. Used by the geometry operations (crop / resize / rotate / flatten) and by
 	/// the dock's per-node Rasterize, which all funnel through <see cref="RasterizeAllObjects"/>.
+	/// <paramref name="icon"/> and <paramref name="historyTitle"/> label the history entry; the
+	/// defaults are the geometry operations' "flatten" framing, which the dock's per-node command
+	/// overrides with its merge-down icon and identical title.
 	/// </summary>
 	public static bool RasterizeModifierStack (
 		Document doc,
 		IWorkspaceService workspace,
 		IChromeService chrome,
 		UserLayer layer,
-		CompoundHistoryItem? historyGroup = null)
+		CompoundHistoryItem? historyGroup = null,
+		string? icon = null,
+		string? historyTitle = null)
 	{
 		BakeSnapshot snapshot = BakeSnapshot.Create (layer, includeMask: true);
 
@@ -536,8 +565,8 @@ public static class ObjectRasterizer
 
 		RasterizeObjectsHistoryItem item = new (
 			workspace,
-			Resources.Icons.ImageFlatten,
-			Translations.GetString ("Rasterize Layer Effects"),
+			icon ?? Resources.Icons.ImageFlatten,
+			historyTitle ?? Translations.GetString ("Rasterize Layer Effects"),
 			snapshot, layer);
 
 		PushBakeHistory (doc, workspace, historyGroup, item);

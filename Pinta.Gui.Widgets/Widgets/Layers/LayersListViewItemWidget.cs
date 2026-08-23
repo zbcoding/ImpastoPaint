@@ -252,19 +252,12 @@ public sealed partial class LayersListViewItem
 				[Translations.GetString ("every effect and object on this layer")]))
 				return;
 
-			BakeSnapshot stackSnapshot = BakeSnapshot.Create (UserLayer, includeMask: true);
-
-			if (!UserLayer.RasterizeModifierStack ())
-				return;
-
-			Pinta.Core.ObjectOpacity.RefreshLayer (PintaCore.Workspace, PintaCore.Chrome, UserLayer);
-			document.History.PushNewItem (
-				new RasterizeObjectsHistoryItem (
-					PintaCore.Workspace,
-					Resources.Icons.LayerMergeDown,
-					Translations.GetString ("Rasterize Layer Effects"),
-					stackSnapshot,
-					UserLayer));
+			ObjectRasterizer.RasterizeModifierStack (
+				document,
+				PintaCore.Workspace,
+				PintaCore.Chrome,
+				UserLayer,
+				icon: Resources.Icons.LayerMergeDown);
 			return;
 		}
 
@@ -295,18 +288,14 @@ public sealed partial class LayersListViewItem
 		if (document is null || UserLayer is null || LiveObject is not { } obj)
 			return;
 
-		BakeSnapshot snapshot = BakeSnapshot.Create (UserLayer);
-
-		UserLayer.RemoveObject (obj);
-		Pinta.Core.ObjectOpacity.RefreshLayer (PintaCore.Workspace, PintaCore.Chrome, UserLayer);
-
-		document.History.PushNewItem (
-			new RasterizeObjectsHistoryItem (
-				PintaCore.Workspace,
-				Resources.Icons.LayerDelete,
-				Translations.GetString ("Delete Object"),
-				snapshot,
-				UserLayer));
+		ObjectRasterizer.RemoveObject (
+			document,
+			PintaCore.Workspace,
+			PintaCore.Chrome,
+			UserLayer,
+			obj,
+			Resources.Icons.LayerDelete,
+			Translations.GetString ("Delete Object"));
 
 		// The object's on-canvas editing chrome (handles, re-edit rectangles) lives on the tool layer
 		// and would otherwise hover over an object that no longer exists.

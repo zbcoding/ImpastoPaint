@@ -173,8 +173,10 @@ internal sealed class KeyboardShortcutsDialogAction : IActionHandler
 				GetCommands (actions.Edit), states, refreshers, searchableLists, Query, searchResults,
 				extraStaticRowFactory: () => BuildStaticInfoRow (
 					Translations.GetString ("Deselect All (Quick, ×2)"),
-					"Esc (×2)",
-					Translations.GetString ("Press Escape twice quickly to deselect. Reference only — not independently rebindable."))),
+					GtkExtensions.TryParseAccelerator ("Escape", out uint escKey, out Gdk.ModifierType escMods)
+						? Gtk.Functions.AcceleratorGetLabel (escKey, escMods)
+						: "Escape",
+					Translations.GetString ("Press {0} twice quickly to deselect. Reference only — not independently rebindable.", "Escape"))),
 			Gtk.Label.New (Translations.GetString ("Edit")));
 		notebook.AppendPage (BuildCommandsPage (GetCommands (actions.View), states, refreshers, searchableLists, Query, searchResults), Gtk.Label.New (Translations.GetString ("View")));
 		notebook.AppendPage (BuildCommandsPage (GetCommands (actions.Image), states, refreshers, searchableLists, Query, searchResults), Gtk.Label.New (Translations.GetString ("Image")));

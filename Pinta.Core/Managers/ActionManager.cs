@@ -150,7 +150,10 @@ public sealed class ActionManager
 	private Gtk.Button CreateDeselectToolBarItem ()
 	{
 		Gtk.Button button = Edit.Deselect.CreateToolBarItem ();
-		button.TooltipText += "\n" + Translations.GetString ("Quick deselect: Esc (×2)");
+		string escLabel = GtkExtensions.TryParseAccelerator ("Escape", out uint key, out Gdk.ModifierType mods)
+			? Gtk.Functions.AcceleratorGetLabel (key, mods)
+			: "Escape";
+		button.TooltipText += "\n" + Translations.GetString ("Quick deselect: {0} (×2)", escLabel);
 		return button;
 	}
 

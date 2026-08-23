@@ -1998,7 +1998,7 @@ public abstract class BaseEditEngine
 					string tension = PintaCore.Shortcuts.GetToolBinding (KeyboardShortcutManager.ShapeChangeTension).ModifierKeyLabel (system_manager);
 					hover_handle.TooltipText =
 						$"{(int) Math.Round (closestControlPoint.Position.X)}, {(int) Math.Round (closestControlPoint.Position.Y)}\n"
-						+ Translations.GetString ("Shift-drag: snap the adjacent segment to a 15° angle.") + "\n"
+						+ Translations.GetString ("{0}-drag: snap the adjacent segment to a 15° angle.", Translations.GetString ("Shift")) + "\n"
 						+ Translations.GetString ("Right click + drag: move the whole shape.") + "\n"
 						+ Translations.GetString ("{0} + right drag: change tension.", tension) + "\n"
 						+ Translations.GetString ("{0} and drag: rotate the whole shape.", RotateGesture.ClickBindingLabel ()) + "\n"

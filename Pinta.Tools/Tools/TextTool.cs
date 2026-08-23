@@ -142,7 +142,7 @@ public sealed class TextTool : BaseTool
 		=> 35;
 
 	public override string StatusBarText
-		=> Translations.GetString ("Left click to place cursor, then type desired text. Text color is primary color. Ctrl+click to re-edit existing text.");
+		=> Translations.GetString ("Left click to place cursor, then type desired text. Text color is primary color. {0}+click to re-edit existing text.", PintaCore.System.CtrlLabel ());
 
 	public override Gdk.Cursor DefaultCursor { get; }
 

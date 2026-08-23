@@ -21,9 +21,13 @@ public sealed class TransientHintPopover
 
 	private Gtk.Popover? popover;
 	private Gtk.Label? label;
+	private string? last_text;
 
 	/// <summary>Whether the popover is currently created (shown or merely retained for reuse).</summary>
 	public bool Exists => popover is not null;
+
+	/// <summary>The text most recently passed to <see cref="Show"/>; lets a caller recognize its own hint.</summary>
+	public string? LastText => last_text;
 
 	/// <summary>
 	/// Shows the hint, creating the popover on first use or reusing (and re-labelling/re-parenting)
@@ -38,6 +42,8 @@ public sealed class TransientHintPopover
 		double clampMax = 10_000,
 		Action<Gtk.Label>? configure = null)
 	{
+		last_text = text;
+
 		if (popover is null) {
 			popover = Gtk.Popover.New ();
 			popover.Autohide = false;
@@ -85,5 +91,6 @@ public sealed class TransientHintPopover
 			popover.Unparent ();
 			popover = null;
 		}
+		last_text = null;
 	}
 }

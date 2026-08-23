@@ -74,7 +74,11 @@ public abstract class BaseTransformTool : BaseTool
 	private DateTime? nudge_start_time;
 	private uint nudge_hint_timeout_id = 0;
 	private bool nudge_hint_visible = false;
-	private string? last_nudge_hint;
+
+	// Canvas tooltip the nudge hint displaced (often the grip hint), restored on
+	// hide. Ownership is tracked explicitly rather than matched against tooltip
+	// contents, which would break under translation.
+	private string? tooltip_before_nudge_hint;
 	private readonly TransientHintPopover nudge_popover = new ();
 
 	/// <summary>
@@ -826,6 +830,8 @@ public abstract class BaseTransformTool : BaseTool
 		if (!workspace.HasOpenDocuments)
 			return;
 
+		// The nudge hint owns the tooltip while it is up; it restores whatever
+		// was there (often this hint) when it hides.
 		if (nudge_hint_visible)
 			return;
 
@@ -838,11 +844,19 @@ public abstract class BaseTransformTool : BaseTool
 
 		string? hint = overGrip
 			// Translators: hint shown when hovering a selection resize handle. Now lists shortcuts vertically.
-			? Translations.GetString ("Drag to resize\nShift: keep aspect ratio\nCtrl+drag: scale from center\nAlt-drag: rotate")
+			? BuildGripHint ()
 			: null;
 
 		if (canvas.TooltipText != hint)
 			canvas.SetTooltipText (hint);
+	}
+
+	private static string BuildGripHint ()
+	{
+		string ctrl = PintaCore.System.CtrlLabel ();
+		// Translators: hint shown when hovering a selection resize handle. Now lists shortcuts vertically.
+		return Translations.GetString (
+			$"Drag to resize\nShift: keep aspect ratio\n{ctrl}+drag: scale from center\nAlt-drag: rotate");
 	}
 
 	/// <summary>
@@ -875,11 +889,14 @@ public abstract class BaseTransformTool : BaseTool
 			KeyboardShortcutManager.TransformNudgeDownPctLarge,
 		];
 
+		string ctrl = PintaCore.System.CtrlLabel ();
+		string shift = Translations.GetString ("Shift");
+
 		List<string> hintLines = [
 			Translations.GetString ("Nudge: Arrow keys"),
-			Translations.GetString ("Nudge 10px: Shift+Arrow keys"),
-			Translations.GetString ("Nudge 10% of canvas: Ctrl+Arrow keys"),
-			Translations.GetString ("Nudge 20% of canvas: Ctrl+Shift+Arrow keys"),
+			Translations.GetString ("Nudge 10px: {0}", shift),
+			Translations.GetString ("Nudge 10% of canvas: {0}", ctrl),
+			Translations.GetString ("Nudge 20% of canvas: {0}", $"{ctrl}+{shift}"),
 		];
 		hintLines.AddRange (nudgeBindings
 			.Where (binding => PintaCore.Shortcuts.GetToolBinding (binding) != binding.DefaultGesture)
@@ -912,10 +929,12 @@ public abstract class BaseTransformTool : BaseTool
 		// If mouse is elsewhere, popover still appears near content (fixes issue #2).
 		nudge_popover.Show (canvas, hint, lowerRightView);
 
-		// Also set tooltip as fallback for accessibility / hover.
+		// Also set tooltip as fallback for accessibility / hover. Remember what
+		// was there (often the grip hint) so it can be restored exactly, instead
+		// of guessing from the text.
+		tooltip_before_nudge_hint = canvas.TooltipText;
 		canvas.SetTooltipText (hint);
 
-		last_nudge_hint = hint;
 		nudge_hint_visible = true;
 	}
 
@@ -927,11 +946,12 @@ public abstract class BaseTransformTool : BaseTool
 		if (workspace.HasOpenDocuments) {
 			try {
 				Gtk.Widget canvas = workspace.ActiveWorkspace.Canvas;
-				if (last_nudge_hint is not null && canvas.TooltipText == last_nudge_hint) {
-					canvas.SetTooltipText (null);
-				} else if (canvas.TooltipText is not null && nudge_hint_visible) {
-					if (canvas.TooltipText.Contains ("Arrow:") || canvas.TooltipText.Contains ("Shift+Arrow"))
-						canvas.SetTooltipText (null);
+
+				// Restore whatever the hint displaced only if nothing has
+				// overwritten it since; otherwise leave the newer tooltip alone.
+				if (canvas.TooltipText == nudge_popover.LastText) {
+					string? restore = nudge_hint_visible ? tooltip_before_nudge_hint : null;
+					canvas.SetTooltipText (restore);
 				}
 			} catch {
 				// Workspace may be disposed.
@@ -941,7 +961,7 @@ public abstract class BaseTransformTool : BaseTool
 		nudge_popover.Hide ();
 
 		nudge_hint_visible = false;
-		last_nudge_hint = null;
+		tooltip_before_nudge_hint = null;
 	}
 
 	private void ClearNudgeState ()

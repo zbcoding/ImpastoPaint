@@ -36,14 +36,12 @@ public sealed class LineCurveEditEngine : ArrowedEditEngine
 	protected override string ShapeName
 		=> Translations.GetString ("Open Curve Shape");
 
-	private readonly IWorkspaceService workspace;
 	public LineCurveEditEngine (
 		IServiceProvider services,
 		ShapeTool passedOwner
 	)
 		: base (services, passedOwner)
 	{
-		workspace = services.GetService<IWorkspaceService> ();
 	}
 
 	protected override ShapeEngine CreateShape (
@@ -53,21 +51,9 @@ public sealed class LineCurveEditEngine : ArrowedEditEngine
 	{
 		Document doc = workspace.ActiveDocument;
 
-		LineCurveSeriesEngine newEngine = new (
-			doc.Layers.CurrentUserLayer,
-			null,
-			BaseEditEngine.ShapeTypes.OpenLineCurveSeries,
-			owner.UseAntialiasing,
-			false,
-			BaseEditEngine.OutlineColor,
-			BaseEditEngine.FillColor,
-			owner.EditEngine.BrushWidth,
-			LineCap.Square);
+		LineCurveSeriesEngine newEngine = NewShapeEngine (BaseEditEngine.ShapeTypes.OpenLineCurveSeries, closed: false, LineCap.Square);
 
 		AddLinePoints (ctrlKey, clickedOnControlPoint, newEngine, prevSelPoint);
-
-		//Set the new shape's DashPattern option.
-		newEngine.DashPattern = dash_pattern_box.ComboBox!.ComboBox.GetActiveText ()!; // NRT - Code assumes this is not-null
 
 		//Set the new arrow's settings to be the same as what's in the toolbar settings.
 		setNewArrowSettings (newEngine);

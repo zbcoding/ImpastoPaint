@@ -103,13 +103,11 @@ public sealed class RoundedLineEditEngine : BaseEditEngine
 		base.BuildShapeToolBar (tb, settings, toolPrefix);
 	}
 
-	private readonly IWorkspaceService workspace;
 	public RoundedLineEditEngine (
 		IServiceProvider services,
 		ShapeTool passedOwner
 	) : base (services, passedOwner)
 	{
-		workspace = services.GetService<IWorkspaceService> ();
 	}
 
 	protected override ShapeEngine CreateShape (
@@ -119,20 +117,9 @@ public sealed class RoundedLineEditEngine : BaseEditEngine
 	{
 		Document doc = workspace.ActiveDocument;
 
-		RoundedLineEngine newEngine = new (
-			doc.Layers.CurrentUserLayer,
-			null,
-			Radius,
-			owner.UseAntialiasing,
-			BaseEditEngine.OutlineColor,
-			BaseEditEngine.FillColor,
-			owner.EditEngine.BrushWidth,
-			LineCap.Butt);
+		RoundedLineEngine newEngine = NewRoundedLineEngine (Radius, LineCap.Butt);
 
 		AddRectanglePoints (ctrlKey, clickedOnControlPoint, newEngine, prevSelPoint);
-
-		//Set the new shape's DashPattern option.
-		newEngine.DashPattern = dash_pattern_box.ComboBox!.ComboBox.GetActiveText ()!; // NRT - Code assumes this is not-null
 
 		return newEngine;
 	}

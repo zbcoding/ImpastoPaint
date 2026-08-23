@@ -35,29 +35,17 @@ public sealed class EllipseEditEngine : BaseEditEngine
 {
 	protected override string ShapeName => Translations.GetString ("Ellipse");
 
-	private readonly IWorkspaceService workspace;
 	public EllipseEditEngine (IServiceProvider services, ShapeTool owner) : base (services, owner)
 	{
-		workspace = services.GetService<IWorkspaceService> ();
 	}
 
 	protected override ShapeEngine CreateShape (bool ctrlKey, bool clickedOnControlPoint, PointD prevSelPoint)
 	{
 		Document doc = workspace.ActiveDocument;
 
-		EllipseEngine newEngine = new (
-			doc.Layers.CurrentUserLayer,
-			null,
-			owner.UseAntialiasing,
-			BaseEditEngine.OutlineColor,
-			BaseEditEngine.FillColor,
-			owner.EditEngine.BrushWidth,
-			LineCap.Butt);
+		EllipseEngine newEngine = NewEllipseEngine (LineCap.Butt);
 
 		AddRectanglePoints (ctrlKey, clickedOnControlPoint, newEngine, prevSelPoint);
-
-		//Set the new shape's DashPattern option.
-		newEngine.DashPattern = dash_pattern_box.ComboBox!.ComboBox.GetActiveText ()!; // NRT - Code assumes this is not-null
 
 		return newEngine;
 	}

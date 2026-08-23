@@ -404,7 +404,7 @@ public abstract class BaseEditEngine
 
 	private readonly IToolService tools;
 	private readonly IPaletteService palette;
-	private readonly IWorkspaceService workspace;
+	protected readonly IWorkspaceService workspace;
 	private readonly SystemManager system_manager;
 	private static UserLayer? runtime_layer;
 
@@ -2548,6 +2548,71 @@ public abstract class BaseEditEngine
 	/// <param name="clickedOnControlPoint"></param>
 	/// <param name="prevSelPoint"></param>
 	protected abstract ShapeEngine CreateShape (bool ctrlKey, bool clickedOnControlPoint, PointD prevSelPoint);
+
+	/// <summary>
+	/// Shared constructor for the curve-series shape tools (rectangle / triangle / line-curve),
+	/// pre-filling the toolbar's current colors, width, antialiasing and dash pattern so each
+	/// tool's CreateShape only adds its own starting points.
+	/// </summary>
+	protected LineCurveSeriesEngine NewShapeEngine (BaseEditEngine.ShapeTypes shapeType, bool closed, LineCap lineCap)
+	{
+		Document doc = workspace.ActiveDocument;
+
+		LineCurveSeriesEngine engine = new (
+			doc.Layers.CurrentUserLayer,
+			null,
+			shapeType,
+			owner.UseAntialiasing,
+			closed,
+			BaseEditEngine.OutlineColor,
+			BaseEditEngine.FillColor,
+			owner.EditEngine.BrushWidth,
+			lineCap) {
+			DashPattern = dash_pattern_box.ComboBox!.ComboBox.GetActiveText ()!, // NRT - Code assumes this is not-null
+		};
+
+		return engine;
+	}
+
+	/// <summary>Ellipse counterpart of <see cref="NewShapeEngine"/>.</summary>
+	protected EllipseEngine NewEllipseEngine (LineCap lineCap)
+	{
+		Document doc = workspace.ActiveDocument;
+
+		EllipseEngine engine = new (
+			doc.Layers.CurrentUserLayer,
+			null,
+			owner.UseAntialiasing,
+			BaseEditEngine.OutlineColor,
+			BaseEditEngine.FillColor,
+			owner.EditEngine.BrushWidth,
+			lineCap) {
+			DashPattern = dash_pattern_box.ComboBox!.ComboBox.GetActiveText ()!, // NRT - Code assumes this is not-null
+		};
+
+		return engine;
+	}
+
+	/// <summary>Rounded-line counterpart of <see cref="NewShapeEngine"/>. The toolbar's corner
+	/// radius is a RoundedLineEditEngine-only setting, so it is passed in rather than read here.</summary>
+	protected RoundedLineEngine NewRoundedLineEngine (double radius, LineCap lineCap)
+	{
+		Document doc = workspace.ActiveDocument;
+
+		RoundedLineEngine engine = new (
+			doc.Layers.CurrentUserLayer,
+			null,
+			radius,
+			owner.UseAntialiasing,
+			BaseEditEngine.OutlineColor,
+			BaseEditEngine.FillColor,
+			owner.EditEngine.BrushWidth,
+			lineCap) {
+			DashPattern = dash_pattern_box.ComboBox!.ComboBox.GetActiveText ()!, // NRT - Code assumes this is not-null
+		};
+
+		return engine;
+	}
 
 	protected virtual void MovePoint (List<ControlPoint> controlPoints)
 	{

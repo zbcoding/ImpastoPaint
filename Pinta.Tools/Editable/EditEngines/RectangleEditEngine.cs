@@ -39,13 +39,12 @@ public sealed class RectangleEditEngine : BaseEditEngine
 	protected override string DefaultObjectName
 		=> Translations.GetString ("Rectangle");
 
-	private readonly IWorkspaceService workspace;
+
 	public RectangleEditEngine (
 		IServiceProvider services,
 		ShapeTool passedOwner
 	) : base (services, passedOwner)
 	{
-		workspace = services.GetService<IWorkspaceService> ();
 	}
 
 	protected override ShapeEngine CreateShape (
@@ -55,13 +54,9 @@ public sealed class RectangleEditEngine : BaseEditEngine
 	{
 		Document doc = workspace.ActiveDocument;
 
-		LineCurveSeriesEngine newEngine = new (doc.Layers.CurrentUserLayer, null, BaseEditEngine.ShapeTypes.ClosedLineCurveSeries,
-			owner.UseAntialiasing, true, BaseEditEngine.OutlineColor, BaseEditEngine.FillColor, owner.EditEngine.BrushWidth, LineCap.Square);
+		LineCurveSeriesEngine newEngine = NewShapeEngine (BaseEditEngine.ShapeTypes.ClosedLineCurveSeries, closed: true, LineCap.Square);
 
 		AddRectanglePoints (ctrlKey, clickedOnControlPoint, newEngine, prevSelPoint);
-
-		//Set the new shape's DashPattern option.
-		newEngine.DashPattern = dash_pattern_box.ComboBox!.ComboBox.GetActiveText ()!; // NRT - Code assumes this is not-null
 
 		return newEngine;
 	}

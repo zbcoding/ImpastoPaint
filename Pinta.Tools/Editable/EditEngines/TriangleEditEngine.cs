@@ -42,7 +42,6 @@ public sealed class TriangleEditEngine : BaseEditEngine
 	protected override string ShapeName
 		=> Translations.GetString ("Triangle Shape");
 
-	private readonly IWorkspaceService workspace;
 	private TriangleType selected_type = TriangleType.Right;
 	private ToolBarDropDownButton? triangle_type_button;
 	private Gtk.Label? triangle_type_label;
@@ -55,7 +54,6 @@ public sealed class TriangleEditEngine : BaseEditEngine
 		ShapeTool passedOwner
 	) : base (services, passedOwner)
 	{
-		workspace = services.GetService<IWorkspaceService> ();
 	}
 
 	protected override ShapeEngine CreateShape (
@@ -65,14 +63,10 @@ public sealed class TriangleEditEngine : BaseEditEngine
 	{
 		Document doc = workspace.ActiveDocument;
 
-		LineCurveSeriesEngine newEngine = new (doc.Layers.CurrentUserLayer, null, BaseEditEngine.ShapeTypes.Triangle,
-			owner.UseAntialiasing, true, BaseEditEngine.OutlineColor, BaseEditEngine.FillColor, owner.EditEngine.BrushWidth, LineCap.Square);
+		LineCurveSeriesEngine newEngine = NewShapeEngine (BaseEditEngine.ShapeTypes.Triangle, closed: true, LineCap.Square);
 		newEngine.TriangleType = (int) selected_type;
 
 		AddTrianglePoints (ctrlKey, clickedOnControlPoint, newEngine, prevSelPoint);
-
-		//Set the new shape's DashPattern option.
-		newEngine.DashPattern = dash_pattern_box.ComboBox!.ComboBox.GetActiveText ()!; // NRT - Code assumes this is not-null
 
 		return newEngine;
 	}

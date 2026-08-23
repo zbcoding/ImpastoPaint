@@ -425,27 +425,14 @@ public sealed partial class ColorPickerPanel
 
 	private void ConfigureSwatchTooltip (Gtk.DrawingArea swatch, bool recent)
 	{
-		Gtk.Label caption = Gtk.Label.New (string.Empty);
-		caption.Halign = Gtk.Align.Start;
-		caption.Justify = Gtk.Justification.Left;
-		caption.Wrap = true;
-		caption.MaxWidthChars = 55;
-
-		Gtk.Popover popup = Gtk.Popover.New ();
-		popup.Autohide = false;
-		popup.CanTarget = false;
-		popup.HasArrow = false;
-		popup.Position = Gtk.PositionType.Bottom;
-		popup.AddCssClass ("color-swatch-tooltip");
-		popup.SetChild (caption);
-		popup.SetParent (swatch);
+		TransientHintPopover.CaptionPopover popup = new ();
 
 		int visibleIndex = -1;
 		Gtk.EventControllerMotion motion = Gtk.EventControllerMotion.New ();
 		motion.OnMotion += (_, args) => {
 			int index = GetSwatchIndex (recent, new PointD (args.X, args.Y));
 			if (index < 0) {
-				popup.Popdown ();
+				popup.Hide ();
 				visibleIndex = -1;
 				return;
 			}
@@ -462,12 +449,16 @@ public sealed partial class ColorPickerPanel
 					"Left click to set primary color. Right click to set secondary color. Middle click or press {0} and left click to choose palette color.",
 					system.CtrlLabel ());
 
-			caption.SetText (Translations.GetString ("Color") + $": #{color.ToHex ()}\n\n" + instructions);
+			popup.Show (
+				swatch,
+				Translations.GetString ("Color") + $": #{color.ToHex ()}\n\n" + instructions,
+				Gtk.PositionType.Bottom,
+				maxWidthChars: 55,
+				cssClass: "color-swatch-tooltip");
 			visibleIndex = index;
-			popup.Popup ();
 		};
 		motion.OnLeave += (_, _) => {
-			popup.Popdown ();
+			popup.Hide ();
 			visibleIndex = -1;
 		};
 		swatch.AddController (motion);

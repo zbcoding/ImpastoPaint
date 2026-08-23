@@ -56,7 +56,7 @@ public sealed partial class ToolBoxWidget
 	// While a pin menu is up, hovering its anchor must not pop the flyout back open -
 	// the flyout's grab would dismiss the pin menu before it can be clicked.
 	private Gtk.Popover? open_pin_menu;
-	private Gtk.Popover? hint_popup;
+	private readonly TransientHintPopover.CaptionPopover hint_popup = new ();
 	private uint hint_timeout_id;
 
 	/// <param name="classic">
@@ -299,38 +299,16 @@ public sealed partial class ToolBoxWidget
 
 	private void ShowHint (Gtk.Widget anchor, string text)
 	{
-		HideHint ();
-
-		Gtk.Label caption = Gtk.Label.New (text);
-		caption.Halign = Gtk.Align.Start;
-		caption.Justify = Gtk.Justification.Left;
-		caption.Wrap = true;
-		caption.MaxWidthChars = 32;
-
-		Gtk.Popover popup = Gtk.Popover.New ();
-		// Not autohiding: an autohiding popover grabs the pointer, which is exactly what makes
-		// a hint next to the flyout freeze input. This one never takes a grab and is dismissed
-		// by hand when the cursor leaves.
-		popup.Autohide = false;
-		popup.CanTarget = false;
-		popup.HasArrow = false; // Reads as a tooltip, not as a menu anchored to the entry.
-		popup.AddCssClass ("toolbox-hint");
-		popup.SetChild (caption);
-		popup.SetParent (anchor);
-		popup.Position = Gtk.PositionType.Right;
-
-		hint_popup = popup;
-		popup.Popup ();
+		hint_popup.Show (
+			anchor,
+			text,
+			Gtk.PositionType.Right,
+			maxWidthChars: 32);
 	}
 
 	private void HideHint ()
 	{
-		if (hint_popup is null)
-			return;
-
-		hint_popup.Popdown ();
-		hint_popup.Unparent ();
-		hint_popup = null;
+		hint_popup.Hide ();
 	}
 
 	private void HandleToolAdded (BaseTool tool)

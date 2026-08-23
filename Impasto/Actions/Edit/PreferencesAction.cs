@@ -53,7 +53,7 @@ internal sealed class PreferencesAction : IActionHandler
 			toolboxClassicLayout,
 			toolSettingsWrapRows,
 			toolSelectorDropDown,
-			(PopoverHintMode) settings.GetSetting (SettingNames.POPOVER_HINT_MODE, (int) PopoverHintMode.All),
+			(PopoverHintMode) settings.GetSetting (TransientHintPopover.SettingKey, (int) PopoverHintMode.All),
 			settings.GetSetting (SettingNames.STATUSBAR_SHOW_CURSOR_POSITION, true),
 			settings.GetSetting (SettingNames.STATUSBAR_SHOW_IMAGE_SIZE, true),
 			settings.GetSetting (SettingNames.TOOLBAR_SHOWN, true),
@@ -68,7 +68,7 @@ internal sealed class PreferencesAction : IActionHandler
 			Cairo.Color? selectedCanvasSurroundColor = dialog.CanvasSurroundColor;
 			settings.PutSetting (SettingNames.CANVAS_SURROUND_COLOR, selectedCanvasSurroundColor?.ToHex (addAlpha: false) ?? SettingNames.DEFAULT_CANVAS_SURROUND_COLOR);
 			settings.PutSetting (SettingNames.PASTE_EXTERNAL_IMAGES_TO_NEW_LAYER, dialog.PasteExternalImagesToNewLayer);
-			settings.PutSetting (SettingNames.POPOVER_HINT_MODE, (int) dialog.PopoverHintMode);
+			settings.PutSetting (TransientHintPopover.SettingKey, (int) dialog.PopoverHintMode);
 			settings.PutSetting (SettingNames.STATUSBAR_SHOW_CURSOR_POSITION, dialog.StatusBarShowCursorPosition);
 			settings.PutSetting (SettingNames.STATUSBAR_SHOW_IMAGE_SIZE, dialog.StatusBarShowImageSize);
 			settings.PutSetting (SettingNames.TOOL_SETTINGS_WRAP_ROWS, dialog.ToolSettingsWrapRows);

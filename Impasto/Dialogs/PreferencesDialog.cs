@@ -565,7 +565,7 @@ public sealed partial class PreferencesDialog
 		show_main_toolbar_check_button.Active = settings.GetSetting (SettingNames.TOOLBAR_SHOWN, ShowMainToolBar);
 		statusbar_show_cursor_position_check_button.Active = settings.GetSetting (SettingNames.STATUSBAR_SHOW_CURSOR_POSITION, StatusBarShowCursorPosition);
 		statusbar_show_image_size_check_button.Active = settings.GetSetting (SettingNames.STATUSBAR_SHOW_IMAGE_SIZE, StatusBarShowImageSize);
-		SetPopoverHintMode ((PopoverHintMode) settings.GetSetting (SettingNames.POPOVER_HINT_MODE, (int) PopoverHintMode));
+		SetPopoverHintMode ((PopoverHintMode) settings.GetSetting (TransientHintPopover.SettingKey, (int) PopoverHintMode));
 
 		string storedColor = settings.GetSetting (SettingNames.CANVAS_SURROUND_COLOR, SettingNames.DEFAULT_CANVAS_SURROUND_COLOR);
 		if (Cairo.Color.FromHex (storedColor) is Cairo.Color color) {

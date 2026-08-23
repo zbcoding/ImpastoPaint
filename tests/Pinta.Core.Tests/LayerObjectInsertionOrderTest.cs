@@ -86,4 +86,31 @@ internal sealed class LayerObjectInsertionOrderTest : DocumentHarness
 		Assert.That ((shown.R, shown.G, shown.B), Is.EqualTo (((byte) 255, (byte) 0, (byte) 255)),
 			"the effect above them should still be reaching what they drew");
 	}
+
+	/// <summary>
+	/// The real drawing flow calls <c>ShapeEngineCollection.Store</c> (and so
+	/// <see cref="UserLayer.ReplaceShapes"/>) once per shape, handing it the *entire* live engine list
+	/// every time - each call's list is the previous one's plus one new entry appended at the end, in
+	/// draw order. Regression coverage for a bug where the third such call onward silently swapped
+	/// already-persisted shapes' geometry between each other's z-slots (without moving anything in the
+	/// layers dock): <see cref="UserLayer.Objects"/>' existing shape slots read newest-first once a
+	/// second shape has landed, but the incoming list is still oldest-first, so zipping them by raw
+	/// position pairs each slot with the wrong shape.
+	/// </summary>
+	[Test]
+	public void SequentialReplaceShapesCallsDoNotSwapAlreadyPersistedShapes ()
+	{
+		UserLayer layer = Layer (0);
+
+		ShapeObject first = Box (new Color (1, 0, 0, 1), new RectangleI (0, 0, 3, 3));
+		ShapeObject second = Box (new Color (0, 1, 0, 1), new RectangleI (0, 0, 3, 3));
+		ShapeObject third = Box (new Color (0, 0, 1, 1), new RectangleI (0, 0, 3, 3));
+
+		layer.ReplaceShapes ([first]);
+		layer.ReplaceShapes ([first, second]);
+		layer.ReplaceShapes ([first, second, third]);
+
+		Assert.That (layer.Objects, Is.EqualTo (new ILayerObject[] { third, second, first }),
+			"each shape keeps its own geometry and lands below everything drawn before it");
+	}
 }

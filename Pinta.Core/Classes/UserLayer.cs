@@ -118,39 +118,53 @@ public sealed class UserLayer : Layer
 	/// brand new (freshly drawn), not reordered survivors, so they insert at the bottom like any other
 	/// new addition -- below everything, including modifiers.
 	/// </summary>
+	/// <remarks>
+	/// <paramref name="shapes"/> arrives oldest-first (the caller's own creation order) and never gets
+	/// reordered on its end between calls. <see cref="Objects"/>' existing shape slots, though, read
+	/// newest-first (index 0 is the bottom, where the newest addition lands) once more than one shape
+	/// has ever been added -- so the existing (already-persisted) prefix of <paramref name="shapes"/>
+	/// has to be walked in reverse to line back up with those slots. Zipping the two in their given
+	/// orders instead reassigns each existing slot's geometry to a different shape as soon as a third
+	/// shape is added, silently swapping shapes' z-order without moving anything in the layers dock.
+	/// </remarks>
 	public void ReplaceShapes (IReadOnlyList<ShapeObject> shapes)
 	{
+		int existingShapeCount = Objects.Count (o => o is ShapeObject);
+		Queue<ShapeObject> existingShapesNewestFirst = new (shapes.Take (existingShapeCount).Reverse ());
+
 		List<ILayerObject> rebuilt = [];
-		int shapeIdx = 0;
 		foreach (ILayerObject o in Objects) {
 			if (o is ShapeObject) {
-				if (shapeIdx < shapes.Count)
-					rebuilt.Add (shapes[shapeIdx++]);
+				if (existingShapesNewestFirst.Count > 0)
+					rebuilt.Add (existingShapesNewestFirst.Dequeue ());
 			} else {
 				rebuilt.Add (o);
 			}
 		}
-		rebuilt.InsertRange (0, shapes.Skip (shapeIdx));
+		rebuilt.InsertRange (0, shapes.Skip (existingShapeCount));
 
 		Objects.Clear ();
 		Objects.AddRange (rebuilt);
 	}
 
 	/// <summary>Replaces every text object on the layer with <paramref name="texts"/>, in place. New
-	/// text beyond the old count inserts at the bottom, same as <see cref="ReplaceShapes"/>.</summary>
+	/// text beyond the old count inserts at the bottom, same as <see cref="ReplaceShapes"/> -- see its
+	/// remarks for why the existing prefix has to be walked in reverse.</summary>
 	public void ReplaceText (IReadOnlyList<TextObject> texts)
 	{
+		int existingTextCount = Objects.Count (o => o is TextObject);
+		Queue<TextObject> existingTextNewestFirst = new (texts.Take (existingTextCount).Reverse ());
+
 		List<ILayerObject> rebuilt = [];
-		int textIdx = 0;
 		foreach (ILayerObject o in Objects) {
 			if (o is TextObject) {
-				if (textIdx < texts.Count)
-					rebuilt.Add (texts[textIdx++]);
+				if (existingTextNewestFirst.Count > 0)
+					rebuilt.Add (existingTextNewestFirst.Dequeue ());
 			} else {
 				rebuilt.Add (o);
 			}
 		}
-		rebuilt.InsertRange (0, texts.Skip (textIdx));
+		rebuilt.InsertRange (0, texts.Skip (existingTextCount));
 
 		Objects.Clear ();
 		Objects.AddRange (rebuilt);

@@ -168,15 +168,16 @@ internal sealed class KeyboardShortcutsDialogAction : IActionHandler
 
 		notebook.AppendPage (BuildCommandsPage (GetCommands (actions.Layers), states, refreshers, searchableLists, Query, searchResults), Gtk.Label.New (Translations.GetString ("Layers")));
 		notebook.AppendPage (BuildCommandsPage (GetCommands (actions.File), states, refreshers, searchableLists, Query, searchResults), Gtk.Label.New (Translations.GetString ("File")));
+		string escLabel = GtkExtensions.TryParseAccelerator ("Escape", out uint escKey, out Gdk.ModifierType escMods)
+			? Gtk.Functions.AcceleratorGetLabel (escKey, escMods)
+			: "Escape";
 		notebook.AppendPage (
 			BuildCommandsPage (
 				GetCommands (actions.Edit), states, refreshers, searchableLists, Query, searchResults,
 				extraStaticRowFactory: () => BuildStaticInfoRow (
 					Translations.GetString ("Deselect All (Quick, ×2)"),
-					GtkExtensions.TryParseAccelerator ("Escape", out uint escKey, out Gdk.ModifierType escMods)
-						? Gtk.Functions.AcceleratorGetLabel (escKey, escMods)
-						: "Escape",
-					Translations.GetString ("Press {0} twice quickly to deselect. Reference only — not independently rebindable.", "Escape"))),
+					escLabel,
+					Translations.GetString ("Press {0} twice quickly to deselect. Reference only — not independently rebindable.", escLabel))),
 			Gtk.Label.New (Translations.GetString ("Edit")));
 		notebook.AppendPage (BuildCommandsPage (GetCommands (actions.View), states, refreshers, searchableLists, Query, searchResults), Gtk.Label.New (Translations.GetString ("View")));
 		notebook.AppendPage (BuildCommandsPage (GetCommands (actions.Image), states, refreshers, searchableLists, Query, searchResults), Gtk.Label.New (Translations.GetString ("Image")));

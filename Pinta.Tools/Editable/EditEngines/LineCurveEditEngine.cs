@@ -49,8 +49,6 @@ public sealed class LineCurveEditEngine : ArrowedEditEngine
 		bool clickedOnControlPoint,
 		PointD prevSelPoint)
 	{
-		Document doc = workspace.ActiveDocument;
-
 		LineCurveSeriesEngine newEngine = NewShapeEngine (BaseEditEngine.ShapeTypes.OpenLineCurveSeries, closed: false, LineCap.Square);
 
 		AddLinePoints (ctrlKey, clickedOnControlPoint, newEngine, prevSelPoint);

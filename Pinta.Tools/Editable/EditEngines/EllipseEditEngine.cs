@@ -41,8 +41,6 @@ public sealed class EllipseEditEngine : BaseEditEngine
 
 	protected override ShapeEngine CreateShape (bool ctrlKey, bool clickedOnControlPoint, PointD prevSelPoint)
 	{
-		Document doc = workspace.ActiveDocument;
-
 		EllipseEngine newEngine = NewEllipseEngine (LineCap.Butt);
 
 		AddRectanglePoints (ctrlKey, clickedOnControlPoint, newEngine, prevSelPoint);

@@ -52,8 +52,6 @@ public sealed class RectangleEditEngine : BaseEditEngine
 		bool clickedOnControlPoint,
 		PointD prevSelPoint)
 	{
-		Document doc = workspace.ActiveDocument;
-
 		LineCurveSeriesEngine newEngine = NewShapeEngine (BaseEditEngine.ShapeTypes.ClosedLineCurveSeries, closed: true, LineCap.Square);
 
 		AddRectanglePoints (ctrlKey, clickedOnControlPoint, newEngine, prevSelPoint);

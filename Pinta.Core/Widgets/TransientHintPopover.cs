@@ -136,6 +136,10 @@ public sealed class TransientHintPopover
 			} else {
 				label?.SetText (text);
 				if (popover.GetParent () != anchor) {
+					// Popdown before unparenting: reparenting a still-popped-up popover onto a
+					// new anchor is what the old per-widget ToolBoxWidget.HideHint avoided by
+					// always tearing the popover down first.
+					popover.Popdown ();
 					popover.Unparent ();
 					popover.SetParent (anchor);
 				}

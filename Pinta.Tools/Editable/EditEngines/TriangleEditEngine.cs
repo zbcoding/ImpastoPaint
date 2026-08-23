@@ -61,8 +61,6 @@ public sealed class TriangleEditEngine : BaseEditEngine
 		bool clickedOnControlPoint,
 		PointD prevSelPoint)
 	{
-		Document doc = workspace.ActiveDocument;
-
 		LineCurveSeriesEngine newEngine = NewShapeEngine (BaseEditEngine.ShapeTypes.Triangle, closed: true, LineCap.Square);
 		newEngine.TriangleType = (int) selected_type;
 

@@ -115,8 +115,6 @@ public sealed class RoundedLineEditEngine : BaseEditEngine
 		bool clickedOnControlPoint,
 		PointD prevSelPoint)
 	{
-		Document doc = workspace.ActiveDocument;
-
 		RoundedLineEngine newEngine = NewRoundedLineEngine (Radius, LineCap.Butt);
 
 		AddRectanglePoints (ctrlKey, clickedOnControlPoint, newEngine, prevSelPoint);

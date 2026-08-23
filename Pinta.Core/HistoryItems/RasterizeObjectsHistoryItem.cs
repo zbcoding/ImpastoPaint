@@ -114,20 +114,7 @@ public sealed class RasterizeObjectsHistoryItem : BaseHistoryItem
 	// Reference hand-off, not a clone: each swap moves the surface between this item and the layer.
 	private void SwapMask ()
 	{
-		ImageSurface? liveSurface = user_layer.Mask?.Surface;
-		bool liveHidden = user_layer.Mask?.Hidden ?? false;
-		bool liveHad = user_layer.Mask is not null;
-
-		if (had_mask) {
-			user_layer.ReplaceMaskSurface (mask_surface!);
-			user_layer.Mask!.Hidden = mask_hidden;
-		} else {
-			user_layer.DropMask ();
-		}
-
-		had_mask = liveHad;
-		mask_surface = liveSurface;
-		mask_hidden = liveHidden;
+		MaskSlot.Swap (user_layer, ref mask_surface, ref mask_hidden, ref had_mask);
 	}
 
 	private static void SwapSurface (SurfaceDiff? diff, ref ImageSurface? stored, ImageSurface current, System.Action<ImageSurface> setter)

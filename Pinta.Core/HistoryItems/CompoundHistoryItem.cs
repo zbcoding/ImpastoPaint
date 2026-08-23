@@ -156,21 +156,6 @@ public class CompoundHistoryItem : BaseHistoryItem
 		public override void Redo () => Swap ();
 
 		private void Swap ()
-		{
-			ImageSurface? current = layer.Mask?.Surface;
-			bool currentHidden = layer.Mask?.Hidden ?? false;
-			bool currentHad = layer.Mask is not null;
-
-			if (had_mask) {
-				layer.ReplaceMaskSurface (surface!);
-				layer.Mask!.Hidden = hidden;
-			} else {
-				layer.DropMask ();
-			}
-
-			surface = current;
-			hidden = currentHidden;
-			had_mask = currentHad;
-		}
+			=> MaskSlot.Swap (layer, ref surface, ref hidden, ref had_mask);
 	}
 }

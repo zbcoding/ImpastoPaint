@@ -25,7 +25,6 @@
 // THE SOFTWARE.
 
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
 using Cairo;
 
@@ -37,9 +36,6 @@ namespace Pinta.Core;
 /// </summary>
 public sealed class UserLayer : Layer
 {
-	//Special layers to be drawn on to keep things editable by drawing them separately from the UserLayers.
-	internal Collection<ReEditableLayer> ReEditableLayers { get; } = [];
-
 	//Call the base class constructor and set up the object layer.
 	public UserLayer (ImageSurface surface)
 		: this (surface, false, 1f, "")
@@ -318,17 +314,11 @@ public sealed class UserLayer : Layer
 	/// </summary>
 	public ImageSurface CreateShapeOverlay ()
 	{
-		ImageSurface overlay = CairoExtensions.CreateImageSurface (Surface.Format, Surface.Width, Surface.Height);
-		using Context g = new (overlay);
-		foreach (ReEditableLayer layer in ReEditableLayers) {
-			if (layer == ObjectLayer || !layer.IsLayerSetup)
-				continue;
-
-			g.SetSourceSurface (layer.Layer.Surface, 0, 0);
-			g.Paint ();
-		}
-
-		return overlay;
+		// ObjectLayer is excluded here (it renders through the normal object-layer path), and it was
+		// the only member of the old ReEditableLayers collection, so this has always returned a blank
+		// transparent overlay. Kept as-is: not this task's job to decide what CreateShapeOverlay should
+		// draw, only to remove the now-empty collection it used to iterate.
+		return CairoExtensions.CreateImageSurface (Surface.Format, Surface.Width, Surface.Height);
 	}
 
 	public override void ApplyTransform (
@@ -338,10 +328,8 @@ public sealed class UserLayer : Layer
 	{
 		base.ApplyTransform (xform, old_size, new_size);
 
-		foreach (ReEditableLayer rel in ReEditableLayers) {
-			if (rel.IsLayerSetup)
-				rel.Layer.ApplyTransform (xform, old_size, new_size);
-		}
+		if (ObjectLayer.IsLayerSetup)
+			ObjectLayer.Layer.ApplyTransform (xform, old_size, new_size);
 
 		// The mask is part of the layer's raster geometry, so a destructive transform moves it too —
 		// otherwise it would stay glued to the old pixel positions. (A non-destructive transform node
@@ -425,9 +413,8 @@ public sealed class UserLayer : Layer
 	{
 		base.Crop (rect, selection);
 
-		foreach (ReEditableLayer rel in ReEditableLayers)
-			if (rel.IsLayerSetup)
-				rel.Layer.Crop (rect, selection);
+		if (ObjectLayer.IsLayerSetup)
+			ObjectLayer.Layer.Crop (rect, selection);
 
 		Mask?.Crop (rect);
 	}
@@ -436,9 +423,8 @@ public sealed class UserLayer : Layer
 	{
 		base.ResizeCanvas (newSize, anchor);
 
-		foreach (ReEditableLayer rel in ReEditableLayers)
-			if (rel.IsLayerSetup)
-				rel.Layer.ResizeCanvas (newSize, anchor);
+		if (ObjectLayer.IsLayerSetup)
+			ObjectLayer.Layer.ResizeCanvas (newSize, anchor);
 
 		Mask?.ResizeCanvas (newSize, anchor);
 	}
@@ -487,9 +473,8 @@ public sealed class UserLayer : Layer
 	{
 		base.Resize (newSize, resamplingMode);
 
-		foreach (ReEditableLayer rel in ReEditableLayers)
-			if (rel.IsLayerSetup)
-				rel.Layer.Resize (newSize, resamplingMode);
+		if (ObjectLayer.IsLayerSetup)
+			ObjectLayer.Layer.Resize (newSize, resamplingMode);
 
 		Mask?.Resize (newSize, resamplingMode);
 	}
@@ -507,11 +492,9 @@ public sealed class UserLayer : Layer
 			return false;
 
 		using Context g = new (Surface);
-		foreach (ReEditableLayer rel in ReEditableLayers) {
-			if (!rel.IsLayerSetup)
-				continue;
-			rel.Layer.Draw (g);
-			rel.Layer.Surface.Clear ();
+		if (ObjectLayer.IsLayerSetup) {
+			ObjectLayer.Layer.Draw (g);
+			ObjectLayer.Layer.Surface.Clear ();
 		}
 
 		Objects.Clear ();
@@ -545,9 +528,8 @@ public sealed class UserLayer : Layer
 		if (Mask is { Hidden: false })
 			DropMask ();
 
-		foreach (ReEditableLayer rel in ReEditableLayers)
-			if (rel.IsLayerSetup)
-				rel.Layer.Surface.Clear ();
+		if (ObjectLayer.IsLayerSetup)
+			ObjectLayer.Layer.Surface.Clear ();
 
 		return true;
 	}
@@ -567,9 +549,7 @@ public sealed class UserLayer : Layer
 
 		yield return this;
 
-		foreach (ReEditableLayer rel in ReEditableLayers) {
-			if (rel.IsLayerSetup)
-				yield return rel.Layer;
-		}
+		if (ObjectLayer.IsLayerSetup)
+			yield return ObjectLayer.Layer;
 	}
 }

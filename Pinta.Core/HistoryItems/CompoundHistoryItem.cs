@@ -76,9 +76,8 @@ public class CompoundHistoryItem : BaseHistoryItem
 		mask_snapshots = [];
 		foreach (UserLayer item in PintaCore.Workspace.ActiveDocument.Layers.UserLayers) {
 			snapshots.Add (item.Surface.Clone ());
-			foreach (ReEditableLayer rel in item.ReEditableLayers)
-				if (rel.IsLayerSetup)
-					sublayer_snapshots.Add ((rel, rel.Layer.Surface.Clone ()));
+			if (item.ObjectLayer.IsLayerSetup)
+				sublayer_snapshots.Add ((item.ObjectLayer, item.ObjectLayer.Layer.Surface.Clone ()));
 			if (item.Mask is { } mask)
 				mask_snapshots.Add ((item, mask.Surface.Clone (), mask.Hidden));
 		}

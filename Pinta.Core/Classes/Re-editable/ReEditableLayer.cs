@@ -66,36 +66,14 @@ public sealed class ReEditableLayer
 	}
 
 	/// <summary>
-	/// Safely and temporarily removes the ReEditableLayer from its parent UserLayer, withdrawing it from being drawn anywhere.
-	/// 
-	/// Due to history, cloning, etc. of editable shapes, ReEditableLayers need to be able to be removed from
-	/// and added back into the system of drawn layers.
+	/// Marks the ReEditableLayer as withdrawn from being drawn anywhere.
 	/// </summary>
-	public void TryRemoveLayer ()
-	{
-		//Safely remove it by checking to make sure it is indeed in the loop first.
-		if (parent.ReEditableLayers.Contains (this)) {
-			parent.ReEditableLayers.Remove (this);
-		}
-
-		in_the_loop = false;
-	}
+	public void TryRemoveLayer () => in_the_loop = false;
 
 	/// <summary>
-	/// Temporarily adds the ReEditableLayer back into its parent UserLayer, allowing it to be drawn again. Automatically avoids adding duplicates.
-	/// 
-	/// Due to history, cloning, etc. of editable shapes, ReEditableLayers need to be able to be removed from
-	/// and added back into the system of drawn layers.
+	/// Marks the ReEditableLayer as available to be drawn again.
 	/// </summary>
-	public void TryAddLayer ()
-	{
-		//Avoid duplicates.
-		if (!parent.ReEditableLayers.Contains (this)) {
-			parent.ReEditableLayers.Add (this);
-		}
-
-		in_the_loop = true;
-	}
+	public void TryAddLayer () => in_the_loop = true;
 
 	/// <summary>
 	/// Setup the Layer based on the parent UserLayer's Surface.

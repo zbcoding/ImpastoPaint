@@ -2212,15 +2212,7 @@ public sealed class TextTool : BaseTool
 	/// <see cref="DrawCursor"/>), which this walk does not touch.
 	/// </summary>
 	private void FoldObjectsIntoComposite (UserLayer layer)
-	{
-		if (!layer.NeedsComposite)
-			return;
-
-		ObjectOpacity.RenderLayerObjects (PintaCore.Chrome, layer);
-
-		// Whole canvas: an effect can move pixels outside the text's own bounds.
-		workspace.Invalidate ();
-	}
+		=> ObjectOpacity.FoldObjectSurfaceIntoComposite (workspace, PintaCore.Chrome, layer);
 
 	/// <summary>
 	/// Computes the on-canvas bounds of a text object, accounting for rotation.

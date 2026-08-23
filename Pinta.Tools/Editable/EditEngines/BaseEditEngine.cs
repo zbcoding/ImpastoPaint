@@ -1801,13 +1801,12 @@ public abstract class BaseEditEngine
 		// surface just drawn (see UserLayer.GetLayersToPaint), so the live geometry has to be folded
 		// into the accumulator or it stays invisible until something else rebuilds it. The accumulator
 		// renders shapes from the stored objects, which the live engines have not written back yet, so
-		// persist them first. Whole-canvas invalidation because an effect can move pixels anywhere,
-		// which the geometry's own dirty rect does not cover.
-		if (layer.NeedsComposite) {
-			PersistShapeObjects (layer);
-			ObjectOpacity.RenderLayerObjects (PintaCore.Chrome, layer);
-			workspace.Invalidate ();
-		}
+		// persist them first.
+		ObjectOpacity.FoldObjectSurfaceIntoComposite (
+			workspace,
+			PintaCore.Chrome,
+			layer,
+			persistObjects: () => PersistShapeObjects (layer));
 
 		return totalDirty ?? RectangleD.Zero;
 	}

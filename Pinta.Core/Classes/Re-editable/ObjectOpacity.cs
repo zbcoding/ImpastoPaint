@@ -142,6 +142,31 @@ public static class ObjectOpacity
 	}
 
 	/// <summary>
+	/// The redraw-path counterpart of <see cref="FoldRasterIntoComposite"/>: after redrawing the
+	/// shared ObjectLayer surface, folds it into the accumulated composite for a layer carrying
+	/// modifier nodes (no-op otherwise), and invalidates the whole workspace when it folded — an
+	/// effect can move pixels outside the object surface's own bounds.
+	/// <paramref name="persistObjects"/> runs before the fold for callers whose just-drawn state
+	/// lives outside the stored objects (the shape engines persist their live geometry first, so the
+	/// accumulator's stored-object render shows what was just drawn).
+	/// </summary>
+	public static void FoldObjectSurfaceIntoComposite (
+		IWorkspaceService workspace,
+		IChromeService chrome,
+		UserLayer layer,
+		Action? persistObjects = null)
+	{
+		if (!layer.NeedsComposite)
+			return;
+
+		persistObjects?.Invoke ();
+
+		RenderLayerObjects (chrome, layer);
+
+		workspace.Invalidate ();
+	}
+
+	/// <summary>
 	/// Lifts <paramref name="selection"/>'s pixels out of <paramref name="layer"/>'s base raster —
 	/// the clear half of Move Selected Pixels, after the pixels have been copied to the selection
 	/// layer — and folds the hole into the composite. The fold is the point: when the selection

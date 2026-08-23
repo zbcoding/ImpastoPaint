@@ -237,17 +237,18 @@ public static class ObjectRasterizer
 		ImageSurface baked = CairoExtensions.CreateImageSurface (Format.Argb32, layer.Surface.Width, layer.Surface.Height);
 		int shapeSeen = 0;
 		int textSeen = 0;
-		foreach (ILayerObject o in layer.Objects) {
-			if (o is ShapeObject shape) {
+		ObjectLayerRenderWalk.Walk (
+			layer,
+			renderShape: shape => {
 				if (shapeIndices.Contains (shapeSeen))
 					LayerObjectSelection.RenderShape (baked, layer, shape);
 				shapeSeen++;
-			} else if (o is TextObject text) {
+			},
+			renderText: text => {
 				if (textIndices.Contains (textSeen))
 					TextObjectRenderer.Render (baked, text, chrome, antialias: true, clip: textClip);
 				textSeen++;
-			}
-		}
+			});
 
 		using (Context g = new (layer.Surface)) {
 			g.SetSourceSurface (baked, 0, 0);

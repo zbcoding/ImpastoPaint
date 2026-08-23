@@ -26,6 +26,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using Cairo;
@@ -176,7 +177,6 @@ public abstract class BaseTransformTool : BaseTool
 				PointD srcCorner = GetCornerPoint (source_rect, active.Value);
 
 				Matrix flipTransform = CairoExtensions.CreateIdentityMatrix ();
-				RectangleD newRect;
 
 				if (fromCenter) {
 					// Scale about center; flip occurs when mouse crosses center.
@@ -201,10 +201,6 @@ public abstract class BaseTransformTool : BaseTool
 					double sx = cdx0 != 0 ? cdx1 / cdx0 : 1;
 					double sy = cdy0 != 0 ? cdy1 / cdy0 : 1;
 
-					double w = Math.Abs (cdx1) * 2;
-					double h = Math.Abs (cdy1) * 2;
-					newRect = new RectangleD (srcCenter.X - w / 2, srcCenter.Y - h / 2, w, h);
-
 					flipTransform.Translate (srcCenter.X, srcCenter.Y);
 					flipTransform.Scale (sx, sy);
 					flipTransform.Translate (-srcCenter.X, -srcCenter.Y);
@@ -226,25 +222,18 @@ public abstract class BaseTransformTool : BaseTool
 					double sx = dx0 != 0 ? dx1 / dx0 : 1;
 					double sy = dy0 != 0 ? dy1 / dy0 : 1;
 
-					double w = Math.Abs (dx1);
-					double h = Math.Abs (dy1);
-					double rx = Math.Min (opp.X, opp.X + dx1);
-					double ry = Math.Min (opp.Y, opp.Y + dy1);
-					newRect = new RectangleD (rx, ry, w, h);
-
 					flipTransform.Translate (opp.X, opp.Y);
 					flipTransform.Scale (sx, sy);
 					flipTransform.Translate (-opp.X, -opp.Y);
 				}
 
-				_ = newRect; // grips are placed via the oriented frame, not this rect
+				// Grips are placed via the oriented frame, not a target rect.
 				ApplyRefScale (document, flipTransform);
 			} else {
 				// Edge handles: allow flipping (mirroring) as well, so user can
 				// mirror horizontally by dragging left/right past opposite edge,
 				// and vertically by dragging up/down past opposite edge.
 				Matrix edgeTransform = CairoExtensions.CreateIdentityMatrix ();
-				RectangleD edgeRect;
 				PointD edgeAnchor;
 
 				double srcW = source_rect.Width;
@@ -257,14 +246,12 @@ public abstract class BaseTransformTool : BaseTool
 								double cdx0 = source_rect.X - srcCenter.X;
 								double cdx1 = mouse.X - srcCenter.X;
 								double sx = cdx0 != 0 ? cdx1 / cdx0 : 1;
-								double w = Math.Abs (cdx1) * 2;
 								double h = srcH;
 								double sy = 1;
 								if (keepAspect && srcW > 0) {
-									h = w * srcH / srcW;
+									h = Math.Abs (cdx1) * 2 * srcH / srcW;
 									sy = Math.Abs (sx);
 								}
-								edgeRect = new RectangleD (srcCenter.X - w / 2, srcCenter.Y - h / 2, w, h);
 								edgeAnchor = srcCenter;
 								edgeTransform.Translate (edgeAnchor.X, edgeAnchor.Y);
 								edgeTransform.Scale (sx, sy);
@@ -273,16 +260,12 @@ public abstract class BaseTransformTool : BaseTool
 								double dx0 = source_rect.X - oppX;
 								double dx1 = mouse.X - oppX;
 								double sx = dx0 != 0 ? dx1 / dx0 : 1;
-								double w = Math.Abs (dx1);
 								double h = srcH;
 								double sy = 1;
 								if (keepAspect && srcW > 0) {
-									h = w * srcH / srcW;
+									h = Math.Abs (dx1) * srcH / srcW;
 									sy = Math.Abs (sx);
 								}
-								double rx = Math.Min (oppX, mouse.X);
-								double ry = keepAspect ? srcCenter.Y - h / 2 : source_rect.Y;
-								edgeRect = new RectangleD (rx, ry, w, h);
 								edgeAnchor = new PointD (oppX, srcCenter.Y);
 								edgeTransform.Translate (edgeAnchor.X, edgeAnchor.Y);
 								edgeTransform.Scale (sx, sy);
@@ -296,14 +279,12 @@ public abstract class BaseTransformTool : BaseTool
 								double cdx0 = source_rect.X + srcW - srcCenter.X;
 								double cdx1 = mouse.X - srcCenter.X;
 								double sx = cdx0 != 0 ? cdx1 / cdx0 : 1;
-								double w = Math.Abs (cdx1) * 2;
 								double h = srcH;
 								double sy = 1;
 								if (keepAspect && srcW > 0) {
-									h = w * srcH / srcW;
+									h = Math.Abs (cdx1) * 2 * srcH / srcW;
 									sy = Math.Abs (sx);
 								}
-								edgeRect = new RectangleD (srcCenter.X - w / 2, srcCenter.Y - h / 2, w, h);
 								edgeAnchor = srcCenter;
 								edgeTransform.Translate (edgeAnchor.X, edgeAnchor.Y);
 								edgeTransform.Scale (sx, sy);
@@ -312,16 +293,12 @@ public abstract class BaseTransformTool : BaseTool
 								double dx0 = srcW;
 								double dx1 = mouse.X - oppX;
 								double sx = dx0 != 0 ? dx1 / dx0 : 1;
-								double w = Math.Abs (dx1);
 								double h = srcH;
 								double sy = 1;
 								if (keepAspect && srcW > 0) {
-									h = w * srcH / srcW;
+									h = Math.Abs (dx1) * srcH / srcW;
 									sy = Math.Abs (sx);
 								}
-								double rx = Math.Min (oppX, mouse.X);
-								double ry = keepAspect ? srcCenter.Y - h / 2 : source_rect.Y;
-								edgeRect = new RectangleD (rx, ry, w, h);
 								edgeAnchor = new PointD (oppX, srcCenter.Y);
 								edgeTransform.Translate (edgeAnchor.X, edgeAnchor.Y);
 								edgeTransform.Scale (sx, sy);
@@ -335,14 +312,10 @@ public abstract class BaseTransformTool : BaseTool
 								double cdy0 = source_rect.Y - srcCenter.Y;
 								double cdy1 = mouse.Y - srcCenter.Y;
 								double sy = cdy0 != 0 ? cdy1 / cdy0 : 1;
-								double h = Math.Abs (cdy1) * 2;
-								double w = srcW;
 								double sx = 1;
 								if (keepAspect && srcH > 0) {
-									w = h * srcW / srcH;
 									sx = Math.Abs (sy);
 								}
-								edgeRect = new RectangleD (srcCenter.X - w / 2, srcCenter.Y - h / 2, w, h);
 								edgeAnchor = srcCenter;
 								edgeTransform.Translate (edgeAnchor.X, edgeAnchor.Y);
 								edgeTransform.Scale (sx, sy);
@@ -351,16 +324,10 @@ public abstract class BaseTransformTool : BaseTool
 								double dy0 = source_rect.Y - oppY;
 								double dy1 = mouse.Y - oppY;
 								double sy = dy0 != 0 ? dy1 / dy0 : 1;
-								double h = Math.Abs (dy1);
-								double w = srcW;
 								double sx = 1;
 								if (keepAspect && srcH > 0) {
-									w = h * srcW / srcH;
 									sx = Math.Abs (sy);
 								}
-								double ry = Math.Min (oppY, mouse.Y);
-								double rx = keepAspect ? srcCenter.X - w / 2 : source_rect.X;
-								edgeRect = new RectangleD (rx, ry, w, h);
 								edgeAnchor = new PointD (srcCenter.X, oppY);
 								edgeTransform.Translate (edgeAnchor.X, edgeAnchor.Y);
 								edgeTransform.Scale (sx, sy);
@@ -374,14 +341,10 @@ public abstract class BaseTransformTool : BaseTool
 								double cdy0 = source_rect.Y + srcH - srcCenter.Y;
 								double cdy1 = mouse.Y - srcCenter.Y;
 								double sy = cdy0 != 0 ? cdy1 / cdy0 : 1;
-								double h = Math.Abs (cdy1) * 2;
-								double w = srcW;
 								double sx = 1;
 								if (keepAspect && srcH > 0) {
-									w = h * srcW / srcH;
 									sx = Math.Abs (sy);
 								}
-								edgeRect = new RectangleD (srcCenter.X - w / 2, srcCenter.Y - h / 2, w, h);
 								edgeAnchor = srcCenter;
 								edgeTransform.Translate (edgeAnchor.X, edgeAnchor.Y);
 								edgeTransform.Scale (sx, sy);
@@ -390,16 +353,10 @@ public abstract class BaseTransformTool : BaseTool
 								double dy0 = srcH;
 								double dy1 = mouse.Y - oppY;
 								double sy = dy0 != 0 ? dy1 / dy0 : 1;
-								double h = Math.Abs (dy1);
-								double w = srcW;
 								double sx = 1;
 								if (keepAspect && srcH > 0) {
-									w = h * srcW / srcH;
 									sx = Math.Abs (sy);
 								}
-								double ry = Math.Min (oppY, mouse.Y);
-								double rx = keepAspect ? srcCenter.X - w / 2 : source_rect.X;
-								edgeRect = new RectangleD (rx, ry, w, h);
 								edgeAnchor = new PointD (srcCenter.X, oppY);
 								edgeTransform.Translate (edgeAnchor.X, edgeAnchor.Y);
 								edgeTransform.Scale (sx, sy);
@@ -407,15 +364,13 @@ public abstract class BaseTransformTool : BaseTool
 							}
 							break;
 						}
-					default: {
-							// Unreachable (all 8 HandlePoints handled above); kept as a guard.
-							RectangleD to = ComputeEdgeRect (source_rect, ref_rect, active.Value, keepAspect, fromCenter);
-							ApplyRefScale (document, ComputeScaleTransform (source_rect, to));
-							return;
-						}
+					default:
+						// Unreachable: the four corner handles are dispatched by IsCorner above,
+						// and these four cases exhaust HandlePoint.
+						throw new UnreachableException ();
 				}
 
-				_ = edgeRect; // grips are placed via the oriented frame, not this rect
+				// Grips are placed via the oriented frame, not a target rect.
 				ApplyRefScale (document, edgeTransform);
 			}
 			return;
@@ -1052,15 +1007,6 @@ public abstract class BaseTransformTool : BaseTool
 		=> p is HandlePoint.UpperLeft or HandlePoint.UpperRight
 			or HandlePoint.LowerLeft or HandlePoint.LowerRight;
 
-	private static PointD ClampToImage (PointD p, Document document)
-		=> new (
-			Math.Round (Math.Clamp (p.X, 0, document.ImageSize.Width)),
-			Math.Round (Math.Clamp (p.Y, 0, document.ImageSize.Height)));
-
-	/// <summary>
-	/// The corner of <paramref name="s"/> diagonally opposite the dragged one;
-	/// this corner stays fixed while the dragged corner follows the mouse.
-	/// </summary>
 	private static PointD OppositeCorner (RectangleD s, HandlePoint dragged) => dragged switch {
 		HandlePoint.UpperLeft => new (s.Right, s.Bottom),
 		HandlePoint.UpperRight => new (s.Left, s.Bottom),
@@ -1080,64 +1026,6 @@ public abstract class BaseTransformTool : BaseTool
 		HandlePoint.Down => new (s.GetCenter ().X, s.Y + s.Height),
 		_ => s.GetCenter (),
 	};
-
-	/// <summary>
-	/// Target rectangle for a corner drag. Shift keeps the pasted content's
-	/// original width:height ratio (not a square); Ctrl anchors the scale to
-	/// the center instead of the opposite corner.
-	/// </summary>
-	private static RectangleD ComputeCornerRect (RectangleD source, PointD mouse, HandlePoint dragged, bool keepAspect, bool fromCenter)
-	{
-		PointD anchor = OppositeCorner (source, dragged);
-		double dx = mouse.X - anchor.X;
-		double dy = mouse.Y - anchor.Y;
-
-		if (keepAspect && source.Width > 0 && source.Height > 0) {
-			// Scale both axes by the same factor, following whichever axis was dragged further.
-			double s = Math.Max (Math.Abs (dx) / source.Width, Math.Abs (dy) / source.Height);
-			dx = (dx < 0 ? -1 : 1) * source.Width * s;
-			dy = (dy < 0 ? -1 : 1) * source.Height * s;
-		}
-
-		RectangleD rect = RectangleD.FromPoints (anchor, new PointD (anchor.X + dx, anchor.Y + dy), true);
-		return fromCenter ? CenterAnchored (source, rect) : rect;
-	}
-
-	/// <summary>
-	/// Target rectangle for an edge drag. The dragged edge changes one dimension;
-	/// Shift derives the other dimension from the pasted content's aspect ratio
-	/// (expanding/contracting symmetrically about the perpendicular centerline),
-	/// and Ctrl anchors the whole scale to the center.
-	/// </summary>
-	private static RectangleD ComputeEdgeRect (RectangleD source, RectangleD dragged, HandlePoint edge, bool keepAspect, bool fromCenter)
-	{
-		RectangleD rect = dragged;
-
-		if (keepAspect && source.Width > 0 && source.Height > 0) {
-			PointD c = source.GetCenter ();
-			if (edge is HandlePoint.Left or HandlePoint.Right) {
-				// Width was dragged; derive height, centered vertically.
-				double height = dragged.Width * source.Height / source.Width;
-				rect = new RectangleD (new PointD (dragged.X, c.Y - height / 2), dragged.Width, height);
-			} else {
-				// Up/Down: height was dragged; derive width, centered horizontally.
-				double width = dragged.Height * source.Width / source.Height;
-				rect = new RectangleD (new PointD (c.X - width / 2, dragged.Y), width, dragged.Height);
-			}
-		}
-
-		return fromCenter ? CenterAnchored (source, rect) : rect;
-	}
-
-	/// <summary>
-	/// Re-centers <paramref name="rect"/> on the source's center, keeping its size,
-	/// so scaling grows symmetrically about the center (Ctrl behavior).
-	/// </summary>
-	private static RectangleD CenterAnchored (RectangleD source, RectangleD rect)
-	{
-		PointD c = source.GetCenter ();
-		return new RectangleD (new PointD (c.X - rect.Width / 2, c.Y - rect.Height / 2), rect.Width, rect.Height);
-	}
 
 	/// <summary>
 	/// Load the rotate cursor texture with white halo + black outline preserved.

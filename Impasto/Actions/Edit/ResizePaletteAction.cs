@@ -91,12 +91,14 @@ internal sealed class ResizePaletteAction : IActionHandler
 			"The colors you have edited will be replaced by the default palette for the new row count. "
 			+ "Keep them instead and the palette stays at its current number of rows.");
 
-		// Not destructive: keeping the colors is the routine outcome; resetting is the lossy one.
-		return !await GtkExtensions.RunConfirmAsync (
+		// Resetting is the lossy choice, so it gets the destructive styling and Cancel/Keep stays
+		// the Enter-key default.
+		return await GtkExtensions.RunConfirmAsync (
 			chrome.MainWindow,
 			primary,
 			secondary,
-			Translations.GetString ("_Reset Palette"));
+			Translations.GetString ("_Reset Palette"),
+			destructive: true);
 	}
 
 	private async Task<(int paletteRows, int paletteSize, int recentColorCount)?> PromptResize ()

@@ -39,13 +39,7 @@ internal static class ErrorDialog
 	{
 		Console.Error.WriteLine ("Impasto: {0}\n{1}", message, body);
 
-		using Adw.MessageDialog dialog = Adw.MessageDialog.New (parent, message, body);
-
-		dialog.AddResponse (nameof (ErrorDialogResponse.OK), Translations.GetString ("_OK"));
-		dialog.DefaultResponse = nameof (ErrorDialogResponse.OK);
-		dialog.CloseResponse = nameof (ErrorDialogResponse.OK);
-
-		await dialog.RunAsync ();
+		await GtkExtensions.RunInfoAsync (parent, message, body, Translations.GetString ("_OK"));
 	}
 
 	internal static async Task<ErrorDialogResponse> ShowError (

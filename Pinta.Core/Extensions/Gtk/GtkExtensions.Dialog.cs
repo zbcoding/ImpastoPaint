@@ -226,6 +226,27 @@ partial class GtkExtensions
 			return await dialog.RunAsync () == confirm_response;
 	}
 
+	/// <summary>
+	/// Shared plumbing for the app's info-only prompts: builds a MessageDialog with a single OK
+	/// response, runs it, and completes on dismissal. Dialogs with extra children or additional
+	/// responses stay hand-rolled.
+	/// </summary>
+	public static async Task RunInfoAsync (
+		Gtk.Window parent,
+		string heading,
+		string body,
+		string okLabel)
+	{
+		const string ok_response = "ok";
+
+		using Adw.MessageDialog dialog = Adw.MessageDialog.New (parent, heading, body);
+		dialog.AddResponse (ok_response, okLabel);
+		dialog.DefaultResponse = ok_response;
+		dialog.CloseResponse = ok_response;
+
+		await dialog.RunAsync ();
+	}
+
 	public static Task<Gtk.ResponseType> RunAsync (this Gtk.Dialog dialog)
 	{
 		TaskCompletionSource<Gtk.ResponseType> completionSource = new ();

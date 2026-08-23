@@ -210,18 +210,13 @@ internal sealed partial class InstallDialog
 			return true;
 
 		} catch {
-			var dialog = Adw.MessageDialog.New (
+			// Fire-and-forget: InitForInstall must return synchronously, so the info dialog
+			// closes on its own while this returns false to the caller.
+			_ = GtkExtensions.RunInfoAsync (
 				TransientFor,
 				Translations.GetString ("Failed to load extension package"),
-				Translations.GetString ("The file may be an invalid or corrupt extension package"));
-
-			const string ok_response = "ok";
-
-			dialog.AddResponse (ok_response, Translations.GetString ("_OK"));
-			dialog.DefaultResponse = ok_response;
-			dialog.CloseResponse = ok_response;
-
-			dialog.Present ();
+				Translations.GetString ("The file may be an invalid or corrupt extension package"),
+				Translations.GetString ("_OK"));
 
 			return false;
 		}

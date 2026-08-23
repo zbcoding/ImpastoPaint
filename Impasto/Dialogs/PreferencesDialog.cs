@@ -578,9 +578,7 @@ public sealed partial class PreferencesDialog
 
 	private async Task ShowMessage (string message)
 	{
-		using Adw.MessageDialog dialog = Adw.MessageDialog.New (this, Translations.GetString ("Settings"), message);
-		dialog.AddResponse ("ok", Translations.GetString ("OK"));
-		await dialog.RunAsync ();
+		await GtkExtensions.RunInfoAsync (this, Translations.GetString ("Settings"), message, Translations.GetString ("OK"));
 	}
 
 	private static Gtk.Label CreateLabel (string text, Gtk.Align horizontalAlign)

@@ -233,142 +233,17 @@ public abstract class BaseTransformTool : BaseTool
 				// Edge handles: allow flipping (mirroring) as well, so user can
 				// mirror horizontally by dragging left/right past opposite edge,
 				// and vertically by dragging up/down past opposite edge.
-				Matrix edgeTransform = CairoExtensions.CreateIdentityMatrix ();
-				PointD edgeAnchor;
+				(bool horizontal, bool nearIsMin) = active.Value switch {
+					HandlePoint.Left => (true, true),
+					HandlePoint.Right => (true, false),
+					HandlePoint.Up => (false, true),
+					HandlePoint.Down => (false, false),
+					// Unreachable: the four corner handles are dispatched by IsCorner above,
+					// and these four cases exhaust HandlePoint.
+					_ => throw new UnreachableException (),
+				};
 
-				double srcW = source_rect.Width;
-				double srcH = source_rect.Height;
-
-				switch (active.Value) {
-					case HandlePoint.Left: {
-							double oppX = source_rect.X + srcW;
-							if (fromCenter) {
-								double cdx0 = source_rect.X - srcCenter.X;
-								double cdx1 = mouse.X - srcCenter.X;
-								double sx = cdx0 != 0 ? cdx1 / cdx0 : 1;
-								double h = srcH;
-								double sy = 1;
-								if (keepAspect && srcW > 0) {
-									h = Math.Abs (cdx1) * 2 * srcH / srcW;
-									sy = Math.Abs (sx);
-								}
-								edgeAnchor = srcCenter;
-								edgeTransform.Translate (edgeAnchor.X, edgeAnchor.Y);
-								edgeTransform.Scale (sx, sy);
-								edgeTransform.Translate (-edgeAnchor.X, -edgeAnchor.Y);
-							} else {
-								double dx0 = source_rect.X - oppX;
-								double dx1 = mouse.X - oppX;
-								double sx = dx0 != 0 ? dx1 / dx0 : 1;
-								double h = srcH;
-								double sy = 1;
-								if (keepAspect && srcW > 0) {
-									h = Math.Abs (dx1) * srcH / srcW;
-									sy = Math.Abs (sx);
-								}
-								edgeAnchor = new PointD (oppX, srcCenter.Y);
-								edgeTransform.Translate (edgeAnchor.X, edgeAnchor.Y);
-								edgeTransform.Scale (sx, sy);
-								edgeTransform.Translate (-edgeAnchor.X, -edgeAnchor.Y);
-							}
-							break;
-						}
-					case HandlePoint.Right: {
-							double oppX = source_rect.X;
-							if (fromCenter) {
-								double cdx0 = source_rect.X + srcW - srcCenter.X;
-								double cdx1 = mouse.X - srcCenter.X;
-								double sx = cdx0 != 0 ? cdx1 / cdx0 : 1;
-								double h = srcH;
-								double sy = 1;
-								if (keepAspect && srcW > 0) {
-									h = Math.Abs (cdx1) * 2 * srcH / srcW;
-									sy = Math.Abs (sx);
-								}
-								edgeAnchor = srcCenter;
-								edgeTransform.Translate (edgeAnchor.X, edgeAnchor.Y);
-								edgeTransform.Scale (sx, sy);
-								edgeTransform.Translate (-edgeAnchor.X, -edgeAnchor.Y);
-							} else {
-								double dx0 = srcW;
-								double dx1 = mouse.X - oppX;
-								double sx = dx0 != 0 ? dx1 / dx0 : 1;
-								double h = srcH;
-								double sy = 1;
-								if (keepAspect && srcW > 0) {
-									h = Math.Abs (dx1) * srcH / srcW;
-									sy = Math.Abs (sx);
-								}
-								edgeAnchor = new PointD (oppX, srcCenter.Y);
-								edgeTransform.Translate (edgeAnchor.X, edgeAnchor.Y);
-								edgeTransform.Scale (sx, sy);
-								edgeTransform.Translate (-edgeAnchor.X, -edgeAnchor.Y);
-							}
-							break;
-						}
-					case HandlePoint.Up: {
-							double oppY = source_rect.Y + srcH;
-							if (fromCenter) {
-								double cdy0 = source_rect.Y - srcCenter.Y;
-								double cdy1 = mouse.Y - srcCenter.Y;
-								double sy = cdy0 != 0 ? cdy1 / cdy0 : 1;
-								double sx = 1;
-								if (keepAspect && srcH > 0) {
-									sx = Math.Abs (sy);
-								}
-								edgeAnchor = srcCenter;
-								edgeTransform.Translate (edgeAnchor.X, edgeAnchor.Y);
-								edgeTransform.Scale (sx, sy);
-								edgeTransform.Translate (-edgeAnchor.X, -edgeAnchor.Y);
-							} else {
-								double dy0 = source_rect.Y - oppY;
-								double dy1 = mouse.Y - oppY;
-								double sy = dy0 != 0 ? dy1 / dy0 : 1;
-								double sx = 1;
-								if (keepAspect && srcH > 0) {
-									sx = Math.Abs (sy);
-								}
-								edgeAnchor = new PointD (srcCenter.X, oppY);
-								edgeTransform.Translate (edgeAnchor.X, edgeAnchor.Y);
-								edgeTransform.Scale (sx, sy);
-								edgeTransform.Translate (-edgeAnchor.X, -edgeAnchor.Y);
-							}
-							break;
-						}
-					case HandlePoint.Down: {
-							double oppY = source_rect.Y;
-							if (fromCenter) {
-								double cdy0 = source_rect.Y + srcH - srcCenter.Y;
-								double cdy1 = mouse.Y - srcCenter.Y;
-								double sy = cdy0 != 0 ? cdy1 / cdy0 : 1;
-								double sx = 1;
-								if (keepAspect && srcH > 0) {
-									sx = Math.Abs (sy);
-								}
-								edgeAnchor = srcCenter;
-								edgeTransform.Translate (edgeAnchor.X, edgeAnchor.Y);
-								edgeTransform.Scale (sx, sy);
-								edgeTransform.Translate (-edgeAnchor.X, -edgeAnchor.Y);
-							} else {
-								double dy0 = srcH;
-								double dy1 = mouse.Y - oppY;
-								double sy = dy0 != 0 ? dy1 / dy0 : 1;
-								double sx = 1;
-								if (keepAspect && srcH > 0) {
-									sx = Math.Abs (sy);
-								}
-								edgeAnchor = new PointD (srcCenter.X, oppY);
-								edgeTransform.Translate (edgeAnchor.X, edgeAnchor.Y);
-								edgeTransform.Scale (sx, sy);
-								edgeTransform.Translate (-edgeAnchor.X, -edgeAnchor.Y);
-							}
-							break;
-						}
-					default:
-						// Unreachable: the four corner handles are dispatched by IsCorner above,
-						// and these four cases exhaust HandlePoint.
-						throw new UnreachableException ();
-				}
+				Matrix edgeTransform = ComputeEdgeScaleTransform (source_rect, srcCenter, mouse, horizontal, nearIsMin, fromCenter, keepAspect);
 
 				// Grips are placed via the oriented frame, not a target rect.
 				ApplyRefScale (document, edgeTransform);
@@ -1026,6 +901,54 @@ public abstract class BaseTransformTool : BaseTool
 		HandlePoint.Down => new (s.GetCenter ().X, s.Y + s.Height),
 		_ => s.GetCenter (),
 	};
+
+	/// <summary>
+	/// Left/Right/Up/Down edge-handle drags all scale about an anchor on their own axis and,
+	/// when <paramref name="keepAspect"/> is set, apply the same ratio to the other axis - one
+	/// block transposed per axis/sign. <paramref name="horizontal"/> picks the dragged axis
+	/// (Left/Right vs Up/Down); <paramref name="nearIsMin"/> picks which edge of
+	/// <paramref name="sourceRect"/> is under the cursor (Left/Up = the min edge, Right/Down =
+	/// the max edge).
+	/// </summary>
+	internal static Matrix ComputeEdgeScaleTransform (
+		RectangleD sourceRect,
+		PointD srcCenter,
+		PointD mouse,
+		bool horizontal,
+		bool nearIsMin,
+		bool fromCenter,
+		bool keepAspect)
+	{
+		double near = horizontal
+			? (nearIsMin ? sourceRect.X : sourceRect.X + sourceRect.Width)
+			: (nearIsMin ? sourceRect.Y : sourceRect.Y + sourceRect.Height);
+		double opposite = horizontal
+			? (nearIsMin ? sourceRect.X + sourceRect.Width : sourceRect.X)
+			: (nearIsMin ? sourceRect.Y + sourceRect.Height : sourceRect.Y);
+		double center = horizontal ? srcCenter.X : srcCenter.Y;
+		double mouseCoord = horizontal ? mouse.X : mouse.Y;
+
+		double pivot = fromCenter ? center : opposite;
+		double d0 = near - pivot;
+		double d1 = mouseCoord - pivot;
+		double primary = d0 != 0 ? d1 / d0 : 1;
+
+		double axisExtent = horizontal ? sourceRect.Width : sourceRect.Height;
+		double secondary = keepAspect && axisExtent > 0 ? Math.Abs (primary) : 1;
+
+		PointD anchor = fromCenter
+			? srcCenter
+			: horizontal ? new PointD (opposite, srcCenter.Y) : new PointD (srcCenter.X, opposite);
+
+		double sx = horizontal ? primary : secondary;
+		double sy = horizontal ? secondary : primary;
+
+		Matrix edgeTransform = CairoExtensions.CreateIdentityMatrix ();
+		edgeTransform.Translate (anchor.X, anchor.Y);
+		edgeTransform.Scale (sx, sy);
+		edgeTransform.Translate (-anchor.X, -anchor.Y);
+		return edgeTransform;
+	}
 
 	/// <summary>
 	/// Load the rotate cursor texture with white halo + black outline preserved.

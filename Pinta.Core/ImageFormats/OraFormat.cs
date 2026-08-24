@@ -811,6 +811,7 @@ public sealed class OraFormat : IImageImporter, IImageExporter
 		writer.WriteAttributeString ("partial-cy", shape.PartialEllipseCenter.Y.ToString (GetFormat ()));
 		writer.WriteAttributeString ("partial-rx", shape.PartialEllipseRadiusX.ToString (GetFormat ()));
 		writer.WriteAttributeString ("partial-ry", shape.PartialEllipseRadiusY.ToString (GetFormat ()));
+		writer.WriteAttributeString ("partial-rot", shape.PartialEllipseRotation.ToString (GetFormat ()));
 
 		WriteArrow (writer, "arrow1", shape.Arrow1);
 		WriteArrow (writer, "arrow2", shape.Arrow2);
@@ -917,6 +918,9 @@ public sealed class OraFormat : IImageImporter, IImageExporter
 				PartialEllipseCenter = new PointD (double.Parse (GetAttribute (element, "partial-cx", "0"), GetFormat ()), double.Parse (GetAttribute (element, "partial-cy", "0"), GetFormat ())),
 				PartialEllipseRadiusX = double.Parse (GetAttribute (element, "partial-rx", "0"), GetFormat ()),
 				PartialEllipseRadiusY = double.Parse (GetAttribute (element, "partial-ry", "0"), GetFormat ()),
+				// Files saved before this attribute existed have unrotated frames; the default keeps
+				// them loading exactly as they always did.
+				PartialEllipseRotation = double.Parse (GetAttribute (element, "partial-rot", "0"), GetFormat ()),
 			};
 
 			ReadObjectCommon (element, shape);

@@ -94,6 +94,12 @@ public sealed class ShapeObject : ILayerObject
 	public PointD PartialEllipseCenter { get; set; }
 	public double PartialEllipseRadiusX { get; set; }
 	public double PartialEllipseRadiusY { get; set; }
+	/// <summary>
+	/// The frozen frame's own orientation, in radians. Whole-shape rotations carry the frame
+	/// (see EllipseEngine.RotateWholeShape), so it has to survive every ShapeObject round trip -
+	/// without it a rebuilt engine's points no longer fit their ellipse and render as splines.
+	/// </summary>
+	public double PartialEllipseRotation { get; set; }
 
 	public ShapeObject Clone ()
 	{
@@ -122,6 +128,7 @@ public sealed class ShapeObject : ILayerObject
 			PartialEllipseCenter = PartialEllipseCenter,
 			PartialEllipseRadiusX = PartialEllipseRadiusX,
 			PartialEllipseRadiusY = PartialEllipseRadiusY,
+			PartialEllipseRotation = PartialEllipseRotation,
 		};
 
 		clone.ControlPoints.AddRange (ControlPoints.ConvertAll (point => point.Clone ()));

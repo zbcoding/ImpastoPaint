@@ -60,8 +60,9 @@ public static class ShapeEngineCollection
 			lineEngine.TriangleType = source.TriangleType;
 		}
 
-		if (engine is EllipseEngine ellipse && source.IsPartialEllipse)
-			ellipse.SetPartialGeometry (source.PartialEllipseCenter, source.PartialEllipseRadiusX, source.PartialEllipseRadiusY);
+		if (engine is EllipseEngine ellipse && source.IsPartialEllipse) {
+			ellipse.SetPartialGeometry (source.PartialEllipseCenter, source.PartialEllipseRadiusX, source.PartialEllipseRadiusY, source.PartialEllipseRotation);
+		}
 
 		return engine;
 	}
@@ -101,11 +102,12 @@ public static class ShapeEngineCollection
 		if (engine is RoundedLineEngine rounded)
 			result.RoundedRadius = rounded.Radius;
 
-		if (engine is EllipseEngine ellipse && ellipse.TryGetPartialGeometry (out PointD center, out double radiusX, out double radiusY)) {
+		if (engine is EllipseEngine ellipse && ellipse.TryGetPartialGeometry (out PointD center, out double radiusX, out double radiusY, out double rotation)) {
 			result.IsPartialEllipse = true;
 			result.PartialEllipseCenter = center;
 			result.PartialEllipseRadiusX = radiusX;
 			result.PartialEllipseRadiusY = radiusY;
+			result.PartialEllipseRotation = rotation;
 		}
 
 		return result;

@@ -52,20 +52,22 @@ public sealed class EllipseEngine : ShapeEngine
 
 	public bool IsPartialEllipse => isPartial;
 
-	public bool TryGetPartialGeometry (out PointD center, out double r_x, out double r_y)
+	public bool TryGetPartialGeometry (out PointD center, out double r_x, out double r_y, out double rotation)
 	{
 		center = partialCenter;
 		r_x = partialRx;
 		r_y = partialRy;
+		rotation = partialRotation;
 		return isPartial && r_x > 0 && r_y > 0;
 	}
 
-	public void SetPartialGeometry (PointD center, double radiusX, double radiusY)
+	public void SetPartialGeometry (PointD center, double radiusX, double radiusY, double rotation = 0d)
 	{
 		isPartial = true;
 		partialCenter = center;
 		partialRx = radiusX;
 		partialRy = radiusY;
+		partialRotation = rotation;
 	}
 
 	/// <summary>

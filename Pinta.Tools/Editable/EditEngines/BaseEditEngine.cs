@@ -1077,6 +1077,55 @@ public abstract class BaseEditEngine
 		}
 	}
 
+	/// <summary>
+	/// The result of hit-testing a canvas position against the closest control point and,
+	/// if that missed, the closest generated (segment) point — shared by HandleMouseDown's
+	/// click test and UpdateHoverHandle's hover test.
+	/// </summary>
+	private readonly record struct PointHitTestResult (
+		bool HitControlPoint,
+		int ControlPointShapeIndex,
+		int ControlPointIndex,
+		ControlPoint? ControlPoint,
+		bool HitGeneratedPoint,
+		int GeneratedPointShapeIndex,
+		int GeneratedPointIndex,
+		PointD? GeneratedPoint);
+
+	private PointHitTestResult HitTestPoints (PointD canvasPoint, PointD windowPoint, MoveHandle handle)
+	{
+		SEngines.FindClosestControlPoint (
+			canvasPoint,
+			out int cpShapeIndex,
+			out int cpIndex,
+			out ControlPoint? controlPoint,
+			out _);
+
+		bool hitControlPoint = false;
+		if (controlPoint != null) {
+			handle.CanvasPosition = controlPoint.Position;
+			hitControlPoint = handle.ContainsPoint (windowPoint);
+		}
+
+		OrganizedPointCollection.FindClosestPoint (
+			SEngines,
+			canvasPoint,
+			out int genShapeIndex,
+			out int genPointIndex,
+			out PointD? generatedPoint,
+			out _);
+
+		bool hitGeneratedPoint = false;
+		if (!hitControlPoint && generatedPoint.HasValue) {
+			handle.CanvasPosition = generatedPoint.Value;
+			hitGeneratedPoint = handle.ContainsPoint (windowPoint);
+		}
+
+		return new (
+			hitControlPoint, cpShapeIndex, cpIndex, controlPoint,
+			hitGeneratedPoint, genShapeIndex, genPointIndex, generatedPoint);
+	}
+
 	public virtual void HandleMouseDown (Document document, ToolMouseEventArgs e)
 	{
 		EnsureShapesForCurrentLayer ();
@@ -1110,42 +1159,25 @@ public abstract class BaseEditEngine
 
 		bool ctrlKey = e.IsControlPressed;
 
-		SEngines.FindClosestControlPoint (
-			unclamped_point,
-			out int closestCPShapeIndex,
-			out int closestCPIndex,
-			out var closestControlPoint,
-			out _);
-
-		OrganizedPointCollection.FindClosestPoint (
-			SEngines,
-			unclamped_point,
-			out int closestShapeIndex,
-			out int closestPointIndex,
-			out var closestPoint,
-			out _);
-
-		bool clicked_control_point = false;
-		bool clicked_generated_point = false;
-
 		PointD current_window_point = workspace.CanvasPointToView (unclamped_point);
 		MoveHandle test_handle = new (workspace);
 
-		// Check if the user is directly clicking on a control point.
-		if (closestControlPoint != null) {
-			test_handle.CanvasPosition = closestControlPoint.Position;
-			clicked_control_point = test_handle.ContainsPoint (current_window_point);
-			if (clicked_control_point) {
-				SelectedPointIndex = closestCPIndex;
-				SelectedShapeIndex = closestCPShapeIndex;
-			}
+		PointHitTestResult hit = HitTestPoints (unclamped_point, current_window_point, test_handle);
+
+		int closestCPShapeIndex = hit.ControlPointShapeIndex;
+		int closestCPIndex = hit.ControlPointIndex;
+		int closestShapeIndex = hit.GeneratedPointShapeIndex;
+		int closestPointIndex = hit.GeneratedPointIndex;
+		PointD? closestPoint = hit.GeneratedPoint;
+
+		bool clicked_control_point = hit.HitControlPoint;
+		if (clicked_control_point) {
+			SelectedPointIndex = closestCPIndex;
+			SelectedShapeIndex = closestCPShapeIndex;
 		}
 
 		// Otherwise, the user might have clicked on a generated point.
-		if (!clicked_control_point && closestPoint.HasValue) {
-			test_handle.CanvasPosition = closestPoint.Value;
-			clicked_generated_point = test_handle.ContainsPoint (current_window_point);
-		}
+		bool clicked_generated_point = hit.HitGeneratedPoint;
 
 		clicked_without_modifying = clicked_control_point;
 
@@ -1972,49 +2004,30 @@ public abstract class BaseEditEngine
 
 			PointD current_window_point = workspace.CanvasPointToView (current_point);
 
-			SEngines.FindClosestControlPoint (
-				current_point,
-				out _,
-				out _,
-				out var closestControlPoint,
-				out _);
+			PointHitTestResult hit = HitTestPoints (current_point, current_window_point, hover_handle);
 
 			// Check if the user is directly hovering over a control point.
-			if (closestControlPoint != null) {
-				hover_handle.CanvasPosition = closestControlPoint.Position;
-				hovering_control_point = hover_handle.ContainsPoint (current_window_point);
-				if (hovering_control_point) {
-					hover_handle.Active = hover_handle.Selected = true;
-					string ctrl = system_manager.CtrlLabel ();
-					string tension = PintaCore.Shortcuts.GetToolBinding (KeyboardShortcutManager.ShapeChangeTension).ModifierKeyLabel (system_manager);
-					hover_handle.TooltipText =
-						$"{(int) Math.Round (closestControlPoint.Position.X)}, {(int) Math.Round (closestControlPoint.Position.Y)}\n"
-						+ Translations.GetString ("{0}-drag: snap the adjacent segment to a 15° angle.", Translations.GetString ("Shift")) + "\n"
-						+ Translations.GetString ("Right click + drag: move the whole shape.") + "\n"
-						+ Translations.GetString ("{0} + right drag: change tension.", tension) + "\n"
-						+ Translations.GetString ("{0} and drag: rotate the whole shape.", RotateGesture.ClickBindingLabel ()) + "\n"
-						+ Translations.GetString ("{0} + click: start a new shape here.", ctrl);
-				}
+			hovering_control_point = hit.HitControlPoint;
+			if (hovering_control_point) {
+				hover_handle.Active = hover_handle.Selected = true;
+				string ctrl = system_manager.CtrlLabel ();
+				string tension = PintaCore.Shortcuts.GetToolBinding (KeyboardShortcutManager.ShapeChangeTension).ModifierKeyLabel (system_manager);
+				PointD cpPos = hit.ControlPoint!.Position;
+				hover_handle.TooltipText =
+					$"{(int) Math.Round (cpPos.X)}, {(int) Math.Round (cpPos.Y)}\n"
+					+ Translations.GetString ("{0}-drag: snap the adjacent segment to a 15° angle.", Translations.GetString ("Shift")) + "\n"
+					+ Translations.GetString ("Right click + drag: move the whole shape.") + "\n"
+					+ Translations.GetString ("{0} + right drag: change tension.", tension) + "\n"
+					+ Translations.GetString ("{0} and drag: rotate the whole shape.", RotateGesture.ClickBindingLabel ()) + "\n"
+					+ Translations.GetString ("{0} + click: start a new shape here.", ctrl);
 			}
 
 			// Otherwise, the user may be hovering over a generated point (segment).
 			// Only show the node-add preview when curved segments are on.
 			if (!hovering_control_point) {
-
-				OrganizedPointCollection.FindClosestPoint (
-					SEngines,
-					current_point,
-					out _,
-					out _,
-					out var closestPoint,
-					out _);
-
-				if (closestPoint.HasValue) {
-					hover_handle.CanvasPosition = closestPoint.Value;
-					hovering_segment = hover_handle.ContainsPoint (current_window_point);
-					if (hovering_segment && curved_segments_enabled)
-						hover_handle.Active = true;
-				}
+				hovering_segment = hit.HitGeneratedPoint;
+				if (hovering_segment && curved_segments_enabled)
+					hover_handle.Active = true;
 			}
 
 			if (hover_handle.Active)

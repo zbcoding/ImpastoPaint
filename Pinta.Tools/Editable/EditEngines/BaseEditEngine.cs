@@ -2619,6 +2619,20 @@ public abstract class BaseEditEngine
 		return engine;
 	}
 
+	/// <summary>Builds a shape from its four rectangle-drag corners — the CreateShape body
+	/// shared by Rectangle, Ellipse, and RoundedLine, which differ only in the engine
+	/// <paramref name="newEngine"/> constructs.</summary>
+	protected TEngine CreateRectangleBasedShape<TEngine> (
+		Func<TEngine> newEngine,
+		bool ctrlKey,
+		bool clickedOnControlPoint,
+		PointD prevSelPoint) where TEngine : ShapeEngine
+	{
+		TEngine engine = newEngine ();
+		AddRectanglePoints (ctrlKey, clickedOnControlPoint, engine, prevSelPoint);
+		return engine;
+	}
+
 	protected virtual void MovePoint (List<ControlPoint> controlPoints)
 	{
 		//Update the control point's position.

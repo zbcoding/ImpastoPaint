@@ -51,13 +51,9 @@ public sealed class RectangleEditEngine : BaseEditEngine
 		bool ctrlKey,
 		bool clickedOnControlPoint,
 		PointD prevSelPoint)
-	{
-		LineCurveSeriesEngine newEngine = NewShapeEngine (BaseEditEngine.ShapeTypes.ClosedLineCurveSeries, closed: true, LineCap.Square);
-
-		AddRectanglePoints (ctrlKey, clickedOnControlPoint, newEngine, prevSelPoint);
-
-		return newEngine;
-	}
+		=> CreateRectangleBasedShape (
+			() => NewShapeEngine (BaseEditEngine.ShapeTypes.ClosedLineCurveSeries, closed: true, LineCap.Square),
+			ctrlKey, clickedOnControlPoint, prevSelPoint);
 
 	protected override void MovePoint (List<ControlPoint> controlPoints)
 	{

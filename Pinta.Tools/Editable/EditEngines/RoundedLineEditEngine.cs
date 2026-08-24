@@ -114,13 +114,9 @@ public sealed class RoundedLineEditEngine : BaseEditEngine
 		bool ctrlKey,
 		bool clickedOnControlPoint,
 		PointD prevSelPoint)
-	{
-		RoundedLineEngine newEngine = NewRoundedLineEngine (Radius, LineCap.Butt);
-
-		AddRectanglePoints (ctrlKey, clickedOnControlPoint, newEngine, prevSelPoint);
-
-		return newEngine;
-	}
+		=> CreateRectangleBasedShape (
+			() => NewRoundedLineEngine (Radius, LineCap.Butt),
+			ctrlKey, clickedOnControlPoint, prevSelPoint);
 
 	protected override void MovePoint (List<ControlPoint> controlPoints)
 	{

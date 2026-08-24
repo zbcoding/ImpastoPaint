@@ -40,13 +40,7 @@ public sealed class EllipseEditEngine : BaseEditEngine
 	}
 
 	protected override ShapeEngine CreateShape (bool ctrlKey, bool clickedOnControlPoint, PointD prevSelPoint)
-	{
-		EllipseEngine newEngine = NewEllipseEngine (LineCap.Butt);
-
-		AddRectanglePoints (ctrlKey, clickedOnControlPoint, newEngine, prevSelPoint);
-
-		return newEngine;
-	}
+		=> CreateRectangleBasedShape (() => NewEllipseEngine (LineCap.Butt), ctrlKey, clickedOnControlPoint, prevSelPoint);
 
 	protected override void MovePoint (List<ControlPoint> controlPoints)
 	{

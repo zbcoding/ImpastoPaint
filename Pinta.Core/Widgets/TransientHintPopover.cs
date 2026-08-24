@@ -135,14 +135,16 @@ public sealed class TransientHintPopover
 				popover.SetChild (label);
 			} else {
 				label?.SetText (text);
-				if (popover.GetParent () != anchor) {
-					// Popdown before unparenting: reparenting a still-popped-up popover onto a
-					// new anchor is what the old per-widget ToolBoxWidget.HideHint avoided by
-					// always tearing the popover down first.
-					popover.Popdown ();
-					popover.Unparent ();
-					popover.SetParent (anchor);
-				}
+			}
+
+			// Parent on every show, not just creation: the first show used to skip it entirely,
+			// popping an orphaned popover - "realize() on a widget that isn't inside a toplevel",
+			// then gtk_widget_get_native / gdk_surface_new_popup assertion failures on screen.
+			// Each swatch owns its own CaptionPopover, so palette hovers hit this once per swatch.
+			if (popover.GetParent () != anchor) {
+				popover.Popdown ();
+				popover.Unparent ();
+				popover.SetParent (anchor);
 			}
 
 			popover.Position = position;

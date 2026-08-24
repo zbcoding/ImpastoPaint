@@ -177,9 +177,15 @@ public class ColorPickerTool : BaseTool
 		int size = SampleSize;
 		int half = size / 2;
 
+		// The composite/two-surface picture is what the canvas paints for the current layer (live
+		// shapes/text, effects, a transform or a mask); its own Surface is the input to that, so
+		// sampling it would return the colour underneath everything the user can see. Built once per
+		// gesture rather than per pixel.
+		using Cairo.ImageSurface? snapshot = SampleLayerOnly ? document.Layers.CurrentUserLayer.CreateVisibleSnapshot () : null;
+
 		// Short circuit for single pixel
 		if (size == 1)
-			return [GetPixel (document, point)];
+			return [GetPixel (document, point, snapshot)];
 
 		// Find the pixels we need (clamp to the size of the image)
 		RectangleI rect = new (point.X - half, point.Y - half, size, size);
@@ -191,19 +197,15 @@ public class ColorPickerTool : BaseTool
 
 		for (int i = intersected.Left; i <= intersected.Right; i++)
 			for (int j = intersected.Top; j <= intersected.Bottom; j++)
-				pixels.Add (GetPixel (document, new (i, j)));
+				pixels.Add (GetPixel (document, new (i, j), snapshot));
 
 		return pixels.MoveToImmutable ();
 	}
 
-	private ColorBgra GetPixel (Document document, PointI position)
+	private ColorBgra GetPixel (Document document, PointI position, Cairo.ImageSurface? layerSnapshot)
 	{
 		if (SampleLayerOnly)
-			// The composite is what the canvas paints for a layer carrying effects, a transform or a
-			// mask; its own Surface is the input to that stack, so sampling it would return the colour
-			// underneath everything the user can see.
-			return (document.Layers.CurrentUserLayer.Composite ?? document.Layers.CurrentUserLayer.Surface)
-				.GetColorBgra (position);
+			return layerSnapshot!.GetColorBgra (position);
 		else
 			return document.GetComputedPixel (position);
 	}

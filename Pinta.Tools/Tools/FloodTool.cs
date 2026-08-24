@@ -90,31 +90,34 @@ public abstract class FloodTool : BaseTool
 		if (!currentRegion.ContainsPoint (pos.X, pos.Y) && LimitToSelection)
 			return;
 
-		// Sample the pixels the user can see: for a layer with effects, a transform or a mask that is
-		// the composite, not the raster the fill lands in. While the mask itself is the paint target,
-		// the mask surface *is* what is being edited, so that one is sampled directly.
+		// Sample the pixels the user can see: for a layer with live shapes/text, effects, a transform
+		// or a mask, that includes what renders on top of the raster the fill lands in. While the mask
+		// itself is the paint target, the mask surface *is* what is being edited, so that one is
+		// sampled directly instead.
 		UserLayer currentLayer = document.Layers.CurrentUserLayer;
-		Cairo.ImageSurface surface =
-			document.Layers.CurrentMaskIsTarget
-			? document.Layers.CurrentPaintSurface
-			: currentLayer.Composite ?? currentLayer.Surface;
-		var stencilBuffer = new BitMask (surface.Width, surface.Height);
-		var tol = (int) (Tolerance * Tolerance * 256);
+		Cairo.ImageSurface? snapshot = document.Layers.CurrentMaskIsTarget ? null : currentLayer.CreateVisibleSnapshot ();
+		try {
+			Cairo.ImageSurface surface = snapshot ?? document.Layers.CurrentPaintSurface;
+			var stencilBuffer = new BitMask (surface.Width, surface.Height);
+			var tol = (int) (Tolerance * Tolerance * 256);
 
-		RectangleD boundingBox;
+			RectangleD boundingBox;
 
-		if (IsGlobalMode || e.IsShiftPressed)
-			CairoExtensions.FillStencilByColor (surface, stencilBuffer, surface.GetColorBgra (pos), tol, out boundingBox, currentRegion, LimitToSelection);
-		else
-			CairoExtensions.FillStencilFromPoint (surface, stencilBuffer, pos, tol, out boundingBox, currentRegion, LimitToSelection);
+			if (IsGlobalMode || e.IsShiftPressed)
+				CairoExtensions.FillStencilByColor (surface, stencilBuffer, surface.GetColorBgra (pos), tol, out boundingBox, currentRegion, LimitToSelection);
+			else
+				CairoExtensions.FillStencilFromPoint (surface, stencilBuffer, pos, tol, out boundingBox, currentRegion, LimitToSelection);
 
-		OnFillRegionComputed (document, stencilBuffer);
+			OnFillRegionComputed (document, stencilBuffer);
 
-		// If a derived tool is only going to use the stencil,
-		// don't waste time building the polygon set
-		if (CalculatePolygonSet) {
-			var polygonSet = stencilBuffer.CreatePolygonSet (boundingBox, PointI.Zero);
-			OnFillRegionComputed (document, polygonSet);
+			// If a derived tool is only going to use the stencil,
+			// don't waste time building the polygon set
+			if (CalculatePolygonSet) {
+				var polygonSet = stencilBuffer.CreatePolygonSet (boundingBox, PointI.Zero);
+				OnFillRegionComputed (document, polygonSet);
+			}
+		} finally {
+			snapshot?.Dispose ();
 		}
 	}
 

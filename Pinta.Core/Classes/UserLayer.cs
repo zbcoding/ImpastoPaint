@@ -313,6 +313,26 @@ public sealed class UserLayer : Layer
 		Composite = composite;
 	}
 
+	/// <summary>
+	/// A fresh, caller-owned snapshot of what this layer alone shows on screen: <see cref="Composite"/>
+	/// when the layer has modifiers or an applying mask, otherwise the base raster with any live
+	/// shape/text objects blended on top — the same two-surface picture <see cref="GetLayersToPaint"/>
+	/// paints for display. Sampling tools (paint bucket, colour picker) need this instead of
+	/// <see cref="Surface"/> alone, which excludes live objects entirely.
+	/// </summary>
+	public ImageSurface CreateVisibleSnapshot ()
+	{
+		ImageSurface snapshot = (Composite ?? Surface).Clone ();
+
+		if (Composite is null && ObjectLayer.IsLayerSetup) {
+			using Context g = new (snapshot);
+			ObjectLayer.Layer.Draw (g);
+			snapshot.MarkDirty ();
+		}
+
+		return snapshot;
+	}
+
 	public bool HasObjectSubNodes
 		=> Objects.Any (o => o is not ShapeObject s || !s.RasterizeOnFinalize);
 

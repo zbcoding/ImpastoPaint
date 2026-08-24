@@ -368,11 +368,23 @@ public sealed partial class LayersListView
 		if (!HasSubRows (layer))
 			return DropChildModel (position, layer);
 
+		bool isFirstObject = !child_models.TryGetValue (layer, out Gio.ListStore? store);
+
+		// A visibility toggle mutates objects in place - the set of rows is unchanged. Repopulating
+		// the child store would recreate every row widget and bounce the list's scroll position,
+		// so skip it entirely when the row layout is identical; the NotifyLayerModified pass above
+		// already refreshed each row's visible state.
+		if (!isFirstObject && ChildLayoutMatches (store!, layer)) {
+			for (uint c = 0; c < store!.GetNItems (); ++c)
+				if (store.GetObject (c) is LayersListViewItem child)
+					child.NotifyLayerModified ();
+			return false;
+		}
+
 		// A layer that had no child model yet was not expandable, so the tree must re-run the child
 		// create func — that needs the root row replaced. Once it has one, every later add/remove is
 		// an in-place store update: the row (and the user's expansion) survives, so adding a
 		// second/third object doesn't collapse the layer.
-		bool isFirstObject = !child_models.TryGetValue (layer, out Gio.ListStore? store);
 		if (isFirstObject) {
 			store = Gio.ListStore.New (LayersListViewItem.GetGType ());
 			child_models[layer] = store;
@@ -387,6 +399,34 @@ public sealed partial class LayersListView
 		LayersListViewItem replacement = ReplaceRow (position, layer);
 		// Expand it so the object that just appeared is visible without a manual click.
 		ExpandRowFor (replacement);
+		return true;
+	}
+
+	// True when the store already holds one row per visible object/mask slot in the same order and
+	// kind as a fresh populate would produce — i.e. repopulating would change nothing structural.
+	private static bool ChildLayoutMatches (Gio.ListStore store, UserLayer layer)
+	{
+		int expected = 0;
+		if (layer.HasMask)
+			expected++;
+		expected += layer.Objects.Count (o =>
+			o is TextObject || (o is ShapeObject s && !s.RasterizeOnFinalize) || o is ILayerModifierNode);
+
+		if (store.GetNItems () != (uint) expected)
+			return false;
+
+		for (uint i = 0; i < store.GetNItems (); ++i) {
+			LayersListViewItem? existing = store.GetObject (i) as LayersListViewItem;
+			ILayerObject obj = layer.Objects[layer.Objects.Count - 1 - (int) i - (layer.HasMask ? 1 : 0)];
+			bool kindMatches = obj switch {
+				TextObject => existing?.IsObjectRow == true && existing.TextObject is not null,
+				ShapeObject shape => !shape.RasterizeOnFinalize && existing?.ShapeObject is not null,
+				ILayerModifierNode => existing?.ModifierNode is not null,
+				_ => false,
+			};
+			if (!kindMatches)
+				return false;
+		}
 		return true;
 	}
 

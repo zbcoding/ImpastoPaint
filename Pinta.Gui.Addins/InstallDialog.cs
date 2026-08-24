@@ -212,11 +212,14 @@ internal sealed partial class InstallDialog
 		} catch {
 			// Fire-and-forget: InitForInstall must return synchronously, so the info dialog
 			// closes on its own while this returns false to the caller.
-			_ = GtkExtensions.RunInfoAsync (
-				TransientFor,
-				Translations.GetString ("Failed to load extension package"),
-				Translations.GetString ("The file may be an invalid or corrupt extension package"),
-				Translations.GetString ("_OK"));
+			Gtk.Window? parent = TransientFor;
+			_ = (parent is not null)
+				? GtkExtensions.RunInfoAsync (
+					parent,
+					Translations.GetString ("Failed to load extension package"),
+					Translations.GetString ("The file may be an invalid or corrupt extension package"),
+					Translations.GetString ("_OK"))
+				: Task.CompletedTask;
 
 			return false;
 		}

@@ -333,18 +333,19 @@ public sealed class DocumentLayers
 	public IEnumerable<Layer> GetLayersToPaint (bool includeToolLayer = true)
 	{
 		foreach (UserLayer userLayer in user_layers) {
+			// The tool layer holds the stroke in progress. It paints beneath the current layer's
+			// own content so a live brush stroke sits under that layer's shapes/effects exactly
+			// where committing it (into the base raster) will leave it - no z-jump at mouse-up.
+			if (userLayer == CurrentUserLayer && includeToolLayer && tool_layer is not null && !ToolLayer.Hidden)
+				yield return ToolLayer;
+
 			if (!userLayer.Hidden) {
 				foreach (Layer layer in userLayer.GetLayersToPaint ())
 					yield return layer;
 			}
 
-			if (userLayer == CurrentUserLayer) {
-				if (includeToolLayer && tool_layer is not null && !ToolLayer.Hidden)
-					yield return ToolLayer;
-
-				if (ShowSelectionLayer && (!SelectionLayer.Hidden))
-					yield return SelectionLayer;
-			}
+			if (userLayer == CurrentUserLayer && ShowSelectionLayer && !SelectionLayer.Hidden)
+				yield return SelectionLayer;
 		}
 	}
 

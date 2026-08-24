@@ -4,19 +4,18 @@ using NUnit.Framework;
 namespace Pinta.Core.Tests;
 
 /// <summary>
-/// Where a freshly added object or modifier node lands in <see cref="UserLayer.Objects"/>. The list is
-/// bottom-to-top: <see cref="Pinta.Core.ObjectOpacity.RenderLayerObjects"/> walks it from index 0, and a
-/// modifier node only reaches what sits at a lower index than itself. Regression coverage for a bug
-/// where <see cref="UserLayer.AddShape"/>/<see cref="UserLayer.AddText"/> appended to the end of the
-/// list (the top) instead: a shape or text object drawn after an effect landed above it and the effect
-/// never touched it, contradicting the model's "history order" (a later addition still falls under an
-/// earlier effect) and the "a modifier applies to everything below it" rule.
+/// Where a freshly added object lands in <see cref="UserLayer.Objects"/>. The list is bottom-to-top:
+/// <see cref="Pinta.Core.ObjectOpacity.RenderLayerObjects"/> walks it from index 0, and a modifier node
+/// only reaches what sits at a lower index than itself. Stacking rule: an object goes directly above
+/// the previous topmost object - the last thing drawn is seen on top among objects and heads the
+/// sub-layer menu - while an effect already on the layer stays above everything drawn afterwards and
+/// keeps applying to it.
 /// </summary>
 [TestFixture]
 internal sealed class LayerObjectInsertionOrderTest : DocumentHarness
 {
 	[Test]
-	public void EachAdditionLandsBelowEverythingAlreadyOnTheLayer ()
+	public void EachAdditionLandsAboveThePreviousObjects ()
 	{
 		UserLayer layer = Layer (0);
 
@@ -29,8 +28,8 @@ internal sealed class LayerObjectInsertionOrderTest : DocumentHarness
 		ShapeObject third = Box (new Color (0, 0, 1, 1), new RectangleI (0, 0, 3, 3));
 		layer.AddShape (third);
 
-		Assert.That (layer.Objects, Is.EqualTo (new ILayerObject[] { third, second, first }),
-			"each addition should insert at index 0, so the newest object is always the new bottom of the stack");
+		Assert.That (layer.Objects, Is.EqualTo (new ILayerObject[] { first, second, third }),
+			"each addition goes above the previous objects, so the last thing drawn is on top");
 	}
 
 	[Test]
@@ -91,11 +90,11 @@ internal sealed class LayerObjectInsertionOrderTest : DocumentHarness
 	/// The real drawing flow calls <c>ShapeEngineCollection.Store</c> (and so
 	/// <see cref="UserLayer.ReplaceShapes"/>) once per shape, handing it the *entire* live engine list
 	/// every time - each call's list is the previous one's plus one new entry appended at the end, in
-	/// draw order. Regression coverage for a bug where the third such call onward silently swapped
+	/// draw order. Regression coverage for a bug where such repeated calls silently swapped
 	/// already-persisted shapes' geometry between each other's z-slots (without moving anything in the
-	/// layers dock): <see cref="UserLayer.Objects"/>' existing shape slots read newest-first once a
-	/// second shape has landed, but the incoming list is still oldest-first, so zipping them by raw
-	/// position pairs each slot with the wrong shape.
+	/// layers dock): pairing the incoming draw-order list against the existing slots by raw position
+	/// must line each persisted shape back up with its own geometry, whatever stacking rule inserts
+	/// the new entries.
 	/// </summary>
 	[Test]
 	public void SequentialReplaceShapesCallsDoNotSwapAlreadyPersistedShapes ()
@@ -110,7 +109,7 @@ internal sealed class LayerObjectInsertionOrderTest : DocumentHarness
 		layer.ReplaceShapes ([first, second]);
 		layer.ReplaceShapes ([first, second, third]);
 
-		Assert.That (layer.Objects, Is.EqualTo (new ILayerObject[] { third, second, first }),
-			"each shape keeps its own geometry and lands below everything drawn before it");
+		Assert.That (layer.Objects, Is.EqualTo (new ILayerObject[] { first, second, third }),
+			"each shape keeps its own geometry, and each lands above everything drawn before it");
 	}
 }

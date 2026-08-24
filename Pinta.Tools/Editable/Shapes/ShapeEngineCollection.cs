@@ -112,9 +112,10 @@ public static class ShapeEngineCollection
 
 	public static void Store (UserLayer layer, IReadOnlyList<ShapeEngine> engines)
 		// Rebuild the layer's shape objects in place, preserving the position of each shape relative
-		// to the text objects it may be interleaved with (cross-kind z-order survives a persist), and
-		// inserting anything past the old count - freshly drawn shapes, not reordered survivors - at
-		// the bottom. UserLayer owns that merge; this is just the ShapeEngine -> ShapeObject leg of it.
+		// to the text objects it may be interleaved with (cross-kind z-order survives a persist);
+		// anything past the old count - freshly drawn shapes, not reordered survivors - lands just
+		// above the previous top object, under any modifier above it. UserLayer owns that merge;
+		// this is just the ShapeEngine -> ShapeObject leg of it.
 		=> layer.ReplaceShapes (engines.Where (e => e.ParentLayer == layer).Select (e => e.ToShapeObject ()).ToList ());
 
 	private static Arrow ToArrow (ShapeArrow arrow)

@@ -87,13 +87,33 @@ public sealed class UserLayer : Layer
 	/// <summary>The text objects, in z-order (filtered view of <see cref="Objects"/>).</summary>
 	public IReadOnlyList<TextObject> TextObjects => Objects.OfType<TextObject> ().ToList ();
 
-	/// <summary>Adds a text object at the bottom (start of <see cref="Objects"/>), so any existing
-	/// modifier keeps applying to it, matching history order.</summary>
-	public void AddText (TextObject text) => Objects.Insert (0, text);
+	/// <summary>
+	/// Where the next drawn object goes: directly above the topmost existing object, or at index 0
+	/// when none exist yet - so an effect already on the layer keeps reaching everything drawn
+	/// after it. Coverage is positional and decided at draw time; drag-reorder changes it after.
+	/// </summary>
+	private int NextObjectInsertIndex {
+		get {
+			for (int i = Objects.Count - 1; i >= 0; --i)
+				if (Objects[i] is ShapeObject or TextObject)
+					return i + 1;
+			return 0;
+		}
+	}
 
-	/// <summary>Adds a shape object at the bottom (start of <see cref="Objects"/>), so any existing
-	/// modifier keeps applying to it, matching history order.</summary>
-	public void AddShape (ShapeObject shape) => Objects.Insert (0, shape);
+	/// <summary>Adds a text object just above the topmost existing object (below any effect above
+	/// it), so the last thing drawn is the one seen on top among objects.</summary>
+	public void AddText (TextObject text)
+	{
+		Objects.Insert (NextObjectInsertIndex, text);
+	}
+
+	/// <summary>Adds a shape object just above the topmost existing object (below any effect above
+	/// it), so the last thing drawn is the one seen on top among objects.</summary>
+	public void AddShape (ShapeObject shape)
+	{
+		Objects.Insert (NextObjectInsertIndex, shape);
+	}
 
 	/// <summary>Removes an object; returns whether it was present.</summary>
 	public bool RemoveObject (ILayerObject obj) => Objects.Remove (obj);
@@ -115,59 +135,72 @@ public sealed class UserLayer : Layer
 	/// Replaces every shape object on the layer with <paramref name="shapes"/>, in place: each shape
 	/// keeps its position relative to the text objects it was interleaved with (cross-kind z-order
 	/// and cross-kind reorder survive a shape only persist/undo). New shapes beyond the old count are
-	/// brand new (freshly drawn), not reordered survivors, so they insert at the bottom like any other
-	/// new addition -- below everything, including modifiers.
+	/// brand new (freshly drawn), not reordered survivors, so they insert just above the topmost
+	/// existing object -- below any modifier above it -- like any other new addition.
 	/// </summary>
 	/// <remarks>
 	/// <paramref name="shapes"/> arrives oldest-first (the caller's own creation order) and never gets
-	/// reordered on its end between calls. <see cref="Objects"/>' existing shape slots, though, read
-	/// newest-first (index 0 is the bottom, where the newest addition lands) once more than one shape
-	/// has ever been added -- so the existing (already-persisted) prefix of <paramref name="shapes"/>
-	/// has to be walked in reverse to line back up with those slots. Zipping the two in their given
-	/// orders instead reassigns each existing slot's geometry to a different shape as soon as a third
-	/// shape is added, silently swapping shapes' z-order without moving anything in the layers dock.
+	/// reordered on its end between calls, and under the top-insert stacking rule
+	/// <see cref="Objects"/>' existing slots read in that same oldest-first order (index 0 is still
+	/// the bottom). Pairing the incoming prefix against the existing slots in their given order lines
+	/// each persisted shape back up with its own geometry; walking either side in reverse instead
+	/// reassigns each slot's geometry to a different shape as soon as a third shape is added,
+	/// silently swapping shapes' z-order without moving anything in the layers dock.
 	/// </remarks>
 	public void ReplaceShapes (IReadOnlyList<ShapeObject> shapes)
 	{
 		int existingShapeCount = Objects.Count (o => o is ShapeObject);
-		Queue<ShapeObject> existingShapesNewestFirst = new (shapes.Take (existingShapeCount).Reverse ());
+		Queue<ShapeObject> existingShapesInDrawOrder = new (shapes.Take (existingShapeCount));
 
 		List<ILayerObject> rebuilt = [];
 		foreach (ILayerObject o in Objects) {
 			if (o is ShapeObject) {
-				if (existingShapesNewestFirst.Count > 0)
-					rebuilt.Add (existingShapesNewestFirst.Dequeue ());
+				if (existingShapesInDrawOrder.Count > 0)
+					rebuilt.Add (existingShapesInDrawOrder.Dequeue ());
 			} else {
 				rebuilt.Add (o);
 			}
 		}
-		rebuilt.InsertRange (0, shapes.Skip (existingShapeCount));
+		rebuilt.InsertRange (InsertIndexForNewObjects (rebuilt), shapes.Skip (existingShapeCount));
 
 		Objects.Clear ();
 		Objects.AddRange (rebuilt);
 	}
 
 	/// <summary>Replaces every text object on the layer with <paramref name="texts"/>, in place. New
-	/// text beyond the old count inserts at the bottom, same as <see cref="ReplaceShapes"/> -- see its
-	/// remarks for why the existing prefix has to be walked in reverse.</summary>
+	/// text beyond the old count inserts just above the topmost existing object, same as
+	/// <see cref="ReplaceShapes"/> -- see its remarks for how the existing prefix pairs up.</summary>
 	public void ReplaceText (IReadOnlyList<TextObject> texts)
 	{
 		int existingTextCount = Objects.Count (o => o is TextObject);
-		Queue<TextObject> existingTextNewestFirst = new (texts.Take (existingTextCount).Reverse ());
+		Queue<TextObject> existingTextInDrawOrder = new (texts.Take (existingTextCount));
 
 		List<ILayerObject> rebuilt = [];
 		foreach (ILayerObject o in Objects) {
 			if (o is TextObject) {
-				if (existingTextNewestFirst.Count > 0)
-					rebuilt.Add (existingTextNewestFirst.Dequeue ());
+				if (existingTextInDrawOrder.Count > 0)
+					rebuilt.Add (existingTextInDrawOrder.Dequeue ());
 			} else {
 				rebuilt.Add (o);
 			}
 		}
-		rebuilt.InsertRange (0, texts.Skip (existingTextCount));
+		rebuilt.InsertRange (InsertIndexForNewObjects (rebuilt), texts.Skip (existingTextCount));
 
 		Objects.Clear ();
 		Objects.AddRange (rebuilt);
+	}
+
+	/// <summary>
+	/// Index within <paramref name="rebuilt"/> where newly drawn objects go: just above the
+	/// topmost existing object (below any modifier above it) - the same rule
+	/// <see cref="AddShape"/>/<see cref="AddText"/> apply, so both paths stack identically.
+	/// </summary>
+	private int InsertIndexForNewObjects (List<ILayerObject> rebuilt)
+	{
+		for (int i = rebuilt.Count - 1; i >= 0; --i)
+			if (rebuilt[i] is ShapeObject or TextObject)
+				return i + 1;
+		return 0;
 	}
 
 	/// <summary>

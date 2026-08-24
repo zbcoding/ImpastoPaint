@@ -98,6 +98,11 @@ public abstract class FloodTool : BaseTool
 		Cairo.ImageSurface? snapshot = document.Layers.CurrentMaskIsTarget ? null : currentLayer.CreateVisibleSnapshot ();
 		try {
 			Cairo.ImageSurface surface = snapshot ?? document.Layers.CurrentPaintSurface;
+
+			// A coloring tool gets first claim: a click landing on a live object's ink recolors
+			// that object instead of flooding whatever sits underneath it.
+			if (TryRecolorObjectAt (document, pos))
+				return;
 			var stencilBuffer = new BitMask (surface.Width, surface.Height);
 			var tol = (int) (Tolerance * Tolerance * 256);
 
@@ -133,6 +138,14 @@ public abstract class FloodTool : BaseTool
 
 	protected virtual void OnFillRegionComputed (Document document, IReadOnlyList<IReadOnlyList<PointI>> polygonSet) { }
 	protected virtual void OnFillRegionComputed (Document document, BitMask stencil) { }
+
+	/// <summary>
+	/// Called before the flood fill samples: lets a derived coloring tool recolor a live
+	/// shape/text object when <paramref name="pos"/> lands on its ink, so the bucket colors the
+	/// object the user actually clicked rather than the raster underneath it. Returns whether the
+	/// click was consumed. The base never consumes - the magic wand selects through this unchanged.
+	/// </summary>
+	protected virtual bool TryRecolorObjectAt (Document document, PointI pos) => false;
 
 	protected Label ModeLabel => mode_label ??= Label.New (string.Format (" {0}: ", Translations.GetString ("Flood Mode")));
 	protected Label ToleranceLabel => tolerance_label ??= Label.New (string.Format (" {0}: ", Translations.GetString ("Tolerance")));

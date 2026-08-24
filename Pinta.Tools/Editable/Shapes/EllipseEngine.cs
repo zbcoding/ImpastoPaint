@@ -37,10 +37,15 @@ public sealed class EllipseEngine : ShapeEngine
 {
 	// Partial-arc state: when extra nodes are added, keep original ellipse geometry
 	// so spans whose points still sit on the original ellipse stay true elliptical.
+	// partialRotation is the frame's own orientation: whole-shape moves and rotates
+	// carry the frame along (see TranslateWholeShape/RotateWholeShape), and
+	// generation maps points through it so the outline follows rigidly instead of
+	// re-fitting splines mid-drag.
 	private bool isPartial = false;
 	private PointD partialCenter;
 	private double partialRx;
 	private double partialRy;
+	private double partialRotation;
 
 	// A control point within this distance of its parametric position counts as "still on the ellipse".
 	private const double OnEllipseEps = 1.5;
@@ -61,6 +66,37 @@ public sealed class EllipseEngine : ShapeEngine
 		partialCenter = center;
 		partialRx = radiusX;
 		partialRy = radiusY;
+	}
+
+	/// <summary>
+	/// Moves the whole shape rigidly: the frozen ellipse frame belongs to the shape too, so a drag
+	/// has to carry it along - leaving it behind makes every point stop counting as on-ellipse
+	/// mid-drag and re-fits the outline as splines (the reported warp).
+	/// </summary>
+	public override void TranslateWholeShape (double dx, double dy)
+	{
+		base.TranslateWholeShape (dx, dy);
+		if (!isPartial)
+			return;
+		partialCenter = new PointD (partialCenter.X + dx, partialCenter.Y + dy);
+	}
+
+	/// <summary>
+	/// Rotates the whole shape rigidly. A rotated ellipse is no longer an axis-aligned frame, so
+	/// the frozen frame also gains the rotation angle; generation un-rotates points into frame
+	/// space and rotates results back out, so its on-ellipse/tangent math runs unchanged.
+	/// </summary>
+	public override void RotateWholeShape (PointD pivot, double radians)
+	{
+		base.RotateWholeShape (pivot, radians);
+		if (!isPartial)
+			return;
+		double cos = Math.Cos (radians);
+		double sin = Math.Sin (radians);
+		double x = partialCenter.X - pivot.X;
+		double y = partialCenter.Y - pivot.Y;
+		partialCenter = new PointD (pivot.X + x * cos - y * sin, pivot.Y + x * sin + y * cos);
+		partialRotation += radians;
 	}
 
 	/// <summary>
@@ -100,6 +136,7 @@ public sealed class EllipseEngine : ShapeEngine
 		partialCenter = src.partialCenter;
 		partialRx = src.partialRx;
 		partialRy = src.partialRy;
+		partialRotation = src.partialRotation;
 	}
 
 	public override ShapeEngine Clone ()
@@ -293,6 +330,23 @@ public sealed class EllipseEngine : ShapeEngine
 		if (n < 3)
 			yield break;
 
+		double cosR = Math.Cos (partialRotation);
+		double sinR = Math.Sin (partialRotation);
+
+		// The frozen frame may be rotated relative to the canvas (whole-shape rotations carry it,
+		// see RotateWholeShape). All on-ellipse/tangent math below assumes an axis-aligned
+		// ellipse, so map control points into frame space and map generated points back out.
+		PointD ToFrame (PointD p) => new (
+			c.X + (p.X - c.X) * cosR + (p.Y - c.Y) * sinR,
+			c.Y - (p.X - c.X) * sinR + (p.Y - c.Y) * cosR);
+		PointD FromFrame (PointD p) => new (
+			c.X + (p.X - c.X) * cosR - (p.Y - c.Y) * sinR,
+			c.Y + (p.X - c.X) * sinR + (p.Y - c.Y) * cosR);
+
+		var frame = new PointD[n];
+		for (int i = 0; i < n; ++i)
+			frame[i] = ToFrame (ControlPoints[i].Position);
+
 		double AngleOf (PointD p)
 		{
 			double ang = Math.Atan2 ((p.Y - c.Y) / r_y, (p.X - c.X) / r_x);
@@ -308,10 +362,9 @@ public sealed class EllipseEngine : ShapeEngine
 		var dir = new PointD[n];
 
 		for (int i = 0; i < n; ++i) {
-			PointD p = ControlPoints[i].Position;
-			angles[i] = AngleOf (p);
+			angles[i] = AngleOf (frame[i]);
 			PointD parametric = new (c.X + r_x * Math.Cos (angles[i]), c.Y + r_y * Math.Sin (angles[i]));
-			onEllipse[i] = p.DistanceSquared (parametric) <= OnEllipseEps * OnEllipseEps;
+			onEllipse[i] = frame[i].DistanceSquared (parametric) <= OnEllipseEps * OnEllipseEps;
 		}
 
 		// A point near the outline only counts as on-ellipse if its angle is still between its
@@ -338,8 +391,8 @@ public sealed class EllipseEngine : ShapeEngine
 				d = new PointD (-r_x * Math.Sin (angles[i]), r_y * Math.Cos (angles[i]));
 			} else {
 				// Moved point: Catmull-Rom direction from its immediate neighbors only.
-				PointD prev = ControlPoints[(i + n - 1) % n].Position;
-				PointD next = ControlPoints[(i + 1) % n].Position;
+				PointD prev = frame[(i + n - 1) % n];
+				PointD next = frame[(i + 1) % n];
 				d = new PointD (next.X - prev.X, next.Y - prev.Y);
 			}
 			double len = Math.Sqrt (d.X * d.X + d.Y * d.Y);
@@ -348,8 +401,8 @@ public sealed class EllipseEngine : ShapeEngine
 
 		for (int i = 0; i < n; ++i) {
 			int j = (i + 1) % n;
-			PointD p0 = ControlPoints[i].Position;
-			PointD p1 = ControlPoints[j].Position;
+			PointD p0 = frame[i];
+			PointD p1 = frame[j];
 
 			double a0 = angles[i];
 			double a1 = angles[j];
@@ -372,10 +425,10 @@ public sealed class EllipseEngine : ShapeEngine
 			// Tag with the segment's END index ("insert before" convention, same as
 			// LineCurveSeriesEngine): clicking this segment inserts the new node between i and j.
 			foreach (var gp in GenerateCubicBezierCurvePoints (
-				p0,
-				new PointD (p0.X + dir[i].X * h0, p0.Y + dir[i].Y * h0),
-				new PointD (p1.X - dir[j].X * h1, p1.Y - dir[j].Y * h1),
-				p1,
+				FromFrame (p0),
+				FromFrame (new PointD (p0.X + dir[i].X * h0, p0.Y + dir[i].Y * h0)),
+				FromFrame (new PointD (p1.X - dir[j].X * h1, p1.Y - dir[j].Y * h1)),
+				FromFrame (p1),
 				j)) {
 				yield return gp;
 			}

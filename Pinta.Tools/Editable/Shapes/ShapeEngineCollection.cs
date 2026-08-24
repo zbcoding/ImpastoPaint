@@ -24,6 +24,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
@@ -227,6 +228,32 @@ public abstract class ShapeEngine : ILayerObject
 
 	public LineCap LineCap { get; set; }
 	public UserLayer ParentLayer => parent_layer ?? DrawingLayer.ParentLayer;
+
+	/// <summary>
+	/// Moves the whole shape by <paramref name="dx"/>, <paramref name="dy"/>. Subclasses with
+	/// derived geometry beyond the control points must override this so the whole shape - not just
+	/// its points - moves rigidly.
+	/// </summary>
+	public virtual void TranslateWholeShape (double dx, double dy)
+	{
+		foreach (ControlPoint cp in ControlPoints)
+			cp.Position = new PointD (cp.Position.X + dx, cp.Position.Y + dy);
+	}
+
+	/// <summary>
+	/// Rotates the whole shape around <paramref name="pivot"/> by <paramref name="radians"/>.
+	/// Same contract as <see cref="TranslateWholeShape"/>.
+	/// </summary>
+	public virtual void RotateWholeShape (PointD pivot, double radians)
+	{
+		double cos = Math.Cos (radians);
+		double sin = Math.Sin (radians);
+		foreach (ControlPoint cp in ControlPoints) {
+			double x = cp.Position.X - pivot.X;
+			double y = cp.Position.Y - pivot.Y;
+			cp.Position = new PointD (pivot.X + x * cos - y * sin, pivot.Y + x * sin + y * cos);
+		}
+	}
 
 	/// <summary>
 	/// Create a new ShapeEngine.

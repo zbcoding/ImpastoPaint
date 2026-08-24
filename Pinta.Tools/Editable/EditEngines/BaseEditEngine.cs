@@ -1425,19 +1425,11 @@ public abstract class BaseEditEngine
 				}
 			}
 
-			double cos = Math.Cos (delta);
-			double sin = Math.Sin (delta);
-
-			foreach (ControlPoint cp in ActiveShapeEngine.ControlPoints) {
-				double x = cp.Position.X - shape_rotate_center.X;
-				double y = cp.Position.Y - shape_rotate_center.Y;
-				cp.Position = new PointD (
-					shape_rotate_center.X + x * cos - y * sin,
-					shape_rotate_center.Y + x * sin + y * cos);
-			}
+			// One shared, transform-equivariant move: points and any derived frozen geometry
+			// (the segmented ellipse's frame) travel together, so custom shapes stay rigid.
+			ActiveShapeEngine.RotateWholeShape (shape_rotate_center, delta);
 
 			last_rotate_angle += delta;
-
 			DrawActiveShape (false, false, true, shiftKey, false, e.IsControlPressed);
 			last_mouse_pos = current_point;
 			return;
@@ -1455,8 +1447,8 @@ public abstract class BaseEditEngine
 			(double dx, double dy) = SnapWholeShapeMove (ActiveShapeEngine, dragPoint);
 
 			if (dx != 0d || dy != 0d) {
-				foreach (ControlPoint cp in ActiveShapeEngine.ControlPoints)
-					cp.Position = new PointD (cp.Position.X + dx, cp.Position.Y + dy);
+				// One shared, transform-equivariant move - see the rotate branch.
+				ActiveShapeEngine.TranslateWholeShape (dx, dy);
 
 				last_shape_move_point = dragPoint;
 			}

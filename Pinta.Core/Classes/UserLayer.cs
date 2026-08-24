@@ -115,6 +115,11 @@ public sealed class UserLayer : Layer
 		Objects.Insert (NextObjectInsertIndex, shape);
 	}
 
+	/// <summary>Adds an effect/modifier node at the very top of the stack, so it reaches everything
+	/// already on the layer - objects included. A newly applied effect grades last; drag-reorder
+	/// changes that after the fact.</summary>
+	public void AddModifierNode (ILayerModifierNode node) => Objects.Add (node);
+
 	/// <summary>Removes an object; returns whether it was present.</summary>
 	public bool RemoveObject (ILayerObject obj) => Objects.Remove (obj);
 

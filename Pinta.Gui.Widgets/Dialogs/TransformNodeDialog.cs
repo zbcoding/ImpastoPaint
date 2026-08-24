@@ -60,7 +60,7 @@ public static class TransformNodeDialog
 		LayerTransformNode node = new (new LayerTransformData ());
 		List<ILayerObject> objectsBefore = ObjectOpacity.CloneAll (layer.Objects);
 
-		layer.Objects.Insert (0, node);
+		layer.AddModifierNode (node);
 		ObjectOpacity.RefreshLayer (workspace, chrome, layer);
 
 		if (!await Run (chrome, workspace, layer, node.Data, title, icon) || node.Data.IsDefault) {

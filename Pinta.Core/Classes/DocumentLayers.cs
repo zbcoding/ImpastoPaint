@@ -354,23 +354,31 @@ public sealed class DocumentLayers
 	public IEnumerable<Layer> GetLayersToPaint (bool includeToolLayer = true)
 	{
 		foreach (UserLayer userLayer in user_layers) {
-			// The tool layer holds the stroke in progress. It paints beneath the current layer's
-			// own content so a live brush stroke sits under that layer's shapes/effects exactly
-			// where committing it (into the base raster) will leave it - no z-jump at mouse-up.
-			if (userLayer == CurrentUserLayer && includeToolLayer && tool_layer is not null && !ToolLayer.Hidden)
-				yield return ToolLayer;
+			bool isCurrent = userLayer == CurrentUserLayer;
 
 			if (!userLayer.Hidden) {
-				foreach (Layer layer in userLayer.GetLayersToPaint ())
+				bool firstPiece = true;
+				foreach (Layer layer in userLayer.GetLayersToPaint ()) {
 					yield return layer;
+
+					// The tool layer holds the stroke in progress. Committing it draws it onto the base
+					// raster with normal (over) compositing, so it ends up on top of whatever was
+					// already there - the live tool layer paints in that same spot, right above the
+					// base raster/composite and below the layer's own objects, or a stroke over opaque
+					// pixels would be invisible until mouse-up.
+					if (firstPiece && isCurrent && includeToolLayer && tool_layer is not null && !ToolLayer.Hidden)
+						yield return ToolLayer;
+
+					firstPiece = false;
+				}
 			}
 
 			// The overlay layer holds on-canvas UI (dashed rectangles, badges) that must
 			// stay visible above the current layer's own content, unlike the tool layer.
-			if (userLayer == CurrentUserLayer && includeToolLayer && overlay_layer is not null && !OverlayLayer.Hidden)
+			if (isCurrent && includeToolLayer && overlay_layer is not null && !OverlayLayer.Hidden)
 				yield return OverlayLayer;
 
-			if (userLayer == CurrentUserLayer && ShowSelectionLayer && !SelectionLayer.Hidden)
+			if (isCurrent && ShowSelectionLayer && !SelectionLayer.Hidden)
 				yield return SelectionLayer;
 		}
 	}

@@ -228,4 +228,50 @@ internal sealed class TextModeSwitchTest : ToolsTestHarness
 			LayerObjectSelection.ObjectsChanged -= Handler;
 		}
 	}
+
+	// A snapshot of the overlay layer's pixels - what RedrawText's on-canvas chrome (dashed
+	// rectangle, handles, "Obj." badge, caret) actually drew - independent of the badge's exact
+	// screen position, which depends on font-layout geometry this test has no need to replicate.
+	private ColorBgra[] OverlaySnapshot ()
+		=> Document.Layers.OverlayLayer.Surface.GetReadOnlyPixelData ().ToArray ();
+
+	private static void RedrawText (TextTool t, bool showCursor)
+		=> typeof (TextTool).GetMethod ("RedrawText", NonPublicInstance)!.Invoke (t, [showCursor]);
+
+	/// <summary>
+	/// The dropdown flipping RasterizeOnFinalize used to leave the on-canvas "Obj." badge stale
+	/// until some unrelated redraw ran (DrawTextRectangles skips the badge for Raster-mode text,
+	/// but nothing repainted the overlay right after the flip) - switching to Raster must make the
+	/// badge disappear immediately, and switching back to Object must bring it straight back.
+	/// </summary>
+	[Test]
+	public void SwitchingTheDropdownRedrawsTheOnCanvasBadgeImmediately ()
+	{
+		UserLayer layer = Layer (0);
+
+		TextObject obj = new (new TextEngine ()) { RasterizeOnFinalize = false };
+		obj.Engine.InsertText ("hello");
+		layer.AddText (obj);
+
+		TextTool t = ActivateOnLayer ();
+		RasterizeModeButton (t).SelectedIndex = 0; // Known baseline - see the tests above.
+		Select (t, obj);
+
+		// Establish what the overlay looks like with the badge on, at a fixed point in the editing
+		// session (so the caret - also drawn here - is in the same state in every snapshot below).
+		RedrawText (t, true);
+		ColorBgra[] withBadge = OverlaySnapshot ();
+
+		RasterizeModeButton (t).SelectedIndex = 1; // Raster
+		ColorBgra[] afterSwitchToRaster = OverlaySnapshot ();
+
+		Assert.That (afterSwitchToRaster, Is.Not.EqualTo (withBadge),
+			"switching to Raster must redraw the overlay immediately, dropping the badge - not leave it stale");
+
+		RasterizeModeButton (t).SelectedIndex = 0; // Back to Object
+		ColorBgra[] afterSwitchBackToObject = OverlaySnapshot ();
+
+		Assert.That (afterSwitchBackToObject, Is.EqualTo (withBadge),
+			"switching back to Object must redraw the overlay immediately, restoring the badge exactly");
+	}
 }

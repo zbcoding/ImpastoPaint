@@ -2233,30 +2233,6 @@ public sealed class TextTool : BaseTool
 
 	private void DrawTextObjectOpaque (ImageSurface surf, TextObject obj)
 	{
-		TextEngine engine = obj.Engine;
-		layout.Engine = engine;
-
-		bool strokeText = obj.StrokesText;
-		bool fillText = obj.FillsText;
-		bool backgroundFill = obj.FillsBackground;
-
-		using Context g = new (surf);
-
-		FontOptions options = new ();
-
-		if (UseAntialiasing) {
-			g.Antialias = Antialias.Gray; // Adjusts antialiasing JUST for the outline brush
-			options.Antialias = Antialias.Gray; // Adjusts antialiasing for PangoCairo's text draw function
-		} else {
-			g.Antialias = Antialias.None;
-			options.Antialias = Antialias.None;
-		}
-
-		g.Save ();
-		PangoCairo.Functions.ContextSetFontOptions (chrome.MainWindow.GetPangoContext (), options);
-
-		ApplyRotation (g, obj);
-
 		//Clip Raster-mode text to the editing selection on every render — preview and the
 		//final commit render alike — so the portion outside the selection is never drawn and
 		//never bakes in (it stays invisible through finalize, in real time as you type/resize,
@@ -2265,45 +2241,10 @@ public sealed class TextTool : BaseTool
 		//clears `selection`. Object-mode text lives on its own sub-layer and is never clipped,
 		//so it stays visible while editing and when re-selected from the dock even if it lies
 		//outside the leftover selection.
-		bool clipToSelection = obj.RasterizeOnFinalize && selection != null;
-		if (clipToSelection)
-			selection!.Clip (g);
+		DocumentSelection? clip = obj.RasterizeOnFinalize ? selection : null;
 
-		g.MoveTo (engine.Origin.X, engine.Origin.Y);
-
-		g.SetSourceColor (engine.PrimaryColor);
-
-		//Fill in background
-		if (backgroundFill) {
-			using Context g2 = new (surf);
-			if (clipToSelection)
-				selection?.Clip (g2);
-			ApplyRotation (g2, obj);
-			g2.FillRectangle (layout.GetLayoutBounds ().ToDouble (), engine.SecondaryColor);
-		}
-
-		// Draws the text stroke
-		if (strokeText) {
-			g.SetSourceColor (fillText ? engine.SecondaryColor : engine.PrimaryColor);
-			g.LineWidth = obj.OutlineWidth;
-			g.LineJoin = obj.LineJoin;
-
-			PangoCairo.Functions.LayoutPath (g, layout.Layout);
-			g.Stroke ();
-
-			// Position resets after g.Stroke ();
-			if (fillText) {
-				g.MoveTo (engine.Origin.X, engine.Origin.Y);
-				g.SetSourceColor (engine.PrimaryColor);
-			}
-		}
-
-		// Draws the text fill
-		if (fillText) {
-			PangoCairo.Functions.ShowLayout (g, layout.Layout);
-		}
-
-		g.Restore ();
+		//The one draw routine, shared with every non-tool render path.
+		TextObjectRenderer.RenderOpaque (surf, obj, layout, chrome, UseAntialiasing, clip);
 	}
 
 	/// <summary>
@@ -2454,7 +2395,7 @@ public sealed class TextTool : BaseTool
 	private static double RadToDeg (double rad) => rad * 180.0 / Math.PI;
 
 	//A positive Rotation (degrees) renders as counter-clockwise on screen.
-	private double RotationRadians (TextObject obj) => -DegToRad (obj.Rotation);
+	private static double RotationRadians (TextObject obj) => obj.RotationRadians;
 
 	private static PointD RotatePoint (PointD p, PointD center, double angleRad)
 	{
@@ -2487,23 +2428,10 @@ public sealed class TextTool : BaseTool
 
 	//Rotates the given context about the text object's fixed top-left origin so the
 	//whole object (fill, stroke, selection highlight, and caret) renders rotated.
-	private void ApplyRotation (Context g, TextObject obj)
-	{
-		if (obj.Rotation == 0)
-			return;
+	private static void ApplyRotation (Context g, TextObject obj)
+		=> TextObjectRenderer.ApplyRotation (g, obj);
 
-		PointD pivot = GetRotationPivot (obj);
-		g.Translate (pivot.X, pivot.Y);
-		g.Rotate (RotationRadians (obj));
-		g.Translate (-pivot.X, -pivot.Y);
-	}
-
-	//The rotation pivot of the text object, in canvas coordinates. This is the object's
-	//top-left origin, which does NOT move when the content (and thus its layout bounds)
-	//grows or shrinks. Rotating about this fixed point keeps an already-positioned,
-	//rotated text in place while the user types more or less text.
-	private PointD GetRotationPivot (TextObject obj)
-		=> obj.Engine.Origin.ToDouble ();
+	private static PointD GetRotationPivot (TextObject obj) => obj.RotationPivot;
 
 	//The unrotated, outline-padded rectangle that the dashed interaction box is based on.
 	private RectangleD GetPaddedLocalRect (TextObject obj)

@@ -31,6 +31,14 @@ public sealed class TextObject : ILayerObject
 	//The rotation of the text, in degrees, counter-clockwise. 0 is unrotated.
 	public double Rotation { get; set; } = 0;
 
+	//Rotation as Cairo wants it: radians, negated because the canvas Y axis points down.
+	public double RotationRadians => -Rotation * System.Math.PI / 180d;
+
+	//The point the object rotates about, in canvas coordinates: its top-left origin, which does
+	//NOT move when the content (and so the layout bounds) grows or shrinks. Rotating about this
+	//fixed point keeps positioned, rotated text in place while the user types more or less of it.
+	public PointD RotationPivot => Engine.Origin.ToDouble ();
+
 	//Whether this object fuses into the layer's raster on commit (Raster mode) rather
 	//than staying a live, re-editable object (Object mode). Stored per object, mirroring
 	//ShapeObject.RasterizeOnFinalize, so the clip-to-selection and commit-time fuse both

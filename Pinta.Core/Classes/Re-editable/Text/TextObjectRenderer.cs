@@ -70,11 +70,26 @@ public static class TextObjectRenderer
 		IChromeService chrome,
 		bool antialias,
 		DocumentSelection? clip = null)
+		=> RenderOpaque (surface, obj, new TextLayout (chrome), chrome, antialias, clip);
+
+	/// <summary>
+	/// Draws one text object's ink onto <paramref name="surface"/>: background fill, stroke, then
+	/// fill, rotated about the object's origin. The text tool draws the object it is editing
+	/// through here too, passing its own reused <paramref name="layout"/> - the live text on screen
+	/// and the text every other path renders (the layer composite, a bake, the paint bucket's hit
+	/// probe) have to be the same pixels, and used to be two copies of this sequence that only the
+	/// tool's half rotated.
+	/// </summary>
+	public static void RenderOpaque (
+		ImageSurface surface,
+		TextObject obj,
+		TextLayout layout,
+		IChromeService chrome,
+		bool antialias,
+		DocumentSelection? clip = null)
 	{
 		TextEngine engine = obj.Engine;
-		TextLayout layout = new (chrome) {
-			Engine = engine,
-		};
+		layout.Engine = engine;
 
 		bool strokeText = obj.StrokesText;
 		bool fillText = obj.FillsText;
@@ -95,7 +110,10 @@ public static class TextObjectRenderer
 		g.Save ();
 		PangoCairo.Functions.ContextSetFontOptions (chrome.MainWindow.GetPangoContext (), options);
 
+		//The clip is a canvas-space region (a frozen selection), so it is applied before the
+		//rotation rather than through it.
 		clip?.Clip (g);
+		ApplyRotation (g, obj);
 
 		g.MoveTo (engine.Origin.X, engine.Origin.Y);
 		g.SetSourceColor (engine.PrimaryColor);
@@ -104,6 +122,7 @@ public static class TextObjectRenderer
 		if (backgroundFill) {
 			using Context g2 = new (surface);
 			clip?.Clip (g2);
+			ApplyRotation (g2, obj);
 			g2.FillRectangle (layout.GetLayoutBounds ().ToDouble (), engine.SecondaryColor);
 		}
 
@@ -129,5 +148,20 @@ public static class TextObjectRenderer
 		}
 
 		g.Restore ();
+	}
+
+	/// <summary>
+	/// Turns <paramref name="g"/> about the object's origin so everything drawn after it - ink,
+	/// and the tool's caret and selection highlight - lands rotated with the object.
+	/// </summary>
+	public static void ApplyRotation (Context g, TextObject obj)
+	{
+		if (obj.Rotation == 0)
+			return;
+
+		PointD pivot = obj.RotationPivot;
+		g.Translate (pivot.X, pivot.Y);
+		g.Rotate (obj.RotationRadians);
+		g.Translate (-pivot.X, -pivot.Y);
 	}
 }

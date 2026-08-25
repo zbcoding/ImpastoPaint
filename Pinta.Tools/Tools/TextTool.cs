@@ -855,7 +855,7 @@ public sealed class TextTool : BaseTool
 		RedrawText (false);
 	}
 
-	// An undo/redo swaps the text objects + their TextLayer surface, but not the ToolLayer overlay
+	// An undo/redo swaps the text objects + their TextLayer surface, but not the OverlayLayer overlay
 	// (the dashed re-edit rects + blue handle dots). Rebuild the overlay from the current object list
 	// so handles for a text object that doesn't exist at this history step no longer linger on canvas.
 	private void HandleHistoryChanged (object? sender, EventArgs e)
@@ -933,7 +933,7 @@ public sealed class TextTool : BaseTool
 		workspace.LayerRemoved += HandleSelectedLayerChanged;
 		workspace.SelectedLayerChanged += HandleSelectedLayerChanged;
 
-		// The re-edit overlay (dashed rects + blue handle dots) lives on the ToolLayer, which history
+		// The re-edit overlay (dashed rects + blue handle dots) lives on the OverlayLayer, which history
 		// undo/redo does NOT swap — so a step that removes a text object would leave its handles behind.
 		// Refresh the overlay from the current object list on every undo/redo while we're the active tool.
 		// HistoryItemAdded matters too: an op pushed from outside the tool (e.g. "Rasterize All
@@ -980,8 +980,8 @@ public sealed class TextTool : BaseTool
 		// Clear the re-edit rectangle overlay and the edit hint.
 		if (document is not null && workspace.HasOpenDocuments) {
 			try {
-				document.Layers.ToolLayer.Hidden = true;
-				document.Layers.ToolLayer.Clear ();
+				document.Layers.OverlayLayer.Hidden = true;
+				document.Layers.OverlayLayer.Clear ();
 			} catch {
 				// Workspace may be disposed.
 			}
@@ -2293,8 +2293,8 @@ public sealed class TextTool : BaseTool
 
 	/// <summary>
 	/// Draws the dashed re-edit rectangles for every text object on the current
-	/// layer, on the tool layer, so they are shown on the canvas but never saved. The caret rides along
-	/// here for the same reason.
+	/// layer, on the overlay layer, so they are shown on the canvas but never saved. The caret rides
+	/// along here for the same reason.
 	/// </summary>
 	private void DrawTextRectangles (bool showCursor = true)
 	{
@@ -2302,7 +2302,7 @@ public sealed class TextTool : BaseTool
 			return;
 
 		Document doc = workspace.ActiveDocument;
-		Layer toolLayer = doc.Layers.ToolLayer;
+		Layer toolLayer = doc.Layers.OverlayLayer;
 		toolLayer.Clear ();
 		toolLayer.Hidden = false;
 

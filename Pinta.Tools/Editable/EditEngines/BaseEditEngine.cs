@@ -687,8 +687,8 @@ public abstract class BaseEditEngine
 
 		// Clear the "Obj." badge overlay so it doesn't linger once another tool is active.
 		if (workspace.HasOpenDocuments) {
-			workspace.ActiveDocument.Layers.ToolLayer.Hidden = true;
-			workspace.ActiveDocument.Layers.ToolLayer.Clear ();
+			workspace.ActiveDocument.Layers.OverlayLayer.Hidden = true;
+			workspace.ActiveDocument.Layers.OverlayLayer.Clear ();
 		}
 
 		palette.PrimaryColorChanged -= Palette_PrimaryColorChanged;
@@ -1670,7 +1670,7 @@ public abstract class BaseEditEngine
 			return;
 
 		Document doc = PintaCore.Workspace.ActiveDocument;
-		Layer toolLayer = doc.Layers.ToolLayer;
+		Layer toolLayer = doc.Layers.OverlayLayer;
 		toolLayer.Clear ();
 
 		bool any = false;

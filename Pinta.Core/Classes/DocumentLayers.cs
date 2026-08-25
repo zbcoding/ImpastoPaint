@@ -18,6 +18,10 @@ public sealed class DocumentLayers
 	// The layer for tools to use until their output is committed
 	private Layer? tool_layer;
 
+	// The layer for on-canvas UI (dashed rectangles, badges) that must stay
+	// visible above the current layer's own content
+	private Layer? overlay_layer;
+
 	// The layer used for selections
 	private Layer? selection_layer;
 
@@ -86,6 +90,22 @@ public sealed class DocumentLayers
 	}
 
 	/// <summary>
+	/// Gets a scratch layer for tools' on-canvas UI (dashed rectangles, corner
+	/// handles, badges) that must stay visible above the current layer's own
+	/// content, unlike <see cref="ToolLayer"/>.
+	/// </summary>
+	public Layer OverlayLayer {
+		get {
+			if (overlay_layer is null || overlay_layer.Surface.Width != document.ImageSize.Width || overlay_layer.Surface.Height != document.ImageSize.Height) {
+				overlay_layer = CreateLayer ("Overlay Layer");
+				overlay_layer.Hidden = true;
+			}
+
+			return overlay_layer;
+		}
+	}
+
+	/// <summary>
 	/// Collection of user layers.
 	/// </summary>
 	public IReadOnlyList<UserLayer> UserLayers => user_layers;
@@ -132,6 +152,7 @@ public sealed class DocumentLayers
 		CurrentUserLayerIndex = -1;
 
 		tool_layer = null;
+		overlay_layer = null;
 		selection_layer = null;
 	}
 
@@ -343,6 +364,11 @@ public sealed class DocumentLayers
 				foreach (Layer layer in userLayer.GetLayersToPaint ())
 					yield return layer;
 			}
+
+			// The overlay layer holds on-canvas UI (dashed rectangles, badges) that must
+			// stay visible above the current layer's own content, unlike the tool layer.
+			if (userLayer == CurrentUserLayer && includeToolLayer && overlay_layer is not null && !OverlayLayer.Hidden)
+				yield return OverlayLayer;
 
 			if (userLayer == CurrentUserLayer && ShowSelectionLayer && !SelectionLayer.Hidden)
 				yield return SelectionLayer;

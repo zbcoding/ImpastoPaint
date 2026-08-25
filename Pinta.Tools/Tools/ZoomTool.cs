@@ -124,7 +124,7 @@ public sealed class ZoomTool : BaseTool
 
 	protected override void OnMouseUp (Document document, ToolMouseEventArgs e)
 	{
-		document.Layers.ToolLayer.Hidden = true;
+		document.Layers.OverlayLayer.Hidden = true;
 
 		if (mouse_down == MouseButton.Left || mouse_down == MouseButton.Right) {
 			if (e.MouseButton == MouseButton.Left) {
@@ -153,10 +153,10 @@ public sealed class ZoomTool : BaseTool
 
 		RectangleD r = RectangleD.FromPoints (shape_origin.Rounded (), point.Rounded ());
 
-		document.Layers.ToolLayer.Clear ();
-		document.Layers.ToolLayer.Hidden = false;
+		document.Layers.OverlayLayer.Clear ();
+		document.Layers.OverlayLayer.Hidden = false;
 
-		using Context g = new (document.Layers.ToolLayer.Surface);
+		using Context g = new (document.Layers.OverlayLayer.Surface);
 
 		RectangleD dirty = g.FillRectangle (r, new Color (0.7, 0.8, 0.9, 0.4));
 

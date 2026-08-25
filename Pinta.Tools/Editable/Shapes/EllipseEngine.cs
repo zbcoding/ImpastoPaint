@@ -467,57 +467,8 @@ public sealed class EllipseEngine : ShapeEngine
 			yield break;
 		}
 
-		// Closed cardinal spline using per-point tension (mirrors LineCurveSeriesEngine).
-		int pointCount = ControlPoints.Count;
-		List<PointD> tangents = new (pointCount);
-
-		// First tangent (closed: wraps to last)
-		tangents.Add (new PointD (
-			ControlPoints[0].Tension * (ControlPoints[1].Position.X - ControlPoints[pointCount - 1].Position.X),
-			ControlPoints[0].Tension * (ControlPoints[1].Position.Y - ControlPoints[pointCount - 1].Position.Y)));
-
-		// Middle tangents
-		for (int i = 1; i < pointCount - 1; ++i) {
-			double tensionForPoint = ControlPoints[i].Tension * i / (double) (pointCount - 1);
-			tangents.Add (new PointD (
-				tensionForPoint * (ControlPoints[i + 1].Position.X - ControlPoints[i - 1].Position.X),
-				tensionForPoint * (ControlPoints[i + 1].Position.Y - ControlPoints[i - 1].Position.Y)));
-		}
-
-		// Last tangent (closed: wraps to first)
-		if (pointCount > 2) {
-			tangents.Add (new PointD (
-				ControlPoints[pointCount - 1].Tension * (ControlPoints[0].Position.X - ControlPoints[pointCount - 2].Position.X),
-				ControlPoints[pointCount - 1].Tension * (ControlPoints[0].Position.Y - ControlPoints[pointCount - 2].Position.Y)));
-		}
-
-		// Emit cubic Bezier segments for each edge.
-		for (int i = 1; i < pointCount; ++i) {
-			int iMinusOne = i - 1;
-			foreach (var p in GenerateCubicBezierCurvePoints (
-				ControlPoints[iMinusOne].Position,
-				new PointD (ControlPoints[iMinusOne].Position.X + tangents[iMinusOne].X,
-					    ControlPoints[iMinusOne].Position.Y + tangents[iMinusOne].Y),
-				new PointD (ControlPoints[i].Position.X - tangents[i].X,
-					    ControlPoints[i].Position.Y - tangents[i].Y),
-				ControlPoints[i].Position,
-				i)) {
-				yield return p;
-			}
-		}
-
-		// Close the loop.
-		int last = pointCount - 1;
-		foreach (var p in GenerateCubicBezierCurvePoints (
-			ControlPoints[last].Position,
-			new PointD (ControlPoints[last].Position.X + tangents[last].X,
-				    ControlPoints[last].Position.Y + tangents[last].Y),
-			new PointD (ControlPoints[0].Position.X - tangents[0].X,
-				    ControlPoints[0].Position.Y - tangents[0].Y),
-			ControlPoints[0].Position,
-			0)) {
+		foreach (GeneratedPoint p in CurveGeneration.CardinalSpline (ControlPoints, closed: true))
 			yield return p;
-		}
 	}
 
 	private static IEnumerable<GeneratedPoint> GenerateCubicBezierCurvePoints (PointD p0, PointD p1, PointD p2, PointD p3, int cPIndex)

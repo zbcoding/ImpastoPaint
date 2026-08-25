@@ -73,6 +73,80 @@ public static class CurveGeneration
 		}
 	}
 
+	/// <summary>
+	/// The tangent at each control point of a cardinal spline: the point's own tension scaled by
+	/// the vector across its two neighbours. A closed chain wraps at both ends; an open one leans
+	/// each end on its single neighbour. Middle tangents additionally fade in with the point's
+	/// position along the chain, which is what gives a freeform curve its slack near the start.
+	/// </summary>
+	private static List<PointD> CardinalSplineTangents (IReadOnlyList<ControlPoint> controlPoints, bool closed)
+	{
+		int last = controlPoints.Count - 1;
+		double lastAsDouble = last;
+
+		List<PointD> tangents = new (controlPoints.Count);
+
+		PointD beforeFirst = (closed ? controlPoints[last] : controlPoints[0]).Position;
+		tangents.Add (new PointD (
+			controlPoints[0].Tension * (controlPoints[1].Position.X - beforeFirst.X),
+			controlPoints[0].Tension * (controlPoints[1].Position.Y - beforeFirst.Y)));
+
+		for (int i = 1; i < last; ++i) {
+			double tensionForPoint = controlPoints[i].Tension * i / lastAsDouble;
+			tangents.Add (new PointD (
+				tensionForPoint * (controlPoints[i + 1].Position.X - controlPoints[i - 1].Position.X),
+				tensionForPoint * (controlPoints[i + 1].Position.Y - controlPoints[i - 1].Position.Y)));
+		}
+
+		PointD afterLast = (closed ? controlPoints[0] : controlPoints[last]).Position;
+		tangents.Add (new PointD (
+			controlPoints[last].Tension * (afterLast.X - controlPoints[last - 1].Position.X),
+			controlPoints[last].Tension * (afterLast.Y - controlPoints[last - 1].Position.Y)));
+
+		return tangents;
+	}
+
+	/// <summary>
+	/// The whole cardinal spline through <paramref name="controlPoints"/>, flattened to generated
+	/// points: one cubic Bezier per segment, the tangents above as its control points, plus the
+	/// wrap-around segment when the shape is closed. Shared by the line-curve engines and the
+	/// segmented ellipse, which must stay pixel-identical to each other - a click counts as on a
+	/// shape's edge by its distance to these points.
+	/// </summary>
+	public static IEnumerable<GeneratedPoint> CardinalSpline (IReadOnlyList<ControlPoint> controlPoints, bool closed)
+	{
+		List<PointD> tangents = CardinalSplineTangents (controlPoints, closed);
+
+		for (int i = 1; i < controlPoints.Count; ++i)
+			foreach (GeneratedPoint p in Segment (controlPoints, tangents, i - 1, i, i))
+				yield return p;
+
+		if (!closed)
+			yield break;
+
+		foreach (GeneratedPoint p in Segment (controlPoints, tangents, controlPoints.Count - 1, 0, 0))
+			yield return p;
+	}
+
+	/// <summary>One segment of the spline: out along the start point's tangent, in along the end
+	/// point's.</summary>
+	private static IEnumerable<GeneratedPoint> Segment (
+		IReadOnlyList<ControlPoint> controlPoints,
+		IReadOnlyList<PointD> tangents,
+		int from,
+		int to,
+		int cPIndex)
+		=> CubicBezierSegment (
+			controlPoints[from].Position,
+			new PointD (
+				controlPoints[from].Position.X + tangents[from].X,
+				controlPoints[from].Position.Y + tangents[from].Y),
+			new PointD (
+				controlPoints[to].Position.X - tangents[to].X,
+				controlPoints[to].Position.Y - tangents[to].Y),
+			controlPoints[to].Position,
+			cPIndex);
+
 	/// <summary>Full-segment convenience overload: same sampling as the line-curve engines have
 	/// always used, including the final point at t = 1.</summary>
 	public static IEnumerable<GeneratedPoint> CubicBezierSegment (

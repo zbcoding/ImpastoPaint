@@ -6,6 +6,7 @@ namespace Pinta.Effects;
 partial class EffectsTest
 {
 	[Test]
+	[Category ("Stylize")]
 	public void EdgeDetect1 ()
 	{
 		EdgeDetectEffect effect = new (Utilities.CreateMockServices ());
@@ -13,6 +14,7 @@ partial class EffectsTest
 	}
 
 	[Test]
+	[Category ("Stylize")]
 	public void EdgeDetect2 ()
 	{
 		EdgeDetectEffect effect = new (Utilities.CreateMockServices ());
@@ -21,6 +23,7 @@ partial class EffectsTest
 	}
 
 	[Test]
+	[Category ("Stylize")]
 	public void Emboss1 ()
 	{
 		EmbossEffect effect = new (Utilities.CreateMockServices ());
@@ -28,6 +31,7 @@ partial class EffectsTest
 	}
 
 	[Test]
+	[Category ("Stylize")]
 	public void Emboss2 ()
 	{
 		EmbossEffect effect = new (Utilities.CreateMockServices ());
@@ -36,6 +40,7 @@ partial class EffectsTest
 	}
 
 	[Test]
+	[Category ("Stylize")]
 	public void Outline1 ()
 	{
 		OutlineEdgeEffect effect = new (Utilities.CreateMockServices ());
@@ -43,6 +48,7 @@ partial class EffectsTest
 	}
 
 	[Test]
+	[Category ("Stylize")]
 	public void Outline2 ()
 	{
 		OutlineEdgeEffect effect = new (Utilities.CreateMockServices ());
@@ -52,6 +58,7 @@ partial class EffectsTest
 	}
 
 	[Test]
+	[Category ("Stylize")]
 	public void Relief1 ()
 	{
 		ReliefEffect effect = new (Utilities.CreateMockServices ());
@@ -59,6 +66,7 @@ partial class EffectsTest
 	}
 
 	[Test]
+	[Category ("Stylize")]
 	public void Relief2 ()
 	{
 		ReliefEffect effect = new (Utilities.CreateMockServices ());

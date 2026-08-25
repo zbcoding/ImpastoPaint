@@ -6,6 +6,7 @@ namespace Pinta.Effects;
 partial class EffectsTest
 {
 	[Test]
+	[Category ("Noise")]
 	public void AddNoise1 ()
 	{
 		AddNoiseEffect effect = new (Utilities.CreateMockServices ());
@@ -17,6 +18,7 @@ partial class EffectsTest
 	}
 
 	[Test]
+	[Category ("Noise")]
 	public void AddNoise2 ()
 	{
 		AddNoiseEffect effect = new (Utilities.CreateMockServices ());
@@ -28,6 +30,7 @@ partial class EffectsTest
 	}
 
 	[Test]
+	[Category ("Noise")]
 	public void Median1 ()
 	{
 		MedianEffect effect = new (Utilities.CreateMockServices ());
@@ -35,6 +38,7 @@ partial class EffectsTest
 	}
 
 	[Test]
+	[Category ("Noise")]
 	public void Median2 ()
 	{
 		MedianEffect effect = new (Utilities.CreateMockServices ());

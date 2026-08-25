@@ -7,6 +7,7 @@ namespace Pinta.Effects;
 partial class EffectsTest
 {
 	[Test]
+	[Category ("Photo")]
 	public void Glow1 ()
 	{
 		GlowEffect effect = new (Utilities.CreateMockServices ());
@@ -14,6 +15,7 @@ partial class EffectsTest
 	}
 
 	[Test]
+	[Category ("Photo")]
 	public void Glow2 ()
 	{
 		GlowEffect effect = new (Utilities.CreateMockServices ());
@@ -24,6 +26,7 @@ partial class EffectsTest
 	}
 
 	[Test]
+	[Category ("Photo")]
 	public void RedEyeRemove1 ()
 	{
 		RedEyeRemoveEffect effect = new (Utilities.CreateMockServices ());
@@ -31,6 +34,7 @@ partial class EffectsTest
 	}
 
 	[Test]
+	[Category ("Photo")]
 	public void RedEyeRemove2 ()
 	{
 		RedEyeRemoveEffect effect = new (Utilities.CreateMockServices ());
@@ -40,6 +44,7 @@ partial class EffectsTest
 	}
 
 	[Test]
+	[Category ("Photo")]
 	public void Sharpen1 ()
 	{
 		SharpenEffect effect = new (Utilities.CreateMockServices ());
@@ -47,6 +52,7 @@ partial class EffectsTest
 	}
 
 	[Test]
+	[Category ("Photo")]
 	public void Sharpen2 ()
 	{
 		SharpenEffect effect = new (Utilities.CreateMockServices ());
@@ -55,6 +61,7 @@ partial class EffectsTest
 	}
 
 	[Test]
+	[Category ("Photo")]
 	public void SoftenPortrait1 ()
 	{
 		SoftenPortraitEffect effect = new (Utilities.CreateMockServices ());
@@ -62,6 +69,7 @@ partial class EffectsTest
 	}
 
 	[Test]
+	[Category ("Photo")]
 	public void SoftenPortrait2 ()
 	{
 		SoftenPortraitEffect effect = new (Utilities.CreateMockServices ());
@@ -72,6 +80,7 @@ partial class EffectsTest
 	}
 
 	[Test]
+	[Category ("Photo")]
 	public void Vignette1 ()
 	{
 		VignetteEffect effect = new (Utilities.CreateMockServices ());
@@ -80,6 +89,7 @@ partial class EffectsTest
 	}
 
 	[Test]
+	[Category ("Photo")]
 	public void Vignette2 ()
 	{
 		VignetteEffect effect = new (Utilities.CreateMockServices ());
@@ -88,6 +98,7 @@ partial class EffectsTest
 	}
 
 	[Test]
+	[Category ("Photo")]
 	public void Vignette3 ()
 	{
 		VignetteEffect effect = new (Utilities.CreateMockServices ());

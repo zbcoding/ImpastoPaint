@@ -7,6 +7,7 @@ namespace Pinta.Effects;
 partial class EffectsTest
 {
 	[Test]
+	[Category ("Distort")]
 	public void Bulge ()
 	{
 		BulgeEffect effect = new (Utilities.CreateMockServices ());
@@ -16,6 +17,7 @@ partial class EffectsTest
 	}
 
 	[Test]
+	[Category ("Distort")]
 	public void BulgeIn ()
 	{
 		BulgeEffect effect = new (Utilities.CreateMockServices ());
@@ -25,6 +27,7 @@ partial class EffectsTest
 	}
 
 	[Test]
+	[Category ("Distort")]
 	public void BulgeSmallerRadius ()
 	{
 		BulgeEffect effect = new BulgeEffect (Utilities.CreateMockServices ());
@@ -35,6 +38,7 @@ partial class EffectsTest
 	}
 
 	[Test]
+	[Category ("Distort")]
 	public void Dents1 ()
 	{
 		DentsEffect effect = new (Utilities.CreateMockServices ());
@@ -43,6 +47,7 @@ partial class EffectsTest
 	}
 
 	[Test]
+	[Category ("Distort")]
 	public void Dents2 ()
 	{
 		DentsEffect effect = new (Utilities.CreateMockServices ());
@@ -52,6 +57,7 @@ partial class EffectsTest
 	}
 
 	[Test]
+	[Category ("Distort")]
 	public void Dents3 ()
 	{
 		DentsEffect effect = new (Utilities.CreateMockServices ());
@@ -61,6 +67,7 @@ partial class EffectsTest
 	}
 
 	[Test]
+	[Category ("Distort")]
 	public void Dents4 ()
 	{
 		DentsEffect effect = new (Utilities.CreateMockServices ());
@@ -70,6 +77,7 @@ partial class EffectsTest
 	}
 
 	[Test]
+	[Category ("Distort")]
 	public void Dents5 ()
 	{
 		DentsEffect effect = new (Utilities.CreateMockServices ());
@@ -79,6 +87,7 @@ partial class EffectsTest
 	}
 
 	[Test]
+	[Category ("Distort")]
 	public void Dents6 ()
 	{
 		DentsEffect effect = new (Utilities.CreateMockServices ());
@@ -87,6 +96,7 @@ partial class EffectsTest
 	}
 
 	[Test]
+	[Category ("Distort")]
 	public void Dents7 ()
 	{
 		DentsEffect effect = new (Utilities.CreateMockServices ());
@@ -96,6 +106,7 @@ partial class EffectsTest
 	}
 
 	[Test]
+	[Category ("Distort")]
 	public void FrostedGlass ()
 	{
 		FrostedGlassEffect effect = new (Utilities.CreateMockServices ());
@@ -105,6 +116,7 @@ partial class EffectsTest
 	}
 
 	[Test]
+	[Category ("Distort")]
 	public void Pixelate1 ()
 	{
 		PixelateEffect effect = new (Utilities.CreateMockServices ());
@@ -112,6 +124,7 @@ partial class EffectsTest
 	}
 
 	[Test]
+	[Category ("Distort")]
 	public void Pixelate2 ()
 	{
 		PixelateEffect effect = new (Utilities.CreateMockServices ());
@@ -120,6 +133,7 @@ partial class EffectsTest
 	}
 
 	[Test]
+	[Category ("Distort")]
 	public void PolarInversion1 ()
 	{
 		PolarInversionEffect effect = new (Utilities.CreateMockServices ());
@@ -128,6 +142,7 @@ partial class EffectsTest
 	}
 
 	[Test]
+	[Category ("Distort")]
 	public void Tile1 ()
 	{
 		TileEffect effect = new (Utilities.CreateMockServices ());
@@ -136,6 +151,7 @@ partial class EffectsTest
 	}
 
 	[Test]
+	[Category ("Distort")]
 	public void Tile2 ()
 	{
 		TileEffect effect = new (Utilities.CreateMockServices ());
@@ -146,6 +162,7 @@ partial class EffectsTest
 	}
 
 	[Test]
+	[Category ("Distort")]
 	public void Tile3 ()
 	{
 		TileEffect effect = new (Utilities.CreateMockServices ());
@@ -155,6 +172,7 @@ partial class EffectsTest
 	}
 
 	[Test]
+	[Category ("Distort")]
 	public void Tile4 ()
 	{
 		TileEffect effect = new (Utilities.CreateMockServices ());
@@ -165,6 +183,7 @@ partial class EffectsTest
 	}
 
 	[Test]
+	[Category ("Distort")]
 	public void Tile5 ()
 	{
 		TileEffect effect = new (Utilities.CreateMockServices ());
@@ -174,6 +193,7 @@ partial class EffectsTest
 	}
 
 	[Test]
+	[Category ("Distort")]
 	public void Tile6 ()
 	{
 		TileEffect effect = new (Utilities.CreateMockServices ());
@@ -183,6 +203,7 @@ partial class EffectsTest
 	}
 
 	[Test]
+	[Category ("Distort")]
 	public void Tile7 ()
 	{
 		TileEffect effect = new (Utilities.CreateMockServices ());
@@ -192,6 +213,7 @@ partial class EffectsTest
 	}
 
 	[Test]
+	[Category ("Distort")]
 	public void Tile8 ()
 	{
 		TileEffect effect = new (Utilities.CreateMockServices ());
@@ -201,6 +223,7 @@ partial class EffectsTest
 	}
 
 	[Test]
+	[Category ("Distort")]
 	public void Tile9 ()
 	{
 		TileEffect effect = new (Utilities.CreateMockServices ());
@@ -210,6 +233,7 @@ partial class EffectsTest
 	}
 
 	[Test]
+	[Category ("Distort")]
 	public void Tile10 ()
 	{
 		TileEffect effect = new (Utilities.CreateMockServices ());
@@ -219,6 +243,7 @@ partial class EffectsTest
 	}
 
 	[Test]
+	[Category ("Distort")]
 	public void Twist1 ()
 	{
 		TwistEffect effect = new (Utilities.CreateMockServices ());
@@ -227,6 +252,7 @@ partial class EffectsTest
 	}
 
 	[Test]
+	[Category ("Distort")]
 	public void Twist2 ()
 	{
 		TwistEffect effect = new (Utilities.CreateMockServices ());
@@ -236,6 +262,7 @@ partial class EffectsTest
 	}
 
 	[Test]
+	[Category ("Distort")]
 	public void Twist3 ()
 	{
 		TwistEffect effect = new (Utilities.CreateMockServices ());
@@ -243,6 +270,7 @@ partial class EffectsTest
 	}
 
 	[Test]
+	[Category ("Distort")]
 	public void Twist4 ()
 	{
 		TwistEffect effect = new (Utilities.CreateMockServices ());
@@ -252,6 +280,7 @@ partial class EffectsTest
 	}
 
 	[Test]
+	[Category ("Distort")]
 	public void Twist5 ()
 	{
 		TwistEffect effect = new (Utilities.CreateMockServices ());

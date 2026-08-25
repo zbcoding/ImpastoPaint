@@ -6,6 +6,7 @@ namespace Pinta.Effects;
 partial class EffectsTest
 {
 	[Test]
+	[Category ("Blurs")]
 	public void Fragment1 ()
 	{
 		FragmentEffect effect = new (Utilities.CreateMockServices ());
@@ -13,6 +14,7 @@ partial class EffectsTest
 	}
 
 	[Test]
+	[Category ("Blurs")]
 	public void Fragment2 ()
 	{
 		FragmentEffect effect = new (Utilities.CreateMockServices ());
@@ -23,6 +25,7 @@ partial class EffectsTest
 	}
 
 	[Test]
+	[Category ("Blurs")]
 	public void GaussianBlur1 ()
 	{
 		GaussianBlurEffect effect = new (Utilities.CreateMockServices ());
@@ -30,6 +33,7 @@ partial class EffectsTest
 	}
 
 	[Test]
+	[Category ("Blurs")]
 	public void GaussianBlur2 ()
 	{
 		GaussianBlurEffect effect = new (Utilities.CreateMockServices ());
@@ -38,6 +42,7 @@ partial class EffectsTest
 	}
 
 	[Test]
+	[Category ("Blurs")]
 	public void MotionBlur1 ()
 	{
 		MotionBlurEffect effect = new (Utilities.CreateMockServices ());
@@ -45,6 +50,7 @@ partial class EffectsTest
 	}
 
 	[Test]
+	[Category ("Blurs")]
 	public void MotionBlur2 ()
 	{
 		MotionBlurEffect effect = new (Utilities.CreateMockServices ());
@@ -55,6 +61,7 @@ partial class EffectsTest
 	}
 
 	[Test]
+	[Category ("Blurs")]
 	public void RadialBlur1 ()
 	{
 		RadialBlurEffect effect = new (Utilities.CreateMockServices ());
@@ -62,6 +69,7 @@ partial class EffectsTest
 	}
 
 	[Test]
+	[Category ("Blurs")]
 	public void RadialBlur2 ()
 	{
 		RadialBlurEffect effect = new (Utilities.CreateMockServices ());
@@ -72,6 +80,7 @@ partial class EffectsTest
 	}
 
 	[Test]
+	[Category ("Blurs")]
 	public void Unfocus1 ()
 	{
 		UnfocusEffect effect = new (Utilities.CreateMockServices ());
@@ -79,6 +88,7 @@ partial class EffectsTest
 	}
 
 	[Test]
+	[Category ("Blurs")]
 	public void Unfocus2 ()
 	{
 		UnfocusEffect effect = new (Utilities.CreateMockServices ());
@@ -87,6 +97,7 @@ partial class EffectsTest
 	}
 
 	[Test]
+	[Category ("Blurs")]
 	public void ZoomBlur1 ()
 	{
 		ZoomBlurEffect effect = new (Utilities.CreateMockServices ());
@@ -94,6 +105,7 @@ partial class EffectsTest
 	}
 
 	[Test]
+	[Category ("Blurs")]
 	public void ZoomBlur2 ()
 	{
 		ZoomBlurEffect effect = new (Utilities.CreateMockServices ());

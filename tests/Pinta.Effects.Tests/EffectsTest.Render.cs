@@ -7,6 +7,7 @@ namespace Pinta.Effects;
 partial class EffectsTest
 {
 	[Test]
+	[Category ("Cells")]
 	public void Cells1 ()
 	{
 		CellsEffect effect = new (Utilities.CreateMockServices ());
@@ -15,6 +16,7 @@ partial class EffectsTest
 	}
 
 	[Test]
+	[Category ("Cells")]
 	public void Cells2 ()
 	{
 		CellsEffect effect = new (Utilities.CreateMockServices ());
@@ -23,6 +25,7 @@ partial class EffectsTest
 	}
 
 	[Test]
+	[Category ("Cells")]
 	public void Cells3 ()
 	{
 		CellsEffect effect = new (Utilities.CreateMockServices ());
@@ -31,6 +34,7 @@ partial class EffectsTest
 	}
 
 	[Test]
+	[Category ("Cells")]
 	public void Cells4 ()
 	{
 		CellsEffect effect = new (Utilities.CreateMockServices ());
@@ -39,6 +43,7 @@ partial class EffectsTest
 	}
 
 	[Test]
+	[Category ("Cells")]
 	public void Cells5 ()
 	{
 		CellsEffect effect = new (Utilities.CreateMockServices ());
@@ -47,6 +52,7 @@ partial class EffectsTest
 	}
 
 	[Test]
+	[Category ("Cells")]
 	public void Cells6 ()
 	{
 		CellsEffect effect = new (Utilities.CreateMockServices ());
@@ -55,6 +61,7 @@ partial class EffectsTest
 	}
 
 	[Test]
+	[Category ("Cells")]
 	public void Cells7 ()
 	{
 		CellsEffect effect = new (Utilities.CreateMockServices ());
@@ -64,6 +71,7 @@ partial class EffectsTest
 	}
 
 	[Test]
+	[Category ("Cells")]
 	public void Cells8 ()
 	{
 		CellsEffect effect = new (Utilities.CreateMockServices ());
@@ -73,6 +81,7 @@ partial class EffectsTest
 	}
 
 	[Test]
+	[Category ("Cells")]
 	public void Cells9 ()
 	{
 		CellsEffect effect = new (Utilities.CreateMockServices ());
@@ -82,6 +91,7 @@ partial class EffectsTest
 	}
 
 	[Test]
+	[Category ("Cells")]
 	public void Cells10 ()
 	{
 		CellsEffect effect = new (Utilities.CreateMockServices ());
@@ -91,6 +101,7 @@ partial class EffectsTest
 	}
 
 	[Test]
+	[Category ("Cells")]
 	public void Cells11 ()
 	{
 		CellsEffect effect = new (Utilities.CreateMockServices ());
@@ -99,6 +110,7 @@ partial class EffectsTest
 	}
 
 	[Test]
+	[Category ("Cells")]
 	public void Cells12 ()
 	{
 		CellsEffect effect = new (Utilities.CreateMockServices ());
@@ -107,6 +119,7 @@ partial class EffectsTest
 	}
 
 	[Test]
+	[Category ("Cells")]
 	public void Cells13 ()
 	{
 		CellsEffect effect = new (Utilities.CreateMockServices ());
@@ -115,6 +128,7 @@ partial class EffectsTest
 	}
 
 	[Test]
+	[Category ("Clouds")]
 	public void Clouds1 ()
 	{
 		CloudsEffect effect = new (Utilities.CreateMockServices ());
@@ -122,6 +136,7 @@ partial class EffectsTest
 	}
 
 	[Test]
+	[Category ("JuliaFractal")]
 	public void JuliaFractal1 ()
 	{
 		JuliaFractalEffect effect = new (Utilities.CreateMockServices ());
@@ -129,6 +144,7 @@ partial class EffectsTest
 	}
 
 	[Test]
+	[Category ("JuliaFractal")]
 	public void JuliaFractal2 ()
 	{
 		JuliaFractalEffect effect = new (Utilities.CreateMockServices ());
@@ -140,6 +156,7 @@ partial class EffectsTest
 	}
 
 	[Test]
+	[Category ("Mandelbrot")]
 	public void MandelbrotFractal1 ()
 	{
 		MandelbrotFractalEffect effect = new (Utilities.CreateMockServices ());
@@ -147,6 +164,7 @@ partial class EffectsTest
 	}
 
 	[Test]
+	[Category ("Mandelbrot")]
 	public void MandelbrotFractal2 ()
 	{
 		MandelbrotFractalEffect effect = new (Utilities.CreateMockServices ());
@@ -159,6 +177,7 @@ partial class EffectsTest
 	}
 
 	[Test]
+	[Category ("Voronoi")]
 	public void Voronoi1 ()
 	{
 		VoronoiDiagramEffect effect = new (Utilities.CreateMockServices ());
@@ -166,6 +185,7 @@ partial class EffectsTest
 	}
 
 	[Test]
+	[Category ("Voronoi")]
 	public void Voronoi2 ()
 	{
 		VoronoiDiagramEffect effect = new (Utilities.CreateMockServices ());
@@ -174,6 +194,7 @@ partial class EffectsTest
 	}
 
 	[Test]
+	[Category ("Voronoi")]
 	public void Voronoi3 ()
 	{
 		VoronoiDiagramEffect effect = new (Utilities.CreateMockServices ());
@@ -182,6 +203,7 @@ partial class EffectsTest
 	}
 
 	[Test]
+	[Category ("Voronoi")]
 	public void Voronoi4 ()
 	{
 		VoronoiDiagramEffect effect = new (Utilities.CreateMockServices ());
@@ -190,6 +212,7 @@ partial class EffectsTest
 	}
 
 	[Test]
+	[Category ("Voronoi")]
 	public void Voronoi5 ()
 	{
 		VoronoiDiagramEffect effect = new (Utilities.CreateMockServices ());
@@ -198,6 +221,7 @@ partial class EffectsTest
 	}
 
 	[Test]
+	[Category ("Voronoi")]
 	public void Voronoi6 ()
 	{
 		VoronoiDiagramEffect effect = new (Utilities.CreateMockServices ());
@@ -206,6 +230,7 @@ partial class EffectsTest
 	}
 
 	[Test]
+	[Category ("Voronoi")]
 	public void Voronoi7 ()
 	{
 		VoronoiDiagramEffect effect = new (Utilities.CreateMockServices ());
@@ -214,6 +239,7 @@ partial class EffectsTest
 	}
 
 	[Test]
+	[Category ("Voronoi")]
 	[Ignore ("Produces different results on some platforms for unknown reasons")]
 	public void Voronoi8 ()
 	{

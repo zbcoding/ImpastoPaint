@@ -6,6 +6,7 @@ namespace Pinta.Effects;
 partial class EffectsTest
 {
 	[Test]
+	[Category ("Artistic")]
 	public void InkSketch1 ()
 	{
 		InkSketchEffect effect = new (Utilities.CreateMockServices ());
@@ -13,6 +14,7 @@ partial class EffectsTest
 	}
 
 	[Test]
+	[Category ("Artistic")]
 	public void InkSketch2 ()
 	{
 		InkSketchEffect effect = new (Utilities.CreateMockServices ());
@@ -22,6 +24,7 @@ partial class EffectsTest
 	}
 
 	[Test]
+	[Category ("Artistic")]
 	public void OilPainting1 ()
 	{
 		OilPaintingEffect effect = new (Utilities.CreateMockServices ());
@@ -29,6 +32,7 @@ partial class EffectsTest
 	}
 
 	[Test]
+	[Category ("Artistic")]
 	public void OilPainting2 ()
 	{
 		OilPaintingEffect effect = new (Utilities.CreateMockServices ());
@@ -38,6 +42,7 @@ partial class EffectsTest
 	}
 
 	[Test]
+	[Category ("Artistic")]
 	public void PencilSketch1 ()
 	{
 		PencilSketchEffect effect = new (Utilities.CreateMockServices ());
@@ -45,6 +50,7 @@ partial class EffectsTest
 	}
 
 	[Test]
+	[Category ("Artistic")]
 	public void PencilSketch2 ()
 	{
 		PencilSketchEffect effect = new (Utilities.CreateMockServices ());

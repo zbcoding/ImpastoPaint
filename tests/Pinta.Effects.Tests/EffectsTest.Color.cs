@@ -6,6 +6,7 @@ namespace Pinta.Effects;
 partial class EffectsTest
 {
 	[Test]
+	[Category ("Color")]
 	public void Dithering1 ()
 	{
 		DitheringEffect effect = new (Utilities.CreateMockServices ());
@@ -15,6 +16,7 @@ partial class EffectsTest
 	}
 
 	[Test]
+	[Category ("Color")]
 	public void Dithering2 ()
 	{
 		DitheringEffect effect = new (Utilities.CreateMockServices ());
@@ -24,6 +26,7 @@ partial class EffectsTest
 	}
 
 	[Test]
+	[Category ("Color")]
 	public void Dithering3 ()
 	{
 		DitheringEffect effect = new (Utilities.CreateMockServices ());
@@ -33,6 +36,7 @@ partial class EffectsTest
 	}
 
 	[Test]
+	[Category ("Color")]
 	public void Dithering4 ()
 	{
 		DitheringEffect effect = new (Utilities.CreateMockServices ());

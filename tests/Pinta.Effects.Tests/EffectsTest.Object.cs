@@ -6,6 +6,7 @@ namespace Pinta.Effects;
 partial class EffectsTest
 {
 	[Test]
+	[Category ("Object")]
 	public void AlignObject1 ()
 	{
 		AlignObjectEffect effect = new (Utilities.CreateMockServices ());
@@ -14,6 +15,7 @@ partial class EffectsTest
 	}
 
 	[Test]
+	[Category ("Object")]
 	public void AlignObject2 ()
 	{
 		AlignObjectEffect effect = new (Utilities.CreateMockServices ());
@@ -22,6 +24,7 @@ partial class EffectsTest
 	}
 
 	[Test]
+	[Category ("Object")]
 	public void AlignObject3 ()
 	{
 		AlignObjectEffect effect = new (Utilities.CreateMockServices ());
@@ -30,6 +33,7 @@ partial class EffectsTest
 	}
 
 	[Test]
+	[Category ("Object")]
 	public void Feather1 ()
 	{
 		FeatherEffect effect = new (Utilities.CreateMockServices ());
@@ -40,6 +44,7 @@ partial class EffectsTest
 	}
 
 	[Test]
+	[Category ("Object")]
 	public void Feather2 ()
 	{
 		FeatherEffect effect = new (Utilities.CreateMockServices ());
@@ -50,6 +55,7 @@ partial class EffectsTest
 	}
 
 	[Test]
+	[Category ("Object")]
 	public void OutlineObject1 ()
 	{
 		OutlineObjectEffect effect = new (Utilities.CreateMockServices ());
@@ -62,6 +68,7 @@ partial class EffectsTest
 		Utilities.TestEffect (effect, "outlineobject1.png", source_image_name: "outlineobjectinput.png");
 	}
 	[Test]
+	[Category ("Object")]
 	public void OutlineObject2 ()
 	{
 		OutlineObjectEffect effect = new (Utilities.CreateMockServices ());
@@ -74,6 +81,7 @@ partial class EffectsTest
 		Utilities.TestEffect (effect, "outlineobject2.png", source_image_name: "outlineobjectinput.png");
 	}
 	[Test]
+	[Category ("Object")]
 	public void OutlineObject3 ()
 	{
 		OutlineObjectEffect effect = new (Utilities.CreateMockServices ());
@@ -86,6 +94,7 @@ partial class EffectsTest
 		Utilities.TestEffect (effect, "outlineobject3.png", source_image_name: "outlineobjectinput.png");
 	}
 	[Test]
+	[Category ("Object")]
 	public void OutlineObject4 ()
 	{
 		OutlineObjectEffect effect = new (Utilities.CreateMockServices ());
@@ -98,6 +107,7 @@ partial class EffectsTest
 		Utilities.TestEffect (effect, "outlineobject4.png", source_image_name: "outlineobjectinput.png");
 	}
 	[Test]
+	[Category ("Object")]
 	public void OutlineObject5 ()
 	{
 		OutlineObjectEffect effect = new (Utilities.CreateMockServices ());

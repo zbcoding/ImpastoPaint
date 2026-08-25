@@ -183,4 +183,49 @@ internal sealed class TextModeSwitchTest : ToolsTestHarness
 		Assert.That (raised, Is.True,
 			"the dock must be told to refresh so the now-transient object's sub-row disappears");
 	}
+
+	/// <summary>
+	/// End-to-end regression for the reported bug: a brand-new (not yet finalized) text object,
+	/// switched to Raster and back to Object via the dropdown, must have its layers-dock sub-row
+	/// disappear and then reappear - not get stuck hidden, and not linger visible while in Raster
+	/// mode (see RasterizeOnFinalizeSubRowTest in Pinta.Core.Tests for the row-visibility rule
+	/// itself). A brand-new object starts in Object mode exactly like TextTool.HandleLeftClick
+	/// creates one, so RasterizeOnFinalize starts false here too.
+	/// </summary>
+	[Test]
+	public void RoundTrippingTheRasterDropdownHidesThenRestoresTheObjectsSubRow ()
+	{
+		UserLayer layer = Layer (0);
+
+		TextObject obj = new (new TextEngine ()) { RasterizeOnFinalize = false };
+		obj.Engine.InsertText ("hello");
+		layer.AddText (obj);
+
+		// Force a known baseline: the setting persists across tests, so the button may already
+		// start on Raster, making a SelectedIndex set below a no-op that never fires the event.
+		TextTool t = ActivateOnLayer ();
+		RasterizeModeButton (t).SelectedIndex = 0;
+		Select (t, obj);
+
+		Assert.That (UserLayer.GetsSubRow (obj), Is.True, "setup: a brand-new object gets a sub-row");
+
+		int changes = 0;
+		void Handler () => changes++;
+		LayerObjectSelection.ObjectsChanged += Handler;
+		try {
+			RasterizeModeButton (t).SelectedIndex = 1; // Raster
+
+			Assert.That (UserLayer.GetsSubRow (obj), Is.False,
+				"switching the brand-new object to Raster must drop its sub-row");
+			Assert.That (changes, Is.EqualTo (1), "the dock must be told to refresh after the drop");
+
+			RasterizeModeButton (t).SelectedIndex = 0; // Back to Object
+
+			Assert.That (UserLayer.GetsSubRow (obj), Is.True,
+				"switching back to Object must restore the object's sub-row");
+			Assert.That (changes, Is.EqualTo (2), "the dock must be told to refresh again after it reappears");
+		} finally {
+			LayerObjectSelection.ObjectsChanged -= Handler;
+		}
+	}
 }

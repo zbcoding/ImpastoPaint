@@ -957,13 +957,7 @@ public abstract class BaseEditEngine
 		ShapeEngine selEngine = SelectedShapeEngine!; // NRT - ^^
 
 		//Create a new ShapesModifyHistoryItem so that the adding of a control point can be undone.
-		workspace.ActiveDocument.History.PushNewItem (
-			new ShapesModifyHistoryItem (
-				this,
-				owner.Icon,
-				ShapeName + " " + Translations.GetString ("Point Added")
-			)
-		);
+		PushModifyHistory (workspace.ActiveDocument, Translations.GetString ("Point Added"));
 
 		bool shiftKey = e.IsShiftPressed;
 		bool ctrlKey = exact || e.IsControlPressed;
@@ -1008,13 +1002,7 @@ public abstract class BaseEditEngine
 		//Either delete a ControlPoint or an entire shape (if there's only 1 ControlPoint left).
 		if (controlPoints.Count > 1) {
 			//Create a new ShapesModifyHistoryItem so that the deletion of a control point can be undone.
-			workspace.ActiveDocument.History.PushNewItem (
-				new ShapesModifyHistoryItem (
-					this,
-					owner.Icon,
-					ShapeName + " " + Translations.GetString ("Point Deleted")
-				)
-			);
+			PushModifyHistory (workspace.ActiveDocument, Translations.GetString ("Point Deleted"));
 
 			//Delete the selected point from the shape.
 			controlPoints.RemoveAt (SelectedPointIndex);
@@ -1203,11 +1191,7 @@ public abstract class BaseEditEngine
 		if (rightButton && !changing_tension) {
 			int hitShapeIndex = clicked_control_point ? closestCPShapeIndex : (clicked_generated_point ? closestShapeIndex : -1);
 			if (hitShapeIndex >= 0) {
-				SelectedShapeIndex = hitShapeIndex;
-				moving_whole_shape = true;
-				last_shape_move_point = current_point;
-				BeginWholeShapeMove (e);
-				clicked_without_modifying = true;
+				BeginWholeShapeDrag (hitShapeIndex, e);
 			} else {
 				// Right click missed the shape: don't let the drag fall through to the
 				// point-moving/tension code, which would deform the previously selected point.
@@ -1220,20 +1204,15 @@ public abstract class BaseEditEngine
 
 		if (!changing_tension && clicked_generated_point) {
 			//Determine if the currently active tool matches the clicked on shape's corresponding tool, and if not, switch to it.
-			if (ActivateCorrespondingTool (closestShapeIndex, true) != null) {
-				//Pass on the event and its data to the newly activated tool.
-				tools.DoMouseDown (document, e);
-
-				//Don't do anything else here once the tool is switched and the event is passed on.
+			if (ForwardToCorrespondingTool (closestShapeIndex, document, e))
 				return;
-			}
 
 			//The currently active tool matches the clicked on shape's corresponding tool.
 
 			//Only add a node if the user isn't holding the control key down and curved segments are enabled.
 			if (!ctrlKey && curved_segments_enabled) {
 				//Create a new ShapesModifyHistoryItem so that the adding of a control point can be undone.
-				doc.History.PushNewItem (new ShapesModifyHistoryItem (this, owner.Icon, ShapeName + " " + Translations.GetString ("Point Added")));
+				PushModifyHistory (doc, Translations.GetString ("Point Added"));
 
 				ShapeEngine targetEngine = SEngines[closestShapeIndex];
 				int insertedIdx = closestPointIndex;
@@ -1262,21 +1241,14 @@ public abstract class BaseEditEngine
 				SelectedShapeIndex = closestShapeIndex;
 			} else if (!ctrlKey && !curved_segments_enabled) {
 				// Curved segments off: side click starts a whole-shape drag (no node add).
-				SelectedShapeIndex = closestShapeIndex;
 				SelectedPointIndex = 0;
-				moving_whole_shape = true;
-				last_shape_move_point = current_point;
-				BeginWholeShapeMove (e);
-				clicked_without_modifying = true;
+				BeginWholeShapeDrag (closestShapeIndex, e);
 			} else {
 				SelectedPointIndex = closestPointIndex;
 				SelectedShapeIndex = closestShapeIndex;
 			}
 
-			ShapeEngine? activeEngine = ActiveShapeEngine;
-
-			if (activeEngine != null)
-				UpdateToolbarSettings (activeEngine);
+			UpdateToolbarSettingsForActiveShape ();
 		}
 
 		//Create a new shape if the user control + clicks on a shape or if the user simply clicks outside of any shapes.
@@ -1326,20 +1298,12 @@ public abstract class BaseEditEngine
 		} else if (clicked_control_point) {
 			//Since the user is not creating a new shape or control point but rather modifying an existing control point, it should be determined
 			//whether the currently active tool matches the clicked on shape's corresponding tool, and if not, switch to it.
-			if (ActivateCorrespondingTool (SelectedShapeIndex, true) != null) {
-				//Pass on the event and its data to the newly activated tool.
-				tools.DoMouseDown (document, e);
-
-				//Don't do anything else here once the tool is switched and the event is passed on.
+			if (ForwardToCorrespondingTool (SelectedShapeIndex, document, e))
 				return;
-			}
 
 			//The currently active tool matches the clicked on shape's corresponding tool.
 
-			ShapeEngine? activeEngine = ActiveShapeEngine;
-
-			if (activeEngine != null)
-				UpdateToolbarSettings (activeEngine);
+			UpdateToolbarSettingsForActiveShape ();
 		}
 
 		//Determine if the user right clicks outside of any shapes (neither on their control points nor on their generated points).
@@ -1349,13 +1313,53 @@ public abstract class BaseEditEngine
 		DrawActiveShape (false, false, true, shiftKey, false, e.IsControlPressed);
 	}
 
-	private void BeginWholeShapeMove (ToolMouseEventArgs e)
+	/// <summary>Starts dragging a whole shape: selects it, then anchors the drag on the grab point.</summary>
+	private void BeginWholeShapeDrag (int shapeIndex, ToolMouseEventArgs e)
 	{
+		SelectedShapeIndex = shapeIndex;
+		moving_whole_shape = true;
+		clicked_without_modifying = true;
+
 		shape_move_grab_point = e.UnsnappedPointDouble;
 		last_shape_move_point = shape_move_grab_point;
 		shape_move_start_bounds = ActiveShapeEngine is null
 			? default
 			: ShapeBounds (ActiveShapeEngine);
+	}
+
+	private void PushModifyHistory (Document document, string label)
+		=> document.History.PushNewItem (new ShapesModifyHistoryItem (this, owner.Icon, ShapeName + " " + label));
+
+	/// <summary>
+	/// One history item per gesture: the first movement after a click records the shape as it was
+	/// before the drag, and later movements of the same drag add nothing.
+	/// </summary>
+	private void PushModifyHistoryOnce (Document document, string label)
+	{
+		if (!clicked_without_modifying)
+			return;
+
+		PushModifyHistory (document, label);
+		clicked_without_modifying = false;
+	}
+
+	/// <summary>
+	/// Hands the click to the tool that owns <paramref name="shapeIndex"/>'s shape when that is not
+	/// the active tool, and reports whether it did - the caller must then stop handling the event.
+	/// </summary>
+	private bool ForwardToCorrespondingTool (int shapeIndex, Document document, ToolMouseEventArgs e)
+	{
+		if (ActivateCorrespondingTool (shapeIndex, true) == null)
+			return false;
+
+		tools.DoMouseDown (document, e);
+		return true;
+	}
+
+	private void UpdateToolbarSettingsForActiveShape ()
+	{
+		if (ActiveShapeEngine is ShapeEngine activeEngine)
+			UpdateToolbarSettings (activeEngine);
 	}
 
 	/// <summary>
@@ -1437,11 +1441,7 @@ public abstract class BaseEditEngine
 			CalculateModifiedCurrentPoint ();
 
 		if (rotating_whole_shape && ActiveShapeEngine != null) {
-			if (clicked_without_modifying) {
-				doc.History.PushNewItem (
-					new ShapesModifyHistoryItem (this, owner.Icon, ShapeName + " " + Translations.GetString ("Rotated")));
-				clicked_without_modifying = false;
-			}
+			PushModifyHistoryOnce (doc, Translations.GetString ("Rotated"));
 
 			PointD p = e.UnsnappedPointDouble;
 			double angle = Math.Atan2 (p.Y - shape_rotate_center.Y, p.X - shape_rotate_center.X);
@@ -1468,11 +1468,7 @@ public abstract class BaseEditEngine
 		}
 
 		if (moving_whole_shape && ActiveShapeEngine != null) {
-			if (clicked_without_modifying) {
-				doc.History.PushNewItem (
-					new ShapesModifyHistoryItem (this, owner.Icon, ShapeName + " " + Translations.GetString ("Modified")));
-				clicked_without_modifying = false;
-			}
+			PushModifyHistoryOnce (doc, Translations.GetString ("Modified"));
 
 			PointD dragPoint = doc.ClampToImageSize (e.UnsnappedPointDouble);
 
@@ -1498,13 +1494,8 @@ public abstract class BaseEditEngine
 			return;
 		}
 
-		if (clicked_without_modifying) {
-			//Create a new ShapesModifyHistoryItem so that the modification of the shape can be undone.
-			doc.History.PushNewItem (
-							new ShapesModifyHistoryItem (this, owner.Icon, ShapeName + " " + Translations.GetString ("Modified")));
-
-			clicked_without_modifying = false;
-		}
+		//Create a new ShapesModifyHistoryItem so that the modification of the shape can be undone.
+		PushModifyHistoryOnce (doc, Translations.GetString ("Modified"));
 
 		List<ControlPoint> controlPoints = SelectedShapeEngine!.ControlPoints; // NRT - Code assumes this is not-null
 

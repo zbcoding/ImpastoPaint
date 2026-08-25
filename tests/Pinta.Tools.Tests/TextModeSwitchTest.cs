@@ -63,6 +63,9 @@ internal sealed class TextModeSwitchTest : ToolsTestHarness
 	private static ToolBarDropDownButton TextModeButton (TextTool t)
 		=> (ToolBarDropDownButton) typeof (TextTool).GetField ("text_mode_btn", NonPublicInstance)!.GetValue (t)!;
 
+	private static ToolBarDropDownButton RasterizeModeButton (TextTool t)
+		=> (ToolBarDropDownButton) typeof (TextTool).GetField ("rasterize_mode_btn", NonPublicInstance)!.GetValue (t)!;
+
 	// Selects the object directly through the tool's own StartEditing, the same method
 	// HandleTextSelectRequested calls after it finishes switching tools/layers - sidesteps that
 	// unrelated tool-switch machinery, which this harness never fully wires up.
@@ -108,5 +111,42 @@ internal sealed class TextModeSwitchTest : ToolsTestHarness
 
 		Assert.That (obj.Engine.WrapWidth, Is.Zero,
 			"choosing Point for the object currently selected must drop its wrap width so it grows freely again");
+	}
+
+	[Test]
+	public void SwitchingDropdownToRasterFlipsTheSelectedObjectsRasterizeOnFinalize ()
+	{
+		UserLayer layer = Layer (0);
+
+		TextObject obj = new (new TextEngine ()) { RasterizeOnFinalize = false };
+		obj.Engine.InsertText ("hello");
+		layer.AddText (obj);
+
+		TextTool t = ActivateOnLayer ();
+		Select (t, obj);
+
+		RasterizeModeButton (t).SelectedIndex = 1; // Raster
+
+		Assert.That (obj.RasterizeOnFinalize, Is.True,
+			"choosing Raster for the object currently selected/being edited must flip it, not just affect future objects");
+	}
+
+	[Test]
+	public void SwitchingDropdownToObjectClearsTheSelectedObjectsRasterizeOnFinalize ()
+	{
+		UserLayer layer = Layer (0);
+
+		TextObject obj = new (new TextEngine ()) { RasterizeOnFinalize = true };
+		obj.Engine.InsertText ("hello");
+		layer.AddText (obj);
+
+		TextTool t = ActivateOnLayer ();
+		RasterizeModeButton (t).SelectedIndex = 1; // Start the toolbar in Raster, matching the object.
+		Select (t, obj);
+
+		RasterizeModeButton (t).SelectedIndex = 0; // Object
+
+		Assert.That (obj.RasterizeOnFinalize, Is.False,
+			"choosing Object for the object currently selected/being edited must flip it back to editable");
 	}
 }

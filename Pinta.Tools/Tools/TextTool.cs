@@ -295,12 +295,17 @@ public sealed class TextTool : BaseTool
 			rasterize_mode_btn.CanFocus = false;
 
 			rasterize_mode_btn.SelectedIndex = Settings.GetSetting (SettingNames.TEXT_RASTERIZE_MODE, false) ? 1 : 0;
-			//The toggle only sets the mode for the NEXT object created (stamped at creation, like the
-			//shape tool). It never re-stamps the object currently being edited: switching to Raster
-			//mid-edit must not suddenly rasterize a text object you're still typing (it stays the Object
-			//it was made as). Mirrors shapes, and keeps the keyboard on the text input while toggling.
-			rasterize_mode_btn.SelectedItemChanged += (_, _) =>
+			//Stamps the mode for the next object created, and also retroactively re-stamps the object
+			//currently selected/being edited (same convert-in-place rule as the Point/Area dropdown
+			//above) - safe because RasterizeOnFinalize is only ever read at commit, so flipping it here
+			//doesn't rasterize anything until the object is actually finalized. CanFocus=false keeps
+			//the keyboard on the text input while toggling.
+			rasterize_mode_btn.SelectedItemChanged += (_, _) => {
 				Settings.PutSetting (SettingNames.TEXT_RASTERIZE_MODE, RasterizeText);
+
+				if (current_text_object is { } obj)
+					obj.RasterizeOnFinalize = RasterizeText;
+			};
 		}
 		tb.Append (rasterize_mode_btn);
 

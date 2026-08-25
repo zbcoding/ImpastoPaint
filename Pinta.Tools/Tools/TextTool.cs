@@ -247,10 +247,10 @@ public sealed class TextTool : BaseTool
 
 			text_mode_btn.SelectedIndex = Settings.GetSetting (SettingNames.TEXT_MODE, 0);
 
-			//Point/Area only sets the mode for the NEXT object — AreaMode is read at creation, it
-			//never re-flows the object currently being edited (same rule as the Object/Raster "Mode"
-			//toggle below). CanFocus=false keeps the keyboard on the text input as a dropdown item is
-			//chosen, instead of letting Space re-open the menu.
+			//For a brand-new object, Point/Area only takes effect at creation — AreaMode is read
+			//there (same rule as the Object/Raster "Mode" toggle below). CanFocus=false keeps the
+			//keyboard on the text input as a dropdown item is chosen, instead of letting Space
+			//re-open the menu.
 			text_mode_btn.CanFocus = false;
 
 			// Justify only has an effect on area (flow) text, which has a fixed width to
@@ -258,6 +258,18 @@ public sealed class TextTool : BaseTool
 			text_mode_btn.SelectedItemChanged += (_, _) => {
 				if (justify_alignment_btn is not null)
 					justify_alignment_btn.Sensitive = AreaMode;
+
+				// Retroactively flip the object currently selected/being edited too, so the dropdown
+				// also works as a convert-in-place control: Point -> Area boxes it at its current
+				// width (no jump); Area -> Point drops the box and lets it grow free again.
+				if (current_text_object is { } obj) {
+					if (AreaMode && obj.Engine.WrapWidth == 0)
+						obj.Engine.WrapWidth = Math.Max (MinAreaWidth, obj.TextBounds.Width);
+					else if (!AreaMode && obj.Engine.WrapWidth != 0)
+						obj.Engine.WrapWidth = 0;
+
+					RedrawText (is_editing);
+				}
 			};
 		}
 

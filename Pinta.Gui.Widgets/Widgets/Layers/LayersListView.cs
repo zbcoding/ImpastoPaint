@@ -404,31 +404,54 @@ public sealed partial class LayersListView
 		return true;
 	}
 
-	// True when the store already holds one row per visible object/mask slot in the same order and
-	// kind as a fresh populate would produce — i.e. repopulating would change nothing structural.
+	// True when the store already holds one row per visible object/mask slot, in the same order and
+	// bound to the same underlying object, as a fresh populate would produce — i.e. repopulating
+	// would change nothing structural. Walks layer.Objects the same way PopulateChildModel does
+	// (skipping objects that get no row) so store position i is compared against the object that
+	// actually produced it, not against whatever sits at raw index i in the unfiltered list — an
+	// earlier version compared by raw position, which drifted out of alignment the moment any
+	// object in the middle of the list had no row (e.g. a rasterize-on-finalize shape or text), and
+	// compared only kind rather than identity, so a store row could go on pointing at a stale
+	// object of the same kind (e.g. text A swapped for text B at the same slot) without being
+	// caught here.
 	private static bool ChildLayoutMatches (Gio.ListStore store, UserLayer layer)
 	{
-		int expected = 0;
-		if (layer.HasMask)
-			expected++;
-		expected += layer.Objects.Count (UserLayer.GetsSubRow);
+		uint i = 0;
 
-		if (store.GetNItems () != (uint) expected)
-			return false;
+		if (layer.HasMask) {
+			if (i >= store.GetNItems () || store.GetObject (i) is not LayersListViewItem { IsMaskRow: true })
+				return false;
+			i++;
+		}
 
-		for (uint i = 0; i < store.GetNItems (); ++i) {
+		for (int oi = layer.Objects.Count - 1; oi >= 0; --oi) {
+			ILayerObject obj = layer.Objects[oi];
+			if (!UserLayer.GetsSubRow (obj))
+				continue;
+
+			if (i >= store.GetNItems ())
+				return false;
+
 			LayersListViewItem? existing = store.GetObject (i) as LayersListViewItem;
-			ILayerObject obj = layer.Objects[layer.Objects.Count - 1 - (int) i - (layer.HasMask ? 1 : 0)];
-			bool kindMatches = obj switch {
-				TextObject text => !text.RasterizeOnFinalize && existing?.TextObject is not null,
-				ShapeObject shape => !shape.RasterizeOnFinalize && existing?.ShapeObject is not null,
-				ILayerModifierNode => existing?.ModifierNode is not null,
+			// Text and modifier nodes keep their own identity across a rebuild, so compare by
+			// reference. Shapes don't: ShapeEngineCollection.Store rebuilds ShapeObjects with new
+			// instances on every persist (see LayersListViewItem.ObjectIndex), so a live drag would
+			// force a full repopulate - and the widget-recreation/scroll-bounce this check exists to
+			// avoid - on every mouse-move if shapes were compared by identity too. Kind is the best
+			// available check for them.
+			bool matches = obj switch {
+				TextObject text => ReferenceEquals (existing?.TextObject, text),
+				ShapeObject shape => existing?.ShapeObject is not null,
+				ILayerModifierNode node => ReferenceEquals (existing?.ModifierNode, node),
 				_ => false,
 			};
-			if (!kindMatches)
+			if (!matches)
 				return false;
+
+			i++;
 		}
-		return true;
+
+		return i == store.GetNItems ();
 	}
 
 	// The layer holds no objects: drop its child model and replace the row so it stops being

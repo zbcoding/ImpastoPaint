@@ -90,6 +90,14 @@ public sealed class EllipseEngine : ShapeEngine
 	/// </summary>
 	public override void RotateWholeShape (PointD pivot, double radians)
 	{
+		// A full ellipse keeps its shape in four axis-aligned bounding-box corners, and those stop
+		// describing an ellipse the moment they turn - regenerated, they are just the rotated
+		// quadrilateral they now form, which with corner tensions of zero draws as a rectangle.
+		// Convert to the segmented form first (four anchors on the ellipse itself, plus the frozen
+		// frame they came from), so the rotation below carries a real ellipse.
+		if (!isPartial)
+			ConvertToSegmentedEllipse (ControlPoints.Count > 0 ? ControlPoints[0].Tension : 0d);
+
 		base.RotateWholeShape (pivot, radians);
 		if (!isPartial)
 			return;
@@ -255,36 +263,41 @@ public sealed class EllipseEngine : ShapeEngine
 	/// </summary>
 	public int ConvertToSegmentedEllipseAndInsert (PointD insertPos, double defaultTension)
 	{
-		// If already partial, just insert by angle into existing sorted list.
-		if (isPartial && partialRx > 0 && partialRy > 0) {
-			return InsertIntoPartialEllipse (insertPos, defaultTension);
-		}
-
-		if (!TryGetEllipseGeometry (out _, out _, out PointD c, out double r_x, out double r_y))
+		if (!ConvertToSegmentedEllipse (defaultTension))
 			return -1;
 
-		// Store original geometry for partial-arc preservation.
-		isPartial = true;
-		partialCenter = c;
-		partialRx = r_x;
-		partialRy = r_y;
+		return InsertIntoPartialEllipse (insertPos, defaultTension);
+	}
 
-		// 4 anchors on the ellipse (angle order, screen Y+ down: right 0°, bottom 90°, left 180°, top 270°)
-		List<ControlPoint> all = [
+	/// <summary>
+	/// Replaces a full ellipse's four bounding-box corners with four anchors on the ellipse itself
+	/// (right, bottom, left, top) and freezes the frame they came from, so the shape survives
+	/// anything that moves its control points. A no-op once the shape is already segmented; false
+	/// when the control points describe no ellipse to convert.
+	/// </summary>
+	private bool ConvertToSegmentedEllipse (double defaultTension)
+	{
+		if (isPartial && partialRx > 0 && partialRy > 0)
+			return true;
+
+		if (!TryGetEllipseGeometry (out _, out _, out PointD c, out double r_x, out double r_y))
+			return false;
+
+		SetPartialGeometry (c, r_x, r_y);
+
+		// Angle order, screen Y+ down: right 0°, bottom 90°, left 180°, top 270°.
+		List<ControlPoint> anchors = [
 			new (new PointD (c.X + r_x, c.Y), defaultTension),
 			new (new PointD (c.X, c.Y + r_y), defaultTension),
 			new (new PointD (c.X - r_x, c.Y), defaultTension),
 			new (new PointD (c.X, c.Y - r_y), defaultTension),
 		];
 
-		int insertIdx = GetInsertionIndexByAngle (all, c, r_x, r_y, insertPos);
-		all.Insert (insertIdx, new ControlPoint (new PointD (insertPos.X, insertPos.Y), defaultTension));
-
 		ControlPoints.Clear ();
-		foreach (var cp in all)
+		foreach (ControlPoint cp in anchors)
 			ControlPoints.Add (cp);
 
-		return insertIdx;
+		return true;
 	}
 
 	private int InsertIntoPartialEllipse (PointD insertPos, double defaultTension)

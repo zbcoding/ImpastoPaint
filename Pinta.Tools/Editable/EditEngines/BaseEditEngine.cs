@@ -229,7 +229,6 @@ public abstract class BaseEditEngine
 	protected PointD last_mouse_pos = new (0d, 0d);
 
 	private bool moving_whole_shape = false;
-	private PointD last_shape_move_point;
 
 	// Where the whole-shape drag was grabbed, and where the shape's bounding box
 	// sat at that moment. The drag is tracked against these rather than frame to
@@ -1321,7 +1320,6 @@ public abstract class BaseEditEngine
 		clicked_without_modifying = true;
 
 		shape_move_grab_point = e.UnsnappedPointDouble;
-		last_shape_move_point = shape_move_grab_point;
 		shape_move_start_bounds = ActiveShapeEngine is null
 			? default
 			: ShapeBounds (ActiveShapeEngine);
@@ -1477,8 +1475,6 @@ public abstract class BaseEditEngine
 			if (dx != 0d || dy != 0d) {
 				// One shared, transform-equivariant move - see the rotate branch.
 				ActiveShapeEngine.TranslateWholeShape (dx, dy);
-
-				last_shape_move_point = dragPoint;
 			}
 
 			DrawActiveShape (false, false, true, shiftKey, false, e.IsControlPressed);

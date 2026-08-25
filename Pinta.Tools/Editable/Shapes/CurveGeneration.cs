@@ -111,7 +111,8 @@ public static class CurveGeneration
 	/// points: one cubic Bezier per segment, the tangents above as its control points, plus the
 	/// wrap-around segment when the shape is closed. Shared by the line-curve engines and the
 	/// segmented ellipse, which must stay pixel-identical to each other - a click counts as on a
-	/// shape's edge by its distance to these points.
+	/// shape's edge by its distance to these points. Needs at least two control points; the
+	/// engines handle their own shorter chains, which have no neighbours to take a tangent from.
 	/// </summary>
 	public static IEnumerable<GeneratedPoint> CardinalSpline (IReadOnlyList<ControlPoint> controlPoints, bool closed)
 	{

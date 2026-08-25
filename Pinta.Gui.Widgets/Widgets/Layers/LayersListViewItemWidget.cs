@@ -139,8 +139,9 @@ public sealed partial class LayersListViewItem
 	/// Whether this object row is the bottom one under its layer, which ends the hierarchy line with
 	/// an elbow instead of carrying it on down. Object rows are listed top-first, so the bottom row is
 	/// the one at index 0 of the layer's object list.
-	/// ponytail: index 0 may be a rasterize-on-finalize shape that gets no row, in which case the line
-	/// runs one row too far; give the row its position in the child model if that ever shows.
+	/// ponytail: index 0 may be a rasterize-on-finalize shape or text object that gets no row, in
+	/// which case the line runs one row too far; give the row its position in the child model if that
+	/// ever shows.
 	/// </summary>
 	public bool IsLastObjectRow
 		=> IsObjectRow

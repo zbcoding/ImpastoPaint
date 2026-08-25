@@ -143,18 +143,20 @@ public sealed partial class LayersListView
 			store.Append (LayersListViewItem.NewMaskRow (active_document, layer));
 
 		// The unified z-ordered object list — shapes and text interleaved. Skip Rasterize-on-finalize
-		// shapes: they are transient and fuse the moment you move on; showing them as a sub-node that
-		// then vanishes is confusing. ObjectIndex is the position in layer.Objects so cross-kind DnD
-		// reorder (text under shapes) maps straight onto the list.
+		// shapes/text (see UserLayer.GetsSubRow): they are transient and fuse the moment you move on;
+		// showing them as a sub-node that then vanishes is confusing. ObjectIndex is the position in
+		// layer.Objects so cross-kind DnD reorder (text under shapes) maps straight onto the list.
 		//
 		// Walked back to front, so the object drawn on top is the FIRST row — the same convention the
 		// layer rows use. Listing them in list order instead put the topmost object at the bottom of
 		// the sub-list, so dragging a row to the top of the group sent it to the back of the z-order:
 		// the canvas was right and the list was upside down.
 		for (int i = layer.Objects.Count - 1; i >= 0; --i) {
+			if (!UserLayer.GetsSubRow (layer.Objects[i]))
+				continue;
 			if (layer.Objects[i] is TextObject text)
 				store.Append (LayersListViewItem.NewTextObject (active_document, layer, text, i));
-			else if (layer.Objects[i] is ShapeObject shape && !shape.RasterizeOnFinalize)
+			else if (layer.Objects[i] is ShapeObject shape)
 				store.Append (LayersListViewItem.NewShapeObject (active_document, layer, shape, i));
 			else if (layer.Objects[i] is ILayerModifierNode node)
 				store.Append (LayersListViewItem.NewModifierNode (active_document, layer, node, i));
@@ -409,8 +411,7 @@ public sealed partial class LayersListView
 		int expected = 0;
 		if (layer.HasMask)
 			expected++;
-		expected += layer.Objects.Count (o =>
-			o is TextObject || (o is ShapeObject s && !s.RasterizeOnFinalize) || o is ILayerModifierNode);
+		expected += layer.Objects.Count (UserLayer.GetsSubRow);
 
 		if (store.GetNItems () != (uint) expected)
 			return false;
@@ -419,7 +420,7 @@ public sealed partial class LayersListView
 			LayersListViewItem? existing = store.GetObject (i) as LayersListViewItem;
 			ILayerObject obj = layer.Objects[layer.Objects.Count - 1 - (int) i - (layer.HasMask ? 1 : 0)];
 			bool kindMatches = obj switch {
-				TextObject => existing?.IsObjectRow == true && existing.TextObject is not null,
+				TextObject text => !text.RasterizeOnFinalize && existing?.TextObject is not null,
 				ShapeObject shape => !shape.RasterizeOnFinalize && existing?.ShapeObject is not null,
 				ILayerModifierNode => existing?.ModifierNode is not null,
 				_ => false,

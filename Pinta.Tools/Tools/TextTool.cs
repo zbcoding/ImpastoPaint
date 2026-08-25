@@ -298,13 +298,18 @@ public sealed class TextTool : BaseTool
 			//Stamps the mode for the next object created, and also retroactively re-stamps the object
 			//currently selected/being edited (same convert-in-place rule as the Point/Area dropdown
 			//above) - safe because RasterizeOnFinalize is only ever read at commit, so flipping it here
-			//doesn't rasterize anything until the object is actually finalized. CanFocus=false keeps
-			//the keyboard on the text input while toggling.
+			//doesn't rasterize anything until the object is actually finalized. A rasterize-on-finalize
+			//object gets no sub-row in the layers dock (it's transient), so switching to Raster must
+			//drop its row and switching back to Object must bring it back - RaiseObjectsChanged is the
+			//same seam the object's own creation uses to show up without a history push.
+			//CanFocus=false keeps the keyboard on the text input while toggling.
 			rasterize_mode_btn.SelectedItemChanged += (_, _) => {
 				Settings.PutSetting (SettingNames.TEXT_RASTERIZE_MODE, RasterizeText);
 
-				if (current_text_object is { } obj)
+				if (current_text_object is { } obj) {
 					obj.RasterizeOnFinalize = RasterizeText;
+					LayerObjectSelection.RaiseObjectsChanged ();
+				}
 			};
 		}
 		tb.Append (rasterize_mode_btn);

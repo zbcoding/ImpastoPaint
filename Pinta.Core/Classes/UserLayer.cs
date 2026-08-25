@@ -372,7 +372,19 @@ public sealed class UserLayer : Layer
 	}
 
 	public bool HasObjectSubNodes
-		=> Objects.Any (o => o is not ShapeObject s || !s.RasterizeOnFinalize);
+		=> Objects.Any (GetsSubRow);
+
+	/// <summary>
+	/// Whether <paramref name="obj"/> gets its own row in the layers dock. A rasterize-on-finalize
+	/// shape or text object is transient — it fuses into the layer's raster the moment editing moves
+	/// on, so showing it as a sub-node that then vanishes is confusing. Shared by the dock's row
+	/// builder (Pinta.Gui.Widgets) and this "is there anything to show" check so they never disagree.
+	/// </summary>
+	public static bool GetsSubRow (ILayerObject o) => o switch {
+		ShapeObject s => !s.RasterizeOnFinalize,
+		TextObject t => !t.RasterizeOnFinalize,
+		_ => true,
+	};
 
 	/// <summary>
 	/// Any live object at all, including transient rasterize-on-finalize shapes — the test for "is

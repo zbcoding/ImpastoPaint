@@ -149,4 +149,38 @@ internal sealed class TextModeSwitchTest : ToolsTestHarness
 		Assert.That (obj.RasterizeOnFinalize, Is.False,
 			"choosing Object for the object currently selected/being edited must flip it back to editable");
 	}
+
+	/// <summary>
+	/// A rasterize-on-finalize text object is transient (see RasterizeOnFinalizeSubRowTest in
+	/// Pinta.Core.Tests), so it must not get a sub-row in the layers dock - switching the currently
+	/// selected/edited object to Raster must tell the dock to drop its row, the same seam the object's
+	/// own creation uses to appear without a history push.
+	/// </summary>
+	[Test]
+	public void SwitchingDropdownToRasterNotifiesTheDockToDropTheObjectsSubRow ()
+	{
+		UserLayer layer = Layer (0);
+
+		TextObject obj = new (new TextEngine ()) { RasterizeOnFinalize = false };
+		obj.Engine.InsertText ("hello");
+		layer.AddText (obj);
+
+		// Force a known baseline: the setting persists across tests, so the button may already
+		// start on Raster, making the SelectedIndex = 1 below a no-op that never fires the event.
+		TextTool t = ActivateOnLayer ();
+		RasterizeModeButton (t).SelectedIndex = 0;
+		Select (t, obj);
+
+		bool raised = false;
+		void Handler () => raised = true;
+		LayerObjectSelection.ObjectsChanged += Handler;
+		try {
+			RasterizeModeButton (t).SelectedIndex = 1; // Raster
+		} finally {
+			LayerObjectSelection.ObjectsChanged -= Handler;
+		}
+
+		Assert.That (raised, Is.True,
+			"the dock must be told to refresh so the now-transient object's sub-row disappears");
+	}
 }

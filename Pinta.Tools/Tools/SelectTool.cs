@@ -119,6 +119,11 @@ public abstract class SelectTool : BaseTool
 
 	protected override void OnMouseUp (Document document, ToolMouseEventArgs e)
 	{
+		// A mouse-up can arrive for a tool instance that never saw the matching mouse-down, e.g. the
+		// user switched tools mid-drag. There is no drag to finish or roll back, so just bail out.
+		if (!handle.IsDragging)
+			return;
+
 		PointD adjusted = AdjustMousePosition (document, e.PointDouble);
 		if (handle.HasDragged (adjusted)) {
 			ReDraw (document);
@@ -163,6 +168,25 @@ public abstract class SelectTool : BaseTool
 		if (document is null) return;
 
 		LoadFromDocument (document);
+	}
+
+	protected override void OnDeactivated (Document? document, BaseTool? newTool)
+	{
+		base.OnDeactivated (document, newTool);
+
+		// Switching tools mid-drag used to leave the handle stuck dragging forever - every
+		// OnMouseDown afterwards bailed out at its `if (handle.IsDragging) return;` guard, so the
+		// select tool went dead for the rest of the session. Treat an interrupted drag like the
+		// no-movement case in OnMouseUp: roll back and end it.
+		if (!handle.IsDragging)
+			return;
+
+		if (hist != null) {
+			hist.Undo ();
+			hist = null;
+		}
+
+		handle.EndDrag ();
 	}
 
 	protected override void OnSaveSettings (ISettingsService settings)

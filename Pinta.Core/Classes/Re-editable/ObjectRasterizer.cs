@@ -283,9 +283,9 @@ public static class ObjectRasterizer
 	// When part of a larger action (e.g. a resize), the bake is recorded into that action's compound
 	// item so the whole thing undoes in one step; otherwise it's its own history step. Either way, the
 	// baked objects' on-canvas editing chrome (the text tool's dashed re-edit rectangles, handle dots
-	// and "Obj." badges) lives on the tool layer, which nothing else here touches — clear it so it
+	// and "Obj." badges) lives on the overlay layer, which nothing else here touches — clear it so it
 	// doesn't hover over pixels that are no longer objects. The active tool redraws its own overlay on
-	// the next edit. ponytail: clear from Core rather than adding a per-tool seam; the tool layer is
+	// the next edit. ponytail: clear from Core rather than adding a per-tool seam; the overlay layer is
 	// transient chrome by definition.
 	private static void PushBakeHistory (Document doc, IWorkspaceService workspace, CompoundHistoryItem? historyGroup, BaseHistoryItem item)
 	{
@@ -294,7 +294,7 @@ public static class ObjectRasterizer
 		else
 			doc.History.PushNewItem (item);
 
-		doc.Layers.ToolLayer.Clear ();
+		doc.Layers.OverlayLayer.Clear ();
 		LayerObjectSelection.RaiseObjectsChanged ();
 		workspace.Invalidate ();
 	}

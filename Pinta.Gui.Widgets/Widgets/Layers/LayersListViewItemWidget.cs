@@ -297,9 +297,9 @@ public sealed partial class LayersListViewItem
 			Resources.Icons.LayerDelete,
 			Translations.GetString ("Delete Object"));
 
-		// The object's on-canvas editing chrome (handles, re-edit rectangles) lives on the tool layer
-		// and would otherwise hover over an object that no longer exists.
-		document.Layers.ToolLayer.Clear ();
+		// The object's on-canvas editing chrome (handles, re-edit rectangles) lives on the overlay
+		// layer and would otherwise hover over an object that no longer exists.
+		document.Layers.OverlayLayer.Clear ();
 		LayerObjectSelection.RaiseObjectsChanged ();
 	}
 

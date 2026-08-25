@@ -164,7 +164,25 @@ public sealed class EllipseEngine : ShapeEngine
 		return false;
 	}
 
+	/// <summary>
+	/// The ellipse inscribed in the shape's four control points, or false when they are not a
+	/// window-aligned rectangle at all - and also when the rectangle has no area, since callers
+	/// that place nodes or arcs on the ellipse have nothing to place them on.
+	/// </summary>
 	public bool TryGetEllipseGeometry (
+		out PointD topLeft,
+		out PointD bottomRight,
+		out PointD center,
+		out double r_x,
+		out double r_y)
+		=> TryGetEllipseFrame (out topLeft, out bottomRight, out center, out r_x, out r_y) && r_x > 0 && r_y > 0;
+
+	/// <summary>
+	/// The same frame without the area requirement: a flattened rectangle still has a centre and
+	/// a (zero) radius, and rendering keeps drawing it as the degenerate ellipse it is while the
+	/// user drags it open.
+	/// </summary>
+	private bool TryGetEllipseFrame (
 		out PointD topLeft,
 		out PointD bottomRight,
 		out PointD center,
@@ -176,6 +194,8 @@ public sealed class EllipseEngine : ShapeEngine
 		center = default;
 		r_x = r_y = 0;
 
+		//An ellipse requires exactly 4 control points, and they must compose a perfect rectangle
+		//parallel/perpendicular to the window.
 		if (ControlPoints.Count != 4)
 			return false;
 
@@ -187,33 +207,43 @@ public sealed class EllipseEngine : ShapeEngine
 		if (!IsPerfectRectangle (cp0, cp1, cp2, cp3))
 			return false;
 
+		//The 4 control points are adjacent to each other by index and position, e.g.: 0, 1, 2, 3 -
+		//so which of them is the top left, and which the bottom right, follows from comparing
+		//consecutive points.
 		topLeft = cp0;
 		bottomRight = cp0;
 
 		if (cp1.X < topLeft.X || cp1.Y < topLeft.Y) {
+			//The second point is either more left or more up than the first.
 			topLeft = cp1;
 			if (cp2.X < topLeft.X || cp2.Y < topLeft.Y) {
+				//The third point is either more left or more up than the second; the first point
+				//remains the bottom right.
 				topLeft = cp2;
 			} else {
+				//The second point remains the top left.
 				bottomRight = cp3;
 			}
 		} else {
+			//The second point is neither more left nor more up than the first.
 			PointD secondPoint = cp1;
 			if (cp2.X < secondPoint.X || cp2.Y < secondPoint.Y) {
+				//The third point is either more left or more up than the second.
 				topLeft = cp3;
 				bottomRight = cp1;
 			} else {
+				//The first point remains the top left.
 				bottomRight = cp2;
 			}
 		}
 
-		double width = bottomRight.X - topLeft.X;
-		double height = bottomRight.Y - topLeft.Y;
-		r_x = width / 2d;
-		r_y = height / 2d;
+		r_x = (bottomRight.X - topLeft.X) / 2d; //1/2 of the bounding Rectangle Width.
+		r_y = (bottomRight.Y - topLeft.Y) / 2d; //1/2 of the bounding Rectangle Height.
+
+		//The middle of the bounding Rectangle.
 		center = new PointD (topLeft.X + r_x, topLeft.Y + r_y);
 
-		return r_x > 0 && r_y > 0;
+		return true;
 	}
 
 	/// <summary>
@@ -476,74 +506,10 @@ public sealed class EllipseEngine : ShapeEngine
 
 	private IEnumerable<GeneratedPoint> CreatePoints ()
 	{
-		//An ellipse requires exactly 4 control points in order to draw anything.
-		if (ControlPoints.Count != 4)
+		//Rendering keeps drawing a rectangle that has been flattened to a line, so it asks for the
+		//frame rather than the ellipse: a zero radius simply collapses the arcs below onto it.
+		if (!TryGetEllipseFrame (out _, out _, out PointD c, out double r_x, out double r_y))
 			yield break;
-
-		//This is mostly for time efficiency/optimization, but it can also help readability.
-		PointD
-			cp0 = ControlPoints[0].Position,
-			cp1 = ControlPoints[1].Position,
-			cp2 = ControlPoints[2].Position,
-			cp3 = ControlPoints[3].Position;
-
-		//An ellipse also requires that all 4 control points compose a perfect rectangle parallel/perpendicular to the window.
-		//So, confirm that it is indeed a perfect rectangle.
-		bool perfectRectangle = IsPerfectRectangle (cp0, cp1, cp2, cp3);
-
-		if (!perfectRectangle)
-			yield break;
-
-		//It is expected that the 4 control points always form a perfect rectangle parallel/perpendicular to the window.
-		//However, we must first determine which control point is at the top left and which is at the bottom right.
-		//It is also expected that the 4 control points are adjacent to each other by index and position, e.g.: 0, 1, 2, 3.
-
-		PointD topLeft = cp0;
-		PointD bottomRight = cp0;
-
-		//Compare the second point with the first.
-		if (cp1.X < topLeft.X || cp1.Y < topLeft.Y) {
-			//The second point is either more left or more up than the first.
-
-			topLeft = cp1;
-
-			//Compare the third point with the second.
-			if (cp2.X < topLeft.X || cp2.Y < topLeft.Y) {
-				//The third point is either more left or more up than the second.
-
-				topLeft = cp2;
-
-				//The first point remains the bottom right.
-			} else {
-				//The third point is neither more left nor more up than the second.
-
-				//The second point remains the top left.
-
-				bottomRight = cp3;
-			}
-		} else {
-			//The second point is neither more left nor more up than the first.
-
-			PointD secondPoint = cp1;
-
-			//Compare the third point with the second.
-			if (cp2.X < secondPoint.X || cp2.Y < secondPoint.Y) {
-				//The third point is either more left or more up than the second.
-
-				topLeft = cp3;
-				bottomRight = cp1;
-			} else {
-				//The third point is neither more left nor more up than the second.
-
-				//The first point remains the top left.
-
-				bottomRight = cp2;
-			}
-		}
-
-		//Now we can calculate the width and height.
-		double width = bottomRight.X - topLeft.X;
-		double height = bottomRight.Y - topLeft.Y;
 
 		//Some elliptic math code taken from Cairo Extensions, and some from DocumentSelection code written for GSoC 2013.
 
@@ -554,14 +520,6 @@ public sealed class EllipseEngine : ShapeEngine
 		//the value of tInterval, the higher number of intermediate Points
 		//that will be calculated and stored into the Polygon collection.
 		double tInterval = .02d;
-
-		double r_x = width / 2d; //1/2 of the bounding Rectangle Width.
-		double r_y = height / 2d; //1/2 of the bounding Rectangle Height.
-
-		//The middle of the bounding Rectangle...
-		PointD c = new (
-			X: topLeft.X + r_x, // ...Horizontally speaking
-			Y: topLeft.Y + r_y); // ...Vertically speaking
 
 		const double c_1 = 0.5522847498307933984022516322796d; //tan(pi / 8d) * 4d / 3d ~= 0.5522847498307933984022516322796d
 

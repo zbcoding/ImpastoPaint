@@ -38,19 +38,42 @@ public sealed class PdnFormat : IImageImporter
 	// Internal core that works with any seekable stream – useful for tests without Gio
 	public Document ImportCore (Stream inputStream, Gio.File? file = null)
 	{
-		// Ensure seekable
-		MemoryStream msFull;
+		MemoryStream msFull = EnsureSeekableCopy (inputStream);
+
+		using (BinaryReader reader = new (msFull, Encoding.UTF8, leaveOpen: true))
+			ReadHeader (reader);
+
+		(ClassRecord docRecord, long afterNrbfPos) = DecodeNrbf (msFull);
+
+		int docWidth = docRecord.GetInt32 ("width");
+		int docHeight = docRecord.GetInt32 ("height");
+
+		if (docWidth <= 0 || docHeight <= 0 || docWidth > 20000 || docHeight > 20000)
+			throw new InvalidDataException ($"Invalid PDN dimensions {docWidth}x{docHeight}");
+
+		List<LayerInfo> layerInfos = ReadLayerInfos (docRecord);
+
+		msFull.Position = afterNrbfPos;
+		List<byte[]> layerPixelDatas = ReadAllLayerPixelData (msFull, layerInfos);
+
+		return BuildDocument (docWidth, docHeight, file, layerInfos, layerPixelDatas);
+	}
+
+	private static MemoryStream EnsureSeekableCopy (Stream inputStream)
+	{
 		if (inputStream is MemoryStream mem && mem.CanSeek) {
-			msFull = mem;
-			msFull.Position = 0;
-		} else {
-			msFull = new MemoryStream ();
-			inputStream.CopyTo (msFull);
-			msFull.Position = 0;
+			mem.Position = 0;
+			return mem;
 		}
 
-		using BinaryReader reader = new (msFull, Encoding.UTF8, leaveOpen: true);
+		MemoryStream copy = new ();
+		inputStream.CopyTo (copy);
+		copy.Position = 0;
+		return copy;
+	}
 
+	private static void ReadHeader (BinaryReader reader)
+	{
 		byte[] magic = reader.ReadBytes (4);
 		if (magic.Length != 4 || Encoding.ASCII.GetString (magic) != "PDN3")
 			throw new InvalidDataException ("Invalid PDN file magic");
@@ -72,10 +95,11 @@ public sealed class PdnFormat : IImageImporter
 		byte[] marker = reader.ReadBytes (2);
 		if (marker.Length != 2 || marker[0] != 0x00 || marker[1] != 0x01)
 			throw new InvalidDataException ("Invalid PDN marker after header");
+	}
 
+	private static (ClassRecord DocRecord, long AfterNrbfPosition) DecodeNrbf (MemoryStream msFull)
+	{
 		long nrbfStartPos = msFull.Position;
-		SerializationRecord rootRecord;
-		long afterNrbfPos;
 
 		// Extract remaining bytes (NRBF + chunk data) into a separate array
 		// to avoid issues with GetBuffer() on non-expandable streams and to keep msFull intact
@@ -84,6 +108,8 @@ public sealed class PdnFormat : IImageImporter
 		byte[] remBytes = new byte[remLen];
 		Array.Copy (fullArray, nrbfStartPos, remBytes, 0, remLen);
 
+		SerializationRecord rootRecord;
+		long afterNrbfPos;
 		using (MemoryStream nrbfSlice = new (remBytes, writable: false)) {
 			rootRecord = NrbfDecoder.Decode (nrbfSlice, leaveOpen: true);
 			afterNrbfPos = nrbfStartPos + nrbfSlice.Position;
@@ -92,12 +118,11 @@ public sealed class PdnFormat : IImageImporter
 		ClassRecord docRecord = rootRecord as ClassRecord
 			?? throw new InvalidDataException ("PDN root is not a class record");
 
-		int docWidth = docRecord.GetInt32 ("width");
-		int docHeight = docRecord.GetInt32 ("height");
+		return (docRecord, afterNrbfPos);
+	}
 
-		if (docWidth <= 0 || docHeight <= 0 || docWidth > 20000 || docHeight > 20000)
-			throw new InvalidDataException ($"Invalid PDN dimensions {docWidth}x{docHeight}");
-
+	private static List<LayerInfo> ReadLayerInfos (ClassRecord docRecord)
+	{
 		ClassRecord layersRec = docRecord.GetSerializationRecord ("layers") as ClassRecord
 			?? throw new InvalidDataException ("Missing layers");
 		int layersSize = layersRec.GetInt32 ("ArrayList+_size");
@@ -175,75 +200,91 @@ public sealed class PdnFormat : IImageImporter
 			});
 		}
 
-		// Now read chunked pixel data
-		msFull.Position = afterNrbfPos;
+		return layerInfos;
+	}
+
+	private static List<byte[]> ReadAllLayerPixelData (MemoryStream msFull, List<LayerInfo> layerInfos)
+	{
 		List<byte[]> layerPixelDatas = new (layerInfos.Count);
+		foreach (LayerInfo info in layerInfos)
+			layerPixelDatas.Add (ReadLayerPixelData (msFull, info));
+		return layerPixelDatas;
+	}
 
-		foreach (LayerInfo info in layerInfos) {
-			int fmt = msFull.ReadByte ();
-			if (fmt == -1)
-				throw new EndOfStreamException ("Unexpected EOF reading formatVersion");
+	private static byte[] ReadLayerPixelData (Stream stream, LayerInfo info)
+	{
+		int fmt = stream.ReadByte ();
+		if (fmt == -1)
+			throw new EndOfStreamException ("Unexpected EOF reading formatVersion");
 
-			byte[] chunkSizeBytes = new byte[4];
-			if (msFull.Read (chunkSizeBytes, 0, 4) != 4)
-				throw new EndOfStreamException ();
-			if (BitConverter.IsLittleEndian) Array.Reverse (chunkSizeBytes);
-			uint chunkSize = BitConverter.ToUInt32 (chunkSizeBytes, 0);
-			if (chunkSize == 0 || chunkSize > 10_000_000)
-				throw new InvalidDataException ($"Invalid chunkSize {chunkSize}");
+		uint chunkSize = ReadUInt32BigEndian (stream);
+		if (chunkSize == 0 || chunkSize > 10_000_000)
+			throw new InvalidDataException ($"Invalid chunkSize {chunkSize}");
 
-			long length = info.Length;
-			uint chunkCount = (uint) ((length + chunkSize - 1) / chunkSize);
-			byte[] data = new byte[length];
+		long length = info.Length;
+		uint chunkCount = (uint) ((length + chunkSize - 1) / chunkSize);
+		byte[] data = new byte[length];
 
-			for (uint c = 0; c < chunkCount; c++) {
-				byte[] cnBytes = new byte[4];
-				if (msFull.Read (cnBytes, 0, 4) != 4) throw new EndOfStreamException ();
-				if (BitConverter.IsLittleEndian) Array.Reverse (cnBytes);
-				uint chunkNumber = BitConverter.ToUInt32 (cnBytes, 0);
+		for (uint c = 0; c < chunkCount; c++)
+			ReadChunkInto (stream, data, chunkSize, chunkCount, length, gzipCompressed: fmt == 0);
 
-				byte[] dsBytes = new byte[4];
-				if (msFull.Read (dsBytes, 0, 4) != 4) throw new EndOfStreamException ();
-				if (BitConverter.IsLittleEndian) Array.Reverse (dsBytes);
-				uint dataSize = BitConverter.ToUInt32 (dsBytes, 0);
+		return data;
+	}
 
-				if (chunkNumber >= chunkCount)
-					throw new InvalidDataException ($"Chunk number {chunkNumber} out of bounds {chunkCount}");
-				if (dataSize > 20_000_000)
-					throw new InvalidDataException ($"Invalid dataSize {dataSize}");
+	private static uint ReadUInt32BigEndian (Stream stream)
+	{
+		byte[] bytes = new byte[4];
+		if (stream.Read (bytes, 0, 4) != 4)
+			throw new EndOfStreamException ();
+		if (BitConverter.IsLittleEndian) Array.Reverse (bytes);
+		return BitConverter.ToUInt32 (bytes, 0);
+	}
 
-				byte[] raw = new byte[dataSize];
-				int readTotal = 0;
-				while (readTotal < dataSize) {
-					int r = msFull.Read (raw, readTotal, (int) dataSize - readTotal);
-					if (r == 0) throw new EndOfStreamException ();
-					readTotal += r;
-				}
+	private static void ReadChunkInto (Stream stream, byte[] data, uint chunkSize, uint chunkCount, long length, bool gzipCompressed)
+	{
+		uint chunkNumber = ReadUInt32BigEndian (stream);
+		uint dataSize = ReadUInt32BigEndian (stream);
 
-				uint actualChunkSize = Math.Min (chunkSize, (uint) (length - (long) chunkNumber * chunkSize));
-				long offset = (long) chunkNumber * chunkSize;
+		if (chunkNumber >= chunkCount)
+			throw new InvalidDataException ($"Chunk number {chunkNumber} out of bounds {chunkCount}");
+		if (dataSize > 20_000_000)
+			throw new InvalidDataException ($"Invalid dataSize {dataSize}");
 
-				if (fmt == 0) {
-					using MemoryStream comp = new (raw, writable: false);
-					using GZipStream gzip = new (comp, CompressionMode.Decompress);
-					int off = 0;
-					while (off < actualChunkSize) {
-						int toRead = (int) actualChunkSize - off;
-						int got = gzip.Read (data, (int) (offset + off), toRead);
-						if (got == 0) break;
-						off += got;
-					}
-					if (off != actualChunkSize)
-						throw new InvalidDataException ($"Decompressed size mismatch {off} vs {actualChunkSize}");
-				} else {
-					Array.Copy (raw, 0, data, offset, actualChunkSize);
-				}
-			}
-
-			layerPixelDatas.Add (data);
+		byte[] raw = new byte[dataSize];
+		int readTotal = 0;
+		while (readTotal < dataSize) {
+			int r = stream.Read (raw, readTotal, (int) dataSize - readTotal);
+			if (r == 0) throw new EndOfStreamException ();
+			readTotal += r;
 		}
 
-		// Create Pinta document
+		uint actualChunkSize = Math.Min (chunkSize, (uint) (length - (long) chunkNumber * chunkSize));
+		long offset = (long) chunkNumber * chunkSize;
+
+		if (gzipCompressed) {
+			using MemoryStream comp = new (raw, writable: false);
+			using GZipStream gzip = new (comp, CompressionMode.Decompress);
+			int off = 0;
+			while (off < actualChunkSize) {
+				int toRead = (int) actualChunkSize - off;
+				int got = gzip.Read (data, (int) (offset + off), toRead);
+				if (got == 0) break;
+				off += got;
+			}
+			if (off != actualChunkSize)
+				throw new InvalidDataException ($"Decompressed size mismatch {off} vs {actualChunkSize}");
+		} else {
+			Array.Copy (raw, 0, data, offset, actualChunkSize);
+		}
+	}
+
+	private static Document BuildDocument (
+		int docWidth,
+		int docHeight,
+		Gio.File? file,
+		List<LayerInfo> layerInfos,
+		List<byte[]> layerPixelDatas)
+	{
 		Document newDoc = new (
 			PintaCore.Actions,
 			PintaCore.Tools,
@@ -255,52 +296,55 @@ public sealed class PdnFormat : IImageImporter
 		// PDN stores bottom to top – insert in same order
 		for (int i = 0; i < layerInfos.Count; i++) {
 			LayerInfo info = layerInfos[i];
-			byte[] pixelData = layerPixelDatas[i];
 
 			UserLayer layer = newDoc.Layers.CreateLayer (info.Name);
 			layer.Opacity = info.Opacity / 255.0;
 			layer.Hidden = !info.Visible;
 			layer.BlendMode = info.BlendMode;
 
-			Span<ColorBgra> dest = layer.Surface.GetPixelData ();
-			int bpp = info.Stride * 8 / info.Width;
-
-			if (bpp == 32) {
-				// Fast path when stride == width*4 – bulk copy via bytes is okay because BGRA layout matches
-				// But we still do row-aware copy to handle potential stride padding
-				for (int y = 0; y < info.Height; y++) {
-					int srcRow = y * info.Stride;
-					int dstRow = y * info.Width;
-					for (int x = 0; x < info.Width; x++) {
-						int srcOff = srcRow + x * 4;
-						byte b = pixelData[srcOff];
-						byte g = pixelData[srcOff + 1];
-						byte r = pixelData[srcOff + 2];
-						byte a = pixelData[srcOff + 3];
-						dest[dstRow + x] = ColorBgra.FromBgra (b, g, r, a);
-					}
-				}
-			} else if (bpp == 24) {
-				for (int y = 0; y < info.Height; y++) {
-					int srcRow = y * info.Stride;
-					int dstRow = y * info.Width;
-					for (int x = 0; x < info.Width; x++) {
-						int srcOff = srcRow + x * 3;
-						byte b = pixelData[srcOff];
-						byte g = pixelData[srcOff + 1];
-						byte r = pixelData[srcOff + 2];
-						dest[dstRow + x] = ColorBgra.FromBgra (b, g, r, 255);
-					}
-				}
-			} else {
-				throw new InvalidDataException ($"Unsupported bpp {bpp}");
-			}
+			CopyPixels (info, layerPixelDatas[i], layer.Surface.GetPixelData ());
 
 			layer.Surface.MarkDirty ();
 			newDoc.Layers.Insert (layer, i);
 		}
 
 		return newDoc;
+	}
+
+	private static void CopyPixels (LayerInfo info, byte[] pixelData, Span<ColorBgra> dest)
+	{
+		int bpp = info.Stride * 8 / info.Width;
+
+		if (bpp == 32) {
+			// Fast path when stride == width*4 – bulk copy via bytes is okay because BGRA layout matches
+			// But we still do row-aware copy to handle potential stride padding
+			for (int y = 0; y < info.Height; y++) {
+				int srcRow = y * info.Stride;
+				int dstRow = y * info.Width;
+				for (int x = 0; x < info.Width; x++) {
+					int srcOff = srcRow + x * 4;
+					byte b = pixelData[srcOff];
+					byte g = pixelData[srcOff + 1];
+					byte r = pixelData[srcOff + 2];
+					byte a = pixelData[srcOff + 3];
+					dest[dstRow + x] = ColorBgra.FromBgra (b, g, r, a);
+				}
+			}
+		} else if (bpp == 24) {
+			for (int y = 0; y < info.Height; y++) {
+				int srcRow = y * info.Stride;
+				int dstRow = y * info.Width;
+				for (int x = 0; x < info.Width; x++) {
+					int srcOff = srcRow + x * 3;
+					byte b = pixelData[srcOff];
+					byte g = pixelData[srcOff + 1];
+					byte r = pixelData[srcOff + 2];
+					dest[dstRow + x] = ColorBgra.FromBgra (b, g, r, 255);
+				}
+			}
+		} else {
+			throw new InvalidDataException ($"Unsupported bpp {bpp}");
+		}
 	}
 
 	private sealed class LayerInfo

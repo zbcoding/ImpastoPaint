@@ -57,9 +57,9 @@ public abstract class ShapeTool : BaseTool
 			return
 				// Translators: {0} is 'Ctrl', or a platform-specific key such as 'Command' on macOS. {1} is the tension modifier key. {2} is the rotate gesture.
 				Translations.GetString ("Left click to draw a shape with the primary color." +
-					"\nLeft click on a shape to add a control point." +
 					"\nLeft click on a control point and drag to move it." +
-					"\nRight click on a shape and drag to move the whole shape." +
+					"\nLeft click on a shape's edge and drag to move the whole shape." +
+					"\nRight click on a shape to add a control point." +
 					"\nHold {1} while right clicking on a control point and drag to change its tension." +
 					"\nUse {2} on a control point and drag to rotate the whole shape." +
 					"\nHold Shift to snap to angles." +

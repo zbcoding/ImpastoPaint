@@ -1183,14 +1183,24 @@ public abstract class BaseEditEngine
 			return;
 		}
 
-		// A plain right click drags the whole shape (mirroring the Text tool), whether it lands on a
-		// control point or on the shape's edge. Right-clicking with the tension modifier held instead
-		// changes a control point's tension (changing_tension above). A right click into empty space
-		// does nothing.
+		// A right click on a control point drags the whole shape (mirroring the Text tool);
+		// there's no point to insert on top of an existing one. A right click on the shape's
+		// edge instead adds a new control point there. Right-clicking with the tension modifier
+		// held instead changes a control point's tension (changing_tension above). A right click
+		// into empty space does nothing.
 		if (rightButton && !changing_tension) {
-			int hitShapeIndex = clicked_control_point ? closestCPShapeIndex : (clicked_generated_point ? closestShapeIndex : -1);
-			if (hitShapeIndex >= 0) {
-				BeginWholeShapeDrag (hitShapeIndex, e);
+			if (clicked_control_point) {
+				BeginWholeShapeDrag (closestCPShapeIndex, e);
+			} else if (clicked_generated_point && curved_segments_enabled) {
+				if (ForwardToCorrespondingTool (closestShapeIndex, document, e))
+					return;
+
+				AddControlPointOnGeneratedPoint (doc, closestShapeIndex, closestPointIndex);
+				UpdateToolbarSettingsForActiveShape ();
+			} else if (clicked_generated_point) {
+				// Curved segments off: no point to add, so fall back to dragging the whole
+				// shape, same as landing on a control point above.
+				BeginWholeShapeDrag (closestShapeIndex, e);
 			} else {
 				// Right click missed the shape: don't let the drag fall through to the
 				// point-moving/tension code, which would deform the previously selected point.
@@ -1201,6 +1211,9 @@ public abstract class BaseEditEngine
 			return;
 		}
 
+		// A left click on the shape's edge drags the whole shape (mirroring the Text tool). A
+		// left click directly on a control point instead moves just that point, via the
+		// SelectedPointIndex fallback below.
 		if (!changing_tension && clicked_generated_point) {
 			//Determine if the currently active tool matches the clicked on shape's corresponding tool, and if not, switch to it.
 			if (ForwardToCorrespondingTool (closestShapeIndex, document, e))
@@ -1208,38 +1221,7 @@ public abstract class BaseEditEngine
 
 			//The currently active tool matches the clicked on shape's corresponding tool.
 
-			//Only add a node if the user isn't holding the control key down and curved segments are enabled.
-			if (!ctrlKey && curved_segments_enabled) {
-				//Create a new ShapesModifyHistoryItem so that the adding of a control point can be undone.
-				PushModifyHistory (doc, Translations.GetString ("Point Added"));
-
-				ShapeEngine targetEngine = SEngines[closestShapeIndex];
-				int insertedIdx = closestPointIndex;
-
-				// Ellipse: keep elliptical shape when adding first extra node by converting
-				// 4-corner perfect-rect to segmented closed curve that visually stays same.
-				if (targetEngine is EllipseEngine ellipse && ellipse.ControlPoints.Count == 4) {
-					// Check perfect rectangle still holds
-					var cps = ellipse.ControlPoints;
-					if (EllipseEngine.IsPerfectRectangle (cps[0].Position, cps[1].Position, cps[2].Position, cps[3].Position)) {
-						insertedIdx = ellipse.ConvertToSegmentedEllipseAndInsert (
-							new PointD (current_point.X, current_point.Y), DefaultMidPointTension);
-						if (insertedIdx < 0)
-							insertedIdx = closestPointIndex;
-					} else {
-						targetEngine.ControlPoints.Insert (closestPointIndex,
-							new ControlPoint (new PointD (current_point.X, current_point.Y), DefaultMidPointTension));
-					}
-				} else {
-					targetEngine.ControlPoints.Insert (closestPointIndex,
-						new ControlPoint (new PointD (current_point.X, current_point.Y), DefaultMidPointTension));
-				}
-
-				//These should be set after creating the history item.
-				SelectedPointIndex = insertedIdx;
-				SelectedShapeIndex = closestShapeIndex;
-			} else if (!ctrlKey && !curved_segments_enabled) {
-				// Curved segments off: side click starts a whole-shape drag (no node add).
+			if (!ctrlKey) {
 				SelectedPointIndex = 0;
 				BeginWholeShapeDrag (closestShapeIndex, e);
 			} else {
@@ -1323,6 +1305,39 @@ public abstract class BaseEditEngine
 		shape_move_start_bounds = ActiveShapeEngine is null
 			? default
 			: ShapeBounds (ActiveShapeEngine);
+	}
+
+	/// <summary>Inserts a new control point at a generated (edge) point, undoably.</summary>
+	private void AddControlPointOnGeneratedPoint (Document doc, int shapeIndex, int pointIndex)
+	{
+		//Create a new ShapesModifyHistoryItem so that the adding of a control point can be undone.
+		PushModifyHistory (doc, Translations.GetString ("Point Added"));
+
+		ShapeEngine targetEngine = SEngines[shapeIndex];
+		int insertedIdx = pointIndex;
+
+		// Ellipse: keep elliptical shape when adding first extra node by converting
+		// 4-corner perfect-rect to segmented closed curve that visually stays same.
+		if (targetEngine is EllipseEngine ellipse && ellipse.ControlPoints.Count == 4) {
+			// Check perfect rectangle still holds
+			var cps = ellipse.ControlPoints;
+			if (EllipseEngine.IsPerfectRectangle (cps[0].Position, cps[1].Position, cps[2].Position, cps[3].Position)) {
+				insertedIdx = ellipse.ConvertToSegmentedEllipseAndInsert (
+					new PointD (current_point.X, current_point.Y), DefaultMidPointTension);
+				if (insertedIdx < 0)
+					insertedIdx = pointIndex;
+			} else {
+				targetEngine.ControlPoints.Insert (pointIndex,
+					new ControlPoint (new PointD (current_point.X, current_point.Y), DefaultMidPointTension));
+			}
+		} else {
+			targetEngine.ControlPoints.Insert (pointIndex,
+				new ControlPoint (new PointD (current_point.X, current_point.Y), DefaultMidPointTension));
+		}
+
+		//These should be set after creating the history item.
+		SelectedPointIndex = insertedIdx;
+		SelectedShapeIndex = shapeIndex;
 	}
 
 	private void PushModifyHistory (Document document, string label)
@@ -2029,10 +2044,11 @@ public abstract class BaseEditEngine
 		if (rotating_whole_shape) {
 			tool.SetCursor (rotate_cursor);
 		} else if (!is_drawing && !ctrl_key && (hovering_control_point || hovering_segment)) {
-			// Grab on control points / for node-add; move when sides drag the whole shape.
+			// Grab (hand) on the shape's edge, where a left click drags the whole shape; move on
+			// a control point, where a left click drags just that point instead.
 			if (rotate_modifier_down)
 				tool.SetCursor (rotate_cursor);
-			else if (hovering_segment && !curved_segments_enabled)
+			else if (hovering_control_point)
 				tool.SetCursor (move_cursor);
 			else
 				tool.SetCursor (grab_cursor);

@@ -2631,19 +2631,22 @@ public abstract class BaseEditEngine
 
 	}
 
-	protected void AddLinePoints (bool ctrlKey, bool clickedOnControlPoint, ShapeEngine selEngine, PointD prevSelPoint)
+	//Resolves the first control point's position: the previously-selected point if the user held
+	//Ctrl on top of it, otherwise where they clicked to start the shape.
+	protected PointD ResolveShapeStartingPoint (bool ctrlKey, bool clickedOnControlPoint, PointD prevSelPoint)
 	{
-		PointD startingPoint;
-
-		//Create the initial points of the shape. The second point will follow the mouse around until released.
 		if (ctrlKey && clickedOnControlPoint) {
-			startingPoint = prevSelPoint;
-
 			clicked_without_modifying = false;
-		} else {
-			startingPoint = shape_origin;
+			return prevSelPoint;
 		}
 
+		return shape_origin;
+	}
+
+	protected void AddLinePoints (bool ctrlKey, bool clickedOnControlPoint, ShapeEngine selEngine, PointD prevSelPoint)
+	{
+		//Create the initial points of the shape. The second point will follow the mouse around until released.
+		PointD startingPoint = ResolveShapeStartingPoint (ctrlKey, clickedOnControlPoint, prevSelPoint);
 
 		selEngine.ControlPoints.Add (new ControlPoint (new PointD (startingPoint.X, startingPoint.Y), DefaultEndPointTension));
 		selEngine.ControlPoints.Add (
@@ -2656,17 +2659,8 @@ public abstract class BaseEditEngine
 
 	protected void AddRectanglePoints (bool ctrlKey, bool clickedOnControlPoint, ShapeEngine selEngine, PointD prevSelPoint)
 	{
-		PointD startingPoint;
-
 		//Create the initial points of the shape. The second point will follow the mouse around until released.
-		if (ctrlKey && clickedOnControlPoint) {
-			startingPoint = prevSelPoint;
-
-			clicked_without_modifying = false;
-		} else {
-			startingPoint = shape_origin;
-		}
-
+		PointD startingPoint = ResolveShapeStartingPoint (ctrlKey, clickedOnControlPoint, prevSelPoint);
 
 		selEngine.ControlPoints.Add (new ControlPoint (new PointD (startingPoint.X, startingPoint.Y), 0.0));
 		selEngine.ControlPoints.Add (
@@ -2758,16 +2752,8 @@ public abstract class BaseEditEngine
 
 	protected void AddTrianglePoints (bool ctrlKey, bool clickedOnControlPoint, ShapeEngine selEngine, PointD prevSelPoint)
 	{
-		PointD startingPoint;
-
 		//Create the initial points of the shape. The third point (the moving base corner) will follow the mouse around until released.
-		if (ctrlKey && clickedOnControlPoint) {
-			startingPoint = prevSelPoint;
-
-			clicked_without_modifying = false;
-		} else {
-			startingPoint = shape_origin;
-		}
+		PointD startingPoint = ResolveShapeStartingPoint (ctrlKey, clickedOnControlPoint, prevSelPoint);
 
 		//Apex.
 		selEngine.ControlPoints.Add (new ControlPoint (new PointD (startingPoint.X, startingPoint.Y), 0.0));

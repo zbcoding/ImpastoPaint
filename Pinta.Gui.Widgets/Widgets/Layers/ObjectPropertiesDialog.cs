@@ -37,61 +37,13 @@ public sealed partial class ObjectPropertiesDialog
 	[MemberNotNull (nameof (blend_combo_box))]
 	partial void Initialize ()
 	{
-		const int spacing = 6;
+		PropertiesDialogGridBuilder.Widgets widgets = PropertiesDialogGridBuilder.Build ();
 
-		Gtk.Label nameLabel = Gtk.Label.New (Translations.GetString ("Name:"));
-		nameLabel.Halign = Gtk.Align.End;
-
-		Gtk.Entry nameEntry = Gtk.Entry.New ();
-		nameEntry.Hexpand = true;
-		nameEntry.Halign = Gtk.Align.Fill;
-		nameEntry.OnChanged += OnNameChanged;
-		nameEntry.SetActivatesDefault (true);
-
-		Gtk.CheckButton visibilityCheckbox = Gtk.CheckButton.NewWithLabel (Translations.GetString ("Visible"));
-		visibilityCheckbox.OnToggled += OnVisibilityToggled;
-
-		Gtk.Label blendLabel = Gtk.Label.New (Translations.GetString ("Blend Mode") + ":");
-		blendLabel.Halign = Gtk.Align.End;
-
-		Gtk.ComboBoxText blendComboBox = Gtk.ComboBoxText.New ();
-		foreach (string name in UserBlendOps.GetAllBlendModeNames ())
-			blendComboBox.AppendText (name);
-		blendComboBox.Hexpand = true;
-		blendComboBox.Halign = Gtk.Align.Fill;
-		blendComboBox.OnChanged += OnBlendModeChanged;
-
-		Gtk.Label opacityLabel = Gtk.Label.New (Translations.GetString ("Opacity:"));
-		opacityLabel.Halign = Gtk.Align.End;
-
-		Gtk.SpinButton opacitySpinner = Gtk.SpinButton.NewWithRange (0, 100, 1);
-		opacitySpinner.Adjustment!.PageIncrement = 10;
-		opacitySpinner.ClimbRate = 1;
-		opacitySpinner.OnValueChanged += OnOpacitySpinnerChanged;
-		opacitySpinner.SetActivatesDefaultImmediate (true);
-
-		Gtk.Scale opacitySlider = Gtk.Scale.NewWithRange (Gtk.Orientation.Horizontal, 0, 100, 1);
-		opacitySlider.Digits = 0;
-		opacitySlider.Adjustment!.PageIncrement = 10;
-		opacitySlider.Hexpand = true;
-		opacitySlider.Halign = Gtk.Align.Fill;
-		opacitySlider.OnValueChanged += OnOpacitySliderChanged;
-
-		Gtk.Box opacityBox = Gtk.Box.New (Gtk.Orientation.Horizontal, spacing);
-		opacityBox.Append (opacitySpinner);
-		opacityBox.Append (opacitySlider);
-
-		Gtk.Grid grid = Gtk.Grid.New ();
-		grid.RowSpacing = spacing;
-		grid.ColumnSpacing = spacing;
-		grid.ColumnHomogeneous = false;
-		grid.Attach (nameLabel, 0, 0, 1, 1);
-		grid.Attach (nameEntry, 1, 0, 1, 1);
-		grid.Attach (visibilityCheckbox, 1, 1, 1, 1);
-		grid.Attach (blendLabel, 0, 2, 1, 1);
-		grid.Attach (blendComboBox, 1, 2, 1, 1);
-		grid.Attach (opacityLabel, 0, 3, 1, 1);
-		grid.Attach (opacityBox, 1, 3, 1, 1);
+		widgets.NameEntry.OnChanged += OnNameChanged;
+		widgets.VisibilityCheckbox.OnToggled += OnVisibilityToggled;
+		widgets.BlendComboBox.OnChanged += OnBlendModeChanged;
+		widgets.OpacitySpinner.OnValueChanged += OnOpacitySpinnerChanged;
+		widgets.OpacitySlider.OnValueChanged += OnOpacitySliderChanged;
 
 		// --- Initialization (Gtk.Window)
 
@@ -111,17 +63,17 @@ public sealed partial class ObjectPropertiesDialog
 		// --- Initialization
 
 		Gtk.Box contentArea = this.GetContentAreaBox ();
-		contentArea.Spacing = spacing;
+		contentArea.Spacing = PropertiesDialogGridBuilder.Spacing;
 		contentArea.SetAllMargins (10);
-		contentArea.Append (grid);
+		contentArea.Append (widgets.Grid);
 
 		// --- References to keep
 
-		name_entry = nameEntry;
-		visibility_checkbox = visibilityCheckbox;
-		blend_combo_box = blendComboBox;
-		opacity_spinner = opacitySpinner;
-		opacity_slider = opacitySlider;
+		name_entry = widgets.NameEntry;
+		visibility_checkbox = widgets.VisibilityCheckbox;
+		blend_combo_box = widgets.BlendComboBox;
+		opacity_spinner = widgets.OpacitySpinner;
+		opacity_slider = widgets.OpacitySlider;
 	}
 
 	/// <summary>

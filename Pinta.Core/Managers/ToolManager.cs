@@ -404,6 +404,22 @@ public sealed class ToolManager : IEnumerable<BaseTool>, IToolService
 				return; // the bake failed; do not let the stroke land on a still-transformed layer
 		}
 
+		// A stroke that starts on top of a shape or text object paints onto the raster underneath it,
+		// where the object's own surface hides it completely — offer to bake just the object(s) under
+		// the down point first. A stroke that starts elsewhere and only crosses an object mid-drag is
+		// left alone, matching how the transform guard above only ever looks at the down point too.
+		if (CurrentTool?.WritesToCurrentLayer == true
+			&& args.MouseButton != MouseButton.Middle
+			&& document.Layers.CurrentUserLayer is { } targetLayer
+			&& !(document.Layers.CurrentMaskIsTarget && CurrentTool!.PaintsMaskSurface)
+			&& targetLayer.HasAnyObjects) {
+			DocumentSelection downPoint = new ();
+			downPoint.CreateRectangleSelection (new RectangleD (args.PointDouble.X, args.PointDouble.Y, 1, 1));
+
+			if (!ObjectRasterizer.PrepareForSelectionRasterOp (document, PintaCore.Workspace, PintaCore.Chrome, targetLayer, downPoint))
+				return; // the user cancelled; leave the stroke off entirely
+		}
+
 		if (!TryMouseDownPanOverride (document, args))
 			CurrentTool?.DoMouseDown (document, ApplySnapping (args));
 	}

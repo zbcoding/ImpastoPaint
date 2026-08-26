@@ -34,6 +34,7 @@
 /////////////////////////////////////////////////////////////////////////////////
 
 using System;
+using System.Collections.Generic;
 using Cairo;
 using Gtk;
 using Pinta.Core;
@@ -76,9 +77,90 @@ public class RecolorTool : BaseBrushTool
 	protected override void OnMouseDown (Document document, ToolMouseEventArgs e)
 	{
 		document.Layers.ToolLayer.Clear ();
+
+		// Recolor replaces pixels, so a stroke starting on a live object's ink first offers to bake
+		// that object (the same prompt cut/erase uses). Declining aborts the whole click — carrying
+		// on would paint the raster underneath the ink, where the change is invisible and the
+		// object keeps its color anyway.
+		if (!TryRasterizeObjectAtStrokeStart (document, e.Point))
+			return;
+
 		stencil = new BitMask (document.ImageSize.Width, document.ImageSize.Height);
 
 		base.OnMouseDown (document, e);
+	}
+
+	/// <summary>
+	/// Called before the stroke starts: if <paramref name="pos"/> lands on a live shape/text
+	/// object's ink (hit-tested against just that object, rendered by the real renderers), prompts
+	/// once and bakes it so the rest of the stroke edits real pixels. Returns whether the stroke
+	/// may go ahead. Strokes on bare ground - or while the mask is the paint target, where no
+	/// objects are in play - pass through unchanged.
+	/// </summary>
+	private bool TryRasterizeObjectAtStrokeStart (Document document, PointI pos)
+	{
+		if (document.Layers.CurrentMaskIsTarget)
+			return true;
+
+		UserLayer layer = document.Layers.CurrentUserLayer;
+		if (!layer.ObjectLayer.IsLayerSetup || layer.Objects.Count == 0)
+			return true;
+
+		for (int i = layer.Objects.Count - 1; i >= 0; --i) {
+			ILayerObject obj = layer.Objects[i];
+
+			switch (obj) {
+				// Topmost visible ink wins, mirroring PaintBucketTool's recolor hit-test. Modifier
+				// nodes carry no clickable ink of their own.
+				case ShapeObject { Hidden: false }:
+				case TextObject { Hidden: false }:
+					break;
+				default:
+					continue;
+			}
+
+			using ImageSurface probe = CairoExtensions.CreateImageSurface (Format.Argb32, layer.Surface.Width, layer.Surface.Height);
+			switch (obj) {
+				case ShapeObject shape:
+					LayerObjectSelection.RenderShape (probe, layer, shape);
+					break;
+				case TextObject text:
+					TextObjectRenderer.Render (probe, text, PintaCore.Chrome, antialias: true);
+					break;
+			}
+			probe.Flush ();
+
+			if (probe.GetColorBgra (pos).A == 0)
+				continue;
+
+			// RasterizeSubset reads by kind-scoped index, so translate the unified list position.
+			int shape_index = -1;
+			int text_index = -1;
+			int shapes_seen = 0;
+			int texts_seen = 0;
+			for (int k = 0; k <= i; ++k) {
+				if (layer.Objects[k] is ShapeObject)
+					shapes_seen++;
+				else if (layer.Objects[k] is TextObject)
+					texts_seen++;
+			}
+			if (obj is ShapeObject)
+				shape_index = shapes_seen - 1;
+			else
+				text_index = texts_seen - 1;
+
+			List<int> shape_indices = shape_index >= 0 ? [shape_index] : [];
+			List<int> text_indices = text_index >= 0 ? [text_index] : [];
+
+			List<string> labels = [.. ObjectRasterizer.Describe (layer, shape_indices, text_indices)];
+			if (!ObjectRasterizer.Confirm (PintaCore.Chrome, labels))
+				return false;
+
+			ObjectRasterizer.RasterizeSubset (document, workspace, PintaCore.Chrome, layer, shape_indices, text_indices);
+			return true;
+		}
+
+		return true;
 	}
 
 	protected override void OnMouseMove (Document document, ToolMouseEventArgs e)

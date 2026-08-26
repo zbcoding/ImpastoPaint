@@ -98,6 +98,25 @@ internal sealed class RecoveredSceneTest : DocumentHarness
 	}
 
 	/// <summary>
+	/// A shape's control points come back from the sidecar entry, but the object surface the canvas
+	/// actually paints is a separate cache that nothing repopulates just by loading the objects.
+	/// <see cref="Shown"/> reads that same cache through <see cref="UserLayer.GetLayersToPaint"/>, so
+	/// this fails if recovery leaves the shape sitting in the object list but invisible until
+	/// something else forces a redraw.
+	/// </summary>
+	[Test]
+	public void ShapeObjectIsVisibleImmediatelyAfterRecovery ()
+	{
+		UserLayer layer = Layer (0);
+		AddObject (layer, Box (OpaqueRed, new RectangleI (4, 4, 8, 8)), "Box");
+
+		Document recovered = RoundTrip ();
+		UserLayer restored = recovered.Layers[0];
+
+		Assert.That (Shown (restored, new PointI (8, 8)), Is.EqualTo (Red));
+	}
+
+	/// <summary>
 	/// Each kind of object has its own sidecar entry, so they are read back a kind at a time. The
 	/// position saved with each one is what reassembles the single list they came from: without it
 	/// a layer comes back with its shapes and its text regrouped, which changes what draws over

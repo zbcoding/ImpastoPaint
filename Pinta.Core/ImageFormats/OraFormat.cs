@@ -44,7 +44,6 @@ public sealed class OraFormat : IImageImporter, IImageExporter
 	// Standard OpenRaster readers ignore it; Impasto uses it to restore text layers.
 	private const string TEXT_ENTRY_PATH = "data/impasto-text.xml";
 	private const string SHAPE_ENTRY_PATH = "data/impasto-shapes.xml";
-	private const string SHAPE_IMAGE_PREFIX = "data/impasto-shapes-layer";
 	private const string EFFECT_ENTRY_PATH = "data/impasto-effects.xml";
 	private const string MANIFEST_ENTRY_PATH = "impasto/manifest.xml";
 
@@ -352,13 +351,6 @@ public sealed class OraFormat : IImageImporter, IImageExporter
 					if (layer.Objects[position] is ShapeObject shape)
 						WriteShapeObject (writer, shape, position - dropped);
 				writer.WriteEndElement ();
-
-				using ImageSurface shapeOverlay = layer.CreateShapeOverlay ();
-				using Pixbuf overlay = shapeOverlay.ToPixbuf ();
-				byte[] bytes = overlay.SaveToBuffer ("png");
-				ZipArchiveEntry imageEntry = archive.CreateEntry ($"{SHAPE_IMAGE_PREFIX}{i}.png");
-				using Stream imageStream = imageEntry.Open ();
-				imageStream.Write (bytes, 0, bytes.Length);
 			}
 
 			writer.WriteEndElement ();
@@ -883,18 +875,9 @@ public sealed class OraFormat : IImageImporter, IImageExporter
 				positions[shape] = SavedPosition (shapeElement);
 			}
 
-			ZipArchiveEntry? imageEntry = zipfile.GetEntry ($"{SHAPE_IMAGE_PREFIX}{index}.png");
-			if (imageEntry is not null) {
-				string temporaryFile = System.IO.Path.GetTempFileName ();
-				using (Stream input = imageEntry.Open ())
-				using (Stream output = File.Open (temporaryFile, FileMode.Create, FileAccess.Write))
-					input.CopyTo (output);
-
-				using Pixbuf overlay = Pixbuf.NewFromFile (temporaryFile)!;
-				using Context g = new (layer.ObjectLayer.Layer.Surface);
-				g.DrawPixbuf (overlay, PointD.Zero);
-				try { File.Delete (temporaryFile); } catch { }
-			}
+			//Render the restored objects so they are visible before a tool ever activates.
+			if (layer.ShapeObjects.Count > 0)
+				ObjectOpacity.RefreshLayerNoInvalidate (PintaCore.Chrome, layer);
 		}
 	}
 

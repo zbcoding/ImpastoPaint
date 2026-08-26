@@ -392,19 +392,6 @@ public sealed class UserLayer : Layer
 	/// </summary>
 	public bool HasAnyObjects => Objects.Count > 0;
 
-	/// <summary>
-	/// Creates a raster fallback for editable shape overlays. It is used by ORA
-	/// import before the shape tool has hydrated its engines.
-	/// </summary>
-	public ImageSurface CreateShapeOverlay ()
-	{
-		// ObjectLayer is excluded here (it renders through the normal object-layer path), and it was
-		// the only member of the old ReEditableLayers collection, so this has always returned a blank
-		// transparent overlay. Kept as-is: not this task's job to decide what CreateShapeOverlay should
-		// draw, only to remove the now-empty collection it used to iterate.
-		return CairoExtensions.CreateImageSurface (Surface.Format, Surface.Width, Surface.Height);
-	}
-
 	public override void ApplyTransform (
 		Matrix xform,
 		Size old_size,

@@ -283,10 +283,10 @@ public sealed class TextTool : BaseTool
 
 		if (rasterize_mode_btn == null) {
 			rasterize_mode_btn = ToolBarDropDownButton.New ();
-			rasterize_mode_btn.AddItem (Translations.GetString ("Object — editable later"), Pinta.Resources.Icons.LayerProperties, false,
-				Translations.GetString ("Stays a live, re-editable text object. Cutting, erasing, or filtering across it will rasterize it first."));
 			rasterize_mode_btn.AddItem (Translations.GetString ("Raster — fuses to layer"), Pinta.Resources.Icons.LayerMergeDown, true,
 				Translations.GetString ("Painted into the active layer's pixels on commit. Immediately cut/move/erase like any artwork, but not editable later."));
+			rasterize_mode_btn.AddItem (Translations.GetString ("Object — editable later"), Pinta.Resources.Icons.LayerProperties, false,
+				Translations.GetString ("Stays a live, re-editable text object. Cutting, erasing, or filtering across it will rasterize it first."));
 
 			// Don't let the dropdown hold keyboard focus (like every other widget on this toolbar): the
 			// Text tool types with the keyboard, and a focused DropDown treats Space as "open the menu",
@@ -294,7 +294,7 @@ public sealed class TextTool : BaseTool
 			// space. CanFocus=false keeps it click/pointer-usable while keeping the keyboard on the text.
 			rasterize_mode_btn.CanFocus = false;
 
-			rasterize_mode_btn.SelectedIndex = Settings.GetSetting (SettingNames.TEXT_RASTERIZE_MODE, false) ? 1 : 0;
+			rasterize_mode_btn.SelectedIndex = Settings.GetSetting (SettingNames.TEXT_RASTERIZE_MODE, true) ? 0 : 1;
 			//Stamps the mode for the next object created, and also retroactively re-stamps the object
 			//currently selected/being edited (same convert-in-place rule as the Point/Area dropdown
 			//above) - safe because RasterizeOnFinalize is only ever read at commit, so flipping it here

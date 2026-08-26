@@ -115,7 +115,7 @@ public abstract class BaseEditEngine
 
 	// Object (false) keeps shapes live/editable; Rasterized (true) bakes them into the layer's
 	// base raster on commit (Enter / tool switch), like classic paint tools. Shared across shape tools.
-	private static bool rasterize_shapes = false;
+	private static bool rasterize_shapes = true;
 
 	private bool prev_antialiasing = true;
 
@@ -507,13 +507,13 @@ public abstract class BaseEditEngine
 		if (rasterize_mode_button == null) {
 			rasterize_mode_button = ToolBarDropDownButton.New ();
 
-			rasterize_mode_button.AddItem (Translations.GetString ("Object — editable later"), Resources.Icons.LayerProperties, false,
-				Translations.GetString ("Stays a live, re-editable shape. Cutting, erasing, or filtering across it will rasterize it first."));
 			rasterize_mode_button.AddItem (Translations.GetString ("Raster — fuses to layer"), Resources.Icons.LayerMergeDown, true,
 				Translations.GetString ("Painted into the layer's pixels on commit. Immediately cut/move/erase like any artwork, but not editable later."));
+			rasterize_mode_button.AddItem (Translations.GetString ("Object — editable later"), Resources.Icons.LayerProperties, false,
+				Translations.GetString ("Stays a live, re-editable shape. Cutting, erasing, or filtering across it will rasterize it first."));
 
-			rasterize_shapes = settings.GetSetting (SettingNames.SHAPE_RASTERIZE_MODE, false);
-			rasterize_mode_button.SelectedIndex = rasterize_shapes ? 1 : 0;
+			rasterize_shapes = settings.GetSetting (SettingNames.SHAPE_RASTERIZE_MODE, true);
+			rasterize_mode_button.SelectedIndex = rasterize_shapes ? 0 : 1;
 
 			rasterize_mode_button.SelectedItemChanged += (o, e) => {
 				rasterize_shapes = rasterize_mode_button.SelectedItem.GetTagOrDefault (false);
@@ -521,7 +521,7 @@ public abstract class BaseEditEngine
 			};
 		}
 
-		rasterize_mode_button.SelectedIndex = rasterize_shapes ? 1 : 0;
+		rasterize_mode_button.SelectedIndex = rasterize_shapes ? 0 : 1;
 		tb.Append (rasterize_mode_button);
 
 		BuildTriangleTypeToolBar (tb, settings, toolPrefix);

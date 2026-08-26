@@ -327,6 +327,17 @@ public abstract class BaseTool
 		=> false;
 
 	/// <summary>
+	/// Whether this tool manages its own interaction with the current layer's live shape/text
+	/// objects, and so must not be intercepted by <see cref="ToolManager"/>'s down-point
+	/// rasterize guard. On for the flood tools: the paint bucket recolors a clicked object's
+	/// own ink instead of the ground (the whole point of its contract), and the magic wand
+	/// samples the layer's visible snapshot without editing anything — baking the object first
+	/// would destroy editability for no gain.
+	/// </summary>
+	public virtual bool HandlesLiveObjectsItself
+		=> false;
+
+	/// <summary>
 	/// Whether starting a stroke on the canvas writes pixels to the current layer's own raster
 	/// (rather than only to the selection / tool layer / an additive object). Off for selection,
 	/// picker, zoom, pan and move-selection tools; on for every tool whose stroke lands in

@@ -54,6 +54,8 @@ public abstract class FloodTool : BaseTool
 	public override bool WritesToCurrentLayer
 		=> true;
 
+	public override bool HandlesLiveObjectsItself => true;
+
 	public override bool PaintsMaskSurface
 		=> true;
 

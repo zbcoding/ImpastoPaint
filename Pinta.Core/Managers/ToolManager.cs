@@ -409,6 +409,7 @@ public sealed class ToolManager : IEnumerable<BaseTool>, IToolService
 		// the down point first. A stroke that starts elsewhere and only crosses an object mid-drag is
 		// left alone, matching how the transform guard above only ever looks at the down point too.
 		if (CurrentTool?.WritesToCurrentLayer == true
+			&& !CurrentTool.HandlesLiveObjectsItself
 			&& args.MouseButton != MouseButton.Middle
 			&& document.Layers.CurrentUserLayer is { } targetLayer
 			&& !(document.Layers.CurrentMaskIsTarget && CurrentTool!.PaintsMaskSurface)

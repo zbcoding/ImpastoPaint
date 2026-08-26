@@ -54,6 +54,10 @@ public class RecolorTool : BaseBrushTool
 	}
 
 	public override bool UsesPaintColors => true;
+	// Its own down-point guard (TryRasterizeObjectAtStrokeStart) handles live objects with an
+	// ink-accurate probe of just the topmost clicked object; the ToolManager chokepoint must
+	// not pre-empt it with a coarser bbox prompt over every intersecting object.
+	public override bool HandlesLiveObjectsItself => true;
 	public override string Name => Translations.GetString ("Recolor");
 	public override string Icon => Pinta.Resources.Icons.ToolRecolor;
 	public override string StatusBarText => Translations.GetString (

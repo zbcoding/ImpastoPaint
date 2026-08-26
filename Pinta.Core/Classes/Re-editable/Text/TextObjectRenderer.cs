@@ -156,7 +156,10 @@ public static class TextObjectRenderer
 	/// </summary>
 	public static void ApplyRotation (Context g, TextObject obj)
 	{
-		if (obj.Rotation == 0)
+		// A multiple of 360 degrees has to be a no-op rather than an actual rotation - cos/sin of
+		// +-2*pi aren't guaranteed bit-identical across platforms, so letting Cairo rotate by it
+		// nudges anti-aliased glyph edges by a sub-pixel amount on some of them.
+		if (obj.Rotation % 360 == 0)
 			return;
 
 		PointD pivot = obj.RotationPivot;

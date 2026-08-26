@@ -154,115 +154,141 @@ public abstract class BaseTransformTool : BaseTool
 	{
 		// While a grip is being dragged, scale the content to match the handle.
 		if (is_handle_scaling) {
-			HandlePoint? active = handle.ActiveHandlePoint;
-			if (active is null)
-				return;
-
-			// Work in the reference frame: un-rotate the mouse through the live
-			// orientation so a (possibly rotated) grip drag reduces to an
-			// axis-aligned resize of ref_rect. The resize matrices built below
-			// are then re-applied through `live` in ApplyRefScale, and the grips
-			// are re-positioned in the oriented frame (never via handle.UpdateDrag,
-			// which would corrupt the reference rectangle).
-			Matrix liveInv = live.Clone ();
-			liveInv.Invert ();
-			PointD mouse = liveInv.TransformPoint (e.PointDouble);
-			PointD srcCenter = source_rect.GetCenter ();
-			bool keepAspect = e.IsShiftPressed;
-			bool fromCenter = e.IsControlPressed;
-
-			if (IsCorner (active)) {
-				// --- Corner handles: allow flipping (mirroring) ---
-				PointD opp = OppositeCorner (source_rect, active.Value);
-				PointD srcCorner = GetCornerPoint (source_rect, active.Value);
-
-				Matrix flipTransform = CairoExtensions.CreateIdentityMatrix ();
-
-				if (fromCenter) {
-					// Scale about center; flip occurs when mouse crosses center.
-					double cdx0 = srcCorner.X - srcCenter.X;
-					double cdy0 = srcCorner.Y - srcCenter.Y;
-					double cdx1 = mouse.X - srcCenter.X;
-					double cdy1 = mouse.Y - srcCenter.Y;
-
-					if (keepAspect && source_rect.Width > 0 && source_rect.Height > 0) {
-						double halfW = source_rect.Width / 2.0;
-						double halfH = source_rect.Height / 2.0;
-						if (halfW > 0 && halfH > 0) {
-							double s = Math.Max (Math.Abs (cdx1) / halfW, Math.Abs (cdy1) / halfH);
-							double signX = cdx1 < 0 ? -1 : 1;
-							double signY = cdy1 < 0 ? -1 : 1;
-							// When exactly zero, keep positive to avoid NaN.
-							cdx1 = signX * halfW * s;
-							cdy1 = signY * halfH * s;
-						}
-					}
-
-					double sx = cdx0 != 0 ? cdx1 / cdx0 : 1;
-					double sy = cdy0 != 0 ? cdy1 / cdy0 : 1;
-
-					flipTransform.Translate (srcCenter.X, srcCenter.Y);
-					flipTransform.Scale (sx, sy);
-					flipTransform.Translate (-srcCenter.X, -srcCenter.Y);
-				} else {
-					// Scale about opposite corner; flip occurs when mouse crosses that corner.
-					double dx0 = srcCorner.X - opp.X;
-					double dy0 = srcCorner.Y - opp.Y;
-					double dx1 = mouse.X - opp.X;
-					double dy1 = mouse.Y - opp.Y;
-
-					if (keepAspect && source_rect.Width > 0 && source_rect.Height > 0) {
-						double s = Math.Max (Math.Abs (dx1) / source_rect.Width, Math.Abs (dy1) / source_rect.Height);
-						double signX = dx1 < 0 ? -1 : 1;
-						double signY = dy1 < 0 ? -1 : 1;
-						dx1 = signX * source_rect.Width * s;
-						dy1 = signY * source_rect.Height * s;
-					}
-
-					double sx = dx0 != 0 ? dx1 / dx0 : 1;
-					double sy = dy0 != 0 ? dy1 / dy0 : 1;
-
-					flipTransform.Translate (opp.X, opp.Y);
-					flipTransform.Scale (sx, sy);
-					flipTransform.Translate (-opp.X, -opp.Y);
-				}
-
-				// Grips are placed via the oriented frame, not a target rect.
-				ApplyRefScale (document, flipTransform);
-			} else {
-				// Edge handles: allow flipping (mirroring) as well, so user can
-				// mirror horizontally by dragging left/right past opposite edge,
-				// and vertically by dragging up/down past opposite edge.
-				(bool horizontal, bool nearIsMin) = active.Value switch {
-					HandlePoint.Left => (true, true),
-					HandlePoint.Right => (true, false),
-					HandlePoint.Up => (false, true),
-					HandlePoint.Down => (false, false),
-					// Unreachable: the four corner handles are dispatched by IsCorner above,
-					// and these four cases exhaust HandlePoint.
-					_ => throw new UnreachableException (),
-				};
-
-				Matrix edgeTransform = ComputeEdgeScaleTransform (source_rect, srcCenter, mouse, horizontal, nearIsMin, fromCenter, keepAspect);
-
-				// Grips are placed via the oriented frame, not a target rect.
-				ApplyRefScale (document, edgeTransform);
-			}
+			HandleGripDrag (document, e);
 			return;
 		}
 
 		if (!IsActive || !using_mouse) {
-			if (!using_mouse && handle.Active) {
-				Gdk.Cursor? gripCursor = handle.GetCursorAtPoint (e.WindowPoint);
-				// Alt rotates; show the rotate cursor. Otherwise show the grip's
-				// resize cursor when hovering one.
-				SetCursor (e.IsAltPressed ? rotate_cursor : gripCursor ?? DefaultCursor);
-				// Hint the modifier keys when hovering a grip.
-				UpdateHandleHint (gripCursor is not null);
-			}
+			UpdateHoverCursor (e);
 			return;
 		}
 
+		ApplyActiveTransform (document, e);
+	}
+
+	/// <summary>
+	/// Scale the content to match a resize grip being dragged (<c>is_handle_scaling</c>).
+	/// </summary>
+	private void HandleGripDrag (Document document, ToolMouseEventArgs e)
+	{
+		HandlePoint? active = handle.ActiveHandlePoint;
+		if (active is null)
+			return;
+
+		// Work in the reference frame: un-rotate the mouse through the live
+		// orientation so a (possibly rotated) grip drag reduces to an
+		// axis-aligned resize of ref_rect. The resize matrices built below
+		// are then re-applied through `live` in ApplyRefScale, and the grips
+		// are re-positioned in the oriented frame (never via handle.UpdateDrag,
+		// which would corrupt the reference rectangle).
+		Matrix liveInv = live.Clone ();
+		liveInv.Invert ();
+		PointD mouse = liveInv.TransformPoint (e.PointDouble);
+		PointD srcCenter = source_rect.GetCenter ();
+		bool keepAspect = e.IsShiftPressed;
+		bool fromCenter = e.IsControlPressed;
+
+		if (IsCorner (active)) {
+			// --- Corner handles: allow flipping (mirroring) ---
+			PointD opp = OppositeCorner (source_rect, active.Value);
+			PointD srcCorner = GetCornerPoint (source_rect, active.Value);
+
+			Matrix flipTransform = CairoExtensions.CreateIdentityMatrix ();
+
+			if (fromCenter) {
+				// Scale about center; flip occurs when mouse crosses center.
+				double cdx0 = srcCorner.X - srcCenter.X;
+				double cdy0 = srcCorner.Y - srcCenter.Y;
+				double cdx1 = mouse.X - srcCenter.X;
+				double cdy1 = mouse.Y - srcCenter.Y;
+
+				if (keepAspect && source_rect.Width > 0 && source_rect.Height > 0) {
+					double halfW = source_rect.Width / 2.0;
+					double halfH = source_rect.Height / 2.0;
+					if (halfW > 0 && halfH > 0) {
+						double s = Math.Max (Math.Abs (cdx1) / halfW, Math.Abs (cdy1) / halfH);
+						double signX = cdx1 < 0 ? -1 : 1;
+						double signY = cdy1 < 0 ? -1 : 1;
+						// When exactly zero, keep positive to avoid NaN.
+						cdx1 = signX * halfW * s;
+						cdy1 = signY * halfH * s;
+					}
+				}
+
+				double sx = cdx0 != 0 ? cdx1 / cdx0 : 1;
+				double sy = cdy0 != 0 ? cdy1 / cdy0 : 1;
+
+				flipTransform.Translate (srcCenter.X, srcCenter.Y);
+				flipTransform.Scale (sx, sy);
+				flipTransform.Translate (-srcCenter.X, -srcCenter.Y);
+			} else {
+				// Scale about opposite corner; flip occurs when mouse crosses that corner.
+				double dx0 = srcCorner.X - opp.X;
+				double dy0 = srcCorner.Y - opp.Y;
+				double dx1 = mouse.X - opp.X;
+				double dy1 = mouse.Y - opp.Y;
+
+				if (keepAspect && source_rect.Width > 0 && source_rect.Height > 0) {
+					double s = Math.Max (Math.Abs (dx1) / source_rect.Width, Math.Abs (dy1) / source_rect.Height);
+					double signX = dx1 < 0 ? -1 : 1;
+					double signY = dy1 < 0 ? -1 : 1;
+					dx1 = signX * source_rect.Width * s;
+					dy1 = signY * source_rect.Height * s;
+				}
+
+				double sx = dx0 != 0 ? dx1 / dx0 : 1;
+				double sy = dy0 != 0 ? dy1 / dy0 : 1;
+
+				flipTransform.Translate (opp.X, opp.Y);
+				flipTransform.Scale (sx, sy);
+				flipTransform.Translate (-opp.X, -opp.Y);
+			}
+
+			// Grips are placed via the oriented frame, not a target rect.
+			ApplyRefScale (document, flipTransform);
+		} else {
+			// Edge handles: allow flipping (mirroring) as well, so user can
+			// mirror horizontally by dragging left/right past opposite edge,
+			// and vertically by dragging up/down past opposite edge.
+			(bool horizontal, bool nearIsMin) = active.Value switch {
+				HandlePoint.Left => (true, true),
+				HandlePoint.Right => (true, false),
+				HandlePoint.Up => (false, true),
+				HandlePoint.Down => (false, false),
+				// Unreachable: the four corner handles are dispatched by IsCorner above,
+				// and these four cases exhaust HandlePoint.
+				_ => throw new UnreachableException (),
+			};
+
+			Matrix edgeTransform = ComputeEdgeScaleTransform (source_rect, srcCenter, mouse, horizontal, nearIsMin, fromCenter, keepAspect);
+
+			// Grips are placed via the oriented frame, not a target rect.
+			ApplyRefScale (document, edgeTransform);
+		}
+	}
+
+	/// <summary>
+	/// Update the cursor/hint while hovering (not dragging) over a resize grip.
+	/// </summary>
+	private void UpdateHoverCursor (ToolMouseEventArgs e)
+	{
+		if (using_mouse || !handle.Active)
+			return;
+
+		Gdk.Cursor? gripCursor = handle.GetCursorAtPoint (e.WindowPoint);
+		// Alt rotates; show the rotate cursor. Otherwise show the grip's
+		// resize cursor when hovering one.
+		SetCursor (e.IsAltPressed ? rotate_cursor : gripCursor ?? DefaultCursor);
+		// Hint the modifier keys when hovering a grip.
+		UpdateHandleHint (gripCursor is not null);
+	}
+
+	/// <summary>
+	/// Apply the in-progress drag/rotate/scale gesture (<c>using_mouse</c> is true) to the
+	/// content's transform and refresh the grips.
+	/// </summary>
+	private void ApplyActiveTransform (Document document, ToolMouseEventArgs e)
+	{
 		// Keep rotate cursor visible while actively rotating.
 		if (is_rotating)
 			SetCursor (rotate_cursor);

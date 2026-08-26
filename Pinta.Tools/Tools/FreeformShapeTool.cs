@@ -132,24 +132,7 @@ public sealed class FreeformShapeTool : BaseBrushTool
 
 		path = g.CopyPath ();
 
-		g.ClosePath ();
-		g.LineWidth = BrushWidth;
-		g.FillRule = FillRule.EvenOdd;
-
-		if (FillShape && StrokeShape) {
-			g.SetSourceColor (fill_color);
-			g.FillPreserve ();
-			g.SetSourceColor (outline_color);
-			g.Stroke ();
-		} else if (FillShape) {
-			g.SetSourceColor (outline_color);
-			g.FillPreserve ();
-			g.SetSourceColor (outline_color);
-			g.Stroke ();
-		} else {
-			g.SetSourceColor (outline_color);
-			g.Stroke ();
-		}
+		FillAndStrokeShape (g);
 
 		document.Workspace.Invalidate ();
 
@@ -171,6 +154,21 @@ public sealed class FreeformShapeTool : BaseBrushTool
 			path = null;
 		}
 
+		FillAndStrokeShape (g);
+
+		if (surface_modified && undo_surface != null)
+			document.History.PushNewItem (new SimpleHistoryItem (Icon, Name, undo_surface, document.Layers.CurrentUserLayerIndex, document.Layers.CurrentMaskIsTarget));
+
+		undo_surface = null;
+		surface_modified = false;
+
+		document.Workspace.Invalidate ();
+	}
+
+	// The current path in g is closed and filled/stroked per the fill-style dropdown, shared by the
+	// live preview (OnMouseMove) and the committed stroke (OnMouseUp).
+	private void FillAndStrokeShape (Context g)
+	{
 		g.ClosePath ();
 		g.LineWidth = BrushWidth;
 		g.FillRule = FillRule.EvenOdd;
@@ -189,14 +187,6 @@ public sealed class FreeformShapeTool : BaseBrushTool
 			g.SetSourceColor (outline_color);
 			g.Stroke ();
 		}
-
-		if (surface_modified && undo_surface != null)
-			document.History.PushNewItem (new SimpleHistoryItem (Icon, Name, undo_surface, document.Layers.CurrentUserLayerIndex, document.Layers.CurrentMaskIsTarget));
-
-		undo_surface = null;
-		surface_modified = false;
-
-		document.Workspace.Invalidate ();
 	}
 
 	protected override void OnSaveSettings (ISettingsService settings)

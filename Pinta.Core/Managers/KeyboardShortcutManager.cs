@@ -338,6 +338,15 @@ public sealed class KeyboardShortcutManager
 		Translations.GetString ("Switch between right and equilateral triangle while drawing"),
 		new KeyGesture (new Gdk.Key (Gdk.Constants.KEY_Shift_L)));
 
+	// Recolor Tool
+	// Reverses a stroke's direction (canvas pixels near the primary color are repainted with the
+	// secondary), as an alternative to right click for e.g. trackpads and styluses.
+	public static readonly ToolBindingDescriptor RecolorReverseStroke = new (
+		"RecolorTool.ReverseStroke",
+		Translations.GetString ("Recolor Tool"),
+		Translations.GetString ("Recolor in reverse (replace the primary color with the secondary)"),
+		new KeyGesture (new Gdk.Key (Gdk.Constants.KEY_Pointer_Button1), Gdk.ModifierType.AltMask));
+
 
 	// Transform Tools (Move Selection, Move Layer, etc.)
 	public static readonly ToolBindingDescriptor TransformNudgeLeft = new (
@@ -490,6 +499,7 @@ public sealed class KeyboardShortcutManager
 		ShapeChangeTension,
 		ShapeRotate,
 		TriangleTypeSwitch,
+		RecolorReverseStroke,
 		TransformNudgeLeft,
 		TransformNudgeRight,
 		TransformNudgeUp,

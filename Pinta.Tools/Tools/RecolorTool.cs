@@ -47,6 +47,10 @@ public class RecolorTool : BaseBrushTool
 
 	private PointI? last_point = null;
 	private BitMask? stencil;
+	// Whether the stroke reverses direction (canvas pixels near the primary color are repainted
+	// with the secondary). Fixed at stroke start so holding the reverse gesture (default Alt) and
+	// releasing it mid-stroke can't make one drag repaint in both directions.
+	private bool reversed_stroke;
 
 	public RecolorTool (IServiceProvider services) : base (services)
 	{
@@ -60,9 +64,18 @@ public class RecolorTool : BaseBrushTool
 	public override bool HandlesLiveObjectsItself => true;
 	public override string Name => Translations.GetString ("Recolor");
 	public override string Icon => Pinta.Resources.Icons.ToolRecolor;
-	public override string StatusBarText => Translations.GetString (
-		"Left click to replace the secondary color with the primary color." +
-		"\nRight click to reverse.");
+	public override string StatusBarText {
+		get {
+			string reverse = PintaCore.Shortcuts.GetToolBinding (KeyboardShortcutManager.RecolorReverseStroke).ClickBindingLabel ();
+
+			return
+				// Translators: {0} is the click gesture that reverses a stroke (default Alt+Click).
+				Translations.GetString (
+					"Left click to replace the secondary color on the canvas with the primary color." +
+					"\n{0} or right click to replace the primary color with the secondary color.",
+					reverse);
+		}
+	}
 	public override Gdk.Cursor DefaultCursor => Gdk.Cursor.NewFromTexture (Resources.GetIcon ("Cursor.Recolor.png"), 9, 18, null);
 	public override Gdk.Key ShortcutKey => new (Gdk.Constants.KEY_R);
 	protected float Tolerance => (float) (ToleranceSlider.GetValue () / 100);
@@ -82,6 +95,8 @@ public class RecolorTool : BaseBrushTool
 	{
 		document.Layers.ToolLayer.Clear ();
 
+		reversed_stroke = IsReverseStroke (e);
+
 		// Recolor replaces pixels, so a stroke starting on a live object's ink first offers to bake
 		// that object (the same prompt cut/erase uses). Declining aborts the whole click — carrying
 		// on would paint the raster underneath the ink, where the change is invisible and the
@@ -92,6 +107,23 @@ public class RecolorTool : BaseBrushTool
 		stencil = new BitMask (document.ImageSize.Width, document.ImageSize.Height);
 
 		base.OnMouseDown (document, e);
+	}
+
+	// The reverse direction is right click, or the user-configured reverse gesture (default
+	// Alt + left click) held during a left click stroke.
+	private bool IsReverseStroke (ToolMouseEventArgs e)
+		=> e.MouseButton == MouseButton.Right
+			|| (e.MouseButton == MouseButton.Left && IsClickBindingPressed (KeyboardShortcutManager.RecolorReverseStroke, e));
+
+	// Checks whether a mouse click matches a "click" tool binding (e.g. Alt+Click),
+	// by matching the modifiers the user configured for that binding.
+	private static bool IsClickBindingPressed (ToolBindingDescriptor binding, ToolMouseEventArgs e)
+	{
+		KeyGesture gesture = PintaCore.Shortcuts.GetToolBinding (binding);
+		if (!gesture.IsValid)
+			return false;
+
+		return (e.State & KeyGesture.AcceleratorMask) == gesture.Modifiers;
 	}
 
 	/// <summary>
@@ -176,15 +208,22 @@ public class RecolorTool : BaseBrushTool
 		if (stencil is null)
 			return;
 
-		if (mouse_button == MouseButton.Left) {
-			old_color = Palette.PrimaryColor.ToColorBgra ();
-			new_color = Palette.SecondaryColor.ToColorBgra ();
-		} else if (mouse_button == MouseButton.Right) {
+		// Only a stroke in progress paints; after mouse-up a hovering move (no button held)
+		// would otherwise repaint at the cursor.
+		if (mouse_button is not (MouseButton.Left or MouseButton.Right)) {
+			last_point = null;
+			return;
+		}
+
+		// Pixels within tolerance of new_color are repainted toward old_color (names kept from the
+		// ported Paint.NET code). A normal stroke finds secondary-colored pixels and paints them
+		// with the primary color; a reversed stroke does the opposite.
+		if (reversed_stroke) {
 			old_color = Palette.SecondaryColor.ToColorBgra ();
 			new_color = Palette.PrimaryColor.ToColorBgra ();
 		} else {
-			last_point = null;
-			return;
+			old_color = Palette.PrimaryColor.ToColorBgra ();
+			new_color = Palette.SecondaryColor.ToColorBgra ();
 		}
 
 		var x = e.Point.X;

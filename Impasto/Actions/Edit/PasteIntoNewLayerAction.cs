@@ -62,24 +62,8 @@ internal sealed class PasteIntoNewLayerAction : IActionHandler
 
 	private void Activated (object sender, EventArgs e)
 	{
-		// If no documents are open, activate the
-		// PasteIntoNewImage action and abort this Paste action.
-		if (!workspace.HasOpenDocuments) {
-			actions.Edit.PasteIntoNewImage.Activate ();
+		if (PasteAction.TryGetPasteTarget (actions, workspace) is not (Document doc, PointI canvasPos))
 			return;
-		}
-
-		var doc = workspace.ActiveDocument;
-
-		// Get the scroll position in canvas coordinates
-		var view = (Gtk.Viewport) doc.Workspace.Canvas.Parent!;
-
-		PointD viewPoint = new (
-			X: view.Hadjustment!.Value,
-			Y: view.Vadjustment!.Value
-		);
-
-		PointD canvasPos = doc.Workspace.ViewPointToCanvas (viewPoint);
 
 		// Paste into the active document.
 		// The 'true' argument indicates that paste should be
@@ -91,7 +75,7 @@ internal sealed class PasteIntoNewLayerAction : IActionHandler
 			tools: tools,
 			doc: doc,
 			destination: settings.GetSetting (SettingNames.PASTE_EXTERNAL_IMAGES_TO_NEW_LAYER, false) ? PasteDestination.ActiveLayer : PasteDestination.NewLayer,
-			pastePosition: canvasPos.ToInt ()
+			pastePosition: canvasPos
 		);
 	}
 }

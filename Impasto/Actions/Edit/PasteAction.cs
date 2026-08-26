@@ -70,11 +70,35 @@ internal sealed class PasteAction : IActionHandler
 
 	private void Activated (object sender, EventArgs e)
 	{
-		// If no documents are open, activate the
-		// PasteIntoNewImage action and abort this Paste action.
+		if (TryGetPasteTarget (actions, workspace) is not (Document doc, PointI canvasPos))
+			return;
+
+		// Paste into the active document.
+		// The 'false' argument indicates that paste should be
+		// performed into the current (not a new) layer.
+		Paste (
+			actions: actions,
+			chrome: chrome,
+			workspace: workspace,
+			tools: tools,
+			doc: doc,
+			destination: settings.GetSetting (SettingNames.PASTE_EXTERNAL_IMAGES_TO_NEW_LAYER, false) ? PasteDestination.NewLayer : PasteDestination.ActiveLayer,
+			pastePosition: canvasPos
+		);
+	}
+
+	/// <summary>
+	/// The document to paste into and the canvas position to paste at (the current scroll position,
+	/// converted from view to canvas coordinates). Null when no document is open, having already
+	/// activated <c>PasteIntoNewImage</c> in its place.
+	/// </summary>
+	internal static (Document Doc, PointI CanvasPosition)? TryGetPasteTarget (
+		ActionManager actions,
+		WorkspaceManager workspace)
+	{
 		if (!workspace.HasOpenDocuments) {
 			actions.Edit.PasteIntoNewImage.Activate ();
-			return;
+			return null;
 		}
 
 		var doc = workspace.ActiveDocument;
@@ -88,18 +112,7 @@ internal sealed class PasteAction : IActionHandler
 
 		PointD canvasPos = doc.Workspace.ViewPointToCanvas (viewPoint);
 
-		// Paste into the active document.
-		// The 'false' argument indicates that paste should be
-		// performed into the current (not a new) layer.
-		Paste (
-			actions: actions,
-			chrome: chrome,
-			workspace: workspace,
-			tools: tools,
-			doc: doc,
-			destination: settings.GetSetting (SettingNames.PASTE_EXTERNAL_IMAGES_TO_NEW_LAYER, false) ? PasteDestination.NewLayer : PasteDestination.ActiveLayer,
-			pastePosition: canvasPos.ToInt ()
-		);
+		return (doc, canvasPos.ToInt ());
 	}
 
 	/// <summary>

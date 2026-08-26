@@ -1996,13 +1996,15 @@ public abstract class BaseEditEngine
 			? hover_handle.InvalidateRect
 			: RectangleI.Zero;
 
-		// Don't show the hover handle while the user is changing a control point's tension.
+		// Don't show the hover handle while changing a control point's tension or dragging the
+		// whole shape: a primary click on the edge starts the drag, not a point-add, and leaving
+		// the node-add preview up would glitch as though a point were placed then dragged.
 		hover_handle.Active = hover_handle.Selected = false;
 		hover_handle.TooltipText = null;
 		bool hovering_control_point = false;
 		bool hovering_segment = false;
 
-		if (!changing_tension && draw_selection) {
+		if (!changing_tension && !moving_whole_shape && draw_selection) {
 
 			PointD current_window_point = workspace.CanvasPointToView (current_point);
 

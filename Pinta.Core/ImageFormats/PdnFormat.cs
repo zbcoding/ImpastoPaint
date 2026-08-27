@@ -239,9 +239,51 @@ public sealed class PdnFormat : IImageImporter
 		long length = info.Length;
 		uint chunkCount = (uint) ((length + chunkSize - 1) / chunkSize);
 		byte[] data = new byte[length];
+		bool gzipCompressed = fmt == 0;
+
+		// A local function so chunkSize/chunkCount/length/gzipCompressed - all loop-invariant,
+		// several same-typed - are captured instead of passed positionally on every iteration,
+		// which would risk a silent argument swap between the same-typed chunkSize/chunkCount.
+		void ReadChunkInto ()
+		{
+			uint chunkNumber = ReadUInt32BigEndian (stream);
+			uint dataSize = ReadUInt32BigEndian (stream);
+
+			if (chunkNumber >= chunkCount)
+				throw new InvalidDataException ($"Chunk number {chunkNumber} out of bounds {chunkCount}");
+			if (dataSize > 20_000_000)
+				throw new InvalidDataException ($"Invalid dataSize {dataSize}");
+
+			byte[] raw = new byte[dataSize];
+			int readTotal = 0;
+			while (readTotal < dataSize) {
+				int r = stream.Read (raw, readTotal, (int) dataSize - readTotal);
+				if (r == 0) throw new EndOfStreamException ();
+				readTotal += r;
+			}
+
+			uint actualChunkSize = Math.Min (chunkSize, (uint) (length - (long) chunkNumber * chunkSize));
+			long offset = (long) chunkNumber * chunkSize;
+
+			if (gzipCompressed) {
+				using MemoryStream comp = new (raw, writable: false);
+				using GZipStream gzip = new (comp, CompressionMode.Decompress);
+				int off = 0;
+				while (off < actualChunkSize) {
+					int toRead = (int) actualChunkSize - off;
+					int got = gzip.Read (data, (int) (offset + off), toRead);
+					if (got == 0) break;
+					off += got;
+				}
+				if (off != actualChunkSize)
+					throw new InvalidDataException ($"Decompressed size mismatch {off} vs {actualChunkSize}");
+			} else {
+				Array.Copy (raw, 0, data, offset, actualChunkSize);
+			}
+		}
 
 		for (uint c = 0; c < chunkCount; c++)
-			ReadChunkInto (stream, data, chunkSize, chunkCount, length, gzipCompressed: fmt == 0);
+			ReadChunkInto ();
 
 		return data;
 	}
@@ -253,44 +295,6 @@ public sealed class PdnFormat : IImageImporter
 			throw new EndOfStreamException ();
 		if (BitConverter.IsLittleEndian) Array.Reverse (bytes);
 		return BitConverter.ToUInt32 (bytes, 0);
-	}
-
-	private static void ReadChunkInto (Stream stream, byte[] data, uint chunkSize, uint chunkCount, long length, bool gzipCompressed)
-	{
-		uint chunkNumber = ReadUInt32BigEndian (stream);
-		uint dataSize = ReadUInt32BigEndian (stream);
-
-		if (chunkNumber >= chunkCount)
-			throw new InvalidDataException ($"Chunk number {chunkNumber} out of bounds {chunkCount}");
-		if (dataSize > 20_000_000)
-			throw new InvalidDataException ($"Invalid dataSize {dataSize}");
-
-		byte[] raw = new byte[dataSize];
-		int readTotal = 0;
-		while (readTotal < dataSize) {
-			int r = stream.Read (raw, readTotal, (int) dataSize - readTotal);
-			if (r == 0) throw new EndOfStreamException ();
-			readTotal += r;
-		}
-
-		uint actualChunkSize = Math.Min (chunkSize, (uint) (length - (long) chunkNumber * chunkSize));
-		long offset = (long) chunkNumber * chunkSize;
-
-		if (gzipCompressed) {
-			using MemoryStream comp = new (raw, writable: false);
-			using GZipStream gzip = new (comp, CompressionMode.Decompress);
-			int off = 0;
-			while (off < actualChunkSize) {
-				int toRead = (int) actualChunkSize - off;
-				int got = gzip.Read (data, (int) (offset + off), toRead);
-				if (got == 0) break;
-				off += got;
-			}
-			if (off != actualChunkSize)
-				throw new InvalidDataException ($"Decompressed size mismatch {off} vs {actualChunkSize}");
-		} else {
-			Array.Copy (raw, 0, data, offset, actualChunkSize);
-		}
 	}
 
 	private static Document BuildDocument (

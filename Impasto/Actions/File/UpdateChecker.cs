@@ -79,7 +79,7 @@ internal static class UpdateChecker
 	}
 
 	/// <summary>
-	/// True if <paramref name="latestTag"/> (e.g. "v0.0.2") is a newer release
+	/// True if <paramref name="latestTag"/> (e.g. "v0.1.0") is a newer release
 	/// than the currently running <paramref name="currentVersion"/>.
 	/// </summary>
 	public static bool IsNewer (string latestTag, string currentVersion)

@@ -8,7 +8,7 @@ entries, is upstream Pinta work; the Impasto sections cover changes made in this
 
 ## Impasto - [Unreleased](https://github.com/zbcoding/ImpastoPaint/compare/v0.0.1...main)
 
-Changes for the next release (0.0.2) go here.
+Changes for the next release (0.1.0) go here.
 
 ### Added
 

@@ -1056,7 +1056,7 @@ public sealed class TextTool : BaseTool
 			HitZone zone = GetHitZone (editing, e.PointDouble);
 
 			//Rotate on the object while holding the rotate modifier.
-			if (zone != HitZone.None && IsClickBindingPressed (KeyboardShortcutManager.TextRotate, e)) {
+			if (zone != HitZone.None && PintaCore.Shortcuts.GetToolBinding (KeyboardShortcutManager.TextRotate).MatchesClick (e)) {
 				BeginManipulation (document, editing, CurrentUserLayer, TextManipulation.Rotate, e.PointDouble);
 				return;
 			}
@@ -1088,7 +1088,7 @@ public sealed class TextTool : BaseTool
 			CommitCurrentText ();
 
 		// Ctrl+Shift+Click opens the text properties window for the object under the cursor.
-		if (IsClickBindingPressed (KeyboardShortcutManager.TextOpenProperties, e)) {
+		if (PintaCore.Shortcuts.GetToolBinding (KeyboardShortcutManager.TextOpenProperties).MatchesClick (e)) {
 			(UserLayer? pl, TextObject? phit) = HitTest (pt, document, allLayers: true);
 			if (phit is not null) {
 				if (pl != CurrentUserLayer)
@@ -1100,7 +1100,7 @@ public sealed class TextTool : BaseTool
 
 		// Ctrl+click re-edits text (on any layer). A plain click on a text object on the
 		// current layer also selects and edits it.
-		(UserLayer? layer, TextObject? hit) = HitTest (pt, document, allLayers: ctrl_key || IsClickBindingPressed (KeyboardShortcutManager.TextReEdit, e));
+		(UserLayer? layer, TextObject? hit) = HitTest (pt, document, allLayers: ctrl_key || PintaCore.Shortcuts.GetToolBinding (KeyboardShortcutManager.TextReEdit).MatchesClick (e));
 		if (hit is not null) {
 
 			//The mouse clicked on editable text. Switch to its layer if needed.
@@ -1108,7 +1108,7 @@ public sealed class TextTool : BaseTool
 				document.Layers.SetCurrentUserLayer (layer!); // NRT - Non-null when hit is non-null.
 
 			// Holding the rotate modifier (default Alt) rotates the object about its center.
-			if (IsClickBindingPressed (KeyboardShortcutManager.TextRotate, e)) {
+			if (PintaCore.Shortcuts.GetToolBinding (KeyboardShortcutManager.TextRotate).MatchesClick (e)) {
 				BeginManipulation (document, hit, layer!, TextManipulation.Rotate, e.PointDouble);
 				return;
 			}
@@ -1440,7 +1440,7 @@ public sealed class TextTool : BaseTool
 			return null;
 
 		//Holding the rotate modifier (default Alt) over an object rotates it.
-		if (e is not null && IsClickBindingPressed (KeyboardShortcutManager.TextRotate, e))
+		if (e is not null && PintaCore.Shortcuts.GetToolBinding (KeyboardShortcutManager.TextRotate).MatchesClick (e))
 			return cursor_rotate;
 
 		HitZone zone = GetHitZone (hit, last_mouse_position.ToDouble ());
@@ -1450,17 +1450,6 @@ public sealed class TextTool : BaseTool
 			return cursor_move;
 
 		return null;
-	}
-
-	//Checks whether a mouse click matches a "click" tool binding (e.g. Ctrl+Shift+Click),
-	//by matching the modifiers the user configured for that binding.
-	private static bool IsClickBindingPressed (ToolBindingDescriptor binding, ToolMouseEventArgs e)
-	{
-		KeyGesture gesture = PintaCore.Shortcuts.GetToolBinding (binding);
-		if (!gesture.IsValid)
-			return false;
-
-		return (e.State & KeyGesture.AcceleratorMask) == gesture.Modifiers;
 	}
 
 	//Renders a human-readable label for a "click" tool binding (e.g. "Ctrl+Shift+Click").

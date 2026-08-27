@@ -61,6 +61,14 @@ partial class GtkExtensions
 	}
 
 	/// <summary>
+	/// Whether a mouse click matches a "click" gesture (e.g. Alt+Click) - i.e. whether the
+	/// modifiers held during the click are exactly the ones configured for the gesture. A click
+	/// gesture's own Key is unused (the "key" is really a mouse button), so only Modifiers matter.
+	/// </summary>
+	public static bool MatchesClick (this KeyGesture gesture, ToolMouseEventArgs e)
+		=> gesture.IsValid && (e.State & KeyGesture.AcceleratorMask) == gesture.Modifiers;
+
+	/// <summary>
 	/// Renders a human-readable label for a "click" gesture (e.g. "Ctrl+Shift+Click"),
 	/// i.e. one whose key is a pointer button rather than a keyboard key.
 	/// </summary>

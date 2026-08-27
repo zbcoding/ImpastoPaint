@@ -120,18 +120,7 @@ public class RecolorTool : BaseBrushTool
 	// Alt + left click) held during a left click stroke.
 	private bool IsReverseStroke (ToolMouseEventArgs e)
 		=> e.MouseButton == MouseButton.Right
-			|| (e.MouseButton == MouseButton.Left && IsClickBindingPressed (KeyboardShortcutManager.RecolorReverseStroke, e));
-
-	// Checks whether a mouse click matches a "click" tool binding (e.g. Alt+Click),
-	// by matching the modifiers the user configured for that binding.
-	private static bool IsClickBindingPressed (ToolBindingDescriptor binding, ToolMouseEventArgs e)
-	{
-		KeyGesture gesture = PintaCore.Shortcuts.GetToolBinding (binding);
-		if (!gesture.IsValid)
-			return false;
-
-		return (e.State & KeyGesture.AcceleratorMask) == gesture.Modifiers;
-	}
+			|| (e.MouseButton == MouseButton.Left && PintaCore.Shortcuts.GetToolBinding (KeyboardShortcutManager.RecolorReverseStroke).MatchesClick (e));
 
 	/// <summary>
 	/// Called before the stroke starts: if <paramref name="pos"/> lands on a live shape/text

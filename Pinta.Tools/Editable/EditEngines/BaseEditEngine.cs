@@ -1199,7 +1199,12 @@ public abstract class BaseEditEngine
 				UpdateToolbarSettingsForActiveShape ();
 			} else if (clicked_generated_point) {
 				// Curved segments off: no point to add, so fall back to dragging the whole
-				// shape, same as landing on a control point above.
+				// shape, same as landing on a control point above. Still needs the same
+				// cross-tool forward as the curved-on branch above: closestShapeIndex can belong
+				// to any shape, not just one owned by the active tool.
+				if (ForwardToCorrespondingTool (closestShapeIndex, document, e))
+					return;
+
 				BeginWholeShapeDrag (closestShapeIndex, e);
 			} else {
 				// Right click missed the shape: don't let the drag fall through to the

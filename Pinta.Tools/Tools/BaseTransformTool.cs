@@ -313,8 +313,8 @@ public abstract class BaseTransformTool : BaseTool
 
 		if (is_scaling) {
 
-			double sx = (c1.X + dx) / c1.X;
-			double sy = (c1.Y + dy) / c1.Y;
+			double sx = c1.X != 0 ? (c1.X + dx) / c1.X : 1;
+			double sy = c1.Y != 0 ? (c1.Y + dy) / c1.Y : 1;
 
 			if (constrain) {
 

@@ -518,6 +518,21 @@ public abstract class BaseEditEngine
 			rasterize_mode_button.SelectedItemChanged += (o, e) => {
 				rasterize_shapes = rasterize_mode_button.SelectedItem.GetTagOrDefault (false);
 				settings.PutSetting (SettingNames.SHAPE_RASTERIZE_MODE, rasterize_shapes);
+
+				// Stamps the mode for the next shape created, and also retroactively re-stamps the
+				// shape currently selected/being edited (same convert-in-place rule as TextTool's
+				// identical dropdown) - safe because RasterizeOnFinalize is only ever read at
+				// commit, so flipping it here doesn't rasterize/unrasterize anything until the
+				// shape is actually finalized. The dock's sub-row check reads the persisted
+				// ShapeObject, not the live engine, so PersistShapeObjects has to run before
+				// RaiseObjectsChanged refreshes it (a rasterize-on-finalize shape gets no sub-row -
+				// it's transient).
+				if (ActiveShapeEngine is ShapeEngine activeEngine) {
+					activeEngine.RasterizeOnFinalize = rasterize_shapes;
+					PersistShapeObjects (workspace.ActiveDocument.Layers.CurrentUserLayer);
+					LayerObjectSelection.RaiseObjectsChanged ();
+					DrawActiveShape (false, false, true, false, false);
+				}
 			};
 		}
 

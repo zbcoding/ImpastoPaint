@@ -193,59 +193,19 @@ public abstract class BaseTransformTool : BaseTool
 			PointD opp = OppositeCorner (source_rect, active.Value);
 			PointD srcCorner = GetCornerPoint (source_rect, active.Value);
 
-			Matrix flipTransform = CairoExtensions.CreateIdentityMatrix ();
+			// Anchor is the fixed point the drag scales around - flip occurs when the mouse
+			// crosses it. The keepAspect clamp needs the extent from that anchor to each axis of
+			// the *un-dragged* rect: half the width/height when scaling about the center (the
+			// anchor sits in the middle of both axes), or the full width/height when scaling about
+			// the opposite corner (the anchor sits at one end of both axes).
+			PointD anchor = fromCenter ? srcCenter : opp;
+			double anchorExtentX = fromCenter ? source_rect.Width / 2.0 : source_rect.Width;
+			double anchorExtentY = fromCenter ? source_rect.Height / 2.0 : source_rect.Height;
 
-			if (fromCenter) {
-				// Scale about center; flip occurs when mouse crosses center.
-				double cdx0 = srcCorner.X - srcCenter.X;
-				double cdy0 = srcCorner.Y - srcCenter.Y;
-				double cdx1 = mouse.X - srcCenter.X;
-				double cdy1 = mouse.Y - srcCenter.Y;
-
-				if (keepAspect && source_rect.Width > 0 && source_rect.Height > 0) {
-					double halfW = source_rect.Width / 2.0;
-					double halfH = source_rect.Height / 2.0;
-					if (halfW > 0 && halfH > 0) {
-						double s = Math.Max (Math.Abs (cdx1) / halfW, Math.Abs (cdy1) / halfH);
-						double signX = cdx1 < 0 ? -1 : 1;
-						double signY = cdy1 < 0 ? -1 : 1;
-						// When exactly zero, keep positive to avoid NaN.
-						cdx1 = signX * halfW * s;
-						cdy1 = signY * halfH * s;
-					}
-				}
-
-				double sx = cdx0 != 0 ? cdx1 / cdx0 : 1;
-				double sy = cdy0 != 0 ? cdy1 / cdy0 : 1;
-
-				flipTransform.Translate (srcCenter.X, srcCenter.Y);
-				flipTransform.Scale (sx, sy);
-				flipTransform.Translate (-srcCenter.X, -srcCenter.Y);
-			} else {
-				// Scale about opposite corner; flip occurs when mouse crosses that corner.
-				double dx0 = srcCorner.X - opp.X;
-				double dy0 = srcCorner.Y - opp.Y;
-				double dx1 = mouse.X - opp.X;
-				double dy1 = mouse.Y - opp.Y;
-
-				if (keepAspect && source_rect.Width > 0 && source_rect.Height > 0) {
-					double s = Math.Max (Math.Abs (dx1) / source_rect.Width, Math.Abs (dy1) / source_rect.Height);
-					double signX = dx1 < 0 ? -1 : 1;
-					double signY = dy1 < 0 ? -1 : 1;
-					dx1 = signX * source_rect.Width * s;
-					dy1 = signY * source_rect.Height * s;
-				}
-
-				double sx = dx0 != 0 ? dx1 / dx0 : 1;
-				double sy = dy0 != 0 ? dy1 / dy0 : 1;
-
-				flipTransform.Translate (opp.X, opp.Y);
-				flipTransform.Scale (sx, sy);
-				flipTransform.Translate (-opp.X, -opp.Y);
-			}
+			Matrix cornerTransform = ComputeCornerScaleTransform (srcCorner, mouse, anchor, anchorExtentX, anchorExtentY, keepAspect);
 
 			// Grips are placed via the oriented frame, not a target rect.
-			ApplyRefScale (document, flipTransform);
+			ApplyRefScale (document, cornerTransform);
 		} else {
 			// Edge handles: allow flipping (mirroring) as well, so user can
 			// mirror horizontally by dragging left/right past opposite edge,
@@ -936,6 +896,47 @@ public abstract class BaseTransformTool : BaseTool
 	/// <paramref name="sourceRect"/> is under the cursor (Left/Up = the min edge, Right/Down =
 	/// the max edge).
 	/// </summary>
+	/// <summary>
+	/// Build the transform for a corner-handle drag: scales <paramref name="srcCorner"/> onto
+	/// <paramref name="mouse"/> about the fixed <paramref name="anchor"/> point, flipping
+	/// (mirroring) if the mouse crosses the anchor on either axis. With <paramref name="keepAspect"/>,
+	/// the drag distance is clamped to the larger of its two axis ratios (against
+	/// <paramref name="anchorExtentX"/>/<paramref name="anchorExtentY"/>, the un-dragged rect's
+	/// extent from the anchor on each axis) before either axis's scale is computed, so both axes
+	/// scale by the same amount.
+	/// </summary>
+	internal static Matrix ComputeCornerScaleTransform (
+		PointD srcCorner,
+		PointD mouse,
+		PointD anchor,
+		double anchorExtentX,
+		double anchorExtentY,
+		bool keepAspect)
+	{
+		double dx0 = srcCorner.X - anchor.X;
+		double dy0 = srcCorner.Y - anchor.Y;
+		double dx1 = mouse.X - anchor.X;
+		double dy1 = mouse.Y - anchor.Y;
+
+		if (keepAspect && anchorExtentX > 0 && anchorExtentY > 0) {
+			double s = Math.Max (Math.Abs (dx1) / anchorExtentX, Math.Abs (dy1) / anchorExtentY);
+			double signX = dx1 < 0 ? -1 : 1;
+			double signY = dy1 < 0 ? -1 : 1;
+			// When exactly zero, keep positive to avoid NaN.
+			dx1 = signX * anchorExtentX * s;
+			dy1 = signY * anchorExtentY * s;
+		}
+
+		double sx = dx0 != 0 ? dx1 / dx0 : 1;
+		double sy = dy0 != 0 ? dy1 / dy0 : 1;
+
+		Matrix cornerTransform = CairoExtensions.CreateIdentityMatrix ();
+		cornerTransform.Translate (anchor.X, anchor.Y);
+		cornerTransform.Scale (sx, sy);
+		cornerTransform.Translate (-anchor.X, -anchor.Y);
+		return cornerTransform;
+	}
+
 	internal static Matrix ComputeEdgeScaleTransform (
 		RectangleD sourceRect,
 		PointD srcCenter,

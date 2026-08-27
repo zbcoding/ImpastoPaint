@@ -155,6 +155,8 @@ public sealed class PdnFormat : IImageImporter
 			int layerWidth = bm.GetInt32 ("Layer+width");
 			int layerHeight = bm.GetInt32 ("Layer+height");
 
+			ValidateLayerGeometry (layerWidth, layerHeight, stride, i);
+
 			ClassRecord lpRec = bm.GetSerializationRecord ("Layer+properties") as ClassRecord
 				?? throw new InvalidDataException ($"Missing Layer+properties for layer {i}");
 
@@ -201,6 +203,19 @@ public sealed class PdnFormat : IImageImporter
 		}
 
 		return layerInfos;
+	}
+
+	// Unlike docWidth/docHeight, these come from the per-layer NRBF record with no
+	// framework-level bounds check. CopyPixels divides by width to recover bpp, so a crafted 0
+	// throws DivideByZeroException instead of the InvalidDataException every other malformed
+	// field in this importer produces, and a bogus stride can overflow the bpp calculation into
+	// a value that still passes the 24/32 check there.
+	internal static void ValidateLayerGeometry (int width, int height, int stride, int layerIndex)
+	{
+		if (width <= 0 || height <= 0 || width > 20000 || height > 20000)
+			throw new InvalidDataException ($"Invalid PDN layer dimensions {width}x{height} for layer {layerIndex}");
+		if (stride <= 0 || stride > 20000 * 4)
+			throw new InvalidDataException ($"Invalid PDN layer stride {stride} for layer {layerIndex}");
 	}
 
 	private static List<byte[]> ReadAllLayerPixelData (MemoryStream msFull, List<LayerInfo> layerInfos)

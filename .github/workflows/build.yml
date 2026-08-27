@@ -216,6 +216,7 @@ jobs:
         if-no-files-found: error
 
   # On a v* tag, publish the built artifacts as a GitHub release.
+  # Cutting a release (version bump, CHANGELOG, metainfo, tag): see docs/releases.md.
   release:
     needs: [build-ubuntu, build-flatpak, build-macos, build-windows]
     if: startsWith(github.ref, 'refs/tags/v')

@@ -1929,6 +1929,12 @@ public sealed class TextTool : BaseTool
 		// (already this obj by now), so it stays a faithful copy like the controls above.
 		rasterize_mode_btn.SelectedIndex = obj.RasterizeOnFinalize ? 0 : 1;
 
+		// Same for Point/Area: show the object's own mode (WrapWidth nonzero = Area), or it keeps
+		// showing the tool's last-used default and misreports the object. Its change handler's
+		// convert-in-place branches both no-op when the mode already matches, so this stays a
+		// faithful copy too.
+		text_mode_btn.SelectedIndex = obj.Engine.WrapWidth != 0 ? 1 : 0;
+
 		outline_width.Visible = outline_width_label.Visible = outline_sep.Visible = join_btn.Visible = join_sep.Visible = StrokeText;
 	}
 

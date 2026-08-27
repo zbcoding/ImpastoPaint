@@ -178,6 +178,60 @@ internal sealed class TextModeSwitchTest : ToolsTestHarness
 	}
 
 	/// <summary>
+	/// Selecting an existing text object also shows its own Point/Area mode in the toolbar
+	/// (SyncToolbarFromObject). The Point/Area dropdown has to move with it, or it keeps showing
+	/// the tool's last-used default and silently misreports the object's real mode - and
+	/// re-clicking the value already shown is a no-op, so the user can't even correct it.
+	/// </summary>
+	[Test]
+	public void SelectingAnAreaTextObjectSyncsTheModeDropdownAwayFromPoint ()
+	{
+		UserLayer layer = Layer (0);
+
+		TextObject obj = new (new TextEngine ());
+		obj.Engine.WrapWidth = 150; // Area mode
+		obj.Engine.InsertText ("hello");
+		layer.AddText (obj);
+
+		TextTool t = ActivateOnLayer ();
+		TextModeButton (t).SelectedIndex = 0; // Dropdown shows Point; the object about to be selected is Area.
+
+		Select (t, obj); // StartEditing -> SyncToolbarFromObject
+
+		Assert.That (TextModeButton (t).SelectedIndex, Is.EqualTo (1),
+			"selecting an Area text object must move the Point/Area dropdown to Area, not leave it on the last Point default");
+	}
+
+	/// <summary>
+	/// Selecting a Point-mode object must sync the dropdown the other way too, and must not
+	/// disturb the object: the sync fires the dropdown's convert-in-place handler, whose branches
+	/// are no-ops when the mode already matches (WrapWidth stays 0 for a point object).
+	/// </summary>
+	[Test]
+	public void SelectingAPointTextObjectSyncsTheModeDropdownAndLeavesTheObjectAlone ()
+	{
+		UserLayer layer = Layer (0);
+
+		TextObject obj = new (new TextEngine ());
+		obj.Engine.InsertText ("hello");
+		layer.AddText (obj);
+
+		Assert.That (obj.Engine.WrapWidth, Is.Zero, "setup: the object starts as point text");
+
+		TextTool t = ActivateOnLayer ();
+		TextModeButton (t).SelectedIndex = 1; // Dropdown shows Area; the object about to be selected is Point.
+
+		Select (t, obj); // StartEditing -> SyncToolbarFromObject
+
+		Assert.Multiple (() => {
+			Assert.That (TextModeButton (t).SelectedIndex, Is.Zero,
+				"selecting a Point text object must move the Point/Area dropdown to Point");
+			Assert.That (obj.Engine.WrapWidth, Is.Zero,
+				"the sync must not convert the object - it was already in the mode being shown");
+		});
+	}
+
+	/// <summary>
 	/// A rasterize-on-finalize text object is transient (see RasterizeOnFinalizeSubRowTest in
 	/// Pinta.Core.Tests), so it must not get a sub-row in the layers dock - switching the currently
 	/// selected/edited object to Raster must tell the dock to drop its row, the same seam the object's

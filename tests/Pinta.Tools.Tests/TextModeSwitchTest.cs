@@ -154,6 +154,30 @@ internal sealed class TextModeSwitchTest : ToolsTestHarness
 	}
 
 	/// <summary>
+	/// Selecting an existing text object shows its own font/style in the toolbar
+	/// (SyncToolbarFromObject). The Raster/Object dropdown has to move with it, or it keeps showing
+	/// the last-used default and silently misreports the selected object's real mode - and
+	/// re-clicking the value already shown is a no-op, so the user can't even correct it.
+	/// </summary>
+	[Test]
+	public void SelectingAnObjectModeTextObjectSyncsTheRasterDropdownAwayFromRaster ()
+	{
+		UserLayer layer = Layer (0);
+
+		TextObject obj = new (new TextEngine ()) { RasterizeOnFinalize = false }; // Object mode
+		obj.Engine.InsertText ("hello");
+		layer.AddText (obj);
+
+		TextTool t = ActivateOnLayer ();
+		RasterizeModeButton (t).SelectedIndex = 0; // Dropdown shows Raster; the object about to be selected is Object.
+
+		Select (t, obj); // StartEditing -> SyncToolbarFromObject
+
+		Assert.That (RasterizeModeButton (t).SelectedIndex, Is.EqualTo (1),
+			"selecting an Object-mode text object must move the Raster/Object dropdown to Object, not leave it on the last Raster default");
+	}
+
+	/// <summary>
 	/// A rasterize-on-finalize text object is transient (see RasterizeOnFinalizeSubRowTest in
 	/// Pinta.Core.Tests), so it must not get a sub-row in the layers dock - switching the currently
 	/// selected/edited object to Raster must tell the dock to drop its row, the same seam the object's

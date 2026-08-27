@@ -1923,6 +1923,12 @@ public sealed class TextTool : BaseTool
 		outline_width.Adjustment!.Value = obj.OutlineWidth;
 		join_btn.SelectedIndex = IndexOfTag (join_btn, obj.LineJoin);
 
+		// Show this object's own Raster/Object mode, not whatever the toolbar last defaulted to.
+		// index 0 = Raster, 1 = Object (see the button's AddItem calls in OnBuildToolBar). The
+		// dropdown's change handler writes this same value straight back onto current_text_object
+		// (already this obj by now), so it stays a faithful copy like the controls above.
+		rasterize_mode_btn.SelectedIndex = obj.RasterizeOnFinalize ? 0 : 1;
+
 		outline_width.Visible = outline_width_label.Visible = outline_sep.Visible = join_btn.Visible = join_sep.Visible = StrokeText;
 	}
 

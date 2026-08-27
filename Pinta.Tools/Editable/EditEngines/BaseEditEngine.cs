@@ -524,12 +524,15 @@ public abstract class BaseEditEngine
 				// identical dropdown) - safe because RasterizeOnFinalize is only ever read at
 				// commit, so flipping it here doesn't rasterize/unrasterize anything until the
 				// shape is actually finalized. The dock's sub-row check reads the persisted
-				// ShapeObject, not the live engine, so PersistShapeObjects has to run before
+				// ShapeObject, not the live engine, so the persist has to run before
 				// RaiseObjectsChanged refreshes it (a rasterize-on-finalize shape gets no sub-row -
-				// it's transient).
+				// it's transient). PersistShapeObjectsIfLive, not PersistShapeObjects: this handler
+				// can fire (via UpdateToolbarSettings syncing the dropdown) while CurrentUserLayer
+				// has moved off the layer SEngines belongs to, and an unguarded persist would
+				// overwrite that other layer's stored shapes with an engine list that isn't its own.
 				if (ActiveShapeEngine is ShapeEngine activeEngine) {
 					activeEngine.RasterizeOnFinalize = rasterize_shapes;
-					PersistShapeObjects (workspace.ActiveDocument.Layers.CurrentUserLayer);
+					PersistShapeObjectsIfLive (workspace.ActiveDocument.Layers.CurrentUserLayer);
 					LayerObjectSelection.RaiseObjectsChanged ();
 					DrawActiveShape (false, false, true, false, false);
 				}
@@ -2539,6 +2542,13 @@ public abstract class BaseEditEngine
 		BrushWidth = engine.BrushWidth;
 		if (fill_button is not null)
 			fill_button.SelectedIndex = engine.FillStyle;
+
+		// Show the selected shape's own Raster/Object mode, not whatever the tool last defaulted to.
+		// index 0 = Raster, 1 = Object (see the button's AddItem calls in HandleBuildToolBar). The
+		// dropdown's change handler writes this same value straight back onto the shape, so this
+		// stays a faithful copy, like every other setting above.
+		if (rasterize_mode_button is not null)
+			rasterize_mode_button.SelectedIndex = engine.RasterizeOnFinalize ? 0 : 1;
 
 		StorePreviousSettings ();
 	}

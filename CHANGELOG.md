@@ -105,6 +105,16 @@ Changes for the next release (0.0.2) go here.
 - An image or canvas resize large enough to slow the machine down now asks for confirmation first,
   showing the resulting dimensions and the memory estimate.
 - The zoom and move-selection cursors are now drawn at 2x for high-density displays.
+- New shapes and text objects now default to Raster mode (fuses to layer), and Raster is listed
+  before Object (editable later) in both mode dropdowns.
+- On a shape's edge, left click now drags the whole shape and right click adds a control point
+  (previously the reverse), matching the grab-cursor hint already shown there. Right click on an
+  existing control point still drags the whole shape, since there is no point to insert on top of
+  one already there.
+- The Recolor tool's reverse direction (right click) is now also bound to a user-configurable
+  click gesture (default Alt+Click), so a trackpad or stylus without an easy second button can
+  still reach both directions. The stroke's direction is fixed at mouse-down, so releasing the
+  gesture mid-drag cannot flip it halfway.
 
 ### Fixed
 

@@ -1860,10 +1860,13 @@ msgid ""
 "color. Ctrl+click to re-edit existing text."
 msgstr ""
 
-#: ../Pinta.Tools/Tools/RecolorTool.cs:59
+#. Translators: {0} is the click gesture that reverses a stroke (default Alt+Click).
+#: ../Pinta.Tools/Tools/RecolorTool.cs:74
+#, fuzzy, csharp-format
 msgid ""
-"Left click to replace the secondary color with the primary color.\n"
-"Right click to reverse."
+"Left click to replace the secondary color on the canvas with the primary "
+"color.\n"
+"{0} or right click to replace the primary color with the secondary color."
 msgstr ""
 "왼쪽을 클릭하면 보조 색상이 기본 색상으로 바뀝니다.\n"
 "오른쪽을 클릭하면 반대로 바뀝니다."

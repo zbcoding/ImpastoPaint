@@ -122,10 +122,13 @@ internal sealed class TextModeSwitchTest : ToolsTestHarness
 		obj.Engine.InsertText ("hello");
 		layer.AddText (obj);
 
+		// Force a known baseline: the setting persists across tests, so the button may already
+		// start on Raster, making the switch below a no-op that never fires the event.
 		TextTool t = ActivateOnLayer ();
+		RasterizeModeButton (t).SelectedIndex = 1; // Object, matching the object's own state.
 		Select (t, obj);
 
-		RasterizeModeButton (t).SelectedIndex = 1; // Raster
+		RasterizeModeButton (t).SelectedIndex = 0; // Raster
 
 		Assert.That (obj.RasterizeOnFinalize, Is.True,
 			"choosing Raster for the object currently selected/being edited must flip it, not just affect future objects");
@@ -141,10 +144,10 @@ internal sealed class TextModeSwitchTest : ToolsTestHarness
 		layer.AddText (obj);
 
 		TextTool t = ActivateOnLayer ();
-		RasterizeModeButton (t).SelectedIndex = 1; // Start the toolbar in Raster, matching the object.
+		RasterizeModeButton (t).SelectedIndex = 0; // Start the toolbar in Raster, matching the object.
 		Select (t, obj);
 
-		RasterizeModeButton (t).SelectedIndex = 0; // Object
+		RasterizeModeButton (t).SelectedIndex = 1; // Object
 
 		Assert.That (obj.RasterizeOnFinalize, Is.False,
 			"choosing Object for the object currently selected/being edited must flip it back to editable");
@@ -166,16 +169,16 @@ internal sealed class TextModeSwitchTest : ToolsTestHarness
 		layer.AddText (obj);
 
 		// Force a known baseline: the setting persists across tests, so the button may already
-		// start on Raster, making the SelectedIndex = 1 below a no-op that never fires the event.
+		// start on Raster, making the switch below a no-op that never fires the event.
 		TextTool t = ActivateOnLayer ();
-		RasterizeModeButton (t).SelectedIndex = 0;
+		RasterizeModeButton (t).SelectedIndex = 1; // Object, matching the object's own state.
 		Select (t, obj);
 
 		bool raised = false;
 		void Handler () => raised = true;
 		LayerObjectSelection.ObjectsChanged += Handler;
 		try {
-			RasterizeModeButton (t).SelectedIndex = 1; // Raster
+			RasterizeModeButton (t).SelectedIndex = 0; // Raster
 		} finally {
 			LayerObjectSelection.ObjectsChanged -= Handler;
 		}
@@ -202,9 +205,9 @@ internal sealed class TextModeSwitchTest : ToolsTestHarness
 		layer.AddText (obj);
 
 		// Force a known baseline: the setting persists across tests, so the button may already
-		// start on Raster, making a SelectedIndex set below a no-op that never fires the event.
+		// start on Raster, making a switch below a no-op that never fires the event.
 		TextTool t = ActivateOnLayer ();
-		RasterizeModeButton (t).SelectedIndex = 0;
+		RasterizeModeButton (t).SelectedIndex = 1; // Object, matching the object's own state.
 		Select (t, obj);
 
 		Assert.That (UserLayer.GetsSubRow (obj), Is.True, "setup: a brand-new object gets a sub-row");
@@ -213,13 +216,13 @@ internal sealed class TextModeSwitchTest : ToolsTestHarness
 		void Handler () => changes++;
 		LayerObjectSelection.ObjectsChanged += Handler;
 		try {
-			RasterizeModeButton (t).SelectedIndex = 1; // Raster
+			RasterizeModeButton (t).SelectedIndex = 0; // Raster
 
 			Assert.That (UserLayer.GetsSubRow (obj), Is.False,
 				"switching the brand-new object to Raster must drop its sub-row");
 			Assert.That (changes, Is.EqualTo (1), "the dock must be told to refresh after the drop");
 
-			RasterizeModeButton (t).SelectedIndex = 0; // Back to Object
+			RasterizeModeButton (t).SelectedIndex = 1; // Back to Object
 
 			Assert.That (UserLayer.GetsSubRow (obj), Is.True,
 				"switching back to Object must restore the object's sub-row");
@@ -254,7 +257,7 @@ internal sealed class TextModeSwitchTest : ToolsTestHarness
 		layer.AddText (obj);
 
 		TextTool t = ActivateOnLayer ();
-		RasterizeModeButton (t).SelectedIndex = 0; // Known baseline - see the tests above.
+		RasterizeModeButton (t).SelectedIndex = 1; // Object - known baseline, matching the object's own state.
 		Select (t, obj);
 
 		// Establish what the overlay looks like with the badge on, at a fixed point in the editing
@@ -262,13 +265,13 @@ internal sealed class TextModeSwitchTest : ToolsTestHarness
 		RedrawText (t, true);
 		ColorBgra[] withBadge = OverlaySnapshot ();
 
-		RasterizeModeButton (t).SelectedIndex = 1; // Raster
+		RasterizeModeButton (t).SelectedIndex = 0; // Raster
 		ColorBgra[] afterSwitchToRaster = OverlaySnapshot ();
 
 		Assert.That (afterSwitchToRaster, Is.Not.EqualTo (withBadge),
 			"switching to Raster must redraw the overlay immediately, dropping the badge - not leave it stale");
 
-		RasterizeModeButton (t).SelectedIndex = 0; // Back to Object
+		RasterizeModeButton (t).SelectedIndex = 1; // Back to Object
 		ColorBgra[] afterSwitchBackToObject = OverlaySnapshot ();
 
 		Assert.That (afterSwitchBackToObject, Is.EqualTo (withBadge),

@@ -93,6 +93,13 @@ public class RecolorTool : BaseBrushTool
 
 	protected override void OnMouseDown (Document document, ToolMouseEventArgs e)
 	{
+		// Mirrors BaseBrushTool's own re-entrancy guard: a second mouse button pressed while a
+		// stroke is already in progress must be ignored outright, not just prevented from
+		// restarting the stroke below - otherwise it still flips reversed_stroke and swaps the
+		// stencil out from under the drag that's still running.
+		if (mouse_button != MouseButton.None)
+			return;
+
 		document.Layers.ToolLayer.Clear ();
 
 		reversed_stroke = IsReverseStroke (e);

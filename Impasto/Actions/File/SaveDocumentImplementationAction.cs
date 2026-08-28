@@ -158,7 +158,7 @@ internal sealed class SaveDocumentImplmentationAction : IActionHandler
 			// the selected format so the file isn't saved without one (e.g. when
 			// saving as AVIF for the first time). Leave an explicitly typed but
 			// unrecognized extension (e.g. "painting.foo") alone.
-			if (Path.GetExtension (displayName) == string.Empty) {
+			if (!HasExtension (displayName)) {
 				displayName += "." + format.Extensions.First ();
 				file = file.GetParent ()!.GetChild (displayName);
 			}
@@ -195,6 +195,12 @@ internal sealed class SaveDocumentImplmentationAction : IActionHandler
 
 		return false;
 	}
+
+	// Path.GetExtension() treats a leading dot as part of the name rather than an extension
+	// marker (e.g. ".bashrc" -> ".bashrc", not ""), so a blank-name save that a portal/file
+	// chooser fills in with a dotfile-style default would otherwise look like it already has
+	// an extension and never get the real one appended.
+	private static bool HasExtension (string fileName) => fileName.LastIndexOf ('.') > 0;
 
 	private async Task<bool> SaveFile (Document document, Gio.File? file, FormatDescriptor? format, Gtk.Window parent)
 	{

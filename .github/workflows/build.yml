@@ -32,6 +32,20 @@ jobs:
 
     steps:
     - uses: actions/checkout@v7
+    # Rebuilding the save target after the Save As dialog accepts sends the write to
+    # a path the portal never granted, so it lands on the portal's staging file
+    # instead of the chosen name. Upstream fixed this in 2022 (Pinta bug 1958670) and
+    # left a comment; this fork reintroduced it anyway. Hence a check that fails the
+    # build. The file's own comment explains why. Delete both together or neither.
+    - name: Check the save dialog does not rebuild its target file
+      run: |
+        save_action=Impasto/Actions/File/SaveDocumentImplementationAction.cs
+        # The second grep drops comment lines, so the file's own explanation of the
+        # rule does not trip it.
+        if grep -nE '\.(GetChild|NewForPath|NewForUri|NewForCommandlineArg) ?\(' "$save_action" | grep -v ':[[:space:]]*//'; then
+          echo "::error file=$save_action::Constructing a Gio.File here breaks desktop portals - use the file the dialog returned."
+          exit 1
+        fi
     # configure.ac is the single source of truth for the version, and it's what
     # names the release zip - so read it from there rather than duplicating it.
     - name: Set environment variables

@@ -154,13 +154,20 @@ internal sealed class SaveDocumentImplmentationAction : IActionHandler
 					?? image_formats.GetDefaultSaveFormat ();
 			}
 
-			// If the entered name has no extension at all, append the extension of
-			// the selected format so the file isn't saved without one (e.g. when
-			// saving as AVIF for the first time). Leave an explicitly typed but
-			// unrecognized extension (e.g. "painting.foo") alone.
+			// Never rebuild a new Gio.File to paper over a missing extension: constructing
+			// a different target after the dialog has already returned one breaks desktop
+			// portals (upstream Pinta bug 1958670 - the write can silently land on a portal
+			// staging file instead of the chosen name). Ask the user to add an extension
+			// instead of quietly redirecting the write to a path the portal never granted.
 			if (!HasExtension (displayName)) {
-				displayName += "." + format.Extensions.First ();
-				file = file.GetParent ()!.GetChild (displayName);
+
+				await chrome.ShowMessageDialog (
+					chrome.MainWindow,
+					Translations.GetString ("Impasto does not save files without a file extension."),
+					Translations.GetString ("Please enter a name with an extension, e.g. \"{0}.{1}\".", displayName, format.Extensions.First ()));
+
+				fcd.SetCurrentName (displayName);
+				continue;
 			}
 
 			if (!await ConfirmFlatten (document, format)) {
@@ -197,9 +204,8 @@ internal sealed class SaveDocumentImplmentationAction : IActionHandler
 	}
 
 	// Path.GetExtension() treats a leading dot as part of the name rather than an extension
-	// marker (e.g. ".bashrc" -> ".bashrc", not ""), so a blank-name save that a portal/file
-	// chooser fills in with a dotfile-style default would otherwise look like it already has
-	// an extension and never get the real one appended.
+	// marker (e.g. ".bashrc" -> ".bashrc", not ""), so a blank or dotfile-style name would
+	// otherwise look like it already has an extension.
 	private static bool HasExtension (string fileName) => fileName.LastIndexOf ('.') > 0;
 
 	private async Task<bool> SaveFile (Document document, Gio.File? file, FormatDescriptor? format, Gtk.Window parent)

@@ -157,16 +157,11 @@ internal sealed class SaveDocumentImplmentationAction : IActionHandler
 			// Never rebuild a new Gio.File to paper over a missing extension: constructing
 			// a different target after the dialog has already returned one breaks desktop
 			// portals (upstream Pinta bug 1958670 - the write can silently land on a portal
-			// staging file instead of the chosen name). Ask the user to add an extension
-			// instead of quietly redirecting the write to a path the portal never granted.
+			// staging file instead of the chosen name). Instead, re-show the dialog with the
+			// selected format's extension already filled in, so accepting it again gets a
+			// freshly negotiated file from the dialog rather than one we patched ourselves.
 			if (!HasExtension (displayName)) {
-
-				await chrome.ShowMessageDialog (
-					chrome.MainWindow,
-					Translations.GetString ("Impasto does not save files without a file extension."),
-					Translations.GetString ("Please enter a name with an extension, e.g. \"{0}.{1}\".", displayName, format.Extensions.First ()));
-
-				fcd.SetCurrentName (displayName);
+				fcd.SetCurrentName (displayName + "." + format.Extensions.First ());
 				continue;
 			}
 

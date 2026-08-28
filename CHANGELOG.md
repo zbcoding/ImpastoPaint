@@ -6,7 +6,11 @@ Impasto is a fork of the [Pinta Project](https://github.com/PintaProject/Pinta).
 Everything below the "Pinta Project history" heading, plus the "Inherited from Pinta"
 entries, is upstream Pinta work; the Impasto sections cover changes made in this fork.
 
-## Impasto - [Unreleased](https://github.com/zbcoding/ImpastoPaint/compare/v0.1.0...main)
+## Impasto - [Unreleased](https://github.com/zbcoding/ImpastoPaint/compare/v0.1.1...main)
+
+Changes for the next release go here.
+
+## Impasto - [0.1.1](https://github.com/zbcoding/ImpastoPaint/releases/tag/v0.1.1) - 2026-08-28
 
 ### Fixed
 
@@ -15,6 +19,9 @@ entries, is upstream Pinta work; the Impasto sections cover changes made in this
   Flatpak). Impasto now re-shows the Save As dialog with the selected format's extension already
   filled in, instead of rebuilding the target file after the dialog has already returned one -
   rebuilding it broke desktop portals, the same issue Pinta fixed upstream in bug 1958670.
+- A dotfile-style name such as `.bashrc` in the Save field no longer saves without an extension.
+  The name counted as its own extension, so the format's extension was never appended and the
+  file was written hidden.
 
 ## Impasto - [0.1.0](https://github.com/zbcoding/ImpastoPaint/releases/tag/v0.1.0) - 2026-08-27
 

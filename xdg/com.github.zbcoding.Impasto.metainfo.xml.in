@@ -43,6 +43,12 @@
     <binary>impasto</binary>
   </provides>
   <releases>
+    <release version="0.1.1" date="2026-08-28">
+      <url>https://github.com/zbcoding/ImpastoPaint/releases/tag/v0.1.1</url>
+      <description>
+        <p>Fixes saving under a file name with no extension. The file is no longer written to a different path than the one chosen, and a dotfile-style name now gets the selected format's extension.</p>
+      </description>
+    </release>
     <release version="0.1.0" date="2026-08-27">
       <url>https://github.com/zbcoding/ImpastoPaint/releases/tag/v0.1.0</url>
       <description>

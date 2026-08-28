@@ -8,7 +8,13 @@ entries, is upstream Pinta work; the Impasto sections cover changes made in this
 
 ## Impasto - [Unreleased](https://github.com/zbcoding/ImpastoPaint/compare/v0.1.0...main)
 
-Changes for the next release go here.
+### Fixed
+
+- Saving with a file name that has no extension no longer silently redirects the write to a
+  different file (which could land on a portal staging file instead of a real name, e.g. under
+  Flatpak). Impasto now asks for a name with an extension instead of rebuilding the target file
+  after the Save As dialog has already returned one - rebuilding it broke desktop portals, the
+  same issue Pinta fixed upstream in bug 1958670.
 
 ## Impasto - [0.1.0](https://github.com/zbcoding/ImpastoPaint/releases/tag/v0.1.0) - 2026-08-27
 

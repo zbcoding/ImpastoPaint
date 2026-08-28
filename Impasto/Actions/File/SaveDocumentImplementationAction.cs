@@ -154,13 +154,20 @@ internal sealed class SaveDocumentImplmentationAction : IActionHandler
 					?? image_formats.GetDefaultSaveFormat ();
 			}
 
-			// Never rebuild a new Gio.File to paper over a missing extension: constructing
-			// a different target after the dialog has already returned one breaks desktop
-			// portals (upstream Pinta bug 1958670 - the write can silently land on a portal
-			// staging file instead of the chosen name). Instead, re-show the dialog with the
-			// selected format's extension already filled in, so accepting it again gets a
-			// freshly negotiated file from the dialog rather than one we patched ourselves.
-			if (!HasExtension (displayName)) {
+			// This exact bug has recurred three times, each attempt patching the filename
+			// right after the dialog returned it:
+			//   - pre-2022 upstream: fcd.CurrentName = display_name; file = fcd.File; -
+			//     re-read the same in-process dialog, which stopped being safe once GTK4
+			//     moved Save As to a portal-backed helper process.
+			//   - upstream's 2022 fix (Pinta bug 1958670) removed all post-accept mutation.
+			//   - this fork's b46cd966 reintroduced it via
+			//     file.GetParent()!.GetChild(displayName), silently redirecting the write to
+			//     a path the portal never granted - the write can then land on the portal's
+			//     own staging file instead of the chosen name.
+			// So: never rebuild a new Gio.File after Accept. A missing extension re-shows the
+			// dialog instead, with the extension already filled in, so accepting it again
+			// gets a freshly negotiated file from the dialog rather than one we patched.
+			if (!ImageConverterManager.HasExtension (displayName)) {
 				fcd.SetCurrentName (displayName + "." + format.Extensions.First ());
 				continue;
 			}
@@ -197,11 +204,6 @@ internal sealed class SaveDocumentImplmentationAction : IActionHandler
 
 		return false;
 	}
-
-	// Path.GetExtension() treats a leading dot as part of the name rather than an extension
-	// marker (e.g. ".bashrc" -> ".bashrc", not ""), so a blank or dotfile-style name would
-	// otherwise look like it already has an extension.
-	private static bool HasExtension (string fileName) => fileName.LastIndexOf ('.') > 0;
 
 	private async Task<bool> SaveFile (Document document, Gio.File? file, FormatDescriptor? format, Gtk.Window parent)
 	{

@@ -228,6 +228,14 @@ public sealed class ImageConverterManager
 	}
 
 	/// <summary>
+	/// Whether the file name has a real extension, e.g. for deciding whether to append one
+	/// before saving. Path.GetExtension() treats a leading dot as part of the name rather
+	/// than an extension marker (e.g. ".bashrc" -> ".bashrc", not ""), so a blank or
+	/// dotfile-style name would otherwise look like it already has an extension.
+	/// </summary>
+	public static bool HasExtension (string fileName) => fileName.LastIndexOf ('.') > 0;
+
+	/// <summary>
 	/// Finds the correct importer to use for opening the given file, or null
 	/// if no importer exists for the file.
 	/// </summary>

@@ -428,6 +428,21 @@ internal sealed class FileFormatTests
 		Assert.That (ImageConverterManager.ResolveSelectedFormat (null, filetypes), Is.Null);
 	}
 
+	[TestCase ("photo.png", true)]
+	[TestCase ("photo", false)]
+	[TestCase ("", false)]
+	// Regression: Path.GetExtension() treats a leading dot as part of the name rather than
+	// an extension marker (".bashrc" -> ".bashrc", not ""), so a dotfile-style name - e.g.
+	// the portal's fallback default when the Save dialog's name field was left blank -
+	// must not be mistaken for a name that already has an extension.
+	[TestCase (".bashrc", false)]
+	[TestCase (".xdp-Screenshot_20260828_043853 mit 2", false)]
+	[TestCase ("archive.tar.gz", true)]
+	public void HasExtension_DetectsRealExtensionsOnly (string fileName, bool expected)
+	{
+		Assert.That (ImageConverterManager.HasExtension (fileName), Is.EqualTo (expected));
+	}
+
 	[Test]
 	public void Export_Avif_ProducesValidFile ()
 	{

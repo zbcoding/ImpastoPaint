@@ -308,8 +308,7 @@ msgstr ""
 msgid "Black and White"
 msgstr ""
 
-#: ../Impasto/Dialogs/LayerPropertiesDialog.cs:73
-#: ../Pinta.Gui.Widgets/Widgets/Layers/ObjectPropertiesDialog.cs:54
+#: ../Pinta.Gui.Widgets/Widgets/Layers/PropertiesDialogGridBuilder.cs:35
 msgid "Blend Mode"
 msgstr ""
 
@@ -2332,8 +2331,7 @@ msgstr ""
 msgid "Multiply"
 msgstr ""
 
-#: ../Impasto/Dialogs/LayerPropertiesDialog.cs:61
-#: ../Pinta.Gui.Widgets/Widgets/Layers/ObjectPropertiesDialog.cs:42
+#: ../Pinta.Gui.Widgets/Widgets/Layers/PropertiesDialogGridBuilder.cs:25
 msgid "Name:"
 msgstr ""
 
@@ -2545,9 +2543,8 @@ msgstr ""
 msgid "Oil Painting"
 msgstr ""
 
-#: ../Impasto/Dialogs/LayerPropertiesDialog.cs:85
 #: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:723
-#: ../Pinta.Gui.Widgets/Widgets/Layers/ObjectPropertiesDialog.cs:64
+#: ../Pinta.Gui.Widgets/Widgets/Layers/PropertiesDialogGridBuilder.cs:44
 msgid "Opacity:"
 msgstr ""
 
@@ -4449,8 +4446,7 @@ msgstr ""
 msgid "Vignette"
 msgstr ""
 
-#: ../Impasto/Dialogs/LayerPropertiesDialog.cs:70
-#: ../Pinta.Gui.Widgets/Widgets/Layers/ObjectPropertiesDialog.cs:51
+#: ../Pinta.Gui.Widgets/Widgets/Layers/PropertiesDialogGridBuilder.cs:33
 msgid "Visible"
 msgstr ""
 

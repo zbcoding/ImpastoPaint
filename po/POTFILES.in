@@ -405,6 +405,7 @@ Pinta.Gui.Widgets/Widgets/HScaleSpinButtonWidget.cs
 Pinta.Gui.Widgets/Widgets/Layers/LayersListView.cs
 Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs
 Pinta.Gui.Widgets/Widgets/Layers/ObjectPropertiesDialog.cs
+Pinta.Gui.Widgets/Widgets/Layers/PropertiesDialogGridBuilder.cs
 Pinta.Gui.Widgets/Widgets/PaletteWidget.cs
 Pinta.Gui.Widgets/Widgets/PintaColorButton.cs
 Pinta.Gui.Widgets/Widgets/PointPickerGraphic.cs

@@ -236,6 +236,16 @@ public sealed class ImageConverterManager
 	public static bool HasExtension (string fileName) => fileName.LastIndexOf ('.') > 0;
 
 	/// <summary>
+	/// Whether the Save dialog has to re-show <paramref name="displayName"/> with a corrected
+	/// extension appended before accepting it, rather than saving as-is: either there's no real
+	/// extension at all (<see cref="HasExtension"/>), or the one present doesn't resolve to any
+	/// known format (e.g. "archive.tar.gz" resolves to ".gz", which matches nothing). Both would
+	/// otherwise silently write the fallback format's bytes under a name that doesn't match it.
+	/// </summary>
+	public static bool NeedsExtensionPrompt (string displayName, FormatDescriptor? formatFromExtension)
+		=> !HasExtension (displayName) || formatFromExtension is null;
+
+	/// <summary>
 	/// Finds the correct importer to use for opening the given file, or null
 	/// if no importer exists for the file.
 	/// </summary>

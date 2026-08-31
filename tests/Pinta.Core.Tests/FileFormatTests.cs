@@ -444,6 +444,27 @@ internal sealed class FileFormatTests
 	}
 
 	[Test]
+	public void NeedsExtensionPrompt_TrueWhenThereIsNoRealExtension ()
+		=> Assert.That (ImageConverterManager.NeedsExtensionPrompt ("photo", formatFromExtension: null), Is.True);
+
+	// Regression: "archive.tar.gz" has a real extension by HasExtension's own rule (there's a dot
+	// past position 0), but ".gz" resolves to no format - the bug wrote the fallback format's
+	// bytes silently under this exact name, with no re-prompt and no warning.
+	[Test]
+	public void NeedsExtensionPrompt_TrueWhenTheExtensionResolvesToNoFormat ()
+		=> Assert.That (ImageConverterManager.NeedsExtensionPrompt ("archive.tar.gz", formatFromExtension: null), Is.True);
+
+	[Test]
+	public void NeedsExtensionPrompt_FalseWhenTheExtensionResolves ()
+	{
+		Assume.That (TryInitGtk (), "GTK is not available on this system");
+
+		FormatDescriptor png = MakeFormat ("PNG", "png");
+
+		Assert.That (ImageConverterManager.NeedsExtensionPrompt ("photo.png", png), Is.False);
+	}
+
+	[Test]
 	public void Export_Avif_ProducesValidFile ()
 	{
 		// AVIF export needs the native libavif library; skip where it is not installed.

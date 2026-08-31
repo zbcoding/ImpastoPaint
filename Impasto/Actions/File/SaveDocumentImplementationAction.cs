@@ -147,12 +147,15 @@ internal sealed class SaveDocumentImplmentationAction : IActionHandler
 			// Always follow the extension rather than the file type drop down
 			// ie: if the user chooses to save a "jpeg" as "foo.png", we are going
 			// to assume they just didn't update the dropdown and really want png
-			FormatDescriptor? format = image_formats.GetFormatByFile (displayName);
-			if (format is null) {
-				// Fall back to the selected file filter, then to the default format.
-				format = ImageConverterManager.ResolveSelectedFormat (fcd.Filter, filetypes)
-					?? image_formats.GetDefaultSaveFormat ();
-			}
+			//
+			// Fall back to the selected file filter, then to the default format, when the name's
+			// extension doesn't resolve to one - a missing extension and an unrecognized one
+			// (foo.tar.gz -> ".gz") both land here and both need the re-prompt below, or the
+			// fallback format's bytes get written silently under the name's original extension.
+			FormatDescriptor? formatFromExtension = image_formats.GetFormatByFile (displayName);
+			FormatDescriptor format = formatFromExtension
+				?? ImageConverterManager.ResolveSelectedFormat (fcd.Filter, filetypes)
+				?? image_formats.GetDefaultSaveFormat ();
 
 			// This exact bug has recurred three times, each attempt patching the filename
 			// right after the dialog returned it:
@@ -164,10 +167,11 @@ internal sealed class SaveDocumentImplmentationAction : IActionHandler
 			//     file.GetParent()!.GetChild(displayName), silently redirecting the write to
 			//     a path the portal never granted - the write can then land on the portal's
 			//     own staging file instead of the chosen name.
-			// So: never rebuild a new Gio.File after Accept. A missing extension re-shows the
-			// dialog instead, with the extension already filled in, so accepting it again
-			// gets a freshly negotiated file from the dialog rather than one we patched.
-			if (!ImageConverterManager.HasExtension (displayName)) {
+			// So: never rebuild a new Gio.File after Accept. A missing extension, or one present but
+			// unresolved (foo.tar.gz -> ".gz"), re-shows the dialog instead, with the resolved
+			// format's extension already filled in, so accepting it again gets a freshly negotiated
+			// file from the dialog rather than one we patched.
+			if (ImageConverterManager.NeedsExtensionPrompt (displayName, formatFromExtension)) {
 				fcd.SetCurrentName (displayName + "." + format.Extensions.First ());
 				continue;
 			}

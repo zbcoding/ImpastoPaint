@@ -689,6 +689,16 @@ public abstract class BaseEditEngine
 		SelectedPointIndex = -1;
 		SelectedShapeIndex = -1;
 
+		// ponytail: a mid-drag tool switch (e.g. a keyboard shortcut) used to leave these set, and
+		// HandleMouseDown's "if (is_drawing) return;" guard made every shape tool dead until
+		// restart. Reset before the workspace.HasOpenDocuments block below so the flags clear even
+		// when there's no open document. Shared fix: a BaseTool.CancelActiveGesture() hook, if a
+		// fourth tool needs the same reset.
+		is_drawing = false;
+		changing_tension = false;
+		moving_whole_shape = false;
+		rotating_whole_shape = false;
+
 		workspace.SelectedLayerChanged -= HandleSelectedLayerChanged;
 
 		StorePreviousSettings ();

@@ -68,6 +68,64 @@ internal sealed class ShapeStateCompletenessTest : ToolsTestHarness
 		});
 	}
 
+	[TearDown]
+	public void ClearSEngines () => BaseEditEngine.SEngines.Clear ();
+
+	// Every kind converted here lands back on a subclass equal to its own (LineCurveSeriesEngine for
+	// all three line kinds; Ellipse and RoundedLine are each the only ShapeObjectType mapping to
+	// their engine class, so the only same-subclass conversion for them is into themselves). Never
+	// targets OpenLineCurveSeries: Convert() hardcodes Closed to false for it regardless of the
+	// source, which Populated's Closed = true cannot survive - a real behavior, not a gap this test
+	// is about, so the target is chosen to not exercise it here.
+	private static ShapeObjectType SameSubclassTarget (ShapeObjectType kind) => kind switch {
+		ShapeObjectType.OpenLineCurveSeries => ShapeObjectType.ClosedLineCurveSeries,
+		ShapeObjectType.ClosedLineCurveSeries => ShapeObjectType.Triangle,
+		ShapeObjectType.Triangle => ShapeObjectType.ClosedLineCurveSeries,
+		_ => kind,
+	};
+
+	// The Convert() counterpart to the test above: Convert() builds an entirely new subclass
+	// instance from scratch and used to carry over only ShapeEngine's own state (CopyMutableState),
+	// silently dropping whatever a subclass added - arrows/triangle type, a RoundedLine's radius, an
+	// Ellipse's partial-arc geometry - on any conversion that stays within (or returns to) the same
+	// subclass. Reuses Populated and per_type_state so a field added to one leg and not the other
+	// fails here exactly as it would above.
+	[TestCase (ShapeObjectType.OpenLineCurveSeries)]
+	[TestCase (ShapeObjectType.ClosedLineCurveSeries)]
+	[TestCase (ShapeObjectType.Ellipse)]
+	[TestCase (ShapeObjectType.RoundedLineSeries)]
+	[TestCase (ShapeObjectType.Triangle)]
+	public void ConvertWithinTheSameSubclassAlsoKeepsEveryOwnedField (ShapeObjectType kind)
+	{
+		ShapeObject source = Populated (kind);
+		ShapeObject dropped = new ();
+		ShapeObjectType target = SameSubclassTarget (kind);
+
+		ShapeEngine engine = ShapeEngineCollection.Create (Layer (0), source);
+		BaseEditEngine.SEngines.Add (engine);
+
+		ShapeEngine converted = engine.Convert ((BaseEditEngine.ShapeTypes) target, shapeIndex: 0);
+		ShapeObject rebuilt = converted.ToShapeObject ();
+
+		Assert.Multiple (() => {
+			Assert.That (rebuilt.ShapeType, Is.EqualTo (target), "setup: Convert() has to actually change the shape's type");
+
+			foreach (PropertyInfo field in Fields) {
+				if (field.Name == nameof (ShapeObject.ShapeType))
+					continue; // Checked above - Convert()'s entire point is to change it.
+
+				bool owned = !per_type_state.TryGetValue (field.Name, out ShapeObjectType[]? owners) || owners.Contains (kind);
+				ShapeObject expected = owned ? source : dropped;
+
+				Assert.That (
+					Same (field.GetValue (rebuilt), field.GetValue (expected)), Is.True,
+					owned
+						? $"{kind}.{field.Name} is common (or this kind's own) state and has to survive Convert(), not just Create -> ToShapeObject"
+						: $"{kind}.{field.Name} belongs to another kind, so it has to come back at its default rather than a stale value");
+			}
+		});
+	}
+
 	// Guards the test above: it only proves a field round-trips if the field was actually given a
 	// non-default value to carry. A field added to ShapeObject and not populated here would pass
 	// vacuously, which is the failure mode this whole fixture exists to prevent.

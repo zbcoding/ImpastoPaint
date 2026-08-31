@@ -394,12 +394,35 @@ public abstract class ShapeEngine : ILayerObject
 		};
 
 		CopyMutableState (clone, this);
+		CopySubclassState (clone, this);
 
 		// Add the new ShapeEngine instance at the specified index to
 		// ensure as transparent of a cloning as possible.
 		BaseEditEngine.SEngines.Insert (shapeIndex, clone);
 
 		return clone;
+	}
+
+	// CopyMutableState only covers state that lives on ShapeEngine itself; Convert() otherwise
+	// starts every new instance from its constructor defaults, silently dropping whatever a
+	// subclass adds - arrows/triangle type, a RoundedLine's radius, an Ellipse's partial-arc
+	// geometry - whenever the conversion stays within (or returns to) that same subclass. Handles
+	// the general "source and destination share a subclass" case rather than special-casing one
+	// family, so the next subclass field added here doesn't get to slip through the same hole.
+	private static void CopySubclassState (ShapeEngine dest, ShapeEngine src)
+	{
+		if (dest is LineCurveSeriesEngine destLine && src is LineCurveSeriesEngine srcLine) {
+			destLine.Arrow1 = srcLine.Arrow1;
+			destLine.Arrow2 = srcLine.Arrow2;
+			destLine.TriangleType = srcLine.TriangleType;
+		}
+
+		if (dest is RoundedLineEngine destRounded && src is RoundedLineEngine srcRounded)
+			destRounded.Radius = srcRounded.Radius;
+
+		if (dest is EllipseEngine destEllipse && src is EllipseEngine srcEllipse
+			&& srcEllipse.TryGetPartialGeometry (out PointD center, out double radiusX, out double radiusY, out double rotation))
+			destEllipse.SetPartialGeometry (center, radiusX, radiusY, rotation);
 	}
 
 	/// <summary>

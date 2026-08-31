@@ -1018,6 +1018,14 @@ public sealed class TextTool : BaseTool
 			document.History.HistoryItemAdded -= HandleHistoryChanged;
 		}
 
+		// ponytail: a mid-drag tool switch (e.g. a keyboard shortcut) deactivates us with a border
+		// grip, corner grip, or new-box drag still live. Without this, OnMouseMove/UpdateMouseCursor
+		// deref current_text_object while tracking is still true and it's already null. Shared fix:
+		// a BaseTool.CancelActiveGesture() hook, if a third tool needs the same reset.
+		tracking = false;
+		manipulation = TextManipulation.None;
+		drawing_new_box = false;
+
 		CommitCurrentText ();
 
 		// Clear the re-edit rectangle overlay, its grips, and the edit hint.

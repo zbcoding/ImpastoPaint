@@ -234,7 +234,7 @@ public static class ObjectRasterizer
 		// a selection cut rasterizes a text and the shape it overlaps.
 		// textClip is set by the text tool's Raster-mode commit so the baked pixels match the clipped
 		// preview; the generic Cut/Erase and "Rasterize All" callers pass null (bake the full object).
-		ImageSurface baked = CairoExtensions.CreateImageSurface (Format.Argb32, layer.Surface.Width, layer.Surface.Height);
+		using ImageSurface baked = CairoExtensions.CreateImageSurface (Format.Argb32, layer.Surface.Width, layer.Surface.Height);
 		int shapeSeen = 0;
 		int textSeen = 0;
 		ObjectLayerRenderWalk.Walk (
@@ -418,9 +418,47 @@ public static class ObjectRasterizer
 		if (shapeIndices.Count == 0 && textIndices.Count == 0)
 			return true; // the selection misses every object; nothing to bake.
 
+		// The selection itself can miss a clipped modifier's region while that region still reaches
+		// one of the objects just picked for the subset bake. RasterizeSubset's walk has no arm for
+		// modifier nodes (ObjectLayerRenderWalk), so it would bake that object's raw, un-modified
+		// pixels straight into the base raster - silently different from what the live composite is
+		// showing through the modifier. Fall back to the whole-stack bake whenever that overlap
+		// exists, same as if the selection had reached the modifier itself.
+		if (layer.HasModifiers && ModifierClipOverlapsAnyBakedObject (layer, shapeIndices, textIndices)) {
+			List<string> stackLabels = DescribeAll (layer).ToList ();
+			return ConfirmThenBake (chrome, stackLabels, () => RasterizeModifierStack (doc, workspace, chrome, layer, historyGroup));
+		}
+
 		List<string> objectLabels = Describe (layer, shapeIndices, textIndices).ToList ();
 		return ConfirmThenBake (chrome, objectLabels,
 			() => RasterizeSubset (doc, workspace, chrome, layer, shapeIndices, textIndices, historyGroup: historyGroup));
+	}
+
+	// Bounds-only overlap, matching FindIntersecting's own conservatism: a false positive here only
+	// costs an unnecessary whole-stack-bake prompt, never a missed one.
+	private static bool ModifierClipOverlapsAnyBakedObject (
+		UserLayer layer,
+		IReadOnlyList<int> shapeIndices,
+		IReadOnlyList<int> textIndices)
+	{
+		List<RectangleD> objectBounds = [
+			.. shapeIndices.Select (i => layer.ShapeObjects[i].GetApproximateBounds ()),
+			.. textIndices.Select (i => {
+				RectangleI b = layer.TextObjects[i].TextBounds;
+				return new RectangleD (b.X, b.Y, b.Width, b.Height);
+			}),
+		];
+
+		foreach (ILayerModifierNode node in layer.ModifierNodes) {
+			if (node.Clip is null)
+				continue; // An unclipped node already routed every selection here via SelectionReachesAnyModifier.
+
+			RectangleD clipBounds = node.Clip.GetBounds ();
+			if (objectBounds.Any (b => Overlaps (clipBounds, b)))
+				return true;
+		}
+
+		return false;
 	}
 
 	// A node with no clip modifies the whole layer, so any selection reaches it. For a clipped node,

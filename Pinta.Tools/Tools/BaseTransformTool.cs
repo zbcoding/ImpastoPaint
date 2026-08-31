@@ -555,6 +555,26 @@ public abstract class BaseTransformTool : BaseTool
 
 	protected override void OnDeactivated (Document? document, BaseTool? newTool)
 	{
+		// ponytail: a mid-drag tool switch (e.g. a keyboard shortcut) used to leave is_dragging /
+		// is_rotating / is_scaling / is_handle_scaling set, and IsActive makes every later
+		// OnMouseDown a no-op - the tool looked dead until restart. Finish the in-flight gesture
+		// the same way OnMouseUp would. Shared fix: a BaseTool.CancelActiveGesture() hook, if a
+		// third tool needs the same reset.
+		if (IsActive) {
+			if (is_handle_scaling)
+				handle.EndDrag ();
+
+			if (document is not null)
+				OnFinishTransform (document, transform);
+			else {
+				is_dragging = false;
+				is_rotating = false;
+				is_scaling = false;
+				is_handle_scaling = false;
+				using_mouse = false;
+			}
+		}
+
 		base.OnDeactivated (document, newTool);
 		handle.Active = false;
 		UpdateHandleHint (false);

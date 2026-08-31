@@ -136,6 +136,21 @@ internal sealed class AutosaveManagerTest
 		Assert.That (AutosaveManager.NextIntervalSeconds (30.0, 900), Is.EqualTo (900));
 	}
 
+	/// <summary>
+	/// TryAutosave defers on a retry loop for as long as the pointer button is held, with the
+	/// deferral itself uncapped - one very long continuous stroke used to defeat this class's own
+	/// "longest a document may go without being autosaved" guarantee (MAX_INTERVAL_SECONDS, 300)
+	/// for exactly the large slow-export documents that guarantee exists for. Pinned as the pure
+	/// decision (not through TryAutosave itself, which needs a real pointer/seat this headless
+	/// harness has no display to provide).
+	/// </summary>
+	[TestCase (0, false)]
+	[TestCase (299, false)]
+	[TestCase (300, true)]
+	[TestCase (600, true)]
+	public void DeferralIsForcedThroughOnceItReachesTheMaxInterval (double secondsDeferred, bool expected)
+		=> Assert.That (AutosaveManager.MustForceThroughDeferral (secondsDeferred), Is.EqualTo (expected));
+
 	private string WriteOra (string name, string mimetype, bool includeStack)
 	{
 		string path = Path.Combine (directory, name);

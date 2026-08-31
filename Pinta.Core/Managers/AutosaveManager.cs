@@ -109,6 +109,9 @@ public sealed class AutosaveManager
 	// underneath it. Meaningless while timer_id is 0.
 	private int armed_interval_seconds;
 
+	// When the current run of pointer-held deferrals began. Null while nothing is deferred.
+	private DateTime? deferred_since;
+
 	public AutosaveManager (
 		ISettingsService settings,
 		WorkspaceManager workspace,
@@ -225,20 +228,30 @@ public sealed class AutosaveManager
 
 		// Exporting blocks the main loop for as long as it takes to write the file, so it
 		// must not begin in the middle of a brush stroke, a drag, or any other gesture.
-		// Strokes end, so this defers the work rather than skipping it.
+		// Strokes end, so this defers the work rather than skipping it - but only up to
+		// MAX_INTERVAL_SECONDS. Left unbounded, one very long continuous stroke would defeat
+		// this class's own documented "longest a document may go without being autosaved"
+		// guarantee for exactly the large slow-export documents that guarantee exists for.
 		if (IsPointerButtonHeld ()) {
+			deferred_since ??= DateTime.UtcNow;
 
-			// One retry at a time. The interval timer keeps firing throughout a long stroke,
-			// and each tick would otherwise add a retry that outlives the one before it.
-			if (retry_timer_id == 0)
-				retry_timer_id = GLib.Functions.TimeoutAdd (GLib.Constants.PRIORITY_LOW, RETRY_MILLISECONDS, () => {
-					retry_timer_id = 0;
-					ScheduleAutosave ();
-					return false;
-				});
+			if (!MustForceThroughDeferral ((DateTime.UtcNow - deferred_since.Value).TotalSeconds)) {
+				// One retry at a time. The interval timer keeps firing throughout a long stroke,
+				// and each tick would otherwise add a retry that outlives the one before it.
+				if (retry_timer_id == 0)
+					retry_timer_id = GLib.Functions.TimeoutAdd (GLib.Constants.PRIORITY_LOW, RETRY_MILLISECONDS, () => {
+						retry_timer_id = 0;
+						ScheduleAutosave ();
+						return false;
+					});
 
-			return false;
+				return false;
+			}
+			// Deferred long enough - fall through and force the export mid-gesture rather than
+			// let the deferral itself defeat the guarantee.
 		}
+
+		deferred_since = null;
 
 		// Autosaving must never be the thing that takes the app down - that is the whole
 		// point of the feature. Any failure is reported and the timer keeps running.
@@ -362,6 +375,15 @@ public sealed class AutosaveManager
 
 		return Math.Clamp (proportional, configuredSeconds, longest);
 	}
+
+	/// <summary>
+	/// Whether a pointer-held deferral that has already lasted <paramref name="secondsDeferred"/>
+	/// must be forced through rather than deferred again. MAX_INTERVAL_SECONDS is the longest a
+	/// document may go without being autosaved; an unbounded deferral loop would defeat that for
+	/// the length of a single continuous stroke.
+	/// </summary>
+	internal static bool MustForceThroughDeferral (double secondsDeferred)
+		=> secondsDeferred >= MAX_INTERVAL_SECONDS;
 
 	private void Forget (Document document)
 	{

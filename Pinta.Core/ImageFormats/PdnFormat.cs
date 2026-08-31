@@ -51,7 +51,7 @@ public sealed class PdnFormat : IImageImporter
 		if (docWidth <= 0 || docHeight <= 0 || docWidth > 20000 || docHeight > 20000)
 			throw new InvalidDataException ($"Invalid PDN dimensions {docWidth}x{docHeight}");
 
-		List<LayerInfo> layerInfos = ReadLayerInfos (docRecord);
+		List<LayerInfo> layerInfos = ReadLayerInfos (docRecord, docWidth, docHeight);
 
 		msFull.Position = afterNrbfPos;
 		List<byte[]> layerPixelDatas = ReadAllLayerPixelData (msFull, layerInfos);
@@ -121,7 +121,7 @@ public sealed class PdnFormat : IImageImporter
 		return (docRecord, afterNrbfPos);
 	}
 
-	private static List<LayerInfo> ReadLayerInfos (ClassRecord docRecord)
+	private static List<LayerInfo> ReadLayerInfos (ClassRecord docRecord, int docWidth, int docHeight)
 	{
 		ClassRecord layersRec = docRecord.GetSerializationRecord ("layers") as ClassRecord
 			?? throw new InvalidDataException ("Missing layers");
@@ -133,7 +133,11 @@ public sealed class PdnFormat : IImageImporter
 		SerializationRecord[] arr = itemsRec.GetArray (typeof (object[]), allowNulls: true) as SerializationRecord[]
 			?? throw new InvalidDataException ("Failed to get layer array");
 
-		List<LayerInfo> layerInfos = new (layersSize);
+		// layersSize comes straight out of the NRBF metadata with no bound of its own; the loop
+		// below already clamps to arr.Length via `i >= arr.Length`, so pre-sizing the list past that
+		// never buys anything - only risks a multi-gigabyte allocation from a crafted _size before
+		// the loop, which validates nothing, ever runs.
+		List<LayerInfo> layerInfos = new (SafeLayerListCapacity (layersSize, arr.Length));
 
 		for (int i = 0; i < layersSize; i++) {
 			if (i >= arr.Length) break;
@@ -155,7 +159,7 @@ public sealed class PdnFormat : IImageImporter
 			int layerWidth = bm.GetInt32 ("Layer+width");
 			int layerHeight = bm.GetInt32 ("Layer+height");
 
-			ValidateLayerGeometry (layerWidth, layerHeight, stride, i);
+			ValidateLayerGeometry (layerWidth, layerHeight, stride, length, docWidth, docHeight, i);
 
 			ClassRecord lpRec = bm.GetSerializationRecord ("Layer+properties") as ClassRecord
 				?? throw new InvalidDataException ($"Missing Layer+properties for layer {i}");
@@ -205,18 +209,36 @@ public sealed class PdnFormat : IImageImporter
 		return layerInfos;
 	}
 
-	// Unlike docWidth/docHeight, these come from the per-layer NRBF record with no
-	// framework-level bounds check. CopyPixels divides by width to recover bpp, so a crafted 0
-	// throws DivideByZeroException instead of the InvalidDataException every other malformed
-	// field in this importer produces, and a bogus stride can overflow the bpp calculation into
-	// a value that still passes the 24/32 check there.
-	internal static void ValidateLayerGeometry (int width, int height, int stride, int layerIndex)
+	// width/height/stride/length come from the per-layer NRBF record with no framework-level
+	// bounds check. CopyPixels divides by width to recover bpp, so a crafted 0 throws
+	// DivideByZeroException instead of the InvalidDataException every other malformed field in
+	// this importer produces, and a bogus stride can overflow the bpp calculation into a value
+	// that still passes the 24/32 check there.
+	internal static void ValidateLayerGeometry (int width, int height, int stride, long length, int docWidth, int docHeight, int layerIndex)
 	{
 		if (width <= 0 || height <= 0 || width > 20000 || height > 20000)
 			throw new InvalidDataException ($"Invalid PDN layer dimensions {width}x{height} for layer {layerIndex}");
+		if (width != docWidth || height != docHeight)
+			throw new InvalidDataException ($"PDN layer {layerIndex} dimensions {width}x{height} do not match document dimensions {docWidth}x{docHeight}");
 		if (stride <= 0 || stride > 20000 * 4)
 			throw new InvalidDataException ($"Invalid PDN layer stride {stride} for layer {layerIndex}");
+
+		// length is read from a separate NRBF field (scan0's length64) with no bound of its own.
+		// CopyPixels indexes pixelData by stride*height, so a legitimate length always equals that
+		// product exactly. Requiring the match closes both directions at once: too large (the
+		// original bug - a crafted length64 forcing a multi-gigabyte zeroing allocation, since
+		// stride/height are already capped above, this bound is too) and too small (a raw
+		// IndexOutOfRangeException deep in CopyPixels instead of here).
+		long expectedLength = (long) stride * height;
+		if (length != expectedLength)
+			throw new InvalidDataException ($"PDN layer {layerIndex} scan0 length {length} does not match stride*height {expectedLength}");
 	}
+
+	// The list only ever needs room for what GetArray actually decoded - anything ArrayList+_size
+	// claims beyond that is either padding the caller's loop will skip, or a hostile value with no
+	// data behind it.
+	internal static int SafeLayerListCapacity (int claimedSize, int actualArrayLength)
+		=> Math.Clamp (claimedSize, 0, actualArrayLength);
 
 	private static List<byte[]> ReadAllLayerPixelData (MemoryStream msFull, List<LayerInfo> layerInfos)
 	{

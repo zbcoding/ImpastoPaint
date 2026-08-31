@@ -8,7 +8,14 @@ entries, is upstream Pinta work; the Impasto sections cover changes made in this
 
 ## Impasto - [Unreleased](https://github.com/zbcoding/ImpastoPaint/compare/v0.1.1...main)
 
-Changes for the next release go here.
+### Changed
+
+- The text tool's corner grips are now canvas handles like the shape and selection grips: they
+  show a tooltip on hover (including while typing, where the hover hint used to stay silent) and
+  keep a constant size instead of growing with the zoom level.
+
+- The text tool's tool box tooltip now describes re-editing, resizing, moving, rotating and
+  finishing a text object, with the effective shortcut for each.
 
 ## Impasto - [0.1.1](https://github.com/zbcoding/ImpastoPaint/releases/tag/v0.1.1) - 2026-08-28
 

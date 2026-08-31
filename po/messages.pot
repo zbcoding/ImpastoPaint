@@ -2019,10 +2019,27 @@ msgid ""
 "Hold Shift to use Global mode."
 msgstr ""
 
-#: ../Pinta.Tools/Tools/TextTool.cs:147
+#. Translators: shown in the tool box tooltip for the Text tool.
+#: ../Pinta.Tools/Tools/TextTool.cs:159
 msgid ""
-"Left click to place cursor, then type desired text. Text color is primary "
-"color. Ctrl+click to re-edit existing text."
+"Left click to place the cursor, then type. Text is drawn in the primary "
+"color."
+msgstr ""
+
+#. Translators: {0} is a click gesture such as 'Ctrl+Click'.
+#: ../Pinta.Tools/Tools/TextTool.cs:160
+#, csharp-format
+msgid "{0} to re-edit an existing text object."
+msgstr ""
+
+#: ../Pinta.Tools/Tools/TextTool.cs:161
+msgid "Drag a corner grip to resize, or the dashed border to move."
+msgstr ""
+
+#. Translators: {0} is a click gesture such as 'Alt+Click'; {1} is a key such as 'Escape'.
+#: ../Pinta.Tools/Tools/TextTool.cs:162
+#, csharp-format
+msgid "{0} to rotate, {1} to finish typing."
 msgstr ""
 
 #. Translators: {0} is the click gesture that reverses a stroke (default Alt+Click).

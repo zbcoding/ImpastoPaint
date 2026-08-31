@@ -119,6 +119,17 @@ public sealed class TextTool : BaseTool
 	//Delays showing the hover hint until the cursor has lingered for a moment.
 	private uint hover_hint_timeout_id = 0;
 
+	//Corner grips for the text objects on the current layer. They are canvas handles rather than
+	//overlay drawing so the canvas renders them at a constant window size (like the shape and
+	//selection grips) and answers their hover tooltip, which an overlay surface cannot do.
+	private readonly List<MoveHandle> corner_handles = [];
+	private Document? corner_handles_document;
+
+	public override IEnumerable<IToolHandle> Handles
+		=> workspace.HasOpenDocuments && workspace.ActiveDocument == corner_handles_document
+			? corner_handles
+			: [];
+
 	//While this is true, text will not be committed upon Surface.Clone calls.
 	private bool ignore_clone_finalizations = false;
 
@@ -141,8 +152,16 @@ public sealed class TextTool : BaseTool
 	public override int Priority
 		=> 35;
 
+	// Translators: shown in the tool box tooltip for the Text tool. The placeholders are
+	// shortcut labels such as 'Ctrl+Click' or 'Escape'.
 	public override string StatusBarText
-		=> Translations.GetString ("Left click to place cursor, then type desired text. Text color is primary color. {0}+click to re-edit existing text.", PintaCore.System.CtrlLabel ());
+		=> string.Join ("\n",
+			Translations.GetString ("Left click to place the cursor, then type. Text is drawn in the primary color."),
+			Translations.GetString ("{0} to re-edit an existing text object.", ClickBindingLabel (KeyboardShortcutManager.TextReEdit)),
+			Translations.GetString ("Drag a corner grip to resize, or the dashed border to move."),
+			Translations.GetString ("{0} to rotate, {1} to finish typing.",
+				ClickBindingLabel (KeyboardShortcutManager.TextRotate),
+				PintaCore.Shortcuts.GetToolBinding (KeyboardShortcutManager.TextStopEditing).ToLabel ()));
 
 	public override Gdk.Cursor DefaultCursor { get; }
 
@@ -880,7 +899,7 @@ public sealed class TextTool : BaseTool
 	}
 
 	// An undo/redo swaps the text objects + their TextLayer surface, but not the OverlayLayer overlay
-	// (the dashed re-edit rects + blue handle dots). Rebuild the overlay from the current object list
+	// (the dashed re-edit rects) or the corner grips. Rebuild both from the current object list
 	// so handles for a text object that doesn't exist at this history step no longer linger on canvas.
 	private void HandleHistoryChanged (object? sender, EventArgs e)
 	{
@@ -957,8 +976,8 @@ public sealed class TextTool : BaseTool
 		workspace.LayerRemoved += HandleSelectedLayerChanged;
 		workspace.SelectedLayerChanged += HandleSelectedLayerChanged;
 
-		// The re-edit overlay (dashed rects + blue handle dots) lives on the OverlayLayer, which history
-		// undo/redo does NOT swap — so a step that removes a text object would leave its handles behind.
+		// The re-edit overlay (dashed rects) lives on the OverlayLayer, which history undo/redo does
+		// NOT swap — so a step that removes a text object would leave its rect and grips behind.
 		// Refresh the overlay from the current object list on every undo/redo while we're the active tool.
 		// HistoryItemAdded matters too: an op pushed from outside the tool (e.g. "Rasterize All
 		// Objects" from the layers dock) removes text objects without going through RedrawText.
@@ -1001,7 +1020,10 @@ public sealed class TextTool : BaseTool
 
 		CommitCurrentText ();
 
-		// Clear the re-edit rectangle overlay and the edit hint.
+		// Clear the re-edit rectangle overlay, its grips, and the edit hint.
+		corner_handles.Clear ();
+		corner_handles_document = null;
+
 		if (document is not null && workspace.HasOpenDocuments) {
 			try {
 				document.Layers.OverlayLayer.Hidden = true;
@@ -2333,6 +2355,10 @@ public sealed class TextTool : BaseTool
 
 		using Context g = new (toolLayer.Surface);
 
+		//The grips are rebuilt from scratch here, alongside the rectangles they belong to.
+		corner_handles.Clear ();
+		corner_handles_document = doc;
+
 		g.Save ();
 
 		g.Translate (.5, .5);
@@ -2359,22 +2385,17 @@ public sealed class TextTool : BaseTool
 
 			g.Stroke ();
 
-			//Draw the corner resize handles as blue dots, matching the look of the
-			//selection / shape-handle grips used elsewhere in the app.
-			g.Save ();
-			g.SetDash ([], 0);
-			const double HANDLE_RADIUS = 5;
-			foreach (PointD corner in corners) {
-				g.NewPath ();
-				g.Arc (corner.X, corner.Y, HANDLE_RADIUS, 0, 2 * Math.PI);
-				g.ClosePath ();
-				g.SetSourceColor (new Color (0, 0, 1));
-				g.FillPreserve ();
-				g.LineWidth = 1.5;
-				g.SetSourceColor (new Color (1, 1, 1, 0.85));
-				g.Stroke ();
-			}
-			g.Restore ();
+			//The corner resize grips are canvas handles rather than overlay drawing: the canvas
+			//renders them at a constant window size, matching the selection and shape grips, and
+			//answers their hover tooltip.
+			string cornerTooltip = CornerHintText (obj.Engine.WrapWidth > 0);
+			foreach (PointD corner in corners)
+				corner_handles.Add (
+					new MoveHandle (workspace) {
+						Active = true,
+						CanvasPosition = corner,
+						TooltipText = cornerTooltip,
+					});
 
 			// "Obj." editable-object badge at the field's lower-left corner (skipped for Raster-mode
 			// text, which isn't a persistent object). Positioned just below the lowest-left corner.
@@ -2602,6 +2623,12 @@ public sealed class TextTool : BaseTool
 
 		HitZone zone = GetHitZone (hit, mousePosition.ToDouble ());
 
+		//A corner grip carries its own tooltip (see Handles), so a popover there would double up.
+		if (zone == HitZone.Resize) {
+			HideEditHint ();
+			return;
+		}
+
 		//Already showing the right hint for this object/zone.
 		if (edit_hint_visible && edit_hint_target == hit && edit_hint_zone == zone)
 			return;
@@ -2623,7 +2650,7 @@ public sealed class TextTool : BaseTool
 		});
 	}
 
-	//Show the hover hint (either the general one or the corner resize one) for an object.
+	//Show the hover hint for an object's body. Its corner grips are handles with their own tooltip.
 	private void ShowHint (TextObject obj, HitZone zone)
 	{
 		if (!workspace.HasOpenDocuments)
@@ -2631,23 +2658,14 @@ public sealed class TextTool : BaseTool
 
 		Gtk.Widget canvas = workspace.ActiveWorkspace.Canvas;
 
-		string hint = zone == HitZone.Resize ? CornerHintText (obj.Engine.WrapWidth > 0) : EditHintText ();
-
-		//Anchor the popover to the hovered corner for the resize hint. Otherwise,
-		//spawn it slightly below the center of the word (not the lower-right corner,
-		//which is an invisible corner when the object isn't focused/being edited).
-		PointD anchor;
-		if (zone == HitZone.Resize) {
-			PointD[] corners = GetInteractionCorners (obj);
-			anchor = corners[FindCorner (obj, last_mouse_position.ToDouble ())];
-		} else {
-			anchor = new PointD (
-				(obj.TextBounds.Left + obj.TextBounds.Right) / 2.0,
-				obj.TextBounds.Bottom);
-		}
+		//Spawn it slightly below the center of the word, not at the lower-right corner,
+		//which is an invisible corner when the object isn't focused/being edited.
+		PointD anchor = new (
+			(obj.TextBounds.Left + obj.TextBounds.Right) / 2.0,
+			obj.TextBounds.Bottom);
 
 		PointD anchorView = workspace.ActiveWorkspace.CanvasPointToView (anchor);
-		edit_hint_popover.Show (canvas, hint, anchorView);
+		edit_hint_popover.Show (canvas, EditHintText (), anchorView);
 
 		edit_hint_visible = true;
 		edit_hint_target = obj;
@@ -2661,7 +2679,7 @@ public sealed class TextTool : BaseTool
 			Translations.GetString ("{0} to open text properties", ClickBindingLabel (KeyboardShortcutManager.TextOpenProperties)),
 			Translations.GetString ("Right click to move"));
 
-	// Translators: hints shown when hovering a text object's resize corner.
+	// Translators: tooltip shown when hovering a text object's corner resize grip.
 	private static string CornerHintText (bool area)
 		=> string.Join ("\n",
 			area

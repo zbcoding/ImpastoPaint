@@ -24,6 +24,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+using System;
 using Cairo;
 
 namespace Pinta.Core;
@@ -49,6 +50,8 @@ public sealed class SimpleHistoryItem : BaseHistoryItem
 		// If the diff was too big, store the original surface, else, dispose it
 		if (surface_diff == null)
 			old_surface = oldSurface;
+		else
+			oldSurface.Dispose ();
 	}
 
 	public SimpleHistoryItem (string icon, string text) : base (icon, text)
@@ -90,13 +93,19 @@ public sealed class SimpleHistoryItem : BaseHistoryItem
 		}
 	}
 
-	// The surface this item swaps: the layer's raster, or its mask when target_is_mask.
+	// The surface this item swaps: the layer's raster, or its mask when target_is_mask. A mask
+	// gone when this runs would be a sequencing bug elsewhere (undo/redo replaying out of order,
+	// or against a layer whose mask a later step removed) - fail loudly rather than silently
+	// applying a mask-derived diff to the layer's colour surface, which would corrupt raster
+	// pixels instead. See LayerMaskHistoryItem.Set for the analogous mask-presence tracking.
 	private ImageSurface TargetSurface (Document doc)
 	{
 		UserLayer layer = doc.Layers[layer_index];
-		return target_is_mask
-			? (layer.Mask?.Surface ?? layer.Surface)
-			: layer.Surface;
+		if (!target_is_mask)
+			return layer.Surface;
+
+		return layer.Mask?.Surface
+			?? throw new InvalidOperationException ($"SimpleHistoryItem targets layer {layer_index}'s mask, but it has none.");
 	}
 
 	public void TakeSnapshotOfLayer (int layerIndex)

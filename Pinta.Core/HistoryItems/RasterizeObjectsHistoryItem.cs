@@ -56,13 +56,19 @@ public sealed class RasterizeObjectsHistoryItem : BaseHistoryItem
 		this.workspace = workspace;
 		user_layer = passedUserLayer;
 
+		// SurfaceDiff.Create only reads original's pixels and never releases it, so a successful
+		// diff has to dispose the caller's fresh Clone() itself or it leaks a full-canvas surface.
 		base_diff = SurfaceDiff.Create (passedBaseSurface, user_layer.Surface, force: true);
 		if (base_diff == null)
 			base_surface = passedBaseSurface;
+		else
+			passedBaseSurface.Dispose ();
 
 		object_diff = SurfaceDiff.Create (passedObjectSurface, user_layer.ObjectLayer.Layer.Surface, force: true);
 		if (object_diff == null)
 			object_surface = passedObjectSurface;
+		else
+			passedObjectSurface.Dispose ();
 
 		objects = ObjectOpacity.CloneAll (passedObjects);
 

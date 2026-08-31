@@ -72,6 +72,10 @@ public sealed class TextHistoryItem : BaseHistoryItem
 
 		if (text_surface_diff == null) {
 			text_surface = passedObjectSurface;
+		} else {
+			// SurfaceDiff.Create only reads original's pixels and never releases it, so a
+			// successful diff has to dispose the caller's fresh Clone() itself, or it leaks.
+			passedObjectSurface.Dispose ();
 		}
 
 		user_surface_diff = SurfaceDiff.Create (
@@ -81,6 +85,8 @@ public sealed class TextHistoryItem : BaseHistoryItem
 
 		if (user_surface_diff == null) {
 			user_surface = passedUserSurface;
+		} else {
+			passedUserSurface.Dispose ();
 		}
 
 		objects = ObjectOpacity.CloneAll (passedObjects);

@@ -79,10 +79,15 @@ public sealed class ShapesHistoryItem : BaseHistoryItem
 
 		user_layer = passedUserLayer;
 
+		// SurfaceDiff.Create only reads original's pixels and never releases it, so a successful
+		// diff has to dispose the caller's fresh Clone() itself or it leaks a full-canvas surface
+		// (same pattern as SimpleHistoryItem/TextHistoryItem/RasterizeObjectsHistoryItem in Core).
 		user_surface_diff = SurfaceDiff.Create (passedUserSurface, user_layer.Surface, true);
 
 		if (user_surface_diff == null) {
 			user_surface = passedUserSurface;
+		} else {
+			passedUserSurface.Dispose ();
 		}
 
 		// Capture the before-change object state. Sync from the live engines first so the snapshot

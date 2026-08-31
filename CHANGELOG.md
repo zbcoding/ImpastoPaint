@@ -17,6 +17,12 @@ entries, is upstream Pinta work; the Impasto sections cover changes made in this
 - The text tool's tool box tooltip now describes re-editing, resizing, moving, rotating and
   finishing a text object, with the effective shortcut for each.
 
+### Fixed
+
+- The "Obj." badge on a rotated text object now stays against the text box's lower-left corner
+  and turns with it, instead of being placed from the box's axis-aligned bounds and drifting away
+  from the corner it labels (about 30px at 45 degrees, further past a quarter turn).
+
 ## Impasto - [0.1.1](https://github.com/zbcoding/ImpastoPaint/releases/tag/v0.1.1) - 2026-08-28
 
 ### Fixed

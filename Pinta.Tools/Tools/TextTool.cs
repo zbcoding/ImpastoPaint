@@ -2397,15 +2397,16 @@ public sealed class TextTool : BaseTool
 						TooltipText = cornerTooltip,
 					});
 
-			// "Obj." editable-object badge at the field's lower-left corner (skipped for Raster-mode
-			// text, which isn't a persistent object). Positioned just below the lowest-left corner.
+			// "Obj." editable-object badge just below the field's own lower-left corner (skipped
+			// for Raster-mode text, which isn't a persistent object). Turned with the object so it
+			// stays against that corner instead of drifting along the axis-aligned bounds.
 			if (!obj.RasterizeOnFinalize) {
-				double minX = corners[0].X, maxY = corners[0].Y;
-				foreach (PointD c in corners) {
-					minX = Math.Min (minX, c.X);
-					maxY = Math.Max (maxY, c.Y);
-				}
-				EditableObjectBadge.Draw (g, new PointD (minX, maxY + 3), EditableObjectBadge.CanvasColor);
+				PointD badgeAnchor = GetBadgeAnchor (obj);
+				g.Save ();
+				g.Translate (badgeAnchor.X, badgeAnchor.Y);
+				g.Rotate (RotationRadians (obj));
+				EditableObjectBadge.Draw (g, new PointD (0, 0), EditableObjectBadge.CanvasColor);
+				g.Restore ();
 			}
 		}
 
@@ -2505,6 +2506,21 @@ public sealed class TextTool : BaseTool
 		double a = RotationRadians (obj);
 		PointD[] local = GetLocalPaddedCorners (pr);
 		return [RotatePoint (local[0], pivot, a), RotatePoint (local[1], pivot, a), RotatePoint (local[2], pivot, a), RotatePoint (local[3], pivot, a)];
+	}
+
+	//The gap, in canvas pixels, between the interaction rectangle's lower edge and the badge.
+	private const double BadgeGap = 3;
+
+	//Canvas-space position of the "Obj." badge's top-left: pinned below the interaction
+	//rectangle's lower-left corner, in the object's own rotated frame, so the gap between the two
+	//is the same whichever way the object is turned.
+	private PointD GetBadgeAnchor (TextObject obj)
+	{
+		RectangleD pr = GetPaddedLocalRect (obj);
+		return RotatePoint (
+			new PointD (pr.Left, pr.Bottom + 1 + BadgeGap),
+			GetRotationPivot (obj),
+			RotationRadians (obj));
 	}
 
 	//The axis-aligned bounding box of the rotated interaction rectangle.

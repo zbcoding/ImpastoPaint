@@ -2655,7 +2655,7 @@ msgstr ""
 
 #: ../Impasto/Actions/Help/AboutDialogAction.cs:92
 #: ../Impasto/Actions/Help/AboutDialogAction.cs:147
-msgid "Paint.NET Reference License"
+msgid "PDN Reference License"
 msgstr ""
 
 #: ../Pinta.Tools/Tools/PaintBrushTool.cs:80

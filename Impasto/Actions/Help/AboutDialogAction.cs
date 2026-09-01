@@ -89,7 +89,7 @@ internal sealed class AboutDialogAction : IActionHandler
 			Gtk.License.Custom,
 			EscapeMarkup (LoadEmbeddedText ("THIRD-PARTY-NOTICES.md")));
 		dialog.AddLegalSection (
-			Translations.GetString ("Paint.NET Reference License"),
+			Translations.GetString ("PDN Reference License"),
 			string.Empty,
 			Gtk.License.Custom,
 			EscapeMarkup (LoadEmbeddedText ("LICENSE-PDN.txt")));
@@ -144,7 +144,7 @@ internal sealed class AboutDialogAction : IActionHandler
 			LoadEmbeddedText ("LICENSE-LGPL.txt"));
 		AppendLegalExpander (
 			legalBox,
-			Translations.GetString ("Paint.NET Reference License"),
+			Translations.GetString ("PDN Reference License"),
 			LoadEmbeddedText ("LICENSE-PDN.txt"));
 	}
 

@@ -2507,7 +2507,7 @@ msgstr ""
 
 #: ../Pinta/Actions/Help/AboutDialogAction.cs:90
 #: ../Pinta/Actions/Help/AboutDialogAction.cs:136
-msgid "Paint.NET Reference License"
+msgid "PDN Reference License"
 msgstr ""
 
 #: ../Pinta.Tools/Tools/PaintBrushTool.cs:80

@@ -293,13 +293,7 @@ public sealed partial class LayersListView
 		if (doc is null)
 			return;
 
-		foreach (var layer in doc.Layers.UserLayers.Reverse ())
-			list_model.Append (LayersListViewItem.New (doc, layer));
-
-		// Update our selection to match the document's active layer (if there is one).
-		int cur = doc.Layers.CurrentUserLayerIndex;
-		if (cur >= 0 && cur < doc.Layers.Count ())
-			SelectLayerRow (doc.Layers[cur]);
+		PopulateLayerRows (doc);
 
 		doc.History.HistoryItemAdded += HandleHistoryChanged;
 		doc.History.ActionUndone += HandleHistoryChanged;
@@ -584,11 +578,31 @@ public sealed partial class LayersListView
 
 		try {
 			list_model.Insert ((uint) index, LayersListViewItem.New (active_document, active_document.Layers[e.Index]));
-		} catch {
-			// Fallback: rebuild on unexpected state.
+		} catch (Exception ex) {
+			// The incremental insert assumes list_model already mirrors the document's layers; if
+			// that assumption is wrong the index is off and the dock would stay desynced for the
+			// rest of this document's session (nothing re-syncs it until the active document
+			// changes). Rebuild the whole list from the document instead, and log so the desync
+			// is diagnosable rather than silent.
+			Console.Error.WriteLine ($"LayersListView: incremental layer-add failed, rebuilding from document: {ex}");
+			list_model.RemoveMultiple (0, list_model.GetNItems ());
+			child_models.Clear ();
+			PopulateLayerRows (active_document);
 			return;
 		}
 		list_view.ScrollToSelectedItem (selection_model);
+	}
+
+	// Fill list_model from a document's layers, top layer first, and move the selection onto its
+	// active layer. Caller clears list_model / child_models first.
+	private void PopulateLayerRows (Document doc)
+	{
+		foreach (var layer in doc.Layers.UserLayers.Reverse ())
+			list_model.Append (LayersListViewItem.New (doc, layer));
+
+		int cur = doc.Layers.CurrentUserLayerIndex;
+		if (cur >= 0 && cur < doc.Layers.Count ())
+			SelectLayerRow (doc.Layers[cur]);
 	}
 
 	private void HandleLayerRemoved (object? sender, IndexEventArgs e)

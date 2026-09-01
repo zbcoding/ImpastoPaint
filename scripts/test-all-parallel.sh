@@ -52,8 +52,9 @@ printf '%s\n' "${builds[@]}" | sort -u | xargs -n1 dotnet build > /dev/null || e
 
 # The Cells category alone is the suite's critical path (13 per-pixel tests, ~55s
 # in one process). Partition its test list into chunks and run each chunk in its
-# own process - a chunk of fully-qualified test names is just another FullyQualifiedName
-# filter. Listed fresh every run, so added Cells tests always land in some chunk.
+# own process - a chunk is an OR of exact `Name=` terms. `~` (Contains) would be
+# wrong here: `~Cells1` also matches Cells10-13, so those run in two chunks each.
+# Listed fresh every run, so added Cells tests always land in some chunk.
 CELLS_SPLIT=2
 cells_chunks=()
 if [[ " ${groups[*]} " == *" Render-Cells "* ]]; then
@@ -66,8 +67,8 @@ if [[ " ${groups[*]} " == *" Render-Cells "* ]]; then
 	else
 		for ((c = 0; c < CELLS_SPLIT; c++)); do
 			chunk=()
-			for ((t = c; t < ${#cells_tests[@]}; t += CELLS_SPLIT)); do chunk+=("${cells_tests[$t]}"); done
-			# A | separated FQN list; | cannot appear in C# identifiers so it is unambiguous.
+			for ((t = c; t < ${#cells_tests[@]}; t += CELLS_SPLIT)); do chunk+=("Name=${cells_tests[$t]}"); done
+			# A | separated list of exact-name terms; | cannot appear in C# identifiers so it is unambiguous.
 			cells_chunks+=("$(IFS='|'; echo "${chunk[*]}")")
 		done
 	fi
@@ -97,7 +98,7 @@ for group in "${groups[@]}"; do
 			for c in "${!cells_chunks[@]}"; do
 				filter="TestCategory=Cells"
 				if [[ -n ${cells_chunks[$c]} ]]; then
-					filter="(FullyQualifiedName~${cells_chunks[$c]//|/|FullyQualifiedName~})&TestCategory=Cells"
+					filter="(${cells_chunks[$c]})&TestCategory=Cells"
 				fi
 				launch "Render-Cells.$c" tests/Pinta.Effects.Tests --filter "$filter"
 			done
@@ -129,9 +130,6 @@ if [[ -n $failing ]]; then
 		echo "--- $name ---"
 		cat "$log_dir/$name.log"
 	done
-	dump=cat
-else
-	dump=true
 fi
 
 rm -rf "$log_dir"

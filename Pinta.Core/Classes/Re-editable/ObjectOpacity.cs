@@ -88,9 +88,9 @@ public static class ObjectOpacity
 	/// fill/stroke/background passes. The blend reuses the layer blend mechanism
 	/// (<see cref="CairoExtensions"/>), so an object mixes with the pixels beneath it on the layer.
 	/// </summary>
-	// ponytail: one image-sized scratch surface per affected object per redraw. Only allocated when
-	// opacity < 1 or blend != Normal; if many such objects on one layer ever make redraws sluggish,
-	// render into a surface sized to the object's bounds instead.
+	// ponytail: one image-sized scratch surface per affected object per redraw, disposed right after
+	// compositing. Only allocated when opacity < 1 or blend != Normal; if many such objects on one
+	// layer ever make redraws sluggish, render into a surface sized to the object's bounds instead.
 	public static void Draw (ImageSurface target, double opacity, BlendMode mode, Action<ImageSurface> draw)
 	{
 		if (opacity >= 1.0 && mode == BlendMode.Normal) {
@@ -98,7 +98,7 @@ public static class ObjectOpacity
 			return;
 		}
 
-		ImageSurface scratch = CairoExtensions.CreateImageSurface (Format.Argb32, target.Width, target.Height);
+		using ImageSurface scratch = CairoExtensions.CreateImageSurface (Format.Argb32, target.Width, target.Height);
 		draw (scratch);
 
 		using Context g = new (target);

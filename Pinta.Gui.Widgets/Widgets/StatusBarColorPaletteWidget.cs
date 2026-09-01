@@ -814,17 +814,32 @@ public sealed partial class StatusBarColorPaletteWidget
 		QueueDraw ();
 	}
 
-	// The modal single-color picker behind the quick-color edit flow. Exposed so the color-wheel
+	// The dialog is deliberately non-modal (ColorPickerDialog), so without this a second swatch
+	// click while one picker is open races the first on SetColor. Matches
+	// ColorPickerPanel.EditQuickColor's guard.
+	private bool color_picker_active;
+
+	// The single-color picker behind the quick-color edit flow. Exposed so the color-wheel
 	// popover's folded-in primary/secondary mini section (MainWindow) can reuse the same dialog
 	// setup as the bar's swatches.
-	public Task<SingleColor?> PickSingleColor (
+	public async Task<SingleColor?> PickSingleColor (
 		SingleColor initial,
 		string title)
-		=> ColorPickerDialog.PickSingleColorAsync (
-			chrome.MainWindow,
-			palette,
-			initial,
-			title);
+	{
+		if (color_picker_active)
+			return null;
+
+		color_picker_active = true;
+		try {
+			return await ColorPickerDialog.PickSingleColorAsync (
+				chrome.MainWindow,
+				palette,
+				initial,
+				title);
+		} finally {
+			color_picker_active = false;
+		}
+	}
 
 	private WidgetElement GetElementAtPoint (PointD point)
 	{

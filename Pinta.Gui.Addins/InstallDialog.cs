@@ -209,7 +209,12 @@ internal sealed partial class InstallDialog
 
 			return true;
 
-		} catch {
+		} catch (Exception ex) {
+			// The message below assumes a malformed package, but a permission or IO failure
+			// reading the file lands here just the same - log the real exception so those cases
+			// are diagnosable.
+			Console.Error.WriteLine ($"Failed to load extension package: {ex}");
+
 			// Fire-and-forget: InitForInstall must return synchronously, so the info dialog
 			// closes on its own while this returns false to the caller.
 			Gtk.Window? parent = TransientFor;

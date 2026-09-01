@@ -409,6 +409,12 @@ internal sealed class MainWindow
 	private static void UpdateExtension (ExtensionNodeEventArgs args)
 	{
 		if (args.Change == ExtensionChange.Add) {
+			// A live install registers its tools/menu items/effects immediately (below), but its
+			// icons/ directory is only added to the theme search path at startup, so its tools would
+			// show the default icon until restart. AddSearchPath tolerates duplicate paths, so
+			// re-running the whole scan here is idempotent.
+			AddAddinIconSearchPaths ();
+
 			try {
 				IExtension extension = (IExtension) args.ExtensionObject;
 				extension.Initialize ();

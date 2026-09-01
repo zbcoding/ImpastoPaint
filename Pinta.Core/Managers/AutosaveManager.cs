@@ -222,7 +222,10 @@ public sealed class AutosaveManager
 		GLib.Functions.IdleAdd (GLib.Constants.PRIORITY_LOW, TryAutosave);
 	}
 
-	private bool TryAutosave ()
+	/// <summary>Test seam: real time by default, overridden to drive the deferral clock without sleeping.</summary>
+	internal Func<DateTime> Clock { get; set; } = () => DateTime.UtcNow;
+
+	internal bool TryAutosave ()
 	{
 		autosave_scheduled = false;
 
@@ -233,9 +236,9 @@ public sealed class AutosaveManager
 		// this class's own documented "longest a document may go without being autosaved"
 		// guarantee for exactly the large slow-export documents that guarantee exists for.
 		if (IsPointerButtonHeld ()) {
-			deferred_since ??= DateTime.UtcNow;
+			deferred_since ??= Clock ();
 
-			if (!MustForceThroughDeferral ((DateTime.UtcNow - deferred_since.Value).TotalSeconds)) {
+			if (!MustForceThroughDeferral ((Clock () - deferred_since.Value).TotalSeconds)) {
 				// One retry at a time. The interval timer keeps firing throughout a long stroke,
 				// and each tick would otherwise add a retry that outlives the one before it.
 				if (retry_timer_id == 0)
@@ -264,12 +267,18 @@ public sealed class AutosaveManager
 		return false;
 	}
 
+	/// <summary>Test seam: needs a real GDK seat a headless run does not have.</summary>
+	internal Func<bool>? PointerButtonHeldOverride { get; set; }
+
 	/// <summary>
 	/// Whether the user currently has a mouse button down. Asked of the seat rather than of
 	/// the active tool, so it holds for every tool and for drags on any part of the window.
 	/// </summary>
 	private bool IsPointerButtonHeld ()
 	{
+		if (PointerButtonHeldOverride is not null)
+			return PointerButtonHeldOverride ();
+
 		const Gdk.ModifierType buttons =
 			Gdk.ModifierType.Button1Mask |
 			Gdk.ModifierType.Button2Mask |
@@ -282,14 +291,18 @@ public sealed class AutosaveManager
 		return pointer is not null && (pointer.GetModifierState () & buttons) != 0;
 	}
 
+	/// <summary>Test seam: stands in for the registered "ora" exporter lookup, so TryAutosave's
+	/// deferral decision can be driven with the same fake exporter the other resilience tests use.</summary>
+	internal IImageExporter? ExporterOverride { get; set; }
+
 	private void AutosaveDirtyDocuments ()
 	{
-		FormatDescriptor? format = image_formats.GetFormatByExtension ("ora");
+		IImageExporter? exporter = ExporterOverride ?? image_formats.GetFormatByExtension ("ora")?.Exporter;
 
-		if (format?.Exporter is null)
+		if (exporter is null)
 			return;
 
-		AutosaveDirtyDocuments (format.Exporter);
+		AutosaveDirtyDocuments (exporter);
 	}
 
 	internal void AutosaveDirtyDocuments (IImageExporter exporter)

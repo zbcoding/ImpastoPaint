@@ -103,6 +103,41 @@ internal sealed class AutosaveResilienceTest : DocumentHarness
 	}
 
 	/// <summary>
+	/// TryAutosave defers while a pointer button is held, but only up to MAX_INTERVAL_SECONDS
+	/// (624dda72) - a continuous held stroke past that ceiling must not defeat this class's own
+	/// "longest a document may go without being autosaved" guarantee. PointerButtonHeldOverride and
+	/// Clock stand in for the real seat and wall clock a headless run has neither of.
+	/// </summary>
+	[Test]
+	public void PointerHeldDefersAutosaveUntilItReachesTheMaxIntervalThenForcesItThrough ()
+	{
+		Document.IsDirty = true;
+
+		Document sentinel = OpenAnotherDocument ();
+		RecordingExporter exporter = new () { Fails = sentinel };
+		AutosaveManager autosave = CreateManager ();
+		autosave.ExporterOverride = exporter;
+		autosave.PointerButtonHeldOverride = () => true;
+
+		DateTime start = DateTime.UtcNow;
+		autosave.Clock = () => start;
+
+		autosave.TryAutosave ();
+		Assert.That (exporter.Attempted, Is.Empty, "just started deferring, well under the ceiling");
+
+		autosave.Clock = () => start.AddSeconds (299);
+		autosave.TryAutosave ();
+		Assert.That (exporter.Attempted, Is.Empty, "still under the ceiling, still deferring");
+
+		autosave.Clock = () => start.AddSeconds (300);
+		autosave.TryAutosave ();
+		Assert.That (exporter.Exported, Is.EquivalentTo (new[] { Document }),
+			"one continuous held stroke must not defeat the documented autosave ceiling");
+
+		autosave.Stop ();
+	}
+
+	/// <summary>
 	/// The timer used to be armed only if autosaving was enabled at startup, which made the
 	/// setting one-way for the session: turning it off worked, turning it back on did nothing
 	/// until the next launch.

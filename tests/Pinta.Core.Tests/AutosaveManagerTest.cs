@@ -137,12 +137,10 @@ internal sealed class AutosaveManagerTest
 	}
 
 	/// <summary>
-	/// TryAutosave defers on a retry loop for as long as the pointer button is held, with the
-	/// deferral itself uncapped - one very long continuous stroke used to defeat this class's own
-	/// "longest a document may go without being autosaved" guarantee (MAX_INTERVAL_SECONDS, 300)
-	/// for exactly the large slow-export documents that guarantee exists for. Pinned as the pure
-	/// decision (not through TryAutosave itself, which needs a real pointer/seat this headless
-	/// harness has no display to provide).
+	/// Pins the pure boundary MustForceThroughDeferral runs on. The state machine that feeds it -
+	/// deferred_since accumulating across held-pointer ticks and resetting once it releases - has its
+	/// own coverage in AutosaveResilienceTest, via PointerButtonHeldOverride and Clock standing in for
+	/// the real seat and wall clock a headless run has neither of.
 	/// </summary>
 	[TestCase (0, false)]
 	[TestCase (299, false)]

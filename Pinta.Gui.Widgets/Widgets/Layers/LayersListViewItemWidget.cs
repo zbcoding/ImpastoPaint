@@ -990,11 +990,9 @@ public sealed partial class LayersListViewItemWidget
 	// Moving an object rebuilds the dock's rows — which destroys the very widget whose drop handler is
 	// running, and selecting the moved row can start a text edit that pumps the main loop. GTK then
 	// begins a second drop while the first is still active and aborts the process on an assertion.
-	private static void AfterDrop (System.Action reorder)
-		=> GLib.Functions.IdleAdd (GLib.Constants.PRIORITY_DEFAULT, () => {
-			reorder ();
-			return false;
-		});
+	// DeferredAction.Run is the tested primitive (Pinta.Core.Tests); this is a one-line delegation to
+	// it on purpose, so the only untested surface is that it does not skip the hand-off.
+	private static void AfterDrop (System.Action reorder) => DeferredAction.Run (reorder);
 
 	private bool DropLayerRow (LayersListViewItem source, bool dropAbove)
 	{

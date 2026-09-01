@@ -166,6 +166,37 @@ internal sealed class LayerMaskTest
 		}
 	}
 
+	// DropMask clears LayerMaskSelection.ActiveMaskLayer when the layer being dropped is the one
+	// currently selected (closing the staleness SimpleHistoryItem.TakeSnapshotOfLayer's fallback
+	// depended on) - but every DropMask call site (bake, undo/redo, flatten, explicit delete) passes
+	// its own layer, so this must never clear a selection that belongs to a different layer.
+	[Test]
+	public void DropMaskOnlyClearsTheSelectionWhenItIsTheDroppedLayersOwn ()
+	{
+		UserLayer selected = LayerWithPixel (4, 4, new PointI (1, 1));
+		UserLayer other = LayerWithPixel (4, 4, new PointI (2, 2));
+		selected.CreateMask ();
+		other.CreateMask ();
+
+		try {
+			LayerMaskSelection.SetActiveMaskLayer (selected);
+
+			other.DropMask ();
+
+			Assert.Multiple (() => {
+				Assert.That (other.Mask, Is.Null, "the targeted layer's mask is still dropped");
+				Assert.That (LayerMaskSelection.ActiveMaskLayer, Is.SameAs (selected),
+					"a different layer's mask being dropped must not clear an unrelated active selection");
+			});
+
+			selected.DropMask ();
+			Assert.That (LayerMaskSelection.ActiveMaskLayer, Is.Null,
+				"dropping the mask the selection actually points at does clear it");
+		} finally {
+			LayerMaskSelection.SetActiveMaskLayer (null);
+		}
+	}
+
 	// Geometry ops move the mask with the layer: a crop shifts the mask's pixels into the new origin.
 	[Test]
 	public void CropMovesTheMaskWithTheLayer ()

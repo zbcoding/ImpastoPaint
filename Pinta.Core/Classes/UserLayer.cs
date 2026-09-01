@@ -318,7 +318,16 @@ public sealed class UserLayer : Layer
 
 	/// <summary>Removes the layer's mask slot entirely, so the layer renders unmasked.</summary>
 	public void DropMask ()
-		=> Mask = null;
+	{
+		// A dropped mask can no longer be anyone's paint target. Leaving ActiveMaskLayer pointing at
+		// this layer stale (bake, undo/redo and the explicit delete-mask action all reach here) is
+		// what let a later mask-targeted snapshot silently read/write the colour surface instead -
+		// see SimpleHistoryItem.TargetSurface/TakeSnapshotOfLayer.
+		if (LayerMaskSelection.IsActiveMaskLayer (this))
+			LayerMaskSelection.SetActiveMaskLayer (null);
+
+		Mask = null;
+	}
 
 	/// <summary>Replaces the mask's surface with <paramref name="surface"/>, creating the mask if absent.</summary>
 	internal void ReplaceMaskSurface (ImageSurface surface)

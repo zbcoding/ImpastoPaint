@@ -123,8 +123,6 @@ public sealed class SimpleHistoryItem : BaseHistoryItem
 
 		layer_index = doc.Layers.IndexOf (layer);
 		target_is_mask = targetIsMask;
-		old_surface = (targetIsMask
-			? (layer.Mask?.Surface ?? layer.Surface)
-			: layer.Surface).Clone ();
+		old_surface = TargetSurface (doc).Clone ();
 	}
 }

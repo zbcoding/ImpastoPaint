@@ -325,7 +325,6 @@ public sealed partial class LayersListViewItem
 			afterSurface: null,
 			beforeHidden: mask.Hidden);
 
-		LayerMaskSelection.SetActiveMaskLayer (null);
 		layer.DropMask ();
 
 		Pinta.Core.ObjectOpacity.RefreshLayer (PintaCore.Workspace, PintaCore.Chrome, layer);

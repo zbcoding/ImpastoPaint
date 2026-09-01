@@ -48,6 +48,16 @@ internal sealed class PaletteHelperTests
 	public void RecentColorLimitAllowsTwentyFourColors ()
 		=> Assert.That (PaletteHelper.MAX_RECENT_COLOR_COUNT, Is.EqualTo (24));
 
+	// b36a4ad7: ConfirmPaletteReset negated RunConfirmAsync's result, so clicking Cancel/Keep wiped
+	// the edited palette and clicking Reset Palette silently kept it - the button the user reads as
+	// safe destroyed their work.
+	[TestCase (false, false, ExpectedResult = false, TestName = "not at default, user keeps -> no reset")]
+	[TestCase (false, true, ExpectedResult = true, TestName = "not at default, user resets -> reset")]
+	[TestCase (true, false, ExpectedResult = true, TestName = "already at default -> reset regardless (nothing to lose)")]
+	[TestCase (true, true, ExpectedResult = true, TestName = "already at default, user also resets -> reset")]
+	public bool ShouldResetPaletteNeverNegatesTheUsersAnswer (bool isAtDefault, bool userConfirmedReset)
+		=> PaletteHelper.ShouldResetPalette (isAtDefault, userConfirmedReset);
+
 	[TestCase (0, 3, 0)]
 	[TestCase (7, 2, 6)]
 	[TestCase (8, 2, 8)]

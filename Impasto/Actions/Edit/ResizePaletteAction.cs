@@ -83,7 +83,8 @@ internal sealed class ResizePaletteAction : IActionHandler
 	/// </summary>
 	private async Task<bool> ConfirmPaletteReset (bool wasExtendedRows)
 	{
-		if (palette.CurrentPalette.Colors.SequenceEqual (PaletteHelper.EnumerateDefaultColors (wasExtendedRows)))
+		bool isAtDefault = palette.CurrentPalette.Colors.SequenceEqual (PaletteHelper.EnumerateDefaultColors (wasExtendedRows));
+		if (isAtDefault)
 			return true;
 
 		string primary = Translations.GetString ("Changing the number of palette rows resets the palette");
@@ -93,12 +94,16 @@ internal sealed class ResizePaletteAction : IActionHandler
 
 		// Resetting is the lossy choice, so it gets the destructive styling and Cancel/Keep stays
 		// the Enter-key default.
-		return await GtkExtensions.RunConfirmAsync (
+		bool userConfirmedReset = await GtkExtensions.RunConfirmAsync (
 			chrome.MainWindow,
 			primary,
 			secondary,
 			Translations.GetString ("_Reset Palette"),
 			destructive: true);
+
+		// PaletteHelper.ShouldResetPalette carries the actual decision (and its test coverage);
+		// isAtDefault is always false here, kept only so the call states the full, tested contract.
+		return PaletteHelper.ShouldResetPalette (isAtDefault, userConfirmedReset);
 	}
 
 	private async Task<(int paletteRows, int paletteSize, int recentColorCount)?> PromptResize ()

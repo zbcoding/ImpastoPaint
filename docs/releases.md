@@ -53,14 +53,30 @@ the flatpark.org page read for the version and the "What's New" text.
 
 - [ ] `xmllint --noout xdg/com.github.zbcoding.Impasto.metainfo.xml.in`.
 
-## 5. Land and tag
+## 5. Translations
 
-- [ ] Land steps 2-4 on `main`; wait for CI to go green.
+Regenerate the template from source, then merge it into every catalogue so a release ships
+the new strings as translatable (empty `msgstr`) rather than silently missing. Skipping the
+merge is what let the template and catalogues drift ~100 msgids apart between v0.0.1 and
+v0.1.1.
+
+- [ ] `make updatepotfiles && make updatepot` — rebuilds `po/POTFILES.in` and `po/messages.pot`
+      from the current source.
+- [ ] `for f in po/*.po; do msgmerge --update --backup=none "$f" po/messages.pot; done` —
+      folds the new msgids into each catalogue and moves now-unused entries to `#~` comments.
+- [ ] `for f in po/*.po; do msgfmt -c -o /dev/null "$f" || echo "BAD: $f"; done` — every
+      catalogue still compiles (header-default warnings are fine; errors are not).
+- [ ] Skim `git diff --stat po/` — expect one changed line block per catalogue, no msgid
+      renamed into a collision.
+
+## 6. Land and tag
+
+- [ ] Land steps 2-5 on `main`; wait for CI to go green.
 - [ ] `git tag -a vX.Y.Z -m "Impasto X.Y.Z" <commit>` then `git push origin vX.Y.Z`.
 - [ ] Watch the tag's `build.yml` run. The `release` job needs all of
       `build-ubuntu`, `build-flatpak`, `build-macos`, `build-windows` to pass.
 
-## 6. Verify the GitHub release
+## 7. Verify the GitHub release
 
 - [ ] `gh release view vX.Y.Z` — not a draft, not a prerelease, notes generated.
 - [ ] Six assets: `Impasto-linux-dotnet-*.zip`, `Impasto-x86_64.flatpak`,
@@ -70,7 +86,7 @@ the flatpark.org page read for the version and the "What's New" text.
 - [ ] Do not rename or drop `Impasto-linux-dotnet-*.zip` — flatpark matches it with
       `^Impasto-linux-dotnet-.*\.zip$`.
 
-## 7. Specific releases
+## 8. Specific releases
 
 ### macOS
 - macOS signing/notarisation is not implemented

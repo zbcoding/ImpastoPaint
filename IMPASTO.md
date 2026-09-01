@@ -12,6 +12,7 @@ in its own document under `docs/`:
 | [toolbox-layout.md](docs/toolbox-layout.md) | How tools are assigned to toolbox sections and stacks |
 | [ora-format.md](docs/ora-format.md) | What Impasto writes into an `.ora` file, and how re-editable objects are stored |
 | [addins.md](docs/addins.md) | What an add-in may reach: the entry point, menu placement, icons, tools, and what is not available yet |
+| [releases.md](docs/releases.md) | The step-by-step checklist for cutting a `v*` release |
 
 Working notes for individual subsystems stay in `docs-private/`, which is untracked —
 they are scratch, not published documentation.

@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using NUnit.Framework;
 using Pinta.Core;
@@ -9,8 +10,8 @@ namespace Pinta.Tools.Tests;
 // paths - a configured-binding lookup and a hardcoded-keycode fallback - that have drifted out of
 // sync before. The lookup tables backing the first path are the single source of truth for "which
 // commands exist and which binding fires them"; this asserts each table is complete (every command
-// bound exactly once) and that every binding's fresh-state gesture equals its own default, i.e. the
-// binding path fires on exactly the physical key the fallback switch also guards for.
+// bound exactly once) and that GetToolBinding on each descriptor actually consults the user's
+// override map rather than silently always returning the compiled-in default.
 [TestFixture]
 internal sealed class KeyDispatchTest : ToolsTestHarness
 {
@@ -25,15 +26,6 @@ internal sealed class KeyDispatchTest : ToolsTestHarness
 	}
 
 	[Test]
-	public void ShapeKeyBindingsFireOnTheirDefaultGesture ()
-	{
-		foreach ((ToolBindingDescriptor binding, BaseEditEngine.ShapeKeyCommand command) in BaseEditEngine.shape_key_bindings) {
-			Assert.That (PintaCore.Shortcuts.GetToolBinding (binding), Is.EqualTo (binding.DefaultGesture),
-				$"{command}: fresh-state binding should equal its default gesture (no override configured)");
-		}
-	}
-
-	[Test]
 	public void TextKeyBindingsCoverEveryCommandExactlyOnce ()
 	{
 		var commands = TextTool.text_key_bindings.Select (kb => kb.Command).ToList ();
@@ -41,15 +33,6 @@ internal sealed class KeyDispatchTest : ToolsTestHarness
 
 		Assert.That (commands, Is.EquivalentTo (expected));
 		Assert.That (commands.Distinct ().Count (), Is.EqualTo (commands.Count), "no TextKeyCommand should be bound twice");
-	}
-
-	[Test]
-	public void TextKeyBindingsFireOnTheirDefaultGesture ()
-	{
-		foreach ((ToolBindingDescriptor binding, TextTool.TextKeyCommand command) in TextTool.text_key_bindings) {
-			Assert.That (PintaCore.Shortcuts.GetToolBinding (binding), Is.EqualTo (binding.DefaultGesture),
-				$"{command}: fresh-state binding should equal its default gesture (no override configured)");
-		}
 	}
 
 	[Test]
@@ -62,12 +45,44 @@ internal sealed class KeyDispatchTest : ToolsTestHarness
 		Assert.That (commands.Distinct ().Count (), Is.EqualTo (commands.Count));
 	}
 
+	// The old versions of these three asserted GetToolBinding(b) == b.DefaultGesture with no
+	// override ever configured - i.e. x == x, unable to fail even if DefaultGesture named the wrong
+	// physical key. Reseed with a deliberately different override per binding and check the round
+	// trip: GetToolBinding has to return the override while it is set, and the default once it is
+	// reset. That is the only real behaviour GetToolBinding has.
+
 	[Test]
-	public void FontSizeBindingsFireOnTheirDefaultGesture ()
+	public void ShapeKeyBindingsHonourAConfiguredOverride ()
+		=> AssertOverrideRoundTrips (BaseEditEngine.shape_key_bindings.Select (kb => (kb.Binding, kb.Command.ToString ())));
+
+	[Test]
+	public void TextKeyBindingsHonourAConfiguredOverride ()
+		=> AssertOverrideRoundTrips (TextTool.text_key_bindings.Select (kb => (kb.Binding, kb.Command.ToString ())));
+
+	[Test]
+	public void FontSizeBindingsHonourAConfiguredOverride ()
+		=> AssertOverrideRoundTrips (TextTool.font_size_bindings.Select (kb => (kb.Binding, kb.Command.ToString ())));
+
+	private static void AssertOverrideRoundTrips (IEnumerable<(ToolBindingDescriptor Binding, string Command)> bindings)
 	{
-		foreach ((ToolBindingDescriptor binding, TextTool.FontSizeCommand command) in TextTool.font_size_bindings) {
+		KeyGesture f13 = new (new Gdk.Key (Gdk.Constants.KEY_F13));
+		KeyGesture f14 = new (new Gdk.Key (Gdk.Constants.KEY_F14));
+
+		foreach ((ToolBindingDescriptor binding, string command) in bindings) {
+			// Pick a key that is definitely not this binding's own default, so the override is a
+			// real change GetToolBinding has to report.
+			KeyGesture wrong = binding.DefaultGesture == f13 ? f14 : f13;
+
+			try {
+				PintaCore.Shortcuts.SetToolBinding (binding, wrong);
+				Assert.That (PintaCore.Shortcuts.GetToolBinding (binding), Is.EqualTo (wrong),
+					$"{command}: GetToolBinding has to return the configured override, not the compiled-in default");
+			} finally {
+				PintaCore.Shortcuts.ResetToolBinding (binding);
+			}
+
 			Assert.That (PintaCore.Shortcuts.GetToolBinding (binding), Is.EqualTo (binding.DefaultGesture),
-				$"{command}: fresh-state binding should equal its default gesture (no override configured)");
+				$"{command}: clearing the override has to restore the default gesture");
 		}
 	}
 }

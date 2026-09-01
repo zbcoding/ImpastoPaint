@@ -40,9 +40,17 @@ internal sealed class TransformToolZeroDivideGuardTest : ToolsTestHarness
 		Matrix transform = (Matrix) typeof (BaseTransformTool).GetField ("transform", NonPublicInstance)!.GetValue (tool)!;
 		PointD probe = transform.TransformPoint (new PointD (1, 1));
 
-		Assert.That (double.IsFinite (probe.X) && double.IsFinite (probe.Y), Is.True,
-			"a drag starting exactly on the center's X coordinate must fall back to scale 1 on that " +
-			"axis, not divide by zero into an Infinity/NaN transform");
+		// c1.X is exactly 0, so sx falls back to 1: the X axis must be left completely unscaled
+		// (the probe's X coordinate maps to itself). The Y axis still scales normally -
+		// c1.Y = -5, dy = 3, so sy = (-5 + 3) / -5 = 0.4 about center.Y = 5, mapping y=1 to
+		// 5 + (1 - 5) * 0.4 = 3.4. Asserting only IsFinite here let a regression to sx = 0 or
+		// sx = 0.5 pass.
+		Assert.Multiple (() => {
+			Assert.That (probe.X, Is.EqualTo (1.0).Within (1e-9),
+				"a drag starting exactly on the center's X coordinate must fall back to scale 1 on that axis, not divide by zero");
+			Assert.That (probe.Y, Is.EqualTo (3.4).Within (1e-9),
+				"the unaffected Y axis still scales by (c1.Y + dy) / c1.Y about the centre");
+		});
 	}
 
 	private static void SetField (object target, string name, object value)

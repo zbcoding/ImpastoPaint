@@ -17,11 +17,59 @@ entries, is upstream Pinta work; the Impasto sections cover changes made in this
 - The text tool's tool box tooltip now describes re-editing, resizing, moving, rotating and
   finishing a text object, with the effective shortcut for each.
 
+- The About dialog's license label no longer names Paint.NET directly, in line with the rest of
+  the application.
+
 ### Fixed
 
 - The "Obj." badge on a rotated text object now stays against the text box's lower-left corner
   and turns with it, instead of being placed from the box's axis-aligned bounds and drifting away
   from the corner it labels (about 30px at 45 degrees, further past a quarter turn).
+
+- The text tool no longer crashes if a tool-switch shortcut is pressed while dragging a text
+  object's border, a corner grip, or its rotate handle.
+
+- Move Selection and Move Selected Pixels no longer go permanently unresponsive if a tool-switch
+  shortcut is pressed mid-drag; the drag is now finished instead of left stuck.
+
+- The shape tools (Ellipse, Rectangle, Rounded Line, Triangle, Line/Curve) no longer go
+  permanently unresponsive if a tool-switch shortcut is pressed while drawing or moving a shape.
+
+- Cutting or erasing part of a layer that has both a clipped effect or transform and an object
+  reaching past that clip no longer commits some of that object's pixels without the effect
+  applied; that case now falls back to baking the whole stack, the same as when the selection
+  reaches the effect directly.
+
+- Opening a corrupted or maliciously crafted `.pdn` file can no longer force a multi-gigabyte
+  allocation or crash on a mismatched layer size; Impasto now rejects it with a clear error
+  instead.
+
+- Switching a selected shape's type in the toolbar (e.g. Line to Triangle and back) no longer
+  resets that shape's arrows, triangle style, rounded-line radius, or partial-ellipse state to
+  their defaults.
+
+- Undoing or redoing a mask-targeted edit against a layer whose mask was since removed now fails
+  with a clear error instead of silently corrupting the layer's colour pixels.
+
+- Saving under a name whose extension isn't recognized (e.g. `photo.tar.gz`) now re-prompts for a
+  valid extension instead of silently writing the selected format's bytes under the unrecognized
+  name.
+
+- Autosaving no longer waits indefinitely behind one very long continuous brush stroke; a document
+  is now autosaved after 5 minutes even if a mouse button is still held.
+
+- The layers dock now recovers automatically if adding a layer's row unexpectedly fails, instead
+  of drifting out of sync with the document for the rest of the session.
+
+- An add-in installed during the current session now shows its own tool and effect icons
+  immediately, instead of falling back to the default icon until Impasto is restarted.
+
+- Clicking the status bar's quick-color swatch twice in a row while its color picker is already
+  open no longer races two color picks against each other.
+
+- Fixed several memory leaks: an editable object's scratch surface when baking objects into a
+  layer's raster, an object's own faded or blended scratch surface on every redraw, and an undo
+  snapshot's "before" surface after most drawing, painting-object, or text-edit strokes.
 
 ## Impasto - [0.1.1](https://github.com/zbcoding/ImpastoPaint/releases/tag/v0.1.1) - 2026-08-28
 

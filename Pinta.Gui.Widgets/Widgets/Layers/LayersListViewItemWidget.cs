@@ -979,12 +979,8 @@ public sealed partial class LayersListViewItemWidget
 		int from = source.ObjectIndex;
 
 		// Object rows are drawn top-first, exactly like layer rows: a higher index in layer.Objects is
-		// higher up the list. Dropping on the upper half of the target lands above it (higher index).
-		int insert = dropAbove ? item.ObjectIndex + 1 : item.ObjectIndex;
-		if (from < insert)
-			insert--; // removing the source first shifts everything above it down.
-
-		if (insert == from)
+		// higher up the list.
+		if (RowReorder.ResolveDropIndex (from, item.ObjectIndex, dropAbove) is not int insert)
 			return false;
 
 		AfterDrop (() => source.MoveObjectTo (insert));
@@ -1012,13 +1008,8 @@ public sealed partial class LayersListViewItemWidget
 		if (from < 0 || target < 0 || from == target)
 			return false;
 
-		// Rows are drawn top-first (higher doc index = higher up). Dropping on the
-		// upper half of the target lands above it (higher doc index), lower half below.
-		int insert = dropAbove ? target + 1 : target;
-		if (from < insert)
-			insert--; // removing the source first shifts everything above it down.
-
-		if (insert == from)
+		// Rows are drawn top-first (higher doc index = higher up).
+		if (RowReorder.ResolveDropIndex (from, target, dropAbove) is not int insert)
 			return false;
 
 		// Deferred for the same reason as the object reorder above.

@@ -92,6 +92,7 @@ public sealed class GradientTool : BaseTool
 			return;
 
 		undo_data = this.Data;
+		undo_surface?.Dispose ();
 		undo_surface = document.Layers.CurrentPaintSurface.Clone ();
 
 		if (handle.BeginDrag (e.PointDouble)) {
@@ -129,7 +130,11 @@ public sealed class GradientTool : BaseTool
 			string name = is_newly_created
 				? Translations.GetString ("Gradient Created")
 				: Translations.GetString ("Gradient Modified");
-			document.History.PushNewItem (new GradientHistoryItem (Icon, name, undo_surface,
+			// Clone: the history item takes ownership of what it is handed and disposes it once its
+			// diff succeeds, but the handle stays active after a drag, so RenderGradient keeps
+			// reading undo_surface for the pre-gradient pixels every time a colour or the gradient
+			// type changes. Handing over the field itself leaves that read dangling.
+			document.History.PushNewItem (new GradientHistoryItem (Icon, name, undo_surface.Clone (),
 				document.Layers.CurrentUserLayerIndex, undo_data!.Value, this, document.Layers.CurrentMaskIsTarget));
 		}
 
@@ -187,11 +192,15 @@ public sealed class GradientTool : BaseTool
 
 		if (document != null) {
 			undo_data = Data;
-			undo_surface = document.Layers.CurrentPaintSurface.Clone ();
-			document.History.PushNewItem (new GradientHistoryItem (Icon, Name + " " + Translations.GetString ("Finalized"), undo_surface,
+			document.History.PushNewItem (new GradientHistoryItem (Icon, Name + " " + Translations.GetString ("Finalized"), document.Layers.CurrentPaintSurface.Clone (),
 						document.Layers.CurrentUserLayerIndex, undo_data!.Value, this, document.Layers.CurrentMaskIsTarget));
 		}
 		handle.Active = false;
+
+		// The handle is gone, so nothing reads the pre-gradient pixels again until the next drag
+		// clones a fresh copy.
+		undo_surface?.Dispose ();
+		undo_surface = null;
 
 		palette.PrimaryColorChanged -= HandlePintaCorePalettePrimaryColorChanged;
 		palette.SecondaryColorChanged -= HandlePintaCorePalettePrimaryColorChanged;

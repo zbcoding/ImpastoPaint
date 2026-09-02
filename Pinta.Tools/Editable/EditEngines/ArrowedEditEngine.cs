@@ -52,7 +52,6 @@ public abstract class ArrowedEditEngine : BaseEditEngine
 	// NRT - These are all set by HandleBuildToolBar
 	private ISettingsService settings = null!;
 	private string tool_prefix = null!;
-	private Gtk.Box toolbar = null!;
 	private bool extra_toolbar_items_added = false;
 
 	private bool ArrowOneEnabled => ArrowOneEnabledCheckBox.Active;
@@ -104,7 +103,6 @@ public abstract class ArrowedEditEngine : BaseEditEngine
 
 		this.settings = settings;
 		tool_prefix = toolPrefix;
-		toolbar = tb;
 
 		// The Line tool draws only a stroke and has no fill, so its width control is the line's
 		// own size, not an "outline width" as on the fill-capable shape tools.
@@ -153,10 +151,16 @@ public abstract class ArrowedEditEngine : BaseEditEngine
 			if (extra_toolbar_items_added)
 				return;
 
-			// Carefully insert after our last toolbar widget, since the Antialiasing dropdown may have been added already.
+			// ToolManager.BuildToolBar drains the build box right after HandleBuildToolBar and
+			// regroups every widget into per-setting cluster boxes, so the checkbox's parent is
+			// the build box only during the build - after that it is its cluster. Insert beside
+			// the checkbox wherever it currently lives; the build box itself is empty by then.
 			Gtk.Widget after_widget = ArrowTwoEnabledCheckBox;
+			if (after_widget.Parent is not Gtk.Box parent)
+				return;
+
 			foreach (var widget in GetArrowOptionToolbarItems ()) {
-				toolbar.InsertChildAfter (widget, after_widget);
+				parent.InsertChildAfter (widget, after_widget);
 				after_widget = widget;
 			}
 
@@ -164,7 +168,7 @@ public abstract class ArrowedEditEngine : BaseEditEngine
 		} else if (extra_toolbar_items_added) {
 
 			foreach (var widget in GetArrowOptionToolbarItems ())
-				toolbar.Remove (widget);
+				(widget.Parent as Gtk.Box)?.Remove (widget);
 
 			extra_toolbar_items_added = false;
 		}

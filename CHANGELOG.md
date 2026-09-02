@@ -42,6 +42,12 @@ entries, is upstream Pinta work; the Impasto sections cover changes made in this
 
 ### Fixed
 
+- Toggling an arrowhead on the Line tool no longer silently fails to show its Size / Angle /
+  Length options (and no longer spams six Gtk-CRITICAL warnings per click): the options were
+  being inserted into the tool settings' temporary build box, which ToolManager had already
+  drained and regrouped into clusters, so they were lost. They are now inserted and removed
+  beside the arrow checkboxes wherever those currently live.
+
 - The "Obj." badge on a rotated text object now stays against the text box's lower-left corner
   and turns with it, instead of being placed from the box's axis-aligned bounds and drifting away
   from the corner it labels (about 30px at 45 degrees, further past a quarter turn).

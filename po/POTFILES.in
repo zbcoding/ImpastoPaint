@@ -130,6 +130,7 @@ Pinta.Core/Classes/Color/ColorBgra.cs
 Pinta.Core/Classes/Color/ColorBgra.Defaults.cs
 Pinta.Core/Classes/ColorGradient.cs
 Pinta.Core/Classes/ColorTransferMode.cs
+Pinta.Core/Classes/DeferredAction.cs
 Pinta.Core/Classes/DialogAttributes.cs
 Pinta.Core/Classes/Document.cs
 Pinta.Core/Classes/DocumentHistory.cs
@@ -159,6 +160,7 @@ Pinta.Core/Classes/Re-editable/LayerMask.cs
 Pinta.Core/Classes/Re-editable/LayerMaskSelection.cs
 Pinta.Core/Classes/Re-editable/LayerObjectSelection.cs
 Pinta.Core/Classes/Re-editable/LayerTransformNode.cs
+Pinta.Core/Classes/Re-editable/ObjectLayerRenderWalk.cs
 Pinta.Core/Classes/Re-editable/ObjectOpacity.cs
 Pinta.Core/Classes/Re-editable/ObjectPropertyHistoryItem.cs
 Pinta.Core/Classes/Re-editable/ObjectRasterizer.cs
@@ -171,6 +173,7 @@ Pinta.Core/Classes/Re-editable/Text/TextObjectRenderer.cs
 Pinta.Core/Classes/Re-editable/Text/TextPosition.cs
 Pinta.Core/Classes/Re-editable/UnavailableEffect.cs
 Pinta.Core/Classes/RenderHandle.cs
+Pinta.Core/Classes/RowReorder.cs
 Pinta.Core/Classes/ScaleFactor.cs
 Pinta.Core/Classes/Scanline.cs
 Pinta.Core/Classes/SelectionModeHandler.cs
@@ -251,6 +254,7 @@ Pinta.Core/HistoryItems/FinishPixelsHistoryItem.cs
 Pinta.Core/HistoryItems/InvertHistoryItem.cs
 Pinta.Core/HistoryItems/LayerMaskHistoryItem.cs
 Pinta.Core/HistoryItems/LayerObjectsHistoryItem.cs
+Pinta.Core/HistoryItems/MaskSlot.cs
 Pinta.Core/HistoryItems/MoveLayerHistoryItem.cs
 Pinta.Core/HistoryItems/MovePixelsHistoryItem.cs
 Pinta.Core/HistoryItems/PasteHistoryItem.cs
@@ -261,6 +265,7 @@ Pinta.Core/HistoryItems/SimpleHistoryItem.cs
 Pinta.Core/HistoryItems/SoloLayerHistoryItem.cs
 Pinta.Core/HistoryItems/SwapLayersHistoryItem.cs
 Pinta.Core/HistoryItems/TextHistoryItem.cs
+Pinta.Core/HistoryItems/TranslateObjectsHistoryItem.cs
 Pinta.Core/HistoryItems/UpdateLayerPropertiesHistoryItem.cs
 Pinta.Core/ImageFormats/AvifFormat.cs
 Pinta.Core/ImageFormats/FormatDescriptor.cs
@@ -304,6 +309,7 @@ Pinta.Core/SettingNames.cs
 Pinta.Core/Widgets/FontFamilyDropDown.cs
 Pinta.Core/Widgets/ToolBarDropDownButton.cs
 Pinta.Core/Widgets/ToolSelectorButton.cs
+Pinta.Core/Widgets/TransientHintPopover.cs
 Pinta.Docking/Dock.cs
 Pinta.Docking/DockItem.cs
 Pinta.Docking/DockNotebook.cs
@@ -434,6 +440,7 @@ Pinta.Tools/Editable/EditEngines/RoundedLineEditEngine.cs
 Pinta.Tools/Editable/EditEngines/TriangleEditEngine.cs
 Pinta.Tools/Editable/Shapes/Arrow.cs
 Pinta.Tools/Editable/Shapes/ControlPoint.cs
+Pinta.Tools/Editable/Shapes/CurveGeneration.cs
 Pinta.Tools/Editable/Shapes/EllipseEngine.cs
 Pinta.Tools/Editable/Shapes/GeneratedPoint.cs
 Pinta.Tools/Editable/Shapes/LineCurveSeriesEngine.cs
@@ -441,6 +448,7 @@ Pinta.Tools/Editable/Shapes/OrganizedPointCollection.cs
 Pinta.Tools/Editable/Shapes/RoundedLineEngine.cs
 Pinta.Tools/Editable/Shapes/ShapeEngineCollection.cs
 Pinta.Tools/Editable/Shapes/ShapeObjectRenderer.cs
+Pinta.Tools/FriendAssemblies.cs
 Pinta.Tools/Handles/BrushHandle.cs
 Pinta.Tools/Handles/LineHandle.cs
 Pinta.Tools/Handles/MoveHandle.cs

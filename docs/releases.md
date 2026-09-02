@@ -62,12 +62,17 @@ v0.1.1.
 
 - [ ] `make updatepotfiles && make updatepot` — rebuilds `po/POTFILES.in` and `po/messages.pot`
       from the current source.
-- [ ] `for f in po/*.po; do msgmerge --update --backup=none "$f" po/messages.pot; done` —
-      folds the new msgids into each catalogue and moves now-unused entries to `#~` comments.
+- [ ] `for f in po/*.po; do msgmerge --no-fuzzy-matching --update --backup=none "$f" po/messages.pot; done`
+      — folds the new msgids into each catalogue and moves now-unused entries to `#~` comments.
+      Without `--no-fuzzy-matching`, msgmerge guesses at every new msgid from whichever old one
+      looks similar: thousands of untagged machine translations for a translator to audit, which
+      is also exactly what the AI-translation marker rule exists to keep out of the catalogues.
 - [ ] `for f in po/*.po; do msgfmt -c -o /dev/null "$f" || echo "BAD: $f"; done` — every
       catalogue still compiles (header-default warnings are fine; errors are not).
-- [ ] Skim `git diff --stat po/` — expect one changed line block per catalogue, no msgid
-      renamed into a collision.
+- [ ] Confirm the merge cost nothing: `msgfmt --statistics` totals should only lose translations
+      whose msgid the release actually removed, and the fuzzy count should not move at all.
+      A rebuilt template rewrites every `#:` source reference, so the raw diff is large by
+      nature — read the statistics, not the line count.
 
 ## 6. Land and tag
 

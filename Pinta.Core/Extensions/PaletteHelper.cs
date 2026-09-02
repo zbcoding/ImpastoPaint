@@ -29,6 +29,15 @@ public static class PaletteHelper
 	public static bool ShouldResetPalette (bool isAtDefault, bool userConfirmedReset)
 		=> isAtDefault || userConfirmedReset;
 
+	// Whether a resize dialog's proposed palette size and recent-color count must be discarded in
+	// favor of whatever the palette already had: only when a row change was requested but declined.
+	// PromptResize steps both fields live to fit whichever row count its own dropdown is proposing,
+	// rounding them down as it goes - once rounded, re-normalizing against the row count actually in
+	// effect can't recover what was already rounded away, so a declined row change has to fall back
+	// to the pre-dialog values instead of the dialog's.
+	public static bool ShouldDiscardResizeProposal (bool rowChangeRequested, bool rowsChanged)
+		=> rowChangeRequested && !rowsChanged;
+
 	public static int GetDefaultRecentColorCount (bool extendedPaletteRows)
 		=> extendedPaletteRows ? 12 : 8;
 

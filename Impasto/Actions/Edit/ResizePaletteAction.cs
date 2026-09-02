@@ -58,6 +58,9 @@ internal sealed class ResizePaletteAction : IActionHandler
 
 	private async void Activated (object sender, EventArgs e)
 	{
+		int originalPaletteSize = palette.CurrentPalette.Colors.Count;
+		int originalRecentColorCount = palette.MaxRecentlyUsedColor;
+
 		(int paletteRows, int paletteSize, int recentColorCount)? response = await PromptResize ();
 		if (!response.HasValue) return;
 
@@ -66,15 +69,24 @@ internal sealed class ResizePaletteAction : IActionHandler
 
 		// The two default palettes order their columns differently, so a row change has to
 		// reload the defaults for the columns to line up - which throws away edited swatches.
-		if (extendedRows != wasExtendedRows && await ConfirmPaletteReset (wasExtendedRows)) {
+		bool rowChangeRequested = extendedRows != wasExtendedRows;
+		bool rowsChanged = rowChangeRequested && await ConfirmPaletteReset (wasExtendedRows);
+		if (rowsChanged) {
 			PintaCore.Settings.PutSetting (SettingNames.EXTENDED_PALETTE_ROWS, extendedRows);
 			palette.CurrentPalette.LoadDefault (extendedRows);
 		}
 
-		palette.CurrentPalette.Resize (response.Value.paletteSize);
+		// PaletteHelper.ShouldDiscardResizeProposal carries the actual decision (and its test
+		// coverage); see its comment for why a declined row change can't just re-normalize the
+		// dialog's proposed size/recent-color-count instead of discarding them outright.
+		bool discardProposal = PaletteHelper.ShouldDiscardResizeProposal (rowChangeRequested, rowsChanged);
+		int paletteSize = discardProposal ? originalPaletteSize : response.Value.paletteSize;
+		int recentColorCount = discardProposal ? originalRecentColorCount : response.Value.recentColorCount;
 
-		if (response.Value.recentColorCount != palette.MaxRecentlyUsedColor)
-			palette.SetRecentlyUsedColorCount (response.Value.recentColorCount);
+		palette.CurrentPalette.Resize (paletteSize);
+
+		if (recentColorCount != palette.MaxRecentlyUsedColor)
+			palette.SetRecentlyUsedColorCount (recentColorCount);
 	}
 
 	/// <summary>

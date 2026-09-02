@@ -58,6 +58,16 @@ internal sealed class PaletteHelperTests
 	public bool ShouldResetPaletteNeverNegatesTheUsersAnswer (bool isAtDefault, bool userConfirmedReset)
 		=> PaletteHelper.ShouldResetPalette (isAtDefault, userConfirmedReset);
 
+	// A declined row change used to leave the resize dialog's size and recent-color-count fields
+	// applied anyway, even though PromptResize had already stepped them (and rounded them down) to
+	// fit the row count the dialog was proposing - e.g. an 8-color recent list silently dropping to
+	// 6 just from previewing 3 rows and then keeping the current 2.
+	[TestCase (false, false, ExpectedResult = false, TestName = "no row change requested -> keep dialog values")]
+	[TestCase (true, true, ExpectedResult = false, TestName = "row change requested and confirmed -> keep dialog values")]
+	[TestCase (true, false, ExpectedResult = true, TestName = "row change requested but declined -> discard dialog values")]
+	public bool ShouldDiscardResizeProposalOnlyOnADeclinedRowChange (bool rowChangeRequested, bool rowsChanged)
+		=> PaletteHelper.ShouldDiscardResizeProposal (rowChangeRequested, rowsChanged);
+
 	[TestCase (0, 3, 0)]
 	[TestCase (7, 2, 6)]
 	[TestCase (8, 2, 8)]

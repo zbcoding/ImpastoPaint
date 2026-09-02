@@ -2035,7 +2035,7 @@ public abstract class BaseEditEngine
 					+ Translations.GetString ("{0}-drag: snap the adjacent segment to a 15° angle.", Translations.GetString ("Shift")) + "\n"
 					+ Translations.GetString ("Right click + drag: move the whole shape.") + "\n"
 					+ Translations.GetString ("{0} + right drag: change tension.", tension) + "\n"
-					+ Translations.GetString ("{0}: curve point, {1}: straight point.", makeCurve, makeLine) + "\n"
+					+ Translations.GetString ("{0}: curve point, {1}: straight point — of the point you're dragging, or click a point to select it first.", makeCurve, makeLine) + "\n"
 					+ Translations.GetString ("{0} and drag: rotate the whole shape.", RotateGesture.ClickBindingLabel ()) + "\n"
 					+ Translations.GetString ("{0} + click: start a new shape here.", ctrl);
 			}

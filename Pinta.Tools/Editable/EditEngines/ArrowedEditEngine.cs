@@ -303,10 +303,29 @@ public abstract class ArrowedEditEngine : BaseEditEngine
 		result.AddItem (Translations.GetString ("Line"), Resources.Icons.ToolLine, true,
 			Translations.GetString ("Each added point joins its neighbors with a straight segment."));
 
-		// The closed button's tooltip must explain both modes, not just whichever is selected: what
-		// each type does with a newly added point, how to add one, and how to change a point's
-		// tension afterwards. The bindings are the user's effective ones, so the tip follows their
-		// custom keybindings like the shape tooltip does.
+		straight_segments_enabled = settings.GetSetting (SettingNames.SHAPE_LINE_CURVE_MODE, false);
+		result.SelectedIndex = straight_segments_enabled ? 1 : 0;
+
+		result.SelectedItemChanged += (o, e) => {
+			straight_segments_enabled = result.SelectedItem.GetTagOrDefault (false);
+			settings.PutSetting (SettingNames.SHAPE_LINE_CURVE_MODE, straight_segments_enabled);
+		};
+
+		line_or_curve_button = result;
+		UpdateTypeTooltip ();
+		PintaCore.Shortcuts.ShortcutsChanged += (_, _) => UpdateTypeTooltip ();
+		return result;
+	}
+
+	// The closed button's tooltip must explain both modes, not just whichever is selected: what
+	// each type does with a newly added point, how to add one, and how to change a point's tension
+	// afterwards. The bindings are the user's effective ones, so the tip follows their custom
+	// keybindings like the shape tooltip does, and ShortcutsChanged keeps it current after a rebind.
+	private void UpdateTypeTooltip ()
+	{
+		if (line_or_curve_button is not ToolBarDropDownButton result)
+			return;
+
 		string addPoint = PintaCore.Shortcuts.GetToolBinding (KeyboardShortcutManager.ShapeAddPoint).ToLabel ();
 		string addPointExact = PintaCore.Shortcuts.GetToolBinding (KeyboardShortcutManager.ShapeAddPointExact).ToLabel ();
 		string tension = PintaCore.Shortcuts.GetToolBinding (KeyboardShortcutManager.ShapeChangeTension).ModifierKeyLabel (system_manager);
@@ -319,17 +338,7 @@ public abstract class ArrowedEditEngine : BaseEditEngine
 			$"{Translations.GetString ("Line")}: {Translations.GetString ("Each added point joins its neighbors with a straight segment.")}",
 			Translations.GetString ("Add a point: {0}, or right-click the line and choose to add one there; {1} adds at the exact same position.", addPoint, addPointExact),
 			Translations.GetString ("{0} + right-drag a point: change its tension.", tension),
-			Translations.GetString ("{0}: make the selected point curve, {1}: make it straight.", makeCurve, makeLine));
-
-		straight_segments_enabled = settings.GetSetting (SettingNames.SHAPE_LINE_CURVE_MODE, false);
-		result.SelectedIndex = straight_segments_enabled ? 1 : 0;
-
-		result.SelectedItemChanged += (o, e) => {
-			straight_segments_enabled = result.SelectedItem.GetTagOrDefault (false);
-			settings.PutSetting (SettingNames.SHAPE_LINE_CURVE_MODE, straight_segments_enabled);
-		};
-
-		return result;
+			Translations.GetString ("{0}: make the selected point curve, {1}: make it straight — while dragging it, or after clicking to select it.", makeCurve, makeLine));
 	}
 
 	private Gtk.Separator ArrowSeparator

@@ -43,7 +43,7 @@ const langEntries = Object.entries(languages) as [Lang, (typeof languages)[Lang]
               ? <li class="current" aria-current="true">{languages.en.name}</li>
               : <li><a href={`${base}${localePath('en')}`}>{languages.en.name}</a></li>}
             <li class="lang-section-label" role="presentation">
-              <abbr class="ai-badge" title={t.aiTranslatedLabel}>AI</abbr> {t.aiTranslatedLabel}
+              <abbr class="ai-badge" title={t.aiTranslatedLabel}>AI</abbr>
             </li>
             {langEntries
               .filter(([code]) => code !== 'en')

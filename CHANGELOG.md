@@ -10,11 +10,14 @@ entries, is upstream Pinta work; the Impasto sections cover changes made in this
 
 ### Added
 
-- The Line tool's toolbar now has a "New Points" dropdown: Curve (default, unchanged from
+- The Line tool's toolbar now leads with a "Type" dropdown: Curve (default, unchanged from
   existing behavior) or Line, where each newly added point joins its neighbors with a straight
-  segment instead of curving through them. Distinct from the existing "Curved Segments" toggle
-  beside it, which governs whether clicking an existing segment inserts a point at all. Replaces
-  the removed Shape Type dropdown's Open/Closed Line toggle for this tool specifically.
+  segment instead of curving through them. Its tooltip describes both options rather than only
+  the selected one. Distinct from the existing "Curved Segments" toggle beside it, which governs
+  whether clicking an existing segment inserts a point at all. Replaces the removed Shape Type
+  dropdown's Open/Closed Line toggle for this tool specifically.
+- The Line tool's width control is now labeled "Size" instead of "Outline width", since a line
+  has no fill for the outline to contrast with.
 
 ### Changed
 

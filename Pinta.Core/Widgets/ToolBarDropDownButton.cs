@@ -137,9 +137,17 @@ public sealed partial class ToolBarDropDownButton
 			OnSelectedItemChanged ();
 		}
 
-		ToolBarItem item = items[index];
-		TooltipText = string.IsNullOrEmpty (item.Tooltip) ? item.Text : $"{item.Text}\n{item.Tooltip}";
+		if (UseSelectedItemTooltip) {
+			ToolBarItem item = items[index];
+			TooltipText = string.IsNullOrEmpty (item.Tooltip) ? item.Text : $"{item.Text}\n{item.Tooltip}";
+		}
 	}
+
+	/// <summary>
+	/// Whether selecting an item overwrites the button's TooltipText with that item's text and
+	/// tooltip. Set false to keep a custom tooltip, e.g. one describing every item at once.
+	/// </summary>
+	public bool UseSelectedItemTooltip { get; set; } = true;
 
 	private void OnSelectedItemChanged ()
 	{

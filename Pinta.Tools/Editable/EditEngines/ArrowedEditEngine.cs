@@ -106,9 +106,16 @@ public abstract class ArrowedEditEngine : BaseEditEngine
 		tool_prefix = toolPrefix;
 		toolbar = tb;
 
-		tb.Append (LineOrCurveSeparator);
-		tb.Append (LineOrCurveLabel);
-		tb.Append (LineOrCurveButton);
+		// The Line tool draws only a stroke and has no fill, so its width control is the line's
+		// own size, not an "outline width" as on the fill-capable shape tools.
+		if (outline_width_label is not null)
+			outline_width_label.SetText ($" {Translations.GetString ("Size")}: ");
+
+		// The new-point type leads the toolbar. Prepending in reverse order ends up as
+		// [label, button, separator] ahead of everything base already appended.
+		tb.Prepend (LineOrCurveSeparator);
+		tb.Prepend (LineOrCurveButton);
+		tb.Prepend (LineOrCurveLabel);
 
 		tb.Append (ArrowSeparator);
 		tb.Append (ArrowLabel);
@@ -278,7 +285,7 @@ public abstract class ArrowedEditEngine : BaseEditEngine
 		=> line_or_curve_sep ??= GtkExtensions.CreateToolBarSeparator ();
 
 	private Gtk.Label LineOrCurveLabel
-		=> line_or_curve_label ??= Gtk.Label.New (string.Format (" {0}: ", Translations.GetString ("New Points")));
+		=> line_or_curve_label ??= Gtk.Label.New (string.Format (" {0}: ", Translations.GetString ("Type")));
 
 	private ToolBarDropDownButton LineOrCurveButton
 		=> line_or_curve_button ??= CreateLineOrCurveButton ();
@@ -291,6 +298,12 @@ public abstract class ArrowedEditEngine : BaseEditEngine
 			Translations.GetString ("Each added point curves smoothly through its neighbors."));
 		result.AddItem (Translations.GetString ("Line"), Resources.Icons.ToolLine, true,
 			Translations.GetString ("Each added point joins its neighbors with a straight segment."));
+
+		// The closed button's tooltip must explain both modes, not just whichever is selected.
+		result.UseSelectedItemTooltip = false;
+		result.TooltipText = string.Join ("\n",
+			$"{Translations.GetString ("Curve")}: {Translations.GetString ("Each added point curves smoothly through its neighbors.")}",
+			$"{Translations.GetString ("Line")}: {Translations.GetString ("Each added point joins its neighbors with a straight segment.")}");
 
 		straight_segments_enabled = settings.GetSetting (SettingNames.SHAPE_LINE_CURVE_MODE, false);
 		result.SelectedIndex = straight_segments_enabled ? 1 : 0;

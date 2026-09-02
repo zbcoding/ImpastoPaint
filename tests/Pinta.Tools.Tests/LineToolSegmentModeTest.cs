@@ -5,7 +5,7 @@ using Pinta.Core;
 namespace Pinta.Tools.Tests;
 
 /// <summary>
-/// The Line tool's "New Points" dropdown (Curve/Line) replaces the removed Shape Type dropdown's
+/// The Line tool's "Type" dropdown (Curve/Line) replaces the removed Shape Type dropdown's
 /// Open/Closed toggle for this tool. Curve is unchanged from existing behaviour: a newly added
 /// point gets the usual curve tension. Line makes a newly added point tension-0 instead
 /// (DefaultEndPointTension) - the cardinal spline's tangent at that point is then zero, which keeps
@@ -45,7 +45,7 @@ internal sealed class LineToolSegmentModeTest : ToolsTestHarness
 	// Same pattern as ShapeEditEngineDragStateTest: drives BaseEditEngine directly rather than
 	// through the full BaseTool.DoActivated, which would build the rest of LineCurveTool's own
 	// toolbar (antialiasing button etc.) this headless harness has no shell for.
-	// HandleBuildToolBar still has to run - it is what creates the New Points dropdown - and
+	// HandleBuildToolBar still has to run - it is what creates the Type dropdown - and
 	// ToolManager.CurrentTool has to be set first for the reasons ShapeEditEngineDragStateTest notes.
 	private LineCurveTool Activate ()
 	{
@@ -98,6 +98,6 @@ internal sealed class LineToolSegmentModeTest : ToolsTestHarness
 		RectangleTool rectangle = new (PintaCore.Services);
 
 		Assert.That (NewPointTension (rectangle.EditEngine), Is.EqualTo (BaseEditEngine.DefaultMidPointTension),
-			"the New Points toggle is scoped to the Line tool; Rectangle (and every other shape tool) must keep the default curve tension regardless of it");
+			"the Type toggle is scoped to the Line tool; Rectangle (and every other shape tool) must keep the default curve tension regardless of it");
 	}
 }

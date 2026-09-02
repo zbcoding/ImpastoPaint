@@ -698,6 +698,11 @@ msgstr ""
 msgid "Close All"
 msgstr ""
 
+#: ../Pinta.Tools/Editable/EditEngines/LineCurveEditEngine.cs:125
+msgid "Close shape"
+msgstr ""
+
+
 #: ../Pinta.Tools/Editable/EditEngines/RectangleEditEngine.cs:37
 msgid "Closed Curve Shape"
 msgstr ""
@@ -786,6 +791,11 @@ msgstr ""
 #: ../Pinta.Tools/Tools/GradientTool.cs:317
 msgid "Conical Gradient"
 msgstr ""
+
+#: ../Pinta.Tools/Editable/EditEngines/LineCurveEditEngine.cs:126
+msgid "Connect the last point back to the first, closing the outline so fill modes show a closed shape."
+msgstr ""
+
 
 #: ../Pinta.Core/Actions/HelpActions.cs:45
 msgid "Contents"

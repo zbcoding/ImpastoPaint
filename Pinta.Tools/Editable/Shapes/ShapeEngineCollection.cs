@@ -192,7 +192,7 @@ public abstract class ShapeEngine : ILayerObject
 	public bool AntiAliasing { get; internal set; }
 	public string DashPattern { get; internal set; } = "-";
 	public int DashSpacing { get; internal set; } = 1;
-	public bool Closed { get; }
+	public bool Closed { get; internal set; }
 
 	public Color OutlineColor { get; internal set; }
 	public Color FillColor { get; internal set; }

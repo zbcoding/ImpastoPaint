@@ -36,6 +36,13 @@ public sealed class LineCurveEditEngine : ArrowedEditEngine
 	protected override string ShapeName
 		=> Translations.GetString ("Open Curve Shape");
 
+	private Gtk.CheckButton? close_shape_check;
+	private Gtk.Separator? close_shape_sep;
+
+	// Default for the next shape; the checkbox owns the live value once built.
+	private bool close_shape_default;
+	private bool prev_close_shape;
+
 	public LineCurveEditEngine (
 		IServiceProvider services,
 		ShapeTool passedOwner
@@ -49,7 +56,7 @@ public sealed class LineCurveEditEngine : ArrowedEditEngine
 		bool clickedOnControlPoint,
 		PointD prevSelPoint)
 	{
-		LineCurveSeriesEngine newEngine = NewShapeEngine (BaseEditEngine.ShapeTypes.OpenLineCurveSeries, closed: false, LineCap.Square);
+		LineCurveSeriesEngine newEngine = NewShapeEngine (BaseEditEngine.ShapeTypes.OpenLineCurveSeries, closed: close_shape_default, LineCap.Square);
 
 		AddLinePoints (ctrlKey, clickedOnControlPoint, newEngine, prevSelPoint);
 
@@ -62,5 +69,78 @@ public sealed class LineCurveEditEngine : ArrowedEditEngine
 	protected override void MovePoint (List<ControlPoint> controlPoints)
 	{
 		base.MovePoint (controlPoints);
+	}
+
+	protected override void BuildShapeToolBar (Gtk.Box tb, ISettingsService settings, string toolPrefix)
+	{
+		base.BuildShapeToolBar (tb, settings, toolPrefix);
+
+		if (close_shape_check is null)
+			close_shape_default = prev_close_shape = settings.GetSetting (SettingNames.SHAPE_CLOSED_SHAPE, false);
+
+		tb.Append (CloseShapeSeparator);
+		tb.Append (CloseShapeCheckBox);
+	}
+
+	public override void OnSaveSettings (ISettingsService settings, string toolPrefix)
+	{
+		base.OnSaveSettings (settings, toolPrefix);
+
+		if (close_shape_check is not null)
+			settings.PutSetting (SettingNames.SHAPE_CLOSED_SHAPE, close_shape_check.Active);
+	}
+
+	public override void UpdateToolbarSettings (ShapeEngine engine)
+	{
+		if (engine.ShapeType == ShapeTypes.OpenLineCurveSeries && close_shape_check is not null)
+			CloseShapeCheckBox.Active = ((LineCurveSeriesEngine) engine).Closed;
+
+		base.UpdateToolbarSettings (engine);
+	}
+
+	protected override void RecallPreviousSettings ()
+	{
+		if (close_shape_check is not null)
+			CloseShapeCheckBox.Active = prev_close_shape;
+
+		base.RecallPreviousSettings ();
+	}
+
+	protected override void StorePreviousSettings ()
+	{
+		if (close_shape_check is not null)
+			prev_close_shape = close_shape_check.Active;
+
+		base.StorePreviousSettings ();
+	}
+
+	private Gtk.Separator CloseShapeSeparator
+		=> close_shape_sep ??= GtkExtensions.CreateToolBarSeparator ();
+
+	private Gtk.CheckButton CloseShapeCheckBox
+		=> close_shape_check ??= CreateCloseShapeCheckBox ();
+
+	private Gtk.CheckButton CreateCloseShapeCheckBox ()
+	{
+		Gtk.CheckButton result = Gtk.CheckButton.NewWithLabel (Translations.GetString ("Close shape"));
+		result.TooltipText = Translations.GetString ("Connect the last point back to the first, closing the outline so fill modes show a closed shape.");
+		result.FocusOnClick = false;
+		result.Active = close_shape_default;
+		result.OnToggled += (o, e) => CloseShapeToggled ();
+		return result;
+	}
+
+	private void CloseShapeToggled ()
+	{
+		close_shape_default = CloseShapeCheckBox.Active;
+
+		if (ActiveShapeEngine is LineCurveSeriesEngine activeEngine) {
+			activeEngine.Closed = close_shape_default;
+			PersistShapeObjectsIfLive (workspace.ActiveDocument.Layers.CurrentUserLayer);
+			LayerObjectSelection.RaiseObjectsChanged ();
+			DrawActiveShape (false, false, true, false, false);
+		}
+
+		StorePreviousSettings ();
 	}
 }

@@ -35,6 +35,7 @@ internal static class SettingNames
 	internal const string SHAPE_CURVED_SEGMENTS = "shape-curved-segments";
 	internal const string SHAPE_LINE_CURVE_MODE = "shape-line-curve-mode";
 	internal const string SHAPE_RASTERIZE_MODE = "shape-rasterize-mode";
+	internal const string SHAPE_CLOSED_SHAPE = "shape-closed-shape";
 
 	internal static string Arrow1 (string prefix)
 		=> $"{prefix}-arrow1";

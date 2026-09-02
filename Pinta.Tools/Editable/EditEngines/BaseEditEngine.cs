@@ -1969,8 +1969,17 @@ public abstract class BaseEditEngine
 				RectangleD dirty = g.DrawPolygonal (points.AsSpan (), engine.OutlineColor, lineCap);
 				totalDirty = totalDirty?.Union (dirty) ?? dirty;
 			}
-		}
 
+			// Fill-only modes paint no pixels until the chain encloses area; sketch the
+			// open path dashed so a two-point fill doesn't look broken while drawing.
+			if (fillShape && !strokeShape && engine.ControlPoints.Count == 2) {
+				g.Save ();
+				g.SetDash ([4d, 4d], 0d);
+				RectangleD ghost = g.DrawPolygonal (points.AsSpan (), engine.OutlineColor, LineCap.Butt);
+				g.Restore ();
+				totalDirty = totalDirty?.Union (ghost) ?? ghost;
+			}
+		}
 		g.SetDash ([], 0.0);
 
 		//Draw anything extra (that not every shape has), like arrows.

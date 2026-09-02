@@ -74,6 +74,13 @@ public sealed class MoveSelectedTool : BaseTransformTool
 	public override bool WritesToCurrentLayer
 		=> true;
 
+	// OnStartTransform below runs the very same rasterize offer over the whole selection it is about
+	// to lift, which is a superset of the down point ToolManager's guard probes. Leaving the guard on
+	// asked twice for one drag: once for whatever object sat under the cursor, then again for every
+	// object the selection reaches.
+	public override bool HandlesLiveObjectsItself
+		=> true;
+
 	protected override RectangleD GetSourceRectangle (Document document)
 		=> document.Selection.GetBounds ();
 

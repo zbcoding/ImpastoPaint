@@ -332,7 +332,8 @@ public abstract class BaseTool
 	/// rasterize guard. On for the flood tools: the paint bucket recolors a clicked object's
 	/// own ink instead of the ground (the whole point of its contract), and the magic wand
 	/// samples the layer's visible snapshot without editing anything — baking the object first
-	/// would destroy editability for no gain.
+	/// would destroy editability for no gain. On for move-selected too, which runs the same
+	/// offer itself over the whole selection it lifts; the guard would only ask a second time.
 	/// </summary>
 	public virtual bool HandlesLiveObjectsItself
 		=> false;

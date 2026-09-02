@@ -44,6 +44,10 @@ entries, is upstream Pinta work; the Impasto sections cover changes made in this
 
 ### Fixed
 
+- Starting a Move Selected Pixels drag over live objects now offers to rasterize once. Two dialogs
+  used to come up for one drag: one for whatever object sat under the cursor, then another for
+  everything the selection reached.
+
 - A newly drawn shape now takes the lowest object name its layer is not already using, so two
   sub-rows never read "Open Curve Shape 1". Numbering came from a counter that started over each
   session and never saw the shapes arriving already named - from a reopened file, a merged-down

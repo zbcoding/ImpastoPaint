@@ -264,11 +264,14 @@ public sealed class KeyboardShortcutManager
 		Translations.GetString ("Delete selected control point"),
 		new KeyGesture (new Gdk.Key (Gdk.Constants.KEY_Delete)));
 
+	// A rather than Space: after clicking a toolbar control the focused Gtk.DropDown/SpinButton
+	// consumes Space to open/activate itself, so the add-point binding was unreachable right after
+	// touching a toolbar. A is not consumed by any focused control and reads as "add point".
 	public static readonly ToolBindingDescriptor ShapeAddPoint = new (
 		"ShapeTool.AddPoint",
 		Translations.GetString ("Shape Tools"),
 		Translations.GetString ("Add control point at mouse position"),
-		new KeyGesture (new Gdk.Key (Gdk.Constants.KEY_space)));
+		new KeyGesture (new Gdk.Key (Gdk.Constants.KEY_A)));
 
 	public static readonly ToolBindingDescriptor ShapeAddPointExact = new (
 		"ShapeTool.AddPointExact",

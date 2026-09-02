@@ -402,7 +402,7 @@ public abstract class BaseEditEngine
 	private readonly IToolService tools;
 	private readonly IPaletteService palette;
 	protected readonly IWorkspaceService workspace;
-	private readonly SystemManager system_manager;
+	protected readonly SystemManager system_manager;
 	private static UserLayer? runtime_layer;
 
 	public BaseEditEngine (

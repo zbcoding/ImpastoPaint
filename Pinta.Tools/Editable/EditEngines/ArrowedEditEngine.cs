@@ -303,11 +303,20 @@ public abstract class ArrowedEditEngine : BaseEditEngine
 		result.AddItem (Translations.GetString ("Line"), Resources.Icons.ToolLine, true,
 			Translations.GetString ("Each added point joins its neighbors with a straight segment."));
 
-		// The closed button's tooltip must explain both modes, not just whichever is selected.
+		// The closed button's tooltip must explain both modes, not just whichever is selected: what
+		// each type does with a newly added point, how to add one, and how to change a point's
+		// tension afterwards. The bindings are the user's effective ones, so the tip follows their
+		// custom keybindings like the shape tooltip does.
+		string addPoint = PintaCore.Shortcuts.GetToolBinding (KeyboardShortcutManager.ShapeAddPoint).ToLabel ();
+		string addPointExact = PintaCore.Shortcuts.GetToolBinding (KeyboardShortcutManager.ShapeAddPointExact).ToLabel ();
+		string tension = PintaCore.Shortcuts.GetToolBinding (KeyboardShortcutManager.ShapeChangeTension).ModifierKeyLabel (system_manager);
+
 		result.UseSelectedItemTooltip = false;
 		result.TooltipText = string.Join ("\n",
 			$"{Translations.GetString ("Curve")}: {Translations.GetString ("Each added point curves smoothly through its neighbors.")}",
-			$"{Translations.GetString ("Line")}: {Translations.GetString ("Each added point joins its neighbors with a straight segment.")}");
+			$"{Translations.GetString ("Line")}: {Translations.GetString ("Each added point joins its neighbors with a straight segment.")}",
+			Translations.GetString ("Add a point: {0}, or right-click the line and choose to add one there; {1} adds at the exact same position.", addPoint, addPointExact),
+			Translations.GetString ("{0} + right-drag a point: change its tension.", tension));
 
 		straight_segments_enabled = settings.GetSetting (SettingNames.SHAPE_LINE_CURVE_MODE, false);
 		result.SelectedIndex = straight_segments_enabled ? 1 : 0;

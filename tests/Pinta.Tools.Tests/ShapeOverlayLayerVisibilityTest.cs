@@ -29,6 +29,15 @@ internal sealed class ShapeOverlayLayerVisibilityTest : ToolsTestHarness
 		typeof (ToolManager).GetProperty (nameof (ToolManager.CurrentTool))!.GetSetMethod (nonPublic: true)!
 			.Invoke (PintaCore.Tools, [null]);
 		BaseEditEngine.SEngines.Clear ();
+
+		// RectangleTool's constructor registers itself into this static, process-lifetime map;
+		// leaving it there would make an unrelated later test's ClosedLineCurveSeries-typed shape
+		// look like it needs a tool switch mid-draw when some other tool is current. Also drop the
+		// static runtime_layer binding left pointing at this test's (possibly just-deleted) layer,
+		// so a later test starts from "no layer bound yet" instead of a stale mismatch.
+		BaseEditEngine.CorrespondingTools.Remove (BaseEditEngine.ShapeTypes.ClosedLineCurveSeries);
+		typeof (BaseEditEngine).GetField ("runtime_layer", BindingFlags.NonPublic | BindingFlags.Static)!
+			.SetValue (null, null);
 	}
 
 	// HandleActivated alone (not the full ShapeTool.OnActivated/DoActivated path) is enough to wire
@@ -112,5 +121,9 @@ internal sealed class ShapeOverlayLayerVisibilityTest : ToolsTestHarness
 
 		Assert.That (Document.Layers.OverlayLayer.Hidden, Is.True,
 			"the Obj. badge overlay must clear once the layer its shape belonged to is deleted");
+		// Handles always includes the hover-position indicator regardless of shape state; what
+		// must be gone is the deleted layer's own shape engine (and, with it, its control points).
+		Assert.That (BaseEditEngine.SEngines, Is.Empty,
+			"control points must not keep showing for a shape whose layer no longer exists");
 	}
 }

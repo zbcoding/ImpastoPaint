@@ -2200,15 +2200,19 @@ public abstract class BaseEditEngine
 		DrawShapeBadges ();
 	}
 
-	// PropertyChangedEventHandler has a different signature than the other layer events, and this
-	// fires for every property change (Opacity, Name, BlendMode too) - cheap enough to just always
-	// refresh, and the one that actually matters is Hidden: toggling the current layer's visibility
-	// from the Layers dock left this overlay's already-drawn badges on screen, since nothing else
-	// redraws it in reaction to a Hidden toggle. The current layer itself never changes here, so
-	// the same resync-then-redraw handler as LayerAdded/LayerRemoved applies (EnsureShapesForCurrentLayer
-	// is a cheap no-op when the layer hasn't actually changed).
+	// PropertyChangedEventHandler has a different signature than the other layer events, and fires
+	// for every layer property change on every layer - Opacity ticking during a drag, a Name edit
+	// per keystroke, BlendMode - none of which any overlay here cares about. Hidden is the only one
+	// that does (toggling the current layer's visibility from the Layers dock left this overlay's
+	// already-drawn badges on screen, since nothing else redraws it in reaction to that), so filter
+	// to it specifically rather than paying a full resync-and-redraw on every unrelated tick.
 	private void HandleLayerPropertyChanged (object? sender, PropertyChangedEventArgs e)
-		=> HandleLayerListChanged (sender, EventArgs.Empty);
+	{
+		if (e.PropertyName != Layer.HiddenProperty)
+			return;
+
+		HandleLayerListChanged (sender, EventArgs.Empty);
+	}
 
 	/// <summary>
 	/// Rebuilds a layer's unified object surface from its full object list (shapes + text), maintaining

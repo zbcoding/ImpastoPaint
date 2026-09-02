@@ -12,9 +12,14 @@ entries, is upstream Pinta work; the Impasto sections cover changes made in this
 
 - The Line tool's toolbar now leads with a "Type" dropdown (Curve/Line) controlling how newly
   added points join their neighbors, replacing the removed Shape Type dropdown's Open/Closed
-  toggle for this tool. By default `A` adds a point, `S` snaps the selected control point to
-  Curve and `D` to Line, and the width control is labeled "Size". All of these are rebindable and
-  shown in the dropdown's tooltip.
+  toggle for this tool. `S` snaps the selected control point to Curve and `D` to Line, and the
+  width control is labeled "Size". Both are rebindable and shown in the dropdown's tooltip. With
+  no control point selected they do nothing and leave the key to the toolbox, so `S` still
+  reaches the selection tools.
+
+- Adding a control point now defaults to `A` across every shape tool, not just the Line tool.
+  Space is consumed by whichever toolbar dropdown or spin button has focus, which made the
+  binding unreachable right after touching the toolbar. Still rebindable, Space included.
 
 ### Changed
 
@@ -106,6 +111,13 @@ entries, is upstream Pinta work; the Impasto sections cover changes made in this
 - Fixed several memory leaks: an editable object's scratch surface when baking objects into a
   layer's raster, an object's own faded or blended scratch surface on every redraw, and an undo
   snapshot's "before" surface after most drawing, painting-object, or text-edit strokes.
+
+- The Gradient tool no longer crashes when a colour or the gradient type changes after a gradient
+  drawn inside a selection: finishing the drag handed the tool's copy of the pre-gradient pixels
+  to the undo history, which disposes it, while the tool kept reading it to re-render.
+
+- Snapping a control point's tension with `S` or `D` outside a drag is now undoable, and clicking
+  on the reshaped curve lands where the curve is drawn rather than where it used to be.
 
 - The Resize Palette dialog's confirmation prompt no longer had its answer inverted: Cancel no
   longer wipes an edited palette back to defaults, and Reset no longer silently keeps the edited

@@ -35,10 +35,6 @@ public sealed class EllipseEditEngine : BaseEditEngine
 {
 	protected override string ShapeName => Translations.GetString ("Ellipse");
 
-	// Ellipse's geometry (a bounding rect and, once partial, an arc) has nothing in
-	// LineCurveSeriesEngine's control points to convert into or out of.
-	protected override bool SupportsShapeTypeConversion => false;
-
 	public EllipseEditEngine (IServiceProvider services, ShapeTool owner) : base (services, owner)
 	{
 	}

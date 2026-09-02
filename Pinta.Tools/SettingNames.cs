@@ -65,9 +65,6 @@ internal static class SettingNames
 	internal static string FillStyle (string prefix)
 		=> $"{prefix}-fill-style";
 
-	internal static string ShapeType (string prefix)
-		=> $"{prefix}-shape-type";
-
 	internal static string TriangleType (string prefix)
 		=> $"{prefix}-triangle-type";
 

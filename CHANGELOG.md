@@ -20,11 +20,14 @@ entries, is upstream Pinta work; the Impasto sections cover changes made in this
 - The About dialog's license label no longer names Paint.NET directly, in line with the rest of
   the application.
 
-- The shape tools' "Shape Type" dropdown now only offers Open and Closed Line/Curve Series, which
-  really are the same tool with one toggle. Ellipse, Rounded Line Series, and Triangle are each
-  their own shape with state (arrows, corner radius, partial-ellipse geometry) that has nothing to
-  convert into or out of another kind, so converting into or out of one used to silently drop
-  whatever made it distinct; they're now reachable only through their own tool.
+- The shape tools' "Shape Type" dropdown for converting a shape in place (e.g. Line to Triangle,
+  Rectangle to Ellipse) has been removed. Every shape has state a conversion has nowhere to map to
+  or from another kind - arrows, triangle style, corner radius, partial-ellipse geometry, or, for
+  Open vs Closed Line/Curve Series, simply which points the tool's own control-point-based drawing
+  produces - so a conversion either silently dropped what made the shape distinct or produced a
+  shape the source tool never draws on its own (e.g. an open line missing one side of what was a
+  rectangle). Each shape is now reachable only through its own tool, as it already was for drawing
+  a new one.
 
 ### Fixed
 
@@ -59,8 +62,9 @@ entries, is upstream Pinta work; the Impasto sections cover changes made in this
   to fit the row count the dialog was previewing (e.g. an 8-color recent list dropping to 6) even
   when that row change was then declined.
 
-- Switching between Open and Closed Line/Curve Series in the toolbar's "Shape Type" dropdown no
-  longer resets that shape's arrows to their defaults.
+- Deleting or hiding the layer a shape's "Obj." badge and control-point handles belong to now
+  clears them from the canvas immediately, instead of leaving them showing over whatever layer
+  became current (or over nothing, once the layer was gone).
 
 - Moving selected pixels (or pasting an image) onto other art on the same layer no longer erases
   that art wherever the moved or pasted content itself has any transparency. Finishing the move

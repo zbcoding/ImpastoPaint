@@ -27,6 +27,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Linq;
 using Cairo;
 using Pinta.Core;
@@ -88,9 +89,6 @@ public abstract class BaseEditEngine
 	}
 
 	// NRT - Created by HandleBuildToolBar
-	protected ToolBarDropDownButton shape_type_button = null!;
-	protected Gtk.Label shape_type_label = null!;
-
 	protected Gtk.Label fill_label = null!;
 	protected ToolBarDropDownButton fill_button = null!;
 	protected Gtk.Separator fill_sep = null!;
@@ -165,19 +163,6 @@ public abstract class BaseEditEngine
 	private int CurrentFillStyle
 		=> fill_button?.SelectedItem?.Tag is int value ? value : 0;
 
-	// Null for Ellipse/Rounded Line/Triangle (no conversion dropdown - see
-	// SupportsShapeTypeConversion), so this must fall back to the tool's own fixed type rather than
-	// NRE or silently reading as OpenLineCurveSeries, which would also disable those shapes'
-	// shift-to-square/circle constrain below (CalculateModifiedCurrentPoint).
-	private ShapeTypes ShapeType {
-		get {
-			if (shape_type_button?.SelectedItem?.Tag is int value)
-				return (ShapeTypes) value;
-
-			return owner.ShapeType;
-		}
-	}
-
 	public const double ShapeClickStartingRange = 10d;
 	public const double DefaultEndPointTension = 0d;
 	public const double DefaultMidPointTension = 1d / 3d;
@@ -219,10 +204,15 @@ public abstract class BaseEditEngine
 	public ShapeEngine? SelectedShapeEngine => (SelectedPointIndex > -1) ? ActiveShapeEngine : null;
 
 	/// <summary>
-	/// Display the handles for all active shape engines' control points, along with the hover position
+	/// Display the handles for all active shape engines' control points, along with the hover
+	/// position. Empty while the current layer is hidden - editing chrome for content that is not
+	/// itself showing would be misleading, and nothing else clears these on a Hidden toggle (they
+	/// are polled live here, not baked onto an overlay surface that needs an explicit redraw).
 	/// </summary>
 	public IEnumerable<IToolHandle> Handles =>
-		SEngines.SelectMany (engine => engine.ControlPointHandles).Append (hover_handle);
+		(workspace.HasOpenDocuments && !workspace.ActiveDocument.Layers.CurrentUserLayer.Hidden)
+			? SEngines.SelectMany (engine => engine.ControlPointHandles).Append (hover_handle)
+			: [];
 
 	private readonly MoveHandle hover_handle;
 
@@ -435,9 +425,6 @@ public abstract class BaseEditEngine
 		if (fill_button is not null)
 			settings.PutSetting (SettingNames.FillStyle (toolPrefix), fill_button.SelectedIndex);
 
-		if (shape_type_button is not null)
-			settings.PutSetting (SettingNames.ShapeType (toolPrefix), shape_type_button.SelectedIndex);
-
 		if (dash_pattern_box?.ComboBox is not null)
 			settings.PutSetting (SettingNames.DashPattern (toolPrefix), dash_pattern_box.ComboBox.ComboBox.GetActiveText ()!);
 
@@ -445,73 +432,8 @@ public abstract class BaseEditEngine
 			settings.PutSetting (SettingNames.DashSpacing (toolPrefix), DashSpacingSetting);
 	}
 
-	// Ellipse, Rounded Line Series, and Triangle are each their own distinct shape (like a
-	// rectangle or an ellipse), not a variant of the Line/Curve tool's open-vs-closed toggle. Their
-	// arrows, triangle type, radius, and partial-ellipse geometry are state Convert() has nowhere
-	// to map to or from another kind, so offering them in the same dropdown reads as a shape
-	// turning into an unrelated one and silently drops whatever made it distinct. Keep the dropdown
-	// to Open/Closed Line-Curve Series, which really are the same tool with one toggle; every other
-	// shape stays reachable only through its own tool.
-	protected virtual bool SupportsShapeTypeConversion => true;
-
 	public void HandleBuildToolBar (Gtk.Box tb, ISettingsService settings, string toolPrefix)
 	{
-		if (SupportsShapeTypeConversion) {
-
-			if (shape_type_label == null) {
-				string shapeTypeText = Translations.GetString ("Shape Type");
-				shape_type_label = Gtk.Label.New ($" {shapeTypeText}: ");
-			}
-
-			tb.Append (shape_type_label);
-
-			if (shape_type_button == null) {
-				shape_type_button = ToolBarDropDownButton.New ();
-
-				shape_type_button.AddItem (Translations.GetString ("Open Line/Curve Series"), Resources.Icons.ToolLine, (int) ShapeTypes.OpenLineCurveSeries, Translations.GetString ("Draws a line or curve with a start and an end point."));
-				shape_type_button.AddItem (Translations.GetString ("Closed Line/Curve Series"), Resources.Icons.ToolRectangle, (int) ShapeTypes.ClosedLineCurveSeries, Translations.GetString ("Automatically connects the last point back to the first, closing the shape (e.g. a rectangle)."));
-
-				shape_type_button.SelectedIndex = settings.GetSetting (
-					SettingNames.ShapeType (toolPrefix),
-					0);
-
-				shape_type_button.SelectedItemChanged += (o, e) => {
-					ShapeTypes newShapeType = ShapeType;
-					ShapeEngine? selEngine = SelectedShapeEngine;
-
-					//Verify that the tool needs to be switched.
-					if (GetCorrespondingTool (newShapeType) == owner)
-						return;
-
-					if (selEngine == null) {
-						ActivateCorrespondingTool (newShapeType, true);
-						return;
-					}
-
-					//if shape is selected it will be converted to new shape and shape type will be changed, otherwise only shape type will be changed.
-
-					//Create a new ShapesModifyHistoryItem so that the changing of the shape type can be undone.
-					workspace.ActiveDocument.History.PushNewItem (new ShapesModifyHistoryItem (
-						this, owner.Icon, Translations.GetString ("Changed Shape Type")));
-
-					//Clone the old shape; it should be automatically garbage-collected. newShapeType already has the updated value.
-					selEngine = selEngine.Convert (newShapeType, SelectedShapeIndex);
-
-					int previousSSI = SelectedShapeIndex;
-					ActivateCorrespondingTool (selEngine.ShapeType, true);
-					SelectedShapeIndex = previousSSI;
-					//Draw the updated shape with organized points generation (for mouse detection).
-					DrawActiveShape (true, false, true, false, true);
-				};
-			}
-
-			// Tag-based, not positional: the dropdown no longer lists every ShapeTypes value, so its
-			// item order and the enum's ordinals have parted ways.
-			shape_type_button.SelectedItem = shape_type_button.Items.First (i => i.GetTagOrDefault (-1) == (int) owner.ShapeType);
-
-			tb.Append (shape_type_button);
-		}
-
 		if (rasterize_mode_label == null) {
 			string modeText = Translations.GetString ("Mode");
 			rasterize_mode_label = Gtk.Label.New ($" {modeText}: ");
@@ -697,6 +619,16 @@ public abstract class BaseEditEngine
 		palette.PrimaryColorChanged += Palette_PrimaryColorChanged;
 		palette.SecondaryColorChanged += Palette_SecondaryColorChanged;
 		workspace.SelectedLayerChanged += HandleSelectedLayerChanged;
+		// LayerAdded/LayerRemoved/LayerPropertyChanged (a Hidden toggle) can all change which
+		// engines and badges belong to the current layer without the user having switched to it -
+		// inserting or deleting a layer shifts CurrentUserLayerIndex on its own. Unlike
+		// SelectedLayerChanged, the layer SEngines currently belongs to may no longer exist at all
+		// by the time this fires, so this resyncs first and only then redraws - HandleSelectedLayerChanged
+		// draws the *old* engines before resyncing, which would read the *new* current layer's
+		// Hidden state for engines that never belonged to it.
+		workspace.LayerAdded += HandleLayerListChanged;
+		workspace.LayerRemoved += HandleLayerListChanged;
+		workspace.LayerPropertyChanged += HandleLayerPropertyChanged;
 	}
 
 	public virtual void HandleDeactivated (BaseTool? newTool)
@@ -715,6 +647,9 @@ public abstract class BaseEditEngine
 		rotating_whole_shape = false;
 
 		workspace.SelectedLayerChanged -= HandleSelectedLayerChanged;
+		workspace.LayerAdded -= HandleLayerListChanged;
+		workspace.LayerRemoved -= HandleLayerListChanged;
+		workspace.LayerPropertyChanged -= HandleLayerPropertyChanged;
 
 		StorePreviousSettings ();
 
@@ -1725,7 +1660,9 @@ public abstract class BaseEditEngine
 	/// Draws the "Obj." editable-object badge below the leftmost control point of every live, editable
 	/// (non-Raster) shape, onto the tool overlay layer (never baked into artwork) — the shape-side
 	/// counterpart of the Text tool's on-canvas badge. Cleared by <see cref="HandleDeactivated"/>; also
-	/// re-invoked by <see cref="ReloadLayerShapes"/> so a shape rasterized away loses its badge at once.
+	/// re-invoked by <see cref="ReloadLayerShapes"/> so a shape rasterized away loses its badge at once,
+	/// and by the layer-added/removed/property-changed hooks in <see cref="HandleActivated"/> so a
+	/// deleted or hidden layer's badges stop lingering once nothing else redraws this overlay.
 	/// </summary>
 	private static void DrawShapeBadges ()
 	{
@@ -1737,7 +1674,11 @@ public abstract class BaseEditEngine
 		toolLayer.Clear ();
 
 		bool any = false;
-		using (Context g = new (toolLayer.Surface)) {
+
+		// Editing chrome for a layer that is not itself showing would be misleading; leave the
+		// overlay cleared instead.
+		if (!doc.Layers.CurrentUserLayer.Hidden) {
+			using Context g = new (toolLayer.Surface);
 			g.Save ();
 			g.Translate (.5, .5);
 			foreach (ShapeEngine engine in SEngines) {
@@ -2240,6 +2181,31 @@ public abstract class BaseEditEngine
 		EnsureShapesForCurrentLayer ();
 	}
 
+	// LayerAdded/LayerRemoved fire when inserting or deleting a layer shifts CurrentUserLayerIndex
+	// on its own, without the user switching to anything - unlike HandleSelectedLayerChanged, the
+	// layer SEngines currently belongs to may no longer exist at all (it could be the one just
+	// deleted). Resync first, then redraw the badges for whichever layer is current now; drawing
+	// the old engines first, as HandleSelectedLayerChanged does, would read the *new* current
+	// layer's Hidden state for engines that never belonged to it and never get to clear them.
+	private void HandleLayerListChanged (object? sender, EventArgs e)
+	{
+		if (!workspace.HasOpenDocuments)
+			return;
+
+		EnsureShapesForCurrentLayer ();
+		DrawShapeBadges ();
+	}
+
+	// PropertyChangedEventHandler has a different signature than the other layer events, and this
+	// fires for every property change (Opacity, Name, BlendMode too) - cheap enough to just always
+	// refresh, and the one that actually matters is Hidden: toggling the current layer's visibility
+	// from the Layers dock left this overlay's already-drawn badges on screen, since nothing else
+	// redraws it in reaction to a Hidden toggle. The current layer itself never changes here, so
+	// the same resync-then-redraw handler as LayerAdded/LayerRemoved applies (EnsureShapesForCurrentLayer
+	// is a cheap no-op when the layer hasn't actually changed).
+	private void HandleLayerPropertyChanged (object? sender, PropertyChangedEventArgs e)
+		=> HandleLayerListChanged (sender, EventArgs.Empty);
+
 	/// <summary>
 	/// Rebuilds a layer's unified object surface from its full object list (shapes + text), maintaining
 	/// the invariant that the object surface equals the render of the object list. Render-only: it does
@@ -2386,7 +2352,7 @@ public abstract class BaseEditEngine
 		if (selEngine == null)
 			return;
 
-		if (ShapeType != ShapeTypes.OpenLineCurveSeries && selEngine.ControlPoints.Count == 4) {
+		if (owner.ShapeType != ShapeTypes.OpenLineCurveSeries && selEngine.ControlPoints.Count == 4) {
 
 			// Constrain to a square / circle.
 

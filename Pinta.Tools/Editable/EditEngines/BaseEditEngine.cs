@@ -167,6 +167,10 @@ public abstract class BaseEditEngine
 	public const double DefaultEndPointTension = 0d;
 	public const double DefaultMidPointTension = 1d / 3d;
 
+	// The tension a newly added interior point gets. Overridden by ArrowedEditEngine's Line/Curve
+	// toggle (Line tool only); every other shape tool keeps the default curve tension.
+	protected virtual double NewPointTension => DefaultMidPointTension;
+
 	public int SelectedPointIndex;
 	public int SelectedShapeIndex;
 
@@ -958,10 +962,10 @@ public abstract class BaseEditEngine
 		//Place the new point on the outside-most end, order-wise.
 		if (SelectedPointIndex < selEngine.ControlPoints.Count / 2d) {
 			selEngine.ControlPoints.Insert (SelectedPointIndex,
-			    new ControlPoint (new PointD (newPointPos.X, newPointPos.Y), DefaultMidPointTension));
+			    new ControlPoint (new PointD (newPointPos.X, newPointPos.Y), NewPointTension));
 		} else {
 			selEngine.ControlPoints.Insert (SelectedPointIndex + 1,
-			    new ControlPoint (new PointD (newPointPos.X, newPointPos.Y), DefaultMidPointTension));
+			    new ControlPoint (new PointD (newPointPos.X, newPointPos.Y), NewPointTension));
 
 			++SelectedPointIndex;
 		}
@@ -1306,16 +1310,16 @@ public abstract class BaseEditEngine
 			var cps = ellipse.ControlPoints;
 			if (EllipseEngine.IsPerfectRectangle (cps[0].Position, cps[1].Position, cps[2].Position, cps[3].Position)) {
 				insertedIdx = ellipse.ConvertToSegmentedEllipseAndInsert (
-					new PointD (current_point.X, current_point.Y), DefaultMidPointTension);
+					new PointD (current_point.X, current_point.Y), NewPointTension);
 				if (insertedIdx < 0)
 					insertedIdx = pointIndex;
 			} else {
 				targetEngine.ControlPoints.Insert (pointIndex,
-					new ControlPoint (new PointD (current_point.X, current_point.Y), DefaultMidPointTension));
+					new ControlPoint (new PointD (current_point.X, current_point.Y), NewPointTension));
 			}
 		} else {
 			targetEngine.ControlPoints.Insert (pointIndex,
-				new ControlPoint (new PointD (current_point.X, current_point.Y), DefaultMidPointTension));
+				new ControlPoint (new PointD (current_point.X, current_point.Y), NewPointTension));
 		}
 
 		//These should be set after creating the history item.

@@ -8,6 +8,13 @@ entries, is upstream Pinta work; the Impasto sections cover changes made in this
 
 ## Impasto - [Unreleased](https://github.com/zbcoding/ImpastoPaint/compare/v0.1.1...main)
 
+### Added
+
+- The Line tool's toolbar now has a Segments dropdown: Curve (default, unchanged from existing
+  behavior) or Line, where each newly added point joins its neighbors with a straight segment
+  instead of curving through them. Replaces the removed Shape Type dropdown's Open/Closed Line
+  toggle for this tool specifically.
+
 ### Changed
 
 - The text tool's corner grips are now canvas handles like the shape and selection grips: they

@@ -58,6 +58,21 @@ public abstract class ArrowedEditEngine : BaseEditEngine
 	private bool ArrowOneEnabled => ArrowOneEnabledCheckBox.Active;
 	private bool ArrowTwoEnabled => ArrowTwoEnabledCheckBox.Active;
 
+	private Gtk.Separator? line_or_curve_sep;
+	private Gtk.Label? line_or_curve_label;
+	private ToolBarDropDownButton? line_or_curve_button;
+
+	// Curve (default) is unchanged: each added point curves smoothly through its neighbors, same as
+	// before this setting existed. Line makes each added point join its neighbors with a tension-0
+	// (DefaultEndPointTension) point instead of the usual curve tension - the cardinal spline's
+	// tangent at that point is then zero, which keeps every segment inside the straight line between
+	// its two points (no curve overshoot) while still joining the next segment with a continuous,
+	// corner-free tangent.
+	private bool straight_segments_enabled;
+
+	protected override double NewPointTension
+		=> straight_segments_enabled ? DefaultEndPointTension : DefaultMidPointTension;
+
 	public ArrowedEditEngine (
 		IServiceProvider services,
 		ShapeTool passedOwner
@@ -90,6 +105,10 @@ public abstract class ArrowedEditEngine : BaseEditEngine
 		this.settings = settings;
 		tool_prefix = toolPrefix;
 		toolbar = tb;
+
+		tb.Append (LineOrCurveSeparator);
+		tb.Append (LineOrCurveLabel);
+		tb.Append (LineOrCurveButton);
 
 		tb.Append (ArrowSeparator);
 		tb.Append (ArrowLabel);
@@ -253,6 +272,35 @@ public abstract class ArrowedEditEngine : BaseEditEngine
 		}
 
 		base.DrawExtras (ref totalDirty, g, engine);
+	}
+
+	private Gtk.Separator LineOrCurveSeparator
+		=> line_or_curve_sep ??= GtkExtensions.CreateToolBarSeparator ();
+
+	private Gtk.Label LineOrCurveLabel
+		=> line_or_curve_label ??= Gtk.Label.New (string.Format (" {0}: ", Translations.GetString ("Segments")));
+
+	private ToolBarDropDownButton LineOrCurveButton
+		=> line_or_curve_button ??= CreateLineOrCurveButton ();
+
+	private ToolBarDropDownButton CreateLineOrCurveButton ()
+	{
+		ToolBarDropDownButton result = ToolBarDropDownButton.New ();
+
+		result.AddItem (Translations.GetString ("Curve"), Resources.Icons.ToolLine, false,
+			Translations.GetString ("Each added point curves smoothly through its neighbors."));
+		result.AddItem (Translations.GetString ("Line"), Resources.Icons.ToolLine, true,
+			Translations.GetString ("Each added point joins its neighbors with a straight segment."));
+
+		straight_segments_enabled = settings.GetSetting (SettingNames.SHAPE_STRAIGHT_SEGMENTS, false);
+		result.SelectedIndex = straight_segments_enabled ? 1 : 0;
+
+		result.SelectedItemChanged += (o, e) => {
+			straight_segments_enabled = result.SelectedItem.GetTagOrDefault (false);
+			settings.PutSetting (SettingNames.SHAPE_STRAIGHT_SEGMENTS, straight_segments_enabled);
+		};
+
+		return result;
 	}
 
 	private Gtk.Separator ArrowSeparator

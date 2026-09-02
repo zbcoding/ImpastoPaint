@@ -64,7 +64,7 @@ const langEntries = Object.entries(languages) as [Lang, (typeof languages)[Lang]
       <h1>{t.heroH1}</h1>
       <p class="lede">{t.heroLede}</p>
       <div class="cta-row">
-        <a class="btn btn-primary" href={releases}>{t.ctaDownload}</a>
+        <a class="btn btn-primary" href={`${releases}/tag/v${version}`}>{t.ctaDownload} <span class="version-tag">v{version}</span></a>
         <a class="btn btn-ghost" href={repo}>{t.ctaSource}</a>
       </div>
       <p class="fine">{t.heroFine}</p>
@@ -187,6 +187,7 @@ const langEntries = Object.entries(languages) as [Lang, (typeof languages)[Lang]
 
   .btn { display: inline-block; padding: 0.75rem 1.5rem; border-radius: 8px; text-decoration: none; font-weight: 600; border: 1px solid transparent; }
   .btn-primary { background: var(--accent); color: #1a1305; }
+  .btn-primary .version-tag { opacity: 0.7; font-weight: 500; font-variant-numeric: tabular-nums; }
   .btn-ghost { border-color: var(--border); color: var(--fg); }
   .btn-small { padding: 0.45rem 1rem; font-size: 0.9rem; border: 1px solid transparent; background: var(--accent); color: #1a1305; border-radius: 6px; }
   .btn-small:hover { opacity: 0.85; }

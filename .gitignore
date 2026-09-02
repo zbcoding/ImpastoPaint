@@ -64,3 +64,7 @@ repo/
 impasto-*.tar.gz
 publish/
 .empryo
+
+# appimage build outputs
+/appimage-build/
+Impasto-x86_64.AppImage

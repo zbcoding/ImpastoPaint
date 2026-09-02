@@ -21,6 +21,10 @@ entries, is upstream Pinta work; the Impasto sections cover changes made in this
   Space is consumed by whichever toolbar dropdown or spin button has focus, which made the
   binding unreachable right after touching the toolbar. Still rebindable, Space included.
 
+- Linux releases now include `Impasto-x86_64.AppImage`, a single-file build that bundles the
+  GTK 4 runtime and needs no system GTK. Built by `scripts/build-appimage.sh` on each tagged
+  release alongside the existing Flatpak and distro zip.
+
 ### Changed
 
 - The text tool's corner grips are now canvas handles like the shape and selection grips: they

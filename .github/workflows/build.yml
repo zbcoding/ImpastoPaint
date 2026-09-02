@@ -134,6 +134,34 @@ jobs:
         path: Impasto-x86_64.flatpak
         if-no-files-found: error
 
+  build-appimage:
+    runs-on: ubuntu-24.04
+
+    steps:
+    - uses: actions/checkout@v7
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v5
+      with:
+        dotnet-version: ${{env.DOTNET_VERSION}}
+    # GTK4 + libadwaita runtime, the schemas libadwaita reads at startup, the
+    # Adwaita icon theme, and the gdk-pixbuf loaders (+ query tool). GirCore
+    # dlopen's GTK by soname, so scripts/build-appimage.sh names it explicitly
+    # and lets linuxdeploy pull the rest of the closure.
+    - name: Install GTK runtime and packaging dependencies
+      run: |
+        sudo apt update
+        sudo apt install -y libgtk-4-1 libadwaita-1-0 gsettings-desktop-schemas \
+          adwaita-icon-theme librsvg2-common webp-pixbuf-loader \
+          libgdk-pixbuf-2.0-0 libgdk-pixbuf2.0-bin
+    - name: Build AppImage
+      run: scripts/build-appimage.sh
+    - name: Upload AppImage
+      uses: actions/upload-artifact@v7
+      with:
+        name: Impasto-x86_64.AppImage
+        path: Impasto-x86_64.AppImage
+        if-no-files-found: error
+
   build-macos:
     # Build for both intel and arm64
     strategy:
@@ -232,7 +260,7 @@ jobs:
   # On a v* tag, publish the built artifacts as a GitHub release.
   # Cutting a release (version bump, CHANGELOG, metainfo, tag): see docs/releases.md.
   release:
-    needs: [build-ubuntu, build-flatpak, build-macos, build-windows]
+    needs: [build-ubuntu, build-flatpak, build-appimage, build-macos, build-windows]
     if: startsWith(github.ref, 'refs/tags/v')
     runs-on: ubuntu-24.04
     permissions:

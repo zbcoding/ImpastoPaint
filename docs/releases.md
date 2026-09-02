@@ -79,12 +79,13 @@ v0.1.1.
 - [ ] Land steps 2-5 on `main`; wait for CI to go green.
 - [ ] `git tag -a vX.Y.Z -m "Impasto X.Y.Z" <commit>` then `git push origin vX.Y.Z`.
 - [ ] Watch the tag's `build.yml` run. The `release` job needs all of
-      `build-ubuntu`, `build-flatpak`, `build-macos`, `build-windows` to pass.
+      `build-ubuntu`, `build-flatpak`, `build-appimage`, `build-macos`, `build-windows` to pass.
 
 ## 7. Verify the GitHub release
 
 - [ ] `gh release view vX.Y.Z` — not a draft, not a prerelease, notes generated.
-- [ ] Six assets: `Impasto-linux-dotnet-*.zip`, `Impasto-x86_64.flatpak`,
+- [ ] Seven assets: `Impasto-linux-dotnet-*.zip`, `Impasto-x86_64.flatpak`,
+      `Impasto-x86_64.AppImage`,
       `Impasto-osx-arm64-unsigned.dmg`, `Impasto-osx-x64-unsigned.dmg`,
       `Impasto-win-x64.exe`, `Impasto-win-arm64.exe`.
 - [ ] The macOS `.dmg` files are unsigned; say so wherever users are pointed at them.

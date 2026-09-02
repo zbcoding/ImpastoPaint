@@ -232,6 +232,12 @@ public sealed class GradientTool : BaseTool
 	{
 		Document document = workspace.ActiveDocument;
 
+		// The copy finalizing retired can come back to life: undoing a finalized gradient hands the
+		// handle back with Active=true, so a later gradient-type or alpha-blending change re-enters
+		// RenderGradient with no base to paint the pre-gradient pixels from. Fall back to the layer's
+		// current content (the last drawn gradient) instead of dereferencing the retired surface.
+		undo_surface ??= document.Layers.CurrentPaintSurface.Clone ();
+
 		var gr = CreateGradientRenderer ();
 
 		if (is_reversed) {

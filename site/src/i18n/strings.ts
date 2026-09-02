@@ -27,9 +27,7 @@ export interface Dict {
   aboutOriginPost: string;
   platformsH2: string;
   linuxH3: string;
-  linuxPPre: string;
-  linuxCode: string;
-  linuxPPost: string;
+  linuxP: string;
   linuxCta: string;
   linuxFlatparkCta: string;
   windowsH3: string;
@@ -91,11 +89,7 @@ export const strings: Record<Lang, Dict> = {
     aboutOriginPost: ', a Windows paint program.',
     platformsH2: 'Get Impasto',
     linuxH3: 'Linux',
-    linuxPPre:
-      'Prebuilt Linux binaries are on the releases page. A Flatpak manifest ships in the repo ' +
-      'for building your own sandboxed',
-    linuxCode: '.flatpak',
-    linuxPPost: "bundle; it isn't listed on Flathub due to their current policy on AI-assisted projects.",
+    linuxP: 'Prebuilt Linux binaries are on the releases page. You can also get the Flatpak from FlatPark.',
     linuxCta: 'Linux download',
     linuxFlatparkCta: 'Install via FlatPark',
     windowsH3: 'Windows',
@@ -157,11 +151,7 @@ export const strings: Record<Lang, Dict> = {
     aboutOriginPost: ', un programa de pintura de Windows.',
     platformsH2: 'Consigue Impasto',
     linuxH3: 'Linux',
-    linuxPPre:
-      'Los binarios precompilados para Linux están en la página de versiones. El repositorio ' +
-      'incluye un manifiesto de Flatpak para compilar tu propio paquete',
-    linuxCode: '.flatpak',
-    linuxPPost: 'en sandbox; no está en Flathub debido a su política actual sobre proyectos con desarrollo asistido por IA.',
+    linuxP: 'Los binarios precompilados para Linux están en la página de versiones. También puedes obtener el Flatpak desde FlatPark.',
     linuxCta: 'Descargar para Linux',
     linuxFlatparkCta: 'Instalar desde FlatPark',
     windowsH3: 'Windows',
@@ -224,11 +214,7 @@ export const strings: Record<Lang, Dict> = {
     aboutOriginPost: ', un logiciel de peinture Windows.',
     platformsH2: 'Obtenir Impasto',
     linuxH3: 'Linux',
-    linuxPPre:
-      'Des binaires précompilés pour Linux sont disponibles sur la page des versions. Un manifeste ' +
-      'Flatpak est fourni dans le dépôt pour créer votre propre paquet',
-    linuxCode: '.flatpak',
-    linuxPPost: 'en bac à sable ; non disponible sur Flathub en raison de leur politique actuelle sur les projets assistés par IA.',
+    linuxP: 'Des binaires précompilés pour Linux sont disponibles sur la page des versions. Vous pouvez aussi obtenir le Flatpak depuis FlatPark.',
     linuxCta: 'Télécharger pour Linux',
     linuxFlatparkCta: 'Installer via FlatPark',
     windowsH3: 'Windows',
@@ -290,11 +276,7 @@ export const strings: Record<Lang, Dict> = {
     aboutOriginPost: ', einem Windows-Malprogramm.',
     platformsH2: 'Impasto herunterladen',
     linuxH3: 'Linux',
-    linuxPPre:
-      'Fertige Linux-Binärdateien gibt es auf der Releases-Seite. Im Repository liegt ein ' +
-      'Flatpak-Manifest zum Erstellen eines eigenen, sandboxed',
-    linuxCode: '.flatpak',
-    linuxPPost: '-Pakets; wegen Flathubs aktueller Richtlinie zu KI-unterstützten Projekten nicht auf Flathub gelistet.',
+    linuxP: 'Fertige Linux-Binärdateien gibt es auf der Releases-Seite. Das Flatpak gibt es auch bei FlatPark.',
     linuxCta: 'Linux-Download',
     linuxFlatparkCta: 'Über FlatPark installieren',
     windowsH3: 'Windows',
@@ -355,11 +337,7 @@ export const strings: Record<Lang, Dict> = {
     aboutOriginPost: '(Windows向けペイントソフト)からも着想を得ています。',
     platformsH2: 'Impastoを入手する',
     linuxH3: 'Linux',
-    linuxPPre:
-      'ビルド済みのLinuxバイナリはリリースページにあります。リポジトリにはFlatpakマニフェストが含ま' +
-      'れており、サンドボックス化された',
-    linuxCode: '.flatpak',
-    linuxPPost: 'バンドルを自分でビルドできます。FlathubのAI支援開発に関する現在の方針により、Flathubには掲載されていません。',
+    linuxP: 'ビルド済みのLinuxバイナリはリリースページにあります。FlatParkからFlatpak版を入手することもできます。',
     linuxCta: 'Linux版をダウンロード',
     linuxFlatparkCta: 'FlatParkからインストール',
     windowsH3: 'Windows',
@@ -419,9 +397,7 @@ export const strings: Record<Lang, Dict> = {
     aboutOriginPost: '(一款 Windows 绘图软件)的启发。',
     platformsH2: '获取 Impasto',
     linuxH3: 'Linux',
-    linuxPPre: '预编译的 Linux 二进制文件可在发布页面获取。仓库中附带 Flatpak 清单文件,供你自行构建沙盒化的',
-    linuxCode: '.flatpak',
-    linuxPPost: '软件包;由于 Flathub 当前对 AI 辅助开发项目的政策,暂未在 Flathub 上架。',
+    linuxP: '预编译的 Linux 二进制文件可在发布页面获取。你也可以从 FlatPark 获取 Flatpak 版本。',
     linuxCta: '下载 Linux 版',
     linuxFlatparkCta: '通过 FlatPark 安装',
     windowsH3: 'Windows',

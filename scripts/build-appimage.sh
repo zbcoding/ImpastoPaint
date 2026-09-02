@@ -183,5 +183,13 @@ exec "$here/usr/bin/Impasto" "$@"
 EOF
 chmod +x "$appdir/AppRun"
 
+# Guard against the apphost being clobbered (e.g. a heredoc following the AppRun
+# symlink linuxdeploy leaves) - the AppImage would still build and only fail when
+# a user runs it.
+file "$appdir/usr/bin/Impasto" | grep -q ELF \
+  || { echo "usr/bin/Impasto is not an ELF binary" >&2; exit 1; }
+file "$appdir/AppRun" | grep -q 'shell script' \
+  || { echo "AppRun is not a script" >&2; exit 1; }
+
 ARCH=x86_64 "$tools/appimagetool" "$appdir" "$repo/Impasto-x86_64.AppImage"
 echo "built: $repo/Impasto-x86_64.AppImage  (version $version)"

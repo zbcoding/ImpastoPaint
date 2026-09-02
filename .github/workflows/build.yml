@@ -137,6 +137,10 @@ jobs:
   build-appimage:
     runs-on: ubuntu-24.04
 
+    env:
+      # ubuntu-24.04 runners have no libfuse2, so the image cannot mount itself.
+      APPIMAGE_EXTRACT_AND_RUN: 1
+
     steps:
     - uses: actions/checkout@v7
     - name: Setup .NET
@@ -146,15 +150,33 @@ jobs:
     # GTK4 + libadwaita runtime, the schemas libadwaita reads at startup, the
     # Adwaita icon theme, and the gdk-pixbuf loaders (+ query tool). GirCore
     # dlopen's GTK by soname, so scripts/build-appimage.sh names it explicitly
-    # and lets linuxdeploy pull the rest of the closure.
+    # and lets linuxdeploy pull the rest of the closure. xvfb is for the launch
+    # check below.
     - name: Install GTK runtime and packaging dependencies
       run: |
         sudo apt update
         sudo apt install -y libgtk-4-1 libadwaita-1-0 gsettings-desktop-schemas \
           adwaita-icon-theme librsvg2-common webp-pixbuf-loader \
-          libgdk-pixbuf-2.0-0 libgdk-pixbuf2.0-bin
+          libgdk-pixbuf-2.0-0 libgdk-pixbuf2.0-bin xvfb
     - name: Build AppImage
       run: scripts/build-appimage.sh
+    # The image builds even when the bundle is broken; only running it catches a
+    # missing library or a bad AppRun.
+    - name: Smoke-test the AppImage
+      run: |
+        version=$(sed -n 's/^AC_INIT(\[impasto\], \[\(.*\)\])/\1/p' configure.ac)
+        ./Impasto-x86_64.AppImage --version | grep -F "$version"
+        # Launch far enough to resolve and initialise the bundled GTK stack, then
+        # kill it. timeout's 124 means it was still alive (good); a crash signals
+        # 132/134/139; a .NET startup throw exits 134/139 or 1.
+        set +e
+        xvfb-run --auto-servernum timeout 25 ./Impasto-x86_64.AppImage
+        code=$?
+        set -e
+        case $code in
+          124|0) ;;
+          *) echo "::error::AppImage exited $code on startup"; exit 1 ;;
+        esac
     - name: Upload AppImage
       uses: actions/upload-artifact@v7
       with:

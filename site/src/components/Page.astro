@@ -2,6 +2,7 @@
 import Layout from '../layouts/Layout.astro';
 import { languages, localePath, type Lang } from '../i18n/languages';
 import { strings } from '../i18n/strings';
+import configureAc from '../../../configure.ac?raw';
 
 export interface Props {
   lang: Lang;
@@ -13,6 +14,13 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 const releases = 'https://github.com/zbcoding/ImpastoPaint/releases';
 const repo = 'https://github.com/zbcoding/ImpastoPaint';
 const pintaUrl = 'https://github.com/PintaProject/Pinta';
+
+// Single source of truth for the release version: configure.ac's AC_INIT, so the site
+// never drifts from what `dotnet build`/the release tarball actually ships. `?raw` is
+// resolved by Vite against this file's source location, so it survives bundling.
+const versionMatch = configureAc.match(/AC_INIT\(\[impasto\],\s*\[([^\]]+)\]\)/);
+if (!versionMatch) throw new Error('Could not find Impasto version in configure.ac');
+const version = versionMatch[1];
 
 const langEntries = Object.entries(languages) as [Lang, (typeof languages)[Lang]][];
 ---
@@ -120,13 +128,14 @@ const langEntries = Object.entries(languages) as [Lang, (typeof languages)[Lang]
   <section id="docs" class="section alt">
     <div class="wrap prose">
       <h2>{t.docsH2}</h2>
-      <p>{t.docsIntro} <a href={`${repo}#readme`}>{t.docsReadme}</a> {t.docsMid} <a href={`${repo}/tree/main/docs`}>{t.docsFolder}</a> {t.docsOutro}</p>
+      <p>{t.docsIntro} <a href={`${repo}#readme`}>{t.docsReadme}</a>{t.docsMid} <a href={`${repo}/tree/main/docs`}>{t.docsFolder}</a>{t.docsMid2} <a href={`${repo}/blob/main/CHANGELOG.md`}>{t.docsChangelog}</a> {t.docsOutro}</p>
+      <p>{t.docsTooltip}</p>
     </div>
   </section>
 
   <footer class="site-footer">
     <div class="wrap row">
-      <p>{t.footerLicense}</p>
+      <p>{t.footerLicense} <span class="version">v{version}</span></p>
       <nav>
         <a href={repo}>{t.footerGithub}</a>
         <a href={releases}>{t.footerReleases}</a>
@@ -209,6 +218,7 @@ const langEntries = Object.entries(languages) as [Lang, (typeof languages)[Lang]
   .site-footer { padding: 2rem 0 3rem; color: var(--fg-muted); font-size: 0.9rem; }
   .site-footer nav { display: flex; gap: 1.25rem; }
   .site-footer a { color: var(--fg-muted); }
+  .version { font-variant-numeric: tabular-nums; opacity: 0.75; }
 </style>
 
 <script>

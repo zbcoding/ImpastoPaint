@@ -42,7 +42,10 @@ export interface Dict {
   docsReadme: string;
   docsMid: string;
   docsFolder: string;
+  docsMid2: string;
+  docsChangelog: string;
   docsOutro: string;
+  docsTooltip: string;
   footerLicense: string;
   footerGithub: string;
   footerReleases: string;
@@ -102,9 +105,13 @@ export const strings: Record<Lang, Dict> = {
     docsH2: 'Documentation',
     docsIntro: 'User docs for Impasto are coming to this site soon. Until then, the',
     docsReadme: 'README',
-    docsMid: 'and the',
+    docsMid: ', the',
     docsFolder: 'docs folder',
+    docsMid2: ', and the',
+    docsChangelog: 'CHANGELOG.md',
     docsOutro: 'on GitHub cover the current feature set, file formats, and add-ins.',
+    docsTooltip:
+      'Impasto also has tooltips throughout the interface - hover over a button or field to see what it does.',
     footerLicense: 'Impasto is free and open source, licensed under the MIT License.',
     footerGithub: 'GitHub',
     footerReleases: 'Releases',
@@ -163,9 +170,13 @@ export const strings: Record<Lang, Dict> = {
     docsH2: 'Documentación',
     docsIntro: 'La documentación de usuario de Impasto llegará pronto a este sitio. Mientras tanto, el',
     docsReadme: 'README',
-    docsMid: 'y la',
+    docsMid: ', la',
     docsFolder: 'carpeta de documentación',
+    docsMid2: ', y el',
+    docsChangelog: 'CHANGELOG.md',
     docsOutro: 'en GitHub describen las funciones actuales, los formatos de archivo y los complementos.',
+    docsTooltip:
+      'Impasto también tiene información sobre las herramientas en toda la interfaz: pasa el cursor sobre un botón o campo para ver qué hace.',
     footerLicense: 'Impasto es software libre y de código abierto, con licencia MIT.',
     footerGithub: 'GitHub',
     footerReleases: 'Versiones',
@@ -225,9 +236,13 @@ export const strings: Record<Lang, Dict> = {
     docsH2: 'Documentation',
     docsIntro: "La documentation utilisateur d'Impasto arrivera bientôt sur ce site. En attendant, le",
     docsReadme: 'README',
-    docsMid: 'et le',
+    docsMid: ', le',
     docsFolder: 'dossier docs',
+    docsMid2: ', et le',
+    docsChangelog: 'CHANGELOG.md',
     docsOutro: 'sur GitHub couvrent les fonctionnalités actuelles, les formats de fichiers et les extensions.',
+    docsTooltip:
+      "Impasto propose aussi des infobulles dans toute l'interface : survolez un bouton ou un champ pour voir sa fonction.",
     footerLicense: 'Impasto est un logiciel libre et open source, sous licence MIT.',
     footerGithub: 'GitHub',
     footerReleases: 'Versions',
@@ -286,9 +301,13 @@ export const strings: Record<Lang, Dict> = {
     docsH2: 'Dokumentation',
     docsIntro: 'Nutzerdokumentation für Impasto folgt bald auf dieser Seite. Bis dahin decken das',
     docsReadme: 'README',
-    docsMid: 'und der',
+    docsMid: ', der',
     docsFolder: 'Docs-Ordner',
+    docsMid2: ' und das',
+    docsChangelog: 'CHANGELOG.md',
     docsOutro: 'auf GitHub den aktuellen Funktionsumfang, die Dateiformate und die Add-ins ab.',
+    docsTooltip:
+      'Impasto zeigt außerdem in der gesamten Oberfläche Tooltips: Cursor über eine Schaltfläche oder ein Feld halten, um ihre Funktion zu sehen.',
     footerLicense: 'Impasto ist freie und quelloffene Software unter der MIT-Lizenz.',
     footerGithub: 'GitHub',
     footerReleases: 'Releases',
@@ -346,9 +365,13 @@ export const strings: Record<Lang, Dict> = {
     docsH2: 'ドキュメント',
     docsIntro: 'Impastoのユーザードキュメントは近日中にこのサイトに追加予定です。それまでは、',
     docsReadme: 'README',
-    docsMid: 'と',
+    docsMid: '、',
     docsFolder: 'docsフォルダ',
+    docsMid2: '、',
+    docsChangelog: 'CHANGELOG.md',
     docsOutro: '(GitHub上)に、現在の機能一覧、ファイル形式、アドインについての説明があります。',
+    docsTooltip:
+      'Impastoの各所にはツールチップも用意されており、ボタンや項目にカーソルを合わせると機能の説明が表示されます。',
     footerLicense: 'ImpastoはMITライセンスの下で提供される、無料でオープンソースのソフトウェアです。',
     footerGithub: 'GitHub',
     footerReleases: 'リリース',
@@ -403,9 +426,12 @@ export const strings: Record<Lang, Dict> = {
     docsH2: '文档',
     docsIntro: 'Impasto 的用户文档即将上线本站。在此之前,可参阅',
     docsReadme: 'README',
-    docsMid: '和',
+    docsMid: '、',
     docsFolder: 'docs 文件夹',
+    docsMid2: '和',
+    docsChangelog: 'CHANGELOG.md',
     docsOutro: '(位于 GitHub),其中介绍了当前的功能集、文件格式和插件。',
+    docsTooltip: 'Impasto 界面中还有大量工具提示,将鼠标悬停在按钮或输入框上即可查看其作用。',
     footerLicense: 'Impasto 是遵循 MIT 许可证的免费开源软件。',
     footerGithub: 'GitHub',
     footerReleases: '发布版本',

@@ -5,13 +5,14 @@ using Pinta.Core;
 namespace Pinta.Tools.Tests;
 
 /// <summary>
-/// The Line tool's "Segments" dropdown (Curve/Line) replaces the removed Shape Type dropdown's
+/// The Line tool's "New Points" dropdown (Curve/Line) replaces the removed Shape Type dropdown's
 /// Open/Closed toggle for this tool. Curve is unchanged from existing behaviour: a newly added
 /// point gets the usual curve tension. Line makes a newly added point tension-0 instead
 /// (DefaultEndPointTension) - the cardinal spline's tangent at that point is then zero, which keeps
 /// the segment inside the straight line between its two neighbors (no curve overshoot) while still
 /// meeting the next segment with a continuous, corner-free tangent, rather than a plain polyline's
-/// sharp elbow.
+/// sharp elbow. Named distinctly from the existing "Curved Segments" toggle beside it (which gates
+/// click-to-insert on an existing segment) so the two adjacent dropdowns read as unrelated controls.
 /// </summary>
 [TestFixture]
 internal sealed class LineToolSegmentModeTest : ToolsTestHarness
@@ -32,7 +33,7 @@ internal sealed class LineToolSegmentModeTest : ToolsTestHarness
 
 		// This setting is process-global (like the pre-existing Curved Segments/Rasterize Mode
 		// toggles it sits beside), not per-test; leave it as found.
-		PintaCore.Settings.PutSetting (SettingNames.SHAPE_STRAIGHT_SEGMENTS, false);
+		PintaCore.Settings.PutSetting (SettingNames.SHAPE_LINE_CURVE_MODE, false);
 
 		// Every ShapeTool constructor registers itself into this static, process-lifetime map;
 		// leaving this test's instances in it would make a later test's differently-typed shape
@@ -44,7 +45,7 @@ internal sealed class LineToolSegmentModeTest : ToolsTestHarness
 	// Same pattern as ShapeEditEngineDragStateTest: drives BaseEditEngine directly rather than
 	// through the full BaseTool.DoActivated, which would build the rest of LineCurveTool's own
 	// toolbar (antialiasing button etc.) this headless harness has no shell for.
-	// HandleBuildToolBar still has to run - it is what creates the Segments dropdown - and
+	// HandleBuildToolBar still has to run - it is what creates the New Points dropdown - and
 	// ToolManager.CurrentTool has to be set first for the reasons ShapeEditEngineDragStateTest notes.
 	private LineCurveTool Activate ()
 	{
@@ -63,7 +64,7 @@ internal sealed class LineToolSegmentModeTest : ToolsTestHarness
 		return t;
 	}
 
-	private static ToolBarDropDownButton SegmentsButton (BaseEditEngine engine)
+	private static ToolBarDropDownButton NewPointsButton (BaseEditEngine engine)
 		=> (ToolBarDropDownButton) typeof (ArrowedEditEngine).GetField ("line_or_curve_button", NonPublicInstance)!.GetValue (engine)!;
 
 	private static double NewPointTension (BaseEditEngine engine)
@@ -83,7 +84,7 @@ internal sealed class LineToolSegmentModeTest : ToolsTestHarness
 	{
 		LineCurveTool t = Activate ();
 
-		SegmentsButton (t.EditEngine).SelectedIndex = 1; // Line
+		NewPointsButton (t.EditEngine).SelectedIndex = 1; // Line
 
 		Assert.That (NewPointTension (t.EditEngine), Is.EqualTo (BaseEditEngine.DefaultEndPointTension),
 			"Line mode must make newly added points tension-0, so segments stay straight with no curve overshoot");
@@ -92,11 +93,11 @@ internal sealed class LineToolSegmentModeTest : ToolsTestHarness
 	[Test]
 	public void OtherShapeToolsAreUnaffectedByLineMode ()
 	{
-		PintaCore.Settings.PutSetting (SettingNames.SHAPE_STRAIGHT_SEGMENTS, true);
+		PintaCore.Settings.PutSetting (SettingNames.SHAPE_LINE_CURVE_MODE, true);
 
 		RectangleTool rectangle = new (PintaCore.Services);
 
 		Assert.That (NewPointTension (rectangle.EditEngine), Is.EqualTo (BaseEditEngine.DefaultMidPointTension),
-			"the Segments toggle is scoped to the Line tool; Rectangle (and every other shape tool) must keep the default curve tension regardless of it");
+			"the New Points toggle is scoped to the Line tool; Rectangle (and every other shape tool) must keep the default curve tension regardless of it");
 	}
 }

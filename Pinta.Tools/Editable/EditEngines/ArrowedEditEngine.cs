@@ -278,7 +278,7 @@ public abstract class ArrowedEditEngine : BaseEditEngine
 		=> line_or_curve_sep ??= GtkExtensions.CreateToolBarSeparator ();
 
 	private Gtk.Label LineOrCurveLabel
-		=> line_or_curve_label ??= Gtk.Label.New (string.Format (" {0}: ", Translations.GetString ("Segments")));
+		=> line_or_curve_label ??= Gtk.Label.New (string.Format (" {0}: ", Translations.GetString ("New Points")));
 
 	private ToolBarDropDownButton LineOrCurveButton
 		=> line_or_curve_button ??= CreateLineOrCurveButton ();
@@ -292,12 +292,12 @@ public abstract class ArrowedEditEngine : BaseEditEngine
 		result.AddItem (Translations.GetString ("Line"), Resources.Icons.ToolLine, true,
 			Translations.GetString ("Each added point joins its neighbors with a straight segment."));
 
-		straight_segments_enabled = settings.GetSetting (SettingNames.SHAPE_STRAIGHT_SEGMENTS, false);
+		straight_segments_enabled = settings.GetSetting (SettingNames.SHAPE_LINE_CURVE_MODE, false);
 		result.SelectedIndex = straight_segments_enabled ? 1 : 0;
 
 		result.SelectedItemChanged += (o, e) => {
 			straight_segments_enabled = result.SelectedItem.GetTagOrDefault (false);
-			settings.PutSetting (SettingNames.SHAPE_STRAIGHT_SEGMENTS, straight_segments_enabled);
+			settings.PutSetting (SettingNames.SHAPE_LINE_CURVE_MODE, straight_segments_enabled);
 		};
 
 		return result;

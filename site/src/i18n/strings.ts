@@ -31,6 +31,7 @@ export interface Dict {
   linuxCode: string;
   linuxPPost: string;
   linuxCta: string;
+  linuxFlatparkCta: string;
   windowsH3: string;
   windowsP: string;
   windowsCta: string;
@@ -96,6 +97,7 @@ export const strings: Record<Lang, Dict> = {
     linuxCode: '.flatpak',
     linuxPPost: 'bundle; a Flathub listing is on the roadmap but not live yet.',
     linuxCta: 'Linux download',
+    linuxFlatparkCta: 'Install via FlatPark',
     windowsH3: 'Windows',
     windowsP: 'A native Windows build is published with every release.',
     windowsCta: 'Windows download',
@@ -161,6 +163,7 @@ export const strings: Record<Lang, Dict> = {
     linuxCode: '.flatpak',
     linuxPPost: 'en sandbox; una publicación en Flathub está en la hoja de ruta, pero aún no está disponible.',
     linuxCta: 'Descargar para Linux',
+    linuxFlatparkCta: 'Instalar desde FlatPark',
     windowsH3: 'Windows',
     windowsP: 'Con cada versión se publica una compilación nativa para Windows.',
     windowsCta: 'Descargar para Windows',
@@ -227,6 +230,7 @@ export const strings: Record<Lang, Dict> = {
     linuxCode: '.flatpak',
     linuxPPost: 'en bac à sable ; une publication sur Flathub est prévue mais pas encore disponible.',
     linuxCta: 'Télécharger pour Linux',
+    linuxFlatparkCta: 'Installer via FlatPark',
     windowsH3: 'Windows',
     windowsP: 'Une version native pour Windows est publiée à chaque version.',
     windowsCta: 'Télécharger pour Windows',
@@ -292,6 +296,7 @@ export const strings: Record<Lang, Dict> = {
     linuxCode: '.flatpak',
     linuxPPost: '-Pakets; ein Eintrag auf Flathub ist geplant, aber noch nicht verfügbar.',
     linuxCta: 'Linux-Download',
+    linuxFlatparkCta: 'Über FlatPark installieren',
     windowsH3: 'Windows',
     windowsP: 'Mit jedem Release wird ein natives Windows-Build veröffentlicht.',
     windowsCta: 'Windows-Download',
@@ -356,6 +361,7 @@ export const strings: Record<Lang, Dict> = {
     linuxCode: '.flatpak',
     linuxPPost: 'バンドルを自分でビルドできます。Flathubへの登録は予定していますが、まだ公開されていません。',
     linuxCta: 'Linux版をダウンロード',
+    linuxFlatparkCta: 'FlatParkからインストール',
     windowsH3: 'Windows',
     windowsP: 'リリースごとにネイティブのWindowsビルドが公開されます。',
     windowsCta: 'Windows版をダウンロード',
@@ -417,6 +423,7 @@ export const strings: Record<Lang, Dict> = {
     linuxCode: '.flatpak',
     linuxPPost: '软件包;Flathub 上架计划中,但目前尚未上线。',
     linuxCta: '下载 Linux 版',
+    linuxFlatparkCta: '通过 FlatPark 安装',
     windowsH3: 'Windows',
     windowsP: '每次发布都会提供原生 Windows 构建版本。',
     windowsCta: '下载 Windows 版',

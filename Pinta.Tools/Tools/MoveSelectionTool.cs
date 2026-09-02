@@ -35,6 +35,10 @@ public sealed class MoveSelectionTool : BaseTransformTool
 	private SelectionHistoryItem? hist;
 	private DocumentSelection? original_selection;
 
+	// Whether a real selection was active before the drag started (see MoveSelectedTool's copy of
+	// this field for the failure mode it prevents).
+	private bool had_real_selection;
+
 	private readonly SystemManager system_manager;
 	private readonly IWorkspaceService workspace;
 	public MoveSelectionTool (IServiceProvider services) : base (services)
@@ -68,7 +72,12 @@ public sealed class MoveSelectionTool : BaseTransformTool
 	{
 		base.OnStartTransform (document);
 
+		had_real_selection = document.Selection.Visible;
 		original_selection = document.Selection.Clone ();
+
+		// Nothing will actually change (see OnUpdateTransform), so there is nothing to undo.
+		if (!had_real_selection)
+			return;
 
 		hist = new SelectionHistoryItem (workspace, Icon, Name);
 		hist.TakeSnapshot ();
@@ -82,6 +91,11 @@ public sealed class MoveSelectionTool : BaseTransformTool
 		if (original_selection is null)
 			return;
 
+		// Nothing was really selected: dragging the canvas-sized placeholder must stay a no-op
+		// rather than turning it into a real, shifted selection (see MoveSelectedTool).
+		if (!had_real_selection)
+			return;
+
 		document.Selection = original_selection.Transform (transform);
 		document.Selection.Visible = true;
 	}
@@ -90,9 +104,11 @@ public sealed class MoveSelectionTool : BaseTransformTool
 	{
 		base.OnFinishTransform (document, transform);
 
-		// Also transform the base selection used for the various select modes.
-		var prev_selection = document.PreviousSelection;
-		document.PreviousSelection = prev_selection.Transform (transform);
+		if (had_real_selection) {
+			// Also transform the base selection used for the various select modes.
+			var prev_selection = document.PreviousSelection;
+			document.PreviousSelection = prev_selection.Transform (transform);
+		}
 
 		if (hist != null)
 			document.History.PushNewItem (hist);

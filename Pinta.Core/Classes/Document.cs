@@ -238,7 +238,12 @@ public sealed class Document
 
 		using Context g = new (Layers.CurrentUserLayer.Surface);
 		selection.Clip (g);
-		layer.DrawWithOperator (g, Operator.Source, opacity: 1.0, transform: true);
+		// Over, not Source: the selection layer holds the moved/pasted content, which can have
+		// transparent or partially-transparent pixels within its own footprint (e.g. moving a
+		// sprite onto other art on the same layer, or pasting an image with alpha). Source would
+		// replace the destination with those transparent pixels outright, erasing whatever
+		// unrelated content the destination already had wherever the moved content is see-through.
+		layer.DrawWithOperator (g, Operator.Over, opacity: 1.0, transform: true);
 
 		Layers.DestroySelectionLayer ();
 		Workspace.Invalidate ();

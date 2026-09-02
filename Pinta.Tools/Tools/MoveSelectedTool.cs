@@ -39,6 +39,13 @@ public sealed class MoveSelectedTool : BaseTransformTool
 	// (BaseTransformTool sets is_dragging before calling OnStartTransform), so the move is neutered
 	// here rather than unwound there.
 	private bool move_declined;
+
+	// Whether a real selection was active before the drag started, captured in OnStartTransform.
+	// When false, "no selection" was standing in for "move the whole layer" (see the fallback
+	// below) and Selection/PreviousSelection must come out of the drag exactly as they went in -
+	// otherwise the untouched, canvas-sized placeholder becomes a real, shifted selection that
+	// silently clips every later paint tool to wherever the drag happened to end.
+	private bool had_real_selection;
 	private readonly Matrix original_transform = CairoExtensions.CreateIdentityMatrix ();
 
 	private readonly SystemManager system_manager;
@@ -73,6 +80,8 @@ public sealed class MoveSelectedTool : BaseTransformTool
 	protected override void OnStartTransform (Document document)
 	{
 		base.OnStartTransform (document);
+
+		had_real_selection = document.Selection.Visible;
 
 		// If there is no selection, select the whole image.
 		if (document.Selection.SelectionPolygons.Count == 0) {
@@ -136,8 +145,12 @@ public sealed class MoveSelectedTool : BaseTransformTool
 		if (move_declined)
 			return;
 
-		document.Selection = original_selection!.Transform (transform); // NRT - Set in OnStartTransform
-		document.Selection.Visible = true;
+		// Whole-layer fallback move: leave the canvas-sized placeholder selection exactly as it
+		// was: moving without a real selection must not fabricate one.
+		if (had_real_selection) {
+			document.Selection = original_selection!.Transform (transform); // NRT - Set in OnStartTransform
+			document.Selection.Visible = true;
+		}
 
 		document.Layers.SelectionLayer.Transform.InitMatrix (original_transform);
 		document.Layers.SelectionLayer.Transform.Multiply (transform);
@@ -154,9 +167,11 @@ public sealed class MoveSelectedTool : BaseTransformTool
 			return;
 		}
 
-		// Also transform the base selection used for the various select modes.
-		var prev_selection = document.PreviousSelection;
-		document.PreviousSelection = prev_selection.Transform (transform);
+		if (had_real_selection) {
+			// Also transform the base selection used for the various select modes.
+			var prev_selection = document.PreviousSelection;
+			document.PreviousSelection = prev_selection.Transform (transform);
+		}
 
 		if (hist != null)
 			document.History.PushNewItem (hist);

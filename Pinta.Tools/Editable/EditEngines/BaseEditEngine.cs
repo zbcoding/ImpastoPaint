@@ -56,15 +56,24 @@ public abstract class BaseEditEngine
 	// generic geometry label (e.g. the rectangle tool's "Closed Curve Shape") can override it.
 	protected virtual string DefaultObjectName => ShapeName;
 
-	// Per-session, per-type running counter for default shape names ("Ellipse 1", "Ellipse 2", ...).
-	// ponytail: monotonic and never reused, so deleting a shape leaves a numbering gap; fine for a
-	// default label the user can rename.
-	private static readonly Dictionary<string, int> shape_name_counters = [];
-
-	private static string NextDefaultShapeName (string baseName)
+	// Lowest free per-type number for a default shape name ("Ellipse 1", "Ellipse 2", ...), scoped to
+	// the layer the shape lands on. Derived from the names already there rather than a running
+	// counter: shapes also arrive already named from a reloaded file, a merged-down layer and a
+	// duplicated one, and a counter that never sees those hands out a name the layer is already
+	// using. Live engines count too - they are only persisted into ShapeObjects at the next commit.
+	// ponytail: numbers are reused once a shape is deleted, and names the user typed by hand are
+	// only avoided when they collide exactly.
+	private static string NextDefaultShapeName (UserLayer layer, string baseName)
 	{
-		shape_name_counters.TryGetValue (baseName, out int n);
-		shape_name_counters[baseName] = ++n;
+		HashSet<string> taken = [
+			.. layer.ShapeObjects.Select (shape => shape.Name),
+			.. SEngines.Select (engine => engine.Name),
+		];
+
+		int n = 1;
+		while (taken.Contains ($"{baseName} {n}"))
+			++n;
+
 		return $"{baseName} {n}";
 	}
 
@@ -1271,7 +1280,7 @@ public abstract class BaseEditEngine
 
 			//Create the shape, add its starting points, and add it to SEngines.
 			ShapeEngine newEngine = CreateShape (ctrlKey, clicked_control_point, prevSelPoint);
-			newEngine.Name = NextDefaultShapeName (DefaultObjectName);
+			newEngine.Name = NextDefaultShapeName (doc.Layers.CurrentUserLayer, DefaultObjectName);
 			// Stamp the current Object/Raster toggle onto the shape so its mode is remembered
 			// per-shape; a later commit only rasterizes the shapes drawn in Raster mode.
 			newEngine.RasterizeOnFinalize = rasterize_shapes;

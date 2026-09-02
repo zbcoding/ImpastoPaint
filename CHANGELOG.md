@@ -44,6 +44,11 @@ entries, is upstream Pinta work; the Impasto sections cover changes made in this
 
 ### Fixed
 
+- A newly drawn shape now takes the lowest object name its layer is not already using, so two
+  sub-rows never read "Open Curve Shape 1". Numbering came from a counter that started over each
+  session and never saw the shapes arriving already named - from a reopened file, a merged-down
+  layer, a duplicated one - so drawing after any of those handed out a name the layer had.
+
 - A layer's shapes no longer disappear when a shape tool is built after they were loaded. The
   shared live-engine list was emptied while still marked as holding that layer's shapes, so the
   tool never reloaded them and the next save wrote the empty list back over them.

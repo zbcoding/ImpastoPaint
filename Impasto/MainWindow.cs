@@ -112,6 +112,7 @@ internal sealed class MainWindow
 		// Look out for any changes in extensions
 		main_thread_id = Environment.CurrentManagedThreadId;
 		AddinManager.AddExtensionNodeHandler (typeof (IExtension), OnExtensionChanged);
+		startup_addins_loaded = true;
 
 		// Load the user's previous settings
 		LoadUserSettings ();
@@ -411,9 +412,11 @@ internal sealed class MainWindow
 		if (args.Change == ExtensionChange.Add) {
 			// A live install registers its tools/menu items/effects immediately (below), but its
 			// icons/ directory is only added to the theme search path at startup, so its tools would
-			// show the default icon until restart. AddSearchPath tolerates duplicate paths, so
-			// re-running the whole scan here is idempotent.
-			AddAddinIconSearchPaths ();
+			// show the default icon until restart. Only after startup: the startup scan already ran
+			// before this handler was registered, and AddSearchPath appends without de-duplicating,
+			// so re-scanning per node would just pile up copies of the same paths.
+			if (startup_addins_loaded)
+				AddAddinIconSearchPaths ();
 
 			try {
 				IExtension extension = (IExtension) args.ExtensionObject;
@@ -449,6 +452,10 @@ internal sealed class MainWindow
 	/// <c>icons</c> directory beside its assembly:
 	/// <c>icons/hicolor/scalable/actions/my-effect-symbolic.svg</c>.
 	/// </summary>
+	// AddExtensionNodeHandler fires Add for every already-registered node before it returns, so
+	// this flips only once that batch is done - after which an Add means a genuine live install.
+	private static bool startup_addins_loaded;
+
 	private static void AddAddinIconSearchPaths ()
 	{
 		Gtk.IconTheme theme = GtkExtensions.GetDefaultIconTheme ();

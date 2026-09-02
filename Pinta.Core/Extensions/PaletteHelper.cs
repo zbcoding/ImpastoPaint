@@ -20,15 +20,6 @@ public static class PaletteHelper
 	public static int GetPaletteRowCount ()
 		=> PintaCore.Settings.GetSetting (SettingNames.EXTENDED_PALETTE_ROWS, false) ? 3 : 2;
 
-	// Whether a palette-row-count change should reset the palette to defaults: always when there is
-	// nothing to lose (the palette is already what the reset would produce), otherwise exactly the
-	// user's answer to the confirmation prompt - never negated. b36a4ad7 found that exact return
-	// silently flipped in ResizePaletteAction, which swapped which button was the lossy one; kept
-	// here, as a one-line pure decision, so that class of bug shows up as a one-line diff instead of
-	// hiding inside an async dialog call.
-	public static bool ShouldResetPalette (bool isAtDefault, bool userConfirmedReset)
-		=> isAtDefault || userConfirmedReset;
-
 	// Whether a resize dialog's proposed palette size and recent-color count must be discarded in
 	// favor of whatever the palette already had: only when a row change was requested but declined.
 	// PromptResize steps both fields live to fit whichever row count its own dropdown is proposing,

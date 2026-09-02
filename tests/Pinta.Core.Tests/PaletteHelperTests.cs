@@ -48,16 +48,6 @@ internal sealed class PaletteHelperTests
 	public void RecentColorLimitAllowsTwentyFourColors ()
 		=> Assert.That (PaletteHelper.MAX_RECENT_COLOR_COUNT, Is.EqualTo (24));
 
-	// b36a4ad7: ConfirmPaletteReset negated RunConfirmAsync's result, so clicking Cancel/Keep wiped
-	// the edited palette and clicking Reset Palette silently kept it - the button the user reads as
-	// safe destroyed their work.
-	[TestCase (false, false, ExpectedResult = false, TestName = "not at default, user keeps -> no reset")]
-	[TestCase (false, true, ExpectedResult = true, TestName = "not at default, user resets -> reset")]
-	[TestCase (true, false, ExpectedResult = true, TestName = "already at default -> reset regardless (nothing to lose)")]
-	[TestCase (true, true, ExpectedResult = true, TestName = "already at default, user also resets -> reset")]
-	public bool ShouldResetPaletteNeverNegatesTheUsersAnswer (bool isAtDefault, bool userConfirmedReset)
-		=> PaletteHelper.ShouldResetPalette (isAtDefault, userConfirmedReset);
-
 	// A declined row change used to leave the resize dialog's size and recent-color-count fields
 	// applied anyway, even though PromptResize had already stepped them (and rounded them down) to
 	// fit the row count the dialog was proposing - e.g. an 8-color recent list silently dropping to

@@ -19,12 +19,12 @@ public static class DeferredAction
 {
 	private static readonly Action<Action> real_scheduler = RunOnIdle;
 
-	public static Action<Action> Scheduler { get; set; } = real_scheduler;
+	internal static Action<Action> Scheduler { get; set; } = real_scheduler;
 
 	public static void Run (Action action) => Scheduler (action);
 
 	/// <summary>Test hook: restores the real GLib-idle scheduler.</summary>
-	public static void ResetScheduler () => Scheduler = real_scheduler;
+	internal static void ResetScheduler () => Scheduler = real_scheduler;
 
 	private static void RunOnIdle (Action action)
 		=> GLib.Functions.IdleAdd (GLib.Constants.PRIORITY_DEFAULT, () => {

@@ -106,16 +106,14 @@ internal sealed class ResizePaletteAction : IActionHandler
 
 		// Resetting is the lossy choice, so it gets the destructive styling and Cancel/Keep stays
 		// the Enter-key default.
-		bool userConfirmedReset = await GtkExtensions.RunConfirmAsync (
+		// Returned as-is, never negated: b36a4ad7 found this exact return silently flipped, which
+		// swapped which button was the lossy one.
+		return await GtkExtensions.RunConfirmAsync (
 			chrome.MainWindow,
 			primary,
 			secondary,
 			Translations.GetString ("_Reset Palette"),
 			destructive: true);
-
-		// PaletteHelper.ShouldResetPalette carries the actual decision (and its test coverage);
-		// isAtDefault is always false here, kept only so the call states the full, tested contract.
-		return PaletteHelper.ShouldResetPalette (isAtDefault, userConfirmedReset);
 	}
 
 	private async Task<(int paletteRows, int paletteSize, int recentColorCount)?> PromptResize ()

@@ -273,6 +273,18 @@ public sealed class KeyboardShortcutManager
 		Translations.GetString ("Add control point at mouse position"),
 		new KeyGesture (new Gdk.Key (Gdk.Constants.KEY_A)));
 
+	public static readonly ToolBindingDescriptor ShapeSetPointCurve = new (
+		"ShapeTool.SetPointCurve",
+		Translations.GetString ("Shape Tools"),
+		Translations.GetString ("Set selected control point to curve"),
+		new KeyGesture (new Gdk.Key (Gdk.Constants.KEY_S)));
+
+	public static readonly ToolBindingDescriptor ShapeSetPointLine = new (
+		"ShapeTool.SetPointLine",
+		Translations.GetString ("Shape Tools"),
+		Translations.GetString ("Set selected control point to line"),
+		new KeyGesture (new Gdk.Key (Gdk.Constants.KEY_D)));
+
 	public static readonly ToolBindingDescriptor ShapeAddPointExact = new (
 		"ShapeTool.AddPointExact",
 		Translations.GetString ("Shape Tools"),
@@ -499,6 +511,8 @@ public sealed class KeyboardShortcutManager
 		ShapeSelectPrevPoint,
 		ShapeSelectNextPoint,
 		ShapeCreateNewAtPoint,
+		ShapeSetPointCurve,
+		ShapeSetPointLine,
 		ShapeChangeTension,
 		ShapeRotate,
 		TriangleTypeSwitch,

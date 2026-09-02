@@ -310,13 +310,16 @@ public abstract class ArrowedEditEngine : BaseEditEngine
 		string addPoint = PintaCore.Shortcuts.GetToolBinding (KeyboardShortcutManager.ShapeAddPoint).ToLabel ();
 		string addPointExact = PintaCore.Shortcuts.GetToolBinding (KeyboardShortcutManager.ShapeAddPointExact).ToLabel ();
 		string tension = PintaCore.Shortcuts.GetToolBinding (KeyboardShortcutManager.ShapeChangeTension).ModifierKeyLabel (system_manager);
+		string makeCurve = PintaCore.Shortcuts.GetToolBinding (KeyboardShortcutManager.ShapeSetPointCurve).ToLabel ();
+		string makeLine = PintaCore.Shortcuts.GetToolBinding (KeyboardShortcutManager.ShapeSetPointLine).ToLabel ();
 
 		result.UseSelectedItemTooltip = false;
 		result.TooltipText = string.Join ("\n",
 			$"{Translations.GetString ("Curve")}: {Translations.GetString ("Each added point curves smoothly through its neighbors.")}",
 			$"{Translations.GetString ("Line")}: {Translations.GetString ("Each added point joins its neighbors with a straight segment.")}",
 			Translations.GetString ("Add a point: {0}, or right-click the line and choose to add one there; {1} adds at the exact same position.", addPoint, addPointExact),
-			Translations.GetString ("{0} + right-drag a point: change its tension.", tension));
+			Translations.GetString ("{0} + right-drag a point: change its tension.", tension),
+			Translations.GetString ("{0}: make the selected point curve, {1}: make it straight.", makeCurve, makeLine));
 
 		straight_segments_enabled = settings.GetSetting (SettingNames.SHAPE_LINE_CURVE_MODE, false);
 		result.SelectedIndex = straight_segments_enabled ? 1 : 0;

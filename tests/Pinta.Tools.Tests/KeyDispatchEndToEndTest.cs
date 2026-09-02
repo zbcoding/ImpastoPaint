@@ -225,6 +225,58 @@ internal sealed class KeyDispatchEndToEndTest : ToolsTestHarness
 		}
 	}
 
+	// S/D snap the selected point's tension to the Line tool's Curve/Line Type values, end-to-end:
+	// the engine point mutates and the change persists back into the layer's stored object.
+	[Test]
+	public void SAndDSetTheSelectedPointTension ()
+	{
+		UserLayer layer = Layer (0);
+		ShapeObject source = Box (ShapeFill, new RectangleI (4, 4, CanvasSize - 8, CanvasSize - 8));
+		layer.AddShape (source);
+
+		LineCurveTool tool = new (PintaCore.Services);
+		typeof (ToolManager).GetProperty (nameof (ToolManager.CurrentTool))!.GetSetMethod (nonPublic: true)!
+			.Invoke (PintaCore.Tools, [tool]);
+
+		try {
+			BaseEditEngine.ReloadLayerShapes (layer);
+			PintaCore.Workspace.ActiveWorkspace.Canvas = Gtk.DrawingArea.New ();
+
+			BaseEditEngine editEngine = (tool.EditEngine as BaseEditEngine)!;
+			editEngine.SelectedShapeIndex = 0;
+			editEngine.SelectedPointIndex = 0;
+
+			Assert.That (editEngine.ActiveShapeEngine!.ControlPoints[0].Tension, Is.EqualTo (0d),
+				"setup: the box's first control point starts straight (tension 0)");
+
+			bool handledLine = editEngine.HandleKeyDown (Document,
+				GestureEventArgs (KeyboardShortcutManager.ShapeSetPointLine.DefaultGesture));
+			Assert.Multiple (() => {
+				Assert.That (handledLine, Is.True, "D should dispatch to the set-straight command");
+				Assert.That (editEngine.ActiveShapeEngine!.ControlPoints[0].Tension, Is.EqualTo (0d),
+					"D on an already-straight point must keep it straight");
+				Assert.That (layer.ShapeObjects[0].ControlPoints[0].Tension, Is.EqualTo (0d),
+					"the tension must persist back into the layer's stored object");
+			});
+
+			bool handledCurve = editEngine.HandleKeyDown (Document,
+				GestureEventArgs (KeyboardShortcutManager.ShapeSetPointCurve.DefaultGesture));
+			Assert.Multiple (() => {
+				Assert.That (handledCurve, Is.True, "S should dispatch to the set-curve command");
+				Assert.That (editEngine.ActiveShapeEngine!.ControlPoints[0].Tension, Is.EqualTo (BaseEditEngine.DefaultMidPointTension),
+					"S after D must lift the point to curve tension");
+				Assert.That (layer.ShapeObjects[0].ControlPoints[0].Tension, Is.EqualTo (BaseEditEngine.DefaultMidPointTension),
+					"the curve tension must persist back into the layer's stored object");
+				Assert.That (editEngine.ActiveShapeEngine!.ControlPoints[1].Tension, Is.EqualTo (0d),
+					"S/D must affect only the selected point, not its neighbors");
+			});
+		} finally {
+			typeof (ToolManager).GetProperty (nameof (ToolManager.CurrentTool))!.GetSetMethod (nonPublic: true)!
+				.Invoke (PintaCore.Tools, [null]);
+			BaseEditEngine.SEngines.Clear ();
+		}
+	}
+
 	// Nudge with an actual selection: the one shape-command effect asserted end-to-end.
 	[Test]
 	public void NudgeMovesTheSelectedPoint ()

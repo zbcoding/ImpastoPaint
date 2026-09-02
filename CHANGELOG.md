@@ -10,14 +10,11 @@ entries, is upstream Pinta work; the Impasto sections cover changes made in this
 
 ### Added
 
-- The Line tool's toolbar now leads with a "Type" dropdown: Curve (default, unchanged from
-  existing behavior) or Line, where each newly added point joins its neighbors with a straight
-  segment instead of curving through them. Its tooltip describes both options rather than only
-  the selected one. Distinct from the existing "Curved Segments" toggle beside it, which governs
-  whether clicking an existing segment inserts a point at all. Replaces the removed Shape Type
-  dropdown's Open/Closed Line toggle for this tool specifically.
-- The Line tool's width control is now labeled "Size" instead of "Outline width", since a line
-  has no fill for the outline to contrast with.
+- The Line tool's toolbar now leads with a "Type" dropdown (Curve/Line) controlling how newly
+  added points join their neighbors, replacing the removed Shape Type dropdown's Open/Closed
+  toggle for this tool. By default `A` adds a point, `S` snaps the selected control point to
+  Curve and `D` to Line, and the width control is labeled "Size". All of these are rebindable and
+  shown in the dropdown's tooltip.
 
 ### Changed
 
@@ -42,11 +39,9 @@ entries, is upstream Pinta work; the Impasto sections cover changes made in this
 
 ### Fixed
 
-- Toggling an arrowhead on the Line tool no longer silently fails to show its Size / Angle /
-  Length options (and no longer spams six Gtk-CRITICAL warnings per click): the options were
-  being inserted into the tool settings' temporary build box, which ToolManager had already
-  drained and regrouped into clusters, so they were lost. They are now inserted and removed
-  beside the arrow checkboxes wherever those currently live.
+- Toggling an arrowhead on the Line tool now actually shows its Size / Angle / Length options
+  again, instead of silently failing (and spamming Gtk-CRITICAL warnings) whenever the toolbar
+  had been rebuilt after activation.
 
 - The "Obj." badge on a rotated text object now stays against the text box's lower-left corner
   and turns with it, instead of being placed from the box's axis-aligned bounds and drifting away

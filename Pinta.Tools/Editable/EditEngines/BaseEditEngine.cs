@@ -728,6 +728,8 @@ public abstract class BaseEditEngine
 		Finalize,
 		AddPointExact,
 		AddPoint,
+		SetPointCurve,
+		SetPointLine,
 		SelectPrevPoint,
 		SelectNextPoint,
 		CreateNewAtPoint,
@@ -746,6 +748,8 @@ public abstract class BaseEditEngine
 		(KeyboardShortcutManager.ShapeFinalize, ShapeKeyCommand.Finalize),
 		(KeyboardShortcutManager.ShapeAddPointExact, ShapeKeyCommand.AddPointExact),
 		(KeyboardShortcutManager.ShapeAddPoint, ShapeKeyCommand.AddPoint),
+		(KeyboardShortcutManager.ShapeSetPointCurve, ShapeKeyCommand.SetPointCurve),
+		(KeyboardShortcutManager.ShapeSetPointLine, ShapeKeyCommand.SetPointLine),
 		(KeyboardShortcutManager.ShapeSelectPrevPoint, ShapeKeyCommand.SelectPrevPoint),
 		(KeyboardShortcutManager.ShapeSelectNextPoint, ShapeKeyCommand.SelectNextPoint),
 		(KeyboardShortcutManager.ShapeCreateNewAtPoint, ShapeKeyCommand.CreateNewAtPoint),
@@ -844,6 +848,8 @@ public abstract class BaseEditEngine
 			case ShapeKeyCommand.Finalize: CommitShapeEditing (); break;
 			case ShapeKeyCommand.AddPointExact: HandleSpace (e, exact: true); break;
 			case ShapeKeyCommand.AddPoint: HandleSpace (e); break;
+			case ShapeKeyCommand.SetPointCurve: SetSelectedPointTension (DefaultMidPointTension); break;
+			case ShapeKeyCommand.SetPointLine: SetSelectedPointTension (DefaultEndPointTension); break;
 			case ShapeKeyCommand.SelectPrevPoint: HandleLeft (e, selectPoint: true); break;
 			case ShapeKeyCommand.SelectNextPoint: HandleRight (e, selectPoint: true); break;
 			case ShapeKeyCommand.CreateNewAtPoint: HandleSpace (e, exact: true); break;
@@ -855,6 +861,18 @@ public abstract class BaseEditEngine
 			case ShapeKeyCommand.BrushIncreaseWidth: BrushWidth++; break;
 			default: throw new ArgumentOutOfRangeException (nameof (command));
 		}
+	}
+
+	// S/D set the selected point's tension to the same values the Line tool's Curve/Line Type
+	// toggle gives newly added points: curve (1/3) or straight (0). A point's tension already has
+	// a continuous range reachable via Ctrl+drag; these snap it to either endpoint.
+	private void SetSelectedPointTension (double tension)
+	{
+		if (SelectedPoint is not ControlPoint point)
+			return;
+
+		point.Tension = tension;
+		DrawActiveShape (false, false, true, false, false);
 	}
 
 	private void HandleRight (ToolKeyEventArgs e, bool selectPoint = false)
@@ -2009,12 +2027,15 @@ public abstract class BaseEditEngine
 				hover_handle.Active = hover_handle.Selected = true;
 				string ctrl = system_manager.CtrlLabel ();
 				string tension = PintaCore.Shortcuts.GetToolBinding (KeyboardShortcutManager.ShapeChangeTension).ModifierKeyLabel (system_manager);
+				string makeCurve = PintaCore.Shortcuts.GetToolBinding (KeyboardShortcutManager.ShapeSetPointCurve).ToLabel ();
+				string makeLine = PintaCore.Shortcuts.GetToolBinding (KeyboardShortcutManager.ShapeSetPointLine).ToLabel ();
 				PointD cpPos = hit.ControlPoint!.Position;
 				hover_handle.TooltipText =
 					$"{(int) Math.Round (cpPos.X)}, {(int) Math.Round (cpPos.Y)}\n"
 					+ Translations.GetString ("{0}-drag: snap the adjacent segment to a 15° angle.", Translations.GetString ("Shift")) + "\n"
 					+ Translations.GetString ("Right click + drag: move the whole shape.") + "\n"
 					+ Translations.GetString ("{0} + right drag: change tension.", tension) + "\n"
+					+ Translations.GetString ("{0}: curve point, {1}: straight point.", makeCurve, makeLine) + "\n"
 					+ Translations.GetString ("{0} and drag: rotate the whole shape.", RotateGesture.ClickBindingLabel ()) + "\n"
 					+ Translations.GetString ("{0} + click: start a new shape here.", ctrl);
 			}

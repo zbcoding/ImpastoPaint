@@ -20,6 +20,12 @@ entries, is upstream Pinta work; the Impasto sections cover changes made in this
 - The About dialog's license label no longer names Paint.NET directly, in line with the rest of
   the application.
 
+- The shape tools' "Shape Type" dropdown now only offers Open and Closed Line/Curve Series, which
+  really are the same tool with one toggle. Ellipse, Rounded Line Series, and Triangle are each
+  their own shape with state (arrows, corner radius, partial-ellipse geometry) that has nothing to
+  convert into or out of another kind, so converting into or out of one used to silently drop
+  whatever made it distinct; they're now reachable only through their own tool.
+
 ### Fixed
 
 - The "Obj." badge on a rotated text object now stays against the text box's lower-left corner
@@ -31,6 +37,10 @@ entries, is upstream Pinta work; the Impasto sections cover changes made in this
 
 - Move Selection and Move Selected Pixels no longer go permanently unresponsive if a tool-switch
   shortcut is pressed mid-drag; the drag is now finished instead of left stuck.
+
+- Move Selection and Move Selected Pixels no longer leave a real, invisible selection active after
+  moving without one to begin with (the tools' "move the whole layer" fallback); that selection
+  used to survive the drag and silently clip every later paint tool to wherever the drag ended.
 
 - The shape tools (Ellipse, Rectangle, Rounded Line, Triangle, Line/Curve) no longer go
   permanently unresponsive if a tool-switch shortcut is pressed while drawing or moving a shape.
@@ -44,9 +54,19 @@ entries, is upstream Pinta work; the Impasto sections cover changes made in this
   allocation or crash on a mismatched layer size; Impasto now rejects it with a clear error
   instead.
 
-- Switching a selected shape's type in the toolbar (e.g. Line to Triangle and back) no longer
-  resets that shape's arrows, triangle style, rounded-line radius, or partial-ellipse state to
-  their defaults.
+- Declining the "changing rows resets the palette" prompt (Resize Palette) no longer applies the
+  dialog's palette size and recently-picked-colors count anyway; both used to be silently stepped
+  to fit the row count the dialog was previewing (e.g. an 8-color recent list dropping to 6) even
+  when that row change was then declined.
+
+- Switching between Open and Closed Line/Curve Series in the toolbar's "Shape Type" dropdown no
+  longer resets that shape's arrows to their defaults.
+
+- Moving selected pixels (or pasting an image) onto other art on the same layer no longer erases
+  that art wherever the moved or pasted content itself has any transparency. Finishing the move
+  used to composite it with an unconditional replace, so a transparent pixel inside the moved
+  content's own footprint punched a hole in whatever was already at the destination instead of
+  leaving it showing through.
 
 - Undoing or redoing a mask-targeted edit against a layer whose mask was since removed now fails
   with a clear error instead of silently corrupting the layer's colour pixels.

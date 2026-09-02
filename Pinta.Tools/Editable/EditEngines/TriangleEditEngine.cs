@@ -42,6 +42,10 @@ public sealed class TriangleEditEngine : BaseEditEngine
 	protected override string ShapeName
 		=> Translations.GetString ("Triangle Shape");
 
+	// Triangle is its own shape, like Ellipse or Rounded Line, not a variant of the Line/Curve
+	// tool's open-vs-closed toggle.
+	protected override bool SupportsShapeTypeConversion => false;
+
 	private TriangleType selected_type = TriangleType.Right;
 	private ToolBarDropDownButton? triangle_type_button;
 	private Gtk.Label? triangle_type_label;

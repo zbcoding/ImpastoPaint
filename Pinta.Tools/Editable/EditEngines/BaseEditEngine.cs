@@ -165,12 +165,16 @@ public abstract class BaseEditEngine
 	private int CurrentFillStyle
 		=> fill_button?.SelectedItem?.Tag is int value ? value : 0;
 
+	// Null for Ellipse/Rounded Line/Triangle (no conversion dropdown - see
+	// SupportsShapeTypeConversion), so this must fall back to the tool's own fixed type rather than
+	// NRE or silently reading as OpenLineCurveSeries, which would also disable those shapes'
+	// shift-to-square/circle constrain below (CalculateModifiedCurrentPoint).
 	private ShapeTypes ShapeType {
 		get {
-			if (shape_type_button.SelectedItem?.Tag is int value)
+			if (shape_type_button?.SelectedItem?.Tag is int value)
 				return (ShapeTypes) value;
 
-			return 0;
+			return owner.ShapeType;
 		}
 	}
 
@@ -441,61 +445,72 @@ public abstract class BaseEditEngine
 			settings.PutSetting (SettingNames.DashSpacing (toolPrefix), DashSpacingSetting);
 	}
 
+	// Ellipse, Rounded Line Series, and Triangle are each their own distinct shape (like a
+	// rectangle or an ellipse), not a variant of the Line/Curve tool's open-vs-closed toggle. Their
+	// arrows, triangle type, radius, and partial-ellipse geometry are state Convert() has nowhere
+	// to map to or from another kind, so offering them in the same dropdown reads as a shape
+	// turning into an unrelated one and silently drops whatever made it distinct. Keep the dropdown
+	// to Open/Closed Line-Curve Series, which really are the same tool with one toggle; every other
+	// shape stays reachable only through its own tool.
+	protected virtual bool SupportsShapeTypeConversion => true;
+
 	public void HandleBuildToolBar (Gtk.Box tb, ISettingsService settings, string toolPrefix)
 	{
-		if (shape_type_label == null) {
-			string shapeTypeText = Translations.GetString ("Shape Type");
-			shape_type_label = Gtk.Label.New ($" {shapeTypeText}: ");
+		if (SupportsShapeTypeConversion) {
+
+			if (shape_type_label == null) {
+				string shapeTypeText = Translations.GetString ("Shape Type");
+				shape_type_label = Gtk.Label.New ($" {shapeTypeText}: ");
+			}
+
+			tb.Append (shape_type_label);
+
+			if (shape_type_button == null) {
+				shape_type_button = ToolBarDropDownButton.New ();
+
+				shape_type_button.AddItem (Translations.GetString ("Open Line/Curve Series"), Resources.Icons.ToolLine, (int) ShapeTypes.OpenLineCurveSeries, Translations.GetString ("Draws a line or curve with a start and an end point."));
+				shape_type_button.AddItem (Translations.GetString ("Closed Line/Curve Series"), Resources.Icons.ToolRectangle, (int) ShapeTypes.ClosedLineCurveSeries, Translations.GetString ("Automatically connects the last point back to the first, closing the shape (e.g. a rectangle)."));
+
+				shape_type_button.SelectedIndex = settings.GetSetting (
+					SettingNames.ShapeType (toolPrefix),
+					0);
+
+				shape_type_button.SelectedItemChanged += (o, e) => {
+					ShapeTypes newShapeType = ShapeType;
+					ShapeEngine? selEngine = SelectedShapeEngine;
+
+					//Verify that the tool needs to be switched.
+					if (GetCorrespondingTool (newShapeType) == owner)
+						return;
+
+					if (selEngine == null) {
+						ActivateCorrespondingTool (newShapeType, true);
+						return;
+					}
+
+					//if shape is selected it will be converted to new shape and shape type will be changed, otherwise only shape type will be changed.
+
+					//Create a new ShapesModifyHistoryItem so that the changing of the shape type can be undone.
+					workspace.ActiveDocument.History.PushNewItem (new ShapesModifyHistoryItem (
+						this, owner.Icon, Translations.GetString ("Changed Shape Type")));
+
+					//Clone the old shape; it should be automatically garbage-collected. newShapeType already has the updated value.
+					selEngine = selEngine.Convert (newShapeType, SelectedShapeIndex);
+
+					int previousSSI = SelectedShapeIndex;
+					ActivateCorrespondingTool (selEngine.ShapeType, true);
+					SelectedShapeIndex = previousSSI;
+					//Draw the updated shape with organized points generation (for mouse detection).
+					DrawActiveShape (true, false, true, false, true);
+				};
+			}
+
+			// Tag-based, not positional: the dropdown no longer lists every ShapeTypes value, so its
+			// item order and the enum's ordinals have parted ways.
+			shape_type_button.SelectedItem = shape_type_button.Items.First (i => i.GetTagOrDefault (-1) == (int) owner.ShapeType);
+
+			tb.Append (shape_type_button);
 		}
-
-		tb.Append (shape_type_label);
-
-		if (shape_type_button == null) {
-			shape_type_button = ToolBarDropDownButton.New ();
-
-			shape_type_button.AddItem (Translations.GetString ("Open Line/Curve Series"), Resources.Icons.ToolLine, 0, Translations.GetString ("Draws a line or curve with a start and an end point."));
-			shape_type_button.AddItem (Translations.GetString ("Closed Line/Curve Series"), Resources.Icons.ToolRectangle, 1, Translations.GetString ("Automatically connects the last point back to the first, closing the shape (e.g. a rectangle)."));
-			shape_type_button.AddItem (Translations.GetString ("Ellipse"), Resources.Icons.ToolEllipse, 2, Translations.GetString ("Draws an ellipse or circle."));
-			shape_type_button.AddItem (Translations.GetString ("Rounded Line Series"), Resources.Icons.ToolRectangleRounded, 3, Translations.GetString ("Like Closed Line/Curve Series, but with rounded corners at each point."));
-			shape_type_button.AddItem (Translations.GetString ("Triangle"), Resources.Icons.ToolTriangle, 4, Translations.GetString ("Draws a triangle."));
-
-			shape_type_button.SelectedIndex = settings.GetSetting (
-				SettingNames.ShapeType (toolPrefix),
-				0);
-
-			shape_type_button.SelectedItemChanged += (o, e) => {
-				ShapeTypes newShapeType = ShapeType;
-				ShapeEngine? selEngine = SelectedShapeEngine;
-
-				//Verify that the tool needs to be switched.
-				if (GetCorrespondingTool (newShapeType) == owner)
-					return;
-
-				if (selEngine == null) {
-					ActivateCorrespondingTool (newShapeType, true);
-					return;
-				}
-
-				//if shape is selected it will be converted to new shape and shape type will be changed, otherwise only shape type will be changed.
-
-				//Create a new ShapesModifyHistoryItem so that the changing of the shape type can be undone.
-				workspace.ActiveDocument.History.PushNewItem (new ShapesModifyHistoryItem (
-					this, owner.Icon, Translations.GetString ("Changed Shape Type")));
-
-				//Clone the old shape; it should be automatically garbage-collected. newShapeType already has the updated value.
-				selEngine = selEngine.Convert (newShapeType, SelectedShapeIndex);
-
-				int previousSSI = SelectedShapeIndex;
-				ActivateCorrespondingTool (selEngine.ShapeType, true);
-				SelectedShapeIndex = previousSSI;
-				//Draw the updated shape with organized points generation (for mouse detection).
-				DrawActiveShape (true, false, true, false, true);
-			};
-		}
-
-		shape_type_button.SelectedItem = shape_type_button.Items[(int) owner.ShapeType];
-
-		tb.Append (shape_type_button);
 
 		if (rasterize_mode_label == null) {
 			string modeText = Translations.GetString ("Mode");

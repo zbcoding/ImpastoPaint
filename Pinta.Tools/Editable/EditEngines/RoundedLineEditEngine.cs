@@ -36,6 +36,9 @@ public sealed class RoundedLineEditEngine : BaseEditEngine
 	protected override string ShapeName
 		=> Translations.GetString ("Rounded Line Shape");
 
+	// Rounded Line's corner radius has no equivalent on the plain LineCurveSeriesEngine shapes.
+	protected override bool SupportsShapeTypeConversion => false;
+
 	public const double DefaultRadius = 20d;
 
 	private double previous_radius = DefaultRadius;

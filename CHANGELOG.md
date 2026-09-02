@@ -44,6 +44,10 @@ entries, is upstream Pinta work; the Impasto sections cover changes made in this
 
 ### Fixed
 
+- A layer's shapes no longer disappear when a shape tool is built after they were loaded. The
+  shared live-engine list was emptied while still marked as holding that layer's shapes, so the
+  tool never reloaded them and the next save wrote the empty list back over them.
+
 - Toggling an arrowhead on the Line tool now actually shows its Size / Angle / Length options
   again, instead of silently failing (and spamming Gtk-CRITICAL warnings) whenever the toolbar
   had been rebuilt after activation.

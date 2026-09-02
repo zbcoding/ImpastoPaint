@@ -2446,6 +2446,11 @@ public abstract class BaseEditEngine
 	protected void ResetShapes ()
 	{
 		SEngines = [];
+		// The engines are what bound runtime_layer to a layer; dropping them without dropping the
+		// binding leaves EnsureShapesForCurrentLayer convinced that layer is already loaded, so it
+		// never refills the list and the next persist writes the empty list back over the layer's
+		// shapes.
+		runtime_layer = null;
 
 		//The fields are modified instead of the properties here because a redraw call is undesired (for speed/efficiency).
 		SelectedPointIndex = -1;

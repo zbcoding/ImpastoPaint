@@ -62,6 +62,17 @@ internal sealed class KeyDispatchEndToEndTest : ToolsTestHarness
 					// selected-point case in NudgeMovesTheSelectedPoint.
 					break;
 
+				case BaseEditEngine.ShapeKeyCommand.SetPointCurve:
+				case BaseEditEngine.ShapeKeyCommand.SetPointLine:
+					// The one pair that deliberately does not consume its key with nothing
+					// selected: S is also the Select tools' toolbox shortcut, and swallowing it
+					// here would make those tools unreachable from any shape tool. Dispatch with a
+					// point selected is covered by SAndDSetTheSelectedPointTension; the
+					// fall-through by STensionSnapWithNoSelectedPointLeavesTheKeyForTheToolbox.
+					Assert.That (handled, Is.False,
+						$"{binding.Id}: with no selected point the key has to reach the toolbox");
+					break;
+
 				default:
 					// DeletePoint/Finalize/AddPoint*/CreateNewAtPoint act on live editing state
 					// (history pushes, commits) that a headless harness can't fully drive; the
@@ -270,6 +281,78 @@ internal sealed class KeyDispatchEndToEndTest : ToolsTestHarness
 				Assert.That (editEngine.ActiveShapeEngine!.ControlPoints[1].Tension, Is.EqualTo (0d),
 					"S/D must affect only the selected point, not its neighbors");
 			});
+		} finally {
+			typeof (ToolManager).GetProperty (nameof (ToolManager.CurrentTool))!.GetSetMethod (nonPublic: true)!
+				.Invoke (PintaCore.Tools, [null]);
+			BaseEditEngine.SEngines.Clear ();
+		}
+	}
+
+	// S doubles as the Select tools' own toolbox shortcut, and MainWindow gives the active tool the
+	// key first. Consuming it with no point to snap would make S dead while any shape tool is
+	// current; reporting it unhandled lets the toolbox switch tools as it always did.
+	[Test]
+	public void STensionSnapWithNoSelectedPointLeavesTheKeyForTheToolbox ()
+	{
+		UserLayer layer = Layer (0);
+		layer.AddShape (Box (ShapeFill, new RectangleI (4, 4, CanvasSize - 8, CanvasSize - 8)));
+
+		LineCurveTool tool = new (PintaCore.Services);
+		typeof (ToolManager).GetProperty (nameof (ToolManager.CurrentTool))!.GetSetMethod (nonPublic: true)!
+			.Invoke (PintaCore.Tools, [tool]);
+
+		try {
+			BaseEditEngine.ReloadLayerShapes (layer);
+			PintaCore.Workspace.ActiveWorkspace.Canvas = Gtk.DrawingArea.New ();
+
+			BaseEditEngine editEngine = (tool.EditEngine as BaseEditEngine)!;
+			editEngine.SelectedShapeIndex = 0;
+			editEngine.SelectedPointIndex = -1;
+
+			Assert.Multiple (() => {
+				Assert.That (editEngine.HandleKeyDown (Document,
+					GestureEventArgs (KeyboardShortcutManager.ShapeSetPointCurve.DefaultGesture)), Is.False,
+					"S with nothing selected has to fall through, or the Select tools become unreachable");
+				Assert.That (editEngine.HandleKeyDown (Document,
+					GestureEventArgs (KeyboardShortcutManager.ShapeSetPointLine.DefaultGesture)), Is.False,
+					"D with nothing selected has to fall through too");
+			});
+		} finally {
+			typeof (ToolManager).GetProperty (nameof (ToolManager.CurrentTool))!.GetSetMethod (nonPublic: true)!
+				.Invoke (PintaCore.Tools, [null]);
+			BaseEditEngine.SEngines.Clear ();
+		}
+	}
+
+	// A tension snap outside a drag has no gesture history item covering it, so it needs its own -
+	// otherwise the next undo silently drops it. An unchanged tension must not log an empty step.
+	[Test]
+	public void STensionSnapIsUndoable ()
+	{
+		UserLayer layer = Layer (0);
+		layer.AddShape (Box (ShapeFill, new RectangleI (4, 4, CanvasSize - 8, CanvasSize - 8)));
+
+		LineCurveTool tool = new (PintaCore.Services);
+		typeof (ToolManager).GetProperty (nameof (ToolManager.CurrentTool))!.GetSetMethod (nonPublic: true)!
+			.Invoke (PintaCore.Tools, [tool]);
+
+		try {
+			BaseEditEngine.ReloadLayerShapes (layer);
+			PintaCore.Workspace.ActiveWorkspace.Canvas = Gtk.DrawingArea.New ();
+
+			BaseEditEngine editEngine = (tool.EditEngine as BaseEditEngine)!;
+			editEngine.SelectedShapeIndex = 0;
+			editEngine.SelectedPointIndex = 0;
+
+			int before = Document.History.Items.Count ();
+
+			editEngine.HandleKeyDown (Document, GestureEventArgs (KeyboardShortcutManager.ShapeSetPointLine.DefaultGesture));
+			Assert.That (Document.History.Items.Count (), Is.EqualTo (before),
+				"D on an already-straight point changes nothing, so it must not log an undo step");
+
+			editEngine.HandleKeyDown (Document, GestureEventArgs (KeyboardShortcutManager.ShapeSetPointCurve.DefaultGesture));
+			Assert.That (Document.History.Items.Count (), Is.EqualTo (before + 1),
+				"a real tension snap has to be undoable");
 		} finally {
 			typeof (ToolManager).GetProperty (nameof (ToolManager.CurrentTool))!.GetSetMethod (nonPublic: true)!
 				.Invoke (PintaCore.Tools, [null]);

@@ -338,7 +338,7 @@ public abstract class ArrowedEditEngine : BaseEditEngine
 			$"{Translations.GetString ("Line")}: {Translations.GetString ("Each added point joins its neighbors with a straight segment.")}",
 			Translations.GetString ("Add a point: {0}, or right-click the line and choose to add one there; {1} adds at the exact same position.", addPoint, addPointExact),
 			Translations.GetString ("{0} + right-drag a point: change its tension.", tension),
-			Translations.GetString ("{0} (while dragging): curve the line around the point; {1} (while dragging): straighten it.", makeCurve, makeLine));
+			Translations.GetString ("{0}: curve the line around the selected point; {1}: straighten it.", makeCurve, makeLine));
 	}
 
 	private Gtk.Separator ArrowSeparator

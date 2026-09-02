@@ -770,10 +770,8 @@ public abstract class BaseEditEngine
 
 		// Whatever the user's configured gesture for a command currently is - default or customized.
 		foreach ((ToolBindingDescriptor binding, ShapeKeyCommand command) in shape_key_bindings) {
-			if (IsBinding (binding)) {
-				ExecuteShapeKeyCommand (command, e);
-				return true;
-			}
+			if (IsBinding (binding))
+				return ExecuteShapeKeyCommand (command, e);
 		}
 
 		// Fallback: the small set of hardcoded keys a shape tool responds to even with no binding
@@ -786,50 +784,41 @@ public abstract class BaseEditEngine
 			case Gdk.Constants.KEY_Delete:
 				if (!IsDefault (KeyboardShortcutManager.ShapeDeletePoint))
 					return false;
-				ExecuteShapeKeyCommand (ShapeKeyCommand.DeletePoint, e);
-				return true;
+				return ExecuteShapeKeyCommand (ShapeKeyCommand.DeletePoint, e);
 			case Gdk.Constants.KEY_Return:
 			case Gdk.Constants.KEY_KP_Enter:
 				if (!IsDefault (KeyboardShortcutManager.ShapeFinalize))
 					return false;
-				ExecuteShapeKeyCommand (ShapeKeyCommand.Finalize, e);
-				return true;
+				return ExecuteShapeKeyCommand (ShapeKeyCommand.Finalize, e);
 			case Gdk.Constants.KEY_space:
 				if (!IsDefault (KeyboardShortcutManager.ShapeAddPoint) ||
 					(e.IsControlPressed && !IsDefault (KeyboardShortcutManager.ShapeAddPointExact)))
 					return false;
-				ExecuteShapeKeyCommand (ShapeKeyCommand.AddPoint, e);
-				return true;
+				return ExecuteShapeKeyCommand (ShapeKeyCommand.AddPoint, e);
 			case Gdk.Constants.KEY_Up:
 				if (!IsDefault (KeyboardShortcutManager.ShapeMovePointUp))
 					return false;
-				ExecuteShapeKeyCommand (ShapeKeyCommand.MovePointUp, e);
-				return true;
+				return ExecuteShapeKeyCommand (ShapeKeyCommand.MovePointUp, e);
 			case Gdk.Constants.KEY_Down:
 				if (!IsDefault (KeyboardShortcutManager.ShapeMovePointDown))
 					return false;
-				ExecuteShapeKeyCommand (ShapeKeyCommand.MovePointDown, e);
-				return true;
+				return ExecuteShapeKeyCommand (ShapeKeyCommand.MovePointDown, e);
 			case Gdk.Constants.KEY_Left:
 				if (!IsDefault (KeyboardShortcutManager.ShapeMovePointLeft))
 					return false;
-				ExecuteShapeKeyCommand (ShapeKeyCommand.MovePointLeft, e);
-				return true;
+				return ExecuteShapeKeyCommand (ShapeKeyCommand.MovePointLeft, e);
 			case Gdk.Constants.KEY_Right:
 				if (!IsDefault (KeyboardShortcutManager.ShapeMovePointRight))
 					return false;
-				ExecuteShapeKeyCommand (ShapeKeyCommand.MovePointRight, e);
-				return true;
+				return ExecuteShapeKeyCommand (ShapeKeyCommand.MovePointRight, e);
 			case Gdk.Constants.KEY_bracketleft:
 				if (!IsDefault (KeyboardShortcutManager.BrushDecreaseWidth))
 					return false;
-				ExecuteShapeKeyCommand (ShapeKeyCommand.BrushDecreaseWidth, e);
-				return true;
+				return ExecuteShapeKeyCommand (ShapeKeyCommand.BrushDecreaseWidth, e);
 			case Gdk.Constants.KEY_bracketright:
 				if (!IsDefault (KeyboardShortcutManager.BrushIncreaseWidth))
 					return false;
-				ExecuteShapeKeyCommand (ShapeKeyCommand.BrushIncreaseWidth, e);
-				return true;
+				return ExecuteShapeKeyCommand (ShapeKeyCommand.BrushIncreaseWidth, e);
 			default:
 				if (keyPressed.IsControlKey ()) {
 					// Redraw since the Ctrl key affects the hover cursor, etc
@@ -841,15 +830,18 @@ public abstract class BaseEditEngine
 		}
 	}
 
-	private void ExecuteShapeKeyCommand (ShapeKeyCommand command, ToolKeyEventArgs e)
+	// Returns whether the key was consumed. All but the tension snaps always are; those report
+	// false when there is no selected point to snap, so the key falls through to the toolbox
+	// instead of being swallowed - S is also the Select tools' own shortcut.
+	private bool ExecuteShapeKeyCommand (ShapeKeyCommand command, ToolKeyEventArgs e)
 	{
 		switch (command) {
 			case ShapeKeyCommand.DeletePoint: HandleDelete (); break;
 			case ShapeKeyCommand.Finalize: CommitShapeEditing (); break;
 			case ShapeKeyCommand.AddPointExact: HandleSpace (e, exact: true); break;
 			case ShapeKeyCommand.AddPoint: HandleSpace (e); break;
-			case ShapeKeyCommand.SetPointCurve: SetSelectedPointTension (DefaultMidPointTension); break;
-			case ShapeKeyCommand.SetPointLine: SetSelectedPointTension (DefaultEndPointTension); break;
+			case ShapeKeyCommand.SetPointCurve: return SetSelectedPointTension (DefaultMidPointTension);
+			case ShapeKeyCommand.SetPointLine: return SetSelectedPointTension (DefaultEndPointTension);
 			case ShapeKeyCommand.SelectPrevPoint: HandleLeft (e, selectPoint: true); break;
 			case ShapeKeyCommand.SelectNextPoint: HandleRight (e, selectPoint: true); break;
 			case ShapeKeyCommand.CreateNewAtPoint: HandleSpace (e, exact: true); break;
@@ -861,18 +853,37 @@ public abstract class BaseEditEngine
 			case ShapeKeyCommand.BrushIncreaseWidth: BrushWidth++; break;
 			default: throw new ArgumentOutOfRangeException (nameof (command));
 		}
+
+		return true;
 	}
 
 	// S/D set the selected point's tension to the same values the Line tool's Curve/Line Type
 	// toggle gives newly added points: curve (1/3) or straight (0). A point's tension already has
 	// a continuous range reachable via Ctrl+drag; these snap it to either endpoint.
-	private void SetSelectedPointTension (double tension)
+	// Returns whether the key did anything, so an unusable one falls through to the toolbox.
+	private bool SetSelectedPointTension (double tension)
 	{
 		if (SelectedPoint is not ControlPoint point)
-			return;
+			return false;
+
+		if (point.Tension == tension)
+			return true; // Already there - consume the key, but do not log an empty undo step.
+
+		// Mid-drag the gesture's own history item already covers this; pressed on its own it needs
+		// one of its own, or the snap is silently dropped by the next undo.
+		Document document = workspace.ActiveDocument;
+		if (is_drawing)
+			PushModifyHistoryOnce (document, Translations.GetString ("Modified"));
+		else
+			PushModifyHistory (document, Translations.GetString ("Modified"));
 
 		point.Tension = tension;
-		DrawActiveShape (false, false, true, false, false);
+
+		// Regenerate the organized points: tension moves the generated points between the control
+		// points, so the spatial hash behind clicking on the curve goes stale otherwise. The
+		// Ctrl+drag tension path gets away without it only because its mouse-up rebuilds them.
+		DrawActiveShape (true, false, true, false, false);
+		return true;
 	}
 
 	private void HandleRight (ToolKeyEventArgs e, bool selectPoint = false)
@@ -2035,7 +2046,7 @@ public abstract class BaseEditEngine
 					+ Translations.GetString ("{0}-drag: snap the adjacent segment to a 15° angle.", Translations.GetString ("Shift")) + "\n"
 					+ Translations.GetString ("Right click + drag: move the whole shape.") + "\n"
 					+ Translations.GetString ("{0} + right drag: change tension.", tension) + "\n"
-					+ Translations.GetString ("{0} (while dragging): curve the line around the point; {1} (while dragging): straighten it.", makeCurve, makeLine) + "\n"
+					+ Translations.GetString ("{0}: curve the line around the selected point; {1}: straighten it.", makeCurve, makeLine) + "\n"
 					+ Translations.GetString ("{0} and drag: rotate the whole shape.", RotateGesture.ClickBindingLabel ()) + "\n"
 					+ Translations.GetString ("{0} + click: start a new shape here.", ctrl);
 			}

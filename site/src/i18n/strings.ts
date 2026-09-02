@@ -95,7 +95,7 @@ export const strings: Record<Lang, Dict> = {
       'Prebuilt Linux binaries are on the releases page. A Flatpak manifest ships in the repo ' +
       'for building your own sandboxed',
     linuxCode: '.flatpak',
-    linuxPPost: 'bundle; a Flathub listing is on the roadmap but not live yet.',
+    linuxPPost: "bundle; it isn't listed on Flathub due to their current policy on AI-assisted projects.",
     linuxCta: 'Linux download',
     linuxFlatparkCta: 'Install via FlatPark',
     windowsH3: 'Windows',
@@ -161,7 +161,7 @@ export const strings: Record<Lang, Dict> = {
       'Los binarios precompilados para Linux están en la página de versiones. El repositorio ' +
       'incluye un manifiesto de Flatpak para compilar tu propio paquete',
     linuxCode: '.flatpak',
-    linuxPPost: 'en sandbox; una publicación en Flathub está en la hoja de ruta, pero aún no está disponible.',
+    linuxPPost: 'en sandbox; no está en Flathub debido a su política actual sobre proyectos con desarrollo asistido por IA.',
     linuxCta: 'Descargar para Linux',
     linuxFlatparkCta: 'Instalar desde FlatPark',
     windowsH3: 'Windows',
@@ -228,7 +228,7 @@ export const strings: Record<Lang, Dict> = {
       'Des binaires précompilés pour Linux sont disponibles sur la page des versions. Un manifeste ' +
       'Flatpak est fourni dans le dépôt pour créer votre propre paquet',
     linuxCode: '.flatpak',
-    linuxPPost: 'en bac à sable ; une publication sur Flathub est prévue mais pas encore disponible.',
+    linuxPPost: 'en bac à sable ; non disponible sur Flathub en raison de leur politique actuelle sur les projets assistés par IA.',
     linuxCta: 'Télécharger pour Linux',
     linuxFlatparkCta: 'Installer via FlatPark',
     windowsH3: 'Windows',
@@ -294,7 +294,7 @@ export const strings: Record<Lang, Dict> = {
       'Fertige Linux-Binärdateien gibt es auf der Releases-Seite. Im Repository liegt ein ' +
       'Flatpak-Manifest zum Erstellen eines eigenen, sandboxed',
     linuxCode: '.flatpak',
-    linuxPPost: '-Pakets; ein Eintrag auf Flathub ist geplant, aber noch nicht verfügbar.',
+    linuxPPost: '-Pakets; wegen Flathubs aktueller Richtlinie zu KI-unterstützten Projekten nicht auf Flathub gelistet.',
     linuxCta: 'Linux-Download',
     linuxFlatparkCta: 'Über FlatPark installieren',
     windowsH3: 'Windows',
@@ -359,7 +359,7 @@ export const strings: Record<Lang, Dict> = {
       'ビルド済みのLinuxバイナリはリリースページにあります。リポジトリにはFlatpakマニフェストが含ま' +
       'れており、サンドボックス化された',
     linuxCode: '.flatpak',
-    linuxPPost: 'バンドルを自分でビルドできます。Flathubへの登録は予定していますが、まだ公開されていません。',
+    linuxPPost: 'バンドルを自分でビルドできます。FlathubのAI支援開発に関する現在の方針により、Flathubには掲載されていません。',
     linuxCta: 'Linux版をダウンロード',
     linuxFlatparkCta: 'FlatParkからインストール',
     windowsH3: 'Windows',
@@ -421,7 +421,7 @@ export const strings: Record<Lang, Dict> = {
     linuxH3: 'Linux',
     linuxPPre: '预编译的 Linux 二进制文件可在发布页面获取。仓库中附带 Flatpak 清单文件,供你自行构建沙盒化的',
     linuxCode: '.flatpak',
-    linuxPPost: '软件包;Flathub 上架计划中,但目前尚未上线。',
+    linuxPPost: '软件包;由于 Flathub 当前对 AI 辅助开发项目的政策,暂未在 Flathub 上架。',
     linuxCta: '下载 Linux 版',
     linuxFlatparkCta: '通过 FlatPark 安装',
     windowsH3: 'Windows',

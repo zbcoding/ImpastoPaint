@@ -71,6 +71,10 @@ entries, is upstream Pinta work; the Impasto sections cover changes made in this
   layer's raster, an object's own faded or blended scratch surface on every redraw, and an undo
   snapshot's "before" surface after most drawing, painting-object, or text-edit strokes.
 
+- The Resize Palette dialog's confirmation prompt no longer had its answer inverted: Cancel no
+  longer wipes an edited palette back to defaults, and Reset no longer silently keeps the edited
+  palette instead of resetting it.
+
 ## Impasto - [0.1.1](https://github.com/zbcoding/ImpastoPaint/releases/tag/v0.1.1) - 2026-08-28
 
 ### Fixed

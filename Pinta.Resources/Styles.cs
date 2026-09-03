@@ -7,4 +7,5 @@ public static class Styles
 	public const string ToolBarScale = "tool-bar-scale";
 	public const string PinnedSection = "pinned-section";
 	public const string DashPatternCombo = "dash-pattern-combo";
+	public const string ArrowWarning = "arrow-warning";
 }

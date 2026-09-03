@@ -123,6 +123,8 @@ public abstract class ArrowedEditEngine : BaseEditEngine
 		extra_toolbar_items_added = false;
 
 		UpdateArrowOptionToolbarItems ();
+		UpdateArrowWarnings ();
+		outline_width.OnValueChanged += (_, _) => UpdateArrowWarnings ();
 	}
 
 	private void ArrowEnabledToggled (bool arrow1)
@@ -172,6 +174,49 @@ public abstract class ArrowedEditEngine : BaseEditEngine
 
 			extra_toolbar_items_added = false;
 		}
+	}
+
+	// Hides the six arrow option widgets without removing them: removal would fight
+	// UpdateArrowOptionToolbarItems' added-flag bookkeeping, visibility doesn't.
+	protected void SetArrowOptionsVisible (bool visible)
+	{
+		if (arrow_size_label is not null)
+			arrow_size_label.Visible = visible;
+		if (arrow_size is not null)
+			arrow_size.Visible = visible;
+		if (arrow_angle_offset_label is not null)
+			arrow_angle_offset_label.Visible = visible;
+		if (arrow_angle_offset is not null)
+			arrow_angle_offset.Visible = visible;
+		if (arrow_length_offset_label is not null)
+			arrow_length_offset_label.Visible = visible;
+		if (arrow_length_offset is not null)
+			arrow_length_offset.Visible = visible;
+	}
+
+	// Which arrow settings deserve a yellow nudge. All three are legal: an arrowhead
+	// smaller than the line it caps reads as a bump rather than a head, and negative
+	// angle/length mirror the head backwards.
+	internal static (bool Size, bool Angle, bool Length) ArrowWarnings (double arrowSize, double lineWidth, double angle, double length)
+		=> (arrowSize < lineWidth, angle < 0, length < 0);
+
+	private void UpdateArrowWarnings ()
+	{
+		if (arrow_size is null || arrow_angle_offset is null || arrow_length_offset is null)
+			return;
+		double lineWidth = (ActiveShapeEngine as LineCurveSeriesEngine)?.BrushWidth ?? BrushWidth;
+		(bool size, bool angle, bool length) = ArrowWarnings (arrow_size.Value, lineWidth, arrow_angle_offset.Value, arrow_length_offset.Value);
+		SetWarning (arrow_size, size);
+		SetWarning (arrow_angle_offset, angle);
+		SetWarning (arrow_length_offset, length);
+	}
+
+	private static void SetWarning (Gtk.SpinButton spin, bool warn)
+	{
+		if (warn)
+			spin.AddCssClass (Resources.Styles.ArrowWarning);
+		else
+			spin.RemoveCssClass (Resources.Styles.ArrowWarning);
 	}
 
 	/// <summary>
@@ -253,6 +298,7 @@ public abstract class ArrowedEditEngine : BaseEditEngine
 		}
 
 		base.StorePreviousSettings ();
+		UpdateArrowWarnings ();
 	}
 
 

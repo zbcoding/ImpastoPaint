@@ -80,6 +80,7 @@ public sealed class LineCurveEditEngine : ArrowedEditEngine
 		tb.Append (CloseShapeCheckBox);
 
 		SetArrowControlsEnabled (!close_shape_default);
+		SetArrowOptionsVisible (!close_shape_default);
 	}
 
 	public override void OnSaveSettings (ISettingsService settings, string toolPrefix)
@@ -96,6 +97,7 @@ public sealed class LineCurveEditEngine : ArrowedEditEngine
 			if (close_shape_check is not null)
 				CloseShapeCheckBox.Active = ((LineCurveSeriesEngine) engine).Closed;
 			SetArrowControlsEnabled (!((LineCurveSeriesEngine) engine).Closed);
+			SetArrowOptionsVisible (!((LineCurveSeriesEngine) engine).Closed);
 		}
 
 		base.UpdateToolbarSettings (engine);
@@ -143,6 +145,7 @@ public sealed class LineCurveEditEngine : ArrowedEditEngine
 		}
 
 		SetArrowControlsEnabled (!close_shape_default);
+		SetArrowOptionsVisible (!close_shape_default);
 
 		StorePreviousSettings ();
 	}

@@ -90,7 +90,7 @@ public static class ShapeObjectRenderer
 
 	private static void DrawArrows (Context g, ShapeEngine engine)
 	{
-		if (engine is not LineCurveSeriesEngine lce)
+		if (engine is not LineCurveSeriesEngine lce || engine.Closed)
 			return;
 
 		var genPoints = engine.GeneratedPoints;

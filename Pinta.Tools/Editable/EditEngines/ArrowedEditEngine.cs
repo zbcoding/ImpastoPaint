@@ -258,7 +258,7 @@ public abstract class ArrowedEditEngine : BaseEditEngine
 
 	protected override void DrawExtras (ref RectangleD? totalDirty, Context g, ShapeEngine engine)
 	{
-		if (engine is LineCurveSeriesEngine lCSEngine && engine.ControlPoints.Count > 0) {
+		if (engine is LineCurveSeriesEngine lCSEngine && engine.ControlPoints.Count > 0 && !engine.Closed) {
 
 			// Draw the arrows for the currently active shape.
 			ReadOnlySpan<GeneratedPoint> genPoints = engine.GeneratedPoints;
@@ -283,6 +283,29 @@ public abstract class ArrowedEditEngine : BaseEditEngine
 		}
 
 		base.DrawExtras (ref totalDirty, g, engine);
+	}
+
+	// Closed shapes have no start or end to hang arrowheads on. The line tool
+	// suspends the whole arrow row while closed; the Show state is kept so
+	// reopening restores the arrows, and both draw paths skip them meanwhile.
+	protected void SetArrowControlsEnabled (bool enabled)
+	{
+		if (show_arrow_one_box is not null)
+			show_arrow_one_box.Sensitive = enabled;
+		if (show_arrow_two_box is not null)
+			show_arrow_two_box.Sensitive = enabled;
+		if (arrow_size_label is not null)
+			arrow_size_label.Sensitive = enabled;
+		if (arrow_size is not null)
+			arrow_size.Sensitive = enabled;
+		if (arrow_angle_offset_label is not null)
+			arrow_angle_offset_label.Sensitive = enabled;
+		if (arrow_angle_offset is not null)
+			arrow_angle_offset.Sensitive = enabled;
+		if (arrow_length_offset_label is not null)
+			arrow_length_offset_label.Sensitive = enabled;
+		if (arrow_length_offset is not null)
+			arrow_length_offset.Sensitive = enabled;
 	}
 
 	private Gtk.Separator LineOrCurveSeparator

@@ -37,7 +37,6 @@ public sealed class LineCurveEditEngine : ArrowedEditEngine
 		=> Translations.GetString ("Open Curve Shape");
 
 	private Gtk.CheckButton? close_shape_check;
-	private Gtk.Separator? close_shape_sep;
 
 	// Default for the next shape; the checkbox owns the live value once built.
 	private bool close_shape_default;
@@ -78,8 +77,9 @@ public sealed class LineCurveEditEngine : ArrowedEditEngine
 		if (close_shape_check is null)
 			close_shape_default = prev_close_shape = settings.GetSetting (SettingNames.SHAPE_CLOSED_SHAPE, false);
 
-		tb.Append (CloseShapeSeparator);
 		tb.Append (CloseShapeCheckBox);
+
+		SetArrowControlsEnabled (!close_shape_default);
 	}
 
 	public override void OnSaveSettings (ISettingsService settings, string toolPrefix)
@@ -92,8 +92,11 @@ public sealed class LineCurveEditEngine : ArrowedEditEngine
 
 	public override void UpdateToolbarSettings (ShapeEngine engine)
 	{
-		if (engine.ShapeType == ShapeTypes.OpenLineCurveSeries && close_shape_check is not null)
-			CloseShapeCheckBox.Active = ((LineCurveSeriesEngine) engine).Closed;
+		if (engine.ShapeType == ShapeTypes.OpenLineCurveSeries) {
+			if (close_shape_check is not null)
+				CloseShapeCheckBox.Active = ((LineCurveSeriesEngine) engine).Closed;
+			SetArrowControlsEnabled (!((LineCurveSeriesEngine) engine).Closed);
+		}
 
 		base.UpdateToolbarSettings (engine);
 	}
@@ -114,8 +117,6 @@ public sealed class LineCurveEditEngine : ArrowedEditEngine
 		base.StorePreviousSettings ();
 	}
 
-	private Gtk.Separator CloseShapeSeparator
-		=> close_shape_sep ??= GtkExtensions.CreateToolBarSeparator ();
 
 	private Gtk.CheckButton CloseShapeCheckBox
 		=> close_shape_check ??= CreateCloseShapeCheckBox ();
@@ -140,6 +141,8 @@ public sealed class LineCurveEditEngine : ArrowedEditEngine
 			LayerObjectSelection.RaiseObjectsChanged ();
 			DrawActiveShape (false, false, true, false, false);
 		}
+
+		SetArrowControlsEnabled (!close_shape_default);
 
 		StorePreviousSettings ();
 	}

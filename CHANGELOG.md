@@ -6,7 +6,11 @@ Impasto is a fork of the [Pinta Project](https://github.com/PintaProject/Pinta).
 Everything below the "Pinta Project history" heading, plus the "Inherited from Pinta"
 entries, is upstream Pinta work; the Impasto sections cover changes made in this fork.
 
-## Impasto - [Unreleased](https://github.com/zbcoding/ImpastoPaint/compare/v0.1.1...main)
+## Impasto - [Unreleased](https://github.com/zbcoding/ImpastoPaint/compare/v0.2.0...main)
+
+Changes for the next release go here.
+
+## Impasto - [0.2.0](https://github.com/zbcoding/ImpastoPaint/releases/tag/v0.2.0) - 2026-09-02
 
 ### Added
 
@@ -25,7 +29,24 @@ entries, is upstream Pinta work; the Impasto sections cover changes made in this
   GTK 4 runtime and needs no system GTK. Built by `scripts/build-appimage.sh` on each tagged
   release alongside the existing Flatpak and distro zip.
 
+- The Line/Curve tool now has a "Close shape" toggle that connects the last point back to the
+  first. Fill and Fill + Outline never drew that closing segment on an open chain, so a filled
+  line/curve was painted against an outline that stayed open, and a two-point fill painted
+  nothing at all. Fill-only mode sketches a dashed preview until the chain encloses area.
+
+- Clicking a shape's control point, or starting a text edit, now selects that object's sub-row
+  in the layers dock and scrolls it into view - the reverse of clicking a sub-row to edit the
+  object it names.
+
 ### Changed
+
+- Arrowheads are suspended while a line/curve shape is closed: a closed outline has no start or
+  end point to hang them off. The arrow controls are hidden until the shape is reopened, and the
+  arrow settings are kept for when it is.
+
+- The arrow Size, Angle and Length spin buttons now carry a warning highlight on a value that is
+  legal but almost never intended - an arrow smaller than the line width it sits on, or a
+  negative angle or length.
 
 - The text tool's corner grips are now canvas handles like the shape and selection grips: they
   show a tooltip on hover (including while typing, where the hover hint used to stay silent) and

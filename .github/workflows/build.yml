@@ -135,10 +135,15 @@ jobs:
         if-no-files-found: error
 
   build-appimage:
-    runs-on: ubuntu-24.04
+    # The image bundles the runner's GTK, so the runner's GTK is the one users get.
+    # configure.ac wants 4.18+; ubuntu-24.04 only ever ships 4.14, which builds an
+    # image that packs cleanly and then dies on a missing gdk_memory_texture_builder_new.
+    # The trade is that the image also inherits this runner's glibc as its floor - the
+    # version check below records both numbers on every run.
+    runs-on: ubuntu-26.04
 
     env:
-      # ubuntu-24.04 runners have no libfuse2, so the image cannot mount itself.
+      # The runners have no libfuse2, so the image cannot mount itself.
       APPIMAGE_EXTRACT_AND_RUN: 1
 
     steps:
@@ -164,6 +169,9 @@ jobs:
     # missing library or a bad AppRun.
     - name: Smoke-test the AppImage
       run: |
+        # What the image ships and what it will demand of a user's system.
+        echo "bundled GTK: $(dpkg-query -W -f='${Version}' libgtk-4-1)"
+        echo "build glibc: $(ldd --version | head -1)"
         version=$(sed -n 's/^AC_INIT(\[impasto\], \[\(.*\)\])/\1/p' configure.ac)
         ./Impasto-x86_64.AppImage --version | grep -F "$version"
         # Launch far enough to resolve and initialise the bundled GTK stack, then

@@ -307,6 +307,30 @@ jobs:
       env:
         GH_TOKEN: ${{ github.token }}
       run: gh release create "$GITHUB_REF_NAME" out/* --generate-notes --repo "$GITHUB_REPOSITORY"
+    # The asset list alone does not say that the AppImage refuses to start below
+    # glibc 2.43, so put that above the generated notes rather than leaving people
+    # on an LTS to find out by downloading it.
+    - name: Lead the notes with what each Linux build needs
+      env:
+        GH_TOKEN: ${{ github.token }}
+      run: |
+        {
+          cat <<'NOTE'
+        ### Which Linux build to take
+
+        - **Flatpak** - carries its own GTK, runs anywhere flatpak does, Ubuntu 22.04 and 24.04
+          included. Use this one if unsure.
+        - **AppImage** - bundles GTK but is built against glibc 2.43, so it needs Ubuntu 26.04,
+          Fedora 44, Arch or newer. It will not start on Ubuntu 24.04, Ubuntu 22.04, Fedora 43
+          or Debian 13.
+        - **Zip** - uses your distribution's GTK, which must be 4.18 or newer.
+
+        The Windows and macOS builds are unsigned.
+
+        NOTE
+          gh release view "$GITHUB_REF_NAME" --repo "$GITHUB_REPOSITORY" --json body -q .body
+        } > notes.md
+        gh release edit "$GITHUB_REF_NAME" --notes-file notes.md --repo "$GITHUB_REPOSITORY"
 
   # Keep only the 2 most recent artifacts per name to stay under storage quota.
   prune-artifacts:

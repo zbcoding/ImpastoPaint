@@ -14,6 +14,24 @@ is shown - to the canvas edges and centre lines. Shapes, text and selections sna
 bounding box rather than by the corner under the pointer, and the guide a point is being held
 against is drawn for as long as the drag lasts. Ctrl+Alt+G turns it off and on.
 
+## Download
+
+Builds for Linux, Windows and macOS are on the
+[releases page](https://github.com/zbcoding/ImpastoPaint/releases/latest). The Windows and
+macOS builds are unsigned, so SmartScreen and Gatekeeper will warn about them.
+
+Impasto needs GTK 4.18 or newer, which decides what works on Linux:
+
+- **Flatpak**, from [FlatPark](https://flatpark.org/apps/com.github.zbcoding.Impasto/) or the
+  release page. It carries its own GTK and runs anywhere flatpak does, including Ubuntu 22.04
+  and 24.04. This is the one to use if you are unsure.
+- **AppImage** (`Impasto-x86_64.AppImage`). Bundles GTK, so no system GTK is needed, but the
+  bundle is built against **glibc 2.43** and will not start on anything older. That means
+  Ubuntu 26.04, Fedora 44 and Arch work; Ubuntu 24.04, Ubuntu 22.04, Fedora 43 and Debian 13
+  do not - take the Flatpak instead.
+- **Zip** (`Impasto-linux-dotnet-*.zip`). Uses the GTK your distribution provides, so it needs
+  GTK 4.18+ already installed.
+
 Impasto is licensed under the MIT License (see `license-mit.txt`). Third-party
 attributions, notices, and license texts are in `THIRD-PARTY-NOTICES.md`.
 

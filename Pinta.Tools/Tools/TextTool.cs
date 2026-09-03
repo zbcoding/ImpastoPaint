@@ -1926,6 +1926,7 @@ public sealed class TextTool : BaseTool
 		//them, so this is a no-op for a freshly created object (whose font/style were
 		//already set from the toolbar just before StartEditing was called).
 		SyncToolbarFromObject (obj);
+		SignalEditSelection (obj);
 	}
 
 	/// <summary>
@@ -2101,11 +2102,38 @@ public sealed class TextTool : BaseTool
 		return -1;
 	}
 
+	// Mirrors the shape tool's edit-selection signal so the layers dock highlights the text
+	// sub-row being edited. Guarded the same way: reselecting the same object stays silent,
+	// and ending the session resets the guard so editing it again re-highlights the row.
+	private static (UserLayer Layer, int ObjectsIndex)? last_signaled_edit;
+
+	private void SignalEditSelection (TextObject obj)
+	{
+		UserLayer? layer = editing_layer;
+		if (layer is null)
+			return;
+		int kindIndex = IndexOfTextObject (layer, obj);
+		if (kindIndex < 0) {
+			last_signaled_edit = null;
+			return;
+		}
+		int objectsIndex = UserLayer.ObjectIndexOfKind (layer, isText: true, kindIndex);
+		if (objectsIndex < 0) {
+			last_signaled_edit = null;
+			return;
+		}
+		if (last_signaled_edit == (layer, objectsIndex))
+			return;
+		last_signaled_edit = (layer, objectsIndex);
+		LayerObjectSelection.RaiseObjectEditSelected (layer, objectsIndex);
+	}
+
 	private void EndEditingSession ()
 	{
 		is_editing = false;
 		current_text_object = null;
 		editing_layer = null;
+		last_signaled_edit = null;
 		UpdateConfirmButtonVisibility ();
 
 		undo_objects = null;

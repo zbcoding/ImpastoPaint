@@ -361,6 +361,7 @@ public abstract class BaseEditEngine
 		// even if another shape was already isolated (the guard would otherwise no-op).
 		engine.other_shapes_points_hidden = false;
 		engine.SetOtherShapesControlPointsHidden (true);
+		engine.SignalEditSelection ();
 	}
 
 	#region ToolbarEventHandlers
@@ -648,6 +649,7 @@ public abstract class BaseEditEngine
 	{
 		SelectedPointIndex = -1;
 		SelectedShapeIndex = -1;
+		last_signaled_edit = null;
 
 		// ponytail: a mid-drag tool switch (e.g. a keyboard shortcut) used to leave these set, and
 		// HandleMouseDown's "if (is_drawing) return;" guard made every shape tool dead until
@@ -1060,6 +1062,7 @@ public abstract class BaseEditEngine
 		}
 
 		DrawActiveShape (true, false, true, false, false);
+		SignalEditSelection ();
 	}
 
 	public virtual bool HandleKeyUp (Document document, ToolKeyEventArgs e)
@@ -1317,6 +1320,7 @@ public abstract class BaseEditEngine
 			clicked_without_modifying = true;
 
 		DrawActiveShape (false, false, true, shiftKey, false, e.IsControlPressed);
+		SignalEditSelection ();
 	}
 
 	/// <summary>Starts dragging a whole shape: selects it, then anchors the drag on the grab point.</summary>
@@ -1398,6 +1402,34 @@ public abstract class BaseEditEngine
 	{
 		if (ActiveShapeEngine is ShapeEngine activeEngine)
 			UpdateToolbarSettings (activeEngine);
+	}
+
+	// The (layer, unified objects index) last reported to the layers dock, so reselecting the
+	// same shape doesn't bounce the dock highlight on every click.
+	private static (UserLayer Layer, int ObjectsIndex)? last_signaled_edit;
+
+	// Tells the layers dock which object sub-row matches the shape being edited — the reverse
+	// of HandleShapeSelectRequested. SEngines mirrors the layer's ShapeObjects one-for-one, so
+	// the selected engine index is the kind index; ObjectIndexOfKind maps it to the unified
+	// position the dock's rows use. Invalid selection just resets the guard (the row vanishes
+	// through the normal object refresh instead).
+	private void SignalEditSelection ()
+	{
+		UserLayer? layer = runtime_layer;
+		int kindIndex = SelectedShapeIndex;
+		if (layer is null || kindIndex < 0 || kindIndex >= SEngines.Count) {
+			last_signaled_edit = null;
+			return;
+		}
+		int objectsIndex = UserLayer.ObjectIndexOfKind (layer, isText: false, kindIndex);
+		if (objectsIndex < 0) {
+			last_signaled_edit = null;
+			return;
+		}
+		if (last_signaled_edit == (layer, objectsIndex))
+			return;
+		last_signaled_edit = (layer, objectsIndex);
+		LayerObjectSelection.RaiseObjectEditSelected (layer, objectsIndex);
 	}
 
 	/// <summary>
@@ -2335,6 +2367,7 @@ public abstract class BaseEditEngine
 
 		SelectedPointIndex = -1;
 		SelectedShapeIndex = -1;
+		last_signaled_edit = null;
 		DrawAllShapes (preventSwitchBack: false);
 		if (workspace.HasOpenDocuments)
 			PersistShapeObjects (workspace.ActiveDocument.Layers.CurrentUserLayer);
@@ -2396,6 +2429,7 @@ public abstract class BaseEditEngine
 
 		SelectedPointIndex = -1;
 		SelectedShapeIndex = -1;
+		last_signaled_edit = null;
 	}
 
 	/// <summary>
@@ -2473,6 +2507,7 @@ public abstract class BaseEditEngine
 		//The fields are modified instead of the properties here because a redraw call is undesired (for speed/efficiency).
 		SelectedPointIndex = -1;
 		SelectedShapeIndex = -1;
+		last_signaled_edit = null;
 
 		is_drawing = false;
 

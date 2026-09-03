@@ -106,6 +106,10 @@ public sealed partial class LayersListView
 		// and only pushes on commit), so refresh sub-rows on that seam too.
 		LayerObjectSelection.ObjectsChanged += RefreshObjectRows;
 
+		// Canvas editing selects an object (a shape's point clicked, a text edit started):
+		// highlight its sub-row, the reverse of clicking a row to edit it.
+		LayerObjectSelection.ObjectEditSelected += HandleObjectEditSelected;
+
 		// Lets Move Layer Up/Down reorder the selected object sub-row instead of the layer.
 		LayerObjectSelection.MoveSelectedObject = MoveSelectedObjectRow;
 	}
@@ -548,6 +552,29 @@ public sealed partial class LayersListView
 			}
 			return;
 		}
+	}
+
+	// Highlights the sub-row for the object canvas editing just selected. Silent like the
+	// restore path: re-selecting must not re-fire the click behaviour (activating the tool
+	// and restarting the edit), which would feed back into another rebuild. Skips quietly
+	// when the object has no row (e.g. a rasterize-on-finalize shape, which never gets one).
+	private void HandleObjectEditSelected (UserLayer layer, int objectsIndex)
+	{
+		if (active_document is null || active_document.Layers.IndexOf (layer) < 0)
+			return;
+
+		// The layer may never have been expanded, so its child model may not exist yet.
+		// RefreshRow creates, populates and expands it; a no-op when already current.
+		for (uint i = 0; i < list_model.GetNItems (); ++i) {
+			if (list_model.GetObject (i) is LayersListViewItem item && !item.IsObjectRow && item.UserLayer == layer) {
+				RefreshRow (i, layer);
+				break;
+			}
+		}
+
+		last_object_row = (layer, objectsIndex);
+		RestoreObjectRowSelection ();
+		list_view.ScrollToSelectedItem (selection_model);
 	}
 
 	// Selects the row for a layer (the layer's own row, not one of its object rows).

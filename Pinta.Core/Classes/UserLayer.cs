@@ -81,6 +81,21 @@ public sealed class UserLayer : Layer
 		return seen - 1;
 	}
 
+	/// <summary>
+	/// Inverse of <see cref="UserLayerIndexOfKind"/>: the position in the unified
+	/// <see cref="Objects"/> list of the kindIndex-th object of that kind, or -1 when there
+	/// is none. Used when canvas editing selects an object through a kind-scoped seam and the
+	/// layers dock needs the unified position of its sub-row.
+	/// </summary>
+	public static int ObjectIndexOfKind (UserLayer layer, bool isText, int kindIndex)
+	{
+		int seen = -1;
+		for (int i = 0; i < layer.Objects.Count; ++i)
+			if ((isText ? layer.Objects[i] is TextObject : layer.Objects[i] is ShapeObject) && ++seen == kindIndex)
+				return i;
+		return -1;
+	}
+
 	/// <summary>The shape objects, in z-order (filtered view of <see cref="Objects"/>).</summary>
 	public IReadOnlyList<ShapeObject> ShapeObjects => Objects.OfType<ShapeObject> ().ToList ();
 

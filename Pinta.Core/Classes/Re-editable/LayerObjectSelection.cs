@@ -28,6 +28,16 @@ public static class LayerObjectSelection
 		=> TextSelectRequested?.Invoke (layer, textIndex);
 
 	/// <summary>
+	/// Fired with the object's layer and its index in <see cref="UserLayer.Objects"/> when canvas
+	/// editing selects an object (clicking a shape's point, starting a text edit). The layers dock
+	/// highlights the matching sub-row — the reverse of ShapeSelectRequested/TextSelectRequested.
+	/// </summary>
+	public static event Action<UserLayer, int>? ObjectEditSelected;
+
+	public static void RaiseObjectEditSelected (UserLayer layer, int objectsIndex)
+		=> ObjectEditSelected?.Invoke (layer, objectsIndex);
+
+	/// <summary>
 	/// Fired when a layer's <see cref="UserLayer.ShapeObjects"/> were swapped from outside the
 	/// shape tool (e.g. rasterize/undo). The active shape edit engine rebuilds its live engines
 	/// from the restored object list so it does not composite stale engines over the surface.

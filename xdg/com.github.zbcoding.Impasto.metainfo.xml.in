@@ -43,6 +43,12 @@
     <binary>impasto</binary>
   </provides>
   <releases>
+    <release version="0.2.0" date="2026-09-02">
+      <url>https://github.com/zbcoding/ImpastoPaint/releases/tag/v0.2.0</url>
+      <description>
+        <p>The Line/Curve tool gains a Type dropdown for how new points join their neighbours, a Close shape toggle so fill modes work on a line or curve, and S/D shortcuts to snap a control point's tension. The layers dock now highlights the object being edited on the canvas. Linux releases add a single-file AppImage. This release also fixes a long list of tool-switch crashes, leaks and selection bugs in the shape, text, move and gradient tools.</p>
+      </description>
+    </release>
     <release version="0.1.1" date="2026-08-28">
       <url>https://github.com/zbcoding/ImpastoPaint/releases/tag/v0.1.1</url>
       <description>

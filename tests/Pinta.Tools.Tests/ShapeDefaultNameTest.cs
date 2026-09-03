@@ -76,10 +76,17 @@ internal sealed class ShapeDefaultNameTest : ToolsTestHarness
 		engine.HandleMouseUp (doc, MouseArgs (to));
 	}
 
+	// GdkExtensions.IsControlPressed reads Cmd (MetaMask) on macOS, so a hard-coded ControlMask
+	// leaves the tool extending the open curve instead of starting a fresh one.
+	private static Gdk.ModifierType PrimaryModifier
+		=> PintaCore.System.OperatingSystem == OS.Mac
+			? Gdk.ModifierType.MetaMask
+			: Gdk.ModifierType.ControlMask;
+
 	private static ToolMouseEventArgs MouseArgs (PointD canvasPos, bool control = false) => new () {
 		PointDouble = canvasPos,
 		MouseButton = MouseButton.Left,
-		State = control ? Gdk.ModifierType.ControlMask : Gdk.ModifierType.NoModifierMask,
+		State = control ? PrimaryModifier : Gdk.ModifierType.NoModifierMask,
 	};
 
 	[Test]

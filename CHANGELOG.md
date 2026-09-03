@@ -27,7 +27,9 @@ Changes for the next release go here.
 
 - Linux releases now include `Impasto-x86_64.AppImage`, a single-file build that bundles the
   GTK 4 runtime and needs no system GTK. Built by `scripts/build-appimage.sh` on each tagged
-  release alongside the existing Flatpak and distro zip.
+  release alongside the existing Flatpak and distro zip. Impasto needs GTK 4.18 or newer, which
+  no Ubuntu 24.04 package provides, so the image bundles 4.22 and is built on a host whose glibc
+  is 2.43 - the version a system needs to run it. On anything older, use the Flatpak.
 
 - The Line/Curve tool now has a "Close shape" toggle that connects the last point back to the
   first. Fill and Fill + Outline never drew that closing segment on an open chain, so a filled

@@ -89,6 +89,9 @@ v0.1.1.
       `Impasto-osx-arm64-unsigned.dmg`, `Impasto-osx-x64-unsigned.dmg`,
       `Impasto-win-x64.exe`, `Impasto-win-arm64.exe`.
 - [ ] The macOS `.dmg` files are unsigned; say so wherever users are pointed at them.
+- [ ] The AppImage bundles the build host's GTK and inherits its glibc as a floor. The
+      `build-appimage` job prints both on every run; if the floor moved, say so wherever users
+      are pointed at the image.
 - [ ] Do not rename or drop `Impasto-linux-dotnet-*.zip` — flatpark matches it with
       `^Impasto-linux-dotnet-.*\.zip$`.
 

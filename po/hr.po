@@ -19,7 +19,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: pinta\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-02 14:13-0500\n"
+"POT-Creation-Date: 2026-09-02 20:24-0500\n"
 "PO-Revision-Date: 2026-05-10 20:22+0000\n"
 "Last-Translator: Milo Ivir <mail@milotype.de>\n"
 "Language-Team: Croatian\n"
@@ -92,7 +92,7 @@ msgstr "Dodaj novi sloj"
 msgid "Add Noise"
 msgstr "Dodaj šum"
 
-#: ../Pinta.Tools/Editable/EditEngines/ArrowedEditEngine.cs:339
+#: ../Pinta.Tools/Editable/EditEngines/ArrowedEditEngine.cs:408
 #, csharp-format
 msgid ""
 "Add a point: {0}, or right-click the line and choose to add one there; {1} "
@@ -120,7 +120,7 @@ msgstr "Upravljač dodataka …"
 msgid "Add-ins"
 msgstr ""
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:1269
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:1281
 msgid "Added"
 msgstr "Dodano"
 
@@ -197,11 +197,11 @@ msgstr "Sidro:"
 #: ../Pinta.Effects/Effects/RadialBlurEffect.cs:136
 #: ../Pinta.Effects/Effects/ReliefEffect.cs:77
 #: ../Pinta.Tools/Brushes/SlashBrush.cs:53
-#: ../Pinta.Tools/Editable/EditEngines/ArrowedEditEngine.cs:399
+#: ../Pinta.Tools/Editable/EditEngines/ArrowedEditEngine.cs:468
 msgid "Angle"
 msgstr "Kut"
 
-#: ../Pinta.Tools/Editable/EditEngines/ArrowedEditEngine.cs:407
+#: ../Pinta.Tools/Editable/EditEngines/ArrowedEditEngine.cs:476
 msgid "Angle, in degrees, between the arrowhead's wings and the line."
 msgstr "Kut, u stupnjevima, između krila strelice i linije."
 
@@ -209,11 +209,11 @@ msgstr "Kut, u stupnjevima, između krila strelice i linije."
 msgid "Antialias"
 msgstr "Zaglađivanje rubova"
 
-#: ../Pinta.Core/Classes/BaseTool.cs:455
+#: ../Pinta.Core/Classes/BaseTool.cs:456
 msgid "Antialiasing Off"
 msgstr "Zaglađivanje rubova isključeno"
 
-#: ../Pinta.Core/Classes/BaseTool.cs:454
+#: ../Pinta.Core/Classes/BaseTool.cs:455
 msgid "Antialiasing On"
 msgstr "Zaglađivanje rubova uključeno"
 
@@ -227,7 +227,7 @@ msgid ""
 "re-wrap the text."
 msgstr ""
 
-#: ../Pinta.Tools/Editable/EditEngines/ArrowedEditEngine.cs:348
+#: ../Pinta.Tools/Editable/EditEngines/ArrowedEditEngine.cs:417
 msgid "Arrow"
 msgstr "Strelica"
 
@@ -570,7 +570,7 @@ msgstr ""
 msgid "Change font size."
 msgstr "Promijeni veličinu fonta."
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:137
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:146
 msgid "Change outline width."
 msgstr "Promijeni širinu konture."
 
@@ -695,7 +695,7 @@ msgstr "Klikni za biranje sekundarne boje."
 msgid "Click to switch between primary and secondary color."
 msgstr "Klikni za prebacivanje između primarne i sekundarne boje."
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:496
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:506
 msgid ""
 "Clicking a segment while editing inserts a control point to smoothly curve "
 "it."
@@ -721,6 +721,10 @@ msgstr "Zatvori"
 #: ../Pinta.Core/Actions/WindowActions.cs:52
 msgid "Close All"
 msgstr "Zatvori sve"
+
+#: ../Pinta.Tools/Editable/EditEngines/LineCurveEditEngine.cs:128
+msgid "Close shape"
+msgstr ""
 
 #: ../Pinta.Tools/Editable/EditEngines/RectangleEditEngine.cs:37
 msgid "Closed Curve Shape"
@@ -756,7 +760,7 @@ msgstr "Posvijetljena boja"
 msgid "Color Gradient"
 msgstr "Gradijent boje"
 
-#: ../Pinta.Tools/Tools/GradientTool.cs:347
+#: ../Pinta.Tools/Tools/GradientTool.cs:353
 msgid "Color Mode"
 msgstr "Modus boja"
 
@@ -807,9 +811,15 @@ msgstr "Bojenje"
 msgid "Colors"
 msgstr ""
 
-#: ../Pinta.Tools/Tools/GradientTool.cs:317
+#: ../Pinta.Tools/Tools/GradientTool.cs:323
 msgid "Conical Gradient"
 msgstr "Konusni gradijent"
+
+#: ../Pinta.Tools/Editable/EditEngines/LineCurveEditEngine.cs:129
+msgid ""
+"Connect the last point back to the first, closing the outline so fill modes "
+"show a closed shape."
+msgstr ""
 
 #: ../Pinta.Core/Actions/HelpActions.cs:45
 msgid "Contents"
@@ -890,8 +900,8 @@ msgstr "Obreži na odabir"
 msgid "Current Palette"
 msgstr "Trenutačna paleta"
 
-#: ../Pinta.Tools/Editable/EditEngines/ArrowedEditEngine.cs:301
-#: ../Pinta.Tools/Editable/EditEngines/ArrowedEditEngine.cs:337
+#: ../Pinta.Tools/Editable/EditEngines/ArrowedEditEngine.cs:370
+#: ../Pinta.Tools/Editable/EditEngines/ArrowedEditEngine.cs:406
 msgid "Curve"
 msgstr ""
 
@@ -899,11 +909,11 @@ msgstr ""
 msgid "Curved"
 msgstr "Krivuljasto"
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:497
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:507
 msgid "Curved Segments Off"
 msgstr "Zakrivljeni segmenti isključeni"
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:496
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:506
 msgid "Curved Segments On"
 msgstr "Zakrivljeni segmenti uključeni"
 
@@ -987,7 +997,7 @@ msgstr ""
 msgid "Delete selected control point"
 msgstr ""
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:1032
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:1043
 msgid "Deleted"
 msgstr "Izbrisano"
 
@@ -1065,11 +1075,11 @@ msgstr ""
 msgid "Drag and drop to reorder"
 msgstr ""
 
-#: ../Pinta.Tools/Tools/TextTool.cs:2711
+#: ../Pinta.Tools/Tools/TextTool.cs:2739
 msgid "Drag corner to resize (changes font size)"
 msgstr ""
 
-#: ../Pinta.Tools/Tools/TextTool.cs:2710
+#: ../Pinta.Tools/Tools/TextTool.cs:2738
 msgid "Drag corner to resize the text box"
 msgstr ""
 
@@ -1077,7 +1087,7 @@ msgstr ""
 msgid "Draw only the outline of the text, using the secondary color."
 msgstr "Crta samo obris teksta, sekundarnom bojom."
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:532
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:542
 #: ../Pinta.Tools/Tools/FreeformShapeTool.cs:216
 msgid "Draw only the shape's outline, using the primary color."
 msgstr "Crta samo obris oblika, primarnom bojom."
@@ -1091,13 +1101,13 @@ msgstr "Dupliciraj sloj"
 msgid "Duplicated"
 msgstr ""
 
-#: ../Pinta.Tools/Editable/EditEngines/ArrowedEditEngine.cs:302
-#: ../Pinta.Tools/Editable/EditEngines/ArrowedEditEngine.cs:337
+#: ../Pinta.Tools/Editable/EditEngines/ArrowedEditEngine.cs:371
+#: ../Pinta.Tools/Editable/EditEngines/ArrowedEditEngine.cs:406
 msgid "Each added point curves smoothly through its neighbors."
 msgstr ""
 
-#: ../Pinta.Tools/Editable/EditEngines/ArrowedEditEngine.cs:304
-#: ../Pinta.Tools/Editable/EditEngines/ArrowedEditEngine.cs:338
+#: ../Pinta.Tools/Editable/EditEngines/ArrowedEditEngine.cs:373
+#: ../Pinta.Tools/Editable/EditEngines/ArrowedEditEngine.cs:407
 msgid "Each added point joins its neighbors with a straight segment."
 msgstr ""
 
@@ -1286,17 +1296,17 @@ msgstr "Ispuni pozadinu objekta"
 msgid "Fill Selection"
 msgstr "Ispuni odabir"
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:533
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:543
 #: ../Pinta.Tools/Tools/FreeformShapeTool.cs:217
 msgid "Fill Shape"
 msgstr "Oblik ispune"
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:523
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:533
 #: ../Pinta.Tools/Tools/FreeformShapeTool.cs:210
 msgid "Fill Style"
 msgstr "Stil ispune"
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:534
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:544
 #: ../Pinta.Tools/Tools/FreeformShapeTool.cs:218
 msgid "Fill and Outline Shape"
 msgstr "Oblik ispune i konture"
@@ -1312,14 +1322,14 @@ msgid ""
 "Fill only the connected region of similar color touching the click point."
 msgstr ""
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:534
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:544
 #: ../Pinta.Tools/Tools/FreeformShapeTool.cs:218
 msgid ""
 "Fill the interior with the secondary color and outline it with the primary "
 "color."
 msgstr ""
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:533
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:543
 #: ../Pinta.Tools/Tools/FreeformShapeTool.cs:217
 msgid "Fill the shape's interior with the secondary color, no outline."
 msgstr "Ispunjava unutrašnjost oblika sekundarnom bojom, bez obrisa."
@@ -1345,8 +1355,8 @@ msgstr ""
 msgid "Finalize shape"
 msgstr ""
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:1780
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:2364
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:1821
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:2415
 #: ../Pinta.Tools/Tools/GradientTool.cs:195
 msgid "Finalized"
 msgstr "Završeno"
@@ -1495,7 +1505,7 @@ msgid "Glow"
 msgstr "Sjaj"
 
 #: ../Pinta.Tools/Tools/GradientTool.cs:63
-#: ../Pinta.Tools/Tools/GradientTool.cs:307
+#: ../Pinta.Tools/Tools/GradientTool.cs:313
 msgid "Gradient"
 msgstr "Gradijent"
 
@@ -2154,15 +2164,15 @@ msgstr ""
 "Desni klik za smanjivanje.\n"
 "Klikni i povuci za povećanje odabira."
 
-#: ../Pinta.Tools/Editable/EditEngines/ArrowedEditEngine.cs:421
+#: ../Pinta.Tools/Editable/EditEngines/ArrowedEditEngine.cs:490
 msgid "Length"
 msgstr "Duljina"
 
-#: ../Pinta.Tools/Editable/EditEngines/ArrowedEditEngine.cs:429
+#: ../Pinta.Tools/Editable/EditEngines/ArrowedEditEngine.cs:498
 msgid "Length of the arrowhead's wings; does not change the line's length."
 msgstr "Duljina krila strelice; ne mijenja duljinu linije."
 
-#: ../Pinta.Tools/Editable/EditEngines/ArrowedEditEngine.cs:385
+#: ../Pinta.Tools/Editable/EditEngines/ArrowedEditEngine.cs:454
 msgid "Length of the arrowhead, in pixels."
 msgstr "Duljina vrha strelice, u pikselima."
 
@@ -2206,8 +2216,8 @@ msgstr "Kao Small Caps, ali zamijenjena velika slova su nešto manja."
 msgid "Lime Lemon"
 msgstr "Limunasta limeta"
 
-#: ../Pinta.Tools/Editable/EditEngines/ArrowedEditEngine.cs:303
-#: ../Pinta.Tools/Editable/EditEngines/ArrowedEditEngine.cs:338
+#: ../Pinta.Tools/Editable/EditEngines/ArrowedEditEngine.cs:372
+#: ../Pinta.Tools/Editable/EditEngines/ArrowedEditEngine.cs:407
 msgid "Line"
 msgstr ""
 
@@ -2217,15 +2227,15 @@ msgstr ""
 msgid "Line/Curve"
 msgstr "Linija / Krivulja"
 
-#: ../Pinta.Tools/Tools/GradientTool.cs:315
+#: ../Pinta.Tools/Tools/GradientTool.cs:321
 msgid "Linear Diamond Gradient"
 msgstr "Linearni rombičan gradijent"
 
-#: ../Pinta.Tools/Tools/GradientTool.cs:313
+#: ../Pinta.Tools/Tools/GradientTool.cs:319
 msgid "Linear Gradient"
 msgstr "Linearni gradijent"
 
-#: ../Pinta.Tools/Tools/GradientTool.cs:314
+#: ../Pinta.Tools/Tools/GradientTool.cs:320
 msgid "Linear Reflected Gradient"
 msgstr "Linearni odsijevajući gradijent"
 
@@ -2310,7 +2320,7 @@ msgstr ""
 msgid "Minimum Size"
 msgstr "Minimalna veličina"
 
-#: ../Pinta.Tools/Tools/GradientTool.cs:314
+#: ../Pinta.Tools/Tools/GradientTool.cs:320
 msgid "Mirrors the linear transition on both sides of the start point."
 msgstr "Zrcali linearni prijelaz na obje strane početne točke."
 
@@ -2324,16 +2334,16 @@ msgid ""
 "Mixes small capital letters for upper case with normal lower case letters."
 msgstr ""
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:442
-#: ../Pinta.Tools/Tools/GradientTool.cs:341
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:452
+#: ../Pinta.Tools/Tools/GradientTool.cs:347
 #: ../Pinta.Tools/Tools/TextTool.cs:298
 msgid "Mode"
 msgstr "Modus"
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:876
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:878
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:1500
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:1525
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:887
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:889
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:1541
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:1566
 msgid "Modified"
 msgstr "Promijenjeno"
 
@@ -2472,7 +2482,7 @@ msgstr "Ništa"
 msgid "Normal"
 msgstr "Normalni (400)"
 
-#: ../Pinta.Core/Classes/BaseTool.cs:437
+#: ../Pinta.Core/Classes/BaseTool.cs:438
 msgid "Normal Blending"
 msgstr "Normalno stapanje"
 
@@ -2607,7 +2617,7 @@ msgstr ""
 msgid "Object Opacity"
 msgstr ""
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:453
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:463
 #: ../Pinta.Tools/Tools/TextTool.cs:307
 msgid "Object — editable later"
 msgstr ""
@@ -2698,12 +2708,12 @@ msgstr "Kontura ruba"
 msgid "Outline Object"
 msgstr "Kontura objekta"
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:532
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:542
 #: ../Pinta.Tools/Tools/FreeformShapeTool.cs:216
 msgid "Outline Shape"
 msgstr "Kontura oblika"
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:549
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:559
 #: ../Pinta.Tools/Tools/TextTool.cs:618
 msgid "Outline width"
 msgstr "Širina konture"
@@ -2720,7 +2730,7 @@ msgstr "Histogram rezultata"
 msgid "Overlay"
 msgstr "Prekriveno"
 
-#: ../Pinta.Core/Classes/BaseTool.cs:438
+#: ../Pinta.Core/Classes/BaseTool.cs:439
 msgid "Overwrite"
 msgstr "Prepiši"
 
@@ -2761,7 +2771,7 @@ msgid ""
 "like any artwork, but not editable later."
 msgstr ""
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:452
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:462
 msgid ""
 "Painted into the layer's pixels on commit. Immediately cut/move/erase like "
 "any artwork, but not editable later."
@@ -2930,8 +2940,8 @@ msgstr ""
 msgid "Point"
 msgstr ""
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:970
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:1330
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:981
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:1343
 msgid "Point Added"
 msgstr "Dodana točka"
 
@@ -2945,7 +2955,7 @@ msgstr "Razmještaj točaka"
 msgid "Point Color"
 msgstr "Boja točke"
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:1015
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:1026
 msgid "Point Deleted"
 msgstr "Izbrisana točka"
 
@@ -3024,7 +3034,7 @@ msgstr ""
 msgid "Press {0} to decrease font size"
 msgstr "Pritisni {0} za smanjivanje veličine fonta"
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:139
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:148
 #, csharp-format
 msgid "Press {0} to decrease outline width"
 msgstr ""
@@ -3039,7 +3049,7 @@ msgstr ""
 msgid "Press {0} to increase font size"
 msgstr "Pritisni {0} za povećavanje veličine fonta"
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:140
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:149
 #, csharp-format
 msgid "Press {0} to increase outline width"
 msgstr ""
@@ -3113,7 +3123,7 @@ msgstr "RGB"
 msgid "Radial Blur"
 msgstr "Radijalno zamućenje"
 
-#: ../Pinta.Tools/Tools/GradientTool.cs:316
+#: ../Pinta.Tools/Tools/GradientTool.cs:322
 msgid "Radial Gradient"
 msgstr "Radijalni gradijent"
 
@@ -3164,7 +3174,7 @@ msgstr "Početni parametar slučajnog šuma"
 msgid "Random Point Locations"
 msgstr "Lokacije slučajnih točaka"
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:451
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:461
 #: ../Pinta.Tools/Tools/TextTool.cs:305
 msgid "Raster — fuses to layer"
 msgstr ""
@@ -3436,11 +3446,11 @@ msgstr "Poravnaj desno"
 msgid "Right Triangle"
 msgstr ""
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:2047
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:2097
 msgid "Right click + drag: move the whole shape."
 msgstr ""
 
-#: ../Pinta.Tools/Tools/TextTool.cs:2704
+#: ../Pinta.Tools/Tools/TextTool.cs:2732
 msgid "Right click to move"
 msgstr ""
 
@@ -3486,7 +3496,7 @@ msgstr ""
 msgid "Rotate text"
 msgstr ""
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:1473
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:1514
 msgid "Rotated"
 msgstr ""
 
@@ -3613,7 +3623,7 @@ msgstr ""
 msgid "Secondary"
 msgstr "Sekundarna"
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:497
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:507
 msgid ""
 "Segments stay straight; clicking a segment does not insert curve control "
 "points."
@@ -3756,7 +3766,7 @@ msgid "Shear Vertically"
 msgstr ""
 
 #: ../Pinta.Core/Extensions/Gtk/GtkExtensions.Interaction.cs:112
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:2046
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:2096
 #: ../Pinta.Tools/Tools/BaseTransformTool.cs:729
 msgid "Shift"
 msgstr ""
@@ -3773,7 +3783,7 @@ msgstr "Tipka prečaca"
 msgid "Shortcut keys"
 msgstr "Tipke prečaca"
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:138
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:147
 #: ../Pinta.Tools/Tools/BaseBrushTool.cs:155
 #: ../Pinta.Tools/Tools/TextTool.cs:744
 msgid "Shortcut keys:"
@@ -3815,11 +3825,11 @@ msgstr "Prikaži točke"
 msgid "Show a third row of darker colors in the palette"
 msgstr ""
 
-#: ../Pinta.Tools/Editable/EditEngines/ArrowedEditEngine.cs:369
+#: ../Pinta.Tools/Editable/EditEngines/ArrowedEditEngine.cs:438
 msgid "Show an arrowhead at the end point."
 msgstr "Prikaži strelicu na krajnjoj točki."
 
-#: ../Pinta.Tools/Editable/EditEngines/ArrowedEditEngine.cs:356
+#: ../Pinta.Tools/Editable/EditEngines/ArrowedEditEngine.cs:425
 msgid "Show an arrowhead at the start point."
 msgstr "Prikaži strelicu na početnoj točki."
 
@@ -3867,7 +3877,7 @@ msgid "Single Pixel"
 msgstr "Jedan piksel"
 
 #: ../Pinta.Tools/Editable/EditEngines/ArrowedEditEngine.cs:110
-#: ../Pinta.Tools/Editable/EditEngines/ArrowedEditEngine.cs:377
+#: ../Pinta.Tools/Editable/EditEngines/ArrowedEditEngine.cs:446
 msgid "Size"
 msgstr "Veličina"
 
@@ -3947,7 +3957,7 @@ msgstr "Kvadrati"
 msgid "Status Bar"
 msgstr "Traka stanja"
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:454
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:464
 msgid ""
 "Stays a live, re-editable shape. Cutting, erasing, or filtering across it "
 "will rasterize it first."
@@ -4371,27 +4381,27 @@ msgstr ""
 msgid "Transform Tools"
 msgstr ""
 
-#: ../Pinta.Tools/Tools/GradientTool.cs:347
+#: ../Pinta.Tools/Tools/GradientTool.cs:353
 msgid "Transition between the primary and secondary colors."
 msgstr "Prijelaz između primarne i sekundarne boje."
 
-#: ../Pinta.Tools/Tools/GradientTool.cs:348
+#: ../Pinta.Tools/Tools/GradientTool.cs:354
 msgid "Transition the primary color from opaque to transparent."
 msgstr "Prelazi primarnu boju iz neprozirne u prozirnu."
 
-#: ../Pinta.Tools/Tools/GradientTool.cs:313
+#: ../Pinta.Tools/Tools/GradientTool.cs:319
 msgid "Transitions colors in a straight line between the two endpoints."
 msgstr "Prelazi boje u ravnoj liniji između dvije krajnje točke."
 
-#: ../Pinta.Tools/Tools/GradientTool.cs:317
+#: ../Pinta.Tools/Tools/GradientTool.cs:323
 msgid "Transitions colors in a sweep around the start point."
 msgstr "Prelazi boje u zamahu oko početne točke."
 
-#: ../Pinta.Tools/Tools/GradientTool.cs:316
+#: ../Pinta.Tools/Tools/GradientTool.cs:322
 msgid "Transitions colors outward from the start point in a circle."
 msgstr "Prelazi boje prema van od početne točke u krugu."
 
-#: ../Pinta.Tools/Tools/GradientTool.cs:315
+#: ../Pinta.Tools/Tools/GradientTool.cs:321
 msgid "Transitions colors outward from the start point in a diamond shape."
 msgstr "Prelazi boje prema van od početne točke u obliku dijamanta."
 
@@ -4403,7 +4413,7 @@ msgstr ""
 msgid "Translate Vertically"
 msgstr ""
 
-#: ../Pinta.Tools/Tools/GradientTool.cs:348
+#: ../Pinta.Tools/Tools/GradientTool.cs:354
 msgid "Transparency Mode"
 msgstr "Modus prozirnosti"
 
@@ -4439,7 +4449,7 @@ msgstr "Zakretanje"
 msgid "Two-Row Sierra"
 msgstr "Dvoredna Sierra"
 
-#: ../Pinta.Tools/Editable/EditEngines/ArrowedEditEngine.cs:292
+#: ../Pinta.Tools/Editable/EditEngines/ArrowedEditEngine.cs:361
 #: ../Pinta.Tools/Editable/EditEngines/TriangleEditEngine.cs:121
 #: ../Pinta.Tools/Tools/EraserTool.cs:337
 #: ../Pinta.Tools/Tools/PaintBrushTool.cs:234
@@ -4814,7 +4824,7 @@ msgstr ""
 msgid "{0} (Alternate)"
 msgstr ""
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:2051
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:2101
 #, csharp-format
 msgid "{0} + click: start a new shape here."
 msgstr ""
@@ -4825,12 +4835,12 @@ msgstr ""
 msgid "{0} + left click to set origin, left click to paint."
 msgstr "{0} + lijevi klik za postavljanje ishodišta, lijevi klik za slikanje."
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:2048
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:2098
 #, csharp-format
 msgid "{0} + right drag: change tension."
 msgstr ""
 
-#: ../Pinta.Tools/Editable/EditEngines/ArrowedEditEngine.cs:340
+#: ../Pinta.Tools/Editable/EditEngines/ArrowedEditEngine.cs:409
 #, csharp-format
 msgid "{0} + right-drag a point: change its tension."
 msgstr ""
@@ -4845,7 +4855,7 @@ msgstr ""
 msgid "{0} - never saved to a file"
 msgstr ""
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:2050
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:2100
 #, csharp-format
 msgid "{0} and drag: rotate the whole shape."
 msgstr ""
@@ -4876,12 +4886,12 @@ msgstr "{0} slika ({1})"
 msgid "{0} palette ({1})"
 msgstr "{0} paleta ({1})"
 
-#: ../Pinta.Tools/Tools/TextTool.cs:2702
+#: ../Pinta.Tools/Tools/TextTool.cs:2730
 #, csharp-format
 msgid "{0} to edit"
 msgstr ""
 
-#: ../Pinta.Tools/Tools/TextTool.cs:2703
+#: ../Pinta.Tools/Tools/TextTool.cs:2731
 #, csharp-format
 msgid "{0} to open text properties"
 msgstr ""
@@ -4891,7 +4901,7 @@ msgstr ""
 msgid "{0} to re-edit an existing text object."
 msgstr ""
 
-#: ../Pinta.Tools/Tools/TextTool.cs:2712
+#: ../Pinta.Tools/Tools/TextTool.cs:2740
 #, csharp-format
 msgid "{0} to rotate"
 msgstr ""
@@ -4915,13 +4925,13 @@ msgstr ""
 msgid "{0}%"
 msgstr "{0} %"
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:2046
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:2096
 #, csharp-format
 msgid "{0}-drag: snap the adjacent segment to a 15° angle."
 msgstr ""
 
-#: ../Pinta.Tools/Editable/EditEngines/ArrowedEditEngine.cs:341
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:2049
+#: ../Pinta.Tools/Editable/EditEngines/ArrowedEditEngine.cs:410
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:2099
 #, csharp-format
 msgid "{0}: curve the line around the selected point; {1}: straighten it."
 msgstr ""

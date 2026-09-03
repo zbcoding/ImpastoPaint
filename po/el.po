@@ -19,7 +19,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: pinta\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-02 14:13-0500\n"
+"POT-Creation-Date: 2026-09-02 20:24-0500\n"
 "PO-Revision-Date: 2026-02-01 04:28+0000\n"
 "Last-Translator: antfullstack "
 "<253273528+antfullstack@users.noreply.github.com>\n"
@@ -92,7 +92,7 @@ msgstr "Προσθήκη νέου επιπέδου"
 msgid "Add Noise"
 msgstr "Προσθήκη θορύβου"
 
-#: ../Pinta.Tools/Editable/EditEngines/ArrowedEditEngine.cs:339
+#: ../Pinta.Tools/Editable/EditEngines/ArrowedEditEngine.cs:408
 #, csharp-format
 msgid ""
 "Add a point: {0}, or right-click the line and choose to add one there; {1} "
@@ -120,7 +120,7 @@ msgstr "Διαχείριση προσθέτων..."
 msgid "Add-ins"
 msgstr ""
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:1269
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:1281
 msgid "Added"
 msgstr "Προστέθηκε"
 
@@ -197,11 +197,11 @@ msgstr "Αγκύρωση:"
 #: ../Pinta.Effects/Effects/RadialBlurEffect.cs:136
 #: ../Pinta.Effects/Effects/ReliefEffect.cs:77
 #: ../Pinta.Tools/Brushes/SlashBrush.cs:53
-#: ../Pinta.Tools/Editable/EditEngines/ArrowedEditEngine.cs:399
+#: ../Pinta.Tools/Editable/EditEngines/ArrowedEditEngine.cs:468
 msgid "Angle"
 msgstr "Γωνία"
 
-#: ../Pinta.Tools/Editable/EditEngines/ArrowedEditEngine.cs:407
+#: ../Pinta.Tools/Editable/EditEngines/ArrowedEditEngine.cs:476
 msgid "Angle, in degrees, between the arrowhead's wings and the line."
 msgstr ""
 "Γωνία, σε μοίρες, μεταξύ των πτερυγίων της αιχμής βέλους και της γραμμής."
@@ -210,11 +210,11 @@ msgstr ""
 msgid "Antialias"
 msgstr "Εξομάλυνση"
 
-#: ../Pinta.Core/Classes/BaseTool.cs:455
+#: ../Pinta.Core/Classes/BaseTool.cs:456
 msgid "Antialiasing Off"
 msgstr "Απενεργοποίηση εξομάλυνσης γραφικών"
 
-#: ../Pinta.Core/Classes/BaseTool.cs:454
+#: ../Pinta.Core/Classes/BaseTool.cs:455
 msgid "Antialiasing On"
 msgstr "Ενεργοποίηση εξομάλυνσης γραφικών"
 
@@ -228,7 +228,7 @@ msgid ""
 "re-wrap the text."
 msgstr ""
 
-#: ../Pinta.Tools/Editable/EditEngines/ArrowedEditEngine.cs:348
+#: ../Pinta.Tools/Editable/EditEngines/ArrowedEditEngine.cs:417
 msgid "Arrow"
 msgstr "Βέλος"
 
@@ -571,7 +571,7 @@ msgstr ""
 msgid "Change font size."
 msgstr ""
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:137
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:146
 msgid "Change outline width."
 msgstr ""
 
@@ -695,7 +695,7 @@ msgstr "Πατήστε για να επιλέξετε δευτερεύον χρ�
 msgid "Click to switch between primary and secondary color."
 msgstr "Κλικ για εναλλαγή μεταξύ κύριου και δευτερεύοντος χρώματος."
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:496
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:506
 msgid ""
 "Clicking a segment while editing inserts a control point to smoothly curve "
 "it."
@@ -721,6 +721,10 @@ msgstr "Κλείσιμο"
 #: ../Pinta.Core/Actions/WindowActions.cs:52
 msgid "Close All"
 msgstr "Κλείσιμο όλων"
+
+#: ../Pinta.Tools/Editable/EditEngines/LineCurveEditEngine.cs:128
+msgid "Close shape"
+msgstr ""
 
 #: ../Pinta.Tools/Editable/EditEngines/RectangleEditEngine.cs:37
 msgid "Closed Curve Shape"
@@ -756,7 +760,7 @@ msgstr "Υπερέκθεση χρώματος"
 msgid "Color Gradient"
 msgstr "Χρώμα διαβάθμισης"
 
-#: ../Pinta.Tools/Tools/GradientTool.cs:347
+#: ../Pinta.Tools/Tools/GradientTool.cs:353
 msgid "Color Mode"
 msgstr "Λειτουργεία χρώματος"
 
@@ -807,9 +811,15 @@ msgstr "Χρωματισμός"
 msgid "Colors"
 msgstr ""
 
-#: ../Pinta.Tools/Tools/GradientTool.cs:317
+#: ../Pinta.Tools/Tools/GradientTool.cs:323
 msgid "Conical Gradient"
 msgstr "Κωνική διαβάθμιση χρώματος"
+
+#: ../Pinta.Tools/Editable/EditEngines/LineCurveEditEngine.cs:129
+msgid ""
+"Connect the last point back to the first, closing the outline so fill modes "
+"show a closed shape."
+msgstr ""
 
 #: ../Pinta.Core/Actions/HelpActions.cs:45
 msgid "Contents"
@@ -891,8 +901,8 @@ msgstr "Περικοπή στην επιλογή"
 msgid "Current Palette"
 msgstr "Τρέχουσα Παλέτα"
 
-#: ../Pinta.Tools/Editable/EditEngines/ArrowedEditEngine.cs:301
-#: ../Pinta.Tools/Editable/EditEngines/ArrowedEditEngine.cs:337
+#: ../Pinta.Tools/Editable/EditEngines/ArrowedEditEngine.cs:370
+#: ../Pinta.Tools/Editable/EditEngines/ArrowedEditEngine.cs:406
 msgid "Curve"
 msgstr ""
 
@@ -900,11 +910,11 @@ msgstr ""
 msgid "Curved"
 msgstr "Κυρτό"
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:497
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:507
 msgid "Curved Segments Off"
 msgstr "Καμπύλα τμήματα ανενεργά"
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:496
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:506
 msgid "Curved Segments On"
 msgstr "Καμπύλα τμήματα ενεργά"
 
@@ -988,7 +998,7 @@ msgstr ""
 msgid "Delete selected control point"
 msgstr ""
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:1032
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:1043
 msgid "Deleted"
 msgstr "Διαγράφηκε"
 
@@ -1066,11 +1076,11 @@ msgstr ""
 msgid "Drag and drop to reorder"
 msgstr ""
 
-#: ../Pinta.Tools/Tools/TextTool.cs:2711
+#: ../Pinta.Tools/Tools/TextTool.cs:2739
 msgid "Drag corner to resize (changes font size)"
 msgstr ""
 
-#: ../Pinta.Tools/Tools/TextTool.cs:2710
+#: ../Pinta.Tools/Tools/TextTool.cs:2738
 msgid "Drag corner to resize the text box"
 msgstr ""
 
@@ -1080,7 +1090,7 @@ msgstr ""
 "Σχεδιάζει μόνο το περίγραμμα του κειμένου, χρησιμοποιώντας το δευτερεύον "
 "χρώμα."
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:532
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:542
 #: ../Pinta.Tools/Tools/FreeformShapeTool.cs:216
 msgid "Draw only the shape's outline, using the primary color."
 msgstr ""
@@ -1095,13 +1105,13 @@ msgstr "Διπλότυπο επιπέδου"
 msgid "Duplicated"
 msgstr ""
 
-#: ../Pinta.Tools/Editable/EditEngines/ArrowedEditEngine.cs:302
-#: ../Pinta.Tools/Editable/EditEngines/ArrowedEditEngine.cs:337
+#: ../Pinta.Tools/Editable/EditEngines/ArrowedEditEngine.cs:371
+#: ../Pinta.Tools/Editable/EditEngines/ArrowedEditEngine.cs:406
 msgid "Each added point curves smoothly through its neighbors."
 msgstr ""
 
-#: ../Pinta.Tools/Editable/EditEngines/ArrowedEditEngine.cs:304
-#: ../Pinta.Tools/Editable/EditEngines/ArrowedEditEngine.cs:338
+#: ../Pinta.Tools/Editable/EditEngines/ArrowedEditEngine.cs:373
+#: ../Pinta.Tools/Editable/EditEngines/ArrowedEditEngine.cs:407
 msgid "Each added point joins its neighbors with a straight segment."
 msgstr ""
 
@@ -1289,17 +1299,17 @@ msgstr "Γέμισμα φόντου αντικειμένου"
 msgid "Fill Selection"
 msgstr "Γέμισμα επιλογής"
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:533
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:543
 #: ../Pinta.Tools/Tools/FreeformShapeTool.cs:217
 msgid "Fill Shape"
 msgstr "Σχήμα γεμίσματος"
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:523
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:533
 #: ../Pinta.Tools/Tools/FreeformShapeTool.cs:210
 msgid "Fill Style"
 msgstr "Στυλ γεμίσματος"
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:534
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:544
 #: ../Pinta.Tools/Tools/FreeformShapeTool.cs:218
 msgid "Fill and Outline Shape"
 msgstr "Σχήμα γεμίσματος και περιγράμματος"
@@ -1315,14 +1325,14 @@ msgid ""
 "Fill only the connected region of similar color touching the click point."
 msgstr ""
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:534
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:544
 #: ../Pinta.Tools/Tools/FreeformShapeTool.cs:218
 msgid ""
 "Fill the interior with the secondary color and outline it with the primary "
 "color."
 msgstr ""
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:533
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:543
 #: ../Pinta.Tools/Tools/FreeformShapeTool.cs:217
 msgid "Fill the shape's interior with the secondary color, no outline."
 msgstr ""
@@ -1351,8 +1361,8 @@ msgstr ""
 msgid "Finalize shape"
 msgstr ""
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:1780
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:2364
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:1821
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:2415
 #: ../Pinta.Tools/Tools/GradientTool.cs:195
 msgid "Finalized"
 msgstr "Τελοιοποιήθηκε"
@@ -1501,7 +1511,7 @@ msgid "Glow"
 msgstr "Λάμψη"
 
 #: ../Pinta.Tools/Tools/GradientTool.cs:63
-#: ../Pinta.Tools/Tools/GradientTool.cs:307
+#: ../Pinta.Tools/Tools/GradientTool.cs:313
 msgid "Gradient"
 msgstr "Διαβάθμιση χρώματος"
 
@@ -2159,16 +2169,16 @@ msgstr ""
 "Δεξί κλικ για ξεζουμάρισμα.\n"
 "Παρατεταμένο κλικ για ζουμάρισμα εντός του επιλεγμένου περιεχομένου."
 
-#: ../Pinta.Tools/Editable/EditEngines/ArrowedEditEngine.cs:421
+#: ../Pinta.Tools/Editable/EditEngines/ArrowedEditEngine.cs:490
 msgid "Length"
 msgstr "Μήκος"
 
-#: ../Pinta.Tools/Editable/EditEngines/ArrowedEditEngine.cs:429
+#: ../Pinta.Tools/Editable/EditEngines/ArrowedEditEngine.cs:498
 msgid "Length of the arrowhead's wings; does not change the line's length."
 msgstr ""
 "Μήκος των πτερυγίων της αιχμής βέλους· δεν αλλάζει το μήκος της γραμμής."
 
-#: ../Pinta.Tools/Editable/EditEngines/ArrowedEditEngine.cs:385
+#: ../Pinta.Tools/Editable/EditEngines/ArrowedEditEngine.cs:454
 msgid "Length of the arrowhead, in pixels."
 msgstr "Μήκος της αιχμής βέλους, σε εικονοστοιχεία."
 
@@ -2216,8 +2226,8 @@ msgstr ""
 msgid "Lime Lemon"
 msgstr "Λάϊμ-Λεμόνι"
 
-#: ../Pinta.Tools/Editable/EditEngines/ArrowedEditEngine.cs:303
-#: ../Pinta.Tools/Editable/EditEngines/ArrowedEditEngine.cs:338
+#: ../Pinta.Tools/Editable/EditEngines/ArrowedEditEngine.cs:372
+#: ../Pinta.Tools/Editable/EditEngines/ArrowedEditEngine.cs:407
 msgid "Line"
 msgstr ""
 
@@ -2227,15 +2237,15 @@ msgstr ""
 msgid "Line/Curve"
 msgstr "Γραμμή/Καμπύλη"
 
-#: ../Pinta.Tools/Tools/GradientTool.cs:315
+#: ../Pinta.Tools/Tools/GradientTool.cs:321
 msgid "Linear Diamond Gradient"
 msgstr "Γραμμική διαβάθμιση χρώματος σε μορφή διαμαντιού"
 
-#: ../Pinta.Tools/Tools/GradientTool.cs:313
+#: ../Pinta.Tools/Tools/GradientTool.cs:319
 msgid "Linear Gradient"
 msgstr "Γραμμική διαβάθμιση χρώματος"
 
-#: ../Pinta.Tools/Tools/GradientTool.cs:314
+#: ../Pinta.Tools/Tools/GradientTool.cs:320
 msgid "Linear Reflected Gradient"
 msgstr "Γραμμική διαβάθμιση χρώματος σε αντανάκλαση"
 
@@ -2320,7 +2330,7 @@ msgstr ""
 msgid "Minimum Size"
 msgstr "Ελάχιστο μέγεθος"
 
-#: ../Pinta.Tools/Tools/GradientTool.cs:314
+#: ../Pinta.Tools/Tools/GradientTool.cs:320
 msgid "Mirrors the linear transition on both sides of the start point."
 msgstr ""
 "Αντικατοπτρίζει τη γραμμική μετάβαση και στις δύο πλευρές του αρχικού "
@@ -2336,16 +2346,16 @@ msgid ""
 "Mixes small capital letters for upper case with normal lower case letters."
 msgstr ""
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:442
-#: ../Pinta.Tools/Tools/GradientTool.cs:341
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:452
+#: ../Pinta.Tools/Tools/GradientTool.cs:347
 #: ../Pinta.Tools/Tools/TextTool.cs:298
 msgid "Mode"
 msgstr "Λειτουργία"
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:876
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:878
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:1500
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:1525
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:887
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:889
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:1541
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:1566
 msgid "Modified"
 msgstr "Τροποποιήθηκε"
 
@@ -2484,7 +2494,7 @@ msgstr "Κανένα"
 msgid "Normal"
 msgstr "Κανονικό"
 
-#: ../Pinta.Core/Classes/BaseTool.cs:437
+#: ../Pinta.Core/Classes/BaseTool.cs:438
 msgid "Normal Blending"
 msgstr "Κανονική ανάμειξη"
 
@@ -2619,7 +2629,7 @@ msgstr ""
 msgid "Object Opacity"
 msgstr ""
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:453
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:463
 #: ../Pinta.Tools/Tools/TextTool.cs:307
 msgid "Object — editable later"
 msgstr ""
@@ -2710,12 +2720,12 @@ msgstr "Περίγραμμα άκρων"
 msgid "Outline Object"
 msgstr "Περίγραμμα αντικειμένου"
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:532
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:542
 #: ../Pinta.Tools/Tools/FreeformShapeTool.cs:216
 msgid "Outline Shape"
 msgstr "Σχήμα περιγράμματος"
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:549
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:559
 #: ../Pinta.Tools/Tools/TextTool.cs:618
 msgid "Outline width"
 msgstr "Πάχος περιγράμματος"
@@ -2732,7 +2742,7 @@ msgstr "Ιστόγραμμα εξόδου"
 msgid "Overlay"
 msgstr "Επικάλυψη"
 
-#: ../Pinta.Core/Classes/BaseTool.cs:438
+#: ../Pinta.Core/Classes/BaseTool.cs:439
 msgid "Overwrite"
 msgstr "Αντικατάσταση"
 
@@ -2773,7 +2783,7 @@ msgid ""
 "like any artwork, but not editable later."
 msgstr ""
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:452
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:462
 msgid ""
 "Painted into the layer's pixels on commit. Immediately cut/move/erase like "
 "any artwork, but not editable later."
@@ -2944,8 +2954,8 @@ msgstr ""
 msgid "Point"
 msgstr ""
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:970
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:1330
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:981
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:1343
 msgid "Point Added"
 msgstr "Το σημείο προστέθηκε"
 
@@ -2959,7 +2969,7 @@ msgstr "Διαβάθμιση Σημείων"
 msgid "Point Color"
 msgstr "Χρώμα Σημείων"
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:1015
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:1026
 msgid "Point Deleted"
 msgstr "Το σημείο διαγράφηκε"
 
@@ -3038,7 +3048,7 @@ msgstr ""
 msgid "Press {0} to decrease font size"
 msgstr ""
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:139
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:148
 #, csharp-format
 msgid "Press {0} to decrease outline width"
 msgstr ""
@@ -3053,7 +3063,7 @@ msgstr ""
 msgid "Press {0} to increase font size"
 msgstr ""
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:140
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:149
 #, csharp-format
 msgid "Press {0} to increase outline width"
 msgstr ""
@@ -3127,7 +3137,7 @@ msgstr "RGB"
 msgid "Radial Blur"
 msgstr "Ακτινικό θόλωμα"
 
-#: ../Pinta.Tools/Tools/GradientTool.cs:316
+#: ../Pinta.Tools/Tools/GradientTool.cs:322
 msgid "Radial Gradient"
 msgstr "Ακτινική διαβάθμιση χρώματος"
 
@@ -3178,7 +3188,7 @@ msgstr "Τυχαίος σπόρος θορύβου"
 msgid "Random Point Locations"
 msgstr "Τυχαία σημεία"
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:451
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:461
 #: ../Pinta.Tools/Tools/TextTool.cs:305
 msgid "Raster — fuses to layer"
 msgstr ""
@@ -3450,11 +3460,11 @@ msgstr "Δεξιά στοίχιση"
 msgid "Right Triangle"
 msgstr ""
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:2047
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:2097
 msgid "Right click + drag: move the whole shape."
 msgstr ""
 
-#: ../Pinta.Tools/Tools/TextTool.cs:2704
+#: ../Pinta.Tools/Tools/TextTool.cs:2732
 msgid "Right click to move"
 msgstr ""
 
@@ -3500,7 +3510,7 @@ msgstr ""
 msgid "Rotate text"
 msgstr ""
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:1473
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:1514
 msgid "Rotated"
 msgstr ""
 
@@ -3628,7 +3638,7 @@ msgstr ""
 msgid "Secondary"
 msgstr "Δευτερεύον"
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:497
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:507
 msgid ""
 "Segments stay straight; clicking a segment does not insert curve control "
 "points."
@@ -3771,7 +3781,7 @@ msgid "Shear Vertically"
 msgstr ""
 
 #: ../Pinta.Core/Extensions/Gtk/GtkExtensions.Interaction.cs:112
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:2046
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:2096
 #: ../Pinta.Tools/Tools/BaseTransformTool.cs:729
 msgid "Shift"
 msgstr ""
@@ -3788,7 +3798,7 @@ msgstr "Πλήκτρο συντόμευσης"
 msgid "Shortcut keys"
 msgstr "Συντομεύσεις Πληκτρολογίου"
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:138
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:147
 #: ../Pinta.Tools/Tools/BaseBrushTool.cs:155
 #: ../Pinta.Tools/Tools/TextTool.cs:744
 msgid "Shortcut keys:"
@@ -3830,11 +3840,11 @@ msgstr "Εμφάνιση σημείων"
 msgid "Show a third row of darker colors in the palette"
 msgstr ""
 
-#: ../Pinta.Tools/Editable/EditEngines/ArrowedEditEngine.cs:369
+#: ../Pinta.Tools/Editable/EditEngines/ArrowedEditEngine.cs:438
 msgid "Show an arrowhead at the end point."
 msgstr "Εμφανίζει μια αιχμή βέλους στο τελικό σημείο."
 
-#: ../Pinta.Tools/Editable/EditEngines/ArrowedEditEngine.cs:356
+#: ../Pinta.Tools/Editable/EditEngines/ArrowedEditEngine.cs:425
 msgid "Show an arrowhead at the start point."
 msgstr "Εμφανίζει μια αιχμή βέλους στο αρχικό σημείο."
 
@@ -3882,7 +3892,7 @@ msgid "Single Pixel"
 msgstr "Μεμονωμένο εικονοστοιχείο"
 
 #: ../Pinta.Tools/Editable/EditEngines/ArrowedEditEngine.cs:110
-#: ../Pinta.Tools/Editable/EditEngines/ArrowedEditEngine.cs:377
+#: ../Pinta.Tools/Editable/EditEngines/ArrowedEditEngine.cs:446
 msgid "Size"
 msgstr "Μέγεθος"
 
@@ -3962,7 +3972,7 @@ msgstr "Τετράγωνα"
 msgid "Status Bar"
 msgstr "Μπάρα κατάστασης"
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:454
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:464
 msgid ""
 "Stays a live, re-editable shape. Cutting, erasing, or filtering across it "
 "will rasterize it first."
@@ -4389,28 +4399,28 @@ msgstr ""
 msgid "Transform Tools"
 msgstr ""
 
-#: ../Pinta.Tools/Tools/GradientTool.cs:347
+#: ../Pinta.Tools/Tools/GradientTool.cs:353
 msgid "Transition between the primary and secondary colors."
 msgstr "Μετάβαση μεταξύ του πρωτεύοντος και του δευτερεύοντος χρώματος."
 
-#: ../Pinta.Tools/Tools/GradientTool.cs:348
+#: ../Pinta.Tools/Tools/GradientTool.cs:354
 msgid "Transition the primary color from opaque to transparent."
 msgstr "Μετάβαση του πρωτεύοντος χρώματος από αδιαφανές σε διάφανο."
 
-#: ../Pinta.Tools/Tools/GradientTool.cs:313
+#: ../Pinta.Tools/Tools/GradientTool.cs:319
 msgid "Transitions colors in a straight line between the two endpoints."
 msgstr "Μεταβαίνει τα χρώματα σε ευθεία γραμμή μεταξύ των δύο άκρων."
 
-#: ../Pinta.Tools/Tools/GradientTool.cs:317
+#: ../Pinta.Tools/Tools/GradientTool.cs:323
 msgid "Transitions colors in a sweep around the start point."
 msgstr "Μεταβαίνει τα χρώματα σε μια σάρωση γύρω από το αρχικό σημείο."
 
-#: ../Pinta.Tools/Tools/GradientTool.cs:316
+#: ../Pinta.Tools/Tools/GradientTool.cs:322
 msgid "Transitions colors outward from the start point in a circle."
 msgstr ""
 "Μεταβαίνει τα χρώματα προς τα έξω από το αρχικό σημείο σε σχήμα κύκλου."
 
-#: ../Pinta.Tools/Tools/GradientTool.cs:315
+#: ../Pinta.Tools/Tools/GradientTool.cs:321
 msgid "Transitions colors outward from the start point in a diamond shape."
 msgstr ""
 "Μεταβαίνει τα χρώματα προς τα έξω από το αρχικό σημείο σε σχήμα ρόμβου."
@@ -4423,7 +4433,7 @@ msgstr ""
 msgid "Translate Vertically"
 msgstr ""
 
-#: ../Pinta.Tools/Tools/GradientTool.cs:348
+#: ../Pinta.Tools/Tools/GradientTool.cs:354
 msgid "Transparency Mode"
 msgstr "Λειτουργίας διαφάνειας"
 
@@ -4459,7 +4469,7 @@ msgstr "Συστροφή"
 msgid "Two-Row Sierra"
 msgstr "Δίγραμμο Σιέρρα"
 
-#: ../Pinta.Tools/Editable/EditEngines/ArrowedEditEngine.cs:292
+#: ../Pinta.Tools/Editable/EditEngines/ArrowedEditEngine.cs:361
 #: ../Pinta.Tools/Editable/EditEngines/TriangleEditEngine.cs:121
 #: ../Pinta.Tools/Tools/EraserTool.cs:337
 #: ../Pinta.Tools/Tools/PaintBrushTool.cs:234
@@ -4842,7 +4852,7 @@ msgstr ""
 msgid "{0} (Alternate)"
 msgstr ""
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:2051
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:2101
 #, csharp-format
 msgid "{0} + click: start a new shape here."
 msgstr ""
@@ -4853,12 +4863,12 @@ msgstr ""
 msgid "{0} + left click to set origin, left click to paint."
 msgstr "{0} + αριστερό κλικ για ορισμό αρχής, αριστερό κλικ για βαφή."
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:2048
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:2098
 #, csharp-format
 msgid "{0} + right drag: change tension."
 msgstr ""
 
-#: ../Pinta.Tools/Editable/EditEngines/ArrowedEditEngine.cs:340
+#: ../Pinta.Tools/Editable/EditEngines/ArrowedEditEngine.cs:409
 #, csharp-format
 msgid "{0} + right-drag a point: change its tension."
 msgstr ""
@@ -4873,7 +4883,7 @@ msgstr ""
 msgid "{0} - never saved to a file"
 msgstr ""
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:2050
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:2100
 #, csharp-format
 msgid "{0} and drag: rotate the whole shape."
 msgstr ""
@@ -4904,12 +4914,12 @@ msgstr "{0} εικόνα ({1})"
 msgid "{0} palette ({1})"
 msgstr "{0} παλέτα ({1})"
 
-#: ../Pinta.Tools/Tools/TextTool.cs:2702
+#: ../Pinta.Tools/Tools/TextTool.cs:2730
 #, csharp-format
 msgid "{0} to edit"
 msgstr ""
 
-#: ../Pinta.Tools/Tools/TextTool.cs:2703
+#: ../Pinta.Tools/Tools/TextTool.cs:2731
 #, csharp-format
 msgid "{0} to open text properties"
 msgstr ""
@@ -4919,7 +4929,7 @@ msgstr ""
 msgid "{0} to re-edit an existing text object."
 msgstr ""
 
-#: ../Pinta.Tools/Tools/TextTool.cs:2712
+#: ../Pinta.Tools/Tools/TextTool.cs:2740
 #, csharp-format
 msgid "{0} to rotate"
 msgstr ""
@@ -4943,13 +4953,13 @@ msgstr ""
 msgid "{0}%"
 msgstr "{0}%"
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:2046
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:2096
 #, csharp-format
 msgid "{0}-drag: snap the adjacent segment to a 15° angle."
 msgstr ""
 
-#: ../Pinta.Tools/Editable/EditEngines/ArrowedEditEngine.cs:341
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:2049
+#: ../Pinta.Tools/Editable/EditEngines/ArrowedEditEngine.cs:410
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:2099
 #, csharp-format
 msgid "{0}: curve the line around the selected point; {1}: straighten it."
 msgstr ""

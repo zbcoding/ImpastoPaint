@@ -19,7 +19,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: pinta\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-02 14:13-0500\n"
+"POT-Creation-Date: 2026-09-02 20:24-0500\n"
 "PO-Revision-Date: 2025-06-15 02:01+0000\n"
 "Last-Translator: Kaspars <kasixlv@gmail.com>\n"
 "Language-Team: Latvian\n"
@@ -91,7 +91,7 @@ msgstr "Pievienot jaunu slāni"
 msgid "Add Noise"
 msgstr "Pielikt Troksni"
 
-#: ../Pinta.Tools/Editable/EditEngines/ArrowedEditEngine.cs:339
+#: ../Pinta.Tools/Editable/EditEngines/ArrowedEditEngine.cs:408
 #, csharp-format
 msgid ""
 "Add a point: {0}, or right-click the line and choose to add one there; {1} "
@@ -119,7 +119,7 @@ msgstr "Spraudņu pārvaldnieks..."
 msgid "Add-ins"
 msgstr ""
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:1269
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:1281
 msgid "Added"
 msgstr "Pievienots"
 
@@ -196,11 +196,11 @@ msgstr "Enkurs:"
 #: ../Pinta.Effects/Effects/RadialBlurEffect.cs:136
 #: ../Pinta.Effects/Effects/ReliefEffect.cs:77
 #: ../Pinta.Tools/Brushes/SlashBrush.cs:53
-#: ../Pinta.Tools/Editable/EditEngines/ArrowedEditEngine.cs:399
+#: ../Pinta.Tools/Editable/EditEngines/ArrowedEditEngine.cs:468
 msgid "Angle"
 msgstr "Leņķis"
 
-#: ../Pinta.Tools/Editable/EditEngines/ArrowedEditEngine.cs:407
+#: ../Pinta.Tools/Editable/EditEngines/ArrowedEditEngine.cs:476
 msgid "Angle, in degrees, between the arrowhead's wings and the line."
 msgstr "Leņķis grādos starp bultas galviņas spārniem un līniju."
 
@@ -208,11 +208,11 @@ msgstr "Leņķis grādos starp bultas galviņas spārniem un līniju."
 msgid "Antialias"
 msgstr "Nogludināt"
 
-#: ../Pinta.Core/Classes/BaseTool.cs:455
+#: ../Pinta.Core/Classes/BaseTool.cs:456
 msgid "Antialiasing Off"
 msgstr "Malu pludināšana izslēgta"
 
-#: ../Pinta.Core/Classes/BaseTool.cs:454
+#: ../Pinta.Core/Classes/BaseTool.cs:455
 msgid "Antialiasing On"
 msgstr "Malu pludināšana Ieslēgta"
 
@@ -226,7 +226,7 @@ msgid ""
 "re-wrap the text."
 msgstr ""
 
-#: ../Pinta.Tools/Editable/EditEngines/ArrowedEditEngine.cs:348
+#: ../Pinta.Tools/Editable/EditEngines/ArrowedEditEngine.cs:417
 msgid "Arrow"
 msgstr "Bulta"
 
@@ -569,7 +569,7 @@ msgstr ""
 msgid "Change font size."
 msgstr ""
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:137
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:146
 msgid "Change outline width."
 msgstr ""
 
@@ -689,7 +689,7 @@ msgstr "Nospiediet lai izvēlētos sekundāro krāsu."
 msgid "Click to switch between primary and secondary color."
 msgstr "Nospiediet lai pārietu starp primāro un sekundāro krāsu."
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:496
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:506
 msgid ""
 "Clicking a segment while editing inserts a control point to smoothly curve "
 "it."
@@ -715,6 +715,10 @@ msgstr "Aizvērt"
 #: ../Pinta.Core/Actions/WindowActions.cs:52
 msgid "Close All"
 msgstr "Aizvērt visu"
+
+#: ../Pinta.Tools/Editable/EditEngines/LineCurveEditEngine.cs:128
+msgid "Close shape"
+msgstr ""
 
 #: ../Pinta.Tools/Editable/EditEngines/RectangleEditEngine.cs:37
 msgid "Closed Curve Shape"
@@ -750,7 +754,7 @@ msgstr ""
 msgid "Color Gradient"
 msgstr "Krāsu Gradients"
 
-#: ../Pinta.Tools/Tools/GradientTool.cs:347
+#: ../Pinta.Tools/Tools/GradientTool.cs:353
 msgid "Color Mode"
 msgstr "Krāsu Režīms"
 
@@ -801,9 +805,15 @@ msgstr "Krāsošana"
 msgid "Colors"
 msgstr ""
 
-#: ../Pinta.Tools/Tools/GradientTool.cs:317
+#: ../Pinta.Tools/Tools/GradientTool.cs:323
 msgid "Conical Gradient"
 msgstr "Koniskā krāsu pāreja"
+
+#: ../Pinta.Tools/Editable/EditEngines/LineCurveEditEngine.cs:129
+msgid ""
+"Connect the last point back to the first, closing the outline so fill modes "
+"show a closed shape."
+msgstr ""
 
 #: ../Pinta.Core/Actions/HelpActions.cs:45
 msgid "Contents"
@@ -884,8 +894,8 @@ msgstr "Apcirst līdz iezīmējumam"
 msgid "Current Palette"
 msgstr ""
 
-#: ../Pinta.Tools/Editable/EditEngines/ArrowedEditEngine.cs:301
-#: ../Pinta.Tools/Editable/EditEngines/ArrowedEditEngine.cs:337
+#: ../Pinta.Tools/Editable/EditEngines/ArrowedEditEngine.cs:370
+#: ../Pinta.Tools/Editable/EditEngines/ArrowedEditEngine.cs:406
 msgid "Curve"
 msgstr ""
 
@@ -893,11 +903,11 @@ msgstr ""
 msgid "Curved"
 msgstr "Ieliekts"
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:497
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:507
 msgid "Curved Segments Off"
 msgstr "Izliekti segmenti izslēgti"
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:496
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:506
 msgid "Curved Segments On"
 msgstr "Izliekti segmenti ieslēgti"
 
@@ -981,7 +991,7 @@ msgstr ""
 msgid "Delete selected control point"
 msgstr ""
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:1032
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:1043
 msgid "Deleted"
 msgstr "Izdzēsts"
 
@@ -1059,11 +1069,11 @@ msgstr ""
 msgid "Drag and drop to reorder"
 msgstr ""
 
-#: ../Pinta.Tools/Tools/TextTool.cs:2711
+#: ../Pinta.Tools/Tools/TextTool.cs:2739
 msgid "Drag corner to resize (changes font size)"
 msgstr ""
 
-#: ../Pinta.Tools/Tools/TextTool.cs:2710
+#: ../Pinta.Tools/Tools/TextTool.cs:2738
 msgid "Drag corner to resize the text box"
 msgstr ""
 
@@ -1071,7 +1081,7 @@ msgstr ""
 msgid "Draw only the outline of the text, using the secondary color."
 msgstr "Zīmēt tikai teksta kontūru, izmantojot otro krāsu."
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:532
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:542
 #: ../Pinta.Tools/Tools/FreeformShapeTool.cs:216
 msgid "Draw only the shape's outline, using the primary color."
 msgstr "Zīmēt tikai figūras kontūru, izmantojot pamatkrāsu."
@@ -1085,13 +1095,13 @@ msgstr "Dublēt slāni"
 msgid "Duplicated"
 msgstr ""
 
-#: ../Pinta.Tools/Editable/EditEngines/ArrowedEditEngine.cs:302
-#: ../Pinta.Tools/Editable/EditEngines/ArrowedEditEngine.cs:337
+#: ../Pinta.Tools/Editable/EditEngines/ArrowedEditEngine.cs:371
+#: ../Pinta.Tools/Editable/EditEngines/ArrowedEditEngine.cs:406
 msgid "Each added point curves smoothly through its neighbors."
 msgstr ""
 
-#: ../Pinta.Tools/Editable/EditEngines/ArrowedEditEngine.cs:304
-#: ../Pinta.Tools/Editable/EditEngines/ArrowedEditEngine.cs:338
+#: ../Pinta.Tools/Editable/EditEngines/ArrowedEditEngine.cs:373
+#: ../Pinta.Tools/Editable/EditEngines/ArrowedEditEngine.cs:407
 msgid "Each added point joins its neighbors with a straight segment."
 msgstr ""
 
@@ -1279,17 +1289,17 @@ msgstr "Aizpildīt Objekta Fonu"
 msgid "Fill Selection"
 msgstr "Aizpildīt iezīmējumu"
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:533
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:543
 #: ../Pinta.Tools/Tools/FreeformShapeTool.cs:217
 msgid "Fill Shape"
 msgstr "Tikai pildīt"
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:523
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:533
 #: ../Pinta.Tools/Tools/FreeformShapeTool.cs:210
 msgid "Fill Style"
 msgstr "Iekrāsošanas veids"
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:534
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:544
 #: ../Pinta.Tools/Tools/FreeformShapeTool.cs:218
 msgid "Fill and Outline Shape"
 msgstr "Pildīt un ārlīnija"
@@ -1305,14 +1315,14 @@ msgid ""
 "Fill only the connected region of similar color touching the click point."
 msgstr ""
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:534
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:544
 #: ../Pinta.Tools/Tools/FreeformShapeTool.cs:218
 msgid ""
 "Fill the interior with the secondary color and outline it with the primary "
 "color."
 msgstr ""
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:533
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:543
 #: ../Pinta.Tools/Tools/FreeformShapeTool.cs:217
 msgid "Fill the shape's interior with the secondary color, no outline."
 msgstr "Aizpildīt figūras iekšpusi ar otro krāsu, bez kontūras."
@@ -1338,8 +1348,8 @@ msgstr ""
 msgid "Finalize shape"
 msgstr ""
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:1780
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:2364
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:1821
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:2415
 #: ../Pinta.Tools/Tools/GradientTool.cs:195
 msgid "Finalized"
 msgstr "Pabeigtā versija"
@@ -1488,7 +1498,7 @@ msgid "Glow"
 msgstr "Kvēlošana"
 
 #: ../Pinta.Tools/Tools/GradientTool.cs:63
-#: ../Pinta.Tools/Tools/GradientTool.cs:307
+#: ../Pinta.Tools/Tools/GradientTool.cs:313
 msgid "Gradient"
 msgstr "Krāsu pāreja"
 
@@ -2118,15 +2128,15 @@ msgstr ""
 "Noklikšķiniet ar kreiso taustiņu , lai attālinātu skatu.\n"
 "Noklikšķiniet ar kreiso taustiņu un velciet lai pietuvinātu atlasi."
 
-#: ../Pinta.Tools/Editable/EditEngines/ArrowedEditEngine.cs:421
+#: ../Pinta.Tools/Editable/EditEngines/ArrowedEditEngine.cs:490
 msgid "Length"
 msgstr "Garums"
 
-#: ../Pinta.Tools/Editable/EditEngines/ArrowedEditEngine.cs:429
+#: ../Pinta.Tools/Editable/EditEngines/ArrowedEditEngine.cs:498
 msgid "Length of the arrowhead's wings; does not change the line's length."
 msgstr "Bultas galviņas spārnu garums; nemaina līnijas garumu."
 
-#: ../Pinta.Tools/Editable/EditEngines/ArrowedEditEngine.cs:385
+#: ../Pinta.Tools/Editable/EditEngines/ArrowedEditEngine.cs:454
 msgid "Length of the arrowhead, in pixels."
 msgstr "Bultas galviņas garums pikseļos."
 
@@ -2173,8 +2183,8 @@ msgstr ""
 msgid "Lime Lemon"
 msgstr "Citrons un Laims"
 
-#: ../Pinta.Tools/Editable/EditEngines/ArrowedEditEngine.cs:303
-#: ../Pinta.Tools/Editable/EditEngines/ArrowedEditEngine.cs:338
+#: ../Pinta.Tools/Editable/EditEngines/ArrowedEditEngine.cs:372
+#: ../Pinta.Tools/Editable/EditEngines/ArrowedEditEngine.cs:407
 msgid "Line"
 msgstr ""
 
@@ -2184,15 +2194,15 @@ msgstr ""
 msgid "Line/Curve"
 msgstr "Līnija/Izliekums"
 
-#: ../Pinta.Tools/Tools/GradientTool.cs:315
+#: ../Pinta.Tools/Tools/GradientTool.cs:321
 msgid "Linear Diamond Gradient"
 msgstr "Dimantveida krāsu pāreja"
 
-#: ../Pinta.Tools/Tools/GradientTool.cs:313
+#: ../Pinta.Tools/Tools/GradientTool.cs:319
 msgid "Linear Gradient"
 msgstr "Lineāra krāsu pāreja"
 
-#: ../Pinta.Tools/Tools/GradientTool.cs:314
+#: ../Pinta.Tools/Tools/GradientTool.cs:320
 msgid "Linear Reflected Gradient"
 msgstr "Lineāra, atstarota krāsu pāreja"
 
@@ -2277,7 +2287,7 @@ msgstr ""
 msgid "Minimum Size"
 msgstr ""
 
-#: ../Pinta.Tools/Tools/GradientTool.cs:314
+#: ../Pinta.Tools/Tools/GradientTool.cs:320
 msgid "Mirrors the linear transition on both sides of the start point."
 msgstr "Spoguļo lineāro pāreju abās sākumpunkta pusēs."
 
@@ -2291,16 +2301,16 @@ msgid ""
 "Mixes small capital letters for upper case with normal lower case letters."
 msgstr ""
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:442
-#: ../Pinta.Tools/Tools/GradientTool.cs:341
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:452
+#: ../Pinta.Tools/Tools/GradientTool.cs:347
 #: ../Pinta.Tools/Tools/TextTool.cs:298
 msgid "Mode"
 msgstr "Režīms"
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:876
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:878
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:1500
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:1525
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:887
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:889
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:1541
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:1566
 msgid "Modified"
 msgstr "Izmainīts"
 
@@ -2439,7 +2449,7 @@ msgstr "Neviens"
 msgid "Normal"
 msgstr "Normāls"
 
-#: ../Pinta.Core/Classes/BaseTool.cs:437
+#: ../Pinta.Core/Classes/BaseTool.cs:438
 msgid "Normal Blending"
 msgstr "Parastā Jaukšana"
 
@@ -2574,7 +2584,7 @@ msgstr ""
 msgid "Object Opacity"
 msgstr ""
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:453
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:463
 #: ../Pinta.Tools/Tools/TextTool.cs:307
 msgid "Object — editable later"
 msgstr ""
@@ -2665,12 +2675,12 @@ msgstr "Ārmalas Stūris"
 msgid "Outline Object"
 msgstr "Ārmalas Objekts"
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:532
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:542
 #: ../Pinta.Tools/Tools/FreeformShapeTool.cs:216
 msgid "Outline Shape"
 msgstr "Tikai ārlīnija"
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:549
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:559
 #: ../Pinta.Tools/Tools/TextTool.cs:618
 msgid "Outline width"
 msgstr "Ārlīnijas Platums"
@@ -2687,7 +2697,7 @@ msgstr "Izvadīt Histogrammu"
 msgid "Overlay"
 msgstr "Pārvalks"
 
-#: ../Pinta.Core/Classes/BaseTool.cs:438
+#: ../Pinta.Core/Classes/BaseTool.cs:439
 msgid "Overwrite"
 msgstr "Pārrakstīt"
 
@@ -2728,7 +2738,7 @@ msgid ""
 "like any artwork, but not editable later."
 msgstr ""
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:452
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:462
 msgid ""
 "Painted into the layer's pixels on commit. Immediately cut/move/erase like "
 "any artwork, but not editable later."
@@ -2896,8 +2906,8 @@ msgstr ""
 msgid "Point"
 msgstr ""
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:970
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:1330
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:981
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:1343
 msgid "Point Added"
 msgstr "Punkts Pievienots"
 
@@ -2911,7 +2921,7 @@ msgstr ""
 msgid "Point Color"
 msgstr ""
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:1015
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:1026
 msgid "Point Deleted"
 msgstr "Punkts Izdzēsts"
 
@@ -2990,7 +3000,7 @@ msgstr ""
 msgid "Press {0} to decrease font size"
 msgstr ""
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:139
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:148
 #, csharp-format
 msgid "Press {0} to decrease outline width"
 msgstr ""
@@ -3005,7 +3015,7 @@ msgstr ""
 msgid "Press {0} to increase font size"
 msgstr ""
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:140
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:149
 #, csharp-format
 msgid "Press {0} to increase outline width"
 msgstr ""
@@ -3079,7 +3089,7 @@ msgstr "RGB"
 msgid "Radial Blur"
 msgstr "Radiāla pludināšana"
 
-#: ../Pinta.Tools/Tools/GradientTool.cs:316
+#: ../Pinta.Tools/Tools/GradientTool.cs:322
 msgid "Radial Gradient"
 msgstr "Radiāla krāsu pāreja"
 
@@ -3130,7 +3140,7 @@ msgstr ""
 msgid "Random Point Locations"
 msgstr "Jauktas Punktu Pozīcijas"
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:451
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:461
 #: ../Pinta.Tools/Tools/TextTool.cs:305
 msgid "Raster — fuses to layer"
 msgstr ""
@@ -3403,11 +3413,11 @@ msgstr "Līdzināt pa labi"
 msgid "Right Triangle"
 msgstr ""
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:2047
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:2097
 msgid "Right click + drag: move the whole shape."
 msgstr ""
 
-#: ../Pinta.Tools/Tools/TextTool.cs:2704
+#: ../Pinta.Tools/Tools/TextTool.cs:2732
 msgid "Right click to move"
 msgstr ""
 
@@ -3453,7 +3463,7 @@ msgstr ""
 msgid "Rotate text"
 msgstr ""
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:1473
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:1514
 msgid "Rotated"
 msgstr ""
 
@@ -3580,7 +3590,7 @@ msgstr ""
 msgid "Secondary"
 msgstr "Sekundārais"
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:497
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:507
 msgid ""
 "Segments stay straight; clicking a segment does not insert curve control "
 "points."
@@ -3723,7 +3733,7 @@ msgid "Shear Vertically"
 msgstr ""
 
 #: ../Pinta.Core/Extensions/Gtk/GtkExtensions.Interaction.cs:112
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:2046
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:2096
 #: ../Pinta.Tools/Tools/BaseTransformTool.cs:729
 msgid "Shift"
 msgstr ""
@@ -3740,7 +3750,7 @@ msgstr "Taustiņš"
 msgid "Shortcut keys"
 msgstr "Saīsnes taustiņš"
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:138
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:147
 #: ../Pinta.Tools/Tools/BaseBrushTool.cs:155
 #: ../Pinta.Tools/Tools/TextTool.cs:744
 msgid "Shortcut keys:"
@@ -3782,11 +3792,11 @@ msgstr ""
 msgid "Show a third row of darker colors in the palette"
 msgstr ""
 
-#: ../Pinta.Tools/Editable/EditEngines/ArrowedEditEngine.cs:369
+#: ../Pinta.Tools/Editable/EditEngines/ArrowedEditEngine.cs:438
 msgid "Show an arrowhead at the end point."
 msgstr "Rādīt bultas galviņu līnijas vai līknes beigu punktā."
 
-#: ../Pinta.Tools/Editable/EditEngines/ArrowedEditEngine.cs:356
+#: ../Pinta.Tools/Editable/EditEngines/ArrowedEditEngine.cs:425
 msgid "Show an arrowhead at the start point."
 msgstr "Rādīt bultas galviņu līnijas vai līknes sākumpunktā."
 
@@ -3834,7 +3844,7 @@ msgid "Single Pixel"
 msgstr "Viens Pikselis"
 
 #: ../Pinta.Tools/Editable/EditEngines/ArrowedEditEngine.cs:110
-#: ../Pinta.Tools/Editable/EditEngines/ArrowedEditEngine.cs:377
+#: ../Pinta.Tools/Editable/EditEngines/ArrowedEditEngine.cs:446
 msgid "Size"
 msgstr "Izmērs"
 
@@ -3914,7 +3924,7 @@ msgstr "Kvadrāti"
 msgid "Status Bar"
 msgstr "Statusa Josla"
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:454
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:464
 msgid ""
 "Stays a live, re-editable shape. Cutting, erasing, or filtering across it "
 "will rasterize it first."
@@ -4339,27 +4349,27 @@ msgstr ""
 msgid "Transform Tools"
 msgstr ""
 
-#: ../Pinta.Tools/Tools/GradientTool.cs:347
+#: ../Pinta.Tools/Tools/GradientTool.cs:353
 msgid "Transition between the primary and secondary colors."
 msgstr "Pāreja starp pamatkrāsu un otro krāsu."
 
-#: ../Pinta.Tools/Tools/GradientTool.cs:348
+#: ../Pinta.Tools/Tools/GradientTool.cs:354
 msgid "Transition the primary color from opaque to transparent."
 msgstr "Pamatkrāsas pāreja no necaurspīdīgas uz caurspīdīgu."
 
-#: ../Pinta.Tools/Tools/GradientTool.cs:313
+#: ../Pinta.Tools/Tools/GradientTool.cs:319
 msgid "Transitions colors in a straight line between the two endpoints."
 msgstr "Krāsas pāriet taisnā līnijā starp diviem galapunktiem."
 
-#: ../Pinta.Tools/Tools/GradientTool.cs:317
+#: ../Pinta.Tools/Tools/GradientTool.cs:323
 msgid "Transitions colors in a sweep around the start point."
 msgstr "Krāsas pāriet riņķveida kustībā ap sākumpunktu."
 
-#: ../Pinta.Tools/Tools/GradientTool.cs:316
+#: ../Pinta.Tools/Tools/GradientTool.cs:322
 msgid "Transitions colors outward from the start point in a circle."
 msgstr "Krāsas pāriet uz āru no sākumpunkta apļa formā."
 
-#: ../Pinta.Tools/Tools/GradientTool.cs:315
+#: ../Pinta.Tools/Tools/GradientTool.cs:321
 msgid "Transitions colors outward from the start point in a diamond shape."
 msgstr "Krāsas pāriet uz āru no sākumpunkta rombveida formā."
 
@@ -4371,7 +4381,7 @@ msgstr ""
 msgid "Translate Vertically"
 msgstr ""
 
-#: ../Pinta.Tools/Tools/GradientTool.cs:348
+#: ../Pinta.Tools/Tools/GradientTool.cs:354
 msgid "Transparency Mode"
 msgstr "Caurspīdīguma Režīms"
 
@@ -4407,7 +4417,7 @@ msgstr "Savīt"
 msgid "Two-Row Sierra"
 msgstr "Divu Rindu Sierra Matrica"
 
-#: ../Pinta.Tools/Editable/EditEngines/ArrowedEditEngine.cs:292
+#: ../Pinta.Tools/Editable/EditEngines/ArrowedEditEngine.cs:361
 #: ../Pinta.Tools/Editable/EditEngines/TriangleEditEngine.cs:121
 #: ../Pinta.Tools/Tools/EraserTool.cs:337
 #: ../Pinta.Tools/Tools/PaintBrushTool.cs:234
@@ -4782,7 +4792,7 @@ msgstr ""
 msgid "{0} (Alternate)"
 msgstr ""
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:2051
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:2101
 #, csharp-format
 msgid "{0} + click: start a new shape here."
 msgstr ""
@@ -4795,12 +4805,12 @@ msgstr ""
 "{0} + kreisais taustiņš lai ieliktu sākumpunktu, kreisais taustiņš lai "
 "zīmētu."
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:2048
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:2098
 #, csharp-format
 msgid "{0} + right drag: change tension."
 msgstr ""
 
-#: ../Pinta.Tools/Editable/EditEngines/ArrowedEditEngine.cs:340
+#: ../Pinta.Tools/Editable/EditEngines/ArrowedEditEngine.cs:409
 #, csharp-format
 msgid "{0} + right-drag a point: change its tension."
 msgstr ""
@@ -4815,7 +4825,7 @@ msgstr ""
 msgid "{0} - never saved to a file"
 msgstr ""
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:2050
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:2100
 #, csharp-format
 msgid "{0} and drag: rotate the whole shape."
 msgstr ""
@@ -4846,12 +4856,12 @@ msgstr "{0} attēls ({1})"
 msgid "{0} palette ({1})"
 msgstr "{0} palete ({1})"
 
-#: ../Pinta.Tools/Tools/TextTool.cs:2702
+#: ../Pinta.Tools/Tools/TextTool.cs:2730
 #, csharp-format
 msgid "{0} to edit"
 msgstr ""
 
-#: ../Pinta.Tools/Tools/TextTool.cs:2703
+#: ../Pinta.Tools/Tools/TextTool.cs:2731
 #, csharp-format
 msgid "{0} to open text properties"
 msgstr ""
@@ -4861,7 +4871,7 @@ msgstr ""
 msgid "{0} to re-edit an existing text object."
 msgstr ""
 
-#: ../Pinta.Tools/Tools/TextTool.cs:2712
+#: ../Pinta.Tools/Tools/TextTool.cs:2740
 #, csharp-format
 msgid "{0} to rotate"
 msgstr ""
@@ -4885,13 +4895,13 @@ msgstr ""
 msgid "{0}%"
 msgstr "{0}%"
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:2046
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:2096
 #, csharp-format
 msgid "{0}-drag: snap the adjacent segment to a 15° angle."
 msgstr ""
 
-#: ../Pinta.Tools/Editable/EditEngines/ArrowedEditEngine.cs:341
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:2049
+#: ../Pinta.Tools/Editable/EditEngines/ArrowedEditEngine.cs:410
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:2099
 #, csharp-format
 msgid "{0}: curve the line around the selected point; {1}: straighten it."
 msgstr ""

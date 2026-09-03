@@ -19,7 +19,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-02 14:13-0500\n"
+"POT-Creation-Date: 2026-09-02 20:24-0500\n"
 "PO-Revision-Date: 2026-05-26 05:11+0000\n"
 "Last-Translator: Сергей <asvmail.as@gmail.com>\n"
 "Language-Team: Russian\n"
@@ -92,7 +92,7 @@ msgstr "Добавить слой"
 msgid "Add Noise"
 msgstr "Добавить шум"
 
-#: ../Pinta.Tools/Editable/EditEngines/ArrowedEditEngine.cs:339
+#: ../Pinta.Tools/Editable/EditEngines/ArrowedEditEngine.cs:408
 #, csharp-format
 msgid ""
 "Add a point: {0}, or right-click the line and choose to add one there; {1} "
@@ -120,7 +120,7 @@ msgstr "Менеджер дополнений..."
 msgid "Add-ins"
 msgstr ""
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:1269
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:1281
 msgid "Added"
 msgstr "Добавлено"
 
@@ -197,11 +197,11 @@ msgstr "Якорь:"
 #: ../Pinta.Effects/Effects/RadialBlurEffect.cs:136
 #: ../Pinta.Effects/Effects/ReliefEffect.cs:77
 #: ../Pinta.Tools/Brushes/SlashBrush.cs:53
-#: ../Pinta.Tools/Editable/EditEngines/ArrowedEditEngine.cs:399
+#: ../Pinta.Tools/Editable/EditEngines/ArrowedEditEngine.cs:468
 msgid "Angle"
 msgstr "Угол"
 
-#: ../Pinta.Tools/Editable/EditEngines/ArrowedEditEngine.cs:407
+#: ../Pinta.Tools/Editable/EditEngines/ArrowedEditEngine.cs:476
 msgid "Angle, in degrees, between the arrowhead's wings and the line."
 msgstr "Угол в градусах между крыльями наконечника стрелки и линией."
 
@@ -209,11 +209,11 @@ msgstr "Угол в градусах между крыльями наконеч�
 msgid "Antialias"
 msgstr "Сглаживание"
 
-#: ../Pinta.Core/Classes/BaseTool.cs:455
+#: ../Pinta.Core/Classes/BaseTool.cs:456
 msgid "Antialiasing Off"
 msgstr "Выключить сглаживание"
 
-#: ../Pinta.Core/Classes/BaseTool.cs:454
+#: ../Pinta.Core/Classes/BaseTool.cs:455
 msgid "Antialiasing On"
 msgstr "Включить сглаживание"
 
@@ -227,7 +227,7 @@ msgid ""
 "re-wrap the text."
 msgstr ""
 
-#: ../Pinta.Tools/Editable/EditEngines/ArrowedEditEngine.cs:348
+#: ../Pinta.Tools/Editable/EditEngines/ArrowedEditEngine.cs:417
 msgid "Arrow"
 msgstr "Стрелка"
 
@@ -570,7 +570,7 @@ msgstr ""
 msgid "Change font size."
 msgstr "Изменить размер шрифта."
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:137
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:146
 msgid "Change outline width."
 msgstr "Изменить ширину контура."
 
@@ -698,7 +698,7 @@ msgstr "Щёлкните, чтобы выбрать дополнительный
 msgid "Click to switch between primary and secondary color."
 msgstr "Щёлкните, чтобы переключиться между основным и дополнительным цветом."
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:496
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:506
 msgid ""
 "Clicking a segment while editing inserts a control point to smoothly curve "
 "it."
@@ -724,6 +724,10 @@ msgstr "Закрыть"
 #: ../Pinta.Core/Actions/WindowActions.cs:52
 msgid "Close All"
 msgstr "Закрыть все"
+
+#: ../Pinta.Tools/Editable/EditEngines/LineCurveEditEngine.cs:128
+msgid "Close shape"
+msgstr ""
 
 #: ../Pinta.Tools/Editable/EditEngines/RectangleEditEngine.cs:37
 msgid "Closed Curve Shape"
@@ -759,7 +763,7 @@ msgstr "Осветление основы"
 msgid "Color Gradient"
 msgstr "Цветовой градиент"
 
-#: ../Pinta.Tools/Tools/GradientTool.cs:347
+#: ../Pinta.Tools/Tools/GradientTool.cs:353
 msgid "Color Mode"
 msgstr "Цветовой режим"
 
@@ -810,9 +814,15 @@ msgstr "Окрашивание"
 msgid "Colors"
 msgstr ""
 
-#: ../Pinta.Tools/Tools/GradientTool.cs:317
+#: ../Pinta.Tools/Tools/GradientTool.cs:323
 msgid "Conical Gradient"
 msgstr "Конический градиент"
+
+#: ../Pinta.Tools/Editable/EditEngines/LineCurveEditEngine.cs:129
+msgid ""
+"Connect the last point back to the first, closing the outline so fill modes "
+"show a closed shape."
+msgstr ""
 
 #: ../Pinta.Core/Actions/HelpActions.cs:45
 msgid "Contents"
@@ -892,8 +902,8 @@ msgstr "Кадрировать по выделенному"
 msgid "Current Palette"
 msgstr "Текущая палитра"
 
-#: ../Pinta.Tools/Editable/EditEngines/ArrowedEditEngine.cs:301
-#: ../Pinta.Tools/Editable/EditEngines/ArrowedEditEngine.cs:337
+#: ../Pinta.Tools/Editable/EditEngines/ArrowedEditEngine.cs:370
+#: ../Pinta.Tools/Editable/EditEngines/ArrowedEditEngine.cs:406
 msgid "Curve"
 msgstr ""
 
@@ -901,11 +911,11 @@ msgstr ""
 msgid "Curved"
 msgstr "Искривление"
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:497
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:507
 msgid "Curved Segments Off"
 msgstr "Скругление сегментов выключено"
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:496
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:506
 msgid "Curved Segments On"
 msgstr "Скругление сегментов включено"
 
@@ -989,7 +999,7 @@ msgstr ""
 msgid "Delete selected control point"
 msgstr ""
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:1032
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:1043
 msgid "Deleted"
 msgstr "Удалено"
 
@@ -1067,11 +1077,11 @@ msgstr ""
 msgid "Drag and drop to reorder"
 msgstr ""
 
-#: ../Pinta.Tools/Tools/TextTool.cs:2711
+#: ../Pinta.Tools/Tools/TextTool.cs:2739
 msgid "Drag corner to resize (changes font size)"
 msgstr ""
 
-#: ../Pinta.Tools/Tools/TextTool.cs:2710
+#: ../Pinta.Tools/Tools/TextTool.cs:2738
 msgid "Drag corner to resize the text box"
 msgstr ""
 
@@ -1079,7 +1089,7 @@ msgstr ""
 msgid "Draw only the outline of the text, using the secondary color."
 msgstr "Рисовать только контур текста вторичным цветом."
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:532
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:542
 #: ../Pinta.Tools/Tools/FreeformShapeTool.cs:216
 msgid "Draw only the shape's outline, using the primary color."
 msgstr "Рисовать только контур фигуры основным цветом."
@@ -1093,13 +1103,13 @@ msgstr "Дублировать слой"
 msgid "Duplicated"
 msgstr ""
 
-#: ../Pinta.Tools/Editable/EditEngines/ArrowedEditEngine.cs:302
-#: ../Pinta.Tools/Editable/EditEngines/ArrowedEditEngine.cs:337
+#: ../Pinta.Tools/Editable/EditEngines/ArrowedEditEngine.cs:371
+#: ../Pinta.Tools/Editable/EditEngines/ArrowedEditEngine.cs:406
 msgid "Each added point curves smoothly through its neighbors."
 msgstr ""
 
-#: ../Pinta.Tools/Editable/EditEngines/ArrowedEditEngine.cs:304
-#: ../Pinta.Tools/Editable/EditEngines/ArrowedEditEngine.cs:338
+#: ../Pinta.Tools/Editable/EditEngines/ArrowedEditEngine.cs:373
+#: ../Pinta.Tools/Editable/EditEngines/ArrowedEditEngine.cs:407
 msgid "Each added point joins its neighbors with a straight segment."
 msgstr ""
 
@@ -1289,17 +1299,17 @@ msgstr "Заливка фона объекта"
 msgid "Fill Selection"
 msgstr "Заполнить выделение"
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:533
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:543
 #: ../Pinta.Tools/Tools/FreeformShapeTool.cs:217
 msgid "Fill Shape"
 msgstr "Залить фигуру"
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:523
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:533
 #: ../Pinta.Tools/Tools/FreeformShapeTool.cs:210
 msgid "Fill Style"
 msgstr "Стиль заполнения"
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:534
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:544
 #: ../Pinta.Tools/Tools/FreeformShapeTool.cs:218
 msgid "Fill and Outline Shape"
 msgstr "Залить и обвести фигуру"
@@ -1315,14 +1325,14 @@ msgid ""
 "Fill only the connected region of similar color touching the click point."
 msgstr ""
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:534
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:544
 #: ../Pinta.Tools/Tools/FreeformShapeTool.cs:218
 msgid ""
 "Fill the interior with the secondary color and outline it with the primary "
 "color."
 msgstr ""
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:533
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:543
 #: ../Pinta.Tools/Tools/FreeformShapeTool.cs:217
 msgid "Fill the shape's interior with the secondary color, no outline."
 msgstr "Заливать внутреннюю часть фигуры вторичным цветом без контура."
@@ -1349,8 +1359,8 @@ msgstr ""
 msgid "Finalize shape"
 msgstr ""
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:1780
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:2364
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:1821
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:2415
 #: ../Pinta.Tools/Tools/GradientTool.cs:195
 msgid "Finalized"
 msgstr "Закончен"
@@ -1499,7 +1509,7 @@ msgid "Glow"
 msgstr "Свечение"
 
 #: ../Pinta.Tools/Tools/GradientTool.cs:63
-#: ../Pinta.Tools/Tools/GradientTool.cs:307
+#: ../Pinta.Tools/Tools/GradientTool.cs:313
 msgid "Gradient"
 msgstr "Градиент"
 
@@ -2173,15 +2183,15 @@ msgstr ""
 "Щёлкните правой кнопкой мыши для уменьшения.\n"
 "Нажмите и перетащите, чтобы увеличить по выделению."
 
-#: ../Pinta.Tools/Editable/EditEngines/ArrowedEditEngine.cs:421
+#: ../Pinta.Tools/Editable/EditEngines/ArrowedEditEngine.cs:490
 msgid "Length"
 msgstr "Длина"
 
-#: ../Pinta.Tools/Editable/EditEngines/ArrowedEditEngine.cs:429
+#: ../Pinta.Tools/Editable/EditEngines/ArrowedEditEngine.cs:498
 msgid "Length of the arrowhead's wings; does not change the line's length."
 msgstr "Длина крыльев наконечника стрелки; не изменяет длину линии."
 
-#: ../Pinta.Tools/Editable/EditEngines/ArrowedEditEngine.cs:385
+#: ../Pinta.Tools/Editable/EditEngines/ArrowedEditEngine.cs:454
 msgid "Length of the arrowhead, in pixels."
 msgstr "Длина наконечника стрелки в пикселях."
 
@@ -2226,8 +2236,8 @@ msgstr "Как «Малые прописные», но заменяющие пр
 msgid "Lime Lemon"
 msgstr "Лайм-лимон"
 
-#: ../Pinta.Tools/Editable/EditEngines/ArrowedEditEngine.cs:303
-#: ../Pinta.Tools/Editable/EditEngines/ArrowedEditEngine.cs:338
+#: ../Pinta.Tools/Editable/EditEngines/ArrowedEditEngine.cs:372
+#: ../Pinta.Tools/Editable/EditEngines/ArrowedEditEngine.cs:407
 msgid "Line"
 msgstr ""
 
@@ -2237,15 +2247,15 @@ msgstr ""
 msgid "Line/Curve"
 msgstr "Линии/кривые"
 
-#: ../Pinta.Tools/Tools/GradientTool.cs:315
+#: ../Pinta.Tools/Tools/GradientTool.cs:321
 msgid "Linear Diamond Gradient"
 msgstr "Линейный ромбовидный градиент"
 
-#: ../Pinta.Tools/Tools/GradientTool.cs:313
+#: ../Pinta.Tools/Tools/GradientTool.cs:319
 msgid "Linear Gradient"
 msgstr "Линейный градиент"
 
-#: ../Pinta.Tools/Tools/GradientTool.cs:314
+#: ../Pinta.Tools/Tools/GradientTool.cs:320
 msgid "Linear Reflected Gradient"
 msgstr "Линейный отражённый градиент"
 
@@ -2330,7 +2340,7 @@ msgstr ""
 msgid "Minimum Size"
 msgstr "Минимальный размер"
 
-#: ../Pinta.Tools/Tools/GradientTool.cs:314
+#: ../Pinta.Tools/Tools/GradientTool.cs:320
 msgid "Mirrors the linear transition on both sides of the start point."
 msgstr "Отражает линейный переход по обе стороны от начальной точки."
 
@@ -2344,16 +2354,16 @@ msgid ""
 "Mixes small capital letters for upper case with normal lower case letters."
 msgstr ""
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:442
-#: ../Pinta.Tools/Tools/GradientTool.cs:341
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:452
+#: ../Pinta.Tools/Tools/GradientTool.cs:347
 #: ../Pinta.Tools/Tools/TextTool.cs:298
 msgid "Mode"
 msgstr "Режим"
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:876
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:878
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:1500
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:1525
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:887
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:889
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:1541
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:1566
 msgid "Modified"
 msgstr "Изменён"
 
@@ -2492,7 +2502,7 @@ msgstr "Нет"
 msgid "Normal"
 msgstr "Обычный"
 
-#: ../Pinta.Core/Classes/BaseTool.cs:437
+#: ../Pinta.Core/Classes/BaseTool.cs:438
 msgid "Normal Blending"
 msgstr "Нормальное наложение"
 
@@ -2627,7 +2637,7 @@ msgstr ""
 msgid "Object Opacity"
 msgstr ""
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:453
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:463
 #: ../Pinta.Tools/Tools/TextTool.cs:307
 msgid "Object — editable later"
 msgstr ""
@@ -2718,12 +2728,12 @@ msgstr "Контур по краю"
 msgid "Outline Object"
 msgstr "Контур объекта"
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:532
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:542
 #: ../Pinta.Tools/Tools/FreeformShapeTool.cs:216
 msgid "Outline Shape"
 msgstr "Контур фигуры"
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:549
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:559
 #: ../Pinta.Tools/Tools/TextTool.cs:618
 msgid "Outline width"
 msgstr "Ширина контура"
@@ -2740,7 +2750,7 @@ msgstr "Гистограмма выхода"
 msgid "Overlay"
 msgstr "Перекрытие"
 
-#: ../Pinta.Core/Classes/BaseTool.cs:438
+#: ../Pinta.Core/Classes/BaseTool.cs:439
 msgid "Overwrite"
 msgstr "Перезаписать"
 
@@ -2781,7 +2791,7 @@ msgid ""
 "like any artwork, but not editable later."
 msgstr ""
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:452
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:462
 msgid ""
 "Painted into the layer's pixels on commit. Immediately cut/move/erase like "
 "any artwork, but not editable later."
@@ -2950,8 +2960,8 @@ msgstr ""
 msgid "Point"
 msgstr ""
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:970
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:1330
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:981
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:1343
 msgid "Point Added"
 msgstr "Точка добавлена"
 
@@ -2965,7 +2975,7 @@ msgstr "Расположение точек"
 msgid "Point Color"
 msgstr "Цвет точек"
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:1015
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:1026
 msgid "Point Deleted"
 msgstr "Точка удалена"
 
@@ -3044,7 +3054,7 @@ msgstr "Нажмите {0}, чтобы уменьшить ширину кист�
 msgid "Press {0} to decrease font size"
 msgstr "Нажмите {0}, чтобы уменьшить размер шрифта"
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:139
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:148
 #, csharp-format
 msgid "Press {0} to decrease outline width"
 msgstr "Нажмите {0}, чтобы уменьшить ширину контура"
@@ -3059,7 +3069,7 @@ msgstr "Нажмите {0}, чтобы увеличить ширину кист�
 msgid "Press {0} to increase font size"
 msgstr "Нажмите {0}, чтобы увеличить размер шрифта"
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:140
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:149
 #, csharp-format
 msgid "Press {0} to increase outline width"
 msgstr "Нажмите {0}, чтобы увеличить ширину контура"
@@ -3133,7 +3143,7 @@ msgstr "RGB"
 msgid "Radial Blur"
 msgstr "Радиальное размытие"
 
-#: ../Pinta.Tools/Tools/GradientTool.cs:316
+#: ../Pinta.Tools/Tools/GradientTool.cs:322
 msgid "Radial Gradient"
 msgstr "Радиальный градиент"
 
@@ -3184,7 +3194,7 @@ msgstr "Начальный уровень случайного шума"
 msgid "Random Point Locations"
 msgstr "Случайные местоположения точек"
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:451
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:461
 #: ../Pinta.Tools/Tools/TextTool.cs:305
 msgid "Raster — fuses to layer"
 msgstr ""
@@ -3456,11 +3466,11 @@ msgstr "По правому краю"
 msgid "Right Triangle"
 msgstr ""
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:2047
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:2097
 msgid "Right click + drag: move the whole shape."
 msgstr ""
 
-#: ../Pinta.Tools/Tools/TextTool.cs:2704
+#: ../Pinta.Tools/Tools/TextTool.cs:2732
 msgid "Right click to move"
 msgstr ""
 
@@ -3506,7 +3516,7 @@ msgstr ""
 msgid "Rotate text"
 msgstr ""
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:1473
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:1514
 msgid "Rotated"
 msgstr ""
 
@@ -3633,7 +3643,7 @@ msgstr ""
 msgid "Secondary"
 msgstr "Дополнительный"
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:497
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:507
 msgid ""
 "Segments stay straight; clicking a segment does not insert curve control "
 "points."
@@ -3776,7 +3786,7 @@ msgid "Shear Vertically"
 msgstr ""
 
 #: ../Pinta.Core/Extensions/Gtk/GtkExtensions.Interaction.cs:112
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:2046
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:2096
 #: ../Pinta.Tools/Tools/BaseTransformTool.cs:729
 msgid "Shift"
 msgstr ""
@@ -3793,7 +3803,7 @@ msgstr "Горячая клавиша"
 msgid "Shortcut keys"
 msgstr "Горячие клавиши"
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:138
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:147
 #: ../Pinta.Tools/Tools/BaseBrushTool.cs:155
 #: ../Pinta.Tools/Tools/TextTool.cs:744
 msgid "Shortcut keys:"
@@ -3835,11 +3845,11 @@ msgstr "Показывать точки"
 msgid "Show a third row of darker colors in the palette"
 msgstr ""
 
-#: ../Pinta.Tools/Editable/EditEngines/ArrowedEditEngine.cs:369
+#: ../Pinta.Tools/Editable/EditEngines/ArrowedEditEngine.cs:438
 msgid "Show an arrowhead at the end point."
 msgstr "Показывать наконечник стрелки в конечной точке."
 
-#: ../Pinta.Tools/Editable/EditEngines/ArrowedEditEngine.cs:356
+#: ../Pinta.Tools/Editable/EditEngines/ArrowedEditEngine.cs:425
 msgid "Show an arrowhead at the start point."
 msgstr "Показывать наконечник стрелки в начальной точке."
 
@@ -3887,7 +3897,7 @@ msgid "Single Pixel"
 msgstr "Один пиксель"
 
 #: ../Pinta.Tools/Editable/EditEngines/ArrowedEditEngine.cs:110
-#: ../Pinta.Tools/Editable/EditEngines/ArrowedEditEngine.cs:377
+#: ../Pinta.Tools/Editable/EditEngines/ArrowedEditEngine.cs:446
 msgid "Size"
 msgstr "Размер"
 
@@ -3967,7 +3977,7 @@ msgstr "Квадраты"
 msgid "Status Bar"
 msgstr "Строка состояния"
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:454
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:464
 msgid ""
 "Stays a live, re-editable shape. Cutting, erasing, or filtering across it "
 "will rasterize it first."
@@ -4393,27 +4403,27 @@ msgstr ""
 msgid "Transform Tools"
 msgstr ""
 
-#: ../Pinta.Tools/Tools/GradientTool.cs:347
+#: ../Pinta.Tools/Tools/GradientTool.cs:353
 msgid "Transition between the primary and secondary colors."
 msgstr "Переход между основным и вторичным цветами."
 
-#: ../Pinta.Tools/Tools/GradientTool.cs:348
+#: ../Pinta.Tools/Tools/GradientTool.cs:354
 msgid "Transition the primary color from opaque to transparent."
 msgstr "Переход основного цвета от непрозрачного к прозрачному."
 
-#: ../Pinta.Tools/Tools/GradientTool.cs:313
+#: ../Pinta.Tools/Tools/GradientTool.cs:319
 msgid "Transitions colors in a straight line between the two endpoints."
 msgstr "Переход цветов по прямой линии между двумя конечными точками."
 
-#: ../Pinta.Tools/Tools/GradientTool.cs:317
+#: ../Pinta.Tools/Tools/GradientTool.cs:323
 msgid "Transitions colors in a sweep around the start point."
 msgstr "Переход цветов по дуге вокруг начальной точки."
 
-#: ../Pinta.Tools/Tools/GradientTool.cs:316
+#: ../Pinta.Tools/Tools/GradientTool.cs:322
 msgid "Transitions colors outward from the start point in a circle."
 msgstr "Переход цветов от начальной точки наружу по кругу."
 
-#: ../Pinta.Tools/Tools/GradientTool.cs:315
+#: ../Pinta.Tools/Tools/GradientTool.cs:321
 msgid "Transitions colors outward from the start point in a diamond shape."
 msgstr "Переход цветов от начальной точки наружу в форме ромба."
 
@@ -4425,7 +4435,7 @@ msgstr ""
 msgid "Translate Vertically"
 msgstr ""
 
-#: ../Pinta.Tools/Tools/GradientTool.cs:348
+#: ../Pinta.Tools/Tools/GradientTool.cs:354
 msgid "Transparency Mode"
 msgstr "Прозрачный режим"
 
@@ -4461,7 +4471,7 @@ msgstr "Завихрение"
 msgid "Two-Row Sierra"
 msgstr "Двухрядный алгоритм Сьерры"
 
-#: ../Pinta.Tools/Editable/EditEngines/ArrowedEditEngine.cs:292
+#: ../Pinta.Tools/Editable/EditEngines/ArrowedEditEngine.cs:361
 #: ../Pinta.Tools/Editable/EditEngines/TriangleEditEngine.cs:121
 #: ../Pinta.Tools/Tools/EraserTool.cs:337
 #: ../Pinta.Tools/Tools/PaintBrushTool.cs:234
@@ -4862,7 +4872,7 @@ msgstr ""
 msgid "{0} (Alternate)"
 msgstr ""
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:2051
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:2101
 #, csharp-format
 msgid "{0} + click: start a new shape here."
 msgstr ""
@@ -4875,12 +4885,12 @@ msgstr ""
 "{0} + щелчок левой кнопкой мыши для установки основы, левой кнопкой мыши "
 "рисовать."
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:2048
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:2098
 #, csharp-format
 msgid "{0} + right drag: change tension."
 msgstr ""
 
-#: ../Pinta.Tools/Editable/EditEngines/ArrowedEditEngine.cs:340
+#: ../Pinta.Tools/Editable/EditEngines/ArrowedEditEngine.cs:409
 #, csharp-format
 msgid "{0} + right-drag a point: change its tension."
 msgstr ""
@@ -4895,7 +4905,7 @@ msgstr ""
 msgid "{0} - never saved to a file"
 msgstr ""
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:2050
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:2100
 #, csharp-format
 msgid "{0} and drag: rotate the whole shape."
 msgstr ""
@@ -4926,12 +4936,12 @@ msgstr "Изображение {0} ({1})"
 msgid "{0} palette ({1})"
 msgstr "{0} палитра ({1})"
 
-#: ../Pinta.Tools/Tools/TextTool.cs:2702
+#: ../Pinta.Tools/Tools/TextTool.cs:2730
 #, csharp-format
 msgid "{0} to edit"
 msgstr ""
 
-#: ../Pinta.Tools/Tools/TextTool.cs:2703
+#: ../Pinta.Tools/Tools/TextTool.cs:2731
 #, csharp-format
 msgid "{0} to open text properties"
 msgstr ""
@@ -4941,7 +4951,7 @@ msgstr ""
 msgid "{0} to re-edit an existing text object."
 msgstr ""
 
-#: ../Pinta.Tools/Tools/TextTool.cs:2712
+#: ../Pinta.Tools/Tools/TextTool.cs:2740
 #, csharp-format
 msgid "{0} to rotate"
 msgstr ""
@@ -4965,13 +4975,13 @@ msgstr ""
 msgid "{0}%"
 msgstr "{0}%"
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:2046
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:2096
 #, csharp-format
 msgid "{0}-drag: snap the adjacent segment to a 15° angle."
 msgstr ""
 
-#: ../Pinta.Tools/Editable/EditEngines/ArrowedEditEngine.cs:341
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:2049
+#: ../Pinta.Tools/Editable/EditEngines/ArrowedEditEngine.cs:410
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:2099
 #, csharp-format
 msgid "{0}: curve the line around the selected point; {1}: straighten it."
 msgstr ""

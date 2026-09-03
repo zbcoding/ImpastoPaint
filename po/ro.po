@@ -19,7 +19,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: pinta\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-02 14:13-0500\n"
+"POT-Creation-Date: 2026-09-02 20:24-0500\n"
 "PO-Revision-Date: 2023-04-24 16:26+0000\n"
 "Last-Translator: Miron Cristea <Unknown>\n"
 "Language-Team: Romanian\n"
@@ -92,7 +92,7 @@ msgstr "Adaugă strat nou"
 msgid "Add Noise"
 msgstr "Adaugă zgomot"
 
-#: ../Pinta.Tools/Editable/EditEngines/ArrowedEditEngine.cs:339
+#: ../Pinta.Tools/Editable/EditEngines/ArrowedEditEngine.cs:408
 #, csharp-format
 msgid ""
 "Add a point: {0}, or right-click the line and choose to add one there; {1} "
@@ -120,7 +120,7 @@ msgstr "Managerul de suplimente"
 msgid "Add-ins"
 msgstr ""
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:1269
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:1281
 msgid "Added"
 msgstr "Adăugat"
 
@@ -197,11 +197,11 @@ msgstr "Ancoră:"
 #: ../Pinta.Effects/Effects/RadialBlurEffect.cs:136
 #: ../Pinta.Effects/Effects/ReliefEffect.cs:77
 #: ../Pinta.Tools/Brushes/SlashBrush.cs:53
-#: ../Pinta.Tools/Editable/EditEngines/ArrowedEditEngine.cs:399
+#: ../Pinta.Tools/Editable/EditEngines/ArrowedEditEngine.cs:468
 msgid "Angle"
 msgstr "Unghi"
 
-#: ../Pinta.Tools/Editable/EditEngines/ArrowedEditEngine.cs:407
+#: ../Pinta.Tools/Editable/EditEngines/ArrowedEditEngine.cs:476
 msgid "Angle, in degrees, between the arrowhead's wings and the line."
 msgstr "Unghiul, în grade, dintre aripile vârfului de săgeată și linie."
 
@@ -209,11 +209,11 @@ msgstr "Unghiul, în grade, dintre aripile vârfului de săgeată și linie."
 msgid "Antialias"
 msgstr "Anticrenelare"
 
-#: ../Pinta.Core/Classes/BaseTool.cs:455
+#: ../Pinta.Core/Classes/BaseTool.cs:456
 msgid "Antialiasing Off"
 msgstr "Finisare margini deactivată"
 
-#: ../Pinta.Core/Classes/BaseTool.cs:454
+#: ../Pinta.Core/Classes/BaseTool.cs:455
 msgid "Antialiasing On"
 msgstr "Finisare margini activată"
 
@@ -227,7 +227,7 @@ msgid ""
 "re-wrap the text."
 msgstr ""
 
-#: ../Pinta.Tools/Editable/EditEngines/ArrowedEditEngine.cs:348
+#: ../Pinta.Tools/Editable/EditEngines/ArrowedEditEngine.cs:417
 msgid "Arrow"
 msgstr "Săgeată"
 
@@ -570,7 +570,7 @@ msgstr ""
 msgid "Change font size."
 msgstr ""
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:137
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:146
 msgid "Change outline width."
 msgstr ""
 
@@ -692,7 +692,7 @@ msgstr ""
 "Faceți clic cu mouse-ul si trageți pentru a schimba intre culoarea primara "
 "si cea secundara."
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:496
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:506
 msgid ""
 "Clicking a segment while editing inserts a control point to smoothly curve "
 "it."
@@ -718,6 +718,10 @@ msgstr "Închide"
 #: ../Pinta.Core/Actions/WindowActions.cs:52
 msgid "Close All"
 msgstr "Închide tot"
+
+#: ../Pinta.Tools/Editable/EditEngines/LineCurveEditEngine.cs:128
+msgid "Close shape"
+msgstr ""
 
 #: ../Pinta.Tools/Editable/EditEngines/RectangleEditEngine.cs:37
 msgid "Closed Curve Shape"
@@ -753,7 +757,7 @@ msgstr "Culoare evitată"
 msgid "Color Gradient"
 msgstr ""
 
-#: ../Pinta.Tools/Tools/GradientTool.cs:347
+#: ../Pinta.Tools/Tools/GradientTool.cs:353
 msgid "Color Mode"
 msgstr "Mod color"
 
@@ -804,9 +808,15 @@ msgstr "Colorare"
 msgid "Colors"
 msgstr ""
 
-#: ../Pinta.Tools/Tools/GradientTool.cs:317
+#: ../Pinta.Tools/Tools/GradientTool.cs:323
 msgid "Conical Gradient"
 msgstr "Gradient conic"
+
+#: ../Pinta.Tools/Editable/EditEngines/LineCurveEditEngine.cs:129
+msgid ""
+"Connect the last point back to the first, closing the outline so fill modes "
+"show a closed shape."
+msgstr ""
 
 #: ../Pinta.Core/Actions/HelpActions.cs:45
 msgid "Contents"
@@ -888,8 +898,8 @@ msgstr "Decupează selecția"
 msgid "Current Palette"
 msgstr ""
 
-#: ../Pinta.Tools/Editable/EditEngines/ArrowedEditEngine.cs:301
-#: ../Pinta.Tools/Editable/EditEngines/ArrowedEditEngine.cs:337
+#: ../Pinta.Tools/Editable/EditEngines/ArrowedEditEngine.cs:370
+#: ../Pinta.Tools/Editable/EditEngines/ArrowedEditEngine.cs:406
 msgid "Curve"
 msgstr ""
 
@@ -897,11 +907,11 @@ msgstr ""
 msgid "Curved"
 msgstr ""
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:497
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:507
 msgid "Curved Segments Off"
 msgstr "Segmente curbate dezactivate"
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:496
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:506
 msgid "Curved Segments On"
 msgstr "Segmente curbate activate"
 
@@ -985,7 +995,7 @@ msgstr ""
 msgid "Delete selected control point"
 msgstr ""
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:1032
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:1043
 msgid "Deleted"
 msgstr "Şters"
 
@@ -1063,11 +1073,11 @@ msgstr ""
 msgid "Drag and drop to reorder"
 msgstr ""
 
-#: ../Pinta.Tools/Tools/TextTool.cs:2711
+#: ../Pinta.Tools/Tools/TextTool.cs:2739
 msgid "Drag corner to resize (changes font size)"
 msgstr ""
 
-#: ../Pinta.Tools/Tools/TextTool.cs:2710
+#: ../Pinta.Tools/Tools/TextTool.cs:2738
 msgid "Drag corner to resize the text box"
 msgstr ""
 
@@ -1075,7 +1085,7 @@ msgstr ""
 msgid "Draw only the outline of the text, using the secondary color."
 msgstr "Desenează doar conturul textului, folosind culoarea secundară."
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:532
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:542
 #: ../Pinta.Tools/Tools/FreeformShapeTool.cs:216
 msgid "Draw only the shape's outline, using the primary color."
 msgstr "Desenează doar conturul formei, folosind culoarea primară."
@@ -1089,13 +1099,13 @@ msgstr "Clonează stratul"
 msgid "Duplicated"
 msgstr ""
 
-#: ../Pinta.Tools/Editable/EditEngines/ArrowedEditEngine.cs:302
-#: ../Pinta.Tools/Editable/EditEngines/ArrowedEditEngine.cs:337
+#: ../Pinta.Tools/Editable/EditEngines/ArrowedEditEngine.cs:371
+#: ../Pinta.Tools/Editable/EditEngines/ArrowedEditEngine.cs:406
 msgid "Each added point curves smoothly through its neighbors."
 msgstr ""
 
-#: ../Pinta.Tools/Editable/EditEngines/ArrowedEditEngine.cs:304
-#: ../Pinta.Tools/Editable/EditEngines/ArrowedEditEngine.cs:338
+#: ../Pinta.Tools/Editable/EditEngines/ArrowedEditEngine.cs:373
+#: ../Pinta.Tools/Editable/EditEngines/ArrowedEditEngine.cs:407
 msgid "Each added point joins its neighbors with a straight segment."
 msgstr ""
 
@@ -1283,17 +1293,17 @@ msgstr ""
 msgid "Fill Selection"
 msgstr "Umple selecția"
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:533
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:543
 #: ../Pinta.Tools/Tools/FreeformShapeTool.cs:217
 msgid "Fill Shape"
 msgstr "Umple formă"
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:523
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:533
 #: ../Pinta.Tools/Tools/FreeformShapeTool.cs:210
 msgid "Fill Style"
 msgstr "Stil de umplere"
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:534
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:544
 #: ../Pinta.Tools/Tools/FreeformShapeTool.cs:218
 msgid "Fill and Outline Shape"
 msgstr "Umple și conturează formă"
@@ -1309,14 +1319,14 @@ msgid ""
 "Fill only the connected region of similar color touching the click point."
 msgstr ""
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:534
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:544
 #: ../Pinta.Tools/Tools/FreeformShapeTool.cs:218
 msgid ""
 "Fill the interior with the secondary color and outline it with the primary "
 "color."
 msgstr ""
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:533
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:543
 #: ../Pinta.Tools/Tools/FreeformShapeTool.cs:217
 msgid "Fill the shape's interior with the secondary color, no outline."
 msgstr "Umple interiorul formei cu culoarea secundară, fără contur."
@@ -1342,8 +1352,8 @@ msgstr ""
 msgid "Finalize shape"
 msgstr ""
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:1780
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:2364
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:1821
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:2415
 #: ../Pinta.Tools/Tools/GradientTool.cs:195
 msgid "Finalized"
 msgstr "Finalizat"
@@ -1492,7 +1502,7 @@ msgid "Glow"
 msgstr "luminiscență"
 
 #: ../Pinta.Tools/Tools/GradientTool.cs:63
-#: ../Pinta.Tools/Tools/GradientTool.cs:307
+#: ../Pinta.Tools/Tools/GradientTool.cs:313
 msgid "Gradient"
 msgstr "Gradient"
 
@@ -2108,15 +2118,15 @@ msgid ""
 "Click and drag to zoom in selection."
 msgstr ""
 
-#: ../Pinta.Tools/Editable/EditEngines/ArrowedEditEngine.cs:421
+#: ../Pinta.Tools/Editable/EditEngines/ArrowedEditEngine.cs:490
 msgid "Length"
 msgstr "Lungime"
 
-#: ../Pinta.Tools/Editable/EditEngines/ArrowedEditEngine.cs:429
+#: ../Pinta.Tools/Editable/EditEngines/ArrowedEditEngine.cs:498
 msgid "Length of the arrowhead's wings; does not change the line's length."
 msgstr "Lungimea aripilor vârfului de săgeată; nu modifică lungimea liniei."
 
-#: ../Pinta.Tools/Editable/EditEngines/ArrowedEditEngine.cs:385
+#: ../Pinta.Tools/Editable/EditEngines/ArrowedEditEngine.cs:454
 msgid "Length of the arrowhead, in pixels."
 msgstr "Lungimea vârfului de săgeată, în pixeli."
 
@@ -2161,8 +2171,8 @@ msgstr "Ca Majuscule mici, dar majusculele înlocuitoare sunt puțin mai mici."
 msgid "Lime Lemon"
 msgstr ""
 
-#: ../Pinta.Tools/Editable/EditEngines/ArrowedEditEngine.cs:303
-#: ../Pinta.Tools/Editable/EditEngines/ArrowedEditEngine.cs:338
+#: ../Pinta.Tools/Editable/EditEngines/ArrowedEditEngine.cs:372
+#: ../Pinta.Tools/Editable/EditEngines/ArrowedEditEngine.cs:407
 msgid "Line"
 msgstr ""
 
@@ -2172,15 +2182,15 @@ msgstr ""
 msgid "Line/Curve"
 msgstr "Linie/Curbă"
 
-#: ../Pinta.Tools/Tools/GradientTool.cs:315
+#: ../Pinta.Tools/Tools/GradientTool.cs:321
 msgid "Linear Diamond Gradient"
 msgstr "Gradient liniar în diamant"
 
-#: ../Pinta.Tools/Tools/GradientTool.cs:313
+#: ../Pinta.Tools/Tools/GradientTool.cs:319
 msgid "Linear Gradient"
 msgstr "Gradient liniar"
 
-#: ../Pinta.Tools/Tools/GradientTool.cs:314
+#: ../Pinta.Tools/Tools/GradientTool.cs:320
 msgid "Linear Reflected Gradient"
 msgstr "Gradient liniar oglindit"
 
@@ -2265,7 +2275,7 @@ msgstr ""
 msgid "Minimum Size"
 msgstr ""
 
-#: ../Pinta.Tools/Tools/GradientTool.cs:314
+#: ../Pinta.Tools/Tools/GradientTool.cs:320
 msgid "Mirrors the linear transition on both sides of the start point."
 msgstr "Reflectă tranziția liniară pe ambele părți ale punctului de start."
 
@@ -2279,16 +2289,16 @@ msgid ""
 "Mixes small capital letters for upper case with normal lower case letters."
 msgstr ""
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:442
-#: ../Pinta.Tools/Tools/GradientTool.cs:341
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:452
+#: ../Pinta.Tools/Tools/GradientTool.cs:347
 #: ../Pinta.Tools/Tools/TextTool.cs:298
 msgid "Mode"
 msgstr "Mod"
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:876
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:878
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:1500
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:1525
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:887
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:889
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:1541
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:1566
 msgid "Modified"
 msgstr "Modificat"
 
@@ -2427,7 +2437,7 @@ msgstr "Niciuna"
 msgid "Normal"
 msgstr "Normal"
 
-#: ../Pinta.Core/Classes/BaseTool.cs:437
+#: ../Pinta.Core/Classes/BaseTool.cs:438
 msgid "Normal Blending"
 msgstr "Contopire normală"
 
@@ -2562,7 +2572,7 @@ msgstr ""
 msgid "Object Opacity"
 msgstr ""
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:453
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:463
 #: ../Pinta.Tools/Tools/TextTool.cs:307
 msgid "Object — editable later"
 msgstr ""
@@ -2653,12 +2663,12 @@ msgstr ""
 msgid "Outline Object"
 msgstr ""
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:532
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:542
 #: ../Pinta.Tools/Tools/FreeformShapeTool.cs:216
 msgid "Outline Shape"
 msgstr "Evidiențiere margini formă"
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:549
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:559
 #: ../Pinta.Tools/Tools/TextTool.cs:618
 msgid "Outline width"
 msgstr "Lățimea conturului"
@@ -2675,7 +2685,7 @@ msgstr "Histogramă de ieșire"
 msgid "Overlay"
 msgstr "Suprapunere"
 
-#: ../Pinta.Core/Classes/BaseTool.cs:438
+#: ../Pinta.Core/Classes/BaseTool.cs:439
 msgid "Overwrite"
 msgstr "Suprascrie"
 
@@ -2716,7 +2726,7 @@ msgid ""
 "like any artwork, but not editable later."
 msgstr ""
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:452
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:462
 msgid ""
 "Painted into the layer's pixels on commit. Immediately cut/move/erase like "
 "any artwork, but not editable later."
@@ -2885,8 +2895,8 @@ msgstr ""
 msgid "Point"
 msgstr ""
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:970
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:1330
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:981
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:1343
 msgid "Point Added"
 msgstr "Punct adăugat"
 
@@ -2900,7 +2910,7 @@ msgstr ""
 msgid "Point Color"
 msgstr ""
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:1015
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:1026
 msgid "Point Deleted"
 msgstr "Punct şters"
 
@@ -2979,7 +2989,7 @@ msgstr ""
 msgid "Press {0} to decrease font size"
 msgstr ""
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:139
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:148
 #, csharp-format
 msgid "Press {0} to decrease outline width"
 msgstr ""
@@ -2994,7 +3004,7 @@ msgstr ""
 msgid "Press {0} to increase font size"
 msgstr ""
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:140
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:149
 #, csharp-format
 msgid "Press {0} to increase outline width"
 msgstr ""
@@ -3068,7 +3078,7 @@ msgstr "RGB"
 msgid "Radial Blur"
 msgstr "Neclaritate radială"
 
-#: ../Pinta.Tools/Tools/GradientTool.cs:316
+#: ../Pinta.Tools/Tools/GradientTool.cs:322
 msgid "Radial Gradient"
 msgstr "Gradient radial"
 
@@ -3119,7 +3129,7 @@ msgstr ""
 msgid "Random Point Locations"
 msgstr ""
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:451
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:461
 #: ../Pinta.Tools/Tools/TextTool.cs:305
 msgid "Raster — fuses to layer"
 msgstr ""
@@ -3392,11 +3402,11 @@ msgstr "Aliniază la dreapta"
 msgid "Right Triangle"
 msgstr ""
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:2047
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:2097
 msgid "Right click + drag: move the whole shape."
 msgstr ""
 
-#: ../Pinta.Tools/Tools/TextTool.cs:2704
+#: ../Pinta.Tools/Tools/TextTool.cs:2732
 msgid "Right click to move"
 msgstr ""
 
@@ -3442,7 +3452,7 @@ msgstr ""
 msgid "Rotate text"
 msgstr ""
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:1473
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:1514
 msgid "Rotated"
 msgstr ""
 
@@ -3569,7 +3579,7 @@ msgstr ""
 msgid "Secondary"
 msgstr "Secundar"
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:497
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:507
 msgid ""
 "Segments stay straight; clicking a segment does not insert curve control "
 "points."
@@ -3712,7 +3722,7 @@ msgid "Shear Vertically"
 msgstr ""
 
 #: ../Pinta.Core/Extensions/Gtk/GtkExtensions.Interaction.cs:112
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:2046
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:2096
 #: ../Pinta.Tools/Tools/BaseTransformTool.cs:729
 msgid "Shift"
 msgstr ""
@@ -3729,7 +3739,7 @@ msgstr "Combinaţie de taste"
 msgid "Shortcut keys"
 msgstr ""
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:138
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:147
 #: ../Pinta.Tools/Tools/BaseBrushTool.cs:155
 #: ../Pinta.Tools/Tools/TextTool.cs:744
 msgid "Shortcut keys:"
@@ -3771,11 +3781,11 @@ msgstr ""
 msgid "Show a third row of darker colors in the palette"
 msgstr ""
 
-#: ../Pinta.Tools/Editable/EditEngines/ArrowedEditEngine.cs:369
+#: ../Pinta.Tools/Editable/EditEngines/ArrowedEditEngine.cs:438
 msgid "Show an arrowhead at the end point."
 msgstr "Afișează un vârf de săgeată la punctul final."
 
-#: ../Pinta.Tools/Editable/EditEngines/ArrowedEditEngine.cs:356
+#: ../Pinta.Tools/Editable/EditEngines/ArrowedEditEngine.cs:425
 msgid "Show an arrowhead at the start point."
 msgstr "Afișează un vârf de săgeată la punctul de start."
 
@@ -3823,7 +3833,7 @@ msgid "Single Pixel"
 msgstr "Un Singur Pixel"
 
 #: ../Pinta.Tools/Editable/EditEngines/ArrowedEditEngine.cs:110
-#: ../Pinta.Tools/Editable/EditEngines/ArrowedEditEngine.cs:377
+#: ../Pinta.Tools/Editable/EditEngines/ArrowedEditEngine.cs:446
 msgid "Size"
 msgstr "Mărime"
 
@@ -3903,7 +3913,7 @@ msgstr "Pătrate"
 msgid "Status Bar"
 msgstr "Bara de stare"
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:454
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:464
 msgid ""
 "Stays a live, re-editable shape. Cutting, erasing, or filtering across it "
 "will rasterize it first."
@@ -4327,29 +4337,29 @@ msgstr ""
 msgid "Transform Tools"
 msgstr ""
 
-#: ../Pinta.Tools/Tools/GradientTool.cs:347
+#: ../Pinta.Tools/Tools/GradientTool.cs:353
 msgid "Transition between the primary and secondary colors."
 msgstr "Face tranziția între culoarea primară și cea secundară."
 
-#: ../Pinta.Tools/Tools/GradientTool.cs:348
+#: ../Pinta.Tools/Tools/GradientTool.cs:354
 msgid "Transition the primary color from opaque to transparent."
 msgstr "Face tranziția culorii primare de la opac la transparent."
 
-#: ../Pinta.Tools/Tools/GradientTool.cs:313
+#: ../Pinta.Tools/Tools/GradientTool.cs:319
 msgid "Transitions colors in a straight line between the two endpoints."
 msgstr ""
 "Trece treptat culorile pe o linie dreaptă între cele două puncte capăt."
 
-#: ../Pinta.Tools/Tools/GradientTool.cs:317
+#: ../Pinta.Tools/Tools/GradientTool.cs:323
 msgid "Transitions colors in a sweep around the start point."
 msgstr "Trece treptat culorile într-o baleiere în jurul punctului de start."
 
-#: ../Pinta.Tools/Tools/GradientTool.cs:316
+#: ../Pinta.Tools/Tools/GradientTool.cs:322
 msgid "Transitions colors outward from the start point in a circle."
 msgstr ""
 "Trece treptat culorile spre exterior de la punctul de start, într-un cerc."
 
-#: ../Pinta.Tools/Tools/GradientTool.cs:315
+#: ../Pinta.Tools/Tools/GradientTool.cs:321
 msgid "Transitions colors outward from the start point in a diamond shape."
 msgstr ""
 "Trece treptat culorile spre exterior de la punctul de start, în formă de "
@@ -4363,7 +4373,7 @@ msgstr ""
 msgid "Translate Vertically"
 msgstr ""
 
-#: ../Pinta.Tools/Tools/GradientTool.cs:348
+#: ../Pinta.Tools/Tools/GradientTool.cs:354
 msgid "Transparency Mode"
 msgstr "Mod transparent"
 
@@ -4399,7 +4409,7 @@ msgstr "Răsucește"
 msgid "Two-Row Sierra"
 msgstr ""
 
-#: ../Pinta.Tools/Editable/EditEngines/ArrowedEditEngine.cs:292
+#: ../Pinta.Tools/Editable/EditEngines/ArrowedEditEngine.cs:361
 #: ../Pinta.Tools/Editable/EditEngines/TriangleEditEngine.cs:121
 #: ../Pinta.Tools/Tools/EraserTool.cs:337
 #: ../Pinta.Tools/Tools/PaintBrushTool.cs:234
@@ -4781,7 +4791,7 @@ msgstr ""
 msgid "{0} (Alternate)"
 msgstr ""
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:2051
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:2101
 #, csharp-format
 msgid "{0} + click: start a new shape here."
 msgstr ""
@@ -4792,12 +4802,12 @@ msgstr ""
 msgid "{0} + left click to set origin, left click to paint."
 msgstr ""
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:2048
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:2098
 #, csharp-format
 msgid "{0} + right drag: change tension."
 msgstr ""
 
-#: ../Pinta.Tools/Editable/EditEngines/ArrowedEditEngine.cs:340
+#: ../Pinta.Tools/Editable/EditEngines/ArrowedEditEngine.cs:409
 #, csharp-format
 msgid "{0} + right-drag a point: change its tension."
 msgstr ""
@@ -4812,7 +4822,7 @@ msgstr ""
 msgid "{0} - never saved to a file"
 msgstr ""
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:2050
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:2100
 #, csharp-format
 msgid "{0} and drag: rotate the whole shape."
 msgstr ""
@@ -4843,12 +4853,12 @@ msgstr "{0} imagine ({1})"
 msgid "{0} palette ({1})"
 msgstr "{0} paleta ({1})"
 
-#: ../Pinta.Tools/Tools/TextTool.cs:2702
+#: ../Pinta.Tools/Tools/TextTool.cs:2730
 #, csharp-format
 msgid "{0} to edit"
 msgstr ""
 
-#: ../Pinta.Tools/Tools/TextTool.cs:2703
+#: ../Pinta.Tools/Tools/TextTool.cs:2731
 #, csharp-format
 msgid "{0} to open text properties"
 msgstr ""
@@ -4858,7 +4868,7 @@ msgstr ""
 msgid "{0} to re-edit an existing text object."
 msgstr ""
 
-#: ../Pinta.Tools/Tools/TextTool.cs:2712
+#: ../Pinta.Tools/Tools/TextTool.cs:2740
 #, csharp-format
 msgid "{0} to rotate"
 msgstr ""
@@ -4882,13 +4892,13 @@ msgstr ""
 msgid "{0}%"
 msgstr "{0}%"
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:2046
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:2096
 #, csharp-format
 msgid "{0}-drag: snap the adjacent segment to a 15° angle."
 msgstr ""
 
-#: ../Pinta.Tools/Editable/EditEngines/ArrowedEditEngine.cs:341
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:2049
+#: ../Pinta.Tools/Editable/EditEngines/ArrowedEditEngine.cs:410
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:2099
 #, csharp-format
 msgid "{0}: curve the line around the selected point; {1}: straighten it."
 msgstr ""

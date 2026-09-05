@@ -19,7 +19,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: pinta\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-02 20:24-0500\n"
+"POT-Creation-Date: 2026-09-05 00:07-0500\n"
 "PO-Revision-Date: 2026-04-12 18:25+0000\n"
 "Last-Translator: Cameron White <cameronwhite91@gmail.com>\n"
 "Language-Team: English (Canada)\n"
@@ -624,7 +624,7 @@ msgstr "Circular"
 msgid "Clamp"
 msgstr "Clamp"
 
-#: ../Pinta.Gui.Widgets/Widgets/ToolBoxWidget.cs:532
+#: ../Pinta.Gui.Widgets/Widgets/ToolBoxWidget.cs:535
 msgid "Clear pinned tools"
 msgstr ""
 
@@ -663,13 +663,13 @@ msgid "Click and drag to navigate image."
 msgstr "Click and drag to navigate image."
 
 #: ../Impasto/MainWindow.cs:953
-#: ../Pinta.Gui.Widgets/Widgets/StatusBarColorPaletteWidget.cs:788
+#: ../Pinta.Gui.Widgets/Widgets/StatusBarColorPaletteWidget.cs:798
 msgid "Click to reset primary and secondary color."
 msgstr "Click to reset primary and secondary colour."
 
 #: ../Pinta.Gui.Widgets/Widgets/ColorPickerDialog.cs:647
 #: ../Pinta.Gui.Widgets/Widgets/ColorPickerPanel.cs:157
-#: ../Pinta.Gui.Widgets/Widgets/StatusBarColorPaletteWidget.cs:775
+#: ../Pinta.Gui.Widgets/Widgets/StatusBarColorPaletteWidget.cs:785
 msgid "Click to select primary color."
 msgstr "Click to select primary colour."
 
@@ -683,14 +683,14 @@ msgstr ""
 
 #: ../Pinta.Gui.Widgets/Widgets/ColorPickerDialog.cs:652
 #: ../Pinta.Gui.Widgets/Widgets/ColorPickerPanel.cs:165
-#: ../Pinta.Gui.Widgets/Widgets/StatusBarColorPaletteWidget.cs:780
+#: ../Pinta.Gui.Widgets/Widgets/StatusBarColorPaletteWidget.cs:790
 msgid "Click to select secondary color."
 msgstr "Click to select secondary colour."
 
 #: ../Impasto/MainWindow.cs:948
 #: ../Pinta.Gui.Widgets/Widgets/ColorPickerDialog.cs:366
 #: ../Pinta.Gui.Widgets/Widgets/ColorPickerPanel.cs:171
-#: ../Pinta.Gui.Widgets/Widgets/StatusBarColorPaletteWidget.cs:783
+#: ../Pinta.Gui.Widgets/Widgets/StatusBarColorPaletteWidget.cs:793
 msgid "Click to switch between primary and secondary color."
 msgstr "Click to switch between primary and secondary colour."
 
@@ -802,7 +802,7 @@ msgstr "Colour Sorting"
 msgid "Color:"
 msgstr ""
 
-#: ../Pinta.Effects/Effects/InkSketchEffect.cs:150
+#: ../Pinta.Effects/Effects/InkSketchEffect.cs:153
 msgid "Coloring"
 msgstr "Colouring"
 
@@ -868,7 +868,7 @@ msgstr ""
 msgid "Could not import layer \"{0}\" from {1}"
 msgstr "Could not import layer \"{0}\" from {1}"
 
-#: ../Pinta.Core/Extensions/OtherExtensions.cs:166
+#: ../Pinta.Core/Extensions/OtherExtensions.cs:169
 #: ../Pinta.Core/Managers/WorkspaceManager.cs:458
 #: ../Pinta.Core/Managers/WorkspaceManager.cs:470
 #, csharp-format
@@ -1428,7 +1428,7 @@ msgid "Flip Vertically"
 msgstr ""
 
 #: ../Pinta.Core/Actions/ViewActions.cs:177
-#: ../Pinta.Gui.Widgets/Widgets/StatusBarColorPaletteWidget.cs:756
+#: ../Pinta.Gui.Widgets/Widgets/StatusBarColorPaletteWidget.cs:766
 msgid "Float Colors"
 msgstr ""
 
@@ -1756,7 +1756,7 @@ msgstr ""
 msgid "Impasto supports the following file formats:"
 msgstr ""
 
-#: ../Pinta.Core/Extensions/OtherExtensions.cs:167
+#: ../Pinta.Core/Extensions/OtherExtensions.cs:170
 msgid "Impasto supports the following palette formats:"
 msgstr "Impasto supports the following palette formats:"
 
@@ -1833,7 +1833,7 @@ msgstr ""
 msgid "Increase font size"
 msgstr ""
 
-#: ../Pinta.Effects/Effects/InkSketchEffect.cs:146
+#: ../Pinta.Effects/Effects/InkSketchEffect.cs:149
 msgid "Ink Outline"
 msgstr "Ink Outline"
 
@@ -2472,7 +2472,7 @@ msgstr "None"
 #: ../Pinta.Core/Algorithms/PixelOps/UserBlendOps.cs:31
 #: ../Pinta.Tools/Brushes/PlainBrush.cs:41
 #: ../Pinta.Tools/Dialogs/TextPropertiesDialog.cs:247
-#: ../Pinta.Tools/Tools/EraserTool.cs:341 ../Pinta.Tools/Tools/TextTool.cs:364
+#: ../Pinta.Tools/Tools/EraserTool.cs:343 ../Pinta.Tools/Tools/TextTool.cs:364
 #: ../Pinta.Tools/Tools/TextTool.cs:470 ../Pinta.Tools/Tools/TextTool.cs:602
 msgid "Normal"
 msgstr "Normal"
@@ -2877,7 +2877,7 @@ msgstr "Phyllotaxis"
 msgid "Pick tools from a dropdown instead of the tool box"
 msgstr ""
 
-#: ../Pinta.Gui.Widgets/Widgets/ToolBoxWidget.cs:525
+#: ../Pinta.Gui.Widgets/Widgets/ToolBoxWidget.cs:528
 msgid "Pin this item"
 msgstr ""
 
@@ -2983,7 +2983,7 @@ msgstr "Popover hints:"
 msgid "Portrait"
 msgstr "Portrait"
 
-#: ../Pinta.Effects/Effects/AlignObjectEffect.cs:129
+#: ../Pinta.Effects/Effects/AlignObjectEffect.cs:143
 msgid "Position"
 msgstr "Position"
 
@@ -3767,7 +3767,7 @@ msgstr ""
 #: ../Pinta.Core/Extensions/Gtk/GtkExtensions.Widget.cs:106
 #: ../Pinta.Core/Widgets/ToolSelectorButton.cs:204
 #: ../Pinta.Gui.Widgets/Widgets/ColorPickerDialog.cs:367
-#: ../Pinta.Gui.Widgets/Widgets/StatusBarColorPaletteWidget.cs:784
+#: ../Pinta.Gui.Widgets/Widgets/StatusBarColorPaletteWidget.cs:794
 #: ../Pinta.Gui.Widgets/Widgets/ToolBoxWidget.cs:198
 msgid "Shortcut key"
 msgstr "Shortcut key"
@@ -3826,7 +3826,7 @@ msgstr "Show an arrowhead at the end point."
 msgid "Show an arrowhead at the start point."
 msgstr "Show an arrowhead at the start point."
 
-#: ../Pinta.Gui.Widgets/Widgets/StatusBarColorPaletteWidget.cs:753
+#: ../Pinta.Gui.Widgets/Widgets/StatusBarColorPaletteWidget.cs:763
 msgid "Show color wheel"
 msgstr ""
 
@@ -3892,7 +3892,7 @@ msgstr "Slash"
 msgid "Small Caps"
 msgstr "Small Caps"
 
-#: ../Pinta.Tools/Tools/EraserTool.cs:341
+#: ../Pinta.Tools/Tools/EraserTool.cs:343
 msgid "Smooth"
 msgstr "Smooth"
 
@@ -4445,7 +4445,7 @@ msgstr "Two-Row Sierra"
 
 #: ../Pinta.Tools/Editable/EditEngines/ArrowedEditEngine.cs:361
 #: ../Pinta.Tools/Editable/EditEngines/TriangleEditEngine.cs:121
-#: ../Pinta.Tools/Tools/EraserTool.cs:337
+#: ../Pinta.Tools/Tools/EraserTool.cs:339
 #: ../Pinta.Tools/Tools/PaintBrushTool.cs:234
 msgid "Type"
 msgstr "Type"
@@ -4511,7 +4511,7 @@ msgstr "Uninstall..."
 msgid "Union (+) ({0} + Left Click)"
 msgstr "Union (+) ({0} + Left Click)"
 
-#: ../Pinta.Gui.Widgets/Widgets/ToolBoxWidget.cs:525
+#: ../Pinta.Gui.Widgets/Widgets/ToolBoxWidget.cs:528
 msgid "Unpin this item"
 msgstr ""
 

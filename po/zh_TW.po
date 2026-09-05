@@ -19,7 +19,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: pinta\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-02 20:24-0500\n"
+"POT-Creation-Date: 2026-09-05 00:07-0500\n"
 "PO-Revision-Date: 2026-03-17 03:10+0000\n"
 "Last-Translator: hugoalh <hugoalh@users.noreply.hosted.weblate.org>\n"
 "Language-Team: Chinese (Traditional Han script)\n"
@@ -624,7 +624,7 @@ msgstr "圓形排列"
 msgid "Clamp"
 msgstr "限制範圍"
 
-#: ../Pinta.Gui.Widgets/Widgets/ToolBoxWidget.cs:532
+#: ../Pinta.Gui.Widgets/Widgets/ToolBoxWidget.cs:535
 msgid "Clear pinned tools"
 msgstr ""
 
@@ -663,13 +663,13 @@ msgid "Click and drag to navigate image."
 msgstr "按住滑鼠並拖動以瀏覽圖片。"
 
 #: ../Impasto/MainWindow.cs:953
-#: ../Pinta.Gui.Widgets/Widgets/StatusBarColorPaletteWidget.cs:788
+#: ../Pinta.Gui.Widgets/Widgets/StatusBarColorPaletteWidget.cs:798
 msgid "Click to reset primary and secondary color."
 msgstr "按一下以重設主要和次要的顏色。"
 
 #: ../Pinta.Gui.Widgets/Widgets/ColorPickerDialog.cs:647
 #: ../Pinta.Gui.Widgets/Widgets/ColorPickerPanel.cs:157
-#: ../Pinta.Gui.Widgets/Widgets/StatusBarColorPaletteWidget.cs:775
+#: ../Pinta.Gui.Widgets/Widgets/StatusBarColorPaletteWidget.cs:785
 msgid "Click to select primary color."
 msgstr "按一下以選取主要顏色。"
 
@@ -681,14 +681,14 @@ msgstr ""
 
 #: ../Pinta.Gui.Widgets/Widgets/ColorPickerDialog.cs:652
 #: ../Pinta.Gui.Widgets/Widgets/ColorPickerPanel.cs:165
-#: ../Pinta.Gui.Widgets/Widgets/StatusBarColorPaletteWidget.cs:780
+#: ../Pinta.Gui.Widgets/Widgets/StatusBarColorPaletteWidget.cs:790
 msgid "Click to select secondary color."
 msgstr "按一下以選取次要顏色。"
 
 #: ../Impasto/MainWindow.cs:948
 #: ../Pinta.Gui.Widgets/Widgets/ColorPickerDialog.cs:366
 #: ../Pinta.Gui.Widgets/Widgets/ColorPickerPanel.cs:171
-#: ../Pinta.Gui.Widgets/Widgets/StatusBarColorPaletteWidget.cs:783
+#: ../Pinta.Gui.Widgets/Widgets/StatusBarColorPaletteWidget.cs:793
 msgid "Click to switch between primary and secondary color."
 msgstr "按一下以在主要顏色和次要顏色之間切換。"
 
@@ -800,7 +800,7 @@ msgstr "顏色分類"
 msgid "Color:"
 msgstr ""
 
-#: ../Pinta.Effects/Effects/InkSketchEffect.cs:150
+#: ../Pinta.Effects/Effects/InkSketchEffect.cs:153
 msgid "Coloring"
 msgstr "染色"
 
@@ -866,7 +866,7 @@ msgstr ""
 msgid "Could not import layer \"{0}\" from {1}"
 msgstr "無法從 {1} 匯入圖層 {0}"
 
-#: ../Pinta.Core/Extensions/OtherExtensions.cs:166
+#: ../Pinta.Core/Extensions/OtherExtensions.cs:169
 #: ../Pinta.Core/Managers/WorkspaceManager.cs:458
 #: ../Pinta.Core/Managers/WorkspaceManager.cs:470
 #, csharp-format
@@ -1425,7 +1425,7 @@ msgid "Flip Vertically"
 msgstr ""
 
 #: ../Pinta.Core/Actions/ViewActions.cs:177
-#: ../Pinta.Gui.Widgets/Widgets/StatusBarColorPaletteWidget.cs:756
+#: ../Pinta.Gui.Widgets/Widgets/StatusBarColorPaletteWidget.cs:766
 msgid "Float Colors"
 msgstr ""
 
@@ -1751,7 +1751,7 @@ msgstr ""
 msgid "Impasto supports the following file formats:"
 msgstr ""
 
-#: ../Pinta.Core/Extensions/OtherExtensions.cs:167
+#: ../Pinta.Core/Extensions/OtherExtensions.cs:170
 msgid "Impasto supports the following palette formats:"
 msgstr "Impasto 支援下列調色盤格式："
 
@@ -1828,7 +1828,7 @@ msgstr ""
 msgid "Increase font size"
 msgstr ""
 
-#: ../Pinta.Effects/Effects/InkSketchEffect.cs:146
+#: ../Pinta.Effects/Effects/InkSketchEffect.cs:149
 msgid "Ink Outline"
 msgstr "輪廓的油墨量"
 
@@ -2456,7 +2456,7 @@ msgstr "無"
 #: ../Pinta.Core/Algorithms/PixelOps/UserBlendOps.cs:31
 #: ../Pinta.Tools/Brushes/PlainBrush.cs:41
 #: ../Pinta.Tools/Dialogs/TextPropertiesDialog.cs:247
-#: ../Pinta.Tools/Tools/EraserTool.cs:341 ../Pinta.Tools/Tools/TextTool.cs:364
+#: ../Pinta.Tools/Tools/EraserTool.cs:343 ../Pinta.Tools/Tools/TextTool.cs:364
 #: ../Pinta.Tools/Tools/TextTool.cs:470 ../Pinta.Tools/Tools/TextTool.cs:602
 msgid "Normal"
 msgstr "一般"
@@ -2861,7 +2861,7 @@ msgstr "葉序"
 msgid "Pick tools from a dropdown instead of the tool box"
 msgstr ""
 
-#: ../Pinta.Gui.Widgets/Widgets/ToolBoxWidget.cs:525
+#: ../Pinta.Gui.Widgets/Widgets/ToolBoxWidget.cs:528
 msgid "Pin this item"
 msgstr ""
 
@@ -2967,7 +2967,7 @@ msgstr "彈出提示："
 msgid "Portrait"
 msgstr "直向"
 
-#: ../Pinta.Effects/Effects/AlignObjectEffect.cs:129
+#: ../Pinta.Effects/Effects/AlignObjectEffect.cs:143
 msgid "Position"
 msgstr "位置"
 
@@ -3749,7 +3749,7 @@ msgstr ""
 #: ../Pinta.Core/Extensions/Gtk/GtkExtensions.Widget.cs:106
 #: ../Pinta.Core/Widgets/ToolSelectorButton.cs:204
 #: ../Pinta.Gui.Widgets/Widgets/ColorPickerDialog.cs:367
-#: ../Pinta.Gui.Widgets/Widgets/StatusBarColorPaletteWidget.cs:784
+#: ../Pinta.Gui.Widgets/Widgets/StatusBarColorPaletteWidget.cs:794
 #: ../Pinta.Gui.Widgets/Widgets/ToolBoxWidget.cs:198
 msgid "Shortcut key"
 msgstr "快捷鍵"
@@ -3808,7 +3808,7 @@ msgstr "在終點顯示箭頭。"
 msgid "Show an arrowhead at the start point."
 msgstr "在起點顯示箭頭。"
 
-#: ../Pinta.Gui.Widgets/Widgets/StatusBarColorPaletteWidget.cs:753
+#: ../Pinta.Gui.Widgets/Widgets/StatusBarColorPaletteWidget.cs:763
 msgid "Show color wheel"
 msgstr ""
 
@@ -3874,7 +3874,7 @@ msgstr ""
 msgid "Small Caps"
 msgstr ""
 
-#: ../Pinta.Tools/Tools/EraserTool.cs:341
+#: ../Pinta.Tools/Tools/EraserTool.cs:343
 msgid "Smooth"
 msgstr "平滑"
 
@@ -4419,7 +4419,7 @@ msgstr "雙列 Sierra"
 
 #: ../Pinta.Tools/Editable/EditEngines/ArrowedEditEngine.cs:361
 #: ../Pinta.Tools/Editable/EditEngines/TriangleEditEngine.cs:121
-#: ../Pinta.Tools/Tools/EraserTool.cs:337
+#: ../Pinta.Tools/Tools/EraserTool.cs:339
 #: ../Pinta.Tools/Tools/PaintBrushTool.cs:234
 msgid "Type"
 msgstr "類型"
@@ -4485,7 +4485,7 @@ msgstr "解除安裝..."
 msgid "Union (+) ({0} + Left Click)"
 msgstr "聯合 (+) ({0} + 左鍵)"
 
-#: ../Pinta.Gui.Widgets/Widgets/ToolBoxWidget.cs:525
+#: ../Pinta.Gui.Widgets/Widgets/ToolBoxWidget.cs:528
 msgid "Unpin this item"
 msgstr ""
 

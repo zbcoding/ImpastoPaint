@@ -19,7 +19,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: pinta\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-02 20:24-0500\n"
+"POT-Creation-Date: 2026-09-05 00:07-0500\n"
 "PO-Revision-Date: 2026-04-07 03:55+0000\n"
 "Last-Translator: VenusGirl <VenusGirl@outlook.com>\n"
 "Language-Team: Korean\n"
@@ -624,7 +624,7 @@ msgstr "원형"
 msgid "Clamp"
 msgstr "집게"
 
-#: ../Pinta.Gui.Widgets/Widgets/ToolBoxWidget.cs:532
+#: ../Pinta.Gui.Widgets/Widgets/ToolBoxWidget.cs:535
 msgid "Clear pinned tools"
 msgstr ""
 
@@ -663,13 +663,13 @@ msgid "Click and drag to navigate image."
 msgstr "이미지를 탐색하려면 클릭하고 끌어서 놓으세요."
 
 #: ../Impasto/MainWindow.cs:953
-#: ../Pinta.Gui.Widgets/Widgets/StatusBarColorPaletteWidget.cs:788
+#: ../Pinta.Gui.Widgets/Widgets/StatusBarColorPaletteWidget.cs:798
 msgid "Click to reset primary and secondary color."
 msgstr "기본 색상과 보조 색상을 재설정하려면 클릭하세요."
 
 #: ../Pinta.Gui.Widgets/Widgets/ColorPickerDialog.cs:647
 #: ../Pinta.Gui.Widgets/Widgets/ColorPickerPanel.cs:157
-#: ../Pinta.Gui.Widgets/Widgets/StatusBarColorPaletteWidget.cs:775
+#: ../Pinta.Gui.Widgets/Widgets/StatusBarColorPaletteWidget.cs:785
 msgid "Click to select primary color."
 msgstr "기본 색상을 선택하려면 클릭하세요."
 
@@ -681,14 +681,14 @@ msgstr ""
 
 #: ../Pinta.Gui.Widgets/Widgets/ColorPickerDialog.cs:652
 #: ../Pinta.Gui.Widgets/Widgets/ColorPickerPanel.cs:165
-#: ../Pinta.Gui.Widgets/Widgets/StatusBarColorPaletteWidget.cs:780
+#: ../Pinta.Gui.Widgets/Widgets/StatusBarColorPaletteWidget.cs:790
 msgid "Click to select secondary color."
 msgstr "보조 색상을 선택하려면 클릭하세요."
 
 #: ../Impasto/MainWindow.cs:948
 #: ../Pinta.Gui.Widgets/Widgets/ColorPickerDialog.cs:366
 #: ../Pinta.Gui.Widgets/Widgets/ColorPickerPanel.cs:171
-#: ../Pinta.Gui.Widgets/Widgets/StatusBarColorPaletteWidget.cs:783
+#: ../Pinta.Gui.Widgets/Widgets/StatusBarColorPaletteWidget.cs:793
 msgid "Click to switch between primary and secondary color."
 msgstr "기본 색상과 보조 색상을 전환하려면 클릭하세요."
 
@@ -800,7 +800,7 @@ msgstr "색상 정렬"
 msgid "Color:"
 msgstr ""
 
-#: ../Pinta.Effects/Effects/InkSketchEffect.cs:150
+#: ../Pinta.Effects/Effects/InkSketchEffect.cs:153
 msgid "Coloring"
 msgstr "채색"
 
@@ -866,7 +866,7 @@ msgstr ""
 msgid "Could not import layer \"{0}\" from {1}"
 msgstr "{1}에서 레이어 \"{0}\"을 가져올 수 없습니다"
 
-#: ../Pinta.Core/Extensions/OtherExtensions.cs:166
+#: ../Pinta.Core/Extensions/OtherExtensions.cs:169
 #: ../Pinta.Core/Managers/WorkspaceManager.cs:458
 #: ../Pinta.Core/Managers/WorkspaceManager.cs:470
 #, csharp-format
@@ -1425,7 +1425,7 @@ msgid "Flip Vertically"
 msgstr ""
 
 #: ../Pinta.Core/Actions/ViewActions.cs:177
-#: ../Pinta.Gui.Widgets/Widgets/StatusBarColorPaletteWidget.cs:756
+#: ../Pinta.Gui.Widgets/Widgets/StatusBarColorPaletteWidget.cs:766
 msgid "Float Colors"
 msgstr ""
 
@@ -1754,7 +1754,7 @@ msgstr ""
 msgid "Impasto supports the following file formats:"
 msgstr ""
 
-#: ../Pinta.Core/Extensions/OtherExtensions.cs:167
+#: ../Pinta.Core/Extensions/OtherExtensions.cs:170
 msgid "Impasto supports the following palette formats:"
 msgstr "Impasto는 다음 팔레트 형식을 지원합니다:"
 
@@ -1831,7 +1831,7 @@ msgstr ""
 msgid "Increase font size"
 msgstr ""
 
-#: ../Pinta.Effects/Effects/InkSketchEffect.cs:146
+#: ../Pinta.Effects/Effects/InkSketchEffect.cs:149
 msgid "Ink Outline"
 msgstr "잉크 외곽선"
 
@@ -2468,7 +2468,7 @@ msgstr "없음"
 #: ../Pinta.Core/Algorithms/PixelOps/UserBlendOps.cs:31
 #: ../Pinta.Tools/Brushes/PlainBrush.cs:41
 #: ../Pinta.Tools/Dialogs/TextPropertiesDialog.cs:247
-#: ../Pinta.Tools/Tools/EraserTool.cs:341 ../Pinta.Tools/Tools/TextTool.cs:364
+#: ../Pinta.Tools/Tools/EraserTool.cs:343 ../Pinta.Tools/Tools/TextTool.cs:364
 #: ../Pinta.Tools/Tools/TextTool.cs:470 ../Pinta.Tools/Tools/TextTool.cs:602
 msgid "Normal"
 msgstr "일반"
@@ -2873,7 +2873,7 @@ msgstr "엽서 배열"
 msgid "Pick tools from a dropdown instead of the tool box"
 msgstr ""
 
-#: ../Pinta.Gui.Widgets/Widgets/ToolBoxWidget.cs:525
+#: ../Pinta.Gui.Widgets/Widgets/ToolBoxWidget.cs:528
 msgid "Pin this item"
 msgstr ""
 
@@ -2979,7 +2979,7 @@ msgstr "팝오버 힌트:"
 msgid "Portrait"
 msgstr "세로"
 
-#: ../Pinta.Effects/Effects/AlignObjectEffect.cs:129
+#: ../Pinta.Effects/Effects/AlignObjectEffect.cs:143
 msgid "Position"
 msgstr "위치"
 
@@ -3763,7 +3763,7 @@ msgstr ""
 #: ../Pinta.Core/Extensions/Gtk/GtkExtensions.Widget.cs:106
 #: ../Pinta.Core/Widgets/ToolSelectorButton.cs:204
 #: ../Pinta.Gui.Widgets/Widgets/ColorPickerDialog.cs:367
-#: ../Pinta.Gui.Widgets/Widgets/StatusBarColorPaletteWidget.cs:784
+#: ../Pinta.Gui.Widgets/Widgets/StatusBarColorPaletteWidget.cs:794
 #: ../Pinta.Gui.Widgets/Widgets/ToolBoxWidget.cs:198
 msgid "Shortcut key"
 msgstr "단축키"
@@ -3822,7 +3822,7 @@ msgstr "끝점에 화살촉을 표시합니다."
 msgid "Show an arrowhead at the start point."
 msgstr "시작점에 화살촉을 표시합니다."
 
-#: ../Pinta.Gui.Widgets/Widgets/StatusBarColorPaletteWidget.cs:753
+#: ../Pinta.Gui.Widgets/Widgets/StatusBarColorPaletteWidget.cs:763
 msgid "Show color wheel"
 msgstr ""
 
@@ -3888,7 +3888,7 @@ msgstr "슬래시"
 msgid "Small Caps"
 msgstr ""
 
-#: ../Pinta.Tools/Tools/EraserTool.cs:341
+#: ../Pinta.Tools/Tools/EraserTool.cs:343
 msgid "Smooth"
 msgstr "매끄러운"
 
@@ -4436,7 +4436,7 @@ msgstr "2열 시에라"
 
 #: ../Pinta.Tools/Editable/EditEngines/ArrowedEditEngine.cs:361
 #: ../Pinta.Tools/Editable/EditEngines/TriangleEditEngine.cs:121
-#: ../Pinta.Tools/Tools/EraserTool.cs:337
+#: ../Pinta.Tools/Tools/EraserTool.cs:339
 #: ../Pinta.Tools/Tools/PaintBrushTool.cs:234
 msgid "Type"
 msgstr "형식"
@@ -4502,7 +4502,7 @@ msgstr "설치 제거..."
 msgid "Union (+) ({0} + Left Click)"
 msgstr "연합 (+) ({0} + 왼쪽 클릭)"
 
-#: ../Pinta.Gui.Widgets/Widgets/ToolBoxWidget.cs:525
+#: ../Pinta.Gui.Widgets/Widgets/ToolBoxWidget.cs:528
 msgid "Unpin this item"
 msgstr ""
 

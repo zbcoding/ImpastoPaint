@@ -19,7 +19,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: pinta\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-02 20:24-0500\n"
+"POT-Creation-Date: 2026-09-05 00:07-0500\n"
 "PO-Revision-Date: 2025-12-31 18:06+0000\n"
 "Last-Translator: Stepan Andriiovych <4fbig9xyb@mozmail.com>\n"
 "Language-Team: Ukrainian\n"
@@ -625,7 +625,7 @@ msgstr "За круговою траекторією"
 msgid "Clamp"
 msgstr "Фіксація"
 
-#: ../Pinta.Gui.Widgets/Widgets/ToolBoxWidget.cs:532
+#: ../Pinta.Gui.Widgets/Widgets/ToolBoxWidget.cs:535
 msgid "Clear pinned tools"
 msgstr ""
 
@@ -665,13 +665,13 @@ msgid "Click and drag to navigate image."
 msgstr "Клацніть і перетягуйте для навігації по зображенню."
 
 #: ../Impasto/MainWindow.cs:953
-#: ../Pinta.Gui.Widgets/Widgets/StatusBarColorPaletteWidget.cs:788
+#: ../Pinta.Gui.Widgets/Widgets/StatusBarColorPaletteWidget.cs:798
 msgid "Click to reset primary and secondary color."
 msgstr "Натисніть для скидання первинного і вторинного кольорів."
 
 #: ../Pinta.Gui.Widgets/Widgets/ColorPickerDialog.cs:647
 #: ../Pinta.Gui.Widgets/Widgets/ColorPickerPanel.cs:157
-#: ../Pinta.Gui.Widgets/Widgets/StatusBarColorPaletteWidget.cs:775
+#: ../Pinta.Gui.Widgets/Widgets/StatusBarColorPaletteWidget.cs:785
 msgid "Click to select primary color."
 msgstr "Клацніть, щоб вибрати основний колір."
 
@@ -683,14 +683,14 @@ msgstr ""
 
 #: ../Pinta.Gui.Widgets/Widgets/ColorPickerDialog.cs:652
 #: ../Pinta.Gui.Widgets/Widgets/ColorPickerPanel.cs:165
-#: ../Pinta.Gui.Widgets/Widgets/StatusBarColorPaletteWidget.cs:780
+#: ../Pinta.Gui.Widgets/Widgets/StatusBarColorPaletteWidget.cs:790
 msgid "Click to select secondary color."
 msgstr "Клацніть, щоб вибрати додатковий колір."
 
 #: ../Impasto/MainWindow.cs:948
 #: ../Pinta.Gui.Widgets/Widgets/ColorPickerDialog.cs:366
 #: ../Pinta.Gui.Widgets/Widgets/ColorPickerPanel.cs:171
-#: ../Pinta.Gui.Widgets/Widgets/StatusBarColorPaletteWidget.cs:783
+#: ../Pinta.Gui.Widgets/Widgets/StatusBarColorPaletteWidget.cs:793
 msgid "Click to switch between primary and secondary color."
 msgstr "Клацніть, щоб перемкнутися між основним і вторинним кольорами."
 
@@ -802,7 +802,7 @@ msgstr "Сортування кольорів"
 msgid "Color:"
 msgstr ""
 
-#: ../Pinta.Effects/Effects/InkSketchEffect.cs:150
+#: ../Pinta.Effects/Effects/InkSketchEffect.cs:153
 msgid "Coloring"
 msgstr "Забарвлення"
 
@@ -869,7 +869,7 @@ msgstr ""
 msgid "Could not import layer \"{0}\" from {1}"
 msgstr "Не вдалося імпортувати шар \"{0}\" з {1}"
 
-#: ../Pinta.Core/Extensions/OtherExtensions.cs:166
+#: ../Pinta.Core/Extensions/OtherExtensions.cs:169
 #: ../Pinta.Core/Managers/WorkspaceManager.cs:458
 #: ../Pinta.Core/Managers/WorkspaceManager.cs:470
 #, csharp-format
@@ -1429,7 +1429,7 @@ msgid "Flip Vertically"
 msgstr ""
 
 #: ../Pinta.Core/Actions/ViewActions.cs:177
-#: ../Pinta.Gui.Widgets/Widgets/StatusBarColorPaletteWidget.cs:756
+#: ../Pinta.Gui.Widgets/Widgets/StatusBarColorPaletteWidget.cs:766
 msgid "Float Colors"
 msgstr ""
 
@@ -1757,7 +1757,7 @@ msgstr ""
 msgid "Impasto supports the following file formats:"
 msgstr ""
 
-#: ../Pinta.Core/Extensions/OtherExtensions.cs:167
+#: ../Pinta.Core/Extensions/OtherExtensions.cs:170
 msgid "Impasto supports the following palette formats:"
 msgstr "У Impasto передбачено підтримку таких форматів палітр:"
 
@@ -1836,7 +1836,7 @@ msgstr ""
 msgid "Increase font size"
 msgstr ""
 
-#: ../Pinta.Effects/Effects/InkSketchEffect.cs:146
+#: ../Pinta.Effects/Effects/InkSketchEffect.cs:149
 msgid "Ink Outline"
 msgstr "Обводка чорнилом"
 
@@ -2478,7 +2478,7 @@ msgstr "Немає"
 #: ../Pinta.Core/Algorithms/PixelOps/UserBlendOps.cs:31
 #: ../Pinta.Tools/Brushes/PlainBrush.cs:41
 #: ../Pinta.Tools/Dialogs/TextPropertiesDialog.cs:247
-#: ../Pinta.Tools/Tools/EraserTool.cs:341 ../Pinta.Tools/Tools/TextTool.cs:364
+#: ../Pinta.Tools/Tools/EraserTool.cs:343 ../Pinta.Tools/Tools/TextTool.cs:364
 #: ../Pinta.Tools/Tools/TextTool.cs:470 ../Pinta.Tools/Tools/TextTool.cs:602
 msgid "Normal"
 msgstr "Нормальний"
@@ -2883,7 +2883,7 @@ msgstr "Філотаксис (спірально-симетрично)"
 msgid "Pick tools from a dropdown instead of the tool box"
 msgstr ""
 
-#: ../Pinta.Gui.Widgets/Widgets/ToolBoxWidget.cs:525
+#: ../Pinta.Gui.Widgets/Widgets/ToolBoxWidget.cs:528
 msgid "Pin this item"
 msgstr ""
 
@@ -2991,7 +2991,7 @@ msgstr "Спливні підказки:"
 msgid "Portrait"
 msgstr "Книжкова"
 
-#: ../Pinta.Effects/Effects/AlignObjectEffect.cs:129
+#: ../Pinta.Effects/Effects/AlignObjectEffect.cs:143
 msgid "Position"
 msgstr "Позиціонування"
 
@@ -3775,7 +3775,7 @@ msgstr ""
 #: ../Pinta.Core/Extensions/Gtk/GtkExtensions.Widget.cs:106
 #: ../Pinta.Core/Widgets/ToolSelectorButton.cs:204
 #: ../Pinta.Gui.Widgets/Widgets/ColorPickerDialog.cs:367
-#: ../Pinta.Gui.Widgets/Widgets/StatusBarColorPaletteWidget.cs:784
+#: ../Pinta.Gui.Widgets/Widgets/StatusBarColorPaletteWidget.cs:794
 #: ../Pinta.Gui.Widgets/Widgets/ToolBoxWidget.cs:198
 msgid "Shortcut key"
 msgstr "Гаряча клавіша"
@@ -3834,7 +3834,7 @@ msgstr "Показувати наконечник стрілки на кінце
 msgid "Show an arrowhead at the start point."
 msgstr "Показувати наконечник стрілки на початковій точці."
 
-#: ../Pinta.Gui.Widgets/Widgets/StatusBarColorPaletteWidget.cs:753
+#: ../Pinta.Gui.Widgets/Widgets/StatusBarColorPaletteWidget.cs:763
 msgid "Show color wheel"
 msgstr ""
 
@@ -3900,7 +3900,7 @@ msgstr ""
 msgid "Small Caps"
 msgstr ""
 
-#: ../Pinta.Tools/Tools/EraserTool.cs:341
+#: ../Pinta.Tools/Tools/EraserTool.cs:343
 msgid "Smooth"
 msgstr "Згладжування"
 
@@ -4454,7 +4454,7 @@ msgstr "Дворядовий ефект високогір'я"
 
 #: ../Pinta.Tools/Editable/EditEngines/ArrowedEditEngine.cs:361
 #: ../Pinta.Tools/Editable/EditEngines/TriangleEditEngine.cs:121
-#: ../Pinta.Tools/Tools/EraserTool.cs:337
+#: ../Pinta.Tools/Tools/EraserTool.cs:339
 #: ../Pinta.Tools/Tools/PaintBrushTool.cs:234
 msgid "Type"
 msgstr "Тип"
@@ -4520,7 +4520,7 @@ msgstr "Видалення..."
 msgid "Union (+) ({0} + Left Click)"
 msgstr "Об'єднати (+) ({0} + клацання лівою кнопкою)"
 
-#: ../Pinta.Gui.Widgets/Widgets/ToolBoxWidget.cs:525
+#: ../Pinta.Gui.Widgets/Widgets/ToolBoxWidget.cs:528
 msgid "Unpin this item"
 msgstr ""
 

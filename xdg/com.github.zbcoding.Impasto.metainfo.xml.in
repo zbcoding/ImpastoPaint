@@ -43,6 +43,12 @@
     <binary>impasto</binary>
   </provides>
   <releases>
+    <release version="0.2.1" date="2026-09-05">
+      <url>https://github.com/zbcoding/ImpastoPaint/releases/tag/v0.2.1</url>
+      <description>
+        <p>The popover hint preference's middle option is now "Tool buttons" and means it: hints appear on the toolbox's tool buttons and nowhere else. This release also fixes off-by-one data loss along the canvas's far edges in Levels, Feather, Auto Crop, the smooth eraser, the magic wand and paint bucket, and an Align Object placement error.</p>
+      </description>
+    </release>
     <release version="0.2.0" date="2026-09-02">
       <url>https://github.com/zbcoding/ImpastoPaint/releases/tag/v0.2.0</url>
       <description>

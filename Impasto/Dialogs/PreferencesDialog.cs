@@ -30,7 +30,7 @@ public sealed partial class PreferencesDialog
 	private Gtk.CheckButton statusbar_show_cursor_position_check_button;
 	private Gtk.CheckButton statusbar_show_image_size_check_button;
 	private Gtk.ToggleButton popover_hint_mode_all_button;
-	private Gtk.ToggleButton popover_hint_mode_essential_button;
+	private Gtk.ToggleButton popover_hint_mode_tool_buttons_button;
 	private Gtk.ToggleButton popover_hint_mode_none_button;
 	private bool canvas_surround_color_is_default;
 	private Cairo.Color default_canvas_surround_color;
@@ -61,7 +61,7 @@ public sealed partial class PreferencesDialog
 	public bool StatusBarShowImageSize => statusbar_show_image_size_check_button.Active;
 	public PopoverHintMode PopoverHintMode
 		=> popover_hint_mode_all_button.Active ? PopoverHintMode.All
-			: popover_hint_mode_essential_button.Active ? PopoverHintMode.Essential
+			: popover_hint_mode_tool_buttons_button.Active ? PopoverHintMode.ToolButtonsOnly
 			: PopoverHintMode.None;
 
 	internal static PreferencesDialog New (ChromeManager chrome, int defaultCanvasWidth, int defaultCanvasHeight, Cairo.Color canvasSurroundColor, bool canvasSurroundColorIsDefault, Cairo.Color defaultCanvasSurroundColor, bool pasteExternalImagesToNewLayer, bool extendedPaletteRows, int recentColorsCount, int paletteSize, bool toolboxClassicLayout, bool toolSettingsWrapRows, bool toolSelectorDropDown, PopoverHintMode popoverHintMode, bool statusBarShowCursorPosition, bool statusBarShowImageSize, bool showMainToolBar, bool skipRasterizeObjectsDialog)
@@ -105,7 +105,7 @@ public sealed partial class PreferencesDialog
 	[MemberNotNull (nameof (statusbar_show_cursor_position_check_button))]
 	[MemberNotNull (nameof (statusbar_show_image_size_check_button))]
 	[MemberNotNull (nameof (popover_hint_mode_all_button))]
-	[MemberNotNull (nameof (popover_hint_mode_essential_button))]
+	[MemberNotNull (nameof (popover_hint_mode_tool_buttons_button))]
 	[MemberNotNull (nameof (popover_hint_mode_none_button))]
 	partial void Initialize ()
 	{
@@ -172,13 +172,13 @@ public sealed partial class PreferencesDialog
 		Gtk.ToggleButton popoverHintModeAllButton = CreateHintModeButton (
 			"All",
 			"Show all UI popover hints.");
-		Gtk.ToggleButton popoverHintModeEssentialButton = CreateHintModeButton (
-			"Essential",
-			"Show only essential tool hints.");
+		Gtk.ToggleButton popoverHintModeToolButtonsButton = CreateHintModeButton (
+			"Tool buttons",
+			"Show hints for the toolbox's tool buttons only, none on the canvas.");
 		Gtk.ToggleButton popoverHintModeNoneButton = CreateHintModeButton (
 			"None",
 			"Hide all UI popover hints.");
-		popoverHintModeEssentialButton.SetGroup (popoverHintModeAllButton);
+		popoverHintModeToolButtonsButton.SetGroup (popoverHintModeAllButton);
 		popoverHintModeNoneButton.SetGroup (popoverHintModeAllButton);
 
 		Gtk.Box popoverHintPage = Gtk.Box.New (Gtk.Orientation.Vertical, SPACING);
@@ -186,10 +186,10 @@ public sealed partial class PreferencesDialog
 		popoverHintPage.Append (Gtk.Label.New (Translations.GetString ("Popover hints:")));
 		Gtk.Box popoverHintRow = Gtk.Box.New (Gtk.Orientation.Horizontal, SPACING);
 		popoverHintModeAllButton.Hexpand = true;
-		popoverHintModeEssentialButton.Hexpand = true;
+		popoverHintModeToolButtonsButton.Hexpand = true;
 		popoverHintModeNoneButton.Hexpand = true;
 		popoverHintRow.Append (popoverHintModeAllButton);
-		popoverHintRow.Append (popoverHintModeEssentialButton);
+		popoverHintRow.Append (popoverHintModeToolButtonsButton);
 		popoverHintRow.Append (popoverHintModeNoneButton);
 		popoverHintRow.Append (CreateResetButton (ResetPopoverHintMode));
 		popoverHintPage.Append (popoverHintRow);
@@ -343,7 +343,7 @@ public sealed partial class PreferencesDialog
 		statusbar_show_cursor_position_check_button = statusbarShowCursorPositionCheckButton;
 		statusbar_show_image_size_check_button = statusbarShowImageSizeCheckButton;
 		popover_hint_mode_all_button = popoverHintModeAllButton;
-		popover_hint_mode_essential_button = popoverHintModeEssentialButton;
+		popover_hint_mode_tool_buttons_button = popoverHintModeToolButtonsButton;
 		popover_hint_mode_none_button = popoverHintModeNoneButton;
 	}
 
@@ -398,7 +398,7 @@ public sealed partial class PreferencesDialog
 	private void SetPopoverHintMode (PopoverHintMode mode)
 	{
 		popover_hint_mode_all_button.Active = mode == PopoverHintMode.All;
-		popover_hint_mode_essential_button.Active = mode == PopoverHintMode.Essential;
+		popover_hint_mode_tool_buttons_button.Active = mode == PopoverHintMode.ToolButtonsOnly;
 		popover_hint_mode_none_button.Active = mode == PopoverHintMode.None;
 	}
 

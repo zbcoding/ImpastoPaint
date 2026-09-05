@@ -299,6 +299,9 @@ public sealed partial class ToolBoxWidget
 
 	private void ShowHint (Gtk.Widget anchor, string text)
 	{
+		if (!TransientHintPopover.ShouldShowToolButtonHint)
+			return;
+
 		hint_popup.Show (
 			anchor,
 			text,

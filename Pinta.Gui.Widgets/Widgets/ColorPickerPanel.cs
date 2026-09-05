@@ -430,7 +430,7 @@ public sealed partial class ColorPickerPanel
 		Gtk.EventControllerMotion motion = Gtk.EventControllerMotion.New ();
 		motion.OnMotion += (_, args) => {
 			int index = GetSwatchIndex (recent, new PointD (args.X, args.Y));
-			if (index < 0) {
+			if (index < 0 || !TransientHintPopover.ShouldShow) {
 				popup.Hide ();
 				visibleIndex = -1;
 				return;

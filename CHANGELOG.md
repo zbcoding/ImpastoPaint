@@ -15,6 +15,13 @@ entries, is upstream Pinta work; the Impasto sections cover changes made in this
   selection's bounds verbatim and read past the end of the layer; it now measures only the part
   of the region that lies on the layer.
 
+### Changed
+
+- The popover hint preference's middle option is now "Tool buttons" and does what it says: hints
+  appear on the toolbox's tool buttons and nowhere else - none on the canvas, none on the palette
+  swatches. It was labeled "Essential" and behaved identically to "All", since the only gate in
+  the code was on/off.
+
 ## Impasto - [0.2.0](https://github.com/zbcoding/ImpastoPaint/releases/tag/v0.2.0) - 2026-09-02
 
 ### Added

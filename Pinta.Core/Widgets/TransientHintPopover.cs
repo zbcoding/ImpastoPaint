@@ -16,8 +16,24 @@ public sealed class TransientHintPopover
 {
 	public const string SettingKey = "popover-hint-mode";
 
+	public static PopoverHintMode Mode
+		=> (PopoverHintMode) PintaCore.Settings.GetSetting (SettingKey, (int) PopoverHintMode.All);
+
+	/// <summary>
+	/// Whether a hint anchored to the canvas or to a chrome widget other than a tool button may
+	/// show. Only the <see cref="PopoverHintMode.All"/> tier keeps these; they are what
+	/// <see cref="PopoverHintMode.ToolButtonsOnly"/> exists to silence.
+	/// </summary>
 	public static bool ShouldShow
-		=> PintaCore.Settings.GetSetting (SettingKey, (int) PopoverHintMode.All) != (int) PopoverHintMode.None;
+		=> Mode == PopoverHintMode.All;
+
+	/// <summary>
+	/// Whether a toolbox tool button's hover hint may show. These survive
+	/// <see cref="PopoverHintMode.ToolButtonsOnly"/>, the tier that keeps the toolbox
+	/// discoverable while leaving the canvas alone.
+	/// </summary>
+	public static bool ShouldShowToolButtonHint
+		=> Mode != PopoverHintMode.None;
 
 	private Gtk.Popover? popover;
 	private Gtk.Label? label;
@@ -46,6 +62,11 @@ public sealed class TransientHintPopover
 		double clampMax = 10_000,
 		Action<Gtk.Label>? configure = null)
 	{
+		// Every caller of this overload anchors to the canvas, so the tier that keeps only the
+		// toolbox's hints is enforced here rather than trusted to each tool's own early return.
+		if (!ShouldShow)
+			return;
+
 		last_text = text;
 
 		if (popover is null) {

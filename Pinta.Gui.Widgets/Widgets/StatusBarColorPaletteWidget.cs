@@ -741,8 +741,18 @@ public sealed partial class StatusBarColorPaletteWidget
 	{
 		string? text = null;
 		PointD point = new (args.X, args.Y);
+		WidgetElement element = GetElementAtPoint (point);
 
-		switch (GetElementAtPoint (point)) {
+		// Swatch captions are palette hints, so the tier that keeps only the toolbox's hints
+		// silences them like the colors dock's swatch captions. The action icons (wheel, float,
+		// swap, reset) are ordinary chrome buttons and stay unaffected, as documented.
+		if (!TransientHintPopover.ShouldShow && element is WidgetElement.Palette
+			or WidgetElement.RecentColorsPalette
+			or WidgetElement.PrimaryColor
+			or WidgetElement.SecondaryColor)
+			return false;
+
+		switch (element) {
 			case WidgetElement.RecentColorsIcon:
 				text = PaletteWidget.RecentlyPickedColorsLabel;
 				break;

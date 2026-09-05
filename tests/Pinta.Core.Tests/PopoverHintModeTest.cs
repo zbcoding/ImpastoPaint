@@ -5,15 +5,20 @@ namespace Pinta.Core.Tests;
 /// <summary>
 /// The middle popover-hint tier exists to keep the toolbox discoverable while leaving the canvas
 /// alone, so it has to be a real subset - it was shipped once as a duplicate of "All".
+/// Each test below pins one of the promises the tier makes to the user; the named surfaces are
+/// the ones that have actually bypassed it before (canvas handle tooltips, status-bar swatch
+/// captions), so a new bypass gets a new surface here, not a rewording of the same assertion.
 /// </summary>
 [TestFixture]
 internal sealed class PopoverHintModeTest
 {
 	private object? saved_mode;
 
-	// Nothing here maps a popover: a GTK popup needs a realized toplevel, which a headless run has
-	// no display for. The gate properties are the whole policy - every hint surface asks one of
-	// them before it shows anything - so this fixture pins the policy, not the widget mechanics.
+	// Nothing here maps a popover: a GTK popup - and the native tooltip args the two
+	// query-tooltip handlers answer - need a display, which a headless run has no display for.
+	// The gate properties are the whole policy: every hint surface asks one of them before it
+	// shows anything, so this fixture pins the policy each surface consults, not the widget
+	// mechanics. Handler bodies are verified live in the app.
 
 	// Reading a setting touches PintaCore, whose static constructor builds the palette format
 	// descriptors out of Gtk.FileFilter, so the bindings have to be loaded even though no widget
@@ -41,15 +46,40 @@ internal sealed class PopoverHintModeTest
 	private static void SetMode (PopoverHintMode mode)
 		=> PintaCore.Settings.PutSetting (TransientHintPopover.SettingKey, (int) mode);
 
+	/// <summary>
+	/// Canvas popovers, the transform grip/nudge hints, and the canvas handle tooltips
+	/// (PintaCanvas.HandleQueryTooltip) all consult ShouldShow - the tier keeps none of them.
+	/// </summary>
 	[Test]
-	public void ToolButtonsOnlyShowsToolButtonHintsAndNothingElse ()
+	public void ToolButtonsOnlySilencesCanvasSurfaces ()
 	{
 		SetMode (PopoverHintMode.ToolButtonsOnly);
 
-		Assert.Multiple (() => {
-			Assert.That (TransientHintPopover.ShouldShowToolButtonHint, Is.True, "toolbox tool buttons keep their hints");
-			Assert.That (TransientHintPopover.ShouldShow, Is.False, "the canvas and other chrome do not");
-		});
+		Assert.That (TransientHintPopover.ShouldShow, Is.False, "no canvas hints under the middle tier");
+	}
+
+	/// <summary>
+	/// The colors dock's swatch captions and the status bar's swatch tooltips
+	/// (StatusBarColorPaletteWidget.HandleQueryTooltip) all consult ShouldShow.
+	/// </summary>
+	[Test]
+	public void ToolButtonsOnlySilencesPaletteSwatches ()
+	{
+		SetMode (PopoverHintMode.ToolButtonsOnly);
+
+		Assert.That (TransientHintPopover.ShouldShow, Is.False, "no palette swatch hints under the middle tier");
+	}
+
+	/// <summary>
+	/// The toolbox flyout captions (ToolBoxWidget.ShowHint) consult ShouldShowToolButtonHint,
+	/// the only gate the middle tier leaves open.
+	/// </summary>
+	[Test]
+	public void ToolButtonsOnlyKeepsToolboxCaptions ()
+	{
+		SetMode (PopoverHintMode.ToolButtonsOnly);
+
+		Assert.That (TransientHintPopover.ShouldShowToolButtonHint, Is.True, "toolbox tool buttons keep their hints");
 	}
 
 	[Test]

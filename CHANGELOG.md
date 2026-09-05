@@ -37,6 +37,11 @@ entries, is upstream Pinta work; the Impasto sections cover changes made in this
   the shape control-point coordinates and text corner captions answered the hover directly
   and never asked the tier, so they survived a setting that promised no canvas hints. They
   go through the same gate as every other canvas surface now.
+- The "Tool buttons" tier also silences the status-bar palette's swatch captions now. The
+  colors dock's swatches were already gated, but the status bar answered the same hover
+  through its own tooltip handler, so one set of swatches survived a setting that promised
+  none on the palette swatches. The bar's action icons (wheel, float, swap, reset) are
+  ordinary chrome buttons and keep their tooltips, as documented.
 
 ### Changed
 

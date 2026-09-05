@@ -6,6 +6,11 @@ on:
     paths:
       - "site/**"
       - ".github/workflows/deploy-site.yml"
+  # The download button reads the version from configure.ac at build time, so a
+  # release whose commit touches nothing under site/** still needs a rebuild -
+  # v0.2.1 shipped with the button showing 0.2.0 until a manual dispatch.
+  release:
+    types: [published]
   workflow_dispatch:
 
 permissions:

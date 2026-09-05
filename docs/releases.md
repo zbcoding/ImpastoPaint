@@ -94,6 +94,8 @@ v0.1.1.
       are pointed at the image.
 - [ ] Do not rename or drop `Impasto-linux-dotnet-*.zip` — flatpark matches it with
       `^Impasto-linux-dotnet-.*\.zip$`.
+- [ ] The site's download button shows `vX.Y.Z` (it reads `configure.ac` at build time, and
+  `deploy-site.yml` rebuilds on release publish — confirm it ran).
 
 ## 8. Specific releases
 

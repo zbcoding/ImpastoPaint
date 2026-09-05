@@ -8,7 +8,12 @@ entries, is upstream Pinta work; the Impasto sections cover changes made in this
 
 ## Impasto - [Unreleased](https://github.com/zbcoding/ImpastoPaint/compare/v0.2.0...main)
 
-Changes for the next release go here.
+### Fixed
+
+- The Levels dialog no longer crashes when the selection reaches past the canvas, which Offset
+  Selection and moving a selection off-canvas both produce. Its histogram measured the
+  selection's bounds verbatim and read past the end of the layer; it now measures only the part
+  of the region that lies on the layer.
 
 ## Impasto - [0.2.0](https://github.com/zbcoding/ImpastoPaint/releases/tag/v0.2.0) - 2026-09-02
 

@@ -153,7 +153,10 @@ public abstract class Histogram
 	/// </summary>
 	protected void Clear ()
 	{
-		histogram.Initialize ();
+		// Array.Initialize does nothing for an array of references, so each channel's
+		// counts have to be zeroed individually.
+		foreach (long[] channelHistogram in histogram)
+			Array.Clear (channelHistogram);
 	}
 
 	protected abstract void AddSurfaceRectangleToHistogram (ImageSurface surface, RectangleI rect);
@@ -165,10 +168,14 @@ public abstract class Histogram
 	//    OnHistogramUpdated();
 	//}
 
+	/// <param name="rect">
+	/// Region to measure. Only its overlap with <paramref name="surface"/> is counted; a
+	/// selection is not confined to the canvas, so the caller's region may extend past it.
+	/// </param>
 	public void UpdateHistogram (ImageSurface surface, RectangleI rect)
 	{
 		Clear ();
-		AddSurfaceRectangleToHistogram (surface, rect);
+		AddSurfaceRectangleToHistogram (surface, rect.Intersect (surface.GetBounds ()));
 		OnHistogramUpdated ();
 	}
 

@@ -15,17 +15,27 @@ internal sealed class PopoverHintModeTest
 	// no display for. The gate properties are the whole policy - every hint surface asks one of
 	// them before it shows anything - so this fixture pins the policy, not the widget mechanics.
 
+	// Reading a setting touches PintaCore, whose static constructor builds the palette format
+	// descriptors out of Gtk.FileFilter, so the bindings have to be loaded even though no widget
+	// is created here. Without this the fixture only passes when some other fixture happens to
+	// run first, and `dotnet test --filter` on it alone fails.
+	[OneTimeSetUp]
+	public void InitializeGtk () => Gtk.Module.Initialize ();
+
 	[SetUp]
 	public void SaveMode ()
 	{
 		saved_mode = PintaCore.Settings.GetSetting<object?> (TransientHintPopover.SettingKey, null);
 	}
 
+	// The settings service has no remove, so an absent value is restored as the default rather
+	// than left at whatever tier the test just set - these run against the one static PintaCore.
 	[TearDown]
 	public void RestoreMode ()
 	{
-		if (saved_mode is not null)
-			PintaCore.Settings.PutSetting (TransientHintPopover.SettingKey, saved_mode);
+		PintaCore.Settings.PutSetting (
+			TransientHintPopover.SettingKey,
+			saved_mode ?? (int) PopoverHintMode.All);
 	}
 
 	private static void SetMode (PopoverHintMode mode)

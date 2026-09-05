@@ -70,12 +70,15 @@ public static class OtherExtensions
 
 				start = start with { X = start.X + 1 };
 
-				if (start.X < bounds.Right)
+				// Right and Bottom are the last pixel inside the bounds, so stopping short of them
+				// skipped the region's final column and row: an island living only there - a stray
+				// matching pixel at the far edge of a global fill - was never traced.
+				if (start.X <= bounds.Right)
 					continue;
 
 				start = start with { X = (int) bounds.X, Y = start.Y + 1 };
 
-				if (start.Y >= bounds.Bottom)
+				if (start.Y > bounds.Bottom)
 					break;
 			}
 

@@ -101,6 +101,9 @@ public sealed class InkSketchEffect : BaseEffect
 					int left = Math.Max (x - Radius, 0);
 					int right = Math.Min (x + Radius + 1, destination.Width);
 
+					// Right/Bottom here hold one-past-the-end, not the last pixel: the convolution
+					// window is built and walked exclusively, so the two agree. Do not "fix" one
+					// side alone.
 					RectangleI adjustedBounds = RectangleI.FromLTRB (left, top, right, bottom);
 					ColorBgra baseRGB = CreateBaseRGBA (sourceData, width, x, y, adjustedBounds);
 					ColorBgra topLayer = CreateTopLayer (baseRGB);

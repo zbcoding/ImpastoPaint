@@ -27,6 +27,13 @@ entries, is upstream Pinta work; the Impasto sections cover changes made in this
   background on the right and bottom edges. A fully blank image is now left alone rather than
   cropped to a single pixel.
 
+- The smooth eraser can now erase the canvas's last column and row. Its pixel loops stopped one
+  short of the brush box's far edge, and clipping the brush to the canvas is exactly what put that
+  edge there, so a stripe along the right and bottom sides survived any amount of scrubbing.
+
+- The magic wand and paint bucket no longer drop a region that sits in the last column or row of
+  what they matched, which a global-mode match can easily produce.
+
 ### Changed
 
 - The popover hint preference's middle option is now "Tool buttons" and does what it says: hints

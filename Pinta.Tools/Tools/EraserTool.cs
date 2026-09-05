@@ -293,12 +293,14 @@ public sealed class EraserTool : BaseBrushTool
 			ImageSurface temporarySurface = CopySurfacePart (surf, destinationBounds);
 			Span<ColorBgra> temporaryData = temporarySurface.GetPixelData ();
 
-			for (int iy = destinationBounds.Top; iy < destinationBounds.Bottom; iy++) {
+			// Right/Bottom are the last pixel inside destinationBounds; stopping short of them left
+			// the canvas's final column and row un-erasable, since that is where the clip lands.
+			for (int iy = destinationBounds.Top; iy <= destinationBounds.Bottom; iy++) {
 
 				var srcRow = temporaryData[(temporarySurface.Width * (iy - destinationBounds.Top))..];
 				int dy = Math.Abs ((iy - y) * LUT_Resolution / rad);
 
-				for (var ix = destinationBounds.Left; ix < destinationBounds.Right; ix++) {
+				for (var ix = destinationBounds.Left; ix <= destinationBounds.Right; ix++) {
 
 					int dx = Math.Abs ((ix - x) * LUT_Resolution / rad);
 

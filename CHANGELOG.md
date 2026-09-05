@@ -33,6 +33,10 @@ entries, is upstream Pinta work; the Impasto sections cover changes made in this
 
 - The magic wand and paint bucket no longer drop a region that sits in the last column or row of
   what they matched, which a global-mode match can easily produce.
+- The "Tool buttons" popover hint tier now also silences the canvas's tool-handle tooltips -
+  the shape control-point coordinates and text corner captions answered the hover directly
+  and never asked the tier, so they survived a setting that promised no canvas hints. They
+  go through the same gate as every other canvas surface now.
 
 ### Changed
 

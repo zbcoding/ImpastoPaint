@@ -81,6 +81,11 @@ internal sealed partial class PintaCanvas
 
 	private bool HandleQueryTooltip (Gtk.Widget sender, QueryTooltipSignalArgs args)
 	{
+		// Handle tooltips (shape control points, text corners) are canvas hints, so the tier that
+		// keeps only the toolbox's hints silences them like every other canvas surface.
+		if (!TransientHintPopover.ShouldShow)
+			return false;
+
 		PointD windowPoint = new (args.X, args.Y);
 
 		string? text = tools.CurrentTool?.Handles

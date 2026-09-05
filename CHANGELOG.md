@@ -15,6 +15,18 @@ entries, is upstream Pinta work; the Impasto sections cover changes made in this
   selection's bounds verbatim and read past the end of the layer; it now measures only the part
   of the region that lies on the layer.
 
+- Align Object now lands the object flush against the region's right and bottom edges instead of
+  two pixels short, and centers it on the object's true bounds. Aligning an object as wide or tall
+  as the region, or running the effect with the selection dragged fully off the canvas, used to
+  throw on the render thread - where the exception was swallowed, so the effect just did nothing.
+
+- Feather now covers the last row of the region it is given: the bottom canvas edge fades exactly
+  like the top one, and the image's final row is no longer left blank.
+
+- Auto Crop measures one row and column further, so it no longer keeps a leftover line of
+  background on the right and bottom edges. A fully blank image is now left alone rather than
+  cropped to a single pixel.
+
 ### Changed
 
 - The popover hint preference's middle option is now "Tool buttons" and does what it says: hints

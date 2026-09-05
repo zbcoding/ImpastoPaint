@@ -53,7 +53,7 @@ public sealed class FeatherEffect : BaseEffect
 		// Clean up dest, then collect all border pixels
 		Parallel.For (
 			roi.Top,
-			roi.Bottom,
+			roi.Bottom + 1, // Parallel.For's bound is exclusive; Bottom is the last row inside the roi.
 			new ParallelOptions { MaxDegreeOfParallelism = threads },
 			y => {
 				var src_data = src.GetReadOnlyPixelData ();
@@ -114,7 +114,7 @@ public sealed class FeatherEffect : BaseEffect
 		// Feather pixels according to distance to border pixels
 		Parallel.For (
 			roi.Top,
-			roi.Bottom,
+			roi.Bottom + 1, // Parallel.For's bound is exclusive; Bottom is the last row inside the roi.
 			new ParallelOptions { MaxDegreeOfParallelism = threads },
 			py => {
 				var src_data = src.GetReadOnlyPixelData ();

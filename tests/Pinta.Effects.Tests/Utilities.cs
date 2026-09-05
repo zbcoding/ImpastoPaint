@@ -15,6 +15,12 @@ internal static class Utilities
 		Gdk.Module.Initialize ();
 	}
 
+	/// <summary>
+	/// Runs the static constructor above, which loads the native libraries. A test that builds a
+	/// Cairo surface itself instead of loading an asset needs this first, or the p/invokes fail.
+	/// </summary>
+	internal static void EnsureNativeLibraries () { }
+
 	public static IServiceProvider CreateMockServices ()
 	{
 		Size imageSize = new (250, 250);

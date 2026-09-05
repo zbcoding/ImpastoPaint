@@ -432,7 +432,7 @@ public static class Utility
 	/// </summary>
 	private static bool IsConstantRow (ImageSurface surface, ColorBgra color, RectangleI rectangle, int y)
 	{
-		for (int x = rectangle.Left; x < rectangle.Right; ++x)
+		for (int x = rectangle.Left; x <= rectangle.Right; ++x)
 			if (surface.GetColorBgra (new (x, y)) != color)
 				return false;
 
@@ -444,23 +444,32 @@ public static class Utility
 	/// </summary>
 	private static bool IsConstantColumn (ImageSurface surface, ColorBgra color, RectangleI rectangle, int x)
 	{
-		for (int y = rectangle.Top; y < rectangle.Bottom; ++y)
+		for (int y = rectangle.Top; y <= rectangle.Bottom; ++y)
 			if (surface.GetColorBgra (new (x, y)) != color)
 				return false;
 
 		return true;
 	}
 
+	/// <summary>
+	/// The bounds of the non-background content inside <paramref name="searchArea"/>, found by
+	/// trimming every edge row and column that matches the area's top-left pixel. An empty area is
+	/// returned unchanged: its origin need not even be a pixel of the surface, since a region
+	/// clamped from a fully off-canvas selection lands on the far edge with zero size.
+	/// </summary>
 	public static RectangleI GetObjectBounds (ImageSurface image, RectangleI? searchArea = null)
 	{
 		// Use the entire image bounds by default, or restrict to the provided search area.
 		RectangleI result = searchArea ?? image.GetBounds ();
 
+		if (result.IsEmpty)
+			return result;
+
 		// Get the background color from the top-left pixel of the rectangle
 		ColorBgra borderColor = image.GetColorBgra (new PointI (result.Left, result.Top));
 
 		// Top down.
-		for (int y = result.Top; y < result.Bottom; ++y) {
+		for (int y = result.Top; y <= result.Bottom; ++y) {
 			if (!IsConstantRow (image, borderColor, result, y))
 				break;
 
@@ -468,7 +477,7 @@ public static class Utility
 		}
 
 		// Bottom up.
-		for (int y = result.Bottom - 1; y >= result.Top; --y) {
+		for (int y = result.Bottom; y >= result.Top; --y) {
 			if (!IsConstantRow (image, borderColor, result, y))
 				break;
 
@@ -476,7 +485,7 @@ public static class Utility
 		}
 
 		// Left side.
-		for (int x = result.Left; x < result.Right; ++x) {
+		for (int x = result.Left; x <= result.Right; ++x) {
 			if (!IsConstantColumn (image, borderColor, result, x))
 				break;
 
@@ -484,7 +493,7 @@ public static class Utility
 		}
 
 		// Right side.
-		for (int x = result.Right - 1; x >= result.Left; --x) {
+		for (int x = result.Right; x >= result.Left; --x) {
 			if (!IsConstantColumn (image, borderColor, result, x))
 				break;
 

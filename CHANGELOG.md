@@ -8,6 +8,13 @@ entries, is upstream Pinta work; the Impasto sections cover changes made in this
 
 ## Impasto - [Unreleased](https://github.com/zbcoding/ImpastoPaint/compare/v0.2.1...main)
 
+### Added
+
+- The layers pad menu has a Thumbnail Size slider in its own section. It grows the layer
+  thumbnails in both the sidebar and the floating layers window; large thumbnails push the layer
+  names underneath them so they stay readable, and the lowest setting hides thumbnails entirely.
+  The size is remembered between sessions.
+
 ### Fixed
 
 - The side dock now shrinks to its icon strip once every pad in it is minimized, and loses its

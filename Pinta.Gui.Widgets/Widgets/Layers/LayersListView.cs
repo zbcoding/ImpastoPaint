@@ -53,6 +53,18 @@ public sealed partial class LayersListView
 	// Up/Down runs would otherwise leave the command with nothing selected to move.
 	private (UserLayer Layer, int Index)? last_object_row;
 
+	// Impasto: whether rows currently stack the layer name under its thumbnail. Recomputed from the
+	// thumbnail size and the list's own width, so a big thumbnail in a narrow pad still leaves the
+	// name readable instead of pushing it off the row.
+	private bool label_below;
+
+	// Row space the thumbnail does not get: the tree expander's indent, the visibility check button,
+	// box spacing and margins.
+	private const int RowChromeWidth = 60;
+
+	// Narrower than this and a layer name beside the thumbnail is not worth showing.
+	private const int MinLabelWidth = 90;
+
 	public static new LayersListView New ()
 		=> NewWithProperties ([]);
 
@@ -112,6 +124,68 @@ public sealed partial class LayersListView
 
 		// Lets Move Layer Up/Down reorder the selected object sub-row instead of the layer.
 		LayerObjectSelection.MoveSelectedObject = MoveSelectedObjectRow;
+
+		// Impasto: the thumbnail slider (layers pad menu) and the pad's own width both decide the
+		// row shape, so react to each of them.
+		LayerThumbnailScale.Changed += (_, _) => {
+			label_below = ComputeLabelBelow ();
+			ApplyRowLayout ();
+		};
+
+		Hadjustment!.OnNotify += (_, args) => {
+			if (args.Pspec.GetName () != "page-size")
+				return;
+			if (!UpdateLabelBelow ())
+				return;
+			ApplyRowLayout ();
+		};
+	}
+
+	/// <summary>
+	/// Whether the layer name has to move under the thumbnail for the list's current width.
+	/// </summary>
+	private bool ComputeLabelBelow ()
+	{
+		double viewportWidth = Hadjustment?.PageSize ?? 0;
+		return
+			LayerThumbnailScale.Enabled
+			&& viewportWidth > 0
+			&& viewportWidth < LayerThumbnailScale.Width + MinLabelWidth + RowChromeWidth;
+	}
+
+	/// <summary>Recomputes <see cref="label_below"/>; true when it changed.</summary>
+	private bool UpdateLabelBelow ()
+	{
+		bool below = ComputeLabelBelow ();
+		if (below == label_below)
+			return false;
+
+		label_below = below;
+		return true;
+	}
+
+	/// <summary>
+	/// Pushes the current thumbnail size and row shape onto the rows that already exist. Rows
+	/// created later pick it up in the factory's setup/bind handlers.
+	/// </summary>
+	private void ApplyRowLayout ()
+	{
+		for (Gtk.Widget? row = list_view.GetFirstChild (); row is not null; row = row.GetNextSibling ())
+			foreach (LayersListViewItemWidget widget in RowItemWidgets (row))
+				widget.ApplyThumbnailLayout (label_below);
+	}
+
+	private static IEnumerable<LayersListViewItemWidget> RowItemWidgets (Gtk.Widget parent)
+	{
+		for (Gtk.Widget? child = parent.GetFirstChild (); child is not null; child = child.GetNextSibling ()) {
+			if (child is LayersListViewItemWidget widget) {
+				yield return widget;
+				continue;
+			}
+
+			foreach (LayersListViewItemWidget descendant in RowItemWidgets (child))
+				yield return descendant;
+		}
 	}
 
 	// Returns the (cached, live) child model of object rows for a layer row, or null for object rows
@@ -167,18 +241,20 @@ public sealed partial class LayersListView
 		}
 	}
 
-	private static void HandleFactorySetup (
+	private void HandleFactorySetup (
 		Gtk.SignalListItemFactory factory,
 		Gtk.SignalListItemFactory.SetupSignalArgs args)
 	{
 		var item = (Gtk.ListItem) args.Object;
 		// A TreeExpander supplies the expand/collapse arrow and indentation; it wraps the row widget.
 		Gtk.TreeExpander expander = Gtk.TreeExpander.New ();
-		expander.SetChild (LayersListViewItemWidget.New ());
+		LayersListViewItemWidget widget = LayersListViewItemWidget.New ();
+		widget.ApplyThumbnailLayout (label_below);
+		expander.SetChild (widget);
 		item.SetChild (expander);
 	}
 
-	private static void HandleFactoryBind (
+	private void HandleFactoryBind (
 		Gtk.SignalListItemFactory factory,
 		Gtk.SignalListItemFactory.BindSignalArgs args)
 	{
@@ -189,6 +265,7 @@ public sealed partial class LayersListView
 		expander.SetListRow (row);
 		var widget = (LayersListViewItemWidget) expander.GetChild ()!;
 		widget.SetItem (model_item);
+		widget.ApplyThumbnailLayout (label_below);
 	}
 
 	// A layer expands to a tree of sub-rows when it holds editable objects (shapes/text/modifiers)

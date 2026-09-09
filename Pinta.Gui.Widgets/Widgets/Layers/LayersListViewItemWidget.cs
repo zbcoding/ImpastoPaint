@@ -543,6 +543,7 @@ public sealed partial class LayersListViewItemWidget
 
 	private Gtk.DrawingArea item_thumbnail;
 	private Gtk.Label item_label;
+	private Gtk.Box content_box;
 	private Gtk.CheckButton visible_button;
 	private Gtk.DrawingArea object_badge;
 	private Gtk.DrawingArea tree_line;
@@ -557,13 +558,14 @@ public sealed partial class LayersListViewItemWidget
 	[MemberNotNull (nameof (item_label))]
 	[MemberNotNull (nameof (visible_button))]
 	[MemberNotNull (nameof (object_badge))]
+	[MemberNotNull (nameof (content_box))]
 	[MemberNotNull (nameof (tree_line))]
 	partial void Initialize ()
 	{
 		Gtk.DrawingArea itemThumbnail = Gtk.DrawingArea.New ();
 		itemThumbnail.SetDrawFunc ((area, context, width, height) => DrawThumbnail (context, width, height));
-		itemThumbnail.WidthRequest = 60;
-		itemThumbnail.HeightRequest = 40;
+		itemThumbnail.WidthRequest = LayerThumbnailScale.Width;
+		itemThumbnail.HeightRequest = LayerThumbnailScale.Height;
 
 		Gtk.Label itemLabel = Gtk.Label.New (string.Empty);
 		itemLabel.Halign = Gtk.Align.Start;
@@ -625,8 +627,13 @@ public sealed partial class LayersListViewItemWidget
 		Append (treeLine);
 		Append (visibleButton);
 		Append (objectBadge);
-		Append (itemLabel);
-		Append (itemThumbnail);
+		// The label and thumbnail share a box so the row can reflow: side by side at the usual
+		// sizes, thumbnail over label once a large thumbnail would leave the name no room.
+		Gtk.Box contentBox = Gtk.Box.New (Gtk.Orientation.Horizontal, 6);
+		contentBox.Hexpand = true;
+		contentBox.Append (itemLabel);
+		contentBox.Append (itemThumbnail);
+		Append (contentBox);
 
 		// --- References to keep
 
@@ -634,6 +641,7 @@ public sealed partial class LayersListViewItemWidget
 		item_label = itemLabel;
 		visible_button = visibleButton;
 		object_badge = objectBadge;
+		content_box = contentBox;
 		tree_line = treeLine;
 	}
 
@@ -1036,6 +1044,36 @@ public sealed partial class LayersListViewItemWidget
 	}
 
 	/// <summary>
+	/// Whether this row draws a thumbnail: only layer rows do, and only while the layer list's
+	/// thumbnail slider is above its "off" step.
+	/// </summary>
+	private bool ShowsThumbnail
+		=> LayerThumbnailScale.Enabled && item is not null && !item.IsObjectRow && !item.IsMaskRow;
+
+	/// <summary>
+	/// Resizes the thumbnail to the current slider step and shapes the row around it.
+	/// <paramref name="labelBelow"/> stacks the label under the thumbnail instead of beside it,
+	/// which is what keeps a wide thumbnail from squeezing the layer name out of the row.
+	/// </summary>
+	public void ApplyThumbnailLayout (bool labelBelow)
+	{
+		item_thumbnail.WidthRequest = LayerThumbnailScale.Width;
+		item_thumbnail.HeightRequest = LayerThumbnailScale.Height;
+
+		content_box.SetOrientation (labelBelow ? Gtk.Orientation.Vertical : Gtk.Orientation.Horizontal);
+
+		// Vertical: thumbnail first, label underneath. Horizontal: label first, thumbnail trailing.
+		content_box.ReorderChildAfter (item_thumbnail, labelBelow ? null : item_label);
+		item_thumbnail.Halign = labelBelow ? Gtk.Align.Start : Gtk.Align.End;
+
+		item_thumbnail.SetVisible (ShowsThumbnail);
+
+		// The cached surface was rendered for the old size.
+		thumbnail_surface = null;
+		item_thumbnail.QueueDraw ();
+	}
+
+	/// <summary>
 	/// Event handler for modifications to the item's layer.
 	/// </summary>
 	private void OnLayerModified (object? sender, EventArgs e)
@@ -1056,7 +1094,7 @@ public sealed partial class LayersListViewItemWidget
 		// Object and mask rows get no thumbnail (the TreeExpander supplies their indentation), but
 		// they do keep the visibility checkbox — it toggles the object's/mask's own Hidden flag.
 		bool isObject = item.IsObjectRow || item.IsMaskRow;
-		item_thumbnail.SetVisible (!isObject);
+		item_thumbnail.SetVisible (ShowsThumbnail);
 		visible_button.SetActive (item.Visible);
 
 		// Widgets are recycled between rows, so both states have to be set explicitly.

@@ -62,10 +62,19 @@ internal sealed class LayersPad : IDockPad
 		hamburger_menu.AppendSection (null, flip_section);
 		hamburger_menu.AppendSection (null, prop_section);
 
+		// Impasto: thumbnail size is a setting for the whole list, not an operation on one layer,
+		// so it gets its own section (a separator above it) and a slider rather than a menu item.
+		Gio.Menu thumbnail_section = Gio.Menu.New ();
+		Gio.MenuItem thumbnail_item = Gio.MenuItem.New (null, null);
+		thumbnail_item.SetAttributeValue ("custom", GLib.Variant.NewString (ThumbnailSliderId));
+		thumbnail_section.AppendItem (thumbnail_item);
+		hamburger_menu.AppendSection (null, thumbnail_section);
+
 		Gtk.MenuButton hamburger_button = GtkExtensions.CreateMenuButton (
 			hamburger_menu, Resources.StandardIcons.OpenMenu);
 
 		hamburger_button.Direction = Gtk.ArrowType.Up;
+		((Gtk.PopoverMenu) hamburger_button.Popover!).AddChild (CreateThumbnailSlider (), ThumbnailSliderId);
 
 		// ponytail: symbolic icons render at 16px, so 24px = 1.5x bigger
 		Gtk.Button move_up = layer_actions.MoveLayerUp.CreateDockToolBarItem ();
@@ -87,5 +96,35 @@ internal sealed class LayersPad : IDockPad
 		]);
 
 		workspace.AddItem (layers_item, DockPlacement.Right);
+	}
+
+	// Id linking the "custom" menu item above to the widget added to the popover.
+	private const string ThumbnailSliderId = "layer-thumbnail-size";
+
+	/// <summary>
+	/// Impasto: the layer thumbnail size slider. Its lowest step turns thumbnails off; the rest
+	/// grow them, and the list reflows the layer names under the thumbnails when they stop fitting
+	/// beside them.
+	/// </summary>
+	private static Gtk.Widget CreateThumbnailSlider ()
+	{
+		Gtk.Label title = Gtk.Label.New (Translations.GetString ("Thumbnail Size"));
+		title.Halign = Gtk.Align.Start;
+
+		Gtk.Scale slider = Gtk.Scale.NewWithRange (Gtk.Orientation.Horizontal, 0, LayerThumbnailScale.MaxStep, 1);
+		slider.WidthRequest = 180;
+		slider.DrawValue = false;
+		slider.RoundDigits = 0;
+		slider.Digits = 0;
+		slider.SetValue (LayerThumbnailScale.Step);
+		slider.AddMark (0, Gtk.PositionType.Bottom, Translations.GetString ("Off"));
+		slider.TooltipText = Translations.GetString ("Size of the layer thumbnails; the lowest setting hides them");
+		slider.OnValueChanged += (_, _) => LayerThumbnailScale.Step = (int) slider.GetValue ();
+
+		Gtk.Box layout = Gtk.Box.New (Gtk.Orientation.Vertical, 2);
+		layout.SetAllMargins (6);
+		layout.Append (title);
+		layout.Append (slider);
+		return layout;
 	}
 }

@@ -12,6 +12,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\Pinta.Core\Pinta.Core.csproj" />
     <ProjectReference Include="..\..\Pinta.Gui.Widgets\Pinta.Gui.Widgets.csproj" />
+    <ProjectReference Include="..\..\Pinta.Docking\Pinta.Docking.csproj" />
   </ItemGroup>
   
   <ItemGroup>

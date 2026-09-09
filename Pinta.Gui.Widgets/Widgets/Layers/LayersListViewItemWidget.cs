@@ -653,6 +653,20 @@ public sealed partial class LayersListViewItemWidget
 	private static bool IsLayerRow ([NotNullWhen (true)] LayersListViewItem? row)
 		=> IsBoundRow (row) && !row.IsObjectRow && !row.IsMaskRow;
 
+	/// <summary>
+	/// Makes this row's layer the document's current layer. A no-op when it already is, or when the
+	/// row is not showing a layer of an open document.
+	/// </summary>
+	internal void MakeRowLayerCurrent ()
+	{
+		if (!IsBoundRow (item))
+			return;
+
+		Document doc = PintaCore.Workspace.ActiveDocument;
+		if (doc.Layers.CurrentUserLayer != item.UserLayer)
+			doc.Layers.SetCurrentUserLayer (item.UserLayer);
+	}
+
 	private void MenuGesture_OnPressed (
 		Gtk.GestureClick _,
 		Gtk.GestureClick.PressedSignalArgs args)
@@ -672,11 +686,8 @@ public sealed partial class LayersListViewItemWidget
 			return;
 		}
 
-		Document doc = PintaCore.Workspace.ActiveDocument;
-		// Ensure this is the current layer before opening the menu, since the menu actions
-		// apply to the current layer.
-		if (doc.Layers.CurrentUserLayer != item.UserLayer)
-			doc.Layers.SetCurrentUserLayer (item.UserLayer!);
+		// The menu's actions apply to the current layer, so this row has to be it first.
+		MakeRowLayerCurrent ();
 
 		LayerActions actions = PintaCore.Actions.Layers;
 
@@ -951,6 +962,15 @@ public sealed partial class LayersListViewItemWidget
 	{
 		if (!IsBoundRow (item))
 			return null;
+
+		// GTK selects a list row on button *release*, but a press that drifts past the drag threshold
+		// starts a DnD instead and resets the row's click gesture — so the release never arrives, the
+		// selection never changes, and the layer never becomes current. Dropping back on the same row
+		// is a no-op (DropLayerRow's from == target guard), so the whole gesture silently did nothing
+		// and the layer the user thought they had picked was still the old one: the next Cut acted on
+		// it. Make the dragged row current here, the same guarantee MenuGesture_OnPressed gives
+		// right-click. Cheap when it is already current, and the drop's own reorder is still deferred.
+		MakeRowLayerCurrent ();
 
 		return Gdk.ContentProvider.NewForValue (new GObject.Value ((GObject.Object) item));
 	}

@@ -86,8 +86,21 @@ public abstract class SelectTool : BaseTool
 		hist = new SelectionHistoryItem (workspace, Icon, Name);
 		hist.TakeSnapshot ();
 
-		if (handle.BeginDrag (e.PointDouble, document.ImageSize))
+		// Only a *visible* selection may be resized by its grips. The handle rectangle keeps the
+		// last committed bounds even while hidden, and Document.ResetSelectionPaths leaves it at the
+		// full canvas after every Deselect, so an unguarded hit test let a press near the canvas's
+		// top-left corner grab an invisible UpperLeft grip and drag out a whole-canvas selection
+		// instead of starting a new rectangle. handle.Active is the same visibility gate the canvas
+		// uses for drawing the grips and for cursor/tooltip targeting.
+		if (handle.Active && handle.BeginDrag (e.PointDouble, document.ImageSize)) {
+			// Resizing replaces the selection it started from; it must not inherit the previous
+			// drag's combine mode, and PreviousSelection has to be the selection actually on screen
+			// (the early return used to skip both, so a resize could union with a stale selection).
+			combine_mode = CombineMode.Replace;
+			document.PreviousSelection = document.Selection.Clone ();
+			document.Selection.SelectionPolygons.Clear ();
 			return;
+		}
 
 		// Start drawing a new rectangle.
 		combine_mode = PintaCore.Workspace.SelectionHandler.DetermineCombineMode (e);

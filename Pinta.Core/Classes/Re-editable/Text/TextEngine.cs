@@ -382,12 +382,16 @@ public sealed partial class TextEngine
 			ClearSelection ();
 	}
 
-	public void PerformCopy (Gdk.Clipboard clipboard)
+	/// <summary>
+	/// Copies the selected text to the clipboard. Returns false when no text is selected, so the
+	/// caller can let the canvas-level Copy run instead of silently consuming the command.
+	/// </summary>
+	public bool PerformCopy (Gdk.Clipboard clipboard)
 	{
 		// Note we could set the clipboard text to empty if nothing is selected,
 		// but this seems to crash on Windows (bug 2070035)
 		if (!HasSelection ())
-			return;
+			return false;
 
 		StringBuilder strbld = new ();
 
@@ -402,13 +406,20 @@ public sealed partial class TextEngine
 		strbld.Remove (strbld.Length - Environment.NewLine.Length, Environment.NewLine.Length);
 
 		clipboard.SetText (strbld.ToString ());
+		return true;
 	}
 
-	public void PerformCut (Gdk.Clipboard clipboard)
+	/// <summary>
+	/// Cuts the selected text to the clipboard. Returns false when no text is selected — same
+	/// contract as <see cref="PerformCopy"/>.
+	/// </summary>
+	public bool PerformCut (Gdk.Clipboard clipboard)
 	{
-		PerformCopy (clipboard);
-		if (HasSelection ())
-			DeleteSelection ();
+		if (!PerformCopy (clipboard))
+			return false;
+
+		DeleteSelection ();
+		return true;
 	}
 
 	/// <summary>

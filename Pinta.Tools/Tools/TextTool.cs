@@ -2801,13 +2801,15 @@ public sealed class TextTool : BaseTool
 		return true;
 	}
 
+	// Copy/Cut are only ours while there is selected *text* to act on. An unqualified `true` here
+	// swallowed the command whenever a text edit was open — the canvas selection was then neither
+	// copied nor erased, with no clipboard change and no history item to show for it.
 	protected override bool OnHandleCopy (Document document, Gdk.Clipboard cb)
 	{
 		if (!is_editing)
 			return false;
 
-		CurrentTextEngine.PerformCopy (cb);
-		return true;
+		return CurrentTextEngine.PerformCopy (cb);
 	}
 
 	// ponytail: async void is the sanctioned fire-and-forget for event-thread paste.
@@ -2823,7 +2825,9 @@ public sealed class TextTool : BaseTool
 		if (!is_editing)
 			return false;
 
-		CurrentTextEngine.PerformCut (cb);
+		if (!CurrentTextEngine.PerformCut (cb))
+			return false;
+
 		RedrawText (true);
 		return true;
 	}

@@ -24,13 +24,11 @@ public static class LayerThumbnailScale
 
 	public static int MaxStep => widths.Length - 1;
 
-	private static int? current_step;
-
 	/// <summary>Raised when <see cref="Step"/> changes, so open lists can resize their rows.</summary>
 	public static event EventHandler? Changed;
 
 	public static int Step {
-		get => current_step ??= Math.Clamp (
+		get => Math.Clamp (
 			PintaCore.Settings.GetSetting (SettingKey, DefaultStep),
 			0,
 			MaxStep);
@@ -39,7 +37,6 @@ public static class LayerThumbnailScale
 			if (Step == clamped)
 				return;
 
-			current_step = clamped;
 			PintaCore.Settings.PutSetting (SettingKey, clamped);
 			Changed?.Invoke (null, EventArgs.Empty);
 		}

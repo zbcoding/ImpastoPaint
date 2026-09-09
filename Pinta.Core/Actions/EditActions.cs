@@ -336,9 +336,14 @@ public sealed class EditActions
 
 		tools.Commit ();
 
-		ImageSurface old = doc.Layers.CurrentUserLayer.Surface.Clone ();
+		// Paint the surface the user is actually editing: the layer's raster, or its mask while the
+		// mask row is the dock's edit target. Reading Surface directly sent the fill to the colour
+		// raster of a layer whose mask the user was painting.
+		bool maskIsTarget = doc.Layers.CurrentMaskIsTarget;
+		ImageSurface target = doc.Layers.CurrentPaintSurface;
+		ImageSurface old = target.Clone ();
 
-		using Context g = new (doc.Layers.CurrentUserLayer.Surface);
+		using Context g = new (target);
 
 		g.AppendPath (doc.Selection.SelectionPath);
 		g.FillRule = FillRule.EvenOdd;
@@ -352,7 +357,8 @@ public sealed class EditActions
 				Resources.Icons.EditSelectionFill,
 				Translations.GetString ("Fill Selection"),
 				old,
-				doc.Layers.CurrentUserLayerIndex
+				doc.Layers.CurrentUserLayerIndex,
+				maskIsTarget
 			)
 		);
 	}
@@ -387,12 +393,18 @@ public sealed class EditActions
 		// raster erase/cut would miss them entirely. Bake only the objects the selection overlaps into
 		// the base raster first (its own undoable step), after asking the user. Objects the selection
 		// doesn't touch stay editable. Cancelling the prompt aborts the whole op. Covers Cut too.
-		if (!RasterizeSelectionObjects (doc))
+		// Skipped while a mask is the target: the objects are not what is being erased, so there is
+		// nothing to bake and no reason to prompt (the paint tools skip them for the same reason).
+		bool maskIsTarget = doc.Layers.CurrentMaskIsTarget;
+		if (!maskIsTarget && !RasterizeSelectionObjects (doc))
 			return;
 
-		ImageSurface old = doc.Layers.CurrentUserLayer.Surface.Clone ();
+		// Erase from the surface the user is editing — the layer's mask when its mask row is the
+		// dock's edit target, otherwise its raster.
+		ImageSurface target = doc.Layers.CurrentPaintSurface;
+		ImageSurface old = target.Clone ();
 
-		using Context g = new (doc.Layers.CurrentUserLayer.Surface);
+		using Context g = new (target);
 
 		g.AppendPath (doc.Selection.SelectionPath);
 		g.FillRule = FillRule.EvenOdd;
@@ -404,8 +416,8 @@ public sealed class EditActions
 
 		doc.History.PushNewItem (
 			sender switch {
-				string and "Cut" => new SimpleHistoryItem (Resources.StandardIcons.EditCut, Translations.GetString ("Cut"), old, doc.Layers.CurrentUserLayerIndex),
-				_ => new SimpleHistoryItem (Resources.Icons.EditSelectionErase, Translations.GetString ("Erase Selection"), old, doc.Layers.CurrentUserLayerIndex),
+				string and "Cut" => new SimpleHistoryItem (Resources.StandardIcons.EditCut, Translations.GetString ("Cut"), old, doc.Layers.CurrentUserLayerIndex, maskIsTarget),
+				_ => new SimpleHistoryItem (Resources.Icons.EditSelectionErase, Translations.GetString ("Erase Selection"), old, doc.Layers.CurrentUserLayerIndex, maskIsTarget),
 			}
 		);
 	}
@@ -518,7 +530,16 @@ public sealed class EditActions
 
 		tools.Commit ();
 
-		CopyLayersToClipboard (doc, doc.Layers.CurrentUserLayer.GetLayersToPaint (), cb);
+		// Copy what the user is editing. With the mask row selected that is the mask's own surface,
+		// not the layer's composite — otherwise Cut would put the colour pixels on the clipboard and
+		// then erase the mask. A plain Layer over the mask surface is the copy path's existing shape
+		// (opaque, Normal, untransformed), so the region is clipped and copied exactly as drawn.
+		IEnumerable<Layer> source =
+			doc.Layers.CurrentMaskIsTarget && doc.Layers.CurrentUserLayer.Mask is { } mask
+			? [new Layer (mask.Surface)]
+			: doc.Layers.CurrentUserLayer.GetLayersToPaint ();
+
+		CopyLayersToClipboard (doc, source, cb);
 	}
 
 	private void HandlerPintaCoreActionsEditCopyMergedActivated (object sender, EventArgs e)

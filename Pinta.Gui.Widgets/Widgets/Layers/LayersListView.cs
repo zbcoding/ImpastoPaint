@@ -145,13 +145,17 @@ public sealed partial class LayersListView
 	/// Whether the layer name has to move under the thumbnail for the list's current width.
 	/// </summary>
 	private bool ComputeLabelBelow ()
-	{
-		double viewportWidth = Hadjustment?.PageSize ?? 0;
-		return
-			LayerThumbnailScale.Enabled
+		=> LabelBelowForViewport (Hadjustment?.PageSize ?? 0);
+
+	/// <summary>
+	/// The width policy behind <see cref="ComputeLabelBelow"/>: a row keeps the name beside the
+	/// thumbnail only while the viewport has room for the chrome, the thumbnail and a readable
+	/// name. A viewport of 0 has not been measured yet, so the row keeps its default shape.
+	/// </summary>
+	internal static bool LabelBelowForViewport (double viewportWidth)
+		=> LayerThumbnailScale.Enabled
 			&& viewportWidth > 0
 			&& viewportWidth < LayerThumbnailScale.Width + MinLabelWidth + RowChromeWidth;
-	}
 
 	/// <summary>Recomputes <see cref="label_below"/>; true when it changed.</summary>
 	private bool UpdateLabelBelow ()

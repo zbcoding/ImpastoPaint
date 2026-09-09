@@ -17,6 +17,37 @@ entries, is upstream Pinta work; the Impasto sections cover changes made in this
 
 ### Fixed
 
+- Dragging out a selection from the canvas's top-left corner now draws the rectangle you dragged
+  instead of selecting the whole canvas. A hidden selection keeps its resize grips positioned
+  where they last were, and a Deselect leaves them covering the entire canvas, so a press near
+  the origin grabbed the invisible top-left grip and resized that full-canvas rectangle. Grips
+  are only grabbable while the selection they belong to is visible now. Resizing a visible
+  selection by a grip also replaces it properly, so dragging a corner inwards shrinks it rather
+  than combining with the selection it started from.
+
+- Clicking a layer in the layers pad now always makes it the current layer, so the next Cut acts
+  on the layer you picked. A click whose press drifted a few pixels started a drag-and-drop
+  instead, which cancelled the row's click and left the previous layer current; dropping back on
+  the same row did nothing, so the gesture silently had no effect and a second click appeared to
+  be needed.
+
+- Cut and Copy no longer do nothing while a text edit is open with no text selected. The text tool
+  claimed both commands for any open edit, and its own cut has nothing to do without selected
+  characters, so the canvas selection was neither copied nor erased - no clipboard change, no
+  history entry, no message. It now declines unless it has selected text, letting the canvas-level
+  cut and copy run.
+
+- Cut, Erase Selection and Fill Selection now act on a layer's mask while its mask row is the
+  selected paint target, matching every paint tool. They read and wrote the layer's colour raster
+  instead, so cutting while painting a mask destroyed pixels the user was not editing, left the
+  mask untouched, and undid onto the wrong surface. Copy reads the mask on that path too, so
+  Cut puts the mask region on the clipboard rather than the colour pixels it did not remove.
+
+- Redoing a paste puts the pasted content back where it was pasted. The history entry recorded the
+  pixels but not their position or an oversized image's dimensions, so undo followed by redo
+  dropped the content at the canvas's top-left corner - away from its own selection outline - and
+  clipped anything hanging past the canvas edge.
+
 - The side dock now shrinks to its icon strip once every pad in it is minimized, and loses its
   resize handle while it is empty. It used to keep the width the pads had - a wide blank column
   the user could drag even wider with nothing in it.

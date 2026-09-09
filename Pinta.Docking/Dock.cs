@@ -35,20 +35,57 @@ public sealed partial class Dock
 {
 	private Gtk.Paned pane;
 
+	/// <summary>
+	/// Whether the panel is currently the paned's end child. While no item is
+	/// docked, the panel sits directly in the box instead, so it is only as wide
+	/// as its icon strip and has no resize handle to drag.
+	/// </summary>
+	private bool panel_in_pane;
+
 	public DockPanel RightPanel { get; } = DockPanel.New ();
 
 	[MemberNotNull (nameof (pane))]
 	partial void Initialize ()
 	{
 		pane = Gtk.Paned.New (Gtk.Orientation.Horizontal);
-		pane.EndChild = RightPanel;
 		pane.ResizeEndChild = false;
 		pane.ShrinkEndChild = false;
+		pane.Hexpand = true;
+
+		RightPanel.DockedItemsChanged += (_, _) => UpdatePanelPlacement ();
 
 		// --- Initialization (Gtk.Box)
 
 		SetOrientation (Gtk.Orientation.Horizontal);
 		Append (pane);
+
+		// Starts collapsed; AddItem docks the panel into the paned.
+		RightPanel.Hexpand = false;
+		Append (RightPanel);
+	}
+
+	/// <summary>
+	/// Move the panel between the paned (resizable) and the box (icon strip width).
+	/// </summary>
+	private void UpdatePanelPlacement ()
+	{
+		bool docked = RightPanel.HasDockedItems;
+		if (docked == panel_in_pane)
+			return;
+
+		if (docked) {
+			Remove (RightPanel);
+			RightPanel.Hexpand = true;
+			pane.EndChild = RightPanel;
+		} else {
+			pane.EndChild = null;
+			// Explicitly unset, otherwise the empty panes inside the panel
+			// propagate their expansion and the box hands it the free width.
+			RightPanel.Hexpand = false;
+			Append (RightPanel);
+		}
+
+		panel_in_pane = docked;
 	}
 
 	public static Dock New () => NewWithProperties ([]);

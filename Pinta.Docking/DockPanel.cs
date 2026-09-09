@@ -32,6 +32,17 @@ namespace Pinta.Docking;
 [GObject.Subclass<Gtk.Box>]
 public sealed partial class DockPanel
 {
+	/// <summary>
+	/// Where a panel item currently lives. The panel is only as wide as its
+	/// icon strip unless at least one item is <see cref="ItemState.Docked"/>.
+	/// </summary>
+	internal enum ItemState
+	{
+		Docked,
+		Minimized,
+		Floating,
+	}
+
 	internal sealed class DockPanelItem
 	{
 		public DockItem Item { get; }
@@ -39,6 +50,24 @@ public sealed partial class DockPanel
 		public Gtk.ToggleButton ReopenButton { get; }
 		private readonly Gtk.Popover popover;
 		private Gtk.Window? float_window;
+
+		/// <summary>
+		/// Raised whenever <see cref="State"/> changes.
+		/// </summary>
+		public event EventHandler? StateChanged;
+
+		private ItemState state = ItemState.Docked;
+		public ItemState State {
+			get => state;
+			private set {
+				if (state == value)
+					return;
+
+				state = value;
+				StateChanged?.Invoke (this, EventArgs.Empty);
+			}
+		}
+
 		public DockPanelItem (DockItem item)
 		{
 			Gtk.Paned pane = Gtk.Paned.New (Gtk.Orientation.Vertical);
@@ -74,7 +103,7 @@ public sealed partial class DockPanel
 		}
 
 		public bool IsMinimized
-			=> popover.Child is not null;
+			=> State == ItemState.Minimized;
 
 		public void UpdateOnMaximize (Gtk.Box dockBar)
 		{
@@ -88,6 +117,8 @@ public sealed partial class DockPanel
 			Pane.StartChild = Item;
 			Pane.ResizeStartChild = true;
 			Pane.ShrinkStartChild = false;
+
+			State = ItemState.Docked;
 		}
 
 		public void UpdateOnMinimize (Gtk.Box dock_bar)
@@ -97,6 +128,8 @@ public sealed partial class DockPanel
 
 			dock_bar.Append (ReopenButton);
 			ReopenButton.Active = false;
+
+			State = ItemState.Minimized;
 		}
 
 		public void Float (Gtk.Box dockBar)
@@ -141,6 +174,8 @@ public sealed partial class DockPanel
 			float_window.Application = parent?.Application;
 			float_window.SetChild (Item);
 			float_window.Present ();
+
+			State = ItemState.Floating;
 		}
 
 		private Gtk.Box? redock_bar;
@@ -178,6 +213,19 @@ public sealed partial class DockPanel
 	/// </summary>
 	private readonly List<DockPanelItem> items = [];
 
+	/// <summary>
+	/// Raised when items enter or leave <see cref="ItemState.Docked"/>, i.e. when
+	/// the panel starts or stops needing more width than its icon strip.
+	/// </summary>
+	public event EventHandler? DockedItemsChanged;
+
+	/// <summary>
+	/// Whether any item is docked in the panel rather than minimized to an icon
+	/// or floating in its own window.
+	/// </summary>
+	public bool HasDockedItems
+		=> items.Any (i => i.State == ItemState.Docked);
+
 	partial void Initialize ()
 	{
 		SetOrientation (Gtk.Orientation.Horizontal);
@@ -201,6 +249,7 @@ public sealed partial class DockPanel
 		}
 
 		items.Add (panelItem);
+		panelItem.StateChanged += (_, _) => DockedItemsChanged?.Invoke (this, EventArgs.Empty);
 		panelItem.UpdateOnMaximize (dock_bar);
 
 		item.MinimizeClicked += (_, _) => {
@@ -225,6 +274,9 @@ public sealed partial class DockPanel
 
 				return false;
 			});
+
+		// The first docked item is what gives the panel a resizable width.
+		DockedItemsChanged?.Invoke (this, EventArgs.Empty);
 	}
 
 	public void SaveSettings (ISettingsService settings)

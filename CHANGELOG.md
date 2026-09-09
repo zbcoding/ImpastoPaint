@@ -8,7 +8,11 @@ entries, is upstream Pinta work; the Impasto sections cover changes made in this
 
 ## Impasto - [Unreleased](https://github.com/zbcoding/ImpastoPaint/compare/v0.2.1...main)
 
-Changes for the next release go here.
+### Fixed
+
+- The side dock now shrinks to its icon strip once every pad in it is minimized, and loses its
+  resize handle while it is empty. It used to keep the width the pads had - a wide blank column
+  the user could drag even wider with nothing in it.
 
 ## Impasto - [0.2.1](https://github.com/zbcoding/ImpastoPaint/releases/tag/v0.2.1) - 2026-09-05
 

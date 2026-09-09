@@ -24,21 +24,25 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+using System;
+
 namespace Pinta.Core;
 
 public sealed class PasteHistoryItem : BaseHistoryItem
 {
 	private readonly Cairo.ImageSurface paste_image;
+	private readonly PointI paste_position;
 	private DocumentSelection old_selection;
 
 	public override bool CausesDirty => true;
 
-	public PasteHistoryItem (Cairo.ImageSurface pasteImage, DocumentSelection oldSelection)
+	public PasteHistoryItem (Cairo.ImageSurface pasteImage, PointI pastePosition, DocumentSelection oldSelection)
 	{
 		Text = Translations.GetString ("Paste");
 		Icon = Resources.StandardIcons.EditPaste;
 
 		paste_image = pasteImage;
+		paste_position = pastePosition;
 		old_selection = oldSelection;
 	}
 
@@ -46,13 +50,23 @@ public sealed class PasteHistoryItem : BaseHistoryItem
 	{
 		Document doc = this.Document!;
 
-		// Copy the paste to the temp layer
-		doc.Layers.CreateSelectionLayer ();
+		// Recreate the selection layer the way the paste did: big enough to hold an image wider or
+		// taller than the canvas (the user may have declined to expand it), then offset by the
+		// position the paste landed at. Redoing without either one put the pixels back at canvas
+		// (0,0), clipped to the canvas size, while Swap restored the marquee at the paste position -
+		// so undo followed by redo teleported the pasted content away from its own outline.
+		doc.Layers.CreateSelectionLayer (
+			Math.Max (doc.ImageSize.Width, paste_image.Width),
+			Math.Max (doc.ImageSize.Height, paste_image.Height));
+
 		doc.Layers.ShowSelectionLayer = true;
 
 		using Cairo.Context g = new (doc.Layers.SelectionLayer.Surface);
 		g.SetSourceSurface (paste_image, 0, 0);
 		g.Paint ();
+
+		doc.Layers.SelectionLayer.Transform.InitIdentity ();
+		doc.Layers.SelectionLayer.Transform.Translate (paste_position.X, paste_position.Y);
 
 		Swap ();
 

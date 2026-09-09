@@ -216,7 +216,7 @@ internal sealed class PasteAction : IActionHandler
 
 		doc.Workspace.Invalidate ();
 
-		paste_action.Push (new PasteHistoryItem (cb_image, old_selection));
+		paste_action.Push (new PasteHistoryItem (cb_image, pastePosition, old_selection));
 		doc.History.PushNewItem (paste_action);
 	}
 

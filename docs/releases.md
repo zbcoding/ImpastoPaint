@@ -111,41 +111,37 @@ v0.1.1.
 #### FlatPark
 
 FlatPark packages the release's `Impasto-linux-dotnet-*.zip` as
-`com.github.zbcoding.Impasto`. It has three ways to hear about a release, all ending in the same
-place: `resolve-update.sh` re-reads the releases API, bumps the pin under
-`registry/com.github.zbcoding.Impasto/`, and `publish.yml` rebuilds and republishes the Flatpak.
-Impasto was listed by https://github.com/flatpark/flatpark/pull/200
+`com.github.zbcoding.Impasto`. It finds new releases on its own: `update-check.yml` runs daily
+(~06:17 UTC), `resolve-update.sh` re-reads the releases API and bumps the pin under
+`registry/com.github.zbcoding.Impasto/`, and its PR triggers `publish.yml`, which rebuilds and
+republishes the Flatpak. Impasto was listed by
+https://github.com/flatpark/flatpark/pull/200
 
-- [ ] **Ping (normal path).** The release job's `Notify FlatPark` step runs
-      `flatpark/publish-action@v1`, which POSTs `{app_id, tag, repository}` to
-      `https://hooks.flatpark.org/release` — no token, and `continue-on-error` so a FlatPark
-      outage cannot fail an already-published release. Their `release-dispatch.yml` then opens
-      `auto/release-com.github.zbcoding.Impasto`, auto-merges it and publishes, usually within
-      minutes.
-- [ ] **Daily sweep (safety net).** `update-check.yml` runs at ~06:17 UTC over every app. It
-      catches what a ping cannot: a Linux asset uploaded after the ping, or a ping that never
-      went out. Waiting for it is the normal outcome if the ping was skipped, so nothing needs
-      doing.
+- [ ] Normally nothing to do: a release published after the sweep is pinned by the next one,
+      within a day. Impasto's release job deliberately does not ping FlatPark — an update PR per
+      release has to be reviewed and merged on their side by hand, and their sweep is enough.
 
-To get a listing refreshed before that sweep — a ping that failed, a re-tagged release, or a
-release cut before this step existed — do it by hand:
+When the listing has to be current before the next sweep, send the ping by hand — one PR, only
+when wanted:
 
 ```bash
-# The same request the release job sends. Nothing to authenticate: the endpoint is public,
-# and it refuses only an app id that is not listed.
+# Nothing to authenticate: the endpoint is public, and it refuses only an app id that is not
+# listed. This is what flatpark/publish-action does; Impasto just does not call it on release.
 curl -sS --fail-with-body -H 'content-type: application/json' \
   -d '{"app_id":"com.github.zbcoding.Impasto","tag":"vX.Y.Z","repository":"zbcoding/ImpastoPaint"}' \
   https://hooks.flatpark.org/release
 ```
 
-Then confirm it took, rather than assuming: the dispatch run and the PR it opens are public.
-`flatpark/flatpark` write access is not needed for the ping, but `gh workflow run update-check.yml
---repo flatpark/flatpark` also works — it sweeps every app and opens one PR — for anyone who has
-it.
+It answers `{"ok":true,...}` and their `release-dispatch.yml` opens
+`auto/release-com.github.zbcoding.Impasto` within a couple of minutes. Confirming it took beats
+assuming it did — the dispatch run and the PR it opens are public, and the PR still needs their
+merge before the Flatpak is rebuilt. `gh workflow run update-check.yml --repo flatpark/flatpark`
+does the same for every app at once, for anyone with write access there (this repo only has
+pull).
 
 - [ ] `gh run list --repo flatpark/flatpark --workflow=release-dispatch.yml` shows an
-      `app-release` run for the ping, or `update-check.yml` for the sweep, and it succeeded.
-- [ ] `gh pr list --repo flatpark/flatpark --search "Impasto"` shows the update PR merged.
+      `app-release` run, or `update-check.yml` for the sweep, and it succeeded.
+- [ ] `gh pr list --repo flatpark/flatpark --search "Impasto"` shows the update PR, merged.
 - [ ] Check `https://flatpark.org/apps/com.github.zbcoding.Impasto/` shows `X.Y.Z` once it
       has rebuilt. The version and "What's New" there come from the metainfo `<releases>`
       list. flatpark keeps its own copy under `registry/com.github.zbcoding.Impasto/`; if a

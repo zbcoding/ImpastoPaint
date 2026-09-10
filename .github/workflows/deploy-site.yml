@@ -6,12 +6,15 @@ on:
     paths:
       - "site/**"
       - ".github/workflows/deploy-site.yml"
-  # The download button reads the version from configure.ac at build time, so a
-  # release whose commit touches nothing under site/** still needs a rebuild -
-  # v0.2.1 shipped with the button showing 0.2.0 until a manual dispatch.
-  release:
-    types: [published]
   workflow_dispatch:
+  # The download button reads the version from configure.ac at build time, so a release whose
+  # commit touches nothing under site/** still needs a rebuild - v0.2.1 shipped with the button
+  # showing 0.2.0 until someone dispatched this by hand.
+  #
+  # Reached by build.yml's `site` job on every v* tag rather than by an `on: release` trigger:
+  # build.yml creates the release with the default GITHUB_TOKEN, and GitHub starts no workflow
+  # runs for events that token creates, so that trigger never fired once.
+  workflow_call:
 
 permissions:
   contents: read

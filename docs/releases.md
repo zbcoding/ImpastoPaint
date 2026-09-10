@@ -94,8 +94,12 @@ v0.1.1.
       are pointed at the image.
 - [ ] Do not rename or drop `Impasto-linux-dotnet-*.zip` — flatpark matches it with
       `^Impasto-linux-dotnet-.*\.zip$`.
-- [ ] The site's download button shows `vX.Y.Z` (it reads `configure.ac` at build time, and
-  `deploy-site.yml` rebuilds on release publish — confirm it ran).
+- [ ] The site's download button shows `vX.Y.Z`. It reads `configure.ac` at build time, and the
+      tag's run rebuilds it in the `site` job, which calls `deploy-site.yml` — confirm that job
+      succeeded. (A manual `gh workflow run deploy-site.yml` also works, and is the way to
+      rebuild without a release.) The `github-pages` environment only accepts deployments from
+      the refs it lists: `main` and `v*` tags. Recreating that environment without the tag policy
+      makes the `site` job fail at its deploy step.
 
 ## 8. Specific releases
 

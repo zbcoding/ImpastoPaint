@@ -332,6 +332,21 @@ jobs:
         } > notes.md
         gh release edit "$GITHUB_REF_NAME" --notes-file notes.md --repo "$GITHUB_REPOSITORY"
 
+  # Rebuild the site on every release: its download button reads the version from configure.ac,
+  # and a release commit touches nothing under site/**, so the push trigger cannot cover it.
+  # Called as a reusable workflow rather than through an `on: release` trigger in deploy-site.yml,
+  # because build.yml creates the release with the default GITHUB_TOKEN and GitHub starts no
+  # workflow runs for events that token creates. The permissions below are the ones the called
+  # workflow inherits; without pages and id-token the deploy step cannot publish.
+  site:
+    needs: release
+    if: startsWith(github.ref, 'refs/tags/v')
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    uses: ./.github/workflows/deploy-site.yml
+
   # Keep only the 2 most recent artifacts per name to stay under storage quota.
   prune-artifacts:
     needs: build-ubuntu

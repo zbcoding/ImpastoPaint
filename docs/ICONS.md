@@ -9,8 +9,8 @@ while redoing `tool-select-lasso-scissors-symbolic.svg`.
 
 Sizes below `scalable/` (`16x16`, `22x22`, `24x24`, `32x32`, `96x96`) hold
 raster/fixed variants for icons that have them; most tool icons only need the
-scalable one. GTK resolves icon names against this tree at runtime via
-`IconTheme.AddSearchPath` (`Pinta/Main.cs:104`), pointing at
+scalable one. GTK resolves icon names against this tree at runtime via `IconTheme.AddSearchPath`
+(`Impasto/Main.cs:104`), pointing at
 `SystemManager.GetDataRootDirectory()/icons` — there is no gresource bundling
 step, so editing the `.svg` file directly is enough, no separate build step
 regenerates or embeds it.
@@ -56,7 +56,8 @@ bold shapes filling the 24×24 canvas:
 3. `dotnet run --project Impasto` and actually look at it in the toolbox at
    real size. A `Read`-tool view of the SVG source tells you nothing about
    how it reads at 32px — check the real render before calling it done.
-4. Commit the icon change as its own `jj` commit (`jj split -r @ <path> -m
-   "..."`) rather than letting it ride along inside an unrelated in-progress
-   commit — see the scissors-icon incident where redesign work never got
-   committed and silently vanished from the working copy.
+4. Commit the icon change as its own git commit with explicit paths (`git add
+   <path>` in a task worktree — see CONTRIBUTING.md) rather than letting it
+   ride along inside an unrelated in-progress commit — see the scissors-icon
+   incident where redesign work never got committed and silently vanished from
+   the working copy.

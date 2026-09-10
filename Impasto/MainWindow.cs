@@ -731,6 +731,11 @@ internal sealed class MainWindow
 			reset_popover.Popdown ();
 			ResetColorsWindow ();
 		};
+		// Activate on press: the release-time click is lost when the pointer keeps moving.
+		reset_button.ActivateOnPress (() => {
+			reset_popover.Popdown ();
+			ResetColorsWindow ();
+		});
 		reset_popover.SetChild (reset_button);
 		colors_palette.ResetColorWindowClicked += (_, _) =>
 			ShowAnchoredPopover (reset_popover, colors_palette.FloatColorsButtonRect);
@@ -947,11 +952,15 @@ internal sealed class MainWindow
 		Gtk.Button swap_button = Gtk.Button.NewWithLabel ("⇄");
 		swap_button.TooltipText = Translations.GetString ("Click to switch between primary and secondary color.");
 		swap_button.OnClicked += (_, _) => PintaCore.Palette.SwapColors ();
+		// Activate on press: the release-time click is lost when the pointer keeps moving.
+		swap_button.ActivateOnPress (PintaCore.Palette.SwapColors);
 		box.Append (swap_button);
 
 		Gtk.Button reset_button = Gtk.Button.NewWithLabel ("↺");
 		reset_button.TooltipText = Translations.GetString ("Click to reset primary and secondary color.");
 		reset_button.OnClicked += (_, _) => PintaCore.Palette.ResetColors ();
+		// Activate on press: the release-time click is lost when the pointer keeps moving.
+		reset_button.ActivateOnPress (PintaCore.Palette.ResetColors);
 		box.Append (reset_button);
 
 		return box;
@@ -988,8 +997,9 @@ internal sealed class MainWindow
 		Gtk.CssProvider provider = Gtk.CssProvider.New ();
 		provider.LoadFromString ($"button {{ background-color: #{color.ToHex (addAlpha: false)}; min-width: {size}px; min-height: {size}px; padding: 0; }}");
 		button.GetStyleContext ().AddProvider (provider, Gtk.Constants.STYLE_PROVIDER_PRIORITY_APPLICATION);
-
 		button.OnClicked += (_, _) => onPrimary ();
+		// Activate on press: the release-time click is lost when the pointer keeps moving.
+		button.ActivateOnPress (onPrimary);
 
 		Gtk.GestureClick right_click = Gtk.GestureClick.New ();
 		right_click.SetButton (GtkExtensions.MOUSE_RIGHT_BUTTON);

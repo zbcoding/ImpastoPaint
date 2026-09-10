@@ -331,6 +331,8 @@ public sealed partial class ToolBoxWidget
 		Gtk.ToggleButton toolButton = CreateToolButton (tool);
 		toolButton.Group = toggle_group;
 		toolButton.OnClicked += (_, _) => HandleToolButtonClicked (tool);
+		// Activate on press: the release-time click is lost when the pointer keeps moving.
+		toolButton.ActivateOnPress (() => HandleToolButtonClicked (tool));
 		tool_buttons[tool] = toolButton;
 
 		// Right click any standalone tool to pin/unpin it.
@@ -376,7 +378,9 @@ public sealed partial class ToolBoxWidget
 			tool_stacks[stackDefinition] = stack;
 
 			button.Group = toggle_group;
-			button.OnClicked += (_, _) => HandleToolButtonClicked (stack.Current);
+			// Press-time activation, without claiming the click so the long press can still
+			// open the flyout (ActivateOnPress would cancel it).
+			button.ActivateOnPressKeepingLongPress (() => HandleToolButtonClicked (stack.Current));
 
 			AttachFlyoutGestures (stack);
 			InsertIntoSection (button, tool);
@@ -488,6 +492,11 @@ public sealed partial class ToolBoxWidget
 				popover.Popdown ();
 				HandleToolButtonClicked (member);
 			};
+			// Activate on press: the release-time click is lost when the pointer keeps moving.
+			entry.ActivateOnPress (() => {
+				popover.Popdown ();
+				HandleToolButtonClicked (member);
+			});
 
 			// Right click a flyout entry to pin/unpin it. The pin menu is nested off the entry
 			// itself and the flyout stays open, so it reads as belonging to that tool.
@@ -554,15 +563,15 @@ public sealed partial class ToolBoxWidget
 		popover.SetChild (action);
 		popover.SetParent (anchor);
 		popover.Position = Gtk.PositionType.Right;
-		popover.OnClosed += (_, _) => {
-			open_pin_menu = null;
-			popover.Unparent ();
-		};
-
 		action.OnClicked += (_, _) => {
 			popover.Popdown ();
 			onClicked ();
 		};
+		// Activate on press: the release-time click is lost when the pointer keeps moving.
+		action.ActivateOnPress (() => {
+			popover.Popdown ();
+			onClicked ();
+		});
 
 		open_pin_menu = popover;
 		popover.Popup ();
@@ -581,6 +590,8 @@ public sealed partial class ToolBoxWidget
 			Gtk.ToggleButton button = CreateToolButton (tool);
 			button.Group = pinned_toggle_group;
 			button.OnClicked += (_, _) => HandleToolButtonClicked (tool);
+			// Activate on press: the release-time click is lost when the pointer keeps moving.
+			button.ActivateOnPress (() => HandleToolButtonClicked (tool));
 
 			// Pinning the tool that's already selected has to light the new copy itself -
 			// nothing re-selects the tool on the way out of here.

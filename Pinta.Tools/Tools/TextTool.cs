@@ -689,6 +689,11 @@ public sealed class TextTool : BaseTool
 				if (current_text_object is not null)
 					OpenTextProperties (current_text_object);
 			};
+			// Activate on press: the release-time click is lost when the pointer keeps moving.
+			text_properties_btn.ActivateOnPress (() => {
+				if (current_text_object is not null)
+					OpenTextProperties (current_text_object);
+			});
 			PintaCore.Shortcuts.ShortcutsChanged += (_, _) => text_properties_btn.TooltipText = TextPropertiesTooltip ();
 		}
 
@@ -700,6 +705,8 @@ public sealed class TextTool : BaseTool
 		if (confirm_btn == null) {
 			confirm_btn = GtkExtensions.CreateConfirmToolBarButton (FinishTypingTooltip ());
 			confirm_btn.OnClicked += (_, _) => CommitCurrentText ();
+			// Activate on press: the release-time click is lost when the pointer keeps moving.
+			confirm_btn.ActivateOnPress (() => CommitCurrentText ());
 			PintaCore.Shortcuts.ShortcutsChanged += (_, _) => confirm_btn.TooltipText = FinishTypingTooltip ();
 		}
 

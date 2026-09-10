@@ -103,6 +103,64 @@ partial class GtkExtensions
 			box.Remove (child);
 	}
 
+	// Impasto: GTK buttons fire `clicked` on button release, and only if the release lands back
+	// inside the button (gtkbutton.c gates it on gtk_widget_contains). A click whose pointer is
+	// still moving then releases just outside — nothing happens. Activating on press makes the
+	// click register, which suits the always-visible chrome users hit while the pointer is on its
+	// way somewhere (toolbox, quick access toolbar, layer rows).
+	//
+	// Claims the click sequence, so the button's own release-time `clicked` never fires on top of
+	// the press-time activation — and with it any coexisting primary-button gesture, e.g. a long
+	// press. Keyboard activation (Enter/Space) still goes through `clicked`, untouched. Existing
+	// `OnClicked` handlers can stay wired: with the sequence claimed they only ever run for
+	// keyboard, where the press gesture never fires.
+	public static void ActivateOnPress (this Gtk.Button button, Action activate)
+		=> button.AddController (CreatePressGesture (button, () => {
+			activate ();
+			return true;
+		}));
+
+	// Like ActivateOnPress, but does not claim the click, so a coexisting primary-button gesture
+	// keeps working — used for the toolbox stack buttons, whose long press opens the flyout.
+	// Instead the button's release-time `clicked` is swallowed (the selection already happened on
+	// press), and the radio toggle that `clicked` default-handles is re-lit, since the press-time
+	// selection left the button active.
+	public static void ActivateOnPressKeepingLongPress (this Gtk.ToggleButton button, Action activate)
+	{
+		bool activated_on_press = false;
+
+		button.AddController (CreatePressGesture (button, () => {
+			activated_on_press = true;
+			activate ();
+			return false;
+		}));
+
+		button.OnClicked += (_, _) => {
+			if (!activated_on_press) {
+				activate (); // Keyboard activation; the press gesture never ran.
+				return;
+			}
+
+			activated_on_press = false;
+			if (!button.Active)
+				button.Active = true;
+		};
+	}
+
+	private static Gtk.GestureClick CreatePressGesture (Gtk.Button button, Func<bool> on_press)
+	{
+		Gtk.GestureClick click = Gtk.GestureClick.New ();
+		click.SetButton (Gdk.Constants.BUTTON_PRIMARY);
+		click.OnPressed += (gesture, _) => {
+			if (!button.GetSensitive ())
+				return;
+
+			if (on_press ())
+				gesture.SetState (Gtk.EventSequenceState.Claimed);
+		};
+		return click;
+	}
+
 	private static readonly string shortcut_label = Translations.GetString ("Shortcut key");
 	private static readonly string shortcuts_label = Translations.GetString ("Shortcut keys");
 
@@ -126,6 +184,9 @@ partial class GtkExtensions
 		Gtk.Button button = Gtk.Button.New ();
 		button.ActionName = action.FullName;
 		button.TooltipText = fullTooltip;
+
+		// Press-time activation (keyboard still goes through the ActionName on `clicked`).
+		button.ActivateOnPress (action.Activate);
 
 		if (action.IsImportant && !force_icon_only) {
 			Adw.ButtonContent buttonContent = Adw.ButtonContent.New ();

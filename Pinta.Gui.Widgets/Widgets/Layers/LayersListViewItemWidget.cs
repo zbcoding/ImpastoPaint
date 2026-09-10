@@ -952,6 +952,8 @@ public sealed partial class LayersListViewItemWidget
 			button.SetTooltipText (tooltip);
 
 		button.OnClicked += (_, _) => onActivated ();
+		// Activate on press: the release-time click is lost when the pointer keeps moving.
+		button.ActivateOnPress (onActivated);
 
 		return button;
 	}
@@ -1062,6 +1064,9 @@ public sealed partial class LayersListViewItemWidget
 		item.LayerModified += OnLayerModified;
 		UpdateFromLayer ();
 	}
+
+	/// <summary>The row's currently bound item, or null before the first bind.</summary>
+	internal LayersListViewItem? BoundItem => item;
 
 	/// <summary>
 	/// Whether this row draws a thumbnail: only layer rows do, and only while the layer list's

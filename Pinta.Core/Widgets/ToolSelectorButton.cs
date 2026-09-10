@@ -186,6 +186,11 @@ public sealed partial class ToolSelectorButton
 			Popover?.Popdown ();
 			tools.SetCurrentTool (tool);
 		};
+		// Activate on press: the release-time click is lost when the pointer keeps moving.
+		entry.ActivateOnPress (() => {
+			Popover?.Popdown ();
+			tools.SetCurrentTool (tool);
+		});
 
 		return entry;
 	}

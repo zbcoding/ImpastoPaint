@@ -173,11 +173,15 @@ public sealed partial class ColorPickerPanel
 		swapButton.TooltipText = label;
 		swapButton.FocusOnClick = false;
 		swapButton.OnClicked += (_, _) => palette.SwapColors ();
+		// Activate on press: the release-time click is lost when the pointer keeps moving.
+		swapButton.ActivateOnPress (palette.SwapColors);
 
 		Gtk.Button eyedropperButton = Gtk.Button.NewFromIconName (Resources.Icons.ToolColorPicker);
 		eyedropperButton.TooltipText = Translations.GetString ("Selects the color in view. Sample from the composited image, including all visible layers.");
 		eyedropperButton.FocusOnClick = false;
 		eyedropperButton.OnClicked += (_, _) => EyedropperClicked?.Invoke (this, EventArgs.Empty);
+		// Activate on press: the release-time click is lost when the pointer keeps moving.
+		eyedropperButton.ActivateOnPress (() => EyedropperClicked?.Invoke (this, EventArgs.Empty));
 
 		Gtk.Box box = Gtk.Box.New (Gtk.Orientation.Vertical, SPACING);
 		box.Append (primary_display);

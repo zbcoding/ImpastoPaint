@@ -256,6 +256,12 @@ public sealed partial class LayersListView
 		widget.ApplyThumbnailLayout (label_below);
 		expander.SetChild (widget);
 		item.SetChild (expander);
+
+		// Select the row at press (see SelectRowOnPress for why).
+		Gtk.GestureClick pressSelect = Gtk.GestureClick.New ();
+		pressSelect.SetButton (Gdk.Constants.BUTTON_PRIMARY);
+		pressSelect.OnPressed += (_, _) => SelectRowOnPress (widget, pressSelect.GetCurrentEventState ());
+		widget.AddController (pressSelect);
 	}
 
 	private void HandleFactoryBind (
@@ -282,6 +288,50 @@ public sealed partial class LayersListView
 	{
 		Gtk.TreeListRow? row = tree_model.GetRow (position);
 		return row?.GetItem () as LayersListViewItem;
+	}
+
+	// Selects the pressed row immediately, before GTK's own release-time selection can be
+	// swallowed: every row carries a Gtk.DragSource, and a press that drifts past the drag
+	// threshold claims the sequence and cancels the row's click gesture, so the release never
+	// arrives as a selection (pinned by LayerRowPressSelectTest). Selecting at press runs before
+	// any drag can start. The sequence is deliberately left unclaimed — drag-to-reorder and
+	// double-click activation keep working — so the release-time selection still runs afterwards,
+	// but re-selecting the same position is a no-op in GtkSingleSelection, so nothing double-fires.
+	//
+	// Modifier presses are left entirely to the native release path, which implements the toggle
+	// (Ctrl) and extend (Shift) semantics; handling them here too would toggle twice.
+	internal void SelectRowOnPress (LayersListViewItemWidget row, Gdk.ModifierType modifiers)
+	{
+		if (active_document is null)
+			return;
+
+		if ((modifiers & (Gdk.ModifierType.ControlMask | Gdk.ModifierType.ShiftMask)) != 0)
+			return;
+
+		if (row.BoundItem is not { } target)
+			return;
+
+		uint n = tree_model.GetNItems ();
+		for (uint i = 0; i < n; ++i) {
+			if (ItemAt (i) is not { } item || !SameRow (item, target))
+				continue;
+
+			selection_model.SelectItem (i, unselectRest: true);
+			return;
+		}
+	}
+
+	// Whether two row items stand for the same row. Compared by layer and row kind rather than
+	// reference, so a row widget bound to a fresh wrapper of the same row still matches.
+	private static bool SameRow (LayersListViewItem a, LayersListViewItem b)
+	{
+		if (a.UserLayer != b.UserLayer)
+			return false;
+		if (a.IsMaskRow || b.IsMaskRow)
+			return a.IsMaskRow && b.IsMaskRow;
+		if (a.IsObjectRow || b.IsObjectRow)
+			return a.IsObjectRow && b.IsObjectRow && a.ObjectIndex == b.ObjectIndex;
+		return true;
 	}
 
 	private void HandleSelectionChanged (

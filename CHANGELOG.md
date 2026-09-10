@@ -10,6 +10,17 @@ entries, is upstream Pinta work; the Impasto sections cover changes made in this
 
 Changes for the next release go here.
 
+### Fixed
+
+- Buttons in the always-visible chrome now activate on button press instead of button release, so
+  a click whose pointer is still moving registers instead of silently doing nothing. This covers
+  the toolbox's tool buttons (including the stacked tools' flyout entries and pinned buttons),
+  the quick access toolbar's New/Open/Save/Undo/... buttons, the status bar's zoom buttons, the
+  dock pads' minimize/maximize/float buttons, the colors window's swap/reset buttons, the tools'
+  finish/back buttons (text tool, lasso), and the tool selector dropdown's entries. The long
+  press that opens a stacked tool's flyout, and drag-to-reorder, keep working. Layer rows select
+  on press for the same reason, before the row's drag-to-reorder can swallow the click.
+
 ## Impasto - [0.3.0](https://github.com/zbcoding/ImpastoPaint/releases/tag/v0.3.0) - 2026-09-10
 
 ### Added

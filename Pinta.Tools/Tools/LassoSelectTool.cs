@@ -291,6 +291,12 @@ public class LassoSelectTool : BaseTool
 						Backtrack (workspace.ActiveDocument);
 				};
 
+				// Activate on press: the release-time click is lost when the pointer keeps moving.
+				back_button.ActivateOnPress (() => {
+					if (workspace.HasOpenDocuments)
+						Backtrack (workspace.ActiveDocument);
+				});
+
 				back_button.Visible = false;
 			}
 
@@ -308,6 +314,12 @@ public class LassoSelectTool : BaseTool
 					if (workspace.HasOpenDocuments)
 						FinalizeShape (workspace.ActiveDocument);
 				};
+
+				// Activate on press: the release-time click is lost when the pointer keeps moving.
+				confirm_button.ActivateOnPress (() => {
+					if (workspace.HasOpenDocuments)
+						FinalizeShape (workspace.ActiveDocument);
+				});
 
 				confirm_button.Visible = false;
 			}

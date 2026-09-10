@@ -126,6 +126,11 @@ public sealed partial class DockItem
 			item.maximize_button.OnClicked += (o, args) => item.Maximize ();
 			item.float_button.OnClicked += (o, args) => item.FloatClicked?.Invoke (item, EventArgs.Empty);
 
+			// Activate on press: the release-time click is lost when the pointer keeps moving.
+			item.minimize_button.ActivateOnPress (item.Minimize);
+			item.maximize_button.ActivateOnPress (item.Maximize);
+			item.float_button.ActivateOnPress (() => item.FloatClicked?.Invoke (item, EventArgs.Empty));
+
 			const int padding = 8;
 			item.label_widget.MarginStart = item.label_widget.MarginEnd = padding;
 			item.label_widget.Hexpand = true;

@@ -19,7 +19,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: pinta\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-05 00:07-0500\n"
+"POT-Creation-Date: 2026-09-10 05:46-0500\n"
 "PO-Revision-Date: 2026-05-03 21:23+0000\n"
 "Last-Translator: Arif Budiman <arifpedia@gmail.com>\n"
 "Language-Team: Indonesian\n"
@@ -158,7 +158,7 @@ msgid "All Small Caps"
 msgstr "Semua Huruf Kapital Kecil"
 
 #: ../Impasto/Actions/File/OpenDocumentAction.cs:140
-#: ../Pinta.Core/Actions/EditActions.cs:704
+#: ../Pinta.Core/Actions/EditActions.cs:725
 #: ../Pinta.Gui.Addins/AddinManagerDialog.cs:335
 msgid "All files"
 msgstr "Semua berkas"
@@ -297,13 +297,13 @@ msgstr "Latar belakang:"
 msgid "Backup"
 msgstr ""
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:834
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:853
 msgid ""
 "Bake this layer's effects and objects into its pixels; they stop being "
 "editable."
 msgstr ""
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:835
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:854
 msgid "Bake this object into the layer's pixels; it stops being editable."
 msgstr ""
 
@@ -335,7 +335,7 @@ msgstr "Hitam dan Putih"
 msgid "Blend Mode"
 msgstr "Modus Pencampuran"
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:779
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:798
 msgid "Blend Mode:"
 msgstr ""
 
@@ -478,7 +478,7 @@ msgstr ""
 #: ../Impasto/Actions/Help/KeyboardShortcutsDialogAction.cs:108
 #: ../Impasto/Actions/Help/KeyboardShortcutsDialogAction.cs:121
 #: ../Impasto/Dialogs/PreferencesDialog.cs:433
-#: ../Pinta.Core/Actions/EditActions.cs:641
+#: ../Pinta.Core/Actions/EditActions.cs:662
 #: ../Pinta.Gui.Addins/InstallDialog.cs:126
 #: ../Pinta.Gui.Widgets/Widgets/ColorPickerDialog.cs:497
 #: ../Pinta.Tools/Dialogs/TextPropertiesDialog.cs:265
@@ -575,12 +575,12 @@ msgstr "Ubah ukuran font."
 msgid "Change outline width."
 msgstr "Ubah lebar garis luar."
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:824
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:843
 msgid ""
 "Change this effect's settings; the layer re-renders with the new values."
 msgstr ""
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:819
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:838
 msgid ""
 "Change this transform's settings; the layer re-renders with the new values."
 msgstr ""
@@ -932,7 +932,7 @@ msgid "Custom"
 msgstr "Kustom"
 
 #: ../Pinta.Core/Actions/EditActions.cs:97
-#: ../Pinta.Core/Actions/EditActions.cs:407
+#: ../Pinta.Core/Actions/EditActions.cs:419
 msgid "Cut"
 msgstr "Potong"
 
@@ -966,7 +966,7 @@ msgstr "Bawaan"
 msgid "Default canvas size (on application open):"
 msgstr ""
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:844
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:863
 msgid "Delete"
 msgstr ""
 
@@ -979,7 +979,7 @@ msgstr "Hapus Lapisan"
 msgid "Delete Layer Mask"
 msgstr ""
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:884
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:903
 msgid "Delete Mask"
 msgstr ""
 
@@ -1008,8 +1008,8 @@ msgstr "Dihapus"
 msgid "Dents"
 msgstr "Lekukan"
 
-#: ../Pinta.Core/Actions/EditActions.cs:437
-#: ../Pinta.Core/Actions/EditActions.cs:442
+#: ../Pinta.Core/Actions/EditActions.cs:449
+#: ../Pinta.Core/Actions/EditActions.cs:454
 msgid "Deselect"
 msgstr "Awapilih"
 
@@ -1072,8 +1072,8 @@ msgid "Drag a corner grip to resize, or the dashed border to move."
 msgstr ""
 
 #: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:160
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:1098
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:1101
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:1156
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:1159
 msgid "Drag and drop to reorder"
 msgstr ""
 
@@ -1145,7 +1145,7 @@ msgstr ""
 msgid "Effe_cts"
 msgstr "Efe_k"
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:823
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:842
 msgid "Effect Settings..."
 msgstr ""
 
@@ -1185,7 +1185,7 @@ msgid "Equilateral Triangle"
 msgstr ""
 
 #: ../Pinta.Core/Actions/EditActions.cs:140
-#: ../Pinta.Core/Actions/EditActions.cs:408
+#: ../Pinta.Core/Actions/EditActions.cs:420
 msgid "Erase Selection"
 msgstr "Hapus Pilihan"
 
@@ -1295,7 +1295,7 @@ msgid "Fill Object Background"
 msgstr "Isi Latar Belakang Objek"
 
 #: ../Pinta.Core/Actions/EditActions.cs:147
-#: ../Pinta.Core/Actions/EditActions.cs:353
+#: ../Pinta.Core/Actions/EditActions.cs:358
 msgid "Fill Selection"
 msgstr "Arsir Pilihan"
 
@@ -1634,12 +1634,12 @@ msgstr "Hijau horizontal (G)"
 msgid "Horizontal red (R)"
 msgstr "Merah horizontal (R)"
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:801
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:820
 msgid ""
 "How much of the effect is applied. At 0 the layer looks as it did before."
 msgstr ""
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:782
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:801
 msgid "How the effect's result is mixed back into the image it was applied to."
 msgstr ""
 
@@ -1903,7 +1903,7 @@ msgid "Invert Colors"
 msgstr "Inversikan Warna"
 
 #: ../Pinta.Core/Actions/EditActions.cs:154
-#: ../Pinta.Core/Actions/EditActions.cs:726
+#: ../Pinta.Core/Actions/EditActions.cs:747
 msgid "Invert Selection"
 msgstr "Inversikan Pilihan"
 
@@ -1987,17 +1987,17 @@ msgstr "Properti Lapisan"
 msgid "Layer Properties..."
 msgstr "Properti Lapisan..."
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:1096
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:1154
 msgid ""
 "Layer effect: applies to everything below it on this layer, and stays "
 "editable."
 msgstr ""
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:1077
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:1135
 msgid "Layer mask: an alpha channel applied to the whole layer."
 msgstr ""
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:1095
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:1153
 msgid ""
 "Layer transform: applies to everything below it on this layer, and stays "
 "editable."
@@ -2367,7 +2367,7 @@ msgstr "Pengaburan Gerak"
 msgid "Move"
 msgstr ""
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:1016
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:1044
 msgid "Move Layer"
 msgstr ""
 
@@ -2630,6 +2630,10 @@ msgstr ""
 msgid "Object — editable later"
 msgstr ""
 
+#: ../Impasto/Pads/LayersPad.cs:120
+msgid "Off"
+msgstr ""
+
 #: ../Impasto/Dialogs/OffsetSelectionDialog.cs:60
 #: ../Pinta.Effects/Effects/BulgeEffect.cs:120
 #: ../Pinta.Effects/Effects/RadialBlurEffect.cs:139
@@ -2648,7 +2652,7 @@ msgstr "Seleksi Offset"
 msgid "Oil Painting"
 msgstr "Cat Minyak"
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:799
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:818
 #: ../Pinta.Gui.Widgets/Widgets/Layers/PropertiesDialogGridBuilder.cs:44
 msgid "Opacity:"
 msgstr "Kelegapan:"
@@ -2675,7 +2679,7 @@ msgstr "Buka Citra"
 msgid "Open Image File"
 msgstr "Buka Berkas Citra"
 
-#: ../Pinta.Core/Actions/EditActions.cs:606
+#: ../Pinta.Core/Actions/EditActions.cs:627
 msgid "Open Palette File"
 msgstr "Buka Berkas Palet"
 
@@ -2759,7 +2763,7 @@ msgstr ""
 msgid "Paint Bucket"
 msgstr "Ember Cat"
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:873
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:892
 msgid ""
 "Paint on the canvas to reveal the layer; erase to hide it. Right-click the "
 "row again for options."
@@ -2801,7 +2805,7 @@ msgstr "Palet"
 msgid "Palette Source"
 msgstr "Sumber Palet"
 
-#: ../Pinta.Core/Actions/EditActions.cs:687
+#: ../Pinta.Core/Actions/EditActions.cs:708
 msgid "Palette files"
 msgstr "Berkas-berkas palet"
 
@@ -2819,7 +2823,7 @@ msgstr "Geser"
 
 #: ../Impasto/Actions/Edit/PasteAction.cs:133
 #: ../Pinta.Core/Actions/EditActions.cs:118
-#: ../Pinta.Core/HistoryItems/PasteHistoryItem.cs:38
+#: ../Pinta.Core/HistoryItems/PasteHistoryItem.cs:41
 msgid "Paste"
 msgstr "Tempel"
 
@@ -3080,7 +3084,7 @@ msgstr "Primer"
 msgid "Print"
 msgstr "Cetak"
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:839
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:858
 msgid "Properties..."
 msgstr ""
 
@@ -3186,7 +3190,7 @@ msgstr "Lokasi Titik Acak"
 msgid "Raster — fuses to layer"
 msgstr ""
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:832
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:851
 msgid "Rasterize"
 msgstr ""
 
@@ -3214,7 +3218,7 @@ msgstr ""
 msgid "Re-edit existing text"
 msgstr ""
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:1099
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:1157
 msgid ""
 "Re-editable object: a live shape or text you can keep editing until you "
 "rasterize it."
@@ -3306,7 +3310,7 @@ msgstr "Relief"
 msgid "Remove last point (Backspace)"
 msgstr ""
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:885
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:904
 msgid "Remove this layer's mask; the layer renders unmasked."
 msgstr ""
 
@@ -3314,7 +3318,7 @@ msgstr ""
 msgid "Rename Layer"
 msgstr "Ubah Nama Lapisan"
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:692
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:711
 msgid "Rename Layer..."
 msgstr ""
 
@@ -3461,15 +3465,15 @@ msgstr ""
 msgid "Right click to move"
 msgstr ""
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:1097
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:1155
 msgid "Right-click to change its settings, blending and strength"
 msgstr ""
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:1079
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:1137
 msgid "Right-click to delete the mask"
 msgstr ""
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:1100
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:1158
 msgid "Right-click to set blend mode and opacity, or open its properties"
 msgstr ""
 
@@ -3580,7 +3584,7 @@ msgstr "Persentase Saturasi"
 
 #: ../Impasto/Actions/File/SaveDocumentImplementationAction.cs:93
 #: ../Impasto/Actions/File/SaveDocumentImplementationAction.cs:351
-#: ../Pinta.Core/Actions/EditActions.cs:640
+#: ../Pinta.Core/Actions/EditActions.cs:661
 #: ../Pinta.Core/Actions/FileActions.cs:104
 msgid "Save"
 msgstr "Simpan"
@@ -3598,7 +3602,7 @@ msgstr "Simpan Sebagai..."
 msgid "Save Image File"
 msgstr "Simpan Berkas Citra"
 
-#: ../Pinta.Core/Actions/EditActions.cs:637
+#: ../Pinta.Core/Actions/EditActions.cs:658
 msgid "Save Palette File"
 msgstr "Simpan Berkas Palet"
 
@@ -3641,7 +3645,7 @@ msgid "Select"
 msgstr ""
 
 #: ../Pinta.Core/Actions/EditActions.cs:168
-#: ../Pinta.Core/Actions/EditActions.cs:369
+#: ../Pinta.Core/Actions/EditActions.cs:375
 msgid "Select All"
 msgstr "Pilih Semua"
 
@@ -3657,7 +3661,7 @@ msgstr ""
 msgid "Select previous control point"
 msgstr ""
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:1078
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:1136
 msgid "Select this row to paint the mask; paint reveals, erase hides"
 msgstr ""
 
@@ -3888,6 +3892,10 @@ msgstr "Piksel Tunggal"
 msgid "Size"
 msgstr "Ukuran"
 
+#: ../Impasto/Pads/LayersPad.cs:121
+msgid "Size of the layer thumbnails; the lowest setting hides them"
+msgstr ""
+
 #: ../Pinta.Tools/Dialogs/TextPropertiesDialog.cs:148
 msgid "Size: "
 msgstr ""
@@ -3985,7 +3993,7 @@ msgstr ""
 msgid "Strength"
 msgstr "Kekuatan"
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:799
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:818
 msgid "Strength:"
 msgstr ""
 
@@ -4241,6 +4249,10 @@ msgid ""
 "Three rows adds a darker shade of each color beneath the standard palette."
 msgstr ""
 
+#: ../Impasto/Pads/LayersPad.cs:111
+msgid "Thumbnail Size"
+msgstr ""
+
 #: ../Pinta.Effects/Effects/TileEffect.cs:28
 msgid "Tile Reflection"
 msgstr "Refleksi Ubin"
@@ -4366,7 +4378,7 @@ msgstr ""
 msgid "Transform Settings"
 msgstr ""
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:818
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:837
 msgid "Transform Settings..."
 msgstr ""
 
@@ -4538,7 +4550,7 @@ msgstr "Gambar yang Belum Disimpan {0}"
 msgid "Unsupported file format"
 msgstr "Format berkas tidak didukung"
 
-#: ../Pinta.Core/Actions/EditActions.cs:629
+#: ../Pinta.Core/Actions/EditActions.cs:650
 msgid "Unsupported palette format"
 msgstr "Format palet tidak didukung"
 

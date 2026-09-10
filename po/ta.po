@@ -19,7 +19,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-05 00:07-0500\n"
+"POT-Creation-Date: 2026-09-10 05:46-0500\n"
 "PO-Revision-Date: 2025-06-17 12:30+0000\n"
 "Last-Translator: தமிழ்நேரம் <anishprabu.t@gmail.com>\n"
 "Language-Team: Tamil\n"
@@ -155,7 +155,7 @@ msgid "All Small Caps"
 msgstr ""
 
 #: ../Impasto/Actions/File/OpenDocumentAction.cs:140
-#: ../Pinta.Core/Actions/EditActions.cs:704
+#: ../Pinta.Core/Actions/EditActions.cs:725
 #: ../Pinta.Gui.Addins/AddinManagerDialog.cs:335
 msgid "All files"
 msgstr "அனைத்து கோப்புகள்"
@@ -294,13 +294,13 @@ msgstr "பின்னணி:"
 msgid "Backup"
 msgstr ""
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:834
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:853
 msgid ""
 "Bake this layer's effects and objects into its pixels; they stop being "
 "editable."
 msgstr ""
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:835
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:854
 msgid "Bake this object into the layer's pixels; it stops being editable."
 msgstr ""
 
@@ -332,7 +332,7 @@ msgstr "கருப்பு மற்றும் வெள்ளை"
 msgid "Blend Mode"
 msgstr "கலப்பு பயன்முறை"
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:779
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:798
 msgid "Blend Mode:"
 msgstr ""
 
@@ -475,7 +475,7 @@ msgstr ""
 #: ../Impasto/Actions/Help/KeyboardShortcutsDialogAction.cs:108
 #: ../Impasto/Actions/Help/KeyboardShortcutsDialogAction.cs:121
 #: ../Impasto/Dialogs/PreferencesDialog.cs:433
-#: ../Pinta.Core/Actions/EditActions.cs:641
+#: ../Pinta.Core/Actions/EditActions.cs:662
 #: ../Pinta.Gui.Addins/InstallDialog.cs:126
 #: ../Pinta.Gui.Widgets/Widgets/ColorPickerDialog.cs:497
 #: ../Pinta.Tools/Dialogs/TextPropertiesDialog.cs:265
@@ -572,12 +572,12 @@ msgstr ""
 msgid "Change outline width."
 msgstr ""
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:824
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:843
 msgid ""
 "Change this effect's settings; the layer re-renders with the new values."
 msgstr ""
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:819
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:838
 msgid ""
 "Change this transform's settings; the layer re-renders with the new values."
 msgstr ""
@@ -923,7 +923,7 @@ msgid "Custom"
 msgstr "தனிப்பயன்"
 
 #: ../Pinta.Core/Actions/EditActions.cs:97
-#: ../Pinta.Core/Actions/EditActions.cs:407
+#: ../Pinta.Core/Actions/EditActions.cs:419
 msgid "Cut"
 msgstr "வெட்டு"
 
@@ -957,7 +957,7 @@ msgstr "இயல்புநிலை"
 msgid "Default canvas size (on application open):"
 msgstr ""
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:844
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:863
 msgid "Delete"
 msgstr ""
 
@@ -970,7 +970,7 @@ msgstr "அடுக்கை நீக்கு"
 msgid "Delete Layer Mask"
 msgstr ""
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:884
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:903
 msgid "Delete Mask"
 msgstr ""
 
@@ -999,8 +999,8 @@ msgstr "நீக்கப்பட்டது"
 msgid "Dents"
 msgstr "பற்கள்"
 
-#: ../Pinta.Core/Actions/EditActions.cs:437
-#: ../Pinta.Core/Actions/EditActions.cs:442
+#: ../Pinta.Core/Actions/EditActions.cs:449
+#: ../Pinta.Core/Actions/EditActions.cs:454
 msgid "Deselect"
 msgstr "தேர்வுநீக்கு"
 
@@ -1063,8 +1063,8 @@ msgid "Drag a corner grip to resize, or the dashed border to move."
 msgstr ""
 
 #: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:160
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:1098
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:1101
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:1156
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:1159
 msgid "Drag and drop to reorder"
 msgstr ""
 
@@ -1136,7 +1136,7 @@ msgstr ""
 msgid "Effe_cts"
 msgstr "விளைவுகள்"
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:823
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:842
 msgid "Effect Settings..."
 msgstr ""
 
@@ -1174,7 +1174,7 @@ msgid "Equilateral Triangle"
 msgstr ""
 
 #: ../Pinta.Core/Actions/EditActions.cs:140
-#: ../Pinta.Core/Actions/EditActions.cs:408
+#: ../Pinta.Core/Actions/EditActions.cs:420
 msgid "Erase Selection"
 msgstr "தேர்வை அழிக்கவும்"
 
@@ -1284,7 +1284,7 @@ msgid "Fill Object Background"
 msgstr "பொருள் பின்னணியை நிரப்பவும்"
 
 #: ../Pinta.Core/Actions/EditActions.cs:147
-#: ../Pinta.Core/Actions/EditActions.cs:353
+#: ../Pinta.Core/Actions/EditActions.cs:358
 msgid "Fill Selection"
 msgstr "தேர்வை நிரப்பவும்"
 
@@ -1622,12 +1622,12 @@ msgstr "கிடைமட்ட பச்சை (சி)"
 msgid "Horizontal red (R)"
 msgstr "கிடைமட்ட சிவப்பு ("
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:801
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:820
 msgid ""
 "How much of the effect is applied. At 0 the layer looks as it did before."
 msgstr ""
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:782
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:801
 msgid "How the effect's result is mixed back into the image it was applied to."
 msgstr ""
 
@@ -1885,7 +1885,7 @@ msgid "Invert Colors"
 msgstr "வண்ணங்களை தலைகீழ்"
 
 #: ../Pinta.Core/Actions/EditActions.cs:154
-#: ../Pinta.Core/Actions/EditActions.cs:726
+#: ../Pinta.Core/Actions/EditActions.cs:747
 msgid "Invert Selection"
 msgstr "தலைகீழ் தேர்வு"
 
@@ -1969,17 +1969,17 @@ msgstr "அடுக்கு பண்புகள்"
 msgid "Layer Properties..."
 msgstr "அடுக்கு பண்புகள் ..."
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:1096
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:1154
 msgid ""
 "Layer effect: applies to everything below it on this layer, and stays "
 "editable."
 msgstr ""
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:1077
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:1135
 msgid "Layer mask: an alpha channel applied to the whole layer."
 msgstr ""
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:1095
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:1153
 msgid ""
 "Layer transform: applies to everything below it on this layer, and stays "
 "editable."
@@ -2339,7 +2339,7 @@ msgstr "இயக்க மங்கலானது"
 msgid "Move"
 msgstr ""
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:1016
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:1044
 msgid "Move Layer"
 msgstr ""
 
@@ -2602,6 +2602,10 @@ msgstr ""
 msgid "Object — editable later"
 msgstr ""
 
+#: ../Impasto/Pads/LayersPad.cs:120
+msgid "Off"
+msgstr ""
+
 #: ../Impasto/Dialogs/OffsetSelectionDialog.cs:60
 #: ../Pinta.Effects/Effects/BulgeEffect.cs:120
 #: ../Pinta.Effects/Effects/RadialBlurEffect.cs:139
@@ -2620,7 +2624,7 @@ msgstr "ஆஃப்செட் தேர்வு"
 msgid "Oil Painting"
 msgstr "எண்ணெய் ஓவியம்"
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:799
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:818
 #: ../Pinta.Gui.Widgets/Widgets/Layers/PropertiesDialogGridBuilder.cs:44
 msgid "Opacity:"
 msgstr "ஒளிபுகாநிலை:"
@@ -2647,7 +2651,7 @@ msgstr "திறந்த படத்தை"
 msgid "Open Image File"
 msgstr "படக் கோப்பைத் திறக்கவும்"
 
-#: ../Pinta.Core/Actions/EditActions.cs:606
+#: ../Pinta.Core/Actions/EditActions.cs:627
 msgid "Open Palette File"
 msgstr "திறந்த தட்டு கோப்பு"
 
@@ -2731,7 +2735,7 @@ msgstr ""
 msgid "Paint Bucket"
 msgstr "பெயிண்ட் வாளி"
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:873
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:892
 msgid ""
 "Paint on the canvas to reveal the layer; erase to hide it. Right-click the "
 "row again for options."
@@ -2773,7 +2777,7 @@ msgstr "தட்டு"
 msgid "Palette Source"
 msgstr ""
 
-#: ../Pinta.Core/Actions/EditActions.cs:687
+#: ../Pinta.Core/Actions/EditActions.cs:708
 msgid "Palette files"
 msgstr "தட்டு கோப்புகள்"
 
@@ -2791,7 +2795,7 @@ msgstr "பான்"
 
 #: ../Impasto/Actions/Edit/PasteAction.cs:133
 #: ../Pinta.Core/Actions/EditActions.cs:118
-#: ../Pinta.Core/HistoryItems/PasteHistoryItem.cs:38
+#: ../Pinta.Core/HistoryItems/PasteHistoryItem.cs:41
 msgid "Paste"
 msgstr "ஒட்டு"
 
@@ -3051,7 +3055,7 @@ msgstr "முதன்மை"
 msgid "Print"
 msgstr "அச்சிடுக"
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:839
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:858
 msgid "Properties..."
 msgstr ""
 
@@ -3157,7 +3161,7 @@ msgstr "சீரற்ற புள்ளி இருப்பிடங்க�
 msgid "Raster — fuses to layer"
 msgstr ""
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:832
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:851
 msgid "Rasterize"
 msgstr ""
 
@@ -3185,7 +3189,7 @@ msgstr ""
 msgid "Re-edit existing text"
 msgstr ""
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:1099
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:1157
 msgid ""
 "Re-editable object: a live shape or text you can keep editing until you "
 "rasterize it."
@@ -3277,7 +3281,7 @@ msgstr "ஈடு"
 msgid "Remove last point (Backspace)"
 msgstr ""
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:885
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:904
 msgid "Remove this layer's mask; the layer renders unmasked."
 msgstr ""
 
@@ -3285,7 +3289,7 @@ msgstr ""
 msgid "Rename Layer"
 msgstr "அடுக்கை மறுபெயரிடுங்கள்"
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:692
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:711
 msgid "Rename Layer..."
 msgstr ""
 
@@ -3432,15 +3436,15 @@ msgstr ""
 msgid "Right click to move"
 msgstr ""
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:1097
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:1155
 msgid "Right-click to change its settings, blending and strength"
 msgstr ""
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:1079
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:1137
 msgid "Right-click to delete the mask"
 msgstr ""
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:1100
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:1158
 msgid "Right-click to set blend mode and opacity, or open its properties"
 msgstr ""
 
@@ -3551,7 +3555,7 @@ msgstr "செறிவு விழுக்காடு"
 
 #: ../Impasto/Actions/File/SaveDocumentImplementationAction.cs:93
 #: ../Impasto/Actions/File/SaveDocumentImplementationAction.cs:351
-#: ../Pinta.Core/Actions/EditActions.cs:640
+#: ../Pinta.Core/Actions/EditActions.cs:661
 #: ../Pinta.Core/Actions/FileActions.cs:104
 msgid "Save"
 msgstr "சேமி"
@@ -3569,7 +3573,7 @@ msgstr "சேமி ..."
 msgid "Save Image File"
 msgstr "படக் கோப்பை சேமிக்கவும்"
 
-#: ../Pinta.Core/Actions/EditActions.cs:637
+#: ../Pinta.Core/Actions/EditActions.cs:658
 msgid "Save Palette File"
 msgstr "தட்டு கோப்பை சேமிக்கவும்"
 
@@ -3612,7 +3616,7 @@ msgid "Select"
 msgstr ""
 
 #: ../Pinta.Core/Actions/EditActions.cs:168
-#: ../Pinta.Core/Actions/EditActions.cs:369
+#: ../Pinta.Core/Actions/EditActions.cs:375
 msgid "Select All"
 msgstr "அனைத்தையும் தெரிவுசெய்"
 
@@ -3628,7 +3632,7 @@ msgstr ""
 msgid "Select previous control point"
 msgstr ""
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:1078
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:1136
 msgid "Select this row to paint the mask; paint reveals, erase hides"
 msgstr ""
 
@@ -3859,6 +3863,10 @@ msgstr "ஒற்றை படப்புள்ளி"
 msgid "Size"
 msgstr "அளவு"
 
+#: ../Impasto/Pads/LayersPad.cs:121
+msgid "Size of the layer thumbnails; the lowest setting hides them"
+msgstr ""
+
 #: ../Pinta.Tools/Dialogs/TextPropertiesDialog.cs:148
 msgid "Size: "
 msgstr ""
@@ -3956,7 +3964,7 @@ msgstr ""
 msgid "Strength"
 msgstr "வலிமை"
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:799
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:818
 msgid "Strength:"
 msgstr ""
 
@@ -4209,6 +4217,10 @@ msgid ""
 "Three rows adds a darker shade of each color beneath the standard palette."
 msgstr ""
 
+#: ../Impasto/Pads/LayersPad.cs:111
+msgid "Thumbnail Size"
+msgstr ""
+
 #: ../Pinta.Effects/Effects/TileEffect.cs:28
 msgid "Tile Reflection"
 msgstr "ஓடு பிரதிபலிப்பு"
@@ -4334,7 +4346,7 @@ msgstr ""
 msgid "Transform Settings"
 msgstr ""
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:818
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:837
 msgid "Transform Settings..."
 msgstr ""
 
@@ -4506,7 +4518,7 @@ msgstr "சேமிக்கப்படாத படம் {0}"
 msgid "Unsupported file format"
 msgstr "ஆதரிக்கப்படாத கோப்பு வடிவம்"
 
-#: ../Pinta.Core/Actions/EditActions.cs:629
+#: ../Pinta.Core/Actions/EditActions.cs:650
 msgid "Unsupported palette format"
 msgstr "ஆதரிக்கப்படாத தட்டு வடிவம்"
 

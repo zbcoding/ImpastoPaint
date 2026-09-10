@@ -331,6 +331,16 @@ jobs:
           gh release view "$GITHUB_REF_NAME" --repo "$GITHUB_REPOSITORY" --json body -q .body
         } > notes.md
         gh release edit "$GITHUB_REF_NAME" --notes-file notes.md --repo "$GITHUB_REPOSITORY"
+    # Tell FlatPark a release went out, so its Flatpak listing moves to this version within
+    # minutes instead of waiting for their daily sweep (06:17 UTC). The action just POSTs the
+    # app id, tag and repo to their webhook - no token. A FlatPark hiccup must not fail a release
+    # that is already published, hence continue-on-error: their sweep is the safety net.
+    - name: Notify FlatPark
+      continue-on-error: true
+      uses: flatpark/publish-action@v1
+      with:
+        app-id: com.github.zbcoding.Impasto
+        tag: ${{ github.ref_name }}
 
   # Rebuild the site on every release: its download button reads the version from configure.ac,
   # and a release commit touches nothing under site/**, so the push trigger cannot cover it.

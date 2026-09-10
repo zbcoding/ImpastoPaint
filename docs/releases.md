@@ -118,8 +118,9 @@ republishes the Flatpak. Impasto was listed by
 https://github.com/flatpark/flatpark/pull/200
 
 - [ ] Normally nothing to do: a release published after the sweep is pinned by the next one,
-      within a day. Impasto's release job deliberately does not ping FlatPark — an update PR per
-      release has to be reviewed and merged on their side by hand, and their sweep is enough.
+      within a day. Impasto's release job deliberately does not ping FlatPark, since pinging FlatPark
+      creates a PR in their repository. This is only necessary if the release needs to update the listing
+      on FlatPark quickly.
 
 When the listing has to be current before the next sweep, send the ping by hand — one PR, only
 when wanted:

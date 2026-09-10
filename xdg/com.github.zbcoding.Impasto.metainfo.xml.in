@@ -43,6 +43,12 @@
     <binary>impasto</binary>
   </provides>
   <releases>
+    <release version="0.3.1" date="2026-09-10">
+      <url>https://github.com/zbcoding/ImpastoPaint/releases/tag/v0.3.1</url>
+      <description>
+        <p>Buttons in the always-visible chrome — the toolbox's tool buttons and stacked-tool flyouts, the quick access toolbar, the status bar's zoom buttons, the dock pads' window buttons, and the colors window's swap and reset buttons — now activate on button press instead of button release, so a click whose pointer is still moving registers instead of silently doing nothing. Layer rows select on press for the same reason. The floating Colors window also no longer crashes the application before it opens.</p>
+      </description>
+    </release>
     <release version="0.3.0" date="2026-09-10">
       <url>https://github.com/zbcoding/ImpastoPaint/releases/tag/v0.3.0</url>
       <description>

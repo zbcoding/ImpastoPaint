@@ -6,9 +6,11 @@ Impasto is a fork of the [Pinta Project](https://github.com/PintaProject/Pinta).
 Everything below the "Pinta Project history" heading, plus the "Inherited from Pinta"
 entries, is upstream Pinta work; the Impasto sections cover changes made in this fork.
 
-## Impasto - [Unreleased](https://github.com/zbcoding/ImpastoPaint/compare/v0.3.0...main)
+## Impasto - [Unreleased](https://github.com/zbcoding/ImpastoPaint/compare/v0.3.1...main)
 
 Changes for the next release go here.
+
+## Impasto - [0.3.1](https://github.com/zbcoding/ImpastoPaint/releases/tag/v0.3.1) - 2026-09-10
 
 ### Fixed
 
@@ -20,6 +22,10 @@ Changes for the next release go here.
   finish/back buttons (text tool, lasso), and the tool selector dropdown's entries. The long
   press that opens a stacked tool's flyout, and drag-to-reorder, keep working. Layer rows select
   on press for the same reason, before the row's drag-to-reorder can swallow the click.
+
+- The floating Colors window no longer crashes the application before it opens. Its swap button
+  read the palette service while the panel was still being constructed, before the service was
+  handed over, so building the window threw and took the process down with it.
 
 ## Impasto - [0.3.0](https://github.com/zbcoding/ImpastoPaint/releases/tag/v0.3.0) - 2026-09-10
 

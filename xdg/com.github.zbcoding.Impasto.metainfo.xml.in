@@ -43,6 +43,12 @@
     <binary>impasto</binary>
   </provides>
   <releases>
+    <release version="0.3.0" date="2026-09-10">
+      <url>https://github.com/zbcoding/ImpastoPaint/releases/tag/v0.3.0</url>
+      <description>
+        <p>The layers pad menu gains a Thumbnail Size slider that grows the layer thumbnails in both the sidebar and the floating layers window, and the side dock collapses to its icon strip once every pad in it is minimized. This release also fixes selection grips grabbing through hidden selections, layer clicks that started drags instead of switching the current layer, text-tool Cut and Copy swallowing the canvas clipboard commands, Cut/Erase/Fill acting on the wrong surface while a mask is the paint target, and redo moving a paste to the canvas's top-left corner.</p>
+      </description>
+    </release>
     <release version="0.2.1" date="2026-09-05">
       <url>https://github.com/zbcoding/ImpastoPaint/releases/tag/v0.2.1</url>
       <description>

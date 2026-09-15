@@ -662,9 +662,10 @@ public sealed partial class LayersListViewItemWidget
 		if (!IsBoundRow (item))
 			return;
 
+		UserLayer rowLayer = item.UserLayer!;
 		Document doc = PintaCore.Workspace.ActiveDocument;
-		if (doc.Layers.CurrentUserLayer != item.UserLayer)
-			doc.Layers.SetCurrentUserLayer (item.UserLayer);
+		if (doc.Layers.CurrentUserLayer != rowLayer)
+			doc.Layers.SetCurrentUserLayer (rowLayer);
 	}
 
 	private void MenuGesture_OnPressed (

@@ -355,8 +355,11 @@ public sealed class ActionManager
 				return;
 			}
 			var size = workspaceManager.ActiveDocument.ImageSize;
+			string ratio = GetAspectRatio (size.Width, size.Height);
 			// The label grows past WidthChars on its own for oversized dimensions.
-			image_size.SetText ($"{size.Width} × {size.Height} · {GetAspectRatio (size.Width, size.Height)}");
+			image_size.SetText (ratio.Length == 0
+				? $"{size.Width} × {size.Height}"
+				: $"{size.Width} × {size.Height} · {ratio}");
 		}
 
 		workspaceManager.ActiveDocumentChanged += delegate { UpdateImageSizeLabel (); };
@@ -368,22 +371,45 @@ public sealed class ActionManager
 		View.CreateStatusBar (statusbar);
 	}
 
-	// Simplified aspect ratio, e.g. 800×600 -> "4:3".
-	private static string GetAspectRatio (int w, int h)
+	// Simplified aspect ratio, e.g. 800×600 -> "4:3". Sizes whose exact ratio only reduces to
+	// terms too long to read (1601×1423 -> "1601:1423") are reported against the closest ratio
+	// with two-digit terms instead, e.g. "≈9:8", and left out entirely when even that is not a
+	// fair description of the shape.
+	internal static string GetAspectRatio (int width, int height)
 	{
-		if (w == 0 || h == 0) return "";
-		int gcd = GCD (w, h);
-		return $"{w / gcd}:{h / gcd}";
-	}
+		const int max_term = 99;
+		const double max_relative_error = 0.001;
 
-	private static int GCD (int a, int b)
-	{
-		while (b != 0) {
-			int temp = b;
-			b = a % b;
-			a = temp;
+		if (width <= 0 || height <= 0)
+			return "";
+
+		double ratio = width / (double) height;
+		int closest_width_term = 0;
+		int closest_height_term = 0;
+		double closest_error = double.MaxValue;
+
+		for (int height_term = 1; height_term <= max_term; height_term++) {
+
+			int width_term = (int) Math.Round (ratio * height_term);
+			if (width_term < 1 || width_term > max_term)
+				continue;
+
+			double error = Math.Abs (ratio - width_term / (double) height_term);
+			if (error >= closest_error)
+				continue;
+
+			closest_error = error;
+			closest_width_term = width_term;
+			closest_height_term = height_term;
 		}
-		return a;
+
+		if (closest_height_term == 0 || closest_error > ratio * max_relative_error)
+			return "";
+
+		bool exact = closest_width_term * height == closest_height_term * width;
+		string terms = $"{closest_width_term}:{closest_height_term}";
+
+		return exact ? terms : $"≈{terms}";
 	}
 
 	public void RegisterHandlers ()

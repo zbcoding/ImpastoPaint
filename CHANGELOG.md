@@ -16,6 +16,14 @@ entries, is upstream Pinta work; the Impasto sections cover changes made in this
   whole run of the slider is a single undo step, and a slider move after something else has taken
   over the selection - Select All, another tool, an undo - leaves that selection alone.
 
+### Fixed
+
+- The status bar's image size chip no longer spells out aspect ratios that do not reduce, such as
+  `1601:1423`. A ratio is shown exactly when its terms are at most two digits (`4:3`, `16:9`);
+  otherwise the closest two-digit ratio is shown as an approximation (`1601 × 1423` reads
+  `≈9:8`), and a shape no short ratio describes leaves the chip showing just the pixel
+  dimensions.
+
 ## Impasto - [0.3.1](https://github.com/zbcoding/ImpastoPaint/releases/tag/v0.3.1) - 2026-09-10
 
 ### Fixed

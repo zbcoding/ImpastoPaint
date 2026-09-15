@@ -140,9 +140,15 @@ merge before the Flatpak is rebuilt. `gh workflow run update-check.yml --repo fl
 does the same for every app at once, for anyone with write access there (this repo only has
 pull).
 
+Only if the ping was sent by hand, and only for that release:
+
 - [ ] `gh run list --repo flatpark/flatpark --workflow=release-dispatch.yml` shows an
       `app-release` run, or `update-check.yml` for the sweep, and it succeeded.
 - [ ] `gh pr list --repo flatpark/flatpark --search "Impasto"` shows the update PR, merged.
+
+The last two boxes are for whenever the rebuild lands - next sweep or ping - and do not hold the
+release up:
+
 - [ ] Check `https://flatpark.org/apps/com.github.zbcoding.Impasto/` shows `X.Y.Z` once it
       has rebuilt. The version and "What's New" there come from the metainfo `<releases>`
       list. flatpark keeps its own copy under `registry/com.github.zbcoding.Impasto/`; if a

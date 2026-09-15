@@ -38,6 +38,13 @@ public sealed class FileActions
 	public Command Close { get; }
 	public Command Save { get; }
 	public Command SaveAs { get; }
+
+	/// <summary>
+	/// Impasto: Save As with the project format (OpenRaster) already chosen, so that the format
+	/// that keeps layers, masks, text, shapes and effect nodes editable is discoverable without
+	/// knowing what ".ora" is.
+	/// </summary>
+	public Command SaveAsProject { get; }
 	public Command Print { get; }
 
 	/// <summary>Added to the File menu by the update checker when a newer release is available.</summary>
@@ -113,6 +120,12 @@ public sealed class FileActions
 			Resources.StandardIcons.DocumentSaveAs,
 			shortcuts: ["<Primary><Shift>S"]);
 
+		SaveAsProject = new Command (
+			"saveAsProject",
+			Translations.GetString ("Save as Impasto project..."),
+			null,
+			Resources.StandardIcons.DocumentSaveAs);
+
 		Print = new Command (
 			"print",
 			Translations.GetString ("Print"),
@@ -138,6 +151,7 @@ public sealed class FileActions
 		Gio.Menu save_section = Gio.Menu.New ();
 		save_section.AppendItem (Save.CreateMenuItem ());
 		save_section.AppendItem (SaveAs.CreateMenuItem ());
+		save_section.AppendItem (SaveAsProject.CreateMenuItem ());
 
 		Gio.Menu close_section = Gio.Menu.New ();
 		close_section.AppendItem (Close.CreateMenuItem ());
@@ -163,6 +177,7 @@ public sealed class FileActions
 
 			Save,
 			SaveAs,
+			SaveAsProject,
 
 			Close,
 			UpdateImpasto]);
@@ -177,12 +192,12 @@ public sealed class FileActions
 	/// <see langword="true"/> if the save succeeded,
 	/// <see langword="false"/> otherwise (for example, if it was canceled)
 	/// </returns>
-	internal async Task<bool> RaiseSaveDocument (Document document, bool saveAs)
+	internal async Task<bool> RaiseSaveDocument (Document document, bool saveAs, string? requestedFileType = null)
 	{
 		if (SaveDocument is null)
 			throw new InvalidOperationException ("GUI is not handling Workspace.SaveDocument");
 
-		DocumentSaveEventArgs e = new (document, saveAs);
+		DocumentSaveEventArgs e = new (document, saveAs, requestedFileType);
 		var results = await SaveDocument.InvokeSequential (this, e);
 		return results.All (succeeded => succeeded);
 	}

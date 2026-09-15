@@ -71,7 +71,7 @@ internal sealed class SaveDocumentImplmentationAction : IActionHandler
 	{
 		// Prompt for a new filename for "Save As", or a document that hasn't been saved before
 		if (e.SaveAs || !e.Document.HasFile) {
-			return await SaveFileAs (e.Document);
+			return await SaveFileAs (e.Document, e.RequestedFileType);
 		}
 
 		// Document hasn't changed, don't re-save it
@@ -82,10 +82,44 @@ internal sealed class SaveDocumentImplmentationAction : IActionHandler
 		return await SaveFile (e.Document, null, null, chrome.MainWindow);
 	}
 
+	/// <summary>
+	/// The format a format-first command (e.g. "Save as Impasto project...") asked for, or null
+	/// when it asked for none, or for one that cannot export here - an add-in can unregister a
+	/// format, and a missing one should degrade to the ordinary Save As rather than fail.
+	/// </summary>
+	private FormatDescriptor? ResolveRequestedFormat (string? requestedFileType)
+	{
+		if (requestedFileType is null)
+			return null;
+
+		FormatDescriptor? format = image_formats.GetFormatByExtension (requestedFileType);
+
+		return format is not null && format.IsExportAvailable () ? format : null;
+	}
+
+	/// <summary>
+	/// What the Save dialog's name box starts out holding.
+	/// </summary>
+	/// <remarks>
+	/// Bare (no extension) unless the command already chose the format. Pre-filling the *default*
+	/// format's extension was tried and reverted (3269cb48): portal-based pickers key off the
+	/// name's extension, and the accept path below treats that extension as authoritative, so a
+	/// name the user never typed silently outvotes the format they did pick in the type dropdown.
+	/// A requested format has no such conflict - it is the user's choice, and it is the only
+	/// filter the dialog offers - so its extension is filled in and the save loop's re-prompt
+	/// never has to fire.
+	/// </remarks>
+	private static string InitialSaveName (string displayName, FormatDescriptor? requestedFormat)
+		=> requestedFormat is null
+		? displayName
+		: ImageConverterManager.WithExtension (displayName, requestedFormat.Extensions.First ());
+
 	// This is actually both for "Save As" and saving a file that never
 	// been saved before.  Either way, we need to prompt for a filename.
-	private async Task<bool> SaveFileAs (Document document)
+	private async Task<bool> SaveFileAs (Document document, string? requestedFileType)
 	{
+		FormatDescriptor? requestedFormat = ResolveRequestedFormat (requestedFileType);
+
 		var fcd = Gtk.FileChooserNative.New (
 			Translations.GetString ("Save Image File"),
 			chrome.MainWindow,
@@ -93,27 +127,27 @@ internal sealed class SaveDocumentImplmentationAction : IActionHandler
 			Translations.GetString ("Save"),
 			Translations.GetString ("Cancel"));
 
-		if (document.HasFile)
+		// SetFile would carry over the document's current extension, which is the one thing a
+		// requested format has to replace - so that path re-uses the folder and renames instead.
+		if (document.HasFile && requestedFormat is null)
 			fcd.SetFile (document.File!);
 		else {
-			if (recent_files.GetDialogDirectory () is Gio.File dir && dir.QueryExists (null))
-				fcd.SetCurrentFolder (dir);
+			Gio.File? folder = document.HasFile ? document.File!.GetParent () : recent_files.GetDialogDirectory ();
+			if (folder is not null && folder.QueryExists (null))
+				fcd.SetCurrentFolder (folder);
 
-			// Leave the name bare (no extension) on purpose: the save loop
-			// below (SaveDocumentImplmentationAction.SaveFileAs) auto-appends
-			// the extension of the format the user actually picks. Pre-filling
-			// the *default* extension here makes portal-based pickers (KDE/GNOME)
-			// key off the name's extension and revert the format dropdown to
-			// match it, so a bare name is the only thing that keeps the user's
-			// dropdown choice authoritative.
-			fcd.SetCurrentName (document.DisplayName);
+			fcd.SetCurrentName (InitialSaveName (document.DisplayName, requestedFormat));
 		}
 
-		// Add all the formats we support to the save dialog
+		// Add all the formats we support to the save dialog - or just the requested one, so that
+		// the dropdown cannot contradict the format the command already committed to.
 		Dictionary<Gtk.FileFilter, FormatDescriptor> filetypes = [];
 		foreach (var format in image_formats.Formats) {
 
 			if (!format.IsExportAvailable ())
+				continue;
+
+			if (requestedFormat is not null && format != requestedFormat)
 				continue;
 
 			fcd.AddFilter (format.Filter);
@@ -124,13 +158,11 @@ internal sealed class SaveDocumentImplmentationAction : IActionHandler
 			fcd.Filter = format.Filter;
 		}
 
-		// If we already have a format, set it to the default.
-		// If not, default to jpeg
-		FormatDescriptor? format_desc = null;
+		// Use the requested format, then the document's own, and default to jpeg otherwise.
+		FormatDescriptor? format_desc = requestedFormat;
 
-		if (document.HasFile) {
+		if (format_desc is null && document.HasFile)
 			format_desc = image_formats.GetFormatByFile (document.DisplayName);
-		}
 
 		if (format_desc is null || !format_desc.IsExportAvailable ())
 			format_desc = image_formats.GetDefaultSaveFormat ();
@@ -199,7 +231,11 @@ internal sealed class SaveDocumentImplmentationAction : IActionHandler
 			document.HasBeenSavedInSession = false;
 
 			recent_files.AddFile (file);
-			image_formats.SetDefaultFormat (format.Extensions.First ());
+
+			// A format-first command says nothing about which format the next plain Save As
+			// should offer, so only an ordinary save updates the remembered export default.
+			if (requestedFormat is null)
+				image_formats.SetDefaultFormat (format.Extensions.First ());
 
 			document.File = file;
 			document.FileType = format.Extensions.First ();

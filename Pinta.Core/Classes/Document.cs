@@ -495,9 +495,9 @@ public sealed class Document
 	}
 
 	// Returns true if successful, false if canceled
-	public Task<bool> Save (bool saveAs)
+	public Task<bool> Save (bool saveAs, string? requestedFileType = null)
 	{
-		return actions.File.RaiseSaveDocument (this, saveAs);
+		return actions.File.RaiseSaveDocument (this, saveAs, requestedFileType);
 	}
 
 	/// <summary>

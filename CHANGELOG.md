@@ -10,6 +10,14 @@ entries, is upstream Pinta work; the Impasto sections cover changes made in this
 
 ### Added
 
+- **File > Save as Impasto project...** saves the open image as an OpenRaster (`.ora`) file, the
+  only format Impasto exports that keeps layers, masks, text, shapes and effect nodes editable.
+  It was always available through the Save As dialog's type dropdown, but only to someone who
+  already knew that `.ora` is what an Impasto project is. Because the command picks the format
+  before the dialog opens, the dialog can offer the project filter alone and pre-fill the name
+  with `.ora` already appended - so it never re-shows itself to correct a missing extension, and
+  it leaves the remembered export format for plain Save As alone.
+
 - The Magic Wand's tolerance slider now retunes the selection you already have. Every point you
   clicked since the selection was last changed from elsewhere is re-flooded as you drag, so the
   marked area grows and shrinks under the pointer instead of needing another click per guess. A

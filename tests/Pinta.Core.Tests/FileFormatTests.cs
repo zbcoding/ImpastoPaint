@@ -464,6 +464,33 @@ internal sealed class FileFormatTests
 		Assert.That (ImageConverterManager.NeedsExtensionPrompt ("photo.png", png), Is.False);
 	}
 
+	[TestCase ("photo.png", "photo.ora")]
+	[TestCase ("Unsaved Image 1", "Unsaved Image 1.ora")]
+	[TestCase ("archive.tar.gz", "archive.tar.ora")]
+	// A dotfile-style name has no real extension to replace (see HasExtension), so the leading
+	// dot stays part of the name instead of being eaten as a separator.
+	[TestCase (".bashrc", ".bashrc.ora")]
+	public void WithExtension_ReplacesOnlyARealExtension (string fileName, string expected)
+	{
+		Assert.That (ImageConverterManager.WithExtension (fileName, "ora"), Is.EqualTo (expected));
+	}
+
+	// "Save as Impasto project..." resolves this file type and silently falls back to a plain
+	// Save As if it can't export or isn't registered, so the command is only as good as this.
+	[Test]
+	public void ProjectFileType_ExportsWithLayersIntact ()
+	{
+		Assume.That (TryInitGtk (), "GTK is not available on this system");
+
+		ImageConverterManager formats = new (new SettingsManager ());
+
+		FormatDescriptor? project = formats.GetFormatByExtension (ImageConverterManager.ProjectFileType);
+
+		Assert.That (project, Is.Not.Null);
+		Assert.That (project!.IsExportAvailable (), Is.True);
+		Assert.That (project.SupportsLayers, Is.True);
+	}
+
 	[Test]
 	public void Export_Avif_ProducesValidFile ()
 	{

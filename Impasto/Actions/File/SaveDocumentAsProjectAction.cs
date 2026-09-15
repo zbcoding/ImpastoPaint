@@ -1,21 +1,18 @@
-// 
-// DocumentCancelEventArgs.cs
-//  
-// Author:
-//       Jonathan Pobst <monkey@jpobst.com>
-// 
-// Copyright (c) 2010 Jonathan Pobst
-// 
+//
+// SaveDocumentAsProjectAction.cs
+//
+// Copyright (c) 2026 Impasto contributors
+//
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
 // in the Software without restriction, including without limitation the rights
 // to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 // copies of the Software, and to permit persons to whom the Software is
 // furnished to do so, subject to the following conditions:
-// 
+//
 // The above copyright notice and this permission notice shall be included in
 // all copies or substantial portions of the Software.
-// 
+//
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -25,27 +22,36 @@
 // THE SOFTWARE.
 
 using System;
+using Pinta.Core;
 
-namespace Pinta.Core;
+namespace Pinta.Actions;
 
-public sealed class DocumentSaveEventArgs : EventArgs
+internal sealed class SaveDocumentAsProjectAction : IActionHandler
 {
-	public Document Document { get; }
-	public bool SaveAs { get; }
-
-	/// <summary>
-	/// Impasto: the file type the save command picked for the user, or null to let the Save As
-	/// dialog decide as usual. Set by format-first commands such as "Save as Impasto project...",
-	/// which know the format before the dialog opens and can therefore pre-fill its extension -
-	/// something the generic Save As must not do, because a pre-filled extension silently beats
-	/// the format the user picks in the dialog's own type dropdown.
-	/// </summary>
-	public string? RequestedFileType { get; }
-
-	public DocumentSaveEventArgs (Document document, bool saveAs, string? requestedFileType = null)
+	private readonly FileActions file;
+	private readonly WorkspaceManager workspace;
+	internal SaveDocumentAsProjectAction (
+		FileActions file,
+		WorkspaceManager workspace)
 	{
-		Document = document;
-		SaveAs = saveAs;
-		RequestedFileType = requestedFileType;
+		this.file = file;
+		this.workspace = workspace;
+	}
+
+	void IActionHandler.Initialize ()
+	{
+		file.SaveAsProject.Activated += Activated;
+	}
+
+	void IActionHandler.Uninitialize ()
+	{
+		file.SaveAsProject.Activated -= Activated;
+	}
+
+	private async void Activated (object sender, EventArgs e)
+	{
+		await workspace.ActiveDocument.Save (
+			saveAs: true,
+			requestedFileType: ImageConverterManager.ProjectFileType);
 	}
 }

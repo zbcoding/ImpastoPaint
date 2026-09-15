@@ -34,6 +34,13 @@ namespace Pinta.Core;
 
 public sealed class ImageConverterManager
 {
+	/// <summary>
+	/// Impasto: the file type an Impasto project is saved as. OpenRaster is the only export
+	/// format that keeps layers, masks, text and shape objects and effect nodes editable - the
+	/// other formats write flattened pixels - so it is what "Save as Impasto project..." picks.
+	/// </summary>
+	public const string ProjectFileType = "ora";
+
 	private readonly SettingsManager settings_manager;
 	public ImageConverterManager (SettingsManager settingsManager)
 	{
@@ -234,6 +241,22 @@ public sealed class ImageConverterManager
 	/// dotfile-style name would otherwise look like it already has an extension.
 	/// </summary>
 	public static bool HasExtension (string fileName) => fileName.LastIndexOf ('.') > 0;
+
+	/// <summary>
+	/// Impasto: <paramref name="fileName"/> carrying <paramref name="extension"/> instead of the
+	/// one it has, for pre-filling the Save dialog when the command already chose the format.
+	/// Only a real extension is replaced (<see cref="HasExtension"/>), so a dotfile-style name
+	/// keeps its leading dot ("photo.png" -> "photo.ora", ".bashrc" -> ".bashrc.ora").
+	/// </summary>
+	public static string WithExtension (string fileName, string extension)
+	{
+		string stem =
+			HasExtension (fileName)
+			? fileName[..fileName.LastIndexOf ('.')]
+			: fileName;
+
+		return $"{stem}.{extension}";
+	}
 
 	/// <summary>
 	/// Whether the Save dialog has to re-show <paramref name="displayName"/> with a corrected

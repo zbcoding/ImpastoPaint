@@ -55,6 +55,7 @@ public sealed class ActionHandlers
 			new OpenDocumentAction (actions.File, chrome, workspace, recentFiles, imageFormats),
 			new SaveDocumentAction (actions.File, workspace),
 			new SaveDocumentAsAction (actions.File, workspace),
+			new SaveDocumentAsProjectAction (actions.File, workspace),
 			new SaveDocumentImplmentationAction (actions.File, actions.Image, chrome, imageFormats, recentFiles, tools),
 			new ModifyCompressionAction (actions.File),
 			//new PrintDocumentAction ();
@@ -129,6 +130,7 @@ public sealed class ActionHandlers
 		PintaCore.Actions.File.Close.Sensitive = enable;
 		PintaCore.Actions.File.Save.Sensitive = enable;
 		PintaCore.Actions.File.SaveAs.Sensitive = enable;
+		PintaCore.Actions.File.SaveAsProject.Sensitive = enable;
 		PintaCore.Actions.File.Print.Sensitive = enable;
 		PintaCore.Actions.Edit.Copy.Sensitive = enable;
 		PintaCore.Actions.Edit.CopyMerged.Sensitive = enable;

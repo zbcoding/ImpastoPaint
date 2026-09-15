@@ -35,8 +35,6 @@ public sealed class MagicWandTool : FloodTool
 {
 	private readonly IWorkspaceService workspace;
 
-	private CombineMode combine_mode;
-
 	/// <summary>A point the user clicked on, and how its region was combined into the selection.</summary>
 	private sealed record WandPoint (PointI Position, bool GlobalMode, CombineMode Mode);
 
@@ -47,10 +45,9 @@ public sealed class MagicWandTool : FloodTool
 	private DocumentSelection? live_base_selection;
 	private Document? live_document;
 
-	// Set while a click is being handled, so the fill callback can tell a click apart from a
-	// re-flood; the re-flood carries the combine mode of the point it is replaying instead.
+	// The point whose flood is on its way back through OnFillRegionComputed, set for as long as
+	// the click that started it is being handled. A re-flood never goes through that callback.
 	private WandPoint? clicked_point;
-	private CombineMode replay_mode;
 
 	// Our own selection writes must not be mistaken for someone else's.
 	private bool writing_selection;
@@ -98,8 +95,8 @@ public sealed class MagicWandTool : FloodTool
 
 	protected override void OnMouseDown (Document document, ToolMouseEventArgs e)
 	{
-		combine_mode = workspace.SelectionHandler.DetermineCombineMode (e);
-		clicked_point = new WandPoint (e.Point, IsGlobalMode || e.IsShiftPressed, combine_mode);
+		CombineMode mode = workspace.SelectionHandler.DetermineCombineMode (e);
+		clicked_point = new WandPoint (e.Point, IsGlobalMode || e.IsShiftPressed, mode);
 
 		writing_selection = true;
 		try {
@@ -121,11 +118,8 @@ public sealed class MagicWandTool : FloodTool
 
 	protected override void OnFillRegionComputed (Document document, IReadOnlyList<IReadOnlyList<PointI>> polygonSet)
 	{
-		if (clicked_point is not WandPoint clicked) {
-			// A re-flood at the new tolerance; its history item was pushed by OnToleranceChanged.
-			CombineIntoSelection (document, replay_mode, polygonSet);
-			return;
-		}
+		// Only a click arrives here; the tolerance slider re-floods its points directly.
+		WandPoint clicked = clicked_point!;
 
 		var undoAction = new SelectionHistoryItem (workspace, Icon, Name);
 		undoAction.TakeSnapshot ();
@@ -150,6 +144,12 @@ public sealed class MagicWandTool : FloodTool
 	/// dragging the tolerance slider grows and shrinks the selected area as the user watches. A
 	/// whole run of slider moves folds into one history item; the next click starts a new one.
 	/// </summary>
+	/// <remarks>
+	/// ponytail: every notch of the slider re-floods every stored point, each flood taking its own
+	/// visible snapshot of the layer - fine for the handful of clicks a selection is usually built
+	/// from, and the ceiling is the click count, not the image. If that stops holding, cache the
+	/// snapshot for the run and flood from it.
+	/// </remarks>
 	protected override void OnToleranceChanged ()
 	{
 		if (live_document is null || live_base_selection is null || live_points.Count == 0)
@@ -168,14 +168,23 @@ public sealed class MagicWandTool : FloodTool
 			undoAction.TakeSnapshot ();
 		}
 
+		// The wand never limits a flood to the selection (LimitToSelection is false), so this is
+		// built once for the whole run to satisfy the flood; it is not read.
+		Cairo.Region limitRegion = CairoExtensions.CreateRegion (document.GetSelectedBounds (true));
+
 		writing_selection = true;
 		try {
 			for (int i = 0; i < live_points.Count; ++i) {
+				WandPoint point = live_points[i];
+
 				// Each point combines into the result of the ones before it, exactly as it did
 				// when it was clicked; the first one combines into the pre-click selection.
 				document.PreviousSelection = (i == 0 ? live_base_selection : document.Selection).Clone ();
-				replay_mode = live_points[i].Mode;
-				ComputeFillRegion (document, live_points[i].Position, live_points[i].GlobalMode);
+
+				FloodedRegion flooded = ComputeFloodedRegion (document, point.Position, point.GlobalMode, limitRegion);
+
+				if (flooded.Polygons is not null)
+					CombineIntoSelection (document, point.Mode, flooded.Polygons);
 			}
 
 			document.Selection.Visible = true;

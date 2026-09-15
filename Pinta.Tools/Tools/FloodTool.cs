@@ -87,8 +87,10 @@ public abstract class FloodTool : BaseTool
 
 		base.OnMouseDown (document, e);
 
+		Cairo.Region limitRegion = CairoExtensions.CreateRegion (document.GetSelectedBounds (true));
+
 		// See if the mouse click is valid
-		if (LimitToSelection && !CairoExtensions.CreateRegion (document.GetSelectedBounds (true)).ContainsPoint (pos.X, pos.Y))
+		if (LimitToSelection && !limitRegion.ContainsPoint (pos.X, pos.Y))
 			return;
 
 		// A coloring tool gets first claim: a click landing on a live object's ink recolors
@@ -96,19 +98,28 @@ public abstract class FloodTool : BaseTool
 		if (TryRecolorObjectAt (document, pos))
 			return;
 
-		ComputeFillRegion (document, pos, IsGlobalMode || e.IsShiftPressed);
+		FloodedRegion flooded = ComputeFloodedRegion (document, pos, IsGlobalMode || e.IsShiftPressed, limitRegion);
+
+		OnFillRegionComputed (document, flooded.Stencil);
+
+		if (flooded.Polygons is not null)
+			OnFillRegionComputed (document, flooded.Polygons);
 	}
 
 	/// <summary>
-	/// Floods the region of similar color around <paramref name="pos"/> at the current tolerance and
-	/// hands it to <see cref="OnFillRegionComputed"/>. Split out of the click handler so a tool can
-	/// recompute a region it already sampled - the magic wand re-floods its click points when the
-	/// tolerance changes.
+	/// The flood of similar color around one point: the pixels it covers, and those same pixels as
+	/// polygons when <see cref="CalculatePolygonSet"/> asks for them.
 	/// </summary>
-	protected void ComputeFillRegion (Document document, PointI pos, bool globalMode)
-	{
-		Cairo.Region limitRegion = CairoExtensions.CreateRegion (document.GetSelectedBounds (true));
+	protected sealed record FloodedRegion (BitMask Stencil, IReadOnlyList<IReadOnlyList<PointI>>? Polygons);
 
+	/// <summary>
+	/// Floods the region of similar color around <paramref name="pos"/> at the current tolerance
+	/// and returns it. Returned rather than dispatched to <see cref="OnFillRegionComputed"/> so
+	/// that a tool can re-flood a point it already sampled and decide on the spot what to do with
+	/// the result - the magic wand re-floods its click points when the tolerance changes.
+	/// </summary>
+	protected FloodedRegion ComputeFloodedRegion (Document document, PointI pos, bool globalMode, Cairo.Region limitRegion)
+	{
 		// Sample the pixels the user can see: for a layer with live shapes/text, effects, a transform
 		// or a mask, that includes what renders on top of the raster the fill lands in. While the mask
 		// itself is the paint target, the mask surface *is* what is being edited, so that one is
@@ -128,14 +139,11 @@ public abstract class FloodTool : BaseTool
 			else
 				CairoExtensions.FillStencilFromPoint (surface, stencilBuffer, pos, tol, out boundingBox, limitRegion, LimitToSelection);
 
-			OnFillRegionComputed (document, stencilBuffer);
-
 			// If a derived tool is only going to use the stencil,
 			// don't waste time building the polygon set
-			if (CalculatePolygonSet) {
-				var polygonSet = stencilBuffer.CreatePolygonSet (boundingBox, PointI.Zero);
-				OnFillRegionComputed (document, polygonSet);
-			}
+			return new FloodedRegion (
+				stencilBuffer,
+				CalculatePolygonSet ? stencilBuffer.CreatePolygonSet (boundingBox, PointI.Zero) : null);
 		} finally {
 			snapshot?.Dispose ();
 		}

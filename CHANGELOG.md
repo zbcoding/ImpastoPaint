@@ -8,7 +8,13 @@ entries, is upstream Pinta work; the Impasto sections cover changes made in this
 
 ## Impasto - [Unreleased](https://github.com/zbcoding/ImpastoPaint/compare/v0.3.1...main)
 
-Changes for the next release go here.
+### Added
+
+- The Magic Wand's tolerance slider now retunes the selection you already have. Every point you
+  clicked since the selection was last changed from elsewhere is re-flooded as you drag, so the
+  marked area grows and shrinks under the pointer instead of needing another click per guess. A
+  whole run of the slider is a single undo step, and a slider move after something else has taken
+  over the selection - Select All, another tool, an undo - leaves that selection alone.
 
 ## Impasto - [0.3.1](https://github.com/zbcoding/ImpastoPaint/releases/tag/v0.3.1) - 2026-09-10
 

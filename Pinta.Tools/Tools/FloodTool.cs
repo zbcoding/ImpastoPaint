@@ -87,10 +87,27 @@ public abstract class FloodTool : BaseTool
 
 		base.OnMouseDown (document, e);
 
-		var currentRegion = CairoExtensions.CreateRegion (document.GetSelectedBounds (true));
 		// See if the mouse click is valid
-		if (!currentRegion.ContainsPoint (pos.X, pos.Y) && LimitToSelection)
+		if (LimitToSelection && !CairoExtensions.CreateRegion (document.GetSelectedBounds (true)).ContainsPoint (pos.X, pos.Y))
 			return;
+
+		// A coloring tool gets first claim: a click landing on a live object's ink recolors
+		// that object instead of flooding whatever sits underneath it.
+		if (TryRecolorObjectAt (document, pos))
+			return;
+
+		ComputeFillRegion (document, pos, IsGlobalMode || e.IsShiftPressed);
+	}
+
+	/// <summary>
+	/// Floods the region of similar color around <paramref name="pos"/> at the current tolerance and
+	/// hands it to <see cref="OnFillRegionComputed"/>. Split out of the click handler so a tool can
+	/// recompute a region it already sampled - the magic wand re-floods its click points when the
+	/// tolerance changes.
+	/// </summary>
+	protected void ComputeFillRegion (Document document, PointI pos, bool globalMode)
+	{
+		Cairo.Region limitRegion = CairoExtensions.CreateRegion (document.GetSelectedBounds (true));
 
 		// Sample the pixels the user can see: for a layer with live shapes/text, effects, a transform
 		// or a mask, that includes what renders on top of the raster the fill lands in. While the mask
@@ -101,19 +118,15 @@ public abstract class FloodTool : BaseTool
 		try {
 			Cairo.ImageSurface surface = snapshot ?? document.Layers.CurrentPaintSurface;
 
-			// A coloring tool gets first claim: a click landing on a live object's ink recolors
-			// that object instead of flooding whatever sits underneath it.
-			if (TryRecolorObjectAt (document, pos))
-				return;
 			var stencilBuffer = new BitMask (surface.Width, surface.Height);
 			var tol = (int) (Tolerance * Tolerance * 256);
 
 			RectangleD boundingBox;
 
-			if (IsGlobalMode || e.IsShiftPressed)
-				CairoExtensions.FillStencilByColor (surface, stencilBuffer, surface.GetColorBgra (pos), tol, out boundingBox, currentRegion, LimitToSelection);
+			if (globalMode)
+				CairoExtensions.FillStencilByColor (surface, stencilBuffer, surface.GetColorBgra (pos), tol, out boundingBox, limitRegion, LimitToSelection);
 			else
-				CairoExtensions.FillStencilFromPoint (surface, stencilBuffer, pos, tol, out boundingBox, currentRegion, LimitToSelection);
+				CairoExtensions.FillStencilFromPoint (surface, stencilBuffer, pos, tol, out boundingBox, limitRegion, LimitToSelection);
 
 			OnFillRegionComputed (document, stencilBuffer);
 
@@ -142,6 +155,12 @@ public abstract class FloodTool : BaseTool
 	protected virtual void OnFillRegionComputed (Document document, BitMask stencil) { }
 
 	/// <summary>
+	/// Called when the user moves the tolerance slider. The base does nothing - a tool that can
+	/// show the new tolerance without another click overrides this.
+	/// </summary>
+	protected virtual void OnToleranceChanged () { }
+
+	/// <summary>
 	/// Called before the flood fill samples: lets a derived coloring tool recolor a live
 	/// shape/text object when <paramref name="pos"/> lands on its ink, so the bucket colors the
 	/// object the user actually clicked rather than the raster underneath it. Returns whether the
@@ -156,6 +175,7 @@ public abstract class FloodTool : BaseTool
 			if (tolerance_slider is null) {
 				tolerance_slider = GtkExtensions.CreateToolBarSlider (0, 100, 1, Settings.GetSetting (SettingNames.FloodToolFillTolerance (this), 0));
 				tolerance_slider.TooltipText = Translations.GetString ("Higher tolerance includes more colors similar to the clicked pixel in the fill.");
+				tolerance_slider.OnValueChanged += (_, _) => OnToleranceChanged ();
 			}
 			return tolerance_slider;
 		}

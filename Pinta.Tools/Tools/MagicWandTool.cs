@@ -37,6 +37,26 @@ public sealed class MagicWandTool : FloodTool
 
 	private CombineMode combine_mode;
 
+	/// <summary>A point the user clicked on, and how its region was combined into the selection.</summary>
+	private sealed record WandPoint (PointI Position, bool GlobalMode, CombineMode Mode);
+
+	// The clicked points the tolerance slider can still re-flood, and the selection they were
+	// combined into. Forgotten as soon as anything other than this tool touches the selection, so
+	// moving the slider never resurrects a region the user has already moved on from.
+	private readonly List<WandPoint> live_points = [];
+	private DocumentSelection? live_base_selection;
+	private Document? live_document;
+
+	// Set while a click is being handled, so the fill callback can tell a click apart from a
+	// re-flood; the re-flood carries the combine mode of the point it is replaying instead.
+	private WandPoint? clicked_point;
+	private CombineMode replay_mode;
+
+	// Our own selection writes must not be mistaken for someone else's.
+	private bool writing_selection;
+
+	private bool tolerance_change_recorded;
+
 	public MagicWandTool (IServiceProvider services) : base (services)
 	{
 		workspace = services.GetService<IWorkspaceService> ();
@@ -47,6 +67,11 @@ public sealed class MagicWandTool : FloodTool
 			if (IsActiveTool ()) {
 				SetCursor (DefaultCursor);
 			}
+		};
+
+		workspace.SelectionChanged += (_, _) => {
+			if (!writing_selection)
+				ForgetLivePoints ();
 		};
 	}
 
@@ -74,23 +99,96 @@ public sealed class MagicWandTool : FloodTool
 	protected override void OnMouseDown (Document document, ToolMouseEventArgs e)
 	{
 		combine_mode = workspace.SelectionHandler.DetermineCombineMode (e);
+		clicked_point = new WandPoint (e.Point, IsGlobalMode || e.IsShiftPressed, combine_mode);
 
-		base.OnMouseDown (document, e);
+		writing_selection = true;
+		try {
+			base.OnMouseDown (document, e);
 
-		document.Selection.Visible = true;
+			document.Selection.Visible = true;
+		} finally {
+			writing_selection = false;
+			clicked_point = null;
+		}
+	}
+
+	protected override void OnDeactivated (Document? document, BaseTool? newTool)
+	{
+		base.OnDeactivated (document, newTool);
+
+		ForgetLivePoints ();
 	}
 
 	protected override void OnFillRegionComputed (Document document, IReadOnlyList<IReadOnlyList<PointI>> polygonSet)
 	{
+		if (clicked_point is not WandPoint clicked) {
+			// A re-flood at the new tolerance; its history item was pushed by OnToleranceChanged.
+			CombineIntoSelection (document, replay_mode, polygonSet);
+			return;
+		}
+
 		var undoAction = new SelectionHistoryItem (workspace, Icon, Name);
 		undoAction.TakeSnapshot ();
 
-		document.PreviousSelection = document.Selection.Clone ();
+		if (live_document != document || live_points.Count == 0) {
+			live_document = document;
+			live_base_selection = document.Selection.Clone ();
+			live_points.Clear ();
+		}
 
-		document.Selection.SelectionPolygons.Clear ();
-		SelectionModeHandler.PerformSelectionMode (document, combine_mode, DocumentSelection.ConvertToPolygons (polygonSet));
+		live_points.Add (clicked);
+		tolerance_change_recorded = false;
+
+		document.PreviousSelection = document.Selection.Clone ();
+		CombineIntoSelection (document, clicked.Mode, polygonSet);
 
 		document.History.PushNewItem (undoAction);
+	}
+
+	/// <summary>
+	/// Re-floods every point clicked since the selection was last changed from elsewhere, so
+	/// dragging the tolerance slider grows and shrinks the selected area as the user watches. A
+	/// whole run of slider moves folds into one history item; the next click starts a new one.
+	/// </summary>
+	protected override void OnToleranceChanged ()
+	{
+		if (live_document is null || live_base_selection is null || live_points.Count == 0)
+			return;
+
+		if (!workspace.HasOpenDocuments || workspace.ActiveDocument != live_document) {
+			ForgetLivePoints ();
+			return;
+		}
+
+		Document document = live_document;
+
+		SelectionHistoryItem? undoAction = null;
+		if (!tolerance_change_recorded) {
+			undoAction = new SelectionHistoryItem (workspace, Icon, Name);
+			undoAction.TakeSnapshot ();
+		}
+
+		writing_selection = true;
+		try {
+			for (int i = 0; i < live_points.Count; ++i) {
+				// Each point combines into the result of the ones before it, exactly as it did
+				// when it was clicked; the first one combines into the pre-click selection.
+				document.PreviousSelection = (i == 0 ? live_base_selection : document.Selection).Clone ();
+				replay_mode = live_points[i].Mode;
+				ComputeFillRegion (document, live_points[i].Position, live_points[i].GlobalMode);
+			}
+
+			document.Selection.Visible = true;
+		} finally {
+			writing_selection = false;
+		}
+
+		if (undoAction is not null) {
+			document.History.PushNewItem (undoAction);
+			tolerance_change_recorded = true;
+		}
+
+		document.Workspace.Invalidate ();
 	}
 
 	protected override void OnSaveSettings (ISettingsService settings)
@@ -98,6 +196,20 @@ public sealed class MagicWandTool : FloodTool
 		base.OnSaveSettings (settings);
 
 		workspace.SelectionHandler.OnSaveSettings (settings);
+	}
+
+	private static void CombineIntoSelection (Document document, CombineMode mode, IReadOnlyList<IReadOnlyList<PointI>> polygonSet)
+	{
+		document.Selection.SelectionPolygons.Clear ();
+		SelectionModeHandler.PerformSelectionMode (document, mode, DocumentSelection.ConvertToPolygons (polygonSet));
+	}
+
+	private void ForgetLivePoints ()
+	{
+		live_points.Clear ();
+		live_base_selection = null;
+		live_document = null;
+		tolerance_change_recorded = false;
 	}
 
 	private Separator? selection_sep;

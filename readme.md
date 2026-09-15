@@ -128,3 +128,5 @@ Before contributing, read the full guide, including the git/PR workflow, in `CON
 
 - You can report [bugs/issues](https://github.com/zbcoding/ImpastoPaint/issues).
 - Notable changes of each release are recorded in `CHANGELOG.md`.
+- What the program sends over the network, and when, is listed in
+  [docs/privacy-policy.md](docs/privacy-policy.md).

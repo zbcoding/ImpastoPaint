@@ -26,6 +26,13 @@ entries, is upstream Pinta work; the Impasto sections cover changes made in this
 
 ### Fixed
 
+- Saving under a name the Save dialog has to correct no longer sends you back to the folder you
+  started in. Typing a name with no extension (or an unknown one) re-shows the dialog with the
+  extension filled in, but a re-shown dialog re-sends the folder it was first configured with -
+  the last directory used, or the document's own - throwing away wherever you had navigated to.
+  It now reopens on the folder you chose, as do the retries after declining to flatten an image
+  and after a failed write.
+
 - The status bar's image size chip no longer spells out aspect ratios that do not reduce, such as
   `1601:1423`. A ratio is shown exactly when its terms are at most two digits (`4:3`, `16:9`);
   otherwise the closest two-digit ratio is shown as an approximation (`1601 × 1423` reads

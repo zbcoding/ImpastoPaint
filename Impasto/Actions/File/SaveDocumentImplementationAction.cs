@@ -114,6 +114,23 @@ internal sealed class SaveDocumentImplmentationAction : IActionHandler
 		? displayName
 		: ImageConverterManager.WithExtension (displayName, requestedFormat.Extensions.First ());
 
+	/// <summary>
+	/// Puts the Save dialog back on <paramref name="file"/>'s folder under <paramref name="name"/>
+	/// before the save loop re-shows it.
+	/// </summary>
+	/// <remarks>
+	/// Re-showing a chooser does not resume where the last run ended: it re-sends the folder and
+	/// name it was configured with before the first run (the last dialog directory, or the
+	/// document's own file), discarding wherever the user navigated to. Every retry path has to
+	/// restore both, or the user has to find their way back to the folder they already chose.
+	/// Folder before name, so that changing the folder cannot clear the name.
+	/// </remarks>
+	private static void RestoreDialogSelection (Gtk.FileChooserNative fcd, Gio.File file, string name)
+	{
+		fcd.SetCurrentFolder (file.GetParent ());
+		fcd.SetCurrentName (name);
+	}
+
 	// This is actually both for "Save As" and saving a file that never
 	// been saved before.  Either way, we need to prompt for a filename.
 	private async Task<bool> SaveFileAs (Document document, string? requestedFileType)
@@ -204,11 +221,12 @@ internal sealed class SaveDocumentImplmentationAction : IActionHandler
 			// format's extension already filled in, so accepting it again gets a freshly negotiated
 			// file from the dialog rather than one we patched.
 			if (ImageConverterManager.NeedsExtensionPrompt (displayName, formatFromExtension)) {
-				fcd.SetCurrentName (displayName + "." + format.Extensions.First ());
+				RestoreDialogSelection (fcd, file, displayName + "." + format.Extensions.First ());
 				continue;
 			}
 
 			if (!await ConfirmFlatten (document, format)) {
+				RestoreDialogSelection (fcd, file, displayName);
 				continue;
 			}
 
@@ -220,9 +238,7 @@ internal sealed class SaveDocumentImplmentationAction : IActionHandler
 			// If saving the file failed or was cancelled, let the user select
 			// a different file type.
 			if (!await SaveFile (document, file, format, chrome.MainWindow)) {
-				// Re-set the current name and directory
-				fcd.SetCurrentName (displayName);
-				fcd.SetCurrentFolder (directory);
+				RestoreDialogSelection (fcd, file, displayName);
 				continue;
 			}
 

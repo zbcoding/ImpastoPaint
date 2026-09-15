@@ -106,8 +106,8 @@ internal sealed class SaveDocumentImplmentationAction : IActionHandler
 	/// name's extension, and the accept path below treats that extension as authoritative, so a
 	/// name the user never typed silently outvotes the format they did pick in the type dropdown.
 	/// A requested format has no such conflict - it is the user's choice, and it is the only
-	/// filter the dialog offers - so its extension is filled in and the save loop's re-prompt
-	/// never has to fire.
+	/// filter the dialog offers - so its extension is filled in, and accepting the name as
+	/// offered saves without the re-prompt.
 	/// </remarks>
 	private static string InitialSaveName (string displayName, FormatDescriptor? requestedFormat)
 		=> requestedFormat is null
@@ -201,8 +201,13 @@ internal sealed class SaveDocumentImplmentationAction : IActionHandler
 			// extension doesn't resolve to one - a missing extension and an unrecognized one
 			// (foo.tar.gz -> ".gz") both land here and both need the re-prompt below, or the
 			// fallback format's bytes get written silently under the name's original extension.
+			//
+			// A requested format outranks the name, and only it does: a command that chose the
+			// format for the user ("Save as Impasto project...") would otherwise write flattened
+			// png bytes from under its own menu item as soon as the name said "sketch.png".
 			FormatDescriptor? formatFromExtension = image_formats.GetFormatByFile (displayName);
-			FormatDescriptor format = formatFromExtension
+			FormatDescriptor format = requestedFormat
+				?? formatFromExtension
 				?? ImageConverterManager.ResolveSelectedFormat (fcd.Filter, filetypes)
 				?? image_formats.GetDefaultSaveFormat ();
 
@@ -216,12 +221,18 @@ internal sealed class SaveDocumentImplmentationAction : IActionHandler
 			//     file.GetParent()!.GetChild(displayName), silently redirecting the write to
 			//     a path the portal never granted - the write can then land on the portal's
 			//     own staging file instead of the chosen name.
-			// So: never rebuild a new Gio.File after Accept. A missing extension, or one present but
-			// unresolved (foo.tar.gz -> ".gz"), re-shows the dialog instead, with the resolved
-			// format's extension already filled in, so accepting it again gets a freshly negotiated
-			// file from the dialog rather than one we patched.
-			if (ImageConverterManager.NeedsExtensionPrompt (displayName, formatFromExtension)) {
-				RestoreDialogSelection (fcd, file, displayName + "." + format.Extensions.First ());
+			// So: never rebuild a new Gio.File after Accept. A name that disagrees with the format
+			// about to be written re-shows the dialog instead, with that format's extension already
+			// filled in, so accepting it again gets a freshly negotiated file from the dialog rather
+			// than one we patched.
+			string? correctedName = ImageConverterManager.CorrectionForSaveName (
+				displayName,
+				formatFromExtension,
+				format,
+				formatWasRequested: requestedFormat is not null);
+
+			if (correctedName is not null) {
+				RestoreDialogSelection (fcd, file, correctedName);
 				continue;
 			}
 

@@ -475,6 +475,30 @@ internal sealed class FileFormatTests
 		Assert.That (ImageConverterManager.WithExtension (fileName, "ora"), Is.EqualTo (expected));
 	}
 
+	// A format-first command is the one caller whose format the typed name does not get to
+	// overrule: "sketch.png" typed into "Save as Impasto project..." comes back as "sketch.ora"
+	// instead of writing flattened png bytes from under a menu item that promised a project.
+	[Test]
+	public void CorrectionForSaveName_RequestedFormatOutranksTheTypedExtension ()
+	{
+		Assume.That (TryInitGtk (), "GTK is not available on this system");
+
+		FormatDescriptor png = MakeFormat ("PNG", "png");
+		FormatDescriptor project = MakeFormat ("OpenRaster", ImageConverterManager.ProjectFileType);
+
+		Assert.Multiple (() => {
+			// Requested: any extension but the requested format's own is replaced by it.
+			Assert.That (ImageConverterManager.CorrectionForSaveName ("sketch.png", png, project, formatWasRequested: true), Is.EqualTo ("sketch.ora"));
+			Assert.That (ImageConverterManager.CorrectionForSaveName ("sketch", null, project, formatWasRequested: true), Is.EqualTo ("sketch.ora"));
+			Assert.That (ImageConverterManager.CorrectionForSaveName ("sketch.ora", project, project, formatWasRequested: true), Is.Null);
+
+			// Not requested: the name keeps deciding the format, and only a name that resolves to
+			// none is corrected - the dropdown must not be overruled by an extension nobody typed.
+			Assert.That (ImageConverterManager.CorrectionForSaveName ("sketch.png", png, png, formatWasRequested: false), Is.Null);
+			Assert.That (ImageConverterManager.CorrectionForSaveName ("sketch", null, png, formatWasRequested: false), Is.EqualTo ("sketch.png"));
+		});
+	}
+
 	// "Save as Impasto project..." resolves this file type and silently falls back to a plain
 	// Save As if it can't export or isn't registered, so the command is only as good as this.
 	[Test]

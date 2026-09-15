@@ -269,6 +269,32 @@ public sealed class ImageConverterManager
 		=> !HasExtension (displayName) || formatFromExtension is null;
 
 	/// <summary>
+	/// Impasto: the name the Save dialog has to re-show before it can accept
+	/// <paramref name="displayName"/>, or <see langword="null"/> when the name saves as it stands.
+	/// </summary>
+	/// <remarks>
+	/// A format a command asked for (<paramref name="formatWasRequested"/>, e.g. "Save as Impasto
+	/// project...") is the one thing a typed extension does not overrule, so any extension but that
+	/// format's own is replaced by it - "sketch.png" typed into the project dialog comes back as
+	/// "sketch.ora" rather than writing flattened pixels. Otherwise the name still decides the
+	/// format, and only a name that resolves to none gets one appended
+	/// (<see cref="NeedsExtensionPrompt"/>).
+	/// </remarks>
+	public static string? CorrectionForSaveName (
+		string displayName,
+		FormatDescriptor? formatFromName,
+		FormatDescriptor formatToWrite,
+		bool formatWasRequested)
+	{
+		string extension = formatToWrite.Extensions.First ();
+
+		if (formatWasRequested)
+			return formatFromName == formatToWrite ? null : WithExtension (displayName, extension);
+
+		return NeedsExtensionPrompt (displayName, formatFromName) ? $"{displayName}.{extension}" : null;
+	}
+
+	/// <summary>
 	/// Finds the correct importer to use for opening the given file, or null
 	/// if no importer exists for the file.
 	/// </summary>

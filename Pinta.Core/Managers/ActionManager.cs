@@ -375,41 +375,52 @@ public sealed class ActionManager
 	// terms too long to read (1601×1423 -> "1601:1423") are reported against the closest ratio
 	// with two-digit terms instead, e.g. "≈9:8", and left out entirely when even that is not a
 	// fair description of the shape.
+	//
+	// ponytail: two-digit terms within a tenth of a percent is the whole policy - it fits the
+	// status bar's fixed-width chip and covers every ratio a camera or a screen produces. Shapes
+	// it cannot name (4000×3, anything past 99:1) show their pixel dimensions alone; the upgrade
+	// path is a wider chip and a three-digit ceiling, not a cleverer search.
 	internal static string GetAspectRatio (int width, int height)
 	{
 		const int max_term = 99;
-		const double max_relative_error = 0.001;
+		const int error_tolerance_denominator = 1000; // A tenth of a percent of the real shape.
 
 		if (width <= 0 || height <= 0)
 			return "";
 
-		double ratio = width / (double) height;
-		int closest_width_term = 0;
-		int closest_height_term = 0;
-		double closest_error = double.MaxValue;
+		// Integers all the way down: a candidate w:h misses the real shape by
+		// |width * h - height * w| / (h * width), so "is this candidate closer?" and "is it close
+		// enough?" are both comparisons of products. A double ratio decided 1000×999 - which sits
+		// exactly on the tolerance - by its last rounding bit.
+		long best_width_term = 0;
+		long best_height_term = 0;
+		long best_error = 0;
 
-		for (int height_term = 1; height_term <= max_term; height_term++) {
+		for (long height_term = 1; height_term <= max_term; height_term++) {
 
-			int width_term = (int) Math.Round (ratio * height_term);
+			// The closest width term for this height term: width * height_term / height, rounded.
+			long width_term = (2 * (long) width * height_term + height) / (2 * (long) height);
 			if (width_term < 1 || width_term > max_term)
 				continue;
 
-			double error = Math.Abs (ratio - width_term / (double) height_term);
-			if (error >= closest_error)
+			long error = Math.Abs ((long) width * height_term - (long) height * width_term);
+
+			// error / height_term against best_error / best_height_term, cross-multiplied. Ties go
+			// to the shorter terms, which come first.
+			if (best_height_term != 0 && error * best_height_term >= best_error * height_term)
 				continue;
 
-			closest_error = error;
-			closest_width_term = width_term;
-			closest_height_term = height_term;
+			best_error = error;
+			best_width_term = width_term;
+			best_height_term = height_term;
 		}
 
-		if (closest_height_term == 0 || closest_error > ratio * max_relative_error)
+		if (best_height_term == 0 || best_error * error_tolerance_denominator > best_height_term * width)
 			return "";
 
-		bool exact = closest_width_term * height == closest_height_term * width;
-		string terms = $"{closest_width_term}:{closest_height_term}";
+		string terms = $"{best_width_term}:{best_height_term}";
 
-		return exact ? terms : $"≈{terms}";
+		return best_error == 0 ? terms : $"≈{terms}";
 	}
 
 	public void RegisterHandlers ()

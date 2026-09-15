@@ -1,18 +1,32 @@
 # Impasto
 
-Impasto is a painting and image editing application.
-It runs on Linux, Windows, and macOS.
+Impasto is a painting and image editing application for Linux, Windows, and macOS.
+
+Impasto is great for quick painting, image edits, crops, resizing, and layer-based editing. 
+Use text tools to draw text, shape tools to draw freeform lines, and selection tools to copy and paste parts of an image layer.
+See the screenshots below.
 
 ![Shapes and text as editable objects, with per-object history](docs/screenshots/impasto-object-layers.png)
 
 ![The text tool, with the UI preferences dialog open](docs/screenshots/impasto-text-tool.png)
 
 ![A shape control point held on the canvas centre line, with the guide drawn while dragging](docs/screenshots/impasto-snap-to-grid.png)
+Feature image: What you move and what you draw snaps to the canvas grid, to ruler units, or to the canvas edges and center lines. 
 
-What you draw snaps: to the canvas grid, to the units the rulers are drawn in, or - when neither
-is shown - to the canvas edges and centre lines. Shapes, text and selections snap by their whole
-bounding box rather than by the corner under the pointer, and the guide a point is being held
-against is drawn for as long as the drag lasts. Ctrl+Alt+G turns it off and on.
+<details>
+<summary><h2>🌐 Other languages 🇨🇳 🇪🇸 🇫🇷 🇩🇪 🇯🇵 🇧🇷</h2></summary>
+
+- 🇨🇳 [简体中文](readme.zh-CN.md)
+- 🇪🇸 [Español](readme.es.md)
+- 🇧🇷 [Português (Brasil)](readme.pt-BR.md)
+- 🇫🇷 [Français](readme.fr.md)
+- 🇩🇪 [Deutsch](readme.de.md)
+- 🇮🇹 [Italiano](readme.it.md)
+- 🇷🇺 [Русский](readme.ru.md)
+- 🇯🇵 [日本語](readme.ja.md)
+- 🇰🇷 [한국어](readme.ko.md)
+
+</details>
 
 ## Download
 
@@ -100,9 +114,10 @@ For building on the command line:
 
 Contributions are welcome. In short:
 
-- **Code** — Contributing to the free edition (MIT-licensed) is encouraged; a
-  contribution received as a PR to the free edition may also be used in the
-  Premium edition of Impasto or used in any other software that has the MIT license.
+- **Code** — The quickest way to contribute is by opening an issue and describing your suggestion
+  or request. Include code snippets, file names, and context. 
+  You can also submit a PR. Contributions received as a PR to the free edition 
+  may also be used in the Premium edition of Impasto or used in any other software that has the MIT license.
 - **AI coding tools** — welcome. Be able to explain the code you submit and
   adapt it to the project's architecture; AI-assisted code may draw extra
   review before it's merged.
@@ -112,10 +127,4 @@ Contributions are welcome. In short:
 Before contributing, read the full guide, including the git/PR workflow, in `CONTRIBUTING.md`.
 
 - You can report [bugs/issues](https://github.com/zbcoding/ImpastoPaint/issues).
-- You can make [suggestions](https://github.com/zbcoding/ImpastoPaint/discussions).
-- You can fork the project on [GitHub](https://github.com/zbcoding/ImpastoPaint).
 - Notable changes of each release are recorded in `CHANGELOG.md`.
-
-## Privacy policy
-
-This program does not transfer any information to other networked systems unless modified or requested by the user or the person installing or operating it.

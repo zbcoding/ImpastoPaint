@@ -14,9 +14,10 @@ entries, is upstream Pinta work; the Impasto sections cover changes made in this
   only format Impasto exports that keeps layers, masks, text, shapes and effect nodes editable.
   It was always available through the Save As dialog's type dropdown, but only to someone who
   already knew that `.ora` is what an Impasto project is. Because the command picks the format
-  before the dialog opens, the dialog can offer the project filter alone and pre-fill the name
-  with `.ora` already appended - so it never re-shows itself to correct a missing extension, and
-  it leaves the remembered export format for plain Save As alone.
+  before the dialog opens, the dialog offers the project filter alone, the name comes pre-filled
+  with `.ora` already appended, and the project format outranks whatever the name says - type
+  `sketch.png` into it and the dialog comes back offering `sketch.ora` rather than writing
+  flattened pixels. It also leaves the remembered export format for plain Save As alone.
 
 - The Magic Wand's tolerance slider now retunes the selection you already have. Every point you
   clicked since the selection was last changed from elsewhere is re-flooded as you drag, so the
@@ -36,8 +37,12 @@ entries, is upstream Pinta work; the Impasto sections cover changes made in this
 - The status bar's image size chip no longer spells out aspect ratios that do not reduce, such as
   `1601:1423`. A ratio is shown exactly when its terms are at most two digits (`4:3`, `16:9`);
   otherwise the closest two-digit ratio is shown as an approximation (`1601 × 1423` reads
-  `≈9:8`), and a shape no short ratio describes leaves the chip showing just the pixel
-  dimensions.
+  `≈9:8`), and a shape that no short ratio describes to within a tenth of a percent leaves the
+  chip showing just the pixel dimensions.
+
+- Dithering no longer leaves a seam along the right and bottom edge of every region it renders:
+  the error diffused into the last column and row was dropped, because the bound checks treated
+  the region's inclusive right and bottom edge as exclusive.
 
 ## Impasto - [0.3.1](https://github.com/zbcoding/ImpastoPaint/releases/tag/v0.3.1) - 2026-09-10
 

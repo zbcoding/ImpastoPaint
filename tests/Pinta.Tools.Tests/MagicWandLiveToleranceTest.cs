@@ -76,16 +76,20 @@ internal sealed class MagicWandLiveToleranceTest : ToolsTestHarness
 		return t;
 	}
 
-	private void Click (MagicWandTool wand, PointI at, bool union = false)
+	private void Click (MagicWandTool wand, PointI at, bool union = false, MouseButton button = MouseButton.Left)
 	{
 		ToolMouseEventArgs e = new () {
 			PointDouble = new PointD (at.X + 0.5, at.Y + 0.5),
-			MouseButton = MouseButton.Left,
+			MouseButton = button,
 			State = union ? Gdk.ModifierType.ControlMask : 0,
 		};
 		typeof (FloodTool).GetMethod ("OnMouseDown", NonPublicInstance)!
 			.Invoke (wand, [Document, e]);
 	}
+
+	/// <summary>A right-click, which <see cref="SelectionModeHandler"/> reads as "take this out".</summary>
+	private void ClickToSubtract (MagicWandTool wand, PointI at)
+		=> Click (wand, at, button: MouseButton.Right);
 
 	private static void SetTolerance (MagicWandTool wand, double value)
 		=> Slider (wand).SetValue (value);
@@ -96,7 +100,37 @@ internal sealed class MagicWandLiveToleranceTest : ToolsTestHarness
 	/// <summary>The area the user sees marked, in pixels.</summary>
 	private int SelectedArea ()
 	{
-		using ImageSurface mask = CairoExtensions.CreateImageSurface (Format.Argb32, CanvasSize, CanvasSize);
+		using ImageSurface mask = SelectionMask ();
+
+		int area = 0;
+		foreach (ColorBgra pixel in mask.GetReadOnlyPixelData ())
+			if (pixel.A > 0)
+				++area;
+
+		return area;
+	}
+
+	/// <summary>
+	/// The marked area inside each band - which bands the selection covers, not just how much of
+	/// the canvas it covers, so that two different selections of equal area can be told apart.
+	/// </summary>
+	private int[] SelectedAreaPerBand ()
+	{
+		using ImageSurface mask = SelectionMask ();
+		var pixels = mask.GetReadOnlyPixelData ();
+
+		int[] areas = new int[CanvasSize / BandWidth];
+		for (int y = 0; y < CanvasSize; ++y)
+			for (int x = 0; x < CanvasSize; ++x)
+				if (pixels[y * CanvasSize + x].A > 0)
+					++areas[x / BandWidth];
+
+		return areas;
+	}
+
+	private ImageSurface SelectionMask ()
+	{
+		ImageSurface mask = CairoExtensions.CreateImageSurface (Format.Argb32, CanvasSize, CanvasSize);
 		using (Context g = new (mask)) {
 			g.Antialias = Antialias.None;
 			g.AppendPath (Document.Selection.SelectionPath);
@@ -106,12 +140,7 @@ internal sealed class MagicWandLiveToleranceTest : ToolsTestHarness
 		}
 		mask.MarkDirty ();
 
-		int area = 0;
-		foreach (ColorBgra pixel in mask.GetReadOnlyPixelData ())
-			if (pixel.A > 0)
-				++area;
-
-		return area;
+		return mask;
 	}
 
 	private int HistoryCount () => Document.History.Items.Count ();
@@ -165,6 +194,27 @@ internal sealed class MagicWandLiveToleranceTest : ToolsTestHarness
 			"both clicked points have to grow, not just the most recent one");
 	}
 
+	// --- Each stored point keeps the mode it was clicked with -------------------------------------
+
+	[Test]
+	public void ASubtractingClickStillSubtractsWhenTheSliderReplaysIt ()
+	{
+		MagicWandTool wand = ActivateWand ();
+		Click (wand, new PointI (4, 16));                 // Replace: band 0.
+		Click (wand, new PointI (20, 16), union: true);   // Union: band 2.
+		ClickToSubtract (wand, new PointI (28, 16));      // Exclude: band 3, which nothing selected.
+
+		Assert.That (SelectedAreaPerBand (), Is.EqualTo (new[] { BandArea, 0, BandArea, 0 }),
+			"setup: at tolerance 0 the subtracting click has nothing of its own to take away");
+
+		SetTolerance (wand, 40);
+
+		// Every point grows: band 0's click over band 1, band 2's over band 3 - and the subtracting
+		// click over bands 3 and 2, which it therefore takes back out instead of adding.
+		Assert.That (SelectedAreaPerBand (), Is.EqualTo (new[] { BandArea, BandArea, 0, 0 }),
+			"the replay has to combine each point at the mode it was clicked with, not at one shared mode");
+	}
+
 	// --- The slider's cost to the undo stack ------------------------------------------------------
 
 	[Test]
@@ -185,6 +235,26 @@ internal sealed class MagicWandLiveToleranceTest : ToolsTestHarness
 
 		Assert.That (SelectedArea (), Is.EqualTo (BandArea),
 			"undoing the adjustment has to leave the selection the click made");
+	}
+
+	[Test]
+	public void AClickEndsTheSliderRunSoTheNextOneRecordsItsOwn ()
+	{
+		MagicWandTool wand = ActivateWand ();
+		Click (wand, new PointI (4, 16));
+		int afterFirstClick = HistoryCount ();
+
+		SetTolerance (wand, 40);
+		Click (wand, new PointI (20, 16), union: true);
+		SetTolerance (wand, 0);
+
+		Assert.That (HistoryCount (), Is.EqualTo (afterFirstClick + 3),
+			"the click closes the first run, so the run after it is its own undo step - not folded into the first");
+
+		Document.History.Undo ();
+
+		Assert.That (SelectedArea (), Is.EqualTo (4 * BandArea),
+			"undoing the second run has to give back the selection the second click made");
 	}
 
 	// --- The slider may not reach past the selection it made --------------------------------------

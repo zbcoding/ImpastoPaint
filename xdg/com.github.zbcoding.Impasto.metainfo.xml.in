@@ -43,6 +43,12 @@
     <binary>impasto</binary>
   </provides>
   <releases>
+    <release version="0.4.0" date="2026-09-15">
+      <url>https://github.com/zbcoding/ImpastoPaint/releases/tag/v0.4.0</url>
+      <description>
+        <p>File &gt; Save as Impasto project… saves the open image as an OpenRaster file, the only format Impasto exports that keeps layers, masks, text, shapes and effect nodes editable, and the Magic Wand's tolerance slider now retunes the selection you already have instead of needing another click per guess. This release also fixes the Save dialog dropping you back in the folder you started in when it has to correct a file name, aspect ratios that did not reduce crowding the status bar, and the seam dithering left along the right and bottom edge of every region it rendered.</p>
+      </description>
+    </release>
     <release version="0.3.1" date="2026-09-10">
       <url>https://github.com/zbcoding/ImpastoPaint/releases/tag/v0.3.1</url>
       <description>

@@ -6,7 +6,11 @@ Impasto is a fork of the [Pinta Project](https://github.com/PintaProject/Pinta).
 Everything below the "Pinta Project history" heading, plus the "Inherited from Pinta"
 entries, is upstream Pinta work; the Impasto sections cover changes made in this fork.
 
-## Impasto - [Unreleased](https://github.com/zbcoding/ImpastoPaint/compare/v0.3.1...main)
+## Impasto - [Unreleased](https://github.com/zbcoding/ImpastoPaint/compare/v0.4.0...main)
+
+Changes for the next release go here.
+
+## Impasto - [0.4.0](https://github.com/zbcoding/ImpastoPaint/releases/tag/v0.4.0) - 2026-09-15
 
 ### Added
 
@@ -24,6 +28,15 @@ entries, is upstream Pinta work; the Impasto sections cover changes made in this
   marked area grows and shrinks under the pointer instead of needing another click per guess. A
   whole run of the slider is a single undo step, and a slider move after something else has taken
   over the selection - Select All, another tool, an undo - leaves that selection alone.
+
+### Changed
+
+- The readme leads with the work Impasto is for, and nine machine-translated readmes sit beside
+  it - zh-CN, es, pt-BR, fr, de, it, ru, ja, ko - each marked as a machine translation and linked
+  from a language list at the top. The privacy paragraph it used to carry moved to
+  [docs/privacy-policy.md](docs/privacy-policy.md), which now names every connection the program
+  makes on its own: the update check against the GitHub releases API on start, and the three
+  add-in repository indexes the add-in gallery refreshes when it is opened.
 
 ### Fixed
 

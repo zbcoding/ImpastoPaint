@@ -124,16 +124,18 @@ public sealed class MagicWandTool : FloodTool
 	protected override void OnFillRegionComputed (Document document, IReadOnlyList<IReadOnlyList<PointI>> polygonSet)
 	{
 		// Only a click arrives here; the tolerance slider re-floods its points directly.
-		WandPoint clicked = clicked_point ?? throw new InvalidOperationException ("a flooded region reached the wand outside a click");
+		WandPoint clicked = clicked_point
+			?? throw new InvalidOperationException ("a flooded region reached the wand outside a click");
 
 		var undoAction = new SelectionHistoryItem (workspace, Icon, Name);
 		undoAction.TakeSnapshot ();
 
 		// A click on a different document, or the first one after the run was forgotten, starts a
 		// new run: the selection as it stands now is what its points get combined into.
-		LiveRun run = live_run is not null && live_run.Document == document
-			? live_run
-			: live_run = new LiveRun (document, document.Selection.Clone ());
+		if (live_run is null || live_run.Document != document)
+			live_run = new LiveRun (document, document.Selection.Clone ());
+
+		LiveRun run = live_run;
 
 		run.Points.Add (clicked);
 

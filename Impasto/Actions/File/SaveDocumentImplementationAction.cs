@@ -193,24 +193,6 @@ internal sealed class SaveDocumentImplmentationAction : IActionHandler
 			// Note that we can't use file.GetDisplayName() because the file doesn't exist.
 			string displayName = file.GetParent ()!.GetRelativePath (file)!;
 
-			// Always follow the extension rather than the file type drop down
-			// ie: if the user chooses to save a "jpeg" as "foo.png", we are going
-			// to assume they just didn't update the dropdown and really want png
-			//
-			// Fall back to the selected file filter, then to the default format, when the name's
-			// extension doesn't resolve to one - a missing extension and an unrecognized one
-			// (foo.tar.gz -> ".gz") both land here and both need the re-prompt below, or the
-			// fallback format's bytes get written silently under the name's original extension.
-			//
-			// A requested format outranks the name, and only it does: a command that chose the
-			// format for the user ("Save as Impasto project...") would otherwise write flattened
-			// png bytes from under its own menu item as soon as the name said "sketch.png".
-			FormatDescriptor? formatFromExtension = image_formats.GetFormatByFile (displayName);
-			FormatDescriptor format = requestedFormat
-				?? formatFromExtension
-				?? ImageConverterManager.ResolveSelectedFormat (fcd.Filter, filetypes)
-				?? image_formats.GetDefaultSaveFormat ();
-
 			// This exact bug has recurred three times, each attempt patching the filename
 			// right after the dialog returned it:
 			//   - pre-2022 upstream: fcd.CurrentName = display_name; file = fcd.File; -
@@ -225,14 +207,17 @@ internal sealed class SaveDocumentImplmentationAction : IActionHandler
 			// about to be written re-shows the dialog instead, with that format's extension already
 			// filled in, so accepting it again gets a freshly negotiated file from the dialog rather
 			// than one we patched.
-			string? correctedName = ImageConverterManager.CorrectionForSaveName (
+			SaveFormatDecision decision = ImageConverterManager.DecideSaveFormat (
 				displayName,
-				formatFromExtension,
-				format,
-				formatWasRequested: requestedFormat is not null);
+				requestedFormat,
+				image_formats.GetFormatByFile (displayName),
+				ImageConverterManager.ResolveSelectedFormat (fcd.Filter, filetypes),
+				image_formats.GetDefaultSaveFormat ());
 
-			if (correctedName is not null) {
-				RestoreDialogSelection (fcd, file, correctedName);
+			FormatDescriptor format = decision.Format;
+
+			if (decision.NameCorrection is not null) {
+				RestoreDialogSelection (fcd, file, decision.NameCorrection);
 				continue;
 			}
 
@@ -259,9 +244,7 @@ internal sealed class SaveDocumentImplmentationAction : IActionHandler
 
 			recent_files.AddFile (file);
 
-			// A format-first command says nothing about which format the next plain Save As
-			// should offer, so only an ordinary save updates the remembered export default.
-			if (requestedFormat is null)
+			if (decision.RemembersDefault)
 				image_formats.SetDefaultFormat (format.Extensions.First ());
 
 			document.File = file;

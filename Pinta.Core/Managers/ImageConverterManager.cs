@@ -265,33 +265,51 @@ public sealed class ImageConverterManager
 	/// known format (e.g. "archive.tar.gz" resolves to ".gz", which matches nothing). Both would
 	/// otherwise silently write the fallback format's bytes under a name that doesn't match it.
 	/// </summary>
-	public static bool NeedsExtensionPrompt (string displayName, FormatDescriptor? formatFromExtension)
+	internal static bool NeedsExtensionPrompt (string displayName, FormatDescriptor? formatFromExtension)
 		=> !HasExtension (displayName) || formatFromExtension is null;
 
 	/// <summary>
-	/// Impasto: the name the Save dialog has to re-show before it can accept
-	/// <paramref name="displayName"/>, or <see langword="null"/> when the name saves as it stands.
+	/// Impasto: the whole policy the Save dialog applies to the name it was just handed - which
+	/// format those bytes are written in, whether the name has to be corrected first, and whether
+	/// this save is the kind that updates the remembered export default.
 	/// </summary>
 	/// <remarks>
-	/// A format a command asked for (<paramref name="formatWasRequested"/>, e.g. "Save as Impasto
-	/// project...") is the one thing a typed extension does not overrule, so any extension but that
-	/// format's own is replaced by it - "sketch.png" typed into the project dialog comes back as
-	/// "sketch.ora" rather than writing flattened pixels. Otherwise the name still decides the
-	/// format, and only a name that resolves to none gets one appended
+	/// The format is the first of: one a command asked for, the name's own extension, the type
+	/// dropdown's selection, the remembered default. Always follow the extension rather than the
+	/// file type dropdown - if the user chooses to save a "jpeg" as "foo.png", we assume they just
+	/// didn't update the dropdown and really want png. The dropdown and the default only get a say
+	/// when the name's extension resolves to no format; a missing extension and an unrecognized
+	/// one ("foo.tar.gz" -> ".gz") both land there, and both need the correction below, or the
+	/// fallback format's bytes get written silently under the name's original extension.
+	///
+	/// A format a command asked for (e.g. "Save as Impasto project...") is the one thing a typed
+	/// extension does not overrule, so any extension but that format's own is replaced by it -
+	/// "sketch.png" typed into the project dialog comes back as "sketch.ora" rather than writing
+	/// flattened png bytes from under a menu item that promised a project. Otherwise the name
+	/// still decides the format, and only a name that resolves to none gets one appended
 	/// (<see cref="NeedsExtensionPrompt"/>).
+	///
+	/// A format-first command says nothing about which format the next plain Save As should offer,
+	/// so only an ordinary save reports back that it may update the remembered default.
 	/// </remarks>
-	public static string? CorrectionForSaveName (
+	public static SaveFormatDecision DecideSaveFormat (
 		string displayName,
-		FormatDescriptor? formatFromName,
-		FormatDescriptor formatToWrite,
-		bool formatWasRequested)
+		FormatDescriptor? requestedFormat,
+		FormatDescriptor? formatFromExtension,
+		FormatDescriptor? selectedFormat,
+		FormatDescriptor defaultFormat)
 	{
-		string extension = formatToWrite.Extensions.First ();
+		FormatDescriptor format = requestedFormat ?? formatFromExtension ?? selectedFormat ?? defaultFormat;
+		string extension = format.Extensions.First ();
 
-		if (formatWasRequested)
-			return formatFromName == formatToWrite ? null : WithExtension (displayName, extension);
+		string? nameCorrection;
 
-		return NeedsExtensionPrompt (displayName, formatFromName) ? $"{displayName}.{extension}" : null;
+		if (requestedFormat is not null)
+			nameCorrection = formatFromExtension == requestedFormat ? null : WithExtension (displayName, extension);
+		else
+			nameCorrection = NeedsExtensionPrompt (displayName, formatFromExtension) ? $"{displayName}.{extension}" : null;
+
+		return new SaveFormatDecision (format, nameCorrection, RemembersDefault: requestedFormat is null);
 	}
 
 	/// <summary>
@@ -349,3 +367,14 @@ public sealed class ImageConverterManager
 	private static string NormalizeExtension (string extension)
 		=> extension.ToLowerInvariant ().TrimStart ('.').Trim ();
 }
+
+/// <summary>Impasto: what the Save dialog does with the name it was just handed.</summary>
+/// <param name="Format">The format the file's bytes are written in.</param>
+/// <param name="NameCorrection">
+/// The name the dialog must be re-shown under, or <see langword="null"/> when the name saves as it
+/// stands.
+/// </param>
+/// <param name="RemembersDefault">
+/// Whether a successful save should update the remembered export default.
+/// </param>
+public sealed record SaveFormatDecision (FormatDescriptor Format, string? NameCorrection, bool RemembersDefault);

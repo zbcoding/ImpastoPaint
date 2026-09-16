@@ -475,27 +475,137 @@ internal sealed class FileFormatTests
 		Assert.That (ImageConverterManager.WithExtension (fileName, "ora"), Is.EqualTo (expected));
 	}
 
+	// --- The Save dialog's accept-path policy -----------------------------------------------------
+	// The whole chain used to live inside the Gtk dialog loop, where reverting any of its three
+	// rules left the suite green; b1fec3c8 fixed the first of them after it had shipped broken.
+
 	// A format-first command is the one caller whose format the typed name does not get to
 	// overrule: "sketch.png" typed into "Save as Impasto project..." comes back as "sketch.ora"
 	// instead of writing flattened png bytes from under a menu item that promised a project.
 	[Test]
-	public void CorrectionForSaveName_RequestedFormatOutranksTheTypedExtension ()
+	public void DecideSaveFormat_RequestedFormatOutranksTheTypedExtension ()
 	{
 		Assume.That (TryInitGtk (), "GTK is not available on this system");
 
 		FormatDescriptor png = MakeFormat ("PNG", "png");
+		FormatDescriptor jpeg = MakeFormat ("JPEG", "jpg");
 		FormatDescriptor project = MakeFormat ("OpenRaster", ImageConverterManager.ProjectFileType);
 
-		Assert.Multiple (() => {
-			// Requested: any extension but the requested format's own is replaced by it.
-			Assert.That (ImageConverterManager.CorrectionForSaveName ("sketch.png", png, project, formatWasRequested: true), Is.EqualTo ("sketch.ora"));
-			Assert.That (ImageConverterManager.CorrectionForSaveName ("sketch", null, project, formatWasRequested: true), Is.EqualTo ("sketch.ora"));
-			Assert.That (ImageConverterManager.CorrectionForSaveName ("sketch.ora", project, project, formatWasRequested: true), Is.Null);
+		SaveFormatDecision decision = ImageConverterManager.DecideSaveFormat (
+			"sketch.png",
+			requestedFormat: project,
+			formatFromExtension: png,
+			selectedFormat: png,
+			defaultFormat: jpeg);
 
-			// Not requested: the name keeps deciding the format, and only a name that resolves to
-			// none is corrected - the dropdown must not be overruled by an extension nobody typed.
-			Assert.That (ImageConverterManager.CorrectionForSaveName ("sketch.png", png, png, formatWasRequested: false), Is.Null);
-			Assert.That (ImageConverterManager.CorrectionForSaveName ("sketch", null, png, formatWasRequested: false), Is.EqualTo ("sketch.png"));
+		Assert.Multiple (() => {
+			Assert.That (decision.Format, Is.SameAs (project),
+				"the format the command committed to has to win over the name, the dropdown and the default");
+			Assert.That (decision.NameCorrection, Is.EqualTo ("sketch.ora"),
+				"the name has to be re-offered under the requested format's extension, or the dialog writes project bytes as .png");
+			Assert.That (decision.RemembersDefault, Is.False,
+				"a format-first command says nothing about what the next plain Save As should offer");
+		});
+	}
+
+	// The correction re-shows the dialog, so a name that already agrees with the requested format
+	// must report none: correcting it again would re-prompt forever instead of ever saving.
+	[Test]
+	public void DecideSaveFormat_RequestedFormatAcceptsANameThatAlreadyCarriesIt ()
+	{
+		Assume.That (TryInitGtk (), "GTK is not available on this system");
+
+		FormatDescriptor jpeg = MakeFormat ("JPEG", "jpg");
+		FormatDescriptor project = MakeFormat ("OpenRaster", ImageConverterManager.ProjectFileType);
+
+		SaveFormatDecision decision = ImageConverterManager.DecideSaveFormat (
+			"sketch.ora",
+			requestedFormat: project,
+			formatFromExtension: project,
+			selectedFormat: null,
+			defaultFormat: jpeg);
+
+		Assert.That (decision.NameCorrection, Is.Null,
+			"a name that already ends in the requested format's extension has to save as it stands");
+	}
+
+	// An ordinary Save As follows the extension rather than the type dropdown - a "jpeg" saved as
+	// "foo.png" means the dropdown was left behind, not that png was a mistake - and it is the
+	// save that gets to move the remembered export default.
+	[Test]
+	public void DecideSaveFormat_PlainSaveAsFollowsTheNameAndRemembersIt ()
+	{
+		Assume.That (TryInitGtk (), "GTK is not available on this system");
+
+		FormatDescriptor png = MakeFormat ("PNG", "png");
+		FormatDescriptor jpeg = MakeFormat ("JPEG", "jpg");
+
+		SaveFormatDecision decision = ImageConverterManager.DecideSaveFormat (
+			"sketch.png",
+			requestedFormat: null,
+			formatFromExtension: png,
+			selectedFormat: png,
+			defaultFormat: jpeg);
+
+		Assert.Multiple (() => {
+			Assert.That (decision.Format, Is.SameAs (png),
+				"a name whose extension resolves decides the format on its own");
+			Assert.That (decision.NameCorrection, Is.Null,
+				"a name that already matches the format being written must not be re-prompted");
+			Assert.That (decision.RemembersDefault, Is.True,
+				"an ordinary Save As is what the next one should offer by default");
+		});
+	}
+
+	// "archive.tar.gz" has a real extension by HasExtension's rule but ".gz" resolves to no
+	// format, so the dropdown decides and the name has to say so - the bug wrote the fallback
+	// format's bytes silently under this exact name.
+	[Test]
+	public void DecideSaveFormat_UnresolvedExtensionFallsBackToTheDropdownAndSaysSo ()
+	{
+		Assume.That (TryInitGtk (), "GTK is not available on this system");
+
+		FormatDescriptor png = MakeFormat ("PNG", "png");
+		FormatDescriptor jpeg = MakeFormat ("JPEG", "jpg");
+
+		SaveFormatDecision decision = ImageConverterManager.DecideSaveFormat (
+			"archive.tar.gz",
+			requestedFormat: null,
+			formatFromExtension: null,
+			selectedFormat: png,
+			defaultFormat: jpeg);
+
+		Assert.Multiple (() => {
+			Assert.That (decision.Format, Is.SameAs (png),
+				"with nothing to read off the name, the format the dropdown shows is the one the user picked");
+			Assert.That (decision.NameCorrection, Is.EqualTo ("archive.tar.gz.png"),
+				"the unresolved extension is kept and the written format's own appended, so the name can never lie about the bytes");
+			Assert.That (decision.RemembersDefault, Is.True,
+				"an ordinary Save As is what the next one should offer by default");
+		});
+	}
+
+	// Nothing left to consult: no command, no usable extension, and a dialog that handed back no
+	// filter at all (portal pickers can), so the remembered default is all that is left.
+	[Test]
+	public void DecideSaveFormat_FallsBackToTheDefaultFormatWhenNothingElseDecides ()
+	{
+		Assume.That (TryInitGtk (), "GTK is not available on this system");
+
+		FormatDescriptor jpeg = MakeFormat ("JPEG", "jpg");
+
+		SaveFormatDecision decision = ImageConverterManager.DecideSaveFormat (
+			"sketch",
+			requestedFormat: null,
+			formatFromExtension: null,
+			selectedFormat: null,
+			defaultFormat: jpeg);
+
+		Assert.Multiple (() => {
+			Assert.That (decision.Format, Is.SameAs (jpeg),
+				"the remembered default is the last resort, not an error");
+			Assert.That (decision.NameCorrection, Is.EqualTo ("sketch.jpg"),
+				"an extensionless name has to gain the default format's extension before it is written");
 		});
 	}
 

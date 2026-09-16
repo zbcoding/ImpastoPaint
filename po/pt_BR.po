@@ -19,7 +19,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: pinta\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-10 07:04-0500\n"
+"POT-Creation-Date: 2026-09-15 21:53-0500\n"
 "PO-Revision-Date: 2026-02-11 08:51+0000\n"
 "Last-Translator: burns <ahoradocafezinho@gmail.com>\n"
 "Language-Team: Portuguese (Brazil)\n"
@@ -295,13 +295,13 @@ msgstr "Segundo plano:"
 msgid "Backup"
 msgstr ""
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:853
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:854
 msgid ""
 "Bake this layer's effects and objects into its pixels; they stop being "
 "editable."
 msgstr ""
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:854
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:855
 msgid "Bake this object into the layer's pixels; it stops being editable."
 msgstr ""
 
@@ -333,7 +333,7 @@ msgstr "Preto e Branco"
 msgid "Blend Mode"
 msgstr "Modo Misturar"
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:798
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:799
 msgid "Blend Mode:"
 msgstr ""
 
@@ -472,7 +472,7 @@ msgid ""
 "format."
 msgstr ""
 
-#: ../Impasto/Actions/File/SaveDocumentImplementationAction.cs:94
+#: ../Impasto/Actions/File/SaveDocumentImplementationAction.cs:145
 #: ../Impasto/Actions/Help/KeyboardShortcutsDialogAction.cs:108
 #: ../Impasto/Actions/Help/KeyboardShortcutsDialogAction.cs:121
 #: ../Impasto/Dialogs/PreferencesDialog.cs:433
@@ -504,7 +504,7 @@ msgstr "Configurações da Grade da Tela"
 msgid "Canvas Grid..."
 msgstr "Grade de Tela..."
 
-#: ../Pinta.Core/Managers/ActionManager.cs:337
+#: ../Pinta.Core/Managers/ActionManager.cs:338
 msgid ""
 "Canvas size in pixels and its aspect ratio.\n"
 "Double click to change the canvas size."
@@ -573,12 +573,12 @@ msgstr ""
 msgid "Change outline width."
 msgstr ""
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:843
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:844
 msgid ""
 "Change this effect's settings; the layer re-renders with the new values."
 msgstr ""
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:838
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:839
 msgid ""
 "Change this transform's settings; the layer re-renders with the new values."
 msgstr ""
@@ -674,7 +674,7 @@ msgstr "Clique para redefinir a cor primária e secundária."
 msgid "Click to select primary color."
 msgstr "Clique para selecionar a cor primária."
 
-#: ../Pinta.Tools/Tools/MagicWandTool.cs:57
+#: ../Pinta.Tools/Tools/MagicWandTool.cs:84
 msgid ""
 "Click to select region of similar color.\n"
 "Hold shift to use Global mode."
@@ -711,7 +711,7 @@ msgstr "Área de Transferência"
 msgid "Clone Stamp"
 msgstr "Ferramenta Carimbo"
 
-#: ../Pinta.Core/Actions/FileActions.cs:97
+#: ../Pinta.Core/Actions/FileActions.cs:104
 #: ../Pinta.Gui.Addins/InstallDialog.cs:346
 msgid "Close"
 msgstr "Fechar"
@@ -823,7 +823,7 @@ msgstr ""
 msgid "Contents"
 msgstr "Conteúdos"
 
-#: ../Pinta.Tools/Tools/FloodTool.cs:170
+#: ../Pinta.Tools/Tools/FloodTool.cs:201
 msgid "Contiguous"
 msgstr "Contíguo"
 
@@ -895,7 +895,7 @@ msgstr ""
 msgid "Crop to Selection"
 msgstr "Recortar para Seleção"
 
-#: ../Pinta.Effects/Effects/DitheringEffect.cs:162
+#: ../Pinta.Effects/Effects/DitheringEffect.cs:161
 msgid "Current Palette"
 msgstr "Paleta Atual"
 
@@ -963,7 +963,7 @@ msgstr "Padrão"
 msgid "Default canvas size (on application open):"
 msgstr ""
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:863
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:864
 msgid "Delete"
 msgstr ""
 
@@ -976,7 +976,7 @@ msgstr "Remover Camada"
 msgid "Delete Layer Mask"
 msgstr ""
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:903
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:904
 msgid "Delete Mask"
 msgstr ""
 
@@ -1069,8 +1069,8 @@ msgid "Drag a corner grip to resize, or the dashed border to move."
 msgstr ""
 
 #: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:160
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:1161
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:1164
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:1162
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:1165
 msgid "Drag and drop to reorder"
 msgstr ""
 
@@ -1142,7 +1142,7 @@ msgstr ""
 msgid "Effe_cts"
 msgstr "Efeito_s"
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:842
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:843
 msgid "Effect Settings..."
 msgstr ""
 
@@ -1193,7 +1193,7 @@ msgstr "Borracha"
 msgid "Error"
 msgstr "Erro"
 
-#: ../Pinta.Effects/Effects/DitheringEffect.cs:171
+#: ../Pinta.Effects/Effects/DitheringEffect.cs:170
 msgid "Error Diffusion Method"
 msgstr "Método de Difusão de Erro"
 
@@ -1253,7 +1253,7 @@ msgstr "Falha ao abrir imagem"
 msgid "Failed to read settings file: {0}"
 msgstr ""
 
-#: ../Impasto/Actions/File/SaveDocumentImplementationAction.cs:270
+#: ../Impasto/Actions/File/SaveDocumentImplementationAction.cs:316
 msgid "Failed to save image"
 msgstr "Falha ao salvar a imagem"
 
@@ -1310,13 +1310,13 @@ msgstr "Estilo do preenchimento"
 msgid "Fill and Outline Shape"
 msgstr "Formato do contorno e preenchimento"
 
-#: ../Pinta.Tools/Tools/FloodTool.cs:171
+#: ../Pinta.Tools/Tools/FloodTool.cs:202
 msgid ""
 "Fill every matching pixel in the image, even disconnected regions. Hold "
 "Shift to use this mode temporarily."
 msgstr ""
 
-#: ../Pinta.Tools/Tools/FloodTool.cs:170
+#: ../Pinta.Tools/Tools/FloodTool.cs:201
 msgid ""
 "Fill only the connected region of similar color touching the click point."
 msgstr ""
@@ -1379,7 +1379,7 @@ msgstr ""
 msgid "Finish typing ({0})"
 msgstr "Terminar a digitação ({0})"
 
-#: ../Impasto/Actions/File/SaveDocumentImplementationAction.cs:312
+#: ../Impasto/Actions/File/SaveDocumentImplementationAction.cs:358
 #: ../Pinta.Core/Actions/ImageActions.cs:117
 #: ../Pinta.Core/Actions/ImageActions.cs:228
 msgid "Flatten"
@@ -1389,7 +1389,7 @@ msgstr "Achatar"
 msgid "Flattened, squared-off corners on the outline."
 msgstr "Cantos achatados e quadrados no contorno."
 
-#: ../Impasto/Actions/File/SaveDocumentImplementationAction.cs:306
+#: ../Impasto/Actions/File/SaveDocumentImplementationAction.cs:352
 msgid "Flattening the image will merge all layers into a single layer."
 msgstr "Achatar a imagem mesclará todas as camadas em uma única camada."
 
@@ -1438,7 +1438,7 @@ msgstr ""
 msgid "Float as window"
 msgstr ""
 
-#: ../Pinta.Tools/Tools/FloodTool.cs:152
+#: ../Pinta.Tools/Tools/FloodTool.cs:182
 msgid "Flood Mode"
 msgstr "Modo Transbordar"
 
@@ -1497,7 +1497,7 @@ msgstr "Desfoque Gaussiano"
 msgid "General"
 msgstr ""
 
-#: ../Pinta.Tools/Tools/FloodTool.cs:171
+#: ../Pinta.Tools/Tools/FloodTool.cs:202
 msgid "Global"
 msgstr "Global"
 
@@ -1582,7 +1582,7 @@ msgid ""
 "again from the View menu."
 msgstr ""
 
-#: ../Pinta.Tools/Tools/FloodTool.cs:158
+#: ../Pinta.Tools/Tools/FloodTool.cs:188
 msgid ""
 "Higher tolerance includes more colors similar to the clicked pixel in the "
 "fill."
@@ -1631,12 +1631,12 @@ msgstr "Verde horizontal (G)"
 msgid "Horizontal red (R)"
 msgstr "Vermelho horizontal (R)"
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:820
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:821
 msgid ""
 "How much of the effect is applied. At 0 the layer looks as it did before."
 msgstr ""
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:801
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:802
 msgid "How the effect's result is mixed back into the image it was applied to."
 msgstr ""
 
@@ -1655,7 +1655,7 @@ msgstr "Hue & Sat"
 msgid "Hue / Saturation"
 msgstr "Tonalidade / Saturação"
 
-#: ../Impasto/Actions/File/SaveDocumentImplementationAction.cs:258
+#: ../Impasto/Actions/File/SaveDocumentImplementationAction.cs:304
 msgid "ICO files can not be larger than 256 x 256 pixels."
 msgstr "Arquivos ICO não podem ser maiores que 256 x 256 pixels."
 
@@ -1706,7 +1706,7 @@ msgstr "Arquivos de Imagem"
 msgid "Image larger than canvas"
 msgstr "Imagem maior que a tela"
 
-#: ../Impasto/Actions/File/SaveDocumentImplementationAction.cs:257
+#: ../Impasto/Actions/File/SaveDocumentImplementationAction.cs:303
 msgid "Image too large"
 msgstr "Imagem muito grande"
 
@@ -1742,7 +1742,7 @@ msgid ""
 "and can be reopened."
 msgstr ""
 
-#: ../Impasto/Actions/File/SaveDocumentImplementationAction.cs:231
+#: ../Impasto/Actions/File/SaveDocumentImplementationAction.cs:277
 msgid "Impasto does not support saving images in this file format."
 msgstr "Impasto não tem suporte para salvar a imagem neste formato."
 
@@ -1989,17 +1989,17 @@ msgstr "Propriedades da Camada"
 msgid "Layer Properties..."
 msgstr "Propiedades da Camada..."
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:1159
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:1160
 msgid ""
 "Layer effect: applies to everything below it on this layer, and stays "
 "editable."
 msgstr ""
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:1140
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:1141
 msgid "Layer mask: an alpha channel applied to the whole layer."
 msgstr ""
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:1158
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:1159
 msgid ""
 "Layer transform: applies to everything below it on this layer, and stays "
 "editable."
@@ -2277,7 +2277,7 @@ msgstr ""
 msgid "MIT License - Pinta Project"
 msgstr ""
 
-#: ../Pinta.Tools/Tools/MagicWandTool.cs:54
+#: ../Pinta.Tools/Tools/MagicWandTool.cs:81
 msgid "Magic Wand Select"
 msgstr "Varinha Mágica de Seleção"
 
@@ -2372,7 +2372,7 @@ msgstr "Borrar por Movimento"
 msgid "Move"
 msgstr ""
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:1046
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:1047
 msgid "Move Layer"
 msgstr ""
 
@@ -2446,7 +2446,7 @@ msgstr "Nome:"
 msgid "Nearest Neighbor"
 msgstr "Vizinho Mais Próximo"
 
-#: ../Pinta.Core/Actions/FileActions.cs:79
+#: ../Pinta.Core/Actions/FileActions.cs:86
 msgid "New"
 msgstr "Novo"
 
@@ -2455,7 +2455,7 @@ msgstr "Novo"
 msgid "New Image"
 msgstr "Nova Imagem"
 
-#: ../Pinta.Core/Actions/FileActions.cs:83
+#: ../Pinta.Core/Actions/FileActions.cs:90
 msgid "New Screenshot..."
 msgstr "Nova Captura de Tela..."
 
@@ -2463,7 +2463,7 @@ msgstr "Nova Captura de Tela..."
 msgid "New palette size:"
 msgstr "Novo tamanho de paleta:"
 
-#: ../Pinta.Core/Actions/FileActions.cs:75
+#: ../Pinta.Core/Actions/FileActions.cs:82
 msgid "New..."
 msgstr "Novo..."
 
@@ -2657,7 +2657,7 @@ msgstr "Seleção de Deslocamento"
 msgid "Oil Painting"
 msgstr "Pintura a Óleo"
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:818
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:819
 #: ../Pinta.Gui.Widgets/Widgets/Layers/PropertiesDialogGridBuilder.cs:44
 msgid "Opacity:"
 msgstr "Opacidade:"
@@ -2667,7 +2667,7 @@ msgstr "Opacidade:"
 msgid "Opacity: {0}%"
 msgstr ""
 
-#: ../Pinta.Core/Actions/FileActions.cs:93
+#: ../Pinta.Core/Actions/FileActions.cs:100
 msgid "Open"
 msgstr "Abrir"
 
@@ -2688,7 +2688,7 @@ msgstr "Abrir Arquivo de Imagem"
 msgid "Open Palette File"
 msgstr "Abrir arquivo de paleta"
 
-#: ../Pinta.Core/Actions/FileActions.cs:149
+#: ../Pinta.Core/Actions/FileActions.cs:163
 msgid "Open Recent"
 msgstr "Abrir Recente"
 
@@ -2697,7 +2697,7 @@ msgid "Open text properties"
 msgstr ""
 
 #: ../Pinta.Core/Actions/EditActions.cs:189
-#: ../Pinta.Core/Actions/FileActions.cs:89
+#: ../Pinta.Core/Actions/FileActions.cs:96
 msgid "Open..."
 msgstr "Abrir..."
 
@@ -2768,7 +2768,7 @@ msgstr ""
 msgid "Paint Bucket"
 msgstr "Balde de Tinta"
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:892
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:893
 msgid ""
 "Paint on the canvas to reveal the layer; erase to hide it. Right-click the "
 "row again for options."
@@ -2802,11 +2802,11 @@ msgid ""
 msgstr ""
 
 #: ../Pinta.Core/Actions/EditActions.cs:261
-#: ../Pinta.Effects/Effects/DitheringEffect.cs:177
+#: ../Pinta.Effects/Effects/DitheringEffect.cs:176
 msgid "Palette"
 msgstr "Paleta de cores"
 
-#: ../Pinta.Effects/Effects/DitheringEffect.cs:174
+#: ../Pinta.Effects/Effects/DitheringEffect.cs:173
 msgid "Palette Source"
 msgstr "Fonte da Paleta"
 
@@ -3029,7 +3029,7 @@ msgstr "Preservar"
 msgid "Preset Gradient"
 msgstr "Gradiente Predefinido"
 
-#: ../Pinta.Effects/Effects/DitheringEffect.cs:159
+#: ../Pinta.Effects/Effects/DitheringEffect.cs:158
 #, fuzzy
 msgid "Preset Palettes"
 msgstr "Paletas Pré-definidas"
@@ -3087,11 +3087,11 @@ msgstr "Pré-Visualizar"
 msgid "Primary"
 msgstr "Primário"
 
-#: ../Pinta.Core/Actions/FileActions.cs:118
+#: ../Pinta.Core/Actions/FileActions.cs:131
 msgid "Print"
 msgstr "Imprimir"
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:858
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:859
 msgid "Properties..."
 msgstr ""
 
@@ -3197,7 +3197,7 @@ msgstr "Locais de Pontos Aleatórios"
 msgid "Raster — fuses to layer"
 msgstr ""
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:851
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:852
 msgid "Rasterize"
 msgstr ""
 
@@ -3225,13 +3225,13 @@ msgstr ""
 msgid "Re-edit existing text"
 msgstr ""
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:1162
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:1163
 msgid ""
 "Re-editable object: a live shape or text you can keep editing until you "
 "rasterize it."
 msgstr ""
 
-#: ../Pinta.Effects/Effects/DitheringEffect.cs:165
+#: ../Pinta.Effects/Effects/DitheringEffect.cs:164
 msgid "Recently Used Colors"
 msgstr "Cores Recentemente Usadas"
 
@@ -3317,7 +3317,7 @@ msgstr "Relevo"
 msgid "Remove last point (Backspace)"
 msgstr ""
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:904
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:905
 msgid "Remove this layer's mask; the layer renders unmasked."
 msgstr ""
 
@@ -3325,7 +3325,7 @@ msgstr ""
 msgid "Rename Layer"
 msgstr "Renomear Camada"
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:711
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:712
 msgid "Rename Layer..."
 msgstr ""
 
@@ -3472,15 +3472,15 @@ msgstr ""
 msgid "Right click to move"
 msgstr ""
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:1160
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:1161
 msgid "Right-click to change its settings, blending and strength"
 msgstr ""
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:1142
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:1143
 msgid "Right-click to delete the mask"
 msgstr ""
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:1163
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:1164
 msgid "Right-click to set blend mode and opacity, or open its properties"
 msgstr ""
 
@@ -3589,10 +3589,10 @@ msgstr "Saturação"
 msgid "Saturation Percentage"
 msgstr "Percentual de Saturação"
 
-#: ../Impasto/Actions/File/SaveDocumentImplementationAction.cs:93
-#: ../Impasto/Actions/File/SaveDocumentImplementationAction.cs:351
+#: ../Impasto/Actions/File/SaveDocumentImplementationAction.cs:144
+#: ../Impasto/Actions/File/SaveDocumentImplementationAction.cs:397
 #: ../Pinta.Core/Actions/EditActions.cs:661
-#: ../Pinta.Core/Actions/FileActions.cs:104
+#: ../Pinta.Core/Actions/FileActions.cs:111
 msgid "Save"
 msgstr "Salvar"
 
@@ -3601,17 +3601,21 @@ msgid "Save All"
 msgstr "Salvar Tudo"
 
 #: ../Pinta.Core/Actions/EditActions.cs:195
-#: ../Pinta.Core/Actions/FileActions.cs:111
+#: ../Pinta.Core/Actions/FileActions.cs:118
 msgid "Save As..."
 msgstr "Salvar Como..."
 
-#: ../Impasto/Actions/File/SaveDocumentImplementationAction.cs:90
+#: ../Impasto/Actions/File/SaveDocumentImplementationAction.cs:141
 msgid "Save Image File"
 msgstr "Salvar Arquivo de Imagem"
 
 #: ../Pinta.Core/Actions/EditActions.cs:658
 msgid "Save Palette File"
 msgstr "Salvar arquivo de paleta"
+
+#: ../Pinta.Core/Actions/FileActions.cs:125
+msgid "Save as Impasto project..."
+msgstr ""
 
 #: ../Impasto/Actions/File/CloseDocumentAction.cs:72
 #, csharp-format
@@ -3668,7 +3672,7 @@ msgstr ""
 msgid "Select previous control point"
 msgstr ""
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:1141
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:1142
 msgid "Select this row to paint the mask; paint reveals, erase hides"
 msgstr ""
 
@@ -3955,7 +3959,7 @@ msgstr ""
 msgid "Solo Layer {0}"
 msgstr ""
 
-#: ../Impasto/Actions/File/SaveDocumentImplementationAction.cs:341
+#: ../Impasto/Actions/File/SaveDocumentImplementationAction.cs:387
 msgid "Some effects cannot be saved as editable. Save anyway?"
 msgstr ""
 
@@ -4000,7 +4004,7 @@ msgstr ""
 msgid "Strength"
 msgstr "Concentração"
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:818
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:819
 msgid "Strength:"
 msgstr ""
 
@@ -4203,7 +4207,7 @@ msgstr ""
 "Existem outros pacotes de extensão que dependem dos anteriores e que também "
 "serão desinstalados:"
 
-#: ../Impasto/Actions/File/SaveDocumentImplementationAction.cs:343
+#: ../Impasto/Actions/File/SaveDocumentImplementationAction.cs:389
 msgid ""
 "These effects come from add-ins and will be part of the saved image's pixels "
 "instead, so reopening the file will not let you change their settings. They "
@@ -4239,7 +4243,7 @@ msgid ""
 "overwrite your current keyboard-shortcuts.json."
 msgstr ""
 
-#: ../Impasto/Actions/File/SaveDocumentImplementationAction.cs:305
+#: ../Impasto/Actions/File/SaveDocumentImplementationAction.cs:351
 msgid "This format does not support layers. Flatten image?"
 msgstr "Este formato não suporta camadas. Achatar imagem?"
 
@@ -4304,7 +4308,7 @@ msgstr ""
 #: ../Pinta.Effects/Effects/FeatherEffect.cs:171
 #: ../Pinta.Effects/Effects/OutlineObjectEffect.cs:208
 #: ../Pinta.Effects/Effects/RedEyeRemoveEffect.cs:53
-#: ../Pinta.Tools/Tools/FloodTool.cs:153
+#: ../Pinta.Tools/Tools/FloodTool.cs:183
 #: ../Pinta.Tools/Tools/RecolorTool.cs:323
 msgid "Tolerance"
 msgstr "Tolerância"
@@ -4386,7 +4390,7 @@ msgstr ""
 msgid "Transform Settings"
 msgstr ""
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:837
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:838
 msgid "Transform Settings..."
 msgstr ""
 
@@ -4564,11 +4568,11 @@ msgstr "Formato do arquivo não suportado"
 msgid "Unsupported palette format"
 msgstr "Formato de paleta não suportado"
 
-#: ../Pinta.Core/Actions/FileActions.cs:127
+#: ../Pinta.Core/Actions/FileActions.cs:140
 msgid "Update Impasto"
 msgstr ""
 
-#: ../Pinta.Core/Actions/FileActions.cs:124
+#: ../Pinta.Core/Actions/FileActions.cs:137
 msgid "Update Impasto..."
 msgstr ""
 
@@ -4702,7 +4706,7 @@ msgid "You do not have access to '{0}'."
 msgstr "Você não tem acesso ao arquivo '{0}'."
 
 #. Translators: {0} is the name of a file that the user does not have write permission for.
-#: ../Impasto/Actions/File/SaveDocumentImplementationAction.cs:273
+#: ../Impasto/Actions/File/SaveDocumentImplementationAction.cs:319
 #, csharp-format
 msgid ""
 "You do not have access to modify '{0}'. The file or folder may be read-only."

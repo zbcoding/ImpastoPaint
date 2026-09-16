@@ -19,7 +19,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: pinta\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-10 07:04-0500\n"
+"POT-Creation-Date: 2026-09-15 21:53-0500\n"
 "PO-Revision-Date: 2026-05-10 20:22+0000\n"
 "Last-Translator: Milo Ivir <mail@milotype.de>\n"
 "Language-Team: Croatian\n"
@@ -296,13 +296,13 @@ msgstr "Pozadina:"
 msgid "Backup"
 msgstr ""
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:853
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:854
 msgid ""
 "Bake this layer's effects and objects into its pixels; they stop being "
 "editable."
 msgstr ""
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:854
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:855
 msgid "Bake this object into the layer's pixels; it stops being editable."
 msgstr ""
 
@@ -334,7 +334,7 @@ msgstr "Crno-bijelo"
 msgid "Blend Mode"
 msgstr "Modus stapanja"
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:798
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:799
 msgid "Blend Mode:"
 msgstr ""
 
@@ -473,7 +473,7 @@ msgid ""
 "format."
 msgstr ""
 
-#: ../Impasto/Actions/File/SaveDocumentImplementationAction.cs:94
+#: ../Impasto/Actions/File/SaveDocumentImplementationAction.cs:145
 #: ../Impasto/Actions/Help/KeyboardShortcutsDialogAction.cs:108
 #: ../Impasto/Actions/Help/KeyboardShortcutsDialogAction.cs:121
 #: ../Impasto/Dialogs/PreferencesDialog.cs:433
@@ -505,7 +505,7 @@ msgstr "Postavke rešetke platna"
 msgid "Canvas Grid..."
 msgstr "Rešetke platna …"
 
-#: ../Pinta.Core/Managers/ActionManager.cs:337
+#: ../Pinta.Core/Managers/ActionManager.cs:338
 msgid ""
 "Canvas size in pixels and its aspect ratio.\n"
 "Double click to change the canvas size."
@@ -574,12 +574,12 @@ msgstr "Promijeni veličinu fonta."
 msgid "Change outline width."
 msgstr "Promijeni širinu konture."
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:843
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:844
 msgid ""
 "Change this effect's settings; the layer re-renders with the new values."
 msgstr ""
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:838
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:839
 msgid ""
 "Change this transform's settings; the layer re-renders with the new values."
 msgstr ""
@@ -674,7 +674,7 @@ msgstr "Klikni za resetiranje primarne i sekundarne boje."
 msgid "Click to select primary color."
 msgstr "Klikni za biranje primarne boje."
 
-#: ../Pinta.Tools/Tools/MagicWandTool.cs:57
+#: ../Pinta.Tools/Tools/MagicWandTool.cs:84
 msgid ""
 "Click to select region of similar color.\n"
 "Hold shift to use Global mode."
@@ -713,7 +713,7 @@ msgstr "Međuspremnik"
 msgid "Clone Stamp"
 msgstr "Pečat za kloniranje"
 
-#: ../Pinta.Core/Actions/FileActions.cs:97
+#: ../Pinta.Core/Actions/FileActions.cs:104
 #: ../Pinta.Gui.Addins/InstallDialog.cs:346
 msgid "Close"
 msgstr "Zatvori"
@@ -825,7 +825,7 @@ msgstr ""
 msgid "Contents"
 msgstr "Sadržaj"
 
-#: ../Pinta.Tools/Tools/FloodTool.cs:170
+#: ../Pinta.Tools/Tools/FloodTool.cs:201
 msgid "Contiguous"
 msgstr "Povezano"
 
@@ -896,7 +896,7 @@ msgstr ""
 msgid "Crop to Selection"
 msgstr "Obreži na odabir"
 
-#: ../Pinta.Effects/Effects/DitheringEffect.cs:162
+#: ../Pinta.Effects/Effects/DitheringEffect.cs:161
 msgid "Current Palette"
 msgstr "Trenutačna paleta"
 
@@ -964,7 +964,7 @@ msgstr "Zadano"
 msgid "Default canvas size (on application open):"
 msgstr ""
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:863
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:864
 msgid "Delete"
 msgstr ""
 
@@ -977,7 +977,7 @@ msgstr "Izbriši sloj"
 msgid "Delete Layer Mask"
 msgstr ""
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:903
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:904
 msgid "Delete Mask"
 msgstr ""
 
@@ -1070,8 +1070,8 @@ msgid "Drag a corner grip to resize, or the dashed border to move."
 msgstr ""
 
 #: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:160
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:1161
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:1164
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:1162
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:1165
 msgid "Drag and drop to reorder"
 msgstr ""
 
@@ -1143,7 +1143,7 @@ msgstr ""
 msgid "Effe_cts"
 msgstr "Efek_ti"
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:842
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:843
 msgid "Effect Settings..."
 msgstr ""
 
@@ -1194,7 +1194,7 @@ msgstr "Gumica"
 msgid "Error"
 msgstr "Greška"
 
-#: ../Pinta.Effects/Effects/DitheringEffect.cs:171
+#: ../Pinta.Effects/Effects/DitheringEffect.cs:170
 msgid "Error Diffusion Method"
 msgstr "Metoda difuzije grešaka"
 
@@ -1254,7 +1254,7 @@ msgstr "Neuspjelo otvaranje slike"
 msgid "Failed to read settings file: {0}"
 msgstr ""
 
-#: ../Impasto/Actions/File/SaveDocumentImplementationAction.cs:270
+#: ../Impasto/Actions/File/SaveDocumentImplementationAction.cs:316
 msgid "Failed to save image"
 msgstr "Neuspjelo spremanje slike"
 
@@ -1311,13 +1311,13 @@ msgstr "Stil ispune"
 msgid "Fill and Outline Shape"
 msgstr "Oblik ispune i konture"
 
-#: ../Pinta.Tools/Tools/FloodTool.cs:171
+#: ../Pinta.Tools/Tools/FloodTool.cs:202
 msgid ""
 "Fill every matching pixel in the image, even disconnected regions. Hold "
 "Shift to use this mode temporarily."
 msgstr ""
 
-#: ../Pinta.Tools/Tools/FloodTool.cs:170
+#: ../Pinta.Tools/Tools/FloodTool.cs:201
 msgid ""
 "Fill only the connected region of similar color touching the click point."
 msgstr ""
@@ -1379,7 +1379,7 @@ msgstr ""
 msgid "Finish typing ({0})"
 msgstr "Završi upisivanje ({0})"
 
-#: ../Impasto/Actions/File/SaveDocumentImplementationAction.cs:312
+#: ../Impasto/Actions/File/SaveDocumentImplementationAction.cs:358
 #: ../Pinta.Core/Actions/ImageActions.cs:117
 #: ../Pinta.Core/Actions/ImageActions.cs:228
 msgid "Flatten"
@@ -1389,7 +1389,7 @@ msgstr "Spoji slojeve"
 msgid "Flattened, squared-off corners on the outline."
 msgstr "Spljošteni, uglati kutovi na obrisu."
 
-#: ../Impasto/Actions/File/SaveDocumentImplementationAction.cs:306
+#: ../Impasto/Actions/File/SaveDocumentImplementationAction.cs:352
 msgid "Flattening the image will merge all layers into a single layer."
 msgstr "Spajanje će spojiti sve slojeve u jedan sloj."
 
@@ -1438,7 +1438,7 @@ msgstr ""
 msgid "Float as window"
 msgstr ""
 
-#: ../Pinta.Tools/Tools/FloodTool.cs:152
+#: ../Pinta.Tools/Tools/FloodTool.cs:182
 msgid "Flood Mode"
 msgstr "Modus ispunjavanja"
 
@@ -1496,7 +1496,7 @@ msgstr "Gaussovo zamućenje"
 msgid "General"
 msgstr ""
 
-#: ../Pinta.Tools/Tools/FloodTool.cs:171
+#: ../Pinta.Tools/Tools/FloodTool.cs:202
 msgid "Global"
 msgstr "Globalno"
 
@@ -1581,7 +1581,7 @@ msgid ""
 "again from the View menu."
 msgstr ""
 
-#: ../Pinta.Tools/Tools/FloodTool.cs:158
+#: ../Pinta.Tools/Tools/FloodTool.cs:188
 msgid ""
 "Higher tolerance includes more colors similar to the clicked pixel in the "
 "fill."
@@ -1629,12 +1629,12 @@ msgstr "Vodoravno zelena (G)"
 msgid "Horizontal red (R)"
 msgstr "Vodoravno crvena (R)"
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:820
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:821
 msgid ""
 "How much of the effect is applied. At 0 the layer looks as it did before."
 msgstr ""
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:801
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:802
 msgid "How the effect's result is mixed back into the image it was applied to."
 msgstr ""
 
@@ -1653,7 +1653,7 @@ msgstr "Nijansa i zasićenost"
 msgid "Hue / Saturation"
 msgstr "Nijansa / Zasićenost"
 
-#: ../Impasto/Actions/File/SaveDocumentImplementationAction.cs:258
+#: ../Impasto/Actions/File/SaveDocumentImplementationAction.cs:304
 msgid "ICO files can not be larger than 256 x 256 pixels."
 msgstr "ICO datoteke ne mogu biti veće od 256 x 256 piksela."
 
@@ -1701,7 +1701,7 @@ msgstr "Slikovne datoteke"
 msgid "Image larger than canvas"
 msgstr "Slika je veća od platna"
 
-#: ../Impasto/Actions/File/SaveDocumentImplementationAction.cs:257
+#: ../Impasto/Actions/File/SaveDocumentImplementationAction.cs:303
 msgid "Image too large"
 msgstr "Slika je prevelika"
 
@@ -1737,7 +1737,7 @@ msgid ""
 "and can be reopened."
 msgstr ""
 
-#: ../Impasto/Actions/File/SaveDocumentImplementationAction.cs:231
+#: ../Impasto/Actions/File/SaveDocumentImplementationAction.cs:277
 msgid "Impasto does not support saving images in this file format."
 msgstr "Impasto ne podržava spremanje slika u ovaj datotečni format."
 
@@ -1981,17 +1981,17 @@ msgstr "Postavke sloja"
 msgid "Layer Properties..."
 msgstr "Postavke sloja …"
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:1159
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:1160
 msgid ""
 "Layer effect: applies to everything below it on this layer, and stays "
 "editable."
 msgstr ""
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:1140
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:1141
 msgid "Layer mask: an alpha channel applied to the whole layer."
 msgstr ""
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:1158
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:1159
 msgid ""
 "Layer transform: applies to everything below it on this layer, and stays "
 "editable."
@@ -2264,7 +2264,7 @@ msgstr ""
 msgid "MIT License - Pinta Project"
 msgstr ""
 
-#: ../Pinta.Tools/Tools/MagicWandTool.cs:54
+#: ../Pinta.Tools/Tools/MagicWandTool.cs:81
 msgid "Magic Wand Select"
 msgstr "Odabir čarobnim štapićem"
 
@@ -2359,7 +2359,7 @@ msgstr "Zamućenje pokreta"
 msgid "Move"
 msgstr ""
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:1046
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:1047
 msgid "Move Layer"
 msgstr ""
 
@@ -2433,7 +2433,7 @@ msgstr "Ime:"
 msgid "Nearest Neighbor"
 msgstr "Najbliži susjed"
 
-#: ../Pinta.Core/Actions/FileActions.cs:79
+#: ../Pinta.Core/Actions/FileActions.cs:86
 msgid "New"
 msgstr "Nova"
 
@@ -2442,7 +2442,7 @@ msgstr "Nova"
 msgid "New Image"
 msgstr "Nova slika"
 
-#: ../Pinta.Core/Actions/FileActions.cs:83
+#: ../Pinta.Core/Actions/FileActions.cs:90
 msgid "New Screenshot..."
 msgstr "Nova slika ekrana …"
 
@@ -2450,7 +2450,7 @@ msgstr "Nova slika ekrana …"
 msgid "New palette size:"
 msgstr "Nova veličina palete:"
 
-#: ../Pinta.Core/Actions/FileActions.cs:75
+#: ../Pinta.Core/Actions/FileActions.cs:82
 msgid "New..."
 msgstr "Nova…"
 
@@ -2644,7 +2644,7 @@ msgstr "Pomak odabira"
 msgid "Oil Painting"
 msgstr "Slika uljanim bojama"
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:818
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:819
 #: ../Pinta.Gui.Widgets/Widgets/Layers/PropertiesDialogGridBuilder.cs:44
 msgid "Opacity:"
 msgstr "Neprozirnost:"
@@ -2654,7 +2654,7 @@ msgstr "Neprozirnost:"
 msgid "Opacity: {0}%"
 msgstr ""
 
-#: ../Pinta.Core/Actions/FileActions.cs:93
+#: ../Pinta.Core/Actions/FileActions.cs:100
 msgid "Open"
 msgstr "Otvori"
 
@@ -2675,7 +2675,7 @@ msgstr "Otvori datoteku slike"
 msgid "Open Palette File"
 msgstr "Otvori datoteku palete"
 
-#: ../Pinta.Core/Actions/FileActions.cs:149
+#: ../Pinta.Core/Actions/FileActions.cs:163
 msgid "Open Recent"
 msgstr ""
 
@@ -2684,7 +2684,7 @@ msgid "Open text properties"
 msgstr ""
 
 #: ../Pinta.Core/Actions/EditActions.cs:189
-#: ../Pinta.Core/Actions/FileActions.cs:89
+#: ../Pinta.Core/Actions/FileActions.cs:96
 msgid "Open..."
 msgstr "Otvori…"
 
@@ -2755,7 +2755,7 @@ msgstr ""
 msgid "Paint Bucket"
 msgstr "Kanta boje"
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:892
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:893
 msgid ""
 "Paint on the canvas to reveal the layer; erase to hide it. Right-click the "
 "row again for options."
@@ -2789,11 +2789,11 @@ msgid ""
 msgstr ""
 
 #: ../Pinta.Core/Actions/EditActions.cs:261
-#: ../Pinta.Effects/Effects/DitheringEffect.cs:177
+#: ../Pinta.Effects/Effects/DitheringEffect.cs:176
 msgid "Palette"
 msgstr "Paleta"
 
-#: ../Pinta.Effects/Effects/DitheringEffect.cs:174
+#: ../Pinta.Effects/Effects/DitheringEffect.cs:173
 msgid "Palette Source"
 msgstr "Izvor palete"
 
@@ -3016,7 +3016,7 @@ msgstr "Sačuvaj"
 msgid "Preset Gradient"
 msgstr "Unaprijed postavljeni gradijent"
 
-#: ../Pinta.Effects/Effects/DitheringEffect.cs:159
+#: ../Pinta.Effects/Effects/DitheringEffect.cs:158
 msgid "Preset Palettes"
 msgstr "Unaprijed postavljene palete"
 
@@ -3073,11 +3073,11 @@ msgstr "Pregled"
 msgid "Primary"
 msgstr "Primarna"
 
-#: ../Pinta.Core/Actions/FileActions.cs:118
+#: ../Pinta.Core/Actions/FileActions.cs:131
 msgid "Print"
 msgstr "Ispiši"
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:858
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:859
 msgid "Properties..."
 msgstr ""
 
@@ -3183,7 +3183,7 @@ msgstr "Lokacije slučajnih točaka"
 msgid "Raster — fuses to layer"
 msgstr ""
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:851
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:852
 msgid "Rasterize"
 msgstr ""
 
@@ -3211,13 +3211,13 @@ msgstr ""
 msgid "Re-edit existing text"
 msgstr ""
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:1162
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:1163
 msgid ""
 "Re-editable object: a live shape or text you can keep editing until you "
 "rasterize it."
 msgstr ""
 
-#: ../Pinta.Effects/Effects/DitheringEffect.cs:165
+#: ../Pinta.Effects/Effects/DitheringEffect.cs:164
 msgid "Recently Used Colors"
 msgstr "Nedavno korištene boje"
 
@@ -3303,7 +3303,7 @@ msgstr "Reljef"
 msgid "Remove last point (Backspace)"
 msgstr ""
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:904
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:905
 msgid "Remove this layer's mask; the layer renders unmasked."
 msgstr ""
 
@@ -3311,7 +3311,7 @@ msgstr ""
 msgid "Rename Layer"
 msgstr "Preimenuj sloj"
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:711
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:712
 msgid "Rename Layer..."
 msgstr ""
 
@@ -3458,15 +3458,15 @@ msgstr ""
 msgid "Right click to move"
 msgstr ""
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:1160
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:1161
 msgid "Right-click to change its settings, blending and strength"
 msgstr ""
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:1142
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:1143
 msgid "Right-click to delete the mask"
 msgstr ""
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:1163
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:1164
 msgid "Right-click to set blend mode and opacity, or open its properties"
 msgstr ""
 
@@ -3575,10 +3575,10 @@ msgstr "Zasićenost"
 msgid "Saturation Percentage"
 msgstr "Postotak zasićenosti"
 
-#: ../Impasto/Actions/File/SaveDocumentImplementationAction.cs:93
-#: ../Impasto/Actions/File/SaveDocumentImplementationAction.cs:351
+#: ../Impasto/Actions/File/SaveDocumentImplementationAction.cs:144
+#: ../Impasto/Actions/File/SaveDocumentImplementationAction.cs:397
 #: ../Pinta.Core/Actions/EditActions.cs:661
-#: ../Pinta.Core/Actions/FileActions.cs:104
+#: ../Pinta.Core/Actions/FileActions.cs:111
 msgid "Save"
 msgstr "Spremi"
 
@@ -3587,17 +3587,21 @@ msgid "Save All"
 msgstr "Spremi sve"
 
 #: ../Pinta.Core/Actions/EditActions.cs:195
-#: ../Pinta.Core/Actions/FileActions.cs:111
+#: ../Pinta.Core/Actions/FileActions.cs:118
 msgid "Save As..."
 msgstr "Spremi kao…"
 
-#: ../Impasto/Actions/File/SaveDocumentImplementationAction.cs:90
+#: ../Impasto/Actions/File/SaveDocumentImplementationAction.cs:141
 msgid "Save Image File"
 msgstr "Spremi datoteku slike"
 
 #: ../Pinta.Core/Actions/EditActions.cs:658
 msgid "Save Palette File"
 msgstr "Spremi datoteku palete"
+
+#: ../Pinta.Core/Actions/FileActions.cs:125
+msgid "Save as Impasto project..."
+msgstr ""
 
 #: ../Impasto/Actions/File/CloseDocumentAction.cs:72
 #, csharp-format
@@ -3654,7 +3658,7 @@ msgstr ""
 msgid "Select previous control point"
 msgstr ""
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:1141
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:1142
 msgid "Select this row to paint the mask; paint reveals, erase hides"
 msgstr ""
 
@@ -3941,7 +3945,7 @@ msgstr ""
 msgid "Solo Layer {0}"
 msgstr ""
 
-#: ../Impasto/Actions/File/SaveDocumentImplementationAction.cs:341
+#: ../Impasto/Actions/File/SaveDocumentImplementationAction.cs:387
 msgid "Some effects cannot be saved as editable. Save anyway?"
 msgstr ""
 
@@ -3986,7 +3990,7 @@ msgstr ""
 msgid "Strength"
 msgstr "Jačina"
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:818
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:819
 msgid "Strength:"
 msgstr ""
 
@@ -4187,7 +4191,7 @@ msgstr ""
 "Postoje i drugi paketi proširenja koji ovise o prethodnim koji će se također "
 "deinstalirati:"
 
-#: ../Impasto/Actions/File/SaveDocumentImplementationAction.cs:343
+#: ../Impasto/Actions/File/SaveDocumentImplementationAction.cs:389
 msgid ""
 "These effects come from add-ins and will be part of the saved image's pixels "
 "instead, so reopening the file will not let you change their settings. They "
@@ -4223,7 +4227,7 @@ msgid ""
 "overwrite your current keyboard-shortcuts.json."
 msgstr ""
 
-#: ../Impasto/Actions/File/SaveDocumentImplementationAction.cs:305
+#: ../Impasto/Actions/File/SaveDocumentImplementationAction.cs:351
 msgid "This format does not support layers. Flatten image?"
 msgstr "Ovaj format ne podržava slojeve. Spojiti slojeve slike?"
 
@@ -4288,7 +4292,7 @@ msgstr ""
 #: ../Pinta.Effects/Effects/FeatherEffect.cs:171
 #: ../Pinta.Effects/Effects/OutlineObjectEffect.cs:208
 #: ../Pinta.Effects/Effects/RedEyeRemoveEffect.cs:53
-#: ../Pinta.Tools/Tools/FloodTool.cs:153
+#: ../Pinta.Tools/Tools/FloodTool.cs:183
 #: ../Pinta.Tools/Tools/RecolorTool.cs:323
 msgid "Tolerance"
 msgstr "Tolerancija"
@@ -4370,7 +4374,7 @@ msgstr ""
 msgid "Transform Settings"
 msgstr ""
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:837
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:838
 msgid "Transform Settings..."
 msgstr ""
 
@@ -4546,11 +4550,11 @@ msgstr "Nepodržani format datoteka"
 msgid "Unsupported palette format"
 msgstr "Nepodržani format paleta"
 
-#: ../Pinta.Core/Actions/FileActions.cs:127
+#: ../Pinta.Core/Actions/FileActions.cs:140
 msgid "Update Impasto"
 msgstr ""
 
-#: ../Pinta.Core/Actions/FileActions.cs:124
+#: ../Pinta.Core/Actions/FileActions.cs:137
 msgid "Update Impasto..."
 msgstr ""
 
@@ -4681,7 +4685,7 @@ msgid "You do not have access to '{0}'."
 msgstr "Nemaš pristup na „{0}“."
 
 #. Translators: {0} is the name of a file that the user does not have write permission for.
-#: ../Impasto/Actions/File/SaveDocumentImplementationAction.cs:273
+#: ../Impasto/Actions/File/SaveDocumentImplementationAction.cs:319
 #, csharp-format
 msgid ""
 "You do not have access to modify '{0}'. The file or folder may be read-only."

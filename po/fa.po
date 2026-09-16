@@ -19,7 +19,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: pinta\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-10 07:04-0500\n"
+"POT-Creation-Date: 2026-09-15 21:53-0500\n"
 "PO-Revision-Date: 2023-12-11 19:34+0000\n"
 "Last-Translator: Parsa <Unknown>\n"
 "Language-Team: Persian\n"
@@ -295,13 +295,13 @@ msgstr "پس‌زمینه:"
 msgid "Backup"
 msgstr ""
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:853
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:854
 msgid ""
 "Bake this layer's effects and objects into its pixels; they stop being "
 "editable."
 msgstr ""
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:854
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:855
 msgid "Bake this object into the layer's pixels; it stops being editable."
 msgstr ""
 
@@ -333,7 +333,7 @@ msgstr "سیاه و سفید"
 msgid "Blend Mode"
 msgstr "حالت ترکیب"
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:798
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:799
 msgid "Blend Mode:"
 msgstr ""
 
@@ -472,7 +472,7 @@ msgid ""
 "format."
 msgstr ""
 
-#: ../Impasto/Actions/File/SaveDocumentImplementationAction.cs:94
+#: ../Impasto/Actions/File/SaveDocumentImplementationAction.cs:145
 #: ../Impasto/Actions/Help/KeyboardShortcutsDialogAction.cs:108
 #: ../Impasto/Actions/Help/KeyboardShortcutsDialogAction.cs:121
 #: ../Impasto/Dialogs/PreferencesDialog.cs:433
@@ -504,7 +504,7 @@ msgstr ""
 msgid "Canvas Grid..."
 msgstr ""
 
-#: ../Pinta.Core/Managers/ActionManager.cs:337
+#: ../Pinta.Core/Managers/ActionManager.cs:338
 msgid ""
 "Canvas size in pixels and its aspect ratio.\n"
 "Double click to change the canvas size."
@@ -573,12 +573,12 @@ msgstr ""
 msgid "Change outline width."
 msgstr ""
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:843
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:844
 msgid ""
 "Change this effect's settings; the layer re-renders with the new values."
 msgstr ""
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:838
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:839
 msgid ""
 "Change this transform's settings; the layer re-renders with the new values."
 msgstr ""
@@ -666,7 +666,7 @@ msgstr "برای تنظیم رنگ اولیه و ثانویه به پیش‌فر
 msgid "Click to select primary color."
 msgstr "برای انتخاب رنگ اولیه کلیک کنید."
 
-#: ../Pinta.Tools/Tools/MagicWandTool.cs:57
+#: ../Pinta.Tools/Tools/MagicWandTool.cs:84
 msgid ""
 "Click to select region of similar color.\n"
 "Hold shift to use Global mode."
@@ -703,7 +703,7 @@ msgstr "حافظه‌ی سیستم"
 msgid "Clone Stamp"
 msgstr "مهر تکثیر"
 
-#: ../Pinta.Core/Actions/FileActions.cs:97
+#: ../Pinta.Core/Actions/FileActions.cs:104
 #: ../Pinta.Gui.Addins/InstallDialog.cs:346
 msgid "Close"
 msgstr "بستن"
@@ -815,7 +815,7 @@ msgstr ""
 msgid "Contents"
 msgstr "فهرست"
 
-#: ../Pinta.Tools/Tools/FloodTool.cs:170
+#: ../Pinta.Tools/Tools/FloodTool.cs:201
 msgid "Contiguous"
 msgstr "پیوسته"
 
@@ -885,7 +885,7 @@ msgstr ""
 msgid "Crop to Selection"
 msgstr "برش‌زدن ناحیه‌ی منتخب"
 
-#: ../Pinta.Effects/Effects/DitheringEffect.cs:162
+#: ../Pinta.Effects/Effects/DitheringEffect.cs:161
 msgid "Current Palette"
 msgstr ""
 
@@ -953,7 +953,7 @@ msgstr ""
 msgid "Default canvas size (on application open):"
 msgstr ""
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:863
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:864
 msgid "Delete"
 msgstr ""
 
@@ -966,7 +966,7 @@ msgstr "حذف لایه"
 msgid "Delete Layer Mask"
 msgstr ""
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:903
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:904
 msgid "Delete Mask"
 msgstr ""
 
@@ -1059,8 +1059,8 @@ msgid "Drag a corner grip to resize, or the dashed border to move."
 msgstr ""
 
 #: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:160
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:1161
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:1164
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:1162
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:1165
 msgid "Drag and drop to reorder"
 msgstr ""
 
@@ -1132,7 +1132,7 @@ msgstr ""
 msgid "Effe_cts"
 msgstr "_جلوه‌ها"
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:842
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:843
 msgid "Effect Settings..."
 msgstr ""
 
@@ -1182,7 +1182,7 @@ msgstr "پاک‌کن"
 msgid "Error"
 msgstr "بروز خطا"
 
-#: ../Pinta.Effects/Effects/DitheringEffect.cs:171
+#: ../Pinta.Effects/Effects/DitheringEffect.cs:170
 msgid "Error Diffusion Method"
 msgstr ""
 
@@ -1242,7 +1242,7 @@ msgstr ""
 msgid "Failed to read settings file: {0}"
 msgstr ""
 
-#: ../Impasto/Actions/File/SaveDocumentImplementationAction.cs:270
+#: ../Impasto/Actions/File/SaveDocumentImplementationAction.cs:316
 msgid "Failed to save image"
 msgstr ""
 
@@ -1299,13 +1299,13 @@ msgstr "شیوه‌ی پرکردن"
 msgid "Fill and Outline Shape"
 msgstr "لبه‌گیری و پرکردن شکل"
 
-#: ../Pinta.Tools/Tools/FloodTool.cs:171
+#: ../Pinta.Tools/Tools/FloodTool.cs:202
 msgid ""
 "Fill every matching pixel in the image, even disconnected regions. Hold "
 "Shift to use this mode temporarily."
 msgstr ""
 
-#: ../Pinta.Tools/Tools/FloodTool.cs:170
+#: ../Pinta.Tools/Tools/FloodTool.cs:201
 msgid ""
 "Fill only the connected region of similar color touching the click point."
 msgstr ""
@@ -1367,7 +1367,7 @@ msgstr ""
 msgid "Finish typing ({0})"
 msgstr "پایان تایپ ({0})"
 
-#: ../Impasto/Actions/File/SaveDocumentImplementationAction.cs:312
+#: ../Impasto/Actions/File/SaveDocumentImplementationAction.cs:358
 #: ../Pinta.Core/Actions/ImageActions.cs:117
 #: ../Pinta.Core/Actions/ImageActions.cs:228
 msgid "Flatten"
@@ -1377,7 +1377,7 @@ msgstr "هم‌سطح‌سازی"
 msgid "Flattened, squared-off corners on the outline."
 msgstr "گوشه‌های صاف و چهارگوش‌شده در طرح کلی."
 
-#: ../Impasto/Actions/File/SaveDocumentImplementationAction.cs:306
+#: ../Impasto/Actions/File/SaveDocumentImplementationAction.cs:352
 msgid "Flattening the image will merge all layers into a single layer."
 msgstr ""
 
@@ -1426,7 +1426,7 @@ msgstr ""
 msgid "Float as window"
 msgstr ""
 
-#: ../Pinta.Tools/Tools/FloodTool.cs:152
+#: ../Pinta.Tools/Tools/FloodTool.cs:182
 msgid "Flood Mode"
 msgstr "حالت پرکردن"
 
@@ -1484,7 +1484,7 @@ msgstr "تار کردن گاوسی"
 msgid "General"
 msgstr ""
 
-#: ../Pinta.Tools/Tools/FloodTool.cs:171
+#: ../Pinta.Tools/Tools/FloodTool.cs:202
 msgid "Global"
 msgstr "فراگیر"
 
@@ -1569,7 +1569,7 @@ msgid ""
 "again from the View menu."
 msgstr ""
 
-#: ../Pinta.Tools/Tools/FloodTool.cs:158
+#: ../Pinta.Tools/Tools/FloodTool.cs:188
 msgid ""
 "Higher tolerance includes more colors similar to the clicked pixel in the "
 "fill."
@@ -1617,12 +1617,12 @@ msgstr ""
 msgid "Horizontal red (R)"
 msgstr ""
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:820
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:821
 msgid ""
 "How much of the effect is applied. At 0 the layer looks as it did before."
 msgstr ""
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:801
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:802
 msgid "How the effect's result is mixed back into the image it was applied to."
 msgstr ""
 
@@ -1641,7 +1641,7 @@ msgstr ""
 msgid "Hue / Saturation"
 msgstr "تن رنگ / اشباع رنگ"
 
-#: ../Impasto/Actions/File/SaveDocumentImplementationAction.cs:258
+#: ../Impasto/Actions/File/SaveDocumentImplementationAction.cs:304
 msgid "ICO files can not be larger than 256 x 256 pixels."
 msgstr "فایل‌های ICO نمی‌توانند بیش از 255 در 255 پیکسل باشند."
 
@@ -1689,7 +1689,7 @@ msgstr "فایل های تصویری"
 msgid "Image larger than canvas"
 msgstr "تصویر بزرگ‌تر از بوم"
 
-#: ../Impasto/Actions/File/SaveDocumentImplementationAction.cs:257
+#: ../Impasto/Actions/File/SaveDocumentImplementationAction.cs:303
 msgid "Image too large"
 msgstr "تصویر خیلی حجیم است."
 
@@ -1725,7 +1725,7 @@ msgid ""
 "and can be reopened."
 msgstr ""
 
-#: ../Impasto/Actions/File/SaveDocumentImplementationAction.cs:231
+#: ../Impasto/Actions/File/SaveDocumentImplementationAction.cs:277
 msgid "Impasto does not support saving images in this file format."
 msgstr "Impasto از این قالب تصویری پشتیبانی نمی‌کند."
 
@@ -1964,17 +1964,17 @@ msgstr "ویژگیهای لایه"
 msgid "Layer Properties..."
 msgstr "خصوصیات لایه..."
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:1159
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:1160
 msgid ""
 "Layer effect: applies to everything below it on this layer, and stays "
 "editable."
 msgstr ""
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:1140
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:1141
 msgid "Layer mask: an alpha channel applied to the whole layer."
 msgstr ""
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:1158
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:1159
 msgid ""
 "Layer transform: applies to everything below it on this layer, and stays "
 "editable."
@@ -2204,7 +2204,7 @@ msgstr ""
 msgid "MIT License - Pinta Project"
 msgstr ""
 
-#: ../Pinta.Tools/Tools/MagicWandTool.cs:54
+#: ../Pinta.Tools/Tools/MagicWandTool.cs:81
 msgid "Magic Wand Select"
 msgstr "انتخاب جادویی"
 
@@ -2299,7 +2299,7 @@ msgstr "حرکت تار شده"
 msgid "Move"
 msgstr ""
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:1046
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:1047
 msgid "Move Layer"
 msgstr ""
 
@@ -2373,7 +2373,7 @@ msgstr "نام:"
 msgid "Nearest Neighbor"
 msgstr ""
 
-#: ../Pinta.Core/Actions/FileActions.cs:79
+#: ../Pinta.Core/Actions/FileActions.cs:86
 msgid "New"
 msgstr "سند جدید"
 
@@ -2382,7 +2382,7 @@ msgstr "سند جدید"
 msgid "New Image"
 msgstr "تصویر جدید"
 
-#: ../Pinta.Core/Actions/FileActions.cs:83
+#: ../Pinta.Core/Actions/FileActions.cs:90
 msgid "New Screenshot..."
 msgstr "تصویر جدید از صفحه نمایش..."
 
@@ -2390,7 +2390,7 @@ msgstr "تصویر جدید از صفحه نمایش..."
 msgid "New palette size:"
 msgstr "اندازه‌ی جدید جعبه‌رنگ:"
 
-#: ../Pinta.Core/Actions/FileActions.cs:75
+#: ../Pinta.Core/Actions/FileActions.cs:82
 msgid "New..."
 msgstr "جدید..."
 
@@ -2584,7 +2584,7 @@ msgstr ""
 msgid "Oil Painting"
 msgstr "رنگ روغنی"
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:818
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:819
 #: ../Pinta.Gui.Widgets/Widgets/Layers/PropertiesDialogGridBuilder.cs:44
 msgid "Opacity:"
 msgstr "شفافیت:"
@@ -2594,7 +2594,7 @@ msgstr "شفافیت:"
 msgid "Opacity: {0}%"
 msgstr ""
 
-#: ../Pinta.Core/Actions/FileActions.cs:93
+#: ../Pinta.Core/Actions/FileActions.cs:100
 msgid "Open"
 msgstr "بازکردن"
 
@@ -2615,7 +2615,7 @@ msgstr "بازکردن فایل تصویری"
 msgid "Open Palette File"
 msgstr "بازکردن پرونده جعبه‌رنگ"
 
-#: ../Pinta.Core/Actions/FileActions.cs:149
+#: ../Pinta.Core/Actions/FileActions.cs:163
 msgid "Open Recent"
 msgstr ""
 
@@ -2624,7 +2624,7 @@ msgid "Open text properties"
 msgstr ""
 
 #: ../Pinta.Core/Actions/EditActions.cs:189
-#: ../Pinta.Core/Actions/FileActions.cs:89
+#: ../Pinta.Core/Actions/FileActions.cs:96
 msgid "Open..."
 msgstr "...باز کردن"
 
@@ -2695,7 +2695,7 @@ msgstr ""
 msgid "Paint Bucket"
 msgstr "سطل رنگ"
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:892
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:893
 msgid ""
 "Paint on the canvas to reveal the layer; erase to hide it. Right-click the "
 "row again for options."
@@ -2729,11 +2729,11 @@ msgid ""
 msgstr ""
 
 #: ../Pinta.Core/Actions/EditActions.cs:261
-#: ../Pinta.Effects/Effects/DitheringEffect.cs:177
+#: ../Pinta.Effects/Effects/DitheringEffect.cs:176
 msgid "Palette"
 msgstr "جعبه‌رنگ"
 
-#: ../Pinta.Effects/Effects/DitheringEffect.cs:174
+#: ../Pinta.Effects/Effects/DitheringEffect.cs:173
 msgid "Palette Source"
 msgstr ""
 
@@ -2955,7 +2955,7 @@ msgstr ""
 msgid "Preset Gradient"
 msgstr ""
 
-#: ../Pinta.Effects/Effects/DitheringEffect.cs:159
+#: ../Pinta.Effects/Effects/DitheringEffect.cs:158
 msgid "Preset Palettes"
 msgstr ""
 
@@ -3012,11 +3012,11 @@ msgstr "پیش‌نمایش"
 msgid "Primary"
 msgstr "اولیه"
 
-#: ../Pinta.Core/Actions/FileActions.cs:118
+#: ../Pinta.Core/Actions/FileActions.cs:131
 msgid "Print"
 msgstr "چاپ"
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:858
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:859
 msgid "Properties..."
 msgstr ""
 
@@ -3122,7 +3122,7 @@ msgstr ""
 msgid "Raster — fuses to layer"
 msgstr ""
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:851
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:852
 msgid "Rasterize"
 msgstr ""
 
@@ -3150,13 +3150,13 @@ msgstr ""
 msgid "Re-edit existing text"
 msgstr ""
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:1162
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:1163
 msgid ""
 "Re-editable object: a live shape or text you can keep editing until you "
 "rasterize it."
 msgstr ""
 
-#: ../Pinta.Effects/Effects/DitheringEffect.cs:165
+#: ../Pinta.Effects/Effects/DitheringEffect.cs:164
 msgid "Recently Used Colors"
 msgstr ""
 
@@ -3242,7 +3242,7 @@ msgstr "نقش برجسته"
 msgid "Remove last point (Backspace)"
 msgstr ""
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:904
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:905
 msgid "Remove this layer's mask; the layer renders unmasked."
 msgstr ""
 
@@ -3250,7 +3250,7 @@ msgstr ""
 msgid "Rename Layer"
 msgstr "تغییر نام لایه"
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:711
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:712
 msgid "Rename Layer..."
 msgstr ""
 
@@ -3397,15 +3397,15 @@ msgstr ""
 msgid "Right click to move"
 msgstr ""
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:1160
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:1161
 msgid "Right-click to change its settings, blending and strength"
 msgstr ""
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:1142
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:1143
 msgid "Right-click to delete the mask"
 msgstr ""
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:1163
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:1164
 msgid "Right-click to set blend mode and opacity, or open its properties"
 msgstr ""
 
@@ -3514,10 +3514,10 @@ msgstr "اشباع رنگ"
 msgid "Saturation Percentage"
 msgstr "درصد اشباع رنگ"
 
-#: ../Impasto/Actions/File/SaveDocumentImplementationAction.cs:93
-#: ../Impasto/Actions/File/SaveDocumentImplementationAction.cs:351
+#: ../Impasto/Actions/File/SaveDocumentImplementationAction.cs:144
+#: ../Impasto/Actions/File/SaveDocumentImplementationAction.cs:397
 #: ../Pinta.Core/Actions/EditActions.cs:661
-#: ../Pinta.Core/Actions/FileActions.cs:104
+#: ../Pinta.Core/Actions/FileActions.cs:111
 msgid "Save"
 msgstr "ذخیره کردن"
 
@@ -3526,17 +3526,21 @@ msgid "Save All"
 msgstr "ذخیره کردن همه"
 
 #: ../Pinta.Core/Actions/EditActions.cs:195
-#: ../Pinta.Core/Actions/FileActions.cs:111
+#: ../Pinta.Core/Actions/FileActions.cs:118
 msgid "Save As..."
 msgstr "...ذخیره به عنوان"
 
-#: ../Impasto/Actions/File/SaveDocumentImplementationAction.cs:90
+#: ../Impasto/Actions/File/SaveDocumentImplementationAction.cs:141
 msgid "Save Image File"
 msgstr "ذخیره‌سازی فایل تصویر"
 
 #: ../Pinta.Core/Actions/EditActions.cs:658
 msgid "Save Palette File"
 msgstr "ذخیره‌ی پرونده‌ی جعبه‌رنگ"
+
+#: ../Pinta.Core/Actions/FileActions.cs:125
+msgid "Save as Impasto project..."
+msgstr ""
 
 #: ../Impasto/Actions/File/CloseDocumentAction.cs:72
 #, csharp-format
@@ -3593,7 +3597,7 @@ msgstr ""
 msgid "Select previous control point"
 msgstr ""
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:1141
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:1142
 msgid "Select this row to paint the mask; paint reveals, erase hides"
 msgstr ""
 
@@ -3880,7 +3884,7 @@ msgstr ""
 msgid "Solo Layer {0}"
 msgstr ""
 
-#: ../Impasto/Actions/File/SaveDocumentImplementationAction.cs:341
+#: ../Impasto/Actions/File/SaveDocumentImplementationAction.cs:387
 msgid "Some effects cannot be saved as editable. Save anyway?"
 msgstr ""
 
@@ -3925,7 +3929,7 @@ msgstr ""
 msgid "Strength"
 msgstr "قدرت"
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:818
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:819
 msgid "Strength:"
 msgstr ""
 
@@ -4121,7 +4125,7 @@ msgid ""
 "will also be uninstalled:"
 msgstr ""
 
-#: ../Impasto/Actions/File/SaveDocumentImplementationAction.cs:343
+#: ../Impasto/Actions/File/SaveDocumentImplementationAction.cs:389
 msgid ""
 "These effects come from add-ins and will be part of the saved image's pixels "
 "instead, so reopening the file will not let you change their settings. They "
@@ -4157,7 +4161,7 @@ msgid ""
 "overwrite your current keyboard-shortcuts.json."
 msgstr ""
 
-#: ../Impasto/Actions/File/SaveDocumentImplementationAction.cs:305
+#: ../Impasto/Actions/File/SaveDocumentImplementationAction.cs:351
 msgid "This format does not support layers. Flatten image?"
 msgstr ""
 
@@ -4222,7 +4226,7 @@ msgstr ""
 #: ../Pinta.Effects/Effects/FeatherEffect.cs:171
 #: ../Pinta.Effects/Effects/OutlineObjectEffect.cs:208
 #: ../Pinta.Effects/Effects/RedEyeRemoveEffect.cs:53
-#: ../Pinta.Tools/Tools/FloodTool.cs:153
+#: ../Pinta.Tools/Tools/FloodTool.cs:183
 #: ../Pinta.Tools/Tools/RecolorTool.cs:323
 msgid "Tolerance"
 msgstr "درجه‌ی اعتنا"
@@ -4304,7 +4308,7 @@ msgstr ""
 msgid "Transform Settings"
 msgstr ""
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:837
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:838
 msgid "Transform Settings..."
 msgstr ""
 
@@ -4480,11 +4484,11 @@ msgstr "قالب تصویری پشتیبانی نشده"
 msgid "Unsupported palette format"
 msgstr ""
 
-#: ../Pinta.Core/Actions/FileActions.cs:127
+#: ../Pinta.Core/Actions/FileActions.cs:140
 msgid "Update Impasto"
 msgstr ""
 
-#: ../Pinta.Core/Actions/FileActions.cs:124
+#: ../Pinta.Core/Actions/FileActions.cs:137
 msgid "Update Impasto..."
 msgstr ""
 
@@ -4615,7 +4619,7 @@ msgid "You do not have access to '{0}'."
 msgstr ""
 
 #. Translators: {0} is the name of a file that the user does not have write permission for.
-#: ../Impasto/Actions/File/SaveDocumentImplementationAction.cs:273
+#: ../Impasto/Actions/File/SaveDocumentImplementationAction.cs:319
 #, csharp-format
 msgid ""
 "You do not have access to modify '{0}'. The file or folder may be read-only."

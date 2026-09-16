@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-15 06:18-0500\n"
+"POT-Creation-Date: 2026-09-15 21:53-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -490,7 +490,7 @@ msgstr ""
 msgid "Canvas Grid..."
 msgstr ""
 
-#: ../Pinta.Core/Managers/ActionManager.cs:337
+#: ../Pinta.Core/Managers/ActionManager.cs:338
 msgid ""
 "Canvas size in pixels and its aspect ratio.\n"
 "Double click to change the canvas size."
@@ -652,7 +652,7 @@ msgstr ""
 msgid "Click to select primary color."
 msgstr ""
 
-#: ../Pinta.Tools/Tools/MagicWandTool.cs:79
+#: ../Pinta.Tools/Tools/MagicWandTool.cs:84
 msgid ""
 "Click to select region of similar color.\n"
 "Hold shift to use Global mode."
@@ -801,7 +801,7 @@ msgstr ""
 msgid "Contents"
 msgstr ""
 
-#: ../Pinta.Tools/Tools/FloodTool.cs:198
+#: ../Pinta.Tools/Tools/FloodTool.cs:201
 msgid "Contiguous"
 msgstr ""
 
@@ -1228,7 +1228,7 @@ msgstr ""
 msgid "Failed to read settings file: {0}"
 msgstr ""
 
-#: ../Impasto/Actions/File/SaveDocumentImplementationAction.cs:338
+#: ../Impasto/Actions/File/SaveDocumentImplementationAction.cs:316
 msgid "Failed to save image"
 msgstr ""
 
@@ -1285,13 +1285,13 @@ msgstr ""
 msgid "Fill and Outline Shape"
 msgstr ""
 
-#: ../Pinta.Tools/Tools/FloodTool.cs:199
+#: ../Pinta.Tools/Tools/FloodTool.cs:202
 msgid ""
 "Fill every matching pixel in the image, even disconnected regions. Hold "
 "Shift to use this mode temporarily."
 msgstr ""
 
-#: ../Pinta.Tools/Tools/FloodTool.cs:198
+#: ../Pinta.Tools/Tools/FloodTool.cs:201
 msgid ""
 "Fill only the connected region of similar color touching the click point."
 msgstr ""
@@ -1353,7 +1353,7 @@ msgstr ""
 msgid "Finish typing ({0})"
 msgstr ""
 
-#: ../Impasto/Actions/File/SaveDocumentImplementationAction.cs:380
+#: ../Impasto/Actions/File/SaveDocumentImplementationAction.cs:358
 #: ../Pinta.Core/Actions/ImageActions.cs:117
 #: ../Pinta.Core/Actions/ImageActions.cs:228
 msgid "Flatten"
@@ -1363,7 +1363,7 @@ msgstr ""
 msgid "Flattened, squared-off corners on the outline."
 msgstr ""
 
-#: ../Impasto/Actions/File/SaveDocumentImplementationAction.cs:374
+#: ../Impasto/Actions/File/SaveDocumentImplementationAction.cs:352
 msgid "Flattening the image will merge all layers into a single layer."
 msgstr ""
 
@@ -1412,7 +1412,7 @@ msgstr ""
 msgid "Float as window"
 msgstr ""
 
-#: ../Pinta.Tools/Tools/FloodTool.cs:179
+#: ../Pinta.Tools/Tools/FloodTool.cs:182
 msgid "Flood Mode"
 msgstr ""
 
@@ -1470,7 +1470,7 @@ msgstr ""
 msgid "General"
 msgstr ""
 
-#: ../Pinta.Tools/Tools/FloodTool.cs:199
+#: ../Pinta.Tools/Tools/FloodTool.cs:202
 msgid "Global"
 msgstr ""
 
@@ -1555,7 +1555,7 @@ msgid ""
 "again from the View menu."
 msgstr ""
 
-#: ../Pinta.Tools/Tools/FloodTool.cs:185
+#: ../Pinta.Tools/Tools/FloodTool.cs:188
 msgid ""
 "Higher tolerance includes more colors similar to the clicked pixel in the "
 "fill."
@@ -1626,7 +1626,7 @@ msgstr ""
 msgid "Hue / Saturation"
 msgstr ""
 
-#: ../Impasto/Actions/File/SaveDocumentImplementationAction.cs:326
+#: ../Impasto/Actions/File/SaveDocumentImplementationAction.cs:304
 msgid "ICO files can not be larger than 256 x 256 pixels."
 msgstr ""
 
@@ -1674,7 +1674,7 @@ msgstr ""
 msgid "Image larger than canvas"
 msgstr ""
 
-#: ../Impasto/Actions/File/SaveDocumentImplementationAction.cs:325
+#: ../Impasto/Actions/File/SaveDocumentImplementationAction.cs:303
 msgid "Image too large"
 msgstr ""
 
@@ -1710,7 +1710,7 @@ msgid ""
 "and can be reopened."
 msgstr ""
 
-#: ../Impasto/Actions/File/SaveDocumentImplementationAction.cs:299
+#: ../Impasto/Actions/File/SaveDocumentImplementationAction.cs:277
 msgid "Impasto does not support saving images in this file format."
 msgstr ""
 
@@ -2187,7 +2187,7 @@ msgstr ""
 msgid "MIT License - Pinta Project"
 msgstr ""
 
-#: ../Pinta.Tools/Tools/MagicWandTool.cs:76
+#: ../Pinta.Tools/Tools/MagicWandTool.cs:81
 msgid "Magic Wand Select"
 msgstr ""
 
@@ -3497,7 +3497,7 @@ msgid "Saturation Percentage"
 msgstr ""
 
 #: ../Impasto/Actions/File/SaveDocumentImplementationAction.cs:144
-#: ../Impasto/Actions/File/SaveDocumentImplementationAction.cs:419
+#: ../Impasto/Actions/File/SaveDocumentImplementationAction.cs:397
 #: ../Pinta.Core/Actions/EditActions.cs:661
 #: ../Pinta.Core/Actions/FileActions.cs:111
 msgid "Save"
@@ -3864,7 +3864,7 @@ msgstr ""
 msgid "Solo Layer {0}"
 msgstr ""
 
-#: ../Impasto/Actions/File/SaveDocumentImplementationAction.cs:409
+#: ../Impasto/Actions/File/SaveDocumentImplementationAction.cs:387
 msgid "Some effects cannot be saved as editable. Save anyway?"
 msgstr ""
 
@@ -4105,7 +4105,7 @@ msgid ""
 "will also be uninstalled:"
 msgstr ""
 
-#: ../Impasto/Actions/File/SaveDocumentImplementationAction.cs:411
+#: ../Impasto/Actions/File/SaveDocumentImplementationAction.cs:389
 msgid ""
 "These effects come from add-ins and will be part of the saved image's pixels "
 "instead, so reopening the file will not let you change their settings. They "
@@ -4141,7 +4141,7 @@ msgid ""
 "overwrite your current keyboard-shortcuts.json."
 msgstr ""
 
-#: ../Impasto/Actions/File/SaveDocumentImplementationAction.cs:373
+#: ../Impasto/Actions/File/SaveDocumentImplementationAction.cs:351
 msgid "This format does not support layers. Flatten image?"
 msgstr ""
 
@@ -4206,7 +4206,7 @@ msgstr ""
 #: ../Pinta.Effects/Effects/FeatherEffect.cs:171
 #: ../Pinta.Effects/Effects/OutlineObjectEffect.cs:208
 #: ../Pinta.Effects/Effects/RedEyeRemoveEffect.cs:53
-#: ../Pinta.Tools/Tools/FloodTool.cs:180
+#: ../Pinta.Tools/Tools/FloodTool.cs:183
 #: ../Pinta.Tools/Tools/RecolorTool.cs:323
 msgid "Tolerance"
 msgstr ""
@@ -4595,7 +4595,7 @@ msgid "You do not have access to '{0}'."
 msgstr ""
 
 #. Translators: {0} is the name of a file that the user does not have write permission for.
-#: ../Impasto/Actions/File/SaveDocumentImplementationAction.cs:341
+#: ../Impasto/Actions/File/SaveDocumentImplementationAction.cs:319
 #, csharp-format
 msgid ""
 "You do not have access to modify '{0}'. The file or folder may be read-only."

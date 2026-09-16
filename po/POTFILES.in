@@ -17,6 +17,7 @@ Impasto/Actions/File/OpenDocumentAction.cs
 Impasto/Actions/File/PrintDocumentAction.cs
 Impasto/Actions/File/SaveDocumentAction.cs
 Impasto/Actions/File/SaveDocumentAsAction.cs
+Impasto/Actions/File/SaveDocumentAsProjectAction.cs
 Impasto/Actions/File/SaveDocumentImplementationAction.cs
 Impasto/Actions/File/UpdateChecker.cs
 Impasto/Actions/File/UpdateImpastoAction.cs

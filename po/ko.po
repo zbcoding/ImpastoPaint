@@ -19,7 +19,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: pinta\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-10 07:04-0500\n"
+"POT-Creation-Date: 2026-09-15 21:53-0500\n"
 "PO-Revision-Date: 2026-04-07 03:55+0000\n"
 "Last-Translator: VenusGirl <VenusGirl@outlook.com>\n"
 "Language-Team: Korean\n"
@@ -295,13 +295,13 @@ msgstr "배경:"
 msgid "Backup"
 msgstr ""
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:853
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:854
 msgid ""
 "Bake this layer's effects and objects into its pixels; they stop being "
 "editable."
 msgstr ""
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:854
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:855
 msgid "Bake this object into the layer's pixels; it stops being editable."
 msgstr ""
 
@@ -333,7 +333,7 @@ msgstr "흑백"
 msgid "Blend Mode"
 msgstr "혼합 모드"
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:798
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:799
 msgid "Blend Mode:"
 msgstr ""
 
@@ -472,7 +472,7 @@ msgid ""
 "format."
 msgstr ""
 
-#: ../Impasto/Actions/File/SaveDocumentImplementationAction.cs:94
+#: ../Impasto/Actions/File/SaveDocumentImplementationAction.cs:145
 #: ../Impasto/Actions/Help/KeyboardShortcutsDialogAction.cs:108
 #: ../Impasto/Actions/Help/KeyboardShortcutsDialogAction.cs:121
 #: ../Impasto/Dialogs/PreferencesDialog.cs:433
@@ -504,7 +504,7 @@ msgstr "캔버스 격자 설정"
 msgid "Canvas Grid..."
 msgstr "캔버스 격자..."
 
-#: ../Pinta.Core/Managers/ActionManager.cs:337
+#: ../Pinta.Core/Managers/ActionManager.cs:338
 msgid ""
 "Canvas size in pixels and its aspect ratio.\n"
 "Double click to change the canvas size."
@@ -573,12 +573,12 @@ msgstr ""
 msgid "Change outline width."
 msgstr ""
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:843
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:844
 msgid ""
 "Change this effect's settings; the layer re-renders with the new values."
 msgstr ""
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:838
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:839
 msgid ""
 "Change this transform's settings; the layer re-renders with the new values."
 msgstr ""
@@ -673,7 +673,7 @@ msgstr "기본 색상과 보조 색상을 재설정하려면 클릭하세요."
 msgid "Click to select primary color."
 msgstr "기본 색상을 선택하려면 클릭하세요."
 
-#: ../Pinta.Tools/Tools/MagicWandTool.cs:57
+#: ../Pinta.Tools/Tools/MagicWandTool.cs:84
 msgid ""
 "Click to select region of similar color.\n"
 "Hold shift to use Global mode."
@@ -710,7 +710,7 @@ msgstr "클립보드"
 msgid "Clone Stamp"
 msgstr "스탬프 복제"
 
-#: ../Pinta.Core/Actions/FileActions.cs:97
+#: ../Pinta.Core/Actions/FileActions.cs:104
 #: ../Pinta.Gui.Addins/InstallDialog.cs:346
 msgid "Close"
 msgstr "닫기"
@@ -822,7 +822,7 @@ msgstr ""
 msgid "Contents"
 msgstr "내용"
 
-#: ../Pinta.Tools/Tools/FloodTool.cs:170
+#: ../Pinta.Tools/Tools/FloodTool.cs:201
 msgid "Contiguous"
 msgstr "연속"
 
@@ -892,7 +892,7 @@ msgstr ""
 msgid "Crop to Selection"
 msgstr "선택 영역으로 자르기"
 
-#: ../Pinta.Effects/Effects/DitheringEffect.cs:162
+#: ../Pinta.Effects/Effects/DitheringEffect.cs:161
 msgid "Current Palette"
 msgstr "현재 팔레트"
 
@@ -960,7 +960,7 @@ msgstr "기본값"
 msgid "Default canvas size (on application open):"
 msgstr ""
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:863
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:864
 msgid "Delete"
 msgstr ""
 
@@ -973,7 +973,7 @@ msgstr "레이어 삭제"
 msgid "Delete Layer Mask"
 msgstr ""
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:903
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:904
 msgid "Delete Mask"
 msgstr ""
 
@@ -1066,8 +1066,8 @@ msgid "Drag a corner grip to resize, or the dashed border to move."
 msgstr ""
 
 #: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:160
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:1161
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:1164
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:1162
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:1165
 msgid "Drag and drop to reorder"
 msgstr ""
 
@@ -1139,7 +1139,7 @@ msgstr ""
 msgid "Effe_cts"
 msgstr "효과(_C)"
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:842
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:843
 msgid "Effect Settings..."
 msgstr ""
 
@@ -1189,7 +1189,7 @@ msgstr "지우개"
 msgid "Error"
 msgstr "오류"
 
-#: ../Pinta.Effects/Effects/DitheringEffect.cs:171
+#: ../Pinta.Effects/Effects/DitheringEffect.cs:170
 msgid "Error Diffusion Method"
 msgstr "오류 확산 방법"
 
@@ -1249,7 +1249,7 @@ msgstr "이미지를 여는 데 실패했습니다"
 msgid "Failed to read settings file: {0}"
 msgstr ""
 
-#: ../Impasto/Actions/File/SaveDocumentImplementationAction.cs:270
+#: ../Impasto/Actions/File/SaveDocumentImplementationAction.cs:316
 msgid "Failed to save image"
 msgstr "이미지를 저장하는 데 실패했습니다"
 
@@ -1306,13 +1306,13 @@ msgstr "채우기 스타일"
 msgid "Fill and Outline Shape"
 msgstr "채우기 및 윤곽선 모양"
 
-#: ../Pinta.Tools/Tools/FloodTool.cs:171
+#: ../Pinta.Tools/Tools/FloodTool.cs:202
 msgid ""
 "Fill every matching pixel in the image, even disconnected regions. Hold "
 "Shift to use this mode temporarily."
 msgstr ""
 
-#: ../Pinta.Tools/Tools/FloodTool.cs:170
+#: ../Pinta.Tools/Tools/FloodTool.cs:201
 msgid ""
 "Fill only the connected region of similar color touching the click point."
 msgstr ""
@@ -1374,7 +1374,7 @@ msgstr ""
 msgid "Finish typing ({0})"
 msgstr "입력 완료 ({0})"
 
-#: ../Impasto/Actions/File/SaveDocumentImplementationAction.cs:312
+#: ../Impasto/Actions/File/SaveDocumentImplementationAction.cs:358
 #: ../Pinta.Core/Actions/ImageActions.cs:117
 #: ../Pinta.Core/Actions/ImageActions.cs:228
 msgid "Flatten"
@@ -1384,7 +1384,7 @@ msgstr "평탄화"
 msgid "Flattened, squared-off corners on the outline."
 msgstr "윤곽선의 평평하고 각진 모서리입니다."
 
-#: ../Impasto/Actions/File/SaveDocumentImplementationAction.cs:306
+#: ../Impasto/Actions/File/SaveDocumentImplementationAction.cs:352
 msgid "Flattening the image will merge all layers into a single layer."
 msgstr "이미지를 평탄화하면 모든 레이어가 하나의 레이어로 병합됩니다."
 
@@ -1433,7 +1433,7 @@ msgstr ""
 msgid "Float as window"
 msgstr ""
 
-#: ../Pinta.Tools/Tools/FloodTool.cs:152
+#: ../Pinta.Tools/Tools/FloodTool.cs:182
 msgid "Flood Mode"
 msgstr "홍수 모드"
 
@@ -1491,7 +1491,7 @@ msgstr "가우시안 흐림"
 msgid "General"
 msgstr ""
 
-#: ../Pinta.Tools/Tools/FloodTool.cs:171
+#: ../Pinta.Tools/Tools/FloodTool.cs:202
 msgid "Global"
 msgstr "전역"
 
@@ -1576,7 +1576,7 @@ msgid ""
 "again from the View menu."
 msgstr ""
 
-#: ../Pinta.Tools/Tools/FloodTool.cs:158
+#: ../Pinta.Tools/Tools/FloodTool.cs:188
 msgid ""
 "Higher tolerance includes more colors similar to the clicked pixel in the "
 "fill."
@@ -1624,12 +1624,12 @@ msgstr "가로 녹색(G)"
 msgid "Horizontal red (R)"
 msgstr "가로 빨간색 (R)"
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:820
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:821
 msgid ""
 "How much of the effect is applied. At 0 the layer looks as it did before."
 msgstr ""
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:801
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:802
 msgid "How the effect's result is mixed back into the image it was applied to."
 msgstr ""
 
@@ -1648,7 +1648,7 @@ msgstr "색조 및 채도"
 msgid "Hue / Saturation"
 msgstr "색조 / 채도"
 
-#: ../Impasto/Actions/File/SaveDocumentImplementationAction.cs:258
+#: ../Impasto/Actions/File/SaveDocumentImplementationAction.cs:304
 msgid "ICO files can not be larger than 256 x 256 pixels."
 msgstr "ICO 파일은 256 x 256 픽셀을 초과할 수 없습니다."
 
@@ -1698,7 +1698,7 @@ msgstr "이미지 파일"
 msgid "Image larger than canvas"
 msgstr "캔버스보다 큰 이미지"
 
-#: ../Impasto/Actions/File/SaveDocumentImplementationAction.cs:257
+#: ../Impasto/Actions/File/SaveDocumentImplementationAction.cs:303
 msgid "Image too large"
 msgstr "너무 큰 이미지"
 
@@ -1734,7 +1734,7 @@ msgid ""
 "and can be reopened."
 msgstr ""
 
-#: ../Impasto/Actions/File/SaveDocumentImplementationAction.cs:231
+#: ../Impasto/Actions/File/SaveDocumentImplementationAction.cs:277
 msgid "Impasto does not support saving images in this file format."
 msgstr "Impasto는 해당 형식의 이미지 파일을 지원하지 않습니다."
 
@@ -1978,17 +1978,17 @@ msgstr "레이어 속성"
 msgid "Layer Properties..."
 msgstr "레이어 속성.."
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:1159
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:1160
 msgid ""
 "Layer effect: applies to everything below it on this layer, and stays "
 "editable."
 msgstr ""
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:1140
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:1141
 msgid "Layer mask: an alpha channel applied to the whole layer."
 msgstr ""
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:1158
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:1159
 msgid ""
 "Layer transform: applies to everything below it on this layer, and stays "
 "editable."
@@ -2255,7 +2255,7 @@ msgstr ""
 msgid "MIT License - Pinta Project"
 msgstr ""
 
-#: ../Pinta.Tools/Tools/MagicWandTool.cs:54
+#: ../Pinta.Tools/Tools/MagicWandTool.cs:81
 msgid "Magic Wand Select"
 msgstr "요술봉 선택"
 
@@ -2350,7 +2350,7 @@ msgstr "모션 효과"
 msgid "Move"
 msgstr ""
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:1046
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:1047
 msgid "Move Layer"
 msgstr ""
 
@@ -2424,7 +2424,7 @@ msgstr "이름:"
 msgid "Nearest Neighbor"
 msgstr "가장 가까운 이웃"
 
-#: ../Pinta.Core/Actions/FileActions.cs:79
+#: ../Pinta.Core/Actions/FileActions.cs:86
 msgid "New"
 msgstr "새 파일"
 
@@ -2433,7 +2433,7 @@ msgstr "새 파일"
 msgid "New Image"
 msgstr "새 이미지"
 
-#: ../Pinta.Core/Actions/FileActions.cs:83
+#: ../Pinta.Core/Actions/FileActions.cs:90
 msgid "New Screenshot..."
 msgstr "새 스크린샷..."
 
@@ -2441,7 +2441,7 @@ msgstr "새 스크린샷..."
 msgid "New palette size:"
 msgstr "새 팔레트 크기:"
 
-#: ../Pinta.Core/Actions/FileActions.cs:75
+#: ../Pinta.Core/Actions/FileActions.cs:82
 msgid "New..."
 msgstr "새로 만들기..."
 
@@ -2635,7 +2635,7 @@ msgstr "오프셋 선택"
 msgid "Oil Painting"
 msgstr "유화"
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:818
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:819
 #: ../Pinta.Gui.Widgets/Widgets/Layers/PropertiesDialogGridBuilder.cs:44
 msgid "Opacity:"
 msgstr "투명도:"
@@ -2645,7 +2645,7 @@ msgstr "투명도:"
 msgid "Opacity: {0}%"
 msgstr ""
 
-#: ../Pinta.Core/Actions/FileActions.cs:93
+#: ../Pinta.Core/Actions/FileActions.cs:100
 msgid "Open"
 msgstr "열기"
 
@@ -2666,7 +2666,7 @@ msgstr "이미지 파일 열기"
 msgid "Open Palette File"
 msgstr "팔레트 파일 열기"
 
-#: ../Pinta.Core/Actions/FileActions.cs:149
+#: ../Pinta.Core/Actions/FileActions.cs:163
 msgid "Open Recent"
 msgstr ""
 
@@ -2675,7 +2675,7 @@ msgid "Open text properties"
 msgstr ""
 
 #: ../Pinta.Core/Actions/EditActions.cs:189
-#: ../Pinta.Core/Actions/FileActions.cs:89
+#: ../Pinta.Core/Actions/FileActions.cs:96
 msgid "Open..."
 msgstr "열기..."
 
@@ -2746,7 +2746,7 @@ msgstr ""
 msgid "Paint Bucket"
 msgstr "색칠"
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:892
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:893
 msgid ""
 "Paint on the canvas to reveal the layer; erase to hide it. Right-click the "
 "row again for options."
@@ -2780,11 +2780,11 @@ msgid ""
 msgstr ""
 
 #: ../Pinta.Core/Actions/EditActions.cs:261
-#: ../Pinta.Effects/Effects/DitheringEffect.cs:177
+#: ../Pinta.Effects/Effects/DitheringEffect.cs:176
 msgid "Palette"
 msgstr "팔레트"
 
-#: ../Pinta.Effects/Effects/DitheringEffect.cs:174
+#: ../Pinta.Effects/Effects/DitheringEffect.cs:173
 msgid "Palette Source"
 msgstr "팔레트 소스"
 
@@ -3005,7 +3005,7 @@ msgstr "보존"
 msgid "Preset Gradient"
 msgstr "사전 설정 그라디언트"
 
-#: ../Pinta.Effects/Effects/DitheringEffect.cs:159
+#: ../Pinta.Effects/Effects/DitheringEffect.cs:158
 msgid "Preset Palettes"
 msgstr "사전 설정 팔레트"
 
@@ -3062,11 +3062,11 @@ msgstr "미리보기"
 msgid "Primary"
 msgstr "기본"
 
-#: ../Pinta.Core/Actions/FileActions.cs:118
+#: ../Pinta.Core/Actions/FileActions.cs:131
 msgid "Print"
 msgstr "출력"
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:858
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:859
 msgid "Properties..."
 msgstr ""
 
@@ -3172,7 +3172,7 @@ msgstr "무작위 포인트 위치"
 msgid "Raster — fuses to layer"
 msgstr ""
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:851
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:852
 msgid "Rasterize"
 msgstr ""
 
@@ -3200,13 +3200,13 @@ msgstr ""
 msgid "Re-edit existing text"
 msgstr ""
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:1162
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:1163
 msgid ""
 "Re-editable object: a live shape or text you can keep editing until you "
 "rasterize it."
 msgstr ""
 
-#: ../Pinta.Effects/Effects/DitheringEffect.cs:165
+#: ../Pinta.Effects/Effects/DitheringEffect.cs:164
 msgid "Recently Used Colors"
 msgstr "최근 사용한 색상"
 
@@ -3292,7 +3292,7 @@ msgstr "돋을새김"
 msgid "Remove last point (Backspace)"
 msgstr ""
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:904
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:905
 msgid "Remove this layer's mask; the layer renders unmasked."
 msgstr ""
 
@@ -3300,7 +3300,7 @@ msgstr ""
 msgid "Rename Layer"
 msgstr "레이어 이름 바꾸기"
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:711
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:712
 msgid "Rename Layer..."
 msgstr ""
 
@@ -3447,15 +3447,15 @@ msgstr ""
 msgid "Right click to move"
 msgstr ""
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:1160
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:1161
 msgid "Right-click to change its settings, blending and strength"
 msgstr ""
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:1142
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:1143
 msgid "Right-click to delete the mask"
 msgstr ""
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:1163
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:1164
 msgid "Right-click to set blend mode and opacity, or open its properties"
 msgstr ""
 
@@ -3564,10 +3564,10 @@ msgstr "채도"
 msgid "Saturation Percentage"
 msgstr "채도 비율"
 
-#: ../Impasto/Actions/File/SaveDocumentImplementationAction.cs:93
-#: ../Impasto/Actions/File/SaveDocumentImplementationAction.cs:351
+#: ../Impasto/Actions/File/SaveDocumentImplementationAction.cs:144
+#: ../Impasto/Actions/File/SaveDocumentImplementationAction.cs:397
 #: ../Pinta.Core/Actions/EditActions.cs:661
-#: ../Pinta.Core/Actions/FileActions.cs:104
+#: ../Pinta.Core/Actions/FileActions.cs:111
 msgid "Save"
 msgstr "저장"
 
@@ -3576,17 +3576,21 @@ msgid "Save All"
 msgstr "모두 저장"
 
 #: ../Pinta.Core/Actions/EditActions.cs:195
-#: ../Pinta.Core/Actions/FileActions.cs:111
+#: ../Pinta.Core/Actions/FileActions.cs:118
 msgid "Save As..."
 msgstr "다른 이름으로 저장..."
 
-#: ../Impasto/Actions/File/SaveDocumentImplementationAction.cs:90
+#: ../Impasto/Actions/File/SaveDocumentImplementationAction.cs:141
 msgid "Save Image File"
 msgstr "이미지 파일 저장"
 
 #: ../Pinta.Core/Actions/EditActions.cs:658
 msgid "Save Palette File"
 msgstr "팔레트 파일 저장"
+
+#: ../Pinta.Core/Actions/FileActions.cs:125
+msgid "Save as Impasto project..."
+msgstr ""
 
 #: ../Impasto/Actions/File/CloseDocumentAction.cs:72
 #, csharp-format
@@ -3643,7 +3647,7 @@ msgstr ""
 msgid "Select previous control point"
 msgstr ""
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:1141
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:1142
 msgid "Select this row to paint the mask; paint reveals, erase hides"
 msgstr ""
 
@@ -3930,7 +3934,7 @@ msgstr ""
 msgid "Solo Layer {0}"
 msgstr ""
 
-#: ../Impasto/Actions/File/SaveDocumentImplementationAction.cs:341
+#: ../Impasto/Actions/File/SaveDocumentImplementationAction.cs:387
 msgid "Some effects cannot be saved as editable. Save anyway?"
 msgstr ""
 
@@ -3975,7 +3979,7 @@ msgstr ""
 msgid "Strength"
 msgstr "세기"
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:818
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:819
 msgid "Strength:"
 msgstr ""
 
@@ -4172,7 +4176,7 @@ msgid ""
 "will also be uninstalled:"
 msgstr "이전 패키지에 의존하는 다른 확장 패키지들도 함께 제거됩니다:"
 
-#: ../Impasto/Actions/File/SaveDocumentImplementationAction.cs:343
+#: ../Impasto/Actions/File/SaveDocumentImplementationAction.cs:389
 msgid ""
 "These effects come from add-ins and will be part of the saved image's pixels "
 "instead, so reopening the file will not let you change their settings. They "
@@ -4208,7 +4212,7 @@ msgid ""
 "overwrite your current keyboard-shortcuts.json."
 msgstr ""
 
-#: ../Impasto/Actions/File/SaveDocumentImplementationAction.cs:305
+#: ../Impasto/Actions/File/SaveDocumentImplementationAction.cs:351
 msgid "This format does not support layers. Flatten image?"
 msgstr "이 형식은 레이어를 지원하지 않습니다. 이미지를 평평하게 하시겠습니까?"
 
@@ -4273,7 +4277,7 @@ msgstr ""
 #: ../Pinta.Effects/Effects/FeatherEffect.cs:171
 #: ../Pinta.Effects/Effects/OutlineObjectEffect.cs:208
 #: ../Pinta.Effects/Effects/RedEyeRemoveEffect.cs:53
-#: ../Pinta.Tools/Tools/FloodTool.cs:153
+#: ../Pinta.Tools/Tools/FloodTool.cs:183
 #: ../Pinta.Tools/Tools/RecolorTool.cs:323
 msgid "Tolerance"
 msgstr "허용 오차"
@@ -4355,7 +4359,7 @@ msgstr ""
 msgid "Transform Settings"
 msgstr ""
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:837
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:838
 msgid "Transform Settings..."
 msgstr ""
 
@@ -4531,11 +4535,11 @@ msgstr "지원하지 않는 파일 형식"
 msgid "Unsupported palette format"
 msgstr "지원되지 않는 팔레트 형식"
 
-#: ../Pinta.Core/Actions/FileActions.cs:127
+#: ../Pinta.Core/Actions/FileActions.cs:140
 msgid "Update Impasto"
 msgstr ""
 
-#: ../Pinta.Core/Actions/FileActions.cs:124
+#: ../Pinta.Core/Actions/FileActions.cs:137
 msgid "Update Impasto..."
 msgstr ""
 
@@ -4666,7 +4670,7 @@ msgid "You do not have access to '{0}'."
 msgstr "'{0}'에 액세스할 수 없습니다."
 
 #. Translators: {0} is the name of a file that the user does not have write permission for.
-#: ../Impasto/Actions/File/SaveDocumentImplementationAction.cs:273
+#: ../Impasto/Actions/File/SaveDocumentImplementationAction.cs:319
 #, csharp-format
 msgid ""
 "You do not have access to modify '{0}'. The file or folder may be read-only."

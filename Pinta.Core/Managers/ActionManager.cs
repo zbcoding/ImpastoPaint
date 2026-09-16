@@ -331,6 +331,7 @@ public sealed class ActionManager
 		var image_size = Gtk.Label.New ("");
 		image_size.Xalign = 0.5f;
 		image_size.Halign = Gtk.Align.Center;
+		// The label grows past WidthChars on its own for oversized dimensions.
 		image_size.WidthChars = 14;
 		image_group.Append (image_size);
 		image_size_label = image_size;
@@ -355,11 +356,7 @@ public sealed class ActionManager
 				return;
 			}
 			var size = workspaceManager.ActiveDocument.ImageSize;
-			string ratio = GetAspectRatio (size.Width, size.Height);
-			// The label grows past WidthChars on its own for oversized dimensions.
-			image_size.SetText (ratio.Length == 0
-				? $"{size.Width} × {size.Height}"
-				: $"{size.Width} × {size.Height} · {ratio}");
+			image_size.SetText (FormatImageSize (size.Width, size.Height));
 		}
 
 		workspaceManager.ActiveDocumentChanged += delegate { UpdateImageSizeLabel (); };
@@ -421,6 +418,17 @@ public sealed class ActionManager
 		string terms = $"{best_width_term}:{best_height_term}";
 
 		return best_error == 0 ? terms : $"≈{terms}";
+	}
+
+	// Impasto: the status bar's image size chip - dimensions, and the aspect ratio when one is
+	// short enough to name (see GetAspectRatio). Without a ratio the separator goes too.
+	internal static string FormatImageSize (int width, int height)
+	{
+		string ratio = GetAspectRatio (width, height);
+
+		return ratio.Length == 0
+			? $"{width} × {height}"
+			: $"{width} × {height} · {ratio}";
 	}
 
 	public void RegisterHandlers ()

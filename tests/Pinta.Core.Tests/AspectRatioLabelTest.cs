@@ -35,4 +35,17 @@ public sealed class AspectRatioLabelTest
 	{
 		Assert.That (ActionManager.GetAspectRatio (width, height), Is.Empty);
 	}
+
+	// The chip itself, not just the ratio: the separator only exists to join the dimensions to a
+	// ratio, so a shape with no ratio to name must not be left wearing one.
+	[TestCase (800, 600, "800 × 600 · 4:3")]
+	[TestCase (1601, 1423, "1601 × 1423 · ≈9:8")]
+	[TestCase (4000, 3, "4000 × 3")]
+	public void Chip_Text_Carries_A_Separator_Only_Alongside_A_Ratio (int width, int height, string expected)
+	{
+		Assert.That (
+			ActionManager.FormatImageSize (width, height),
+			Is.EqualTo (expected),
+			"The image size chip shows the dimensions, and the separator only when a ratio follows it.");
+	}
 }

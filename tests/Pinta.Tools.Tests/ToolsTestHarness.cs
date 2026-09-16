@@ -76,6 +76,18 @@ internal abstract class ToolsTestHarness
 			PintaCore.Workspace.CloseDocument (Document);
 	}
 
+	// --- Input ----------------------------------------------------------------------------------
+
+	/// <summary>
+	/// The modifier a tool reads as Ctrl. GdkExtensions.IsControlPressed reads Cmd (MetaMask) on
+	/// macOS, so a hard-coded ControlMask means a synthesized click carries no modifier at all
+	/// there and the tool takes its unmodified path instead.
+	/// </summary>
+	protected static Gdk.ModifierType PrimaryModifier
+		=> PintaCore.System.OperatingSystem == OS.Mac
+			? Gdk.ModifierType.MetaMask
+			: Gdk.ModifierType.ControlMask;
+
 	// --- The scene ------------------------------------------------------------------------------
 
 	protected UserLayer Layer (int index) => Document.Layers[index];

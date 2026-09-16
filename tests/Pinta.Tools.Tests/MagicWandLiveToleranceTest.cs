@@ -81,7 +81,7 @@ internal sealed class MagicWandLiveToleranceTest : ToolsTestHarness
 		ToolMouseEventArgs e = new () {
 			PointDouble = new PointD (at.X + 0.5, at.Y + 0.5),
 			MouseButton = button,
-			State = union ? Gdk.ModifierType.ControlMask : 0,
+			State = union ? PrimaryModifier : Gdk.ModifierType.NoModifierMask,
 		};
 		typeof (FloodTool).GetMethod ("OnMouseDown", NonPublicInstance)!
 			.Invoke (wand, [Document, e]);

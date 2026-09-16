@@ -38,12 +38,19 @@ public sealed class MagicWandTool : FloodTool
 	/// <summary>A point the user clicked on, and how its region was combined into the selection.</summary>
 	private sealed record WandPoint (PointI Position, bool GlobalMode, CombineMode Mode);
 
-	// The clicked points the tolerance slider can still re-flood, and the selection they were
-	// combined into. Forgotten as soon as anything other than this tool touches the selection, so
-	// moving the slider never resurrects a region the user has already moved on from.
-	private readonly List<WandPoint> live_points = [];
-	private DocumentSelection? live_base_selection;
-	private Document? live_document;
+	/// <summary>The clicks the tolerance slider can still re-flood, and the selection they were combined into.</summary>
+	private sealed class LiveRun (Document document, DocumentSelection baseSelection)
+	{
+		public Document Document { get; } = document;
+		public DocumentSelection BaseSelection { get; } = baseSelection;
+		public List<WandPoint> Points { get; } = [];
+		/// <summary>Whether this run already pushed the one history item a slider run costs.</summary>
+		public bool HistoryRecorded { get; set; }
+	}
+
+	// Forgotten as soon as anything other than this tool touches the selection, so moving the
+	// slider never resurrects a region the user has already moved on from.
+	private LiveRun? live_run;
 
 	// The point whose flood is on its way back through OnFillRegionComputed, set for as long as
 	// the click that started it is being handled. A re-flood never goes through that callback.
@@ -51,8 +58,6 @@ public sealed class MagicWandTool : FloodTool
 
 	// Our own selection writes must not be mistaken for someone else's.
 	private bool writing_selection;
-
-	private bool tolerance_change_recorded;
 
 	public MagicWandTool (IServiceProvider services) : base (services)
 	{
@@ -68,7 +73,7 @@ public sealed class MagicWandTool : FloodTool
 
 		workspace.SelectionChanged += (_, _) => {
 			if (!writing_selection)
-				ForgetLivePoints ();
+				ForgetLiveRun ();
 		};
 	}
 
@@ -96,7 +101,7 @@ public sealed class MagicWandTool : FloodTool
 	protected override void OnMouseDown (Document document, ToolMouseEventArgs e)
 	{
 		CombineMode mode = workspace.SelectionHandler.DetermineCombineMode (e);
-		clicked_point = new WandPoint (e.Point, IsGlobalMode || e.IsShiftPressed, mode);
+		clicked_point = new WandPoint (e.Point, IsGlobalFlood (e), mode);
 
 		writing_selection = true;
 		try {
@@ -113,25 +118,27 @@ public sealed class MagicWandTool : FloodTool
 	{
 		base.OnDeactivated (document, newTool);
 
-		ForgetLivePoints ();
+		ForgetLiveRun ();
 	}
 
 	protected override void OnFillRegionComputed (Document document, IReadOnlyList<IReadOnlyList<PointI>> polygonSet)
 	{
 		// Only a click arrives here; the tolerance slider re-floods its points directly.
-		WandPoint clicked = clicked_point!;
+		WandPoint clicked = clicked_point ?? throw new InvalidOperationException ("a flooded region reached the wand outside a click");
 
 		var undoAction = new SelectionHistoryItem (workspace, Icon, Name);
 		undoAction.TakeSnapshot ();
 
-		if (live_document != document || live_points.Count == 0) {
-			live_document = document;
-			live_base_selection = document.Selection.Clone ();
-			live_points.Clear ();
-		}
+		// A click on a different document, or the first one after the run was forgotten, starts a
+		// new run: the selection as it stands now is what its points get combined into.
+		LiveRun run = live_run is not null && live_run.Document == document
+			? live_run
+			: live_run = new LiveRun (document, document.Selection.Clone ());
 
-		live_points.Add (clicked);
-		tolerance_change_recorded = false;
+		run.Points.Add (clicked);
+
+		// The click closes any slider run before it, so the next one records its own undo step.
+		run.HistoryRecorded = false;
 
 		document.PreviousSelection = document.Selection.Clone ();
 		CombineIntoSelection (document, clicked.Mode, polygonSet);
@@ -152,18 +159,19 @@ public sealed class MagicWandTool : FloodTool
 	/// </remarks>
 	protected override void OnToleranceChanged ()
 	{
-		if (live_document is null || live_base_selection is null || live_points.Count == 0)
+		if (live_run is null)
 			return;
 
-		if (!workspace.HasOpenDocuments || workspace.ActiveDocument != live_document) {
-			ForgetLivePoints ();
+		if (!workspace.HasOpenDocuments || workspace.ActiveDocument != live_run.Document) {
+			ForgetLiveRun ();
 			return;
 		}
 
-		Document document = live_document;
+		LiveRun run = live_run;
+		Document document = run.Document;
 
 		SelectionHistoryItem? undoAction = null;
-		if (!tolerance_change_recorded) {
+		if (!run.HistoryRecorded) {
 			undoAction = new SelectionHistoryItem (workspace, Icon, Name);
 			undoAction.TakeSnapshot ();
 		}
@@ -174,12 +182,12 @@ public sealed class MagicWandTool : FloodTool
 
 		writing_selection = true;
 		try {
-			for (int i = 0; i < live_points.Count; ++i) {
-				WandPoint point = live_points[i];
+			for (int i = 0; i < run.Points.Count; ++i) {
+				WandPoint point = run.Points[i];
 
 				// Each point combines into the result of the ones before it, exactly as it did
 				// when it was clicked; the first one combines into the pre-click selection.
-				document.PreviousSelection = (i == 0 ? live_base_selection : document.Selection).Clone ();
+				document.PreviousSelection = (i == 0 ? run.BaseSelection : document.Selection).Clone ();
 
 				FloodedRegion flooded = ComputeFloodedRegion (document, point.Position, point.GlobalMode, limitRegion);
 
@@ -194,7 +202,7 @@ public sealed class MagicWandTool : FloodTool
 
 		if (undoAction is not null) {
 			document.History.PushNewItem (undoAction);
-			tolerance_change_recorded = true;
+			run.HistoryRecorded = true;
 		}
 
 		document.Workspace.Invalidate ();
@@ -213,13 +221,7 @@ public sealed class MagicWandTool : FloodTool
 		SelectionModeHandler.PerformSelectionMode (document, mode, DocumentSelection.ConvertToPolygons (polygonSet));
 	}
 
-	private void ForgetLivePoints ()
-	{
-		live_points.Clear ();
-		live_base_selection = null;
-		live_document = null;
-		tolerance_change_recorded = false;
-	}
+	private void ForgetLiveRun () => live_run = null;
 
 	private Separator? selection_sep;
 	private Separator SelectionSeparator => selection_sep ??= GtkExtensions.CreateToolBarSeparator ();

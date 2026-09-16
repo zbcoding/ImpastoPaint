@@ -64,6 +64,9 @@ public abstract class FloodTool : BaseTool
 	protected virtual bool CalculatePolygonSet => true;
 	protected bool LimitToSelection { get; set; } = true;
 
+	/// <summary>Whether a click floods every matching pixel on the layer rather than the region around it.</summary>
+	protected bool IsGlobalFlood (ToolMouseEventArgs e) => IsGlobalMode || e.IsShiftPressed;
+
 	protected override void OnBuildToolBar (Gtk.Box tb)
 	{
 		base.OnBuildToolBar (tb);
@@ -98,7 +101,7 @@ public abstract class FloodTool : BaseTool
 		if (TryRecolorObjectAt (document, pos))
 			return;
 
-		FloodedRegion flooded = ComputeFloodedRegion (document, pos, IsGlobalMode || e.IsShiftPressed, limitRegion);
+		FloodedRegion flooded = ComputeFloodedRegion (document, pos, IsGlobalFlood (e), limitRegion);
 
 		OnFillRegionComputed (document, flooded.Stencil);
 

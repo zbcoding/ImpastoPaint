@@ -15,10 +15,13 @@ entries, is upstream Pinta work; the Impasto sections cover changes made in this
   swap, so releasing without moving the pointer again left the last stretch of the stroke showing
   its scratch-layer version until something else forced a redraw.
 
-- A paintbrush stroke that paints onto the canvas while the pointer stays outside it - a wide brush
-  dragged along an edge - is now undoable. Whether there was anything to undo was decided by the
-  pointer being inside the canvas, not by the stroke covering any of it, so those strokes committed
-  pixels with no history entry and could be neither undone nor redone.
+- A stroke that paints the canvas while the pointer stays outside it is now undoable. The
+  paintbrush, eraser, pencil, recolor tool and freeform shape all decided they had changed pixels
+  from the pointer being inside the canvas, which is a different question: a wide brush dragged
+  along an edge paints without the pointer ever arriving, and a drag fast enough to be sampled off
+  one edge and then off the opposite one still paints everything it crossed. Those strokes
+  committed pixels with no history entry and could be neither undone nor redone. Each tool now
+  asks whether what it painted overlaps the canvas.
 
 ## Impasto - [0.4.0](https://github.com/zbcoding/ImpastoPaint/releases/tag/v0.4.0) - 2026-09-15
 

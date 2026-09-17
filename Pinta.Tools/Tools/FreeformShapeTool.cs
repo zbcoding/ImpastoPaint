@@ -112,9 +112,6 @@ public sealed class FreeformShapeTool : BaseBrushTool
 			return;
 		}
 
-		if (document.Workspace.PointInCanvas (e.PointDouble))
-			surface_modified = true;
-
 		document.Layers.ToolLayer.Clear ();
 
 		using Context g = document.CreateClippedToolContext ();
@@ -131,6 +128,15 @@ public sealed class FreeformShapeTool : BaseBrushTool
 		g.LineTo (x, y);
 
 		path = g.CopyPath ();
+
+		// The shape is closed and stroked, so what it paints is the path's box widened by half the
+		// line width. That, not the pointer's position, is what says pixels changed: a shape drawn
+		// around the outside of the canvas can still cover part of it.
+		int strokeReach = (BrushWidth / 2) + 1;
+		RectangleI painted = g.PathExtents ().ToInt ().Inflated (strokeReach, strokeReach);
+
+		if (document.Workspace.RectangleIntersectsCanvas (painted))
+			surface_modified = true;
 
 		FillAndStrokeShape (g);
 

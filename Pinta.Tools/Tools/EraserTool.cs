@@ -110,7 +110,21 @@ public sealed class EraserTool : BaseBrushTool
 		if (!last_point.HasValue)
 			last_point = newPoint;
 
-		if (document.Workspace.PointInCanvas (newPointD))
+		// Both erase modes reach half the brush width out from the segment - EraseSmooth's own
+		// radius, rounded the way it rounds it. That reach, not the pointer's position, is what
+		// tells us pixels changed: a wide eraser scrubbed along an edge never puts the pointer on
+		// the canvas but clears a good strip of it.
+		int erasedReach = (BrushWidth / 2) + 1;
+
+		RectangleI erased =
+			RectangleI.FromPoints (
+				last_point.Value,
+				newPoint)
+			.Inflated (
+				erasedReach,
+				erasedReach);
+
+		if (document.Workspace.RectangleIntersectsCanvas (erased))
 			surface_modified = true;
 
 		using Context g = document.CreateClippedContext ();

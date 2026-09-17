@@ -196,6 +196,14 @@ public sealed class DocumentWorkspace
 		return true;
 	}
 
+	/// <summary>
+	/// Whether any part of the rectangle lies on the canvas. What a stroke painted, rather than
+	/// where the pointer was, is what tells a paint tool that it changed pixels: a wide brush
+	/// dragged along an edge paints while the pointer stays outside the canvas entirely.
+	/// </summary>
+	public bool RectangleIntersectsCanvas (RectangleI rect)
+		=> !rect.Intersect (new RectangleI (PointI.Zero, document.ImageSize)).IsEmpty;
+
 	public void RecenterView (PointD point)
 	{
 		Gtk.Viewport view = (Gtk.Viewport) Canvas.Parent!;

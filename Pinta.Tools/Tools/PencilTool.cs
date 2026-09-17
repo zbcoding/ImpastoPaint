@@ -126,7 +126,17 @@ public sealed class PencilTool : BaseTool
 				return;
 		}
 
-		if (document.Workspace.PointInCanvas (e.PointDouble))
+		// The pencil paints a one-pixel line, so the pixels it can touch are exactly the inclusive
+		// box between the two points. That box's overlap with the canvas, not the pointer being
+		// inside it, is what says there is something to undo - a segment from just off the edge
+		// paints its on-canvas end.
+		RectangleI painted = RectangleI.FromLTRB (
+			Math.Min (last_point.Value.X, x),
+			Math.Min (last_point.Value.Y, y),
+			Math.Max (last_point.Value.X, x),
+			Math.Max (last_point.Value.Y, y));
+
+		if (document.Workspace.RectangleIntersectsCanvas (painted))
 			surface_modified = true;
 
 		using Context g = document.CreateClippedContext ();

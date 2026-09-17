@@ -176,7 +176,7 @@ public sealed class PaintBrushTool : BaseBrushTool
 		// A stroke that begins outside the canvas still paints the part of itself that lands on it,
 		// so what decides whether there is anything to undo is the stroke's overlap with the canvas,
 		// not whether the pointer was inside it.
-		if (!invalidate_rect.Intersect (new RectangleI (PointI.Zero, document.ImageSize)).IsEmpty)
+		if (document.Workspace.RectangleIntersectsCanvas (invalidate_rect))
 			surface_modified = true;
 
 		// If we draw partially offscreen, Cairo gives us a bogus

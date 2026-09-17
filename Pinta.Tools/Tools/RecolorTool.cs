@@ -228,14 +228,17 @@ public class RecolorTool : BaseBrushTool
 		if (!last_point.HasValue)
 			last_point = new PointI (x, y);
 
-		if (document.Workspace.PointInCanvas (e.PointDouble))
-			surface_modified = true;
-
 		var surf = document.Layers.CurrentPaintSurface;
 		var tmp_layer = document.Layers.ToolLayer.Surface;
 
 		int roiPadding = BrushWidth + 2;
 		RectangleI roi = RectangleI.FromPoints (last_point.Value, new PointI (x, y)).Inflated (roiPadding, roiPadding);
+
+		// Tested before the clamp, and against the stroke rather than the pointer: a wide brush
+		// dragged along an edge recolors on-canvas pixels with the pointer outside the canvas the
+		// whole time, and that has to be undoable.
+		if (document.Workspace.RectangleIntersectsCanvas (roi))
+			surface_modified = true;
 
 		roi = workspace.ClampToImageSize (roi);
 		var myTolerance = (int) (Tolerance * 256);

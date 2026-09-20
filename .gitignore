@@ -68,3 +68,6 @@ publish/
 # appimage build outputs
 /appimage-build/
 Impasto-x86_64.AppImage
+
+# agent harness state (locally installed skills etc.)
+/.pi/

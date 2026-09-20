@@ -283,6 +283,22 @@ public abstract class BaseEditEngine
 
 		// When the selection is cleared, bake any shape drawn clipped to it (Pinta.Core).
 		LayerObjectSelection.SelectionCleared += HandleSelectionCleared;
+
+		// The dock's selection moved off every object sub-row, so no shape is being worked on:
+		// take the "Obj." badges off the overlay, the shape-side counterpart of the text tool's
+		// re-edit rectangles.
+		LayerObjectSelection.ObjectDeselected += HandleObjectDeselected;
+	}
+
+	private static void HandleObjectDeselected ()
+	{
+		if (!PintaCore.Workspace.HasOpenDocuments)
+			return;
+
+		Document doc = PintaCore.Workspace.ActiveDocument;
+		doc.Layers.OverlayLayer.Clear ();
+		doc.Layers.OverlayLayer.Hidden = true;
+		doc.Workspace.Invalidate ();
 	}
 
 	// Deselect just cleared the selection. Any Object-mode shape that was drawn clipped to that

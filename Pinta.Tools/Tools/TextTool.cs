@@ -224,6 +224,27 @@ public sealed class TextTool : BaseTool
 		RedrawText (true);
 	}
 
+	// The dock's selection left every object sub-row (a layer row or the mask row is selected now),
+	// so nothing on the canvas is being edited: commit whatever was and take the dashed re-edit
+	// rectangles, the corner grips and the "Obj." badges off the overlay. Redrawing them is not
+	// enough — DrawTextRectangles draws one for every text object on the layer, which is the very
+	// chrome that has to go.
+	private void HandleObjectDeselected ()
+	{
+		if (!workspace.HasOpenDocuments)
+			return;
+
+		if (is_editing)
+			CommitCurrentText ();
+
+		corner_handles.Clear ();
+
+		Document doc = workspace.ActiveDocument;
+		doc.Layers.OverlayLayer.Clear ();
+		doc.Layers.OverlayLayer.Hidden = true;
+		doc.Workspace.Invalidate ();
+	}
+
 	#region ToolBar
 	// NRT - Created by OnBuildToolBar
 	private Gtk.Label font_label = null!;
@@ -905,6 +926,20 @@ public sealed class TextTool : BaseTool
 		RedrawText (false);
 	}
 
+	// PropertyChangedEventHandler fires for every layer property on every layer — Opacity ticking
+	// through a drag, a Name edit per keystroke, BlendMode — none of which this overlay cares
+	// about. Hidden is the one that does: hiding a layer from the dock left its text objects'
+	// dashed rectangles and "Obj." badges drawn over artwork that is no longer shown, because
+	// nothing else redraws the overlay in reaction. Filter to it rather than paying a full redraw
+	// on every unrelated tick. (Same rule as BaseEditEngine.HandleLayerPropertyChanged.)
+	private void HandleLayerPropertyChanged (object? sender, System.ComponentModel.PropertyChangedEventArgs e)
+	{
+		if (e.PropertyName != Layer.HiddenProperty)
+			return;
+
+		DrawTextRectangles ();
+	}
+
 	// An undo/redo swaps the text objects + their TextLayer surface, but not the OverlayLayer overlay
 	// (the dashed re-edit rects) or the corner grips. Rebuild both from the current object list
 	// so handles for a text object that doesn't exist at this history step no longer linger on canvas.
@@ -983,6 +1018,16 @@ public sealed class TextTool : BaseTool
 		workspace.LayerRemoved += HandleSelectedLayerChanged;
 		workspace.SelectedLayerChanged += HandleSelectedLayerChanged;
 
+		// A Hidden toggle from the layers dock changes whether this overlay should be on screen at
+		// all, and nothing else redraws it in reaction: hiding a layer left its text objects'
+		// dashed rectangles and "Obj." badges drawn over the now-invisible text. Mirrors the shape
+		// tool's HandleLayerPropertyChanged.
+		workspace.LayerPropertyChanged += HandleLayerPropertyChanged;
+
+		// The chrome this tool draws only exists while it is the active tool, so it only has to
+		// listen for "the dock selected something that is not an object" while it is.
+		LayerObjectSelection.ObjectDeselected += HandleObjectDeselected;
+
 		// The re-edit overlay (dashed rects) lives on the OverlayLayer, which history undo/redo does
 		// NOT swap — so a step that removes a text object would leave its rect and grips behind.
 		// Refresh the overlay from the current object list on every undo/redo while we're the active tool.
@@ -1018,6 +1063,8 @@ public sealed class TextTool : BaseTool
 		workspace.LayerAdded -= HandleSelectedLayerChanged;
 		workspace.LayerRemoved -= HandleSelectedLayerChanged;
 		workspace.SelectedLayerChanged -= HandleSelectedLayerChanged;
+		workspace.LayerPropertyChanged -= HandleLayerPropertyChanged;
+		LayerObjectSelection.ObjectDeselected -= HandleObjectDeselected;
 
 		if (document is not null) {
 			document.History.ActionUndone -= HandleHistoryChanged;
@@ -2394,7 +2441,19 @@ public sealed class TextTool : BaseTool
 		Document doc = workspace.ActiveDocument;
 		Layer toolLayer = doc.Layers.OverlayLayer;
 		toolLayer.Clear ();
-		toolLayer.Hidden = false;
+
+		// Editing chrome over a layer that is not itself showing would point at artwork the user
+		// cannot see, so a hidden layer gets a cleared, hidden overlay and nothing else. Same rule
+		// as the shape tool's badges (BaseEditEngine.DrawShapeBadges).
+		if (CurrentUserLayer.Hidden) {
+			corner_handles.Clear ();
+			corner_handles_document = doc;
+			toolLayer.Hidden = true;
+			doc.Workspace.Invalidate ();
+			return;
+		}
+
+		bool drewAnything = false;
 
 		using Context g = new (toolLayer.Surface);
 
@@ -2407,8 +2466,12 @@ public sealed class TextTool : BaseTool
 		g.Translate (.5, .5);
 
 		foreach (TextObject obj in CurrentUserLayer.TextObjects) {
-			if (obj.IsEmpty)
+			// A hidden object draws nothing, so neither does its chrome — hiding just the text's
+			// own sub-row has to take its rectangle and badge with it.
+			if (obj.IsEmpty || obj.Hidden)
 				continue;
+
+			drewAnything = true;
 
 			//Draw the rotated text interaction rectangle (the dashed outline).
 			PointD[] corners = GetInteractionCorners (obj);
@@ -2461,6 +2524,10 @@ public sealed class TextTool : BaseTool
 		}
 
 		g.Restore ();
+
+		// An overlay with nothing on it still composites (and still counts as the current layer's
+		// tool layer); leave it hidden so an empty pass is indistinguishable from no pass at all.
+		toolLayer.Hidden = !drewAnything && !(showCursor && is_editing && current_text_object is not null);
 
 		doc.Workspace.Invalidate ();
 	}

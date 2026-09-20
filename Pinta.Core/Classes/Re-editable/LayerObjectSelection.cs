@@ -28,6 +28,18 @@ public static class LayerObjectSelection
 		=> TextSelectRequested?.Invoke (layer, textIndex);
 
 	/// <summary>
+	/// Fired when the dock's selection moves off every object sub-row — onto a plain layer row or a
+	/// mask row. The tools that draw on-canvas editing chrome (the text tool's dashed re-edit
+	/// rectangles and corner grips, the shape tool's "Obj." badges) clear it: that chrome marks the
+	/// object the user is working on, so selecting the layer itself has to leave the canvas showing
+	/// the artwork rather than an outline around an object nothing is pointed at.
+	/// </summary>
+	public static event Action? ObjectDeselected;
+
+	public static void RaiseObjectDeselected ()
+		=> ObjectDeselected?.Invoke ();
+
+	/// <summary>
 	/// Fired with the object's layer and its index in <see cref="UserLayer.Objects"/> when canvas
 	/// editing selects an object (clicking a shape's point, starting a text edit). The layers dock
 	/// highlights the matching sub-row — the reverse of ShapeSelectRequested/TextSelectRequested.

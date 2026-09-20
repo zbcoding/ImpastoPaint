@@ -376,6 +376,12 @@ public sealed partial class LayersListView
 			// Clicking a text object row activates the Text tool and starts editing it (shows its handles).
 			else if (item.TextObject is not null)
 				LayerObjectSelection.RequestTextSelect (layer, UserLayer.UserLayerIndexOfKind (layer, isText: true, item.ObjectIndex));
+			// A layer row, a mask row or a modifier row: nothing on the canvas is being edited any
+			// more, so the tools drop the editing chrome they drew for whatever was. Without this,
+			// clicking a text object's row and then its layer's row left the dashed re-edit
+			// rectangle and the "Obj." badge sitting on the canvas with nothing selected.
+			else
+				LayerObjectSelection.RaiseObjectDeselected ();
 		} finally {
 			changing_selection = false;
 			// Move Up/Down retarget between layer and object depending on what is selected.

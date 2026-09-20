@@ -135,6 +135,16 @@ public sealed class UserLayer : Layer
 	/// changes that after the fact.</summary>
 	public void AddModifierNode (ILayerModifierNode node) => Objects.Add (node);
 
+	/// <summary>
+	/// Where <paramref name="obj"/> goes when it is placed on this layer without a position of its
+	/// own — dropped onto the layer's row in the dock rather than between two object rows. Same rule
+	/// the creation paths use, so a moved object stacks exactly where an object created here would:
+	/// a modifier node on top of everything, a shape or text just above the topmost shape/text and
+	/// below any modifier above it.
+	/// </summary>
+	public int InsertIndexFor (ILayerObject obj)
+		=> obj is ILayerModifierNode ? Objects.Count : NextObjectInsertIndex;
+
 	/// <summary>Removes an object; returns whether it was present.</summary>
 	public bool RemoveObject (ILayerObject obj) => Objects.Remove (obj);
 
@@ -281,6 +291,34 @@ public sealed class UserLayer : Layer
 		return true;
 	}
 
+	/// <summary>
+	/// Moves the object at <paramref name="index"/> out of this layer and into
+	/// <paramref name="destination"/> at <paramref name="destinationIndex"/>. Returns false when
+	/// either index is stale or the destination is this layer (use <see cref="MoveObjectAt"/> for a
+	/// reorder). Object geometry — a shape's control points, a text's origin, a node's clip — is in
+	/// canvas coordinates and every layer of a document is canvas-sized, so nothing is transformed:
+	/// the object keeps its position and only changes which stack composites it.
+	/// </summary>
+	/// <remarks>
+	/// A pure list splice. Both layers' object surfaces (and composites) are derived caches, so the
+	/// caller re-renders each one — see <see cref="ObjectOpacity.RefreshLayer"/>, which also rebuilds
+	/// the live shape engines that are bound to a layer by position.
+	/// </remarks>
+	public bool TransferObjectTo (int index, UserLayer destination, int destinationIndex)
+	{
+		if (ReferenceEquals (this, destination))
+			return false;
+		if (index < 0 || index >= Objects.Count)
+			return false;
+		if (destinationIndex < 0 || destinationIndex > destination.Objects.Count)
+			return false;
+
+		ILayerObject obj = Objects[index];
+		Objects.RemoveAt (index);
+		destination.Objects.Insert (destinationIndex, obj);
+		return true;
+	}
+
 	/// <summary>The index-th object in the unified list, or null if stale.</summary>
 	public ILayerObject? FindObjectAt (int index)
 		=> index >= 0 && index < Objects.Count ? Objects[index] : null;
@@ -409,6 +447,64 @@ public sealed class UserLayer : Layer
 		TextObject t => !t.RasterizeOnFinalize,
 		_ => true,
 	};
+
+	/// <summary>
+	/// Whether <paramref name="obj"/> can be moved to another layer. Only the objects that
+	/// contribute pixels can: a shape or a text carries its own canvas-space geometry, so it lands
+	/// on the new layer looking exactly as it did on the old one and only the stack compositing it
+	/// changes.
+	/// </summary>
+	/// <remarks>
+	/// A modifier node cannot. It is not content but a grade over everything accumulated beneath it
+	/// <em>on its own layer</em> (see <see cref="ObjectOpacity.RenderLayerObjects"/>), so relocating
+	/// one is not the same object elsewhere: the layer it leaves loses its grade, the layer it joins
+	/// has its whole stack graded, and <see cref="NeedsComposite"/> flips on both — two unasked-for
+	/// visual changes from a gesture that reads as "put this over there". A modifier's position is
+	/// meaningful only within its own layer, which is what reordering it already expresses.
+	/// </remarks>
+	public static bool CanMoveBetweenLayers (ILayerObject obj) => obj is ShapeObject or TextObject;
+
+	/// <summary>
+	/// The position of the object at <paramref name="objectIndex"/> among only the objects that get
+	/// a dock sub-row, or -1 when there is no such object or it has no row. The inverse is
+	/// <see cref="ObjectIndexOfSubRow"/>.
+	/// </summary>
+	/// <remarks>
+	/// A sub-row ordinal survives a tool commit; a raw <see cref="Objects"/> index does not.
+	/// Committing bakes the rasterize-on-finalize shapes and text into the raster and drops them
+	/// from the list, shifting every index above them — but those objects never had a row
+	/// (<see cref="GetsSubRow"/>), so the ordinals are untouched. Any dock command that has to
+	/// commit before acting on a row therefore addresses the row this way across the commit.
+	/// </remarks>
+	public int SubRowOrdinalAt (int objectIndex)
+	{
+		if (objectIndex < 0 || objectIndex >= Objects.Count || !GetsSubRow (Objects[objectIndex]))
+			return -1;
+
+		int ordinal = 0;
+		for (int i = 0; i < objectIndex; ++i)
+			if (GetsSubRow (Objects[i]))
+				ordinal++;
+
+		return ordinal;
+	}
+
+	/// <summary>
+	/// The <see cref="Objects"/> index of the <paramref name="ordinal"/>-th object that gets a dock
+	/// sub-row, or -1 when there is none. Inverse of <see cref="SubRowOrdinalAt"/>.
+	/// </summary>
+	public int ObjectIndexOfSubRow (int ordinal)
+	{
+		if (ordinal < 0)
+			return -1;
+
+		int seen = 0;
+		for (int i = 0; i < Objects.Count; ++i)
+			if (GetsSubRow (Objects[i]) && seen++ == ordinal)
+				return i;
+
+		return -1;
+	}
 
 	/// <summary>
 	/// Any live object at all, including transient rasterize-on-finalize shapes — the test for "is

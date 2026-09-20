@@ -490,12 +490,74 @@ public sealed partial class LayersListViewItem
 		LayerObjectSelection.RaiseObjectsChanged ();
 	}
 
-	/// <summary>Whether this row and <paramref name="other"/> are object rows on the same layer — the
-	/// only case where one can be dragged onto the other to reorder (cross-kind allowed).</summary>
-	public bool IsReorderablePeer (LayersListViewItem other)
-		=> IsObjectRow
-			&& other.IsObjectRow
-			&& ReferenceEquals (UserLayer, other.UserLayer);
+	/// <summary>Whether this row's object can be dragged onto another layer at all: shapes and text
+	/// can, a modifier node cannot (see <see cref="UserLayer.CanMoveBetweenLayers"/>).</summary>
+	public bool IsMovableBetweenLayers
+		=> IsObjectRow && LiveObject is { } obj && UserLayer.CanMoveBetweenLayers (obj);
+
+	/// <summary>
+	/// Moves this row's object off its layer and onto <paramref name="destination"/>, at
+	/// <paramref name="destinationIndex"/> in that layer's z-order — or, when the index is null, at
+	/// the position an object created there would take. One undoable step. Driven by dragging the
+	/// row onto another layer's row or in between its object rows.
+	/// </summary>
+	public void MoveObjectToLayer (UserLayer destination, int? destinationIndex)
+	{
+		if (UserLayer is null || document is null || !IsMovableBetweenLayers)
+			return;
+
+		UserLayer source = UserLayer;
+		if (ReferenceEquals (source, destination) || document.Layers.IndexOf (destination) < 0)
+			return;
+
+		// Address the row by sub-row ordinal across the commit below: committing bakes the layer's
+		// rasterize-on-finalize objects into its raster and drops them from the list, which shifts
+		// the raw indices of everything above them but not the ordinals (a baked object had no row).
+		int ordinal = source.SubRowOrdinalAt (ObjectIndex);
+		if (ordinal < 0)
+			return;
+
+		// Making the destination current commits the active tool first. Clicking an object row
+		// starts editing that object, so the row being dragged is usually the one under edit: left
+		// uncommitted, the text tool would keep writing into the layer the object just left, and the
+		// shape engines — bound to a layer by position, never by identity — would persist their
+		// stale list over the spliced one. It also leaves the object editable where it lands, which
+		// is what selecting an object row means everywhere else in the dock.
+		document.Layers.SetCurrentUserLayer (destination);
+
+		int from = source.ObjectIndexOfSubRow (ordinal);
+		if (source.FindObjectAt (from) is not { } obj)
+			return;
+
+		int to = destinationIndex ?? destination.InsertIndexFor (obj);
+
+		ObjectTransferHistoryItem historyItem = new (
+			PintaCore.Workspace,
+			PintaCore.Chrome,
+			Resources.Icons.LayerProperties,
+			Translations.GetString ("Move Object to Layer"),
+			source,
+			from,
+			destination,
+			to);
+
+		if (!source.TransferObjectTo (from, destination, to))
+			return;
+
+		Pinta.Core.ObjectOpacity.RefreshLayer (PintaCore.Workspace, PintaCore.Chrome, source);
+		Pinta.Core.ObjectOpacity.RefreshLayer (PintaCore.Workspace, PintaCore.Chrome, destination);
+
+		// The object's on-canvas editing chrome (handles, re-edit rectangles, badges) was drawn for
+		// the layer it just left.
+		document.Layers.OverlayLayer.Clear ();
+
+		document.History.PushNewItem (historyItem);
+		LayerObjectSelection.RaiseObjectsChanged ();
+
+		// Keep the dock highlight — and with it the Move Up/Down target — on the object the user
+		// just moved, under its new layer, instead of on whatever now sits at its old index.
+		LayerObjectSelection.RaiseObjectEditSelected (destination, to);
+	}
 
 	/// <summary>
 	/// Pushes an already-applied per-object property change as one undoable step. The value is set
@@ -551,6 +613,12 @@ public sealed partial class LayersListViewItemWidget
 	// Which badge the current row shows: "Obj." for a shape/text, "Fx" for a layer effect.
 	private string badge_label = EditableObjectBadge.ObjectLabel;
 
+	// The row the in-flight drag started from, or null when no drag is running. GTK picks the drag
+	// cursor from whether a target accepts the drag as it enters, and that runs before the drop's
+	// transferred value can be read, so the source row is remembered here rather than unpacked from
+	// the Gdk.Drop. These drags are local to the process and there is only ever one at a time.
+	private static LayersListViewItem? dragged_row;
+
 	public static LayersListViewItemWidget New ()
 		=> NewWithProperties ([]);
 
@@ -604,12 +672,24 @@ public sealed partial class LayersListViewItemWidget
 		Gtk.DragSource dragSource = Gtk.DragSource.New ();
 		dragSource.SetActions (Gdk.DragAction.Move);
 		dragSource.OnPrepare += DragSource_OnPrepare;
+		// The remembered source row is what every row's accept handler reads, so it lives exactly as
+		// long as the drag does — whether the drag ends in a drop or is cancelled.
+		dragSource.OnDragEnd += (_, _) => dragged_row = null;
+		dragSource.OnDragCancel += (_, _) => {
+			dragged_row = null;
+			return false;
+		};
 		this.AddController (dragSource);
 
 		// Accept the base object GType: the transferred GObject.Value reports G_TYPE_OBJECT,
 		// so requiring the specific subclass here would make the formats never intersect and
 		// the drop would be silently rejected. We re-check the concrete type in the handler.
 		Gtk.DropTarget dropTarget = Gtk.DropTarget.New (GObject.Type.Object, Gdk.DragAction.Move);
+		// Decide while the pointer is over the row, not when the button is released: a row that
+		// would refuse the drop has to refuse the drag too, or GTK goes on showing the "move"
+		// cursor over a row that will silently do nothing. Refusing here is what makes the drag
+		// show the platform's no-drop cursor instead.
+		dropTarget.OnAccept += DropTarget_OnAccept;
 		dropTarget.OnDrop += DropTarget_OnDrop;
 		this.AddController (dropTarget);
 
@@ -975,7 +1055,40 @@ public sealed partial class LayersListViewItemWidget
 		// right-click. Cheap when it is already current, and the drop's own reorder is still deferred.
 		MakeRowLayerCurrent ();
 
+		// Every row's accept handler reads this to decide whether it can take the drag, which is
+		// what GTK turns into the drag cursor.
+		dragged_row = item;
+
 		return Gdk.ContentProvider.NewForValue (new GObject.Value ((GObject.Object) item));
+	}
+
+	private bool DropTarget_OnAccept (
+		Gtk.DropTarget _,
+		Gtk.DropTarget.AcceptSignalArgs args)
+		=> dragged_row is { } source && CanAcceptDrop (source);
+
+	/// <summary>
+	/// Whether this row could take <paramref name="source"/> at all — the position-independent half
+	/// of the drop rules, asked while the drag is still in flight so a row that would do nothing
+	/// refuses the drag and GTK shows the no-drop cursor over it. The exact slot within the row
+	/// (upper or lower half) only decides where the object lands, never whether it can.
+	/// </summary>
+	internal bool CanAcceptDrop (LayersListViewItem source)
+	{
+		if (!IsBoundRow (item))
+			return false;
+
+		// A whole layer being dragged: only onto another layer's row, to reorder the two.
+		if (!source.IsObjectRow)
+			return IsLayerRow (item) && IsLayerRow (source) && !ReferenceEquals (item.UserLayer, source.UserLayer);
+
+		// An object dragged within its own layer reorders against its sibling object rows; the
+		// layer's own row and its mask row name no position among them.
+		if (ReferenceEquals (source.UserLayer, item.UserLayer))
+			return item.IsObjectRow;
+
+		// Onto another layer: only content can go, never a modifier node.
+		return source.IsMovableBetweenLayers;
 	}
 
 	private bool DropTarget_OnDrop (
@@ -997,23 +1110,50 @@ public sealed partial class LayersListViewItemWidget
 		return DropLayerRow (source, dropAbove);
 	}
 
-	// Reordering an object sub-node within its layer's object list (its z-order). Only objects of
-	// the same kind on the same layer can be reordered against each other: shapes and text live in
-	// separate lists rendered into separate surfaces, and moving an object between layers would be
-	// a different operation (its geometry belongs to the layer it was drawn on).
-	private bool DropObjectRow (LayersListViewItem source, bool dropAbove)
+	// An object sub-node was dragged, or something was dragged onto one. Between two object rows of
+	// the same layer it is a z-order reorder — any kind, effects included. Onto a different layer —
+	// that layer's own row, its mask row, or in between its object rows — the object moves to that
+	// layer, but only shapes and text may: they carry canvas-space geometry, so they land looking
+	// exactly as they did and only the stack compositing them changes. A modifier node grades its
+	// own layer's stack rather than carrying content, so it stays where it is (see
+	// UserLayer.CanMoveBetweenLayers).
+	internal bool DropObjectRow (LayersListViewItem source, bool dropAbove)
 	{
-		if (item is null || !source.IsReorderablePeer (item))
+		// Only an object can be dropped this way. A layer row (or a mask row, which stands for a
+		// slot on the layer rather than a z-ordered object) dragged onto an object row names no
+		// move at all.
+		if (!IsBoundRow (item) || !source.IsObjectRow)
 			return false;
 
-		int from = source.ObjectIndex;
+		UserLayer destination = item.UserLayer!;
 
-		// Object rows are drawn top-first, exactly like layer rows: a higher index in layer.Objects is
-		// higher up the list.
-		if (RowReorder.ResolveDropIndex (from, item.ObjectIndex, dropAbove) is not int insert)
+		if (ReferenceEquals (source.UserLayer, destination)) {
+			// Dropped on its own layer's row or mask row: the object is already on that layer, and
+			// such a row names no position among its objects, so there is nothing to do.
+			if (!item.IsObjectRow)
+				return false;
+
+			int from = source.ObjectIndex;
+
+			// Object rows are drawn top-first, exactly like layer rows: a higher index in
+			// layer.Objects is higher up the list.
+			if (RowReorder.ResolveDropIndex (from, item.ObjectIndex, dropAbove) is not int insert)
+				return false;
+
+			AfterDrop (() => source.MoveObjectTo (insert));
+			return true;
+		}
+
+		if (!source.IsMovableBetweenLayers)
 			return false;
 
-		AfterDrop (() => source.MoveObjectTo (insert));
+		// Across layers the object leaves a different list than the one it is inserted into, so the
+		// destination index takes none of the removal-shift correction RowReorder.ResolveDropIndex
+		// applies to a same-list reorder. A null index means the drop named a layer rather than a
+		// slot in it, and the object stacks where one created on that layer would.
+		int? insertIndex = item.IsObjectRow ? (dropAbove ? item.ObjectIndex + 1 : item.ObjectIndex) : null;
+
+		AfterDrop (() => source.MoveObjectToLayer (destination, insertIndex));
 		return true;
 	}
 
@@ -1159,10 +1299,10 @@ public sealed partial class LayersListViewItemWidget
 					? Translations.GetString ("Layer transform: applies to everything below it on this layer, and stays editable.")
 					: Translations.GetString ("Layer effect: applies to everything below it on this layer, and stays editable."))
 					+ "\n" + Translations.GetString ("Right-click to change its settings, blending and strength") + "\n"
-					+ Translations.GetString ("Drag and drop to reorder")
+					+ Translations.GetString ("Drag and drop to reorder it on this layer")
 				: Translations.GetString ("Re-editable object: a live shape or text you can keep editing until you rasterize it.")
 					+ "\n" + Translations.GetString ("Right-click to set blend mode and opacity, or open its properties") + "\n"
-					+ Translations.GetString ("Drag and drop to reorder"));
+					+ Translations.GetString ("Drag and drop to reorder, or onto another layer to move it there"));
 			return;
 		}
 

@@ -102,3 +102,57 @@ public sealed class ObjectReorderHistoryItem : BaseHistoryItem
 		ObjectOpacity.RefreshLayer (workspace, chrome, layer);
 	}
 }
+
+/// <summary>
+/// Undoable move of an object from one layer's object list into another's — the cross-layer
+/// counterpart of <see cref="ObjectReorderHistoryItem"/>. Like it, the step is replayed rather than
+/// snapshotted: the splice is exactly invertible and both layers' surfaces are pure functions of
+/// their object lists, so undo re-splices and re-renders instead of restoring pixels. Replaying
+/// also keeps the object instance itself, so a reference held elsewhere (the text tool edits its
+/// <see cref="TextObject"/> in place) still points at the live object after an undo.
+/// </summary>
+public sealed class ObjectTransferHistoryItem : BaseHistoryItem
+{
+	private readonly IWorkspaceService workspace;
+	private readonly IChromeService chrome;
+	private readonly UserLayer source;
+	private readonly int source_index;
+	private readonly UserLayer destination;
+	private readonly int destination_index;
+
+	public ObjectTransferHistoryItem (
+		IWorkspaceService workspace,
+		IChromeService chrome,
+		string icon,
+		string text,
+		UserLayer source,
+		int sourceIndex,
+		UserLayer destination,
+		int destinationIndex)
+		: base (icon, text)
+	{
+		this.workspace = workspace;
+		this.chrome = chrome;
+		this.source = source;
+		source_index = sourceIndex;
+		this.destination = destination;
+		destination_index = destinationIndex;
+	}
+
+	public override void Undo () => Transfer (destination, destination_index, source, source_index);
+	public override void Redo () => Transfer (source, source_index, destination, destination_index);
+
+	private void Transfer (UserLayer from, int fromIndex, UserLayer to, int toIndex)
+	{
+		if (!from.TransferObjectTo (fromIndex, to, toIndex))
+			return;
+
+		// Both stacks changed, so both have to be re-rendered and both have to rebuild the live
+		// shape engines that are bound to a layer by position.
+		ObjectOpacity.RefreshLayer (workspace, chrome, from);
+		ObjectOpacity.RefreshLayer (workspace, chrome, to);
+
+		// The dock addresses object rows by (layer, index); every row of both layers moved.
+		LayerObjectSelection.RaiseObjectsChanged ();
+	}
+}

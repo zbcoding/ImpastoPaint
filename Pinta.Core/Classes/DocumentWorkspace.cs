@@ -354,33 +354,11 @@ public sealed class DocumentWorkspace
 	private static double CanvasOrigin (double page, double extent)
 		=> Math.Max (0, (page - extent) / 2);
 
-	// Outer share of the visible image, on each side, where a zoom pins that side of the view.
-	private const double ZOOM_EDGE_SNAP = 0.1;
-	// Up to this share from a side the anchor ramps from the pinned side back to the pointer,
-	// so the anchor never jumps; the middle of the view zooms exactly around the pointer.
-	private const double ZOOM_EDGE_BLEND = 0.25;
-
-	/// <summary>
-	/// Remaps a pointer position across the visible image (0 = one side, 1 = the other) to the
-	/// position the zoom holds steady. Near a side the anchor moves onto that side, so zooming
-	/// with the pointer toward an edge of the image keeps that edge in view instead of pushing it
-	/// off screen.
-	/// </summary>
-	private static double FavorEdges (double t)
-	{
-		if (t > 0.5)
-			return 1 - FavorEdges (1 - t);
-		if (t <= ZOOM_EDGE_SNAP)
-			return 0;
-		if (t < ZOOM_EDGE_BLEND)
-			return ZOOM_EDGE_BLEND * (t - ZOOM_EDGE_SNAP) / (ZOOM_EDGE_BLEND - ZOOM_EDGE_SNAP);
-		return t;
-	}
-
 	/// <summary>
 	/// Scroll value on one axis after the zoomed image changes from <paramref name="oldExtent"/>
-	/// to <paramref name="newExtent"/> pixels, holding the anchor chosen by <see cref="FavorEdges"/>
-	/// at the same place on screen.
+	/// to <paramref name="newExtent"/> pixels. The image point under the pointer stays under it,
+	/// except that an image edge which is on screen, on the pointer's half of the visible image,
+	/// is never pushed off screen: zooming in toward a corner keeps the whole corner in view.
 	/// </summary>
 	/// <param name="pointer">Pointer position relative to the viewport's start.</param>
 	/// <param name="page">Visible size of the viewport.</param>
@@ -389,16 +367,23 @@ public sealed class DocumentWorkspace
 	{
 		double maxScroll = Math.Max (0, newExtent - page);
 		double imageStart = CanvasOrigin (page, oldExtent) - scroll;
+		double imageEnd = imageStart + oldExtent;
 		double visibleStart = Math.Max (0, imageStart);
-		double visibleEnd = Math.Min (page, imageStart + oldExtent);
+		double visibleEnd = Math.Min (page, imageEnd);
 		if (visibleEnd <= visibleStart || oldExtent <= 0)
 			return Math.Clamp (scroll, 0, maxScroll);
 
-		double t = Math.Clamp ((pointer - visibleStart) / (visibleEnd - visibleStart), 0, 1);
-		double anchor = visibleStart + FavorEdges (t) * (visibleEnd - visibleStart);
+		double anchor = Math.Clamp (pointer, visibleStart, visibleEnd);
 		double imageFraction = (anchor - imageStart) / oldExtent;
+		double newOrigin = CanvasOrigin (page, newExtent);
+		double newScroll = newOrigin + imageFraction * newExtent - anchor;
 
-		double newScroll = CanvasOrigin (page, newExtent) + imageFraction * newExtent - anchor;
+		bool nearStart = anchor - visibleStart <= visibleEnd - anchor;
+		if (nearStart && imageStart >= 0)
+			newScroll = Math.Min (newScroll, newOrigin); // new image start stays at or right of 0
+		else if (!nearStart && imageEnd <= page)
+			newScroll = Math.Max (newScroll, newOrigin + newExtent - page); // new image end stays at or left of page
+
 		return Math.Clamp (newScroll, 0, maxScroll);
 	}
 

@@ -43,6 +43,7 @@ public sealed class PanTool : BaseTool
 	public override Gdk.Cursor DefaultCursor => GdkExtensions.CursorFromName (Pinta.Resources.StandardCursors.Grab);
 	public override Gdk.Key ShortcutKey => new (Gdk.Constants.KEY_H);
 	public override int Priority => 11;
+	public override bool AutoScrollsWhileDragging => false;
 
 	protected override void OnMouseDown (Document document, ToolMouseEventArgs e)
 	{

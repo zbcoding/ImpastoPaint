@@ -327,6 +327,14 @@ public abstract class BaseTool
 		=> false;
 
 	/// <summary>
+	/// Whether the canvas scrolls on its own while this tool drags the pointer past the edge of
+	/// the view, so a drag can reach parts of a zoomed-in image that are off screen. Off for
+	/// tools whose drag already moves the view.
+	/// </summary>
+	public virtual bool AutoScrollsWhileDragging
+		=> true;
+
+	/// <summary>
 	/// Whether this tool manages its own interaction with the current layer's live shape/text
 	/// objects, and so must not be intercepted by <see cref="ToolManager"/>'s down-point
 	/// rasterize guard. On for the flood tools: the paint bucket recolors a clicked object's

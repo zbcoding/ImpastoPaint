@@ -57,8 +57,24 @@ public sealed partial class CanvasWindow
 	private double cumulative_alt_scroll_amount;
 	private double last_scale_delta;
 
+	// Last pointer position relative to this widget. Zoom anchors on it rather than on the canvas
+	// point last seen under it, since zooming or autoscrolling moves the image under a still pointer.
+	private PointD pointer_root_point;
+
+	// Drag autoscroll: while a tool drag holds the pointer at or past the viewport edge, the view
+	// scrolls every frame and the tool gets a move event for the pointer's new canvas position.
+	private uint autoscroll_tick_id;
+	private Gdk.ModifierType drag_state;
+	private MouseButton drag_button;
+
 	private const double ZOOM_THRESHOLD_SCROLL = 1.25;
 	private const double ZOOM_THRESHOLD_PINCH = 0.15;
+	// Band inside the viewport edge that already counts as "past" it, so a maximized or
+	// fullscreen canvas whose edge touches the screen edge can still scroll.
+	private const double AUTOSCROLL_EDGE_BAND = 8;
+	// Pixels scrolled per frame for each pixel the pointer is past the band start, and the cap.
+	private const double AUTOSCROLL_SPEED = 0.3;
+	private const int AUTOSCROLL_MAX_STEP = 60;
 
 	public Gtk.Widget Canvas { get { return canvas; } }
 
@@ -234,6 +250,7 @@ public sealed partial class CanvasWindow
 		Gtk.EventControllerMotion.MotionSignalArgs args)
 	{
 		PointD rootPoint = new (args.X, args.Y);
+		pointer_root_point = rootPoint;
 
 		// These coordinates are relative to our grid widget, so transform into the child image
 		// view's coordinates, and then to the canvas coordinates.
@@ -262,6 +279,12 @@ public sealed partial class CanvasWindow
 		tools.DoMouseMove (document, tool_args);
 	}
 
+	private PointD PointerInViewport ()
+	{
+		this.TranslateCoordinates (scrolled_window.Child!, pointer_root_point, out PointD point);
+		return point;
+	}
+
 	private void HandleGestureZoomScaleChanged (object? sender, EventArgs e)
 	{
 		// Allow the user to zoom in/out by pinching the trackpad
@@ -272,7 +295,7 @@ public sealed partial class CanvasWindow
 
 			cumulative_zoom_amount += pinchDelta;
 			if (cumulative_zoom_amount <= -ZOOM_THRESHOLD_PINCH) {
-				document.Workspace.ZoomOutAroundCanvasPoint (current_canvas_pos);
+				document.Workspace.ZoomOutAroundViewportPoint (PointerInViewport ());
 				cumulative_zoom_amount = 0;
 			}
 		} else {
@@ -281,7 +304,7 @@ public sealed partial class CanvasWindow
 
 			cumulative_zoom_amount += pinchDelta;
 			if (cumulative_zoom_amount >= ZOOM_THRESHOLD_PINCH) {
-				document.Workspace.ZoomInAroundCanvasPoint (current_canvas_pos);
+				document.Workspace.ZoomInAroundViewportPoint (PointerInViewport ());
 				cumulative_zoom_amount = 0;
 			}
 		}
@@ -363,12 +386,12 @@ public sealed partial class CanvasWindow
 		// "clicky" scroll wheels generate 1 or -1
 
 		if (args.Dy == -1) {
-			document.Workspace.ZoomInAroundCanvasPoint (current_canvas_pos);
+			document.Workspace.ZoomInAroundViewportPoint (PointerInViewport ());
 			return true;
 		}
 
 		if (args.Dy == 1) {
-			document.Workspace.ZoomOutAroundCanvasPoint (current_canvas_pos);
+			document.Workspace.ZoomOutAroundViewportPoint (PointerInViewport ());
 			return true;
 		}
 
@@ -380,7 +403,7 @@ public sealed partial class CanvasWindow
 
 			cumulative_zoom_amount += args.Dy;
 			if (cumulative_zoom_amount <= -ZOOM_THRESHOLD_SCROLL) {
-				document.Workspace.ZoomInAroundCanvasPoint (current_canvas_pos);
+				document.Workspace.ZoomInAroundViewportPoint (PointerInViewport ());
 				cumulative_zoom_amount = 0;
 			}
 
@@ -390,7 +413,7 @@ public sealed partial class CanvasWindow
 
 			cumulative_zoom_amount += args.Dy;
 			if (cumulative_zoom_amount >= ZOOM_THRESHOLD_SCROLL) {
-				document.Workspace.ZoomOutAroundCanvasPoint (current_canvas_pos);
+				document.Workspace.ZoomOutAroundViewportPoint (PointerInViewport ());
 				cumulative_zoom_amount = 0;
 			}
 
@@ -474,14 +497,26 @@ public sealed partial class CanvasWindow
 		// Translate coordinates to the canvas widget.
 		this.TranslateCoordinates (Canvas, rootPoint, out PointD viewPoint);
 
+		pointer_root_point = rootPoint;
+		drag_state = gesture.GetCurrentEventState ();
+		drag_button = gesture.GetCurrentMouseButton ();
+
+		SendDragMove (rootPoint, viewPoint);
+
+		if (autoscroll_tick_id == 0 && AutoScrollStep (rootPoint) != PointI.Zero)
+			autoscroll_tick_id = AddTickCallback (OnAutoScrollTick);
+	}
+
+	private void SendDragMove (PointD rootPoint, PointD viewPoint)
+	{
 		current_canvas_pos = document.Workspace.ViewPointToCanvas (viewPoint);
 		if (document.Workspace.PointInCanvas (current_canvas_pos))
 			chrome.LastCanvasCursorPoint = current_canvas_pos.ToInt ();
 
 		// Send the mouse move event to the current tool.
 		ToolMouseEventArgs tool_args = new () {
-			State = gesture.GetCurrentEventState (),
-			MouseButton = gesture.GetCurrentMouseButton (),
+			State = drag_state,
+			MouseButton = drag_button,
 			PointDouble = current_canvas_pos,
 			WindowPoint = viewPoint,
 			RootPoint = rootPoint,
@@ -490,8 +525,81 @@ public sealed partial class CanvasWindow
 		tools.DoMouseMove (document, tool_args);
 	}
 
+	/// <summary>
+	/// How far to scroll this frame for a drag at <paramref name="rootPoint"/>, or zero when the
+	/// pointer is inside the view or the drag should not scroll it (middle-button pan, or a tool
+	/// that moves the view itself).
+	/// </summary>
+	private PointI AutoScrollStep (PointD rootPoint)
+	{
+		if (drag_button == MouseButton.Middle || !tools.CurrentToolAutoScrollsWhileDragging)
+			return PointI.Zero;
+
+		Gtk.Widget viewport = scrolled_window.Child!;
+		this.TranslateCoordinates (viewport, rootPoint, out PointD p);
+
+		return new (
+			StepForAxis (p.X, viewport.GetWidth ()),
+			StepForAxis (p.Y, viewport.GetHeight ()));
+
+		static int StepForAxis (double position, double length)
+		{
+			double depth =
+				position < AUTOSCROLL_EDGE_BAND ? position - AUTOSCROLL_EDGE_BAND
+				: position > length - AUTOSCROLL_EDGE_BAND ? position - (length - AUTOSCROLL_EDGE_BAND)
+				: 0;
+
+			if (depth == 0)
+				return 0;
+
+			int step = Math.Clamp ((int) Math.Ceiling (Math.Abs (depth) * AUTOSCROLL_SPEED), 1, AUTOSCROLL_MAX_STEP);
+			return Math.Sign (depth) * step;
+		}
+	}
+
+	private bool OnAutoScrollTick (Gtk.Widget widget, Gdk.FrameClock clock)
+	{
+		PointI step = drag_controller.GetStartPoint (out _, out _)
+			? AutoScrollStep (pointer_root_point)
+			: PointI.Zero;
+
+		Gtk.Adjustment h_adjust = scrolled_window.Hadjustment!;
+		Gtk.Adjustment v_adjust = scrolled_window.Vadjustment!;
+		double old_x = h_adjust.Value;
+		double old_y = v_adjust.Value;
+
+		if (step != PointI.Zero)
+			document.Workspace.ScrollCanvas (step);
+
+		PointD scrolled = new (h_adjust.Value - old_x, v_adjust.Value - old_y);
+
+		// Stop once the pointer is back inside or the view can't scroll further that way; the
+		// next drag update past the edge starts it again.
+		if (scrolled == PointD.Zero) {
+			autoscroll_tick_id = 0;
+			return false;
+		}
+
+		// Layout from the previous frame already reflects earlier scrolls; this frame's scroll has
+		// not been laid out yet, so shift the pointer's view position by it directly.
+		this.TranslateCoordinates (Canvas, pointer_root_point, out PointD viewPoint);
+		SendDragMove (pointer_root_point, viewPoint + scrolled);
+		return true;
+	}
+
+	private void StopAutoScroll ()
+	{
+		if (autoscroll_tick_id == 0)
+			return;
+
+		RemoveTickCallback (autoscroll_tick_id);
+		autoscroll_tick_id = 0;
+	}
+
 	private void OnDragEnd (Gtk.GestureDrag gesture, Gtk.GestureDrag.DragEndSignalArgs args)
 	{
+		StopAutoScroll ();
+
 		gesture.GetStartPoint (out double startX, out double startY);
 		PointD rootPoint = new (startX + args.OffsetX, startY + args.OffsetY);
 

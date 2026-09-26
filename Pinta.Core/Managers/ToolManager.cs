@@ -474,6 +474,9 @@ public sealed class ToolManager : IEnumerable<BaseTool>, IToolService
 	public bool CurrentToolSupportsMouseScroll
 		=> CurrentTool?.SupportsMouseScroll ?? false;
 
+	public bool CurrentToolAutoScrollsWhileDragging
+		=> CurrentTool?.AutoScrollsWhileDragging ?? false;
+
 	public bool DoKeyUp (Document document, ToolKeyEventArgs args)
 		=> CurrentTool?.DoKeyUp (document, args) ?? false;
 

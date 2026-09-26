@@ -8,6 +8,22 @@ entries, is upstream Pinta work; the Impasto sections cover changes made in this
 
 ## Impasto - [Unreleased](https://github.com/zbcoding/ImpastoPaint/compare/v0.4.0...main)
 
+### Added
+
+- Dragging with a tool past the edge of a zoomed-in canvas now scrolls the view that way, faster
+  the further past the edge the pointer goes, and the tool keeps working on the part of the image
+  that scrolls into view. A band a few pixels inside the edge also counts, so a maximized window
+  whose canvas touches the screen edge still scrolls. The pan tool and middle-button pan are
+  unaffected.
+
+### Changed
+
+- Ctrl+scroll and pinch zoom now keep the image's edges in view. With the pointer near a side of
+  the visible image, zooming holds that side in place instead of pushing it off screen, so zooming
+  in at an edge no longer needs a scroll back to reach it; toward the middle, zoom still stays
+  anchored under the pointer. Zooming around the pointer also no longer drifts when the image is
+  smaller than the window and centered in it.
+
 ### Fixed
 
 - A paintbrush stroke now finishes drawn: the stroke is painted on a scratch layer and only moved

@@ -18,11 +18,11 @@ entries, is upstream Pinta work; the Impasto sections cover changes made in this
 
 ### Changed
 
-- Ctrl+scroll and pinch zoom now keep the image's edges in view. With the pointer near a side of
-  the visible image, zooming holds that side in place instead of pushing it off screen, so zooming
-  in at an edge no longer needs a scroll back to reach it; toward the middle, zoom still stays
-  anchored under the pointer. Zooming around the pointer also no longer drifts when the image is
-  smaller than the window and centered in it.
+- Ctrl+scroll and pinch zoom now keep the image's edges in view. An image edge that is on screen,
+  on the same side of the visible image as the pointer, is never pushed off screen by zooming in,
+  so zooming toward a corner keeps the whole corner visible without scrolling back to it. Once
+  both edges on an axis are off screen, zoom stays anchored under the pointer. Zooming around the
+  pointer also no longer drifts when the image is smaller than the window and centered in it.
 
 ### Fixed
 

@@ -20,18 +20,30 @@ internal sealed class ZoomScrollTest
 
 	[TestCase (950)]
 	[TestCase (999)]
-	public void PointerNearRightSideKeepsTheImageEdgeInView (double pointer)
+	[TestCase (600)]
+	public void PointerOnRightHalfKeepsTheVisibleRightEdgeInView (double pointer)
 	{
 		double scroll = DocumentWorkspace.ScrollAfterZoom (pointer, Page, scroll: 0, oldExtent: 1000, newExtent: 2000);
 
 		Assert.That (scroll + Page, Is.EqualTo (2000).Within (1e-9));
 	}
 
-	[Test]
-	public void PointerNearLeftSideKeepsTheImageEdgeInView ()
+	[TestCase (60)]
+	[TestCase (400)]
+	public void PointerOnLeftHalfKeepsTheVisibleLeftEdgeInView (double pointer)
 	{
-		double scroll = DocumentWorkspace.ScrollAfterZoom (pointer: 60, Page, scroll: 0, oldExtent: 1000, newExtent: 4000);
+		double scroll = DocumentWorkspace.ScrollAfterZoom (pointer, Page, scroll: 0, oldExtent: 1000, newExtent: 4000);
 
+		Assert.That (scroll, Is.Zero);
+	}
+
+	[Test]
+	public void EdgeInsideTheViewStaysOnScreenAfterZoomingIn ()
+	{
+		// A 600px image is centered (200..800); the pointer at 450 is well inside it, left of middle.
+		double scroll = DocumentWorkspace.ScrollAfterZoom (pointer: 450, Page, scroll: 0, oldExtent: 600, newExtent: 1200);
+
+		// Pure pointer anchoring would scroll to 50 and cut off the image's left 50px.
 		Assert.That (scroll, Is.Zero);
 	}
 
@@ -45,26 +57,21 @@ internal sealed class ZoomScrollTest
 	}
 
 	[Test]
-	public void CenteredImageZoomsAroundThePointerOnScreenNotItsWidgetOffset ()
+	public void WithBothEdgesOffScreenZoomsAroundThePointer ()
 	{
-		// A 700px image is centered (150..850); the pointer at 500 is over its middle.
-		double scroll = DocumentWorkspace.ScrollAfterZoom (pointer: 500, Page, scroll: 0, oldExtent: 700, newExtent: 1400);
+		// Image spans -1000..2000 on screen; the pointer at 300 is over image pixel 1300 (of 3000).
+		double scroll = DocumentWorkspace.ScrollAfterZoom (pointer: 300, Page, scroll: 1000, oldExtent: 3000, newExtent: 6000);
 
-		// The image middle (700 of 1400) stays under the pointer.
-		Assert.That (700 - scroll, Is.EqualTo (500).Within (1e-9));
+		Assert.That (2600 - scroll, Is.EqualTo (300).Within (1e-9));
 	}
 
-	[TestCase (0.1)]
-	[TestCase (0.25)]
-	[TestCase (0.75)]
-	[TestCase (0.9)]
-	public void AnchorDoesNotJumpAtZoneBoundaries (double fraction)
+	[Test]
+	public void ZoomingOutKeepsTheImagePointUnderThePointer ()
 	{
-		double pointer = fraction * Page;
-		double below = DocumentWorkspace.ScrollAfterZoom (pointer - 1e-6, Page, scroll: 1000, oldExtent: 3000, newExtent: 6000);
-		double above = DocumentWorkspace.ScrollAfterZoom (pointer + 1e-6, Page, scroll: 1000, oldExtent: 3000, newExtent: 6000);
+		// Image spans -1000..2000; the pointer at 300 is over image pixel 1300 (of 3000).
+		double scroll = DocumentWorkspace.ScrollAfterZoom (pointer: 300, Page, scroll: 1000, oldExtent: 3000, newExtent: 1500);
 
-		Assert.That (above, Is.EqualTo (below).Within (1e-3));
+		Assert.That (650 - scroll, Is.EqualTo (300).Within (1e-9));
 	}
 
 	[Test]

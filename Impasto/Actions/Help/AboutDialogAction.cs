@@ -81,18 +81,12 @@ internal sealed class AboutDialogAction : IActionHandler
 		//   license-mit-pinta.txt  -> MIT License (upstream Pinta Project)
 		//   THIRD-PARTY-NOTICES.md  -> Third-Party Notices (icons + component licenses)
 		//   license-lgpl.txt       -> GNU LGPL/GPL texts (third-party libraries)
-		//   license-pdn.txt        -> Paint.NET reference license
 		//   CONTRIBUTORS.md         -> Credits (contributors)
 		dialog.AddLegalSection (
 			Translations.GetString ("Third-Party Notices"),
 			string.Empty,
 			Gtk.License.Custom,
 			EscapeMarkup (LoadEmbeddedText ("THIRD-PARTY-NOTICES.md")));
-		dialog.AddLegalSection (
-			Translations.GetString ("PDN Reference License"),
-			string.Empty,
-			Gtk.License.Custom,
-			EscapeMarkup (LoadEmbeddedText ("LICENSE-PDN.txt")));
 		ReplaceLegalSections (dialog);
 		dialog.AddCreditSection (
 			Translations.GetString ("Impasto by"),
@@ -142,10 +136,6 @@ internal sealed class AboutDialogAction : IActionHandler
 			legalBox,
 			Translations.GetString ("GNU LGPL Licenses"),
 			LoadEmbeddedText ("LICENSE-LGPL.txt"));
-		AppendLegalExpander (
-			legalBox,
-			Translations.GetString ("PDN Reference License"),
-			LoadEmbeddedText ("LICENSE-PDN.txt"));
 	}
 
 	private static void AppendCopyrightRow (Gtk.Box legalBox, string text)

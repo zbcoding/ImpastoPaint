@@ -27,6 +27,11 @@ entries, is upstream Pinta work; the Impasto sections cover changes made in this
   effects and editable text come in as their stored pixels only. Photoshop files can be opened,
   not saved.
 
+- Opening a file in a format Impasto can read but not write (Photoshop, PDN, and any read-only
+  system format) now says so right away, and points to Save As, so edits aren't made expecting
+  Save to write that file back. The check follows the format list, so a format stops warning
+  as soon as Impasto can save it.
+
 ### Changed
 
 - Ctrl+scroll and pinch zoom now keep the image's edges in view. An image edge that is on screen,

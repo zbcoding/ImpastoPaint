@@ -1,0 +1,13 @@
+Corrected message:
+
+Offer to rasterize a live object before a paint tool draws on it
+
+Any tool that writes to the current layer now checks the press point:
+if it lands on a live shape/text object, the same rasterize prompt
+Cut/Erase uses appears first. Accepting bakes just the object(s) under
+the press as their own undo step; declining cancels the stroke.
+Middle-button presses and mask painting are exempt.
+
+Recolor also gets its own check that hit-tests the object's rendered
+ink before prompting. A stroke that starts on bare ground never
+prompts, even if it later crosses an object.

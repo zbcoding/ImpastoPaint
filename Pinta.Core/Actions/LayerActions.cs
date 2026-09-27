@@ -406,17 +406,40 @@ public sealed class LayerActions
 		if (directory is not null)
 			recent_files.LastDialogDirectory = directory;
 
-		// Open the image and add it to the layers
-		UserLayer layer = doc.Layers.AddNewLayer (choice.GetDisplayName ());
+		try {
+			ImportLayerFromFile (doc, choice);
+		} catch (Exception error) {
+			await chrome.ShowErrorDialog (
+				chrome.MainWindow,
+				error.Message,
+				Translations.GetString ("Could not open file: {0}", choice.GetParseName ()),
+				error.ToString ());
+			return;
+		}
 
-		using (Gio.FileInputStream fs = choice.Read (null)) {
-			try {
-				using GdkPixbuf.Pixbuf bg = GdkPixbuf.Pixbuf.NewFromStream (fs, cancellable: null)!; // NRT: only nullable when an error is thrown
-				using Cairo.Context context = new (layer.Surface);
-				context.DrawPixbuf (bg, PointD.Zero);
-			} finally {
-				fs.Close (null);
-			}
+		doc.Workspace.Invalidate ();
+	}
+
+	/// <summary>
+	/// Adds the image in <paramref name="file"/> to <paramref name="doc"/> as a new layer, flattened.
+	/// The file is decoded through the same importers Open uses, so every format the picker offers
+	/// imports here too. The document is only touched once decoding has succeeded.
+	/// </summary>
+	internal void ImportLayerFromFile (Document doc, Gio.File file)
+	{
+		Document imported = ImportDocument (file);
+		Cairo.ImageSurface flattened;
+		try {
+			flattened = imported.GetFlattenedImage ();
+		} finally {
+			imported.Close ();
+		}
+
+		UserLayer layer = doc.Layers.AddNewLayer (file.GetDisplayName ());
+		using (flattened) {
+			using Cairo.Context context = new (layer.Surface);
+			context.SetSourceSurface (flattened, 0, 0);
+			context.Paint ();
 		}
 
 		AddLayerHistoryItem hist = new (
@@ -424,11 +447,29 @@ public sealed class LayerActions
 			Translations.GetString ("Import From File"),
 			doc.Layers.IndexOf (layer));
 
-		// --- Changes to document go after everything else is completed successfully
-
 		doc.Layers.SetCurrentUserLayer (layer);
 		doc.History.PushNewItem (hist);
-		doc.Workspace.Invalidate ();
+	}
+
+	private Document ImportDocument (Gio.File file)
+	{
+		if (image_formats.GetImporterByFile (file.GetDisplayName ()) is IImageImporter importer)
+			return importer.Import (file);
+
+		// The picker also matches by MIME type on Unix, so the name may carry no known
+		// extension. Try every importer, as Open does.
+		List<Exception> failures = [];
+		foreach (FormatDescriptor format in image_formats.Formats) {
+			if (!format.IsImportAvailable ())
+				continue;
+			try {
+				return format.Importer.Import (file);
+			} catch (Exception e) {
+				failures.Add (e);
+			}
+		}
+
+		throw new AggregateException (Translations.GetString ("Unsupported file format"), failures);
 	}
 
 	private void HandlePintaCoreActionsLayersFlipVerticalActivated (object sender, EventArgs e)

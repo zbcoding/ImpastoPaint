@@ -1,0 +1,10 @@
+Corrected message:
+
+Update the Line/Curve Type tooltip when shortcuts are rebound
+
+The Type dropdown's tooltip names the Add Point, tension and S/D
+keys, but was built once; it now rebuilds when shortcuts change.
+
+Also say in that tooltip and in the point hover tooltip that S/D act
+on the point being dragged or one selected by clicking it, not on a
+point that is only hovered.

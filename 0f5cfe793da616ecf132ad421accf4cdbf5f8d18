@@ -1,0 +1,13 @@
+Corrected message:
+
+Add missing Unreleased changelog entries for recent fixes
+
+Adds one Changed entry (the About dialog's license label no longer names
+Paint.NET) and thirteen Fixed entries: tool-switch shortcuts mid-drag
+crashing the text tool or freezing the move and shape tools, wrong
+pixels when cutting or erasing over clipped effects, .pdn import
+hardening, shape settings lost when switching shape type, mask undo
+failing with a clear error, re-prompting on an unrecognized save
+extension, autosave during long strokes, layers dock recovery, add-in
+icons showing without a restart, a status-bar color picker race, and
+several memory leaks.

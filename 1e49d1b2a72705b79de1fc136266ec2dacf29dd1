@@ -1,0 +1,11 @@
+Corrected message:
+
+Changelog: add Gradient crash and tension-snap undo fixes
+
+- Add entries for the Gradient tool crash after changing a colour or
+  gradient type within a selection, and for S/D tension snaps outside
+  a drag now being undoable and hit-testing the reshaped curve.
+- Move the A (add point) default out of the Line tool entry into its
+  own entry: it applies to every shape tool.
+- Note that S and D do nothing without a selected control point, so S
+  still reaches the selection tools.

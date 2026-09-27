@@ -48,6 +48,18 @@ internal sealed class ZoomScrollTest
 	}
 
 	[Test]
+	public void ZoomingAroundTheViewCenterKeepsTheCenteredPointCentered ()
+	{
+		// Menu, keyboard and typed zoom anchor on the view center. A 600px image is centered
+		// (200..800), so both edges are on screen and the center ties between them; neither may
+		// pull the view to the image's corner.
+		double scroll = DocumentWorkspace.ScrollAfterZoom (pointer: 500, Page, scroll: 0, oldExtent: 600, newExtent: 1200, keepEdgesInView: false);
+
+		// Image pixel 300 (the old center) is now at 600 and must still be at the view center.
+		Assert.That (600 - scroll, Is.EqualTo (500).Within (1e-9));
+	}
+
+	[Test]
 	public void PointerOverSurroundPastTheImageKeepsThatEdgeInView ()
 	{
 		// A 500px image is centered (250..750); the pointer is in the empty surround at 900.

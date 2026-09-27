@@ -1,0 +1,12 @@
+Corrected message:
+
+Fix Line tool arrow options not appearing when an arrow is enabled
+
+After the toolbar was regrouped into per-setting clusters, checking an
+arrowhead tried to insert the Size/Angle/Length options into the old,
+already-emptied build box. GTK rejected it (six Gtk-CRITICAL warnings
+per click) and the options never showed for the rest of the session.
+They are now inserted and removed next to the arrow checkboxes
+wherever those currently live.
+
+Adds a regression test and a changelog entry.

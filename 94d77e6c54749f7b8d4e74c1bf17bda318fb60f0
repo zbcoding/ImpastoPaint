@@ -1,0 +1,13 @@
+Corrected message:
+
+Changelog: add selection, layer-click, Cut/Copy and paste-redo fixes
+
+Adds Fixed entries for:
+- Dragging a selection from the canvas's top-left corner selecting the
+  whole canvas via a hidden resize grip.
+- A slightly dragged click on a layer row not making it current.
+- Cut and Copy doing nothing while a text edit is open with no text
+  selected.
+- Cut, Erase Selection and Fill Selection acting on the colour raster
+  instead of the selected mask.
+- Redo of a paste dropping the content at the top-left corner.

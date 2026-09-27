@@ -1,0 +1,14 @@
+Corrected message:
+
+Merge duplicated handlers in text, shape, toolbox and palette UI
+
+No behavior change. Near-identical handlers each become one shared
+helper:
+- Text tool: the four alignment toggle handlers.
+- Shape tools: arrow-key point nudging and next/previous point
+  selection, the outline width/dash/spacing toolbar handlers, and the
+  after-undo/after-redo refresh.
+- Toolbox: the pin/unpin and clear-pinned popover menus.
+- Main window: the rectangle conversion for the colour popovers.
+- Status bar palette: swatch drawing and the recent/quick colour
+  section layout.

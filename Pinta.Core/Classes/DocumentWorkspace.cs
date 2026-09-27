@@ -58,6 +58,13 @@ public sealed class DocumentWorkspace
 	#endregion
 
 	#region Public Properties
+	/// <summary>
+	/// Surround kept around the canvas widget inside the scrolled viewport, on every side, so an
+	/// image edge the view is scrolled to still shows its drop shadow and a strip of surround,
+	/// clear of the overlay scrollbars that sit over the viewport's right and bottom edges.
+	/// </summary>
+	public const int CanvasMargin = 24;
+
 	public Gtk.Widget Canvas { get; set; } = null!; // NRT - This is set soon after creation
 	public Gtk.Widget CanvasWindow { get; set; } = null!; // NRT - This is set soon after creation
 
@@ -69,7 +76,7 @@ public sealed class DocumentWorkspace
 			Gtk.Viewport view = (Gtk.Viewport) Canvas.Parent!;
 			int window_x = view.GetAllocatedWidth ();
 			int window_y = view.GetAllocatedHeight ();
-			return ViewSize.Width <= window_x && ViewSize.Height <= window_y;
+			return ViewSize.Width + 2 * CanvasMargin <= window_x && ViewSize.Height + 2 * CanvasMargin <= window_y;
 		}
 	}
 
@@ -96,7 +103,7 @@ public sealed class DocumentWorkspace
 			Gtk.Viewport view = (Gtk.Viewport) Canvas.Parent!;
 			int window_x = view.GetAllocatedWidth ();
 			int window_y = view.GetAllocatedHeight ();
-			return document.ImageSize.Width <= window_x && document.ImageSize.Height <= window_y;
+			return document.ImageSize.Width + 2 * CanvasMargin <= window_x && document.ImageSize.Height + 2 * CanvasMargin <= window_y;
 		}
 	}
 
@@ -209,10 +216,10 @@ public sealed class DocumentWorkspace
 		Gtk.Viewport view = (Gtk.Viewport) Canvas.Parent!;
 
 		var h_adjust = view.GetHadjustment ()!;
-		h_adjust.Value = Math.Clamp (point.X * Scale - h_adjust.PageSize / 2, h_adjust.Lower, h_adjust.Upper);
+		h_adjust.Value = Math.Clamp (point.X * Scale + CanvasMargin - h_adjust.PageSize / 2, h_adjust.Lower, h_adjust.Upper);
 
 		var v_adjust = view.GetVadjustment ()!;
-		v_adjust.Value = Math.Clamp (point.Y * Scale - v_adjust.PageSize / 2, v_adjust.Lower, v_adjust.Upper);
+		v_adjust.Value = Math.Clamp (point.Y * Scale + CanvasMargin - v_adjust.PageSize / 2, v_adjust.Lower, v_adjust.Upper);
 	}
 
 	public void ScrollCanvas (PointI delta)
@@ -338,36 +345,37 @@ public sealed class DocumentWorkspace
 	/// <summary>
 	/// Where a canvas point currently sits on screen, relative to the viewport's top-left corner.
 	/// </summary>
-	private PointD CanvasPointToViewport (PointD canvasPoint)
+	public PointD CanvasPointToViewport (PointD canvasPoint)
 	{
 		Gtk.Viewport view = (Gtk.Viewport) Canvas.Parent!;
 		PointD viewPoint = CanvasPointToView (canvasPoint);
 		return new (
-			CanvasOrigin (view.Hadjustment!.PageSize, ViewSize.Width) + viewPoint.X - view.Hadjustment.Value,
-			CanvasOrigin (view.Vadjustment!.PageSize, ViewSize.Height) + viewPoint.Y - view.Vadjustment.Value);
+			CanvasOrigin (view.Hadjustment!.PageSize, ViewSize.Width, CanvasMargin) + viewPoint.X - view.Hadjustment.Value,
+			CanvasOrigin (view.Vadjustment!.PageSize, ViewSize.Height, CanvasMargin) + viewPoint.Y - view.Vadjustment.Value);
 	}
 
 	/// <summary>
-	/// Offset of the canvas widget inside the viewport's scrollable area on one axis: the widget
-	/// is centered while it is smaller than the viewport, and fills it from the start otherwise.
+	/// Offset of the image inside the viewport's scrollable area on one axis. The canvas widget,
+	/// with <paramref name="margin"/> on each side, is centered while it is smaller than the
+	/// viewport, and fills it from the start otherwise.
 	/// </summary>
-	private static double CanvasOrigin (double page, double extent)
-		=> Math.Max (0, (page - extent) / 2);
+	private static double CanvasOrigin (double page, double extent, double margin)
+		=> Math.Max (0, (page - extent - 2 * margin) / 2) + margin;
 
 	/// <summary>
 	/// Scroll value on one axis after the zoomed image changes from <paramref name="oldExtent"/>
 	/// to <paramref name="newExtent"/> pixels. The image point under the pointer stays under it,
 	/// except that, with <paramref name="keepEdgesInView"/>, an image edge which is on screen, on
-	/// the pointer's half of the visible image, is never pushed off screen: zooming in toward a
-	/// corner keeps the whole corner in view.
+	/// the pointer's half of the visible image, is never pushed off screen, together with the
+	/// <paramref name="margin"/> around it: zooming in toward a corner keeps the whole corner in view.
 	/// </summary>
 	/// <param name="pointer">Pointer position relative to the viewport's start.</param>
 	/// <param name="page">Visible size of the viewport.</param>
 	/// <param name="scroll">Scroll value before the zoom.</param>
-	internal static double ScrollAfterZoom (double pointer, double page, double scroll, double oldExtent, double newExtent, bool keepEdgesInView = true)
+	internal static double ScrollAfterZoom (double pointer, double page, double scroll, double oldExtent, double newExtent, bool keepEdgesInView = true, double margin = 0)
 	{
-		double maxScroll = Math.Max (0, newExtent - page);
-		double imageStart = CanvasOrigin (page, oldExtent) - scroll;
+		double maxScroll = Math.Max (0, newExtent + 2 * margin - page);
+		double imageStart = CanvasOrigin (page, oldExtent, margin) - scroll;
 		double imageEnd = imageStart + oldExtent;
 		double visibleStart = Math.Max (0, imageStart);
 		double visibleEnd = Math.Min (page, imageEnd);
@@ -376,7 +384,7 @@ public sealed class DocumentWorkspace
 
 		double anchor = Math.Clamp (pointer, visibleStart, visibleEnd);
 		double imageFraction = (anchor - imageStart) / oldExtent;
-		double newOrigin = CanvasOrigin (page, newExtent);
+		double newOrigin = CanvasOrigin (page, newExtent, margin);
 		double newScroll = newOrigin + imageFraction * newExtent - anchor;
 
 		if (!keepEdgesInView)
@@ -384,9 +392,9 @@ public sealed class DocumentWorkspace
 
 		bool nearStart = anchor - visibleStart <= visibleEnd - anchor;
 		if (nearStart && imageStart >= 0)
-			newScroll = Math.Min (newScroll, newOrigin); // new image start stays at or right of 0
+			newScroll = Math.Min (newScroll, newOrigin - margin); // new image start and its margin stay at or right of 0
 		else if (!nearStart && imageEnd <= page)
-			newScroll = Math.Max (newScroll, newOrigin + newExtent - page); // new image end stays at or left of page
+			newScroll = Math.Max (newScroll, newOrigin + newExtent + margin - page); // new image end and its margin stay at or left of page
 
 		return Math.Clamp (newScroll, 0, maxScroll);
 	}
@@ -461,13 +469,13 @@ public sealed class DocumentWorkspace
 
 		// Quick fix : need to manually update Upper limit because the value is not changing after updating the canvas scale.
 		// TODO : I think there is an event need to be fired so that those values updated automatically.
-		view.Hadjustment!.Upper = ViewSize.Width < view.Hadjustment.PageSize ? view.Hadjustment.PageSize : ViewSize.Width;
-		view.Vadjustment!.Upper = ViewSize.Height < view.Vadjustment.PageSize ? view.Vadjustment.PageSize : ViewSize.Height;
+		view.Hadjustment!.Upper = Math.Max (view.Hadjustment.PageSize, ViewSize.Width + 2 * CanvasMargin);
+		view.Vadjustment!.Upper = Math.Max (view.Vadjustment.PageSize, ViewSize.Height + 2 * CanvasMargin);
 
 		// The canvas widget might not have resized yet, so place the view from the new ViewSize
 		// rather than from the widget's allocation.
-		view.Hadjustment.Value = ScrollAfterZoom (pointer.X, view.Hadjustment.PageSize, old_scroll_x, oldViewSize.Width, ViewSize.Width, keepEdgesInView);
-		view.Vadjustment.Value = ScrollAfterZoom (pointer.Y, view.Vadjustment.PageSize, old_scroll_y, oldViewSize.Height, ViewSize.Height, keepEdgesInView);
+		view.Hadjustment.Value = ScrollAfterZoom (pointer.X, view.Hadjustment.PageSize, old_scroll_x, oldViewSize.Width, ViewSize.Width, keepEdgesInView, CanvasMargin);
+		view.Vadjustment.Value = ScrollAfterZoom (pointer.Y, view.Vadjustment.PageSize, old_scroll_y, oldViewSize.Height, ViewSize.Height, keepEdgesInView, CanvasMargin);
 
 		actions.View.ResumeZoomUpdate ();
 	}

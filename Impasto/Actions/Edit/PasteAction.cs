@@ -103,12 +103,12 @@ internal sealed class PasteAction : IActionHandler
 
 		var doc = workspace.ActiveDocument;
 
-		// Get the scroll position in canvas coordinates
-		var view = (Gtk.Viewport) doc.Workspace.Canvas.Parent!;
-
+		// The canvas point at the top-left of the visible area, or the image's corner when that
+		// is on screen.
+		PointD viewportCorner = doc.Workspace.CanvasPointToViewport (PointD.Zero);
 		PointD viewPoint = new (
-			X: view.Hadjustment!.Value,
-			Y: view.Vadjustment!.Value);
+			X: Math.Max (0, -viewportCorner.X),
+			Y: Math.Max (0, -viewportCorner.Y));
 
 		PointD canvasPos = doc.Workspace.ViewPointToCanvas (viewPoint);
 

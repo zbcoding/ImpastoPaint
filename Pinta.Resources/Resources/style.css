@@ -54,6 +54,29 @@
     box-shadow: 0px 0px 2px 2px #7F7F7F;
 }
 
+/* Impasto: the canvas's overlay scrollbars default to a faint slider in the text color, which
+   vanishes over a white image. A dark slider with a light outline reads over both the image and
+   the surround, and stays thicker while idle. */
+.canvas-scroller > scrollbar > range > trough > slider {
+    background-color: alpha(#303030, 0.7);
+    outline: 1px solid alpha(white, 0.85);
+    outline-offset: -8px;
+}
+
+.canvas-scroller > scrollbar > range > trough > slider:hover {
+    background-color: alpha(#303030, 0.85);
+}
+
+.canvas-scroller > scrollbar > range > trough > slider:active {
+    background-color: alpha(#303030, 0.95);
+}
+
+.canvas-scroller > scrollbar.overlay-indicator:not(.hovering) > range > trough > slider {
+    min-width: 6px;
+    min-height: 6px;
+    outline-color: alpha(white, 0.85);
+}
+
 /* Impasto: border around the tool name chip, and one around the tool settings area
    as a whole - however many rows the settings wrap onto. */
 .tool-setting-group {

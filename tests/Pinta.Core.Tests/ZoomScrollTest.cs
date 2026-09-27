@@ -59,6 +59,17 @@ internal sealed class ZoomScrollTest
 		Assert.That (600 - scroll, Is.EqualTo (500).Within (1e-9));
 	}
 
+	[TestCase (60, 0)]
+	[TestCase (950, 2008 - Page)]
+	public void EdgePinningKeepsTheMarginAroundTheEdgeInView (double pointer, double expectedScroll)
+	{
+		// A 992px image with a 4px margin each side exactly fills the view; zooming in toward
+		// either edge must leave that edge's margin, where the canvas shadow draws, on screen.
+		double scroll = DocumentWorkspace.ScrollAfterZoom (pointer, Page, scroll: 0, oldExtent: 992, newExtent: 2000, margin: 4);
+
+		Assert.That (scroll, Is.EqualTo (expectedScroll).Within (1e-9));
+	}
+
 	[Test]
 	public void PointerOverSurroundPastTheImageKeepsThatEdgeInView ()
 	{

@@ -113,8 +113,10 @@ public sealed partial class CanvasWindow
 
 		PintaCanvas canvas = PintaCanvas.New ();
 		// For CSS: add a drop shadow outline to the canvas to give it a clear border
-		// when the image is close to the background color.
+		// when the image is close to the background color. The margin leaves a strip of surround
+		// around it inside the scrolled area, so an edge the view is scrolled to stays visible.
 		canvas.Name = "canvas";
+		canvas.MarginStart = canvas.MarginEnd = canvas.MarginTop = canvas.MarginBottom = DocumentWorkspace.CanvasMargin;
 
 		Gtk.Viewport viewPort = Gtk.Viewport.New (null, null);
 		viewPort.AddCssClass ("canvas-surround");
@@ -133,6 +135,7 @@ public sealed partial class CanvasWindow
 		Gtk.ScrolledWindow scrolledWindow = Gtk.ScrolledWindow.New ();
 		scrolledWindow.Hexpand = true;
 		scrolledWindow.Vexpand = true;
+		scrolledWindow.AddCssClass ("canvas-scroller");
 		scrolledWindow.Child = viewPort;
 
 		Ruler horizontalRuler = Ruler.New (Gtk.Orientation.Horizontal);
@@ -334,35 +337,17 @@ public sealed partial class CanvasWindow
 
 	public void UpdateRulerRange (object? sender, EventArgs e)
 	{
-		PointD lower = PointD.Zero;
-		PointD upper = PointD.Zero;
-
 		if (scrolled_window.Hadjustment == null || scrolled_window.Vadjustment == null)
 			return;
 
 		DocumentWorkspace workspace = document.Workspace;
 
-		Gtk.Widget viewport = scrolled_window.Child!;
-		Size viewSize = workspace.ViewSize;
-		PointD offset = new (
-			(viewport.GetAllocatedWidth () - viewSize.Width) / 2,
-			(viewport.GetAllocatedHeight () - viewSize.Height) / 2);
-
-		if (offset.X > 0) {
-			lower = lower with { X = -offset.X / workspace.Scale };
-			upper = upper with { X = document.ImageSize.Width - lower.X };
-		} else {
-			lower = lower with { X = scrolled_window.Hadjustment.Value / workspace.Scale };
-			upper = upper with { X = (scrolled_window.Hadjustment.Value + scrolled_window.Hadjustment.PageSize) / workspace.Scale };
-		}
-
-		if (offset.Y > 0) {
-			lower = lower with { Y = -offset.Y / workspace.Scale };
-			upper = upper with { Y = document.ImageSize.Height - lower.Y };
-		} else {
-			lower = lower with { Y = scrolled_window.Vadjustment.Value / workspace.Scale };
-			upper = upper with { Y = (scrolled_window.Vadjustment.Value + scrolled_window.Vadjustment.PageSize) / workspace.Scale };
-		}
+		// The image's top-left corner on screen; the rulers span the visible page from there.
+		PointD imageOrigin = workspace.CanvasPointToViewport (PointD.Zero);
+		PointD lower = new (-imageOrigin.X / workspace.Scale, -imageOrigin.Y / workspace.Scale);
+		PointD upper = new (
+			lower.X + scrolled_window.Hadjustment.PageSize / workspace.Scale,
+			lower.Y + scrolled_window.Vadjustment.PageSize / workspace.Scale);
 
 		horizontal_ruler.RulerRange = new (lower.X, upper.X);
 		vertical_ruler.RulerRange = new (lower.Y, upper.Y);

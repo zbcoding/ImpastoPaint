@@ -1179,10 +1179,11 @@ internal sealed class MainWindow
 			int window_x = canvas_viewport.GetAllocatedWidth ();
 			int window_y = canvas_viewport.GetAllocatedHeight ();
 
+			int surround = 2 * DocumentWorkspace.CanvasMargin;
 			double ratio =
 				(image_x / (double) window_x >= image_y / (double) window_y)
-				? (window_x - 20) / (double) image_x
-				: (window_y - 20) / (double) image_y;
+				? (window_x - surround) / (double) image_x
+				: (window_y - surround) / (double) image_y;
 
 			// The image is more constrained by width than height
 

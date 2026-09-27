@@ -1,0 +1,11 @@
+Corrected message:
+
+Test undo/redo of edits to existing modifier nodes
+
+Adds a history scenario suite that edits nodes already on the layer:
+strength, blend mode, name and visibility changes, re-applying an
+effect with new settings (including while hidden), reordering objects
+and nodes, moving a layer, and a final bake. The session is undone and
+redone linearly, out of order, and in long runs, with targeted tests
+for a reorder between a property edit and its undo and for unhiding a
+node edited while hidden.

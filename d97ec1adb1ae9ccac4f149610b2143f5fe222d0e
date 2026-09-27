@@ -1,0 +1,11 @@
+Corrected message:
+
+Reword the S/D curve and straighten hints to say "while dragging"
+
+The Line/Curve type dropdown tooltip and the shape control-point
+hover tooltip now read "S (while dragging): curve the line around the
+point; D (while dragging): straighten it", dropping the mention of
+clicking a point to select it first.
+
+That was inaccurate: S and D also act on a point selected by clicking,
+not only while dragging. 04ffe06d rewrote these tooltips again.

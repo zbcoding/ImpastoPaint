@@ -34,6 +34,11 @@ entries, is upstream Pinta work; the Impasto sections cover changes made in this
 
 ### Changed
 
+- License files are simpler. The Paint.NET license moved into `THIRD-PARTY-NOTICES.md`, which
+  now opens with a short list of what each license file covers, and its separate "PDN Reference
+  License" section is gone from Help > About. The Windows installer's license page now shows
+  Impasto's own license and Pinta's, instead of only Pinta's original notice.
+
 - Ctrl+scroll and pinch zoom now keep the image's edges in view. An image edge that is on screen,
   on the same side of the visible image as the pointer, is never pushed off screen by zooming in,
   so zooming toward a corner keeps the whole corner visible without scrolling back to it. Once

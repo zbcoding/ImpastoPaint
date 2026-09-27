@@ -3,33 +3,77 @@
 <!--
     NOTE FOR EDITORS: This file is embedded into the application and displayed
     verbatim in the "Third-Party Notices" expandable Legal section of the About
-    dialog (Pinta/Actions/Help/AboutDialogAction.cs). The main license
-    (license-mit.txt) and the Paint.NET license (license-pdn.txt) are shown as
-    their own sections. Whatever you write here is exactly what users see in the
-    app, so keep the formatting consistent.
+    dialog (Impasto/Actions/Help/AboutDialogAction.cs). license-mit.txt,
+    license-mit-pinta.txt and license-lgpl.txt are shown as their own sections.
+    Whatever you write here is exactly what users see in the app, so keep the
+    formatting consistent.
 -->
 
 This product, **Impasto** (a fork of [Pinta](https://github.com/PintaProject/Pinta)),
 includes third-party components that are redistributed with the application (bundled
 in the macOS and Windows installers, or linked from system packages on Linux).
 
-The Impasto application itself is licensed under the MIT License (see
-`license-mit.txt`). Code inherited from the Pinta Project remains under its own
-MIT License (see `license-mit-pinta.txt`). Portions derived from Paint.NET are
-licensed separately (see `license-pdn.txt`).
+## What each license file covers
+
+- `license-mit.txt`: Impasto's own code. MIT License, copyright zbcoding.
+- `license-mit-pinta.txt`: the code Impasto inherited from the Pinta Project. MIT License,
+  copyright Jonathan Pobst and the Pinta Project contributors.
+- `THIRD-PARTY-NOTICES.md` (this file): code derived from Paint.NET 3.0, the bundled icon
+  sets, and the libraries shipped with the application, each with its license.
+- `license-lgpl.txt`: the full GNU LGPL and GPL texts for the LGPL libraries listed below.
+  These cover those libraries only, not Impasto's code.
 
 The components listed below are owned by their respective copyright holders and
 are provided under their own licenses, which are reproduced here.
+
+## Paint.NET 3.0 (code and icons)
+
+Parts of Impasto's code, marked with a Paint.NET header in the source files, and some
+of its icons are derived from Paint.NET 3.0, used under the following license:
+
+> Paint.NET
+> Copyright (C) 2007 Rick Brewster, Chris Crosetto, Tom Jackson, Michael Kelsey, Brandon
+> Ortiz, Craig Taylor, Chris Trevino, and Luke Walker.
+> Portions Copyright (C) 2007 Microsoft Corporation. All Rights Reserved.
+>
+> This software is licensed as per the MIT License below, but with one exception:
+>
+> * The Paint.NET logo and icon artwork are Copyright (C) Rick Brewster. They are covered
+>   by the Creative Commons Attribution-NonCommercial-NoDerivs 2.5 license which is
+>   detailed here: http://creativecommons.org/licenses/by-nc-nd/2.5/ . Permission is
+>   granted to use the logo and icon artwork in ways that discuss or promote Paint.NET
+>   (e.g. blog and news posts about Paint.NET, "Made with Paint.NET" watermarks or insets).
+>
+> MIT License: http://www.opensource.org/licenses/mit-license.php
+>
+> Permission is hereby granted, free of charge, to any person obtaining a copy of this
+> software and associated documentation files (the "Software"), to deal in the Software
+> without restriction, including without limitation the rights to use, copy, modify,
+> merge, publish, distribute, sublicense, and/or sell copies of the Software, and to
+> permit persons to whom the Software is furnished to do so, subject to the following
+> conditions:
+>
+> The above copyright notice and this permission notice shall be included in all copies
+> or substantial portions of the Software.
+>
+> THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+> INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A
+> PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
+> HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF
+> CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE
+> OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+Pinta, and Impasto after it, do not use the Paint.NET logo or icon artwork covered by
+the exception above.
 
 ## Icon sets
 
 The application bundles icons from the following sources, reproduced here with
 their respective licenses.
 
-### Paint.Net 3.0
+### Paint.NET 3.0
 
-Used under the MIT License. Copyright (c) dotPDN LLC, Rick Brewster and
-contributors. See also `license-pdn.txt` and the "MIT License" text below.
+Used under the Paint.NET 3.0 license reproduced in "Paint.NET 3.0 (code and icons)" above.
 
 ### Silk icon set
 

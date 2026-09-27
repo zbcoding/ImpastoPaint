@@ -28,6 +28,7 @@ public sealed class PsdFormat : IImageImporter
 
 	private const short TransparencyChannel = -1;
 	private const short UserMaskChannel = -2;
+	private const short RealUserMaskChannel = -3;
 
 	public Document Import (Gio.File file)
 	{
@@ -240,7 +241,8 @@ public sealed class PsdFormat : IImageImporter
 		int extraLength = reader.ReadLength ();
 		int extraEnd = reader.Position + extraLength;
 
-		MaskInfo? mask = ReadMaskInfo (reader, extraEnd);
+		bool hasRealUserMask = Array.Exists (channels, c => c.Id == RealUserMaskChannel);
+		MaskInfo? mask = ReadMaskInfo (reader, extraEnd, hasRealUserMask);
 		reader.Skip (reader.ReadLength (extraEnd)); // Blending ranges
 		string name = ReadPascalName (reader);
 
@@ -278,7 +280,7 @@ public sealed class PsdFormat : IImageImporter
 		return new (left, top, right, bottom);
 	}
 
-	private static MaskInfo? ReadMaskInfo (PsdReader reader, int end)
+	private static MaskInfo? ReadMaskInfo (PsdReader reader, int end, bool hasRealUserMask)
 	{
 		int length = reader.ReadLength (end);
 		int maskEnd = reader.Position + length;
@@ -289,6 +291,11 @@ public sealed class PsdFormat : IImageImporter
 			Bounds rect = ReadBounds (reader);
 			byte defaultColor = reader.ReadByte ();
 			byte flags = reader.ReadByte ();
+
+			// A layer with both a vector mask and a user mask stores the real user mask's flags,
+			// background color and rect (18 bytes) next, ahead of the parameters.
+			if (hasRealUserMask && length >= 36)
+				reader.Skip (18);
 
 			// Bit 4: a parameters byte follows, whose bit 0 says the user mask density comes first.
 			byte density = 255;
@@ -431,13 +438,30 @@ public sealed class PsdFormat : IImageImporter
 	{
 		Dictionary<short, Plane> planes = [];
 		foreach (ChannelData channel in record.ChannelData) {
-			Plane plane = new (channel.Rect.Intersect (header.Width, header.Height));
 			int compression = BinaryPrimitives.ReadUInt16BigEndian (data.AsSpan (channel.Start, 2));
-			DecodeChannel (data, compression, channel.Start + 2, channel.End, channel.Rect, plane);
+			int start = channel.Start + 2;
+			if (MinimumChannelLength (compression, channel.Rect) > channel.End - start)
+				throw new InvalidDataException ("Truncated channel data");
+
+			Plane plane = new (channel.Rect.Intersect (header.Width, header.Height));
+			DecodeChannel (data, compression, start, channel.End, channel.Rect, plane);
 			planes[channel.Id] = plane;
 		}
 		return planes;
 	}
+
+	/// <summary>
+	/// The fewest bytes that can hold a channel covering <paramref name="rect"/>: every pixel when raw,
+	/// a row count plus 2 bytes per 128 pixels for PackBits, deflate's 1032:1 limit for ZIP. Checked
+	/// before the channel's plane is allocated, so a tiny file cannot demand a huge one.
+	/// </summary>
+	private static long MinimumChannelLength (int compression, Bounds rect)
+		=> compression switch {
+			0 => (long) rect.Width * rect.Height,
+			1 => rect.Height * (2 + (2L * ((rect.Width + 127) / 128))),
+			2 or 3 => (long) rect.Width * rect.Height / 1032,
+			_ => throw new InvalidDataException ($"Unknown channel compression {compression}"),
+		};
 
 	/// <summary>The rectangle a channel's pixels cover, or null for channels Impasto does not use.</summary>
 	private static Bounds? ChannelBounds (Header header, LayerRecord record, short id)
@@ -453,7 +477,7 @@ public sealed class PsdFormat : IImageImporter
 	{
 		switch (compression) {
 			case 0:
-				DecodeRawRows (data, start, end, rect, plane);
+				DecodeRawRows (data, start, rect, plane);
 				break;
 			case 1:
 				DecodeRleRows (data, countsStart: start, rowsStart: start + (2 * rect.Height), end, rect, plane);
@@ -467,11 +491,8 @@ public sealed class PsdFormat : IImageImporter
 		}
 	}
 
-	private static void DecodeRawRows (byte[] data, int start, int end, Bounds rect, Plane plane)
+	private static void DecodeRawRows (byte[] data, int start, Bounds rect, Plane plane)
 	{
-		if ((long) rect.Width * rect.Height > end - start)
-			throw new InvalidDataException ("Truncated channel data");
-
 		for (int y = 0; y < rect.Height; y++)
 			plane.CopyRow (rect, y, data.AsSpan (start + (y * rect.Width), rect.Width));
 	}
@@ -482,9 +503,6 @@ public sealed class PsdFormat : IImageImporter
 	/// </summary>
 	private static int DecodeRleRows (byte[] data, int countsStart, int rowsStart, int end, Bounds rect, Plane plane)
 	{
-		if (rowsStart > end)
-			throw new InvalidDataException ("Truncated RLE row counts");
-
 		byte[] row = new byte[rect.Width];
 		int position = rowsStart;
 		for (int y = 0; y < rect.Height; y++) {
@@ -553,14 +571,8 @@ public sealed class PsdFormat : IImageImporter
 			LayerRecord record = records[i];
 			Dictionary<short, Plane> planes = DecodePlanes (data, header, record);
 
-			UserLayer layer = document.Layers.CreateLayer (record.Name);
-			layer.Opacity = record.EffectiveOpacity;
-			layer.Hidden = record.EffectiveHidden;
-			layer.BlendMode = ToBlendMode (record.BlendKey);
-
-			WriteLayerPixels (layer.Surface, header, record.Rect, planes);
-
 			// Impasto layers have one mask, so the layer's own and its groups' masks are multiplied into it.
+			// Everything is decoded before the layer exists, so a corrupt channel leaves no surface behind.
 			List<(MaskInfo Info, Plane Plane)> masks = [];
 			if (record.Mask is MaskInfo own && planes.TryGetValue (UserMaskChannel, out Plane? ownPlane))
 				masks.Add ((own, ownPlane));
@@ -572,6 +584,13 @@ public sealed class PsdFormat : IImageImporter
 				if (group.Mask is MaskInfo info && groupPlane is not null)
 					masks.Add ((info, groupPlane));
 			}
+
+			UserLayer layer = document.Layers.CreateLayer (record.Name);
+			layer.Opacity = record.EffectiveOpacity;
+			layer.Hidden = record.EffectiveHidden;
+			layer.BlendMode = ToBlendMode (record.BlendKey);
+
+			WriteLayerPixels (layer.Surface, header, record.Rect, planes);
 
 			if (masks.Count > 0) {
 				// A disabled mask is kept only when there is nothing enabled, so it can be re-enabled.
@@ -645,23 +664,23 @@ public sealed class PsdFormat : IImageImporter
 		int start = reader.Position;
 		int end = reader.Data.Length;
 
+		if (compression is not (0 or 1))
+			throw new NotSupportedException ($"Composite image compression {compression} is not supported");
+
+		// All of it must be there before any plane is allocated. RLE row counts cover every channel, used or not.
+		long minimum = (channels * MinimumChannelLength (compression, canvas))
+			+ (compression == 1 ? 2L * header.Height * (header.Channels - channels) : 0);
+		if (minimum > end - start)
+			throw new InvalidDataException ("Truncated composite image");
+
 		Plane[] planes = new Plane[channels];
 		int rowsStart = start + (2 * header.Height * header.Channels);
 		for (int c = 0; c < channels; c++) {
 			planes[c] = new Plane (canvas);
-			switch (compression) {
-				case 0:
-					long planeStart = start + ((long) c * header.Width * header.Height);
-					if (planeStart > end)
-						throw new InvalidDataException ("Truncated composite image");
-					DecodeRawRows (reader.Data, (int) planeStart, end, canvas, planes[c]);
-					break;
-				case 1:
-					rowsStart = DecodeRleRows (reader.Data, start + (2 * header.Height * c), rowsStart, end, canvas, planes[c]);
-					break;
-				default:
-					throw new NotSupportedException ($"Composite image compression {compression} is not supported");
-			}
+			if (compression == 0)
+				DecodeRawRows (reader.Data, start + (c * header.Width * header.Height), canvas, planes[c]);
+			else
+				rowsStart = DecodeRleRows (reader.Data, start + (2 * header.Height * c), rowsStart, end, canvas, planes[c]);
 		}
 
 		UserLayer layer = document.Layers.CreateLayer ();

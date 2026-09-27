@@ -1,0 +1,9 @@
+Corrected message:
+
+Fix Ctrl+drag scaling from the center line corrupting the transform
+
+In Move Selected and Move Selection, a Ctrl+drag scale that started
+exactly on the content's horizontal or vertical center line divided by
+zero and produced an Infinity/NaN transform. That axis now keeps a
+scale of 1, as the other scale paths already did. Adds a regression
+test.

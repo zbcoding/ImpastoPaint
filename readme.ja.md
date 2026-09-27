@@ -40,11 +40,7 @@ Impasto は MIT License の下でライセンスされています（`license-mi
 
 Impasto は新しく独立したプロジェクトです。MIT ライセンスで公開されている
 [Pinta](https://github.com/PintaProject/Pinta) のソースコードを出発点としています。Pinta 自体も
-[Paint.NET™](https://www.getpaint.net/) に影響を受けた GTK アプリケーションで、その一部は Paint.NET の作者が
-3.x 系で MIT ライセンスのもと公開した初期のソースコードに基づいています。そのため一部のソース
-ファイルには Paint.NET と Microsoft の著作権表示があります(`THIRD-PARTY-NOTICES.md` を参照)。
-Impasto は Paint.NET とは無関係であり、現在のクローズドソース版の Paint.NET に由来するものは
-含まれていません。
+[Paint.NET™](https://www.getpaint.net/) に影響を受けた GTK アプリケーションです。
 Pinta のコントリビューターは Impasto アプリケーション内に記載されています。
 Impasto は Pinta プロジェクトや同じコントリビューターによって保守されているものではありません。
 

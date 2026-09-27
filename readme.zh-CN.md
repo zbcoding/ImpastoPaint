@@ -40,9 +40,7 @@ Impasto 基于 MIT 许可证授权（参见 `license-mit.txt`）。第三方
 
 Impasto 是一个全新的独立项目。它起始于以 MIT 许可证发布的
 [Pinta](https://github.com/PintaProject/Pinta) 源代码 —— 而 Pinta 本身是一款受
-[Paint.NET™](https://www.getpaint.net/) 启发的 GTK 应用,并且部分基于 Paint.NET 作者在 3.x 版本中以 MIT
-许可证发布的早期源代码。因此部分源文件带有 Paint.NET 和 Microsoft 的版权声明;参见
-`THIRD-PARTY-NOTICES.md`。Impasto 与 Paint.NET 无关联,也不包含任何来自当前闭源版 Paint.NET 的内容。
+[Paint.NET™](https://www.getpaint.net/) 启发的 GTK 应用。
 Pinta 的贡献者已在 Impasto 应用中列出。
 Impasto 并非由 Pinta 项目或同一批贡献者维护。
 

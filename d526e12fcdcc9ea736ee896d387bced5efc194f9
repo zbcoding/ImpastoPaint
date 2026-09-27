@@ -1,0 +1,11 @@
+Corrected message:
+
+Correct two unreleased changelog entries and add the dithering fix
+
+- Save as Impasto project: the dialog does re-show itself when the
+  typed name isn't .ora (sketch.png comes back as sketch.ora); the
+  entry claimed it never re-shows.
+- Aspect ratio chip: state the tolerance (a tenth of a percent) used
+  to decide that no short ratio describes the image.
+- Add the missing entry for dithering no longer leaving a seam along
+  the right and bottom edge of each region it renders.

@@ -1,0 +1,10 @@
+Corrected message:
+
+Add canvas-resize tests for text objects and compound-action bakes
+
+Test-only:
+- Growing the canvas centred moves text objects with the raster, as
+  it already did for shapes.
+- A resize run as part of a larger undo step (e.g. paste into a new
+  layer) still bakes modifier nodes, and one undo restores both the
+  size and the node.

@@ -1,0 +1,11 @@
+Corrected message:
+
+Share the object z-order walk and composite fold as Core helpers
+
+Refactor, no behavior change:
+- Move ObjectLayerRenderWalk from Pinta.Tools to Pinta.Core and use it
+  for the group bake in ObjectRasterizer.RasterizeSubset instead of
+  its own shape/text loop.
+- Replace the two copies of the modifier-composite fold after an
+  object redraw (text tool and shape edit engine) with one helper,
+  ObjectOpacity.FoldObjectSurfaceIntoComposite.

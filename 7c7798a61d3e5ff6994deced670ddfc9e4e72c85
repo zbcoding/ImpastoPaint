@@ -1,0 +1,8 @@
+Corrected message:
+
+Release checklist: FlatPark PR checks apply only to a manual ping
+
+The release-dispatch run and merged flatpark PR checks now sit under
+"only if the ping was sent by hand", so a normal release no longer
+waits on a merge only FlatPark can do. The two remaining rebuild
+checks are marked as not blocking the release.

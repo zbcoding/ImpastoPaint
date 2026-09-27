@@ -52,12 +52,8 @@ attributions, notices, and license texts are in `THIRD-PARTY-NOTICES.md`.
 ## Relationship to Pinta
 
 Impasto is a new and separate project. It started from the MIT-licensed source of
-[Pinta](https://github.com/PintaProject/Pinta), a GTK application inspired by
-[Paint.NET™](https://www.getpaint.net/) and built partly from Paint.NET's early source
-code, which its authors published under the MIT License for the 3.x releases. That is why
-some source files carry Paint.NET and Microsoft copyright notices; see
-`THIRD-PARTY-NOTICES.md`. Impasto is not affiliated with Paint.NET, and nothing in it comes
-from current, closed-source versions of Paint.NET.
+[Pinta](https://github.com/PintaProject/Pinta) — a GTK application itself inspired by
+[Paint.NET™](https://www.getpaint.net/) 
 Pinta's contributors are listed in the Impasto application.
 Impasto is not maintained by the Pinta project or the same contributors.
 

@@ -37,8 +37,8 @@ entries, is upstream Pinta work; the Impasto sections cover changes made in this
 - License files are simpler. The Paint.NET license moved into `THIRD-PARTY-NOTICES.md`, which
   now opens with a short list of what each license file covers, and its separate "PDN Reference
   License" section is gone from Help > About. The Windows installer's license page now shows
-  Impasto's own license and Pinta's, instead of only Pinta's original notice. The notices,
-  the readmes and the headers of the source files that descend from Paint.NET now say plainly
+  Impasto's own license and Pinta's, instead of only Pinta's original notice. The notices
+  and the headers of the source files that descend from Paint.NET now say plainly
   that this code comes from Paint.NET's early MIT-licensed 3.x source release by way of Pinta,
   why Microsoft holds copyright on parts of it, and that Paint.NET is a trademark Impasto is
   not affiliated with.

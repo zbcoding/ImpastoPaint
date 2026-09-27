@@ -1,0 +1,7 @@
+Corrected message:
+
+Share shape start-point resolution across the Add*Points helpers
+
+No behavior change. The Ctrl-on-control-point vs click-origin choice
+duplicated in AddLinePoints, AddRectanglePoints and AddTrianglePoints
+moves into ResolveShapeStartingPoint.

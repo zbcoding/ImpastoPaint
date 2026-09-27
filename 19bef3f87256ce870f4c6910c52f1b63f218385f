@@ -1,0 +1,10 @@
+Corrected message:
+
+Keep newly drawn shapes beneath existing effect nodes
+
+9d393727 inserted directly added shapes and text at the bottom of the
+layer's object stack, but shape tools save a drawn shape through a
+different path that still appended it at the top, above any effect or
+transform node, so the node did not apply to it. That path, and its
+text counterpart, now insert new entries at the bottom as a block in
+draw order. Adds a regression test.

@@ -30,7 +30,7 @@ are provided under their own licenses, which are reproduced here.
 ## Paint.NET 3.x source release (code and icons)
 
 **Where this code comes from.** Paint.NET's authors published its source code under the MIT
-License for the 3.x releases (2007-2008). Pinta was built partly from that MIT-licensed
+License up to version 3.36 (2008). Pinta was built partly from that MIT-licensed
 source, and Impasto is a fork of Pinta, so some of Impasto's code descends from it. Those
 source files say so in their header ("Derived from the MIT-licensed Paint.NET 3.x source
 release, via Pinta"). Some of Impasto's icons come from the same release.
@@ -42,10 +42,12 @@ release, via Pinta"). Some of Impasto's icons come from the same release.
   have been closed source since version 3.5 and are not MIT-licensed.
 - The copyright lines below, including "Portions Copyright (C) Microsoft Corporation", are
   the original authors' notices, which the MIT License requires be kept. Paint.NET began in
-  2004 as a student project at Washington State University mentored by Microsoft, so
-  Microsoft holds the copyright to parts of that early code. Microsoft's portions were
-  published under the same MIT License, and it adds no further terms. Neither Microsoft nor
-  the Paint.NET authors hold any copyright in Impasto's own code.
+  2004 as a Washington State University student project mentored by Microsoft, and its
+  developers then worked on it in their spare time while employed full-time at Microsoft;
+  that is the likely source of Microsoft's copyright in parts of it. The whole release,
+  Microsoft's portions included, was published under the MIT License below, which grants
+  its rights free of charge and adds no further terms. Neither Microsoft nor the Paint.NET
+  authors hold any copyright in Impasto's own code.
 - Paint.NET is a trademark of dotPDN LLC. The name appears here and in source headers only to
   identify where the code came from. Impasto is not affiliated with, endorsed by, or derived
   from any current version of Paint.NET, and does not use its name, logo or branding.

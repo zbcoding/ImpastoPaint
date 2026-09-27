@@ -1,0 +1,7 @@
+Corrected message:
+
+Test that dropping a mask keeps another layer's mask selection
+
+With two masked layers, dropping the unselected layer's mask must
+leave the active mask selection alone, while dropping the selected
+layer's own mask clears it.

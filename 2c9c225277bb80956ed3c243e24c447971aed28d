@@ -1,0 +1,9 @@
+Corrected message:
+
+Fix Text tool crash after switching tools mid-drag
+
+Switching tools (e.g. with a keyboard shortcut) while dragging a text
+box's corner, border or rotate handle, or while drawing a new box, left
+the Text tool still tracking the drag after its text object had been
+committed and cleared; the next mouse move crashed. Deactivating the
+tool now ends the drag. Adds a regression test.

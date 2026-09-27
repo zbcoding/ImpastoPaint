@@ -1,0 +1,12 @@
+Corrected message:
+
+Test that hiding or deleting a layer clears its shape handles and badge
+
+Test-only commit: adds tests checking that a shape tool's control
+points and "Obj." badge overlay clear when the current layer is hidden,
+and that the badge clears when the layer it belongs to is deleted.
+
+The fix those tests cover (no handles while the current layer is
+hidden, and a resync-then-redraw on layer add/remove/property changes)
+was committed in 81c84664, "Remove the shape-type in-place conversion
+dropdown", not here.

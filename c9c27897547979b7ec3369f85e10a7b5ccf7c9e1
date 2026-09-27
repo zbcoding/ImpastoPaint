@@ -1,0 +1,13 @@
+Corrected message:
+
+Fix undo history items leaking a full-size copy of the layer
+
+Raster, text, shape and rasterize-objects undo steps kept the
+"before" surface copy alive after storing only a diff of it. The copy
+is now freed when the diff is stored.
+
+Also: undoing or redoing a mask edit on a layer whose mask no longer
+exists now fails with an error instead of applying the mask's diff to
+the layer's color pixels.
+
+Adds surface-ownership tests for all four history item types.

@@ -1,0 +1,10 @@
+Corrected message:
+
+Fix a layer's shapes vanishing when a shape tool is created
+
+Creating a shape tool emptied the shared list of loaded shapes but
+left it marked as holding the current layer's shapes. The layer was
+never reloaded, and the next save of the shape list wrote the empty
+list over the layer, deleting every shape on it.
+
+Adds a changelog entry and a regression test.

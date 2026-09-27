@@ -1,0 +1,17 @@
+Corrected message:
+
+Rebuild Layers panel object rows when their objects change
+
+The check that decides whether a layer's object rows can be kept
+instead of rebuilt compared rows against the layer's objects by raw
+index, assuming every object has a row. Shapes and text set to
+rasterize on finalize have none, so any such object shifted the
+comparison. It also compared only the kind of object, so replacing one
+text with another at the same position kept a row pointing at the old
+one.
+
+Rows are now compared against the same filtered object list used to
+build them, and text and modifier rows must refer to the same object.
+Shape rows are still matched by kind only: shape objects are recreated
+on every save of the shape list, so an identity check would rebuild
+every row on each mouse move while dragging.

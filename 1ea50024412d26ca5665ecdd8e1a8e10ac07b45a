@@ -1,0 +1,15 @@
+Corrected message:
+
+Clear the mask paint target whenever a layer's mask is removed
+
+Baking a layer's modifier stack removed its mask but left that mask
+selected as the paint target; only the Layers panel's delete-mask
+action cleared it. A later mask-targeted history snapshot then fell
+back to copying the layer's colour pixels, and Undo could write them
+over the restored mask.
+
+Removing a mask now clears the mask paint target on every path (bake,
+undo/redo, delete), so the delete-mask action no longer does it
+separately. A mask-targeted snapshot of a layer with no mask now throws
+instead of silently falling back to the colour surface, matching what
+undo/redo of such an item already did.

@@ -1,0 +1,14 @@
+Corrected message:
+
+Use the platform Escape label in the shortcuts dialog description
+
+The keyboard shortcuts dialog's "Deselect All (Quick, x2)" row showed
+the platform's label for Escape in its shortcut column but still said
+"Press Escape twice quickly" in its description. The description now
+uses the same label.
+
+Also:
+- A transient hint popover is now popped down before it moves to a new
+  anchor widget, as the toolbox's old per-widget hint code did.
+- Remove an unused local from each shape edit engine's CreateShape. No
+  behavior change.

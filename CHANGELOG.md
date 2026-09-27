@@ -6,7 +6,11 @@ Impasto is a fork of the [Pinta Project](https://github.com/PintaProject/Pinta).
 Everything below the "Pinta Project history" heading, plus the "Inherited from Pinta"
 entries, is upstream Pinta work; the Impasto sections cover changes made in this fork.
 
-## Impasto - [Unreleased](https://github.com/zbcoding/ImpastoPaint/compare/v0.4.0...main)
+## Impasto - [Unreleased](https://github.com/zbcoding/ImpastoPaint/compare/v0.5.0...main)
+
+Changes for the next release go here.
+
+## Impasto - [0.5.0](https://github.com/zbcoding/ImpastoPaint/releases/tag/v0.5.0) - 2026-09-27
 
 ### Added
 
@@ -32,6 +36,11 @@ entries, is upstream Pinta work; the Impasto sections cover changes made in this
   Save to write that file back. The check follows the format list, so a format stops warning
   as soon as Impasto can save it.
 
+- A text or shape object's row in the Layers panel can be dragged onto another layer's row, its
+  mask row, or between its object rows to move the object to that layer. It keeps its place on
+  the canvas, and the move is a single undo step. Modifier rows stay on their own layer: the
+  drag is refused there, so the pointer shows it can't drop instead of a move that does nothing.
+
 ### Changed
 
 - License files are simpler. The Paint.NET license moved into `THIRD-PARTY-NOTICES.md`, which
@@ -55,6 +64,10 @@ entries, is upstream Pinta work; the Impasto sections cover changes made in this
   onto the real layer when the button is released, and nothing asked the canvas to repaint that
   swap, so releasing without moving the pointer again left the last stretch of the stroke showing
   its scratch-layer version until something else forced a redraw.
+
+- The dashed rectangle, grips and "Obj." badge around a text or shape object now go away when
+  they no longer point at anything: after selecting the layer's own row or its mask row instead
+  of the object's, and after hiding the layer or the object from the Layers panel.
 
 - Layers > Import from File now reads every format the file picker offers it. It decoded files
   with the system image loader instead of Impasto's own readers, so OpenRaster and PDN files

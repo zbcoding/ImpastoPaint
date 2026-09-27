@@ -1,0 +1,17 @@
+Corrected message:
+
+Paint in-progress strokes beneath the current layer's objects
+
+A stroke being drawn was painted above the current layer's shapes,
+text and effect nodes, then dropped beneath them at mouse-up when it
+was committed to the layer's raster. It is now painted beneath them
+from the start, so it no longer jumps at mouse-up. The colour picker's
+pixel sampling reads the same layer order.
+
+Also:
+- Toggling a sub-layer's visibility no longer rebuilds the layers
+  dock's child rows (which reset the list's scroll position) when the
+  row layout is unchanged; the existing rows are refreshed instead.
+- The add-in install dialog no longer passes a possibly null parent
+  window to its "failed to load" error dialog (CS8604); without a
+  parent the error is not shown.

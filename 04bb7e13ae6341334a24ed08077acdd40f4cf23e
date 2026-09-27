@@ -1,0 +1,11 @@
+Corrected message:
+
+Fix tautological key-binding tests and a weak transform guard test
+
+- The three KeyDispatchTest default-gesture tests compared a binding
+  with its own default and could not fail. They are replaced with
+  override round trips: set a different key, expect it back, reset,
+  expect the default.
+- TransformToolZeroDivideGuardTest checked only that the transformed
+  point was finite; it now checks the exact point, so a fallback to a
+  wrong scale (0 or 0.5 instead of 1) fails.

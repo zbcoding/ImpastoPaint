@@ -1,0 +1,8 @@
+Corrected message:
+
+Fix magic wand tests on macOS by sending Cmd for Ctrl clicks
+
+The wand tests sent Ctrl for Union clicks, but on macOS the tool
+reads Cmd as Ctrl, so three tests failed there. The helper that picks
+the right modifier moves from the shape name tests into the shared
+tools test harness, and both fixtures use it.

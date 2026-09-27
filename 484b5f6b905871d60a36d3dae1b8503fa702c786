@@ -1,0 +1,12 @@
+Corrected message:
+
+Prevent opening two status-bar color pickers at once
+
+The status bar's single-color picker is non-modal and had no
+re-entry guard, so a second swatch click while one picker was open
+raced the first when setting the color. A second click is now ignored
+while a picker is open, matching the color panel's picker.
+
+Also log the underlying exception when an add-in package fails to
+load; the install dialog reported every failure (including permission
+and IO errors) as a corrupt package with nothing logged.

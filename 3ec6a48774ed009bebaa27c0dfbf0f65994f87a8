@@ -1,0 +1,10 @@
+Corrected message:
+
+Stop earlier shapes and text swapping z-order when a third is drawn
+
+Each save hands the layer its full shape (or text) list oldest-first,
+but the layer puts new objects at the bottom, so its existing slots
+read newest-first. Matching the two by position put already-drawn
+objects into each other's slots from the third one on. The existing
+objects are now matched in reverse; new ones still go in at the bottom
+in draw order. Adds a regression test.

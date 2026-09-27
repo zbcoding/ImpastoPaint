@@ -1,0 +1,12 @@
+Corrected message:
+
+Keep the view centered on menu, keyboard and typed zoom
+
+Zooming from the menu, a keyboard shortcut or the typed zoom box
+anchors on the center of the view, but the rule that keeps an
+on-screen image edge from being pushed out of view also applied there
+and could pull a centered image to its top-left corner. That rule now
+applies only to zooming around the mouse pointer; center zoom keeps
+the centered image point centered.
+
+Adds a test for the center case.

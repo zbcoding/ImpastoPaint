@@ -74,6 +74,18 @@ internal sealed class PsdCompatibilityTest : DocumentHarness
 		Assert.That (PintaCore.Workspace.OpenDocuments, Has.Count.EqualTo (documentsBefore));
 	}
 
+	[Test]
+	public void ImportingALargeDocumentFormatFileAsALayerIsRefusedAsAnUnsupportedFormat ()
+	{
+		// The message is the error dialog's heading: plain, as Open shows it, with each reader's
+		// failure left to the details.
+		Assert.That (
+			() => PintaCore.Actions.Layers.ImportLayerFromFile (Document, Asset ("psd-refused-large-document.psb")),
+			Throws.TypeOf<NotSupportedException> ().With.Message.EqualTo ("Unsupported file format"));
+
+		Assert.That (Document.Layers.UserLayers, Has.Count.EqualTo (1));
+	}
+
 	[TestCase ("psd-refused-16bit.psd")]
 	[TestCase ("psd-refused-cmyk.psd")]
 	public void ImportingAnUnsupportedPhotoshopFileAsALayerLeavesTheDocumentUntouched (string fileName)

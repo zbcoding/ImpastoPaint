@@ -1,0 +1,13 @@
+Corrected message:
+
+Stop Paint Bucket and Magic Wand clicks baking live objects
+
+The rasterize prompt added in 525caeae fired for any layer-writing
+tool whose click landed inside a live object's bounds. For Paint
+Bucket this baked the clicked object before it could recolor the
+object non-destructively, so the fill went into the layer raster
+instead. Magic Wand clicks likewise baked objects the wand only reads,
+and Recolor got a second prompt on top of its own per-object one.
+
+Paint Bucket, Magic Wand and Recolor now skip that prompt. Adds a
+regression test for the tool-manager routing.

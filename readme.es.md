@@ -40,7 +40,11 @@ atribuciones, avisos y textos de licencia de terceros están en `THIRD-PARTY-NOT
 
 Impasto es un proyecto nuevo e independiente. Partió del código fuente con licencia MIT de
 [Pinta](https://github.com/PintaProject/Pinta) — una aplicación GTK inspirada a su vez en
-[Paint.NET™](https://www.getpaint.net/)
+[Paint.NET™](https://www.getpaint.net/) y construida en parte a partir del código fuente temprano de Paint.NET,
+que sus autores publicaron bajo la licencia MIT para las versiones 3.x. Por eso algunos archivos
+fuente llevan avisos de copyright de Paint.NET y Microsoft; consulte `THIRD-PARTY-NOTICES.md`.
+Impasto no está afiliado a Paint.NET y no contiene nada de las versiones actuales, de código
+cerrado, de Paint.NET.
 Los colaboradores de Pinta aparecen acreditados en la aplicación Impasto.
 Impasto no está mantenido por el proyecto Pinta ni por los mismos colaboradores.
 

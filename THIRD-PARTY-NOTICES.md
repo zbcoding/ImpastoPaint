@@ -18,18 +18,39 @@ in the macOS and Windows installers, or linked from system packages on Linux).
 - `license-mit.txt`: Impasto's own code. MIT License, copyright zbcoding.
 - `license-mit-pinta.txt`: the code Impasto inherited from the Pinta Project. MIT License,
   copyright Jonathan Pobst and the Pinta Project contributors.
-- `THIRD-PARTY-NOTICES.md` (this file): code derived from Paint.NET 3.0, the bundled icon
-  sets, and the libraries shipped with the application, each with its license.
+- `THIRD-PARTY-NOTICES.md` (this file): code derived from the early, MIT-licensed Paint.NET
+  source release, the bundled icon sets, and the libraries shipped with the application, each
+  with its license.
 - `license-lgpl.txt`: the full GNU LGPL and GPL texts for the LGPL libraries listed below.
   These cover those libraries only, not Impasto's code.
 
 The components listed below are owned by their respective copyright holders and
 are provided under their own licenses, which are reproduced here.
 
-## Paint.NET 3.0 (code and icons)
+## Paint.NET 3.x source release (code and icons)
 
-Parts of Impasto's code, marked with a Paint.NET header in the source files, and some
-of its icons are derived from Paint.NET 3.0, used under the following license:
+**Where this code comes from.** Paint.NET's authors published its source code under the MIT
+License for the 3.x releases (2007-2008). Pinta was built partly from that MIT-licensed
+source, and Impasto is a fork of Pinta, so some of Impasto's code descends from it. Those
+source files say so in their header ("Derived from the MIT-licensed Paint.NET 3.x source
+release, via Pinta"). Some of Impasto's icons come from the same release.
+
+**What this does and does not mean.**
+
+- That code is used under the MIT License reproduced below, which is the license it was
+  published under. Nothing in Impasto is licensed from current versions of Paint.NET, which
+  have been closed source since version 3.5 and are not MIT-licensed.
+- The copyright lines below, including "Portions Copyright (C) Microsoft Corporation", are
+  the original authors' notices, which the MIT License requires be kept. Paint.NET began in
+  2004 as a student project at Washington State University mentored by Microsoft, so
+  Microsoft holds the copyright to parts of that early code. Microsoft's portions were
+  published under the same MIT License, and it adds no further terms. Neither Microsoft nor
+  the Paint.NET authors hold any copyright in Impasto's own code.
+- Paint.NET is a trademark of dotPDN LLC. The name appears here and in source headers only to
+  identify where the code came from. Impasto is not affiliated with, endorsed by, or derived
+  from any current version of Paint.NET, and does not use its name, logo or branding.
+
+The license, as published with that source release:
 
 > Paint.NET
 > Copyright (C) 2007 Rick Brewster, Chris Crosetto, Tom Jackson, Michael Kelsey, Brandon
@@ -71,9 +92,9 @@ the exception above.
 The application bundles icons from the following sources, reproduced here with
 their respective licenses.
 
-### Paint.NET 3.0
+### Paint.NET 3.x source release
 
-Used under the Paint.NET 3.0 license reproduced in "Paint.NET 3.0 (code and icons)" above.
+Used under the MIT License reproduced in "Paint.NET 3.x source release (code and icons)" above.
 
 ### Silk icon set
 

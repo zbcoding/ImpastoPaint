@@ -40,7 +40,10 @@ Impasto распространяется по лицензии MIT (см. `licen
 
 Impasto — новый и самостоятельный проект. Он начался с исходного кода
 [Pinta](https://github.com/PintaProject/Pinta) под лицензией MIT — приложения на GTK, которое само вдохновлено
-[Paint.NET™](https://www.getpaint.net/)
+[Paint.NET™](https://www.getpaint.net/) и частично построено на раннем исходном коде Paint.NET, который его
+авторы опубликовали под лицензией MIT для версий 3.x. Поэтому в некоторых исходных файлах есть
+уведомления об авторских правах Paint.NET и Microsoft; см. `THIRD-PARTY-NOTICES.md`. Impasto не
+связан с Paint.NET и не содержит ничего из современных закрытых версий Paint.NET.
 Участники разработки Pinta перечислены в приложении Impasto.
 Impasto не поддерживается проектом Pinta или теми же участниками.
 

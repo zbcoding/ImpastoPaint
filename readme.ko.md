@@ -40,7 +40,10 @@ Impasto는 MIT 라이선스로 배포됩니다(`license-mit.txt` 참고). 서드
 
 Impasto는 새롭고 독립적인 프로젝트입니다. MIT 라이선스로 공개된
 [Pinta](https://github.com/PintaProject/Pinta)의 소스에서 출발했으며, Pinta 자체도
-[Paint.NET™](https://www.getpaint.net/)에서 영감을 받은 GTK 애플리케이션입니다.
+[Paint.NET™](https://www.getpaint.net/)에서 영감을 받은 GTK 애플리케이션이며, 일부는 Paint.NET 제작자들이
+3.x 버전에서 MIT 라이선스로 공개한 초기 소스 코드를 바탕으로 합니다. 그래서 일부 소스 파일에는
+Paint.NET과 Microsoft의 저작권 고지가 있습니다(`THIRD-PARTY-NOTICES.md` 참고). Impasto는
+Paint.NET과 제휴 관계가 없으며, 현재의 비공개 소스 Paint.NET 버전에서 가져온 것은 없습니다.
 Pinta의 기여자 목록은 Impasto 애플리케이션 안에 표시됩니다.
 Impasto는 Pinta 프로젝트나 동일한 기여자들이 관리하지 않습니다.
 

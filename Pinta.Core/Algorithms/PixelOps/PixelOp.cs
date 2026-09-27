@@ -1,5 +1,5 @@
 /////////////////////////////////////////////////////////////////////////////////
-// Paint.NET                                                                   //
+// Derived from the MIT-licensed Paint.NET 3.x source release, via Pinta.      //
 // Copyright (C) Rick Brewster, Tom Jackson, and past contributors.            //
 // Portions Copyright (C) Microsoft Corporation. All Rights Reserved.          //
 // See THIRD-PARTY-NOTICES.md for full licensing and attribution details.      //

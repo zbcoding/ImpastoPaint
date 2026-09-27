@@ -1,0 +1,17 @@
+Corrected message:
+
+Let S reach the selection tools when no shape point is selected
+
+With a shape tool active, S and D were reported as handled even with
+no point to act on, so S never reached the toolbox and Select, Lasso
+Select and Magic Wand could not be picked by shortcut. S/D now consume
+the key only when a point is selected.
+
+Also:
+- S/D on a selected point outside a drag adds its own undo step;
+  before, the change was lost on the next undo. Pressing it on a point
+  that already has that tension adds no step.
+- Clicking on the curve after S/D hits the curve's new shape instead
+  of its old one.
+- Tooltips say S/D act on the selected point, not "while dragging".
+- Add end-to-end key dispatch tests.

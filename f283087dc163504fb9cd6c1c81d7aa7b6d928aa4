@@ -1,0 +1,11 @@
+Corrected message:
+
+Test layer thumbnail size steps; stop caching the stored step
+
+The thumbnail size step was cached on first read, so a value later
+written to settings by any other route was ignored. It is now read
+from settings every time.
+
+New tests cover: step 0 hides thumbnails, each higher step grows in
+3:2, out-of-range stored values clamp, the change event fires only on
+a real change, and the step round-trips through settings.

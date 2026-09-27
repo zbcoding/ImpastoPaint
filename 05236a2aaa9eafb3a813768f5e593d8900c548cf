@@ -1,0 +1,10 @@
+Corrected message:
+
+Test what blend modes blend against in layered scenes
+
+Adds three Multiply-over-grey tests:
+- a blended shape above an effect blends with the effect's output,
+  not the raw layer pixels;
+- a layer mask scales the blended shape's result;
+- a blended layer blends with the effected result of the layer
+  below.

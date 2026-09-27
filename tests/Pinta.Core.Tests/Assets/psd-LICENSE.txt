@@ -1,6 +1,21 @@
-The psd-*.psd files in this folder come from the psd-tools test corpus
+The psd-*.psd and psd-*.psb files in this folder come from the psd-tools test corpus
 (https://github.com/psd-tools/psd-tools/tree/main/tests/psd_files). Each psd-*.expected.png is
-the merged composite Photoshop saved inside the matching file. Both are used under this license:
+the merged composite Photoshop saved inside the matching file. Most keep their corpus name after
+the psd- prefix; the refused/converted fixtures were renamed for what they test:
+
+  psd-refused-16bit.psd                  16bit5x5.psd
+  psd-refused-32bit.psd                  32bit5x5.psd
+  psd-refused-cmyk.psd                   cmyk-gray-ramp.psd (image resources removed)
+  psd-refused-large-document.psb         1layer.psb
+  psd-converted-clipping-blend-modes.psd clipping-mask4.psd
+  psd-converted-adjustment-text.psd      clip-adjustment.psd
+  psd-converted-layer-effects.psd        effect-stroke-gradient.psd (image resources removed)
+  psd-converted-grayscale.psd            gray0.psd (image resources removed)
+
+"Image resources removed" means the file's image resources section (ICC profile, thumbnail,
+XMP metadata) was emptied to keep the fixture small; the layer and pixel data are Photoshop's.
+
+All of them are used under this license:
 
 Copyright (c) 2019 Kota Yamaguchi
 

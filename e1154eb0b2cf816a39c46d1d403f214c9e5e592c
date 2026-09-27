@@ -1,0 +1,16 @@
+Corrected message:
+
+Fix Cut/Erase baking objects without a clipped modifier's effect
+
+When a selection-driven raster operation (Cut, Erase, moving selected
+pixels, and similar) baked only the objects under the selection, it
+checked whether the selection reached a clipped modifier, not whether
+the modifier's clip reached those objects. A clip that missed the
+selection but overlapped a baked object let that object's raw pixels,
+without the modifier applied, be committed into the layer. That case
+now bakes the whole stack instead, with the usual confirmation. The
+overlap check uses bounds only, so it may ask more often than needed
+but never misses.
+
+Also free the full-canvas scratch surface that the object-subset bake
+leaked on every call.

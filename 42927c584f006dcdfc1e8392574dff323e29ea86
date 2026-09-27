@@ -1,0 +1,9 @@
+Corrected message:
+
+Open site screenshots full-size in a lightbox
+
+Clicking a screenshot on the website opens it in a modal dialog with
+a translated close button; clicking the backdrop also closes it.
+
+Also restyle the small download buttons in the accent orange instead
+of the muted outline.

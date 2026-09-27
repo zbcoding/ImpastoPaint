@@ -1,0 +1,11 @@
+Corrected message:
+
+Test that Cancel at the palette-reset prompt keeps the palette
+
+No behavior change. The decision whether changing the palette row
+count resets the palette moves out of the Resize Palette action into a
+small pure helper: reset if the palette already matches the defaults,
+otherwise exactly when the user chose Reset Palette.
+
+New tests cover all four combinations, so a return of the inverted
+answer fixed in b36a4ad7 fails a test.

@@ -1,0 +1,18 @@
+Corrected message:
+
+Stop moves without a selection from clipping later paint strokes
+
+With nothing selected, Move Selection and Move Selected Pixels fell
+back to the canvas-sized placeholder selection, then marked it visible
+and kept its shifted geometry after the drag. That left a real
+selection that clipped every later paint tool to wherever the drag
+ended. Both tools now leave the selection untouched when none was
+active; Move Selection with no selection is a no-op and adds no undo
+step.
+
+Also fix moved or pasted content erasing art beneath it: finishing a
+move or paste replaced the destination pixels outright (Source), so
+transparent parts of the moved content punched holes in the layer.
+It now composites with Over.
+
+Adds regression tests for both.

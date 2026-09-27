@@ -1,0 +1,10 @@
+Corrected message:
+
+Stop Cancel in the palette-reset prompt from wiping the palette
+
+The prompt shown when Resize Palette changes the row count of an
+edited palette had its answer inverted: Cancel/Keep replaced the
+colours with the defaults, and Reset Palette kept them. The answer is
+no longer negated, and Reset Palette now gets destructive styling so
+Cancel/Keep is the Enter-key default, like the other confirmation
+prompts added in bf7072f9.

@@ -1,0 +1,15 @@
+Corrected message:
+
+Stop re-adding add-in icon search paths for every node at startup
+
+The icon search-path rescan ran for each extension node, including the
+batch reported for already-installed add-ins at startup. The startup
+scan had already run, and adding a search path does not de-duplicate,
+so each add-in's path piled up once per node. It now rescans only for
+add-ins installed while the app is running.
+
+Also:
+- Resize Palette returns the reset confirmation's answer directly; the
+  palette helper that wrapped it (its first argument was always false)
+  and its tests are removed.
+- The deferred-action scheduler override is no longer public.

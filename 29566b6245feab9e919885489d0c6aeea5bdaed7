@@ -1,0 +1,12 @@
+Corrected message:
+
+Let text and shape rows be dragged onto another layer
+
+A text or shape row in the Layers panel can be dropped onto another
+layer's row, its mask row, or between its object rows to move the
+object to that layer. The object keeps its position on the canvas, and
+the move is a single undo step that re-renders both layers.
+
+Modifier rows stay on their own layer. Dragging a row that can't move
+is refused at the start, so the pointer shows it can't drop instead of
+the drag silently doing nothing.

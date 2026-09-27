@@ -1,0 +1,10 @@
+Corrected message:
+
+Make PopoverHintModeTest pass when run on its own
+
+Reading a setting runs PintaCore's static constructor, which needs
+Gtk loaded, so the fixture only passed if another fixture had loaded
+Gtk first. Initialize Gtk once for the fixture.
+
+Also restore an absent hint-mode setting to the default tier after
+each test instead of leaving the last test's value in place.

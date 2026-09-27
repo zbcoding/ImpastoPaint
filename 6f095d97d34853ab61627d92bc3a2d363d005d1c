@@ -1,0 +1,15 @@
+Corrected message:
+
+Show the configured swap-colors key in its tooltip; remove dead code
+
+The status bar's swap-colors tooltip always said "X". It now shows the
+key actually bound to Swap Colors, read the same way the global key
+handler reads it.
+
+Code cleanup, no behavior change:
+- Inline MainWindow.SetColorsFloating, which ignored its argument.
+- Rename ToolBoxWidget.SetStackTooltip to UpdateStackButtonName; it
+  sets the button's name, not a tooltip.
+- Fix stale file headers (LayersListView, LayersListViewItemWidget)
+  and outdated comments in MainWindow, UserLayer and
+  ShapeEngineCollection (incl. FindClosestControlPoint's param doc).

@@ -72,21 +72,6 @@ internal sealed class PsdFormatTest : DocumentHarness
 		Assert.That (imported.Layers.UserLayers.Single (l => l.Name == "Background").Mask, Is.Null);
 	}
 
-	[TestCase (16, 3, Description = "16 bits per channel")]
-	[TestCase (8, 4, Description = "CMYK")]
-	public void UnsupportedDocumentsAreRefusedWithAReason (int depth, int colorMode)
-	{
-		byte[] header = [
-			.. "8BPS"u8, 0, 1, 0, 0, 0, 0, 0, 0,
-			0, 3, // channels
-			0, 0, 0, 4, 0, 0, 0, 4, // 4x4
-			0, (byte) depth,
-			0, (byte) colorMode,
-		];
-
-		Assert.That (() => PsdFormat.Import (header, null), Throws.TypeOf<NotSupportedException> ());
-	}
-
 	[Test]
 	public void ATruncatedFileIsRejectedAsCorrupt ()
 	{

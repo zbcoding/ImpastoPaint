@@ -1,0 +1,17 @@
+Corrected message:
+
+Run custom and default text-editing keys through the same code
+
+The text tool handled a key matching a configured shortcut and a
+default key pressed with extra modifiers (e.g. Shift+Left) in two
+separate copies of every editing command, and the copies had drifted.
+Both now run the same code:
+
+- Backspace and Left/Right/Up/Down/Home/End bound to a shortcut that
+  includes Ctrl or Shift now do the word-wise or selecting variant,
+  as the default keys with those modifiers do. Before, the modifiers
+  were ignored.
+- Stop Editing through its shortcut no longer runs an extra text
+  redraw after committing.
+- Undo reached through the default-key path now redraws the text
+  afterwards, as the shortcut path did.

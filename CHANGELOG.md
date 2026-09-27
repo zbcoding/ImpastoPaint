@@ -16,6 +16,17 @@ entries, is upstream Pinta work; the Impasto sections cover changes made in this
   whose canvas touches the screen edge still scrolls. The pan tool and middle-button pan are
   unaffected.
 
+- Photoshop documents (`.psd`) open with their layers, on every platform. Each layer keeps its
+  name (including non-Latin names), position, opacity, fill opacity, visibility and blend mode,
+  and its layer mask becomes an editable Impasto mask. Groups are flattened into their layers: a
+  hidden group's layers come in hidden, and a group's opacity and mask are applied to each layer
+  inside it. A file saved without layers opens as its merged image. Limits: 8-bit RGB and
+  grayscale only (16/32-bit, CMYK, Lab, indexed and large-document `.psb` files are refused with
+  a message); Photoshop blend modes Impasto lacks (Linear Burn, Vivid Light, Pin Light and the
+  like) import as Normal; clipping masks, vector masks, adjustment and fill layers, layer
+  effects and editable text come in as their stored pixels only. Photoshop files can be opened,
+  not saved.
+
 ### Changed
 
 - Ctrl+scroll and pinch zoom now keep the image's edges in view. An image edge that is on screen,
@@ -30,6 +41,12 @@ entries, is upstream Pinta work; the Impasto sections cover changes made in this
   onto the real layer when the button is released, and nothing asked the canvas to repaint that
   swap, so releasing without moving the pointer again left the last stretch of the stroke showing
   its scratch-layer version until something else forced a redraw.
+
+- Layers > Import from File now reads every format the file picker offers it. It decoded files
+  with the system image loader instead of Impasto's own readers, so OpenRaster and PDN files
+  always failed, and AVIF failed wherever the system had no AVIF loader. A file that failed to
+  import also left an empty, un-undoable layer behind; the layer is now only added once the
+  file has been read.
 
 - A stroke that paints the canvas while the pointer stays outside it is now undoable. The
   paintbrush, eraser, pencil, recolor tool and freeform shape all decided they had changed pixels

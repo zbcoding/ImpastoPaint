@@ -1,0 +1,11 @@
+Corrected message:
+
+Fix shape tools ignoring clicks after a mid-drag tool switch
+
+Switching tools mid-gesture (e.g. with a keyboard shortcut) left the
+shape engine's drawing/drag flags set, so every later click on
+Rectangle, Ellipse, Rounded Line, Triangle or Line/Curve was ignored
+until restart. The flags are now reset when the tool deactivates,
+even with no document open.
+
+Adds a regression test.

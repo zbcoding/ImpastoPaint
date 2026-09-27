@@ -1,0 +1,14 @@
+Corrected message:
+
+Stop the swap-colors shortcut from adding to recent colors
+
+Pressing X (Swap primary and secondary colors) went through the
+color setters that record recent colors, so each swap pushed colors
+onto the recent-colors list. Swapping now leaves that list alone, as
+the swap buttons already did.
+
+Also:
+- The swap and reset buttons in the main window, color picker panel
+  and status-bar palette share one swap/reset implementation.
+- Three copies of the color picker dialog open/run/close code are
+  merged into one helper.

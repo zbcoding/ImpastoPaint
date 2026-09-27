@@ -1,0 +1,11 @@
+Corrected message:
+
+Ignore extra mouse buttons pressed during a Recolor stroke
+
+Pressing a second mouse button while a Recolor stroke was held could
+switch the rest of the stroke between primary-to-secondary and
+secondary-to-primary, and restarted its record of pixels already
+recoloured. The Recolor tool now ignores such presses until the stroke
+ends, as the other brush tools already do.
+
+Adds a regression test.

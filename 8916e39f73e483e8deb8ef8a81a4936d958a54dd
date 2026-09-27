@@ -1,0 +1,12 @@
+Corrected message:
+
+Accept site URLs with or without a trailing slash
+
+With trailingSlash 'never', the English home link ('/') still had a
+slash, so switching back to English raised the same "did you mean"
+dev-server warning the other locales had. GitHub Pages serves both
+forms, so use 'ignore' and make every locale link directory-style
+('/', '/es/', ...).
+
+Also make the site deploy workflow run on pushes to the 'website'
+branch instead of 'main'.

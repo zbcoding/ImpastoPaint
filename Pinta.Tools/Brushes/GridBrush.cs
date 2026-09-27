@@ -52,6 +52,7 @@ internal sealed class GridBrush : BasePaintBrush
 			X: (c.X - strokeArgs.CurrentPosition.X) * 10.0,
 			Y: (c.Y - strokeArgs.CurrentPosition.Y) * 10.0);
 
+		RectangleI? dirty = null;
 		for (int i = 0; i < 50; i++) {
 			g.MoveTo (c.X, c.Y);
 			g.QuadraticCurveTo (
@@ -59,9 +60,11 @@ internal sealed class GridBrush : BasePaintBrush
 				strokeArgs.CurrentPosition.Y + random.NextDouble () * d.Y,
 				c.X,
 				c.Y);
+			RectangleI curve = g.StrokeExtents ().ToInt ();
+			dirty = dirty?.Union (curve) ?? curve;
 			g.Stroke ();
 		}
 
-		return RectangleI.Zero;
+		return dirty ?? RectangleI.Zero;
 	}
 }

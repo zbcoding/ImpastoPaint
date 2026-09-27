@@ -92,6 +92,34 @@ internal sealed class PaintBrushStrokeCommitTest : ToolsTestHarness
 		spin.Value = width;
 	}
 
+	// The tool records history and repaints from the rectangle a brush reports, so a brush that
+	// reports less than it painted leaves strokes that cannot be undone.
+	[TestCase (typeof (Brushes.CircleBrush))]
+	[TestCase (typeof (Brushes.GridBrush))]
+	public void BrushReportsEveryPixelItPainted (System.Type brushType)
+	{
+		BasePaintBrush brush = (BasePaintBrush) System.Activator.CreateInstance (brushType)!;
+		using ImageSurface surface = CairoExtensions.CreateImageSurface (Format.Argb32, 200, 200);
+		RectangleI reported;
+		using (Context g = new (surface)) {
+			g.LineWidth = 4;
+			g.SetSourceColor (new Color (1, 0, 0));
+			reported = brush.DoMouseMove (g, surface, new BrushStrokeArgs (new Color (1, 0, 0), new PointI (90, 60), new PointI (60, 60)));
+		}
+		surface.Flush ();
+
+		int painted = 0;
+		for (int y = 0; y < surface.Height; y++) {
+			for (int x = 0; x < surface.Width; x++) {
+				if (surface.GetColorBgra (new PointI (x, y)).A == 0)
+					continue;
+				painted++;
+				Assert.That (reported.Contains (x, y), Is.True, $"painted pixel ({x}, {y}) lies outside the reported {reported}");
+			}
+		}
+		Assert.That (painted, Is.GreaterThan (0), "the stroke has to paint something to check against");
+	}
+
 	[Test]
 	public void CommittingTheStrokeRepaintsWhatItPainted ()
 	{

@@ -54,6 +54,7 @@ internal sealed class CircleBrush : BasePaintBrush
 		int steps = random.Next (1, 10);
 		double step_delta = d / steps;
 
+		RectangleI? dirty = null;
 		for (int i = 0; i < steps; i++) {
 			double radius = (steps - i) * step_delta;
 			g.Arc (
@@ -62,9 +63,11 @@ internal sealed class CircleBrush : BasePaintBrush
 				radius,
 				0,
 				Math.PI * 2);
+			RectangleI arc = g.StrokeExtents ().ToInt ();
+			dirty = dirty?.Union (arc) ?? arc;
 			g.Stroke ();
 		}
 
-		return RectangleI.Zero;
+		return dirty ?? RectangleI.Zero;
 	}
 }

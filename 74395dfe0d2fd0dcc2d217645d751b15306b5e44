@@ -1,0 +1,12 @@
+Corrected message:
+
+Fix gradient crash when changing type after undoing a gradient
+
+Undoing a finished gradient made its handle live again, but finishing
+had already released the tool's copy of the pixels from before the
+gradient. Changing the gradient type or alpha blending afterwards
+(with a translucent colour) re-rendered from that released copy and
+crashed. The gradient now takes a fresh copy of the layer's current
+content as its base when none is left.
+
+Adds a regression test.

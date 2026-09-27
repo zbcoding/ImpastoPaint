@@ -1,0 +1,14 @@
+Corrected message:
+
+Edit one color from the color wheel popover's primary/secondary swatches
+
+Clicking the primary or secondary swatch in the color wheel popover
+opened the two-color live picker. It now opens the single-color
+picker for the clicked color, like the other swatch edits.
+
+Also, with no intended behavior change:
+- The status-bar palette and the floating color panel share one
+  swatch click handler and one set of swatch tooltip texts.
+- The single-color picker dialogs share one helper.
+- The color wheel and reset-window popovers share one anchoring
+  helper.

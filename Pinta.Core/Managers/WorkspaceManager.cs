@@ -381,6 +381,8 @@ public sealed class WorkspaceManager : IWorkspaceService
 			ActiveWorkspace.History.PushNewItem (new BaseHistoryItem (Resources.StandardIcons.DocumentOpen, Translations.GetString ("Open Image")));
 			ActiveDocument.History.SetClean ();
 
+			WarnIfFormatCannotBeSaved (parent, ActiveDocument);
+
 			return true;
 
 		} catch (UnauthorizedAccessException) {
@@ -457,6 +459,28 @@ public sealed class WorkspaceManager : IWorkspaceService
 	{
 		string secondary_text = Translations.GetString ("Could not open file: {0}", filename);
 		return chrome_manager.ShowErrorDialog (parent, primary_text, secondary_text, details);
+	}
+
+	/// <summary>
+	/// Tells the user straight away when the file they opened is in a format Impasto reads but
+	/// cannot write, rather than letting them find out when Save refuses after their edits. Asks
+	/// the format registry, so a format stops warning as soon as an exporter is registered for it.
+	/// </summary>
+	private void WarnIfFormatCannotBeSaved (Gtk.Window parent, Document document)
+	{
+		if (document.FileType is not string fileType)
+			return;
+
+		if (image_formats.GetFormatByExtension (fileType) is FormatDescriptor format && format.IsExportAvailable ())
+			return;
+
+		chrome_manager.ShowMessageDialog (
+			parent,
+			Translations.GetString ("Impasto can open .{0} files but cannot save them", fileType),
+			Translations.GetString (
+				"Your changes to {0} can't be saved back to that file. Use Save As to save them in another format; an Impasto project (.{1}) keeps the layers.",
+				document.DisplayName,
+				ImageConverterManager.ProjectFileType));
 	}
 
 	private Task ShowUnsupportedFormatDialog (

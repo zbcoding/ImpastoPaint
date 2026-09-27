@@ -104,7 +104,7 @@ public sealed class ViewActions
 			Translations.GetString ("Normal Size"),
 			null,
 			Resources.StandardIcons.ZoomOriginal,
-			shortcuts: ["<Primary>0", "<Primary><Shift>A"]);
+			shortcuts: ["<Primary>0"]);
 
 		ToolBar = new ToggleCommand (
 			"Toolbar",

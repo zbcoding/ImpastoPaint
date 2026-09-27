@@ -8,7 +8,28 @@ entries, is upstream Pinta work; the Impasto sections cover changes made in this
 
 ## Impasto - [Unreleased](https://github.com/zbcoding/ImpastoPaint/compare/v0.5.0...main)
 
-Changes for the next release go here.
+### Added
+
+- Settings has a Keyboard tab, which replaces the Clipboard tab. It keeps the "Paste external
+  images onto a new layer" option and has a button that opens Keyboard Shortcuts, which is still
+  in the Help menu too.
+
+### Changed
+
+- A single Escape now deselects. It used to take two quick presses. Escape still finalizes any
+  text or shape being edited first, and while the pointer is over the canvas the Text and Lasso
+  tools still take the first press to finish typing or cancel the outline. Ctrl+Z restores a
+  selection cleared by accident.
+- The quick deselect appears in Keyboard Shortcuts as the rebindable "Deselect All (Quick)" row.
+  The read-only "×2" reference row is gone, and the Deselect toolbar tooltip now shows whatever
+  key it is bound to.
+
+### Fixed
+
+- Ctrl+Shift+A was also a default shortcut for View > Normal Size, so Keyboard Shortcuts marked
+  Deselect All as duplicated even after Reset to default. Normal Size keeps Ctrl+0.
+- Keyboard Shortcuts row tooltips show the key as "Shift+Ctrl+A" rather than the raw
+  "<Primary><Shift>A".
 
 ## Impasto - [0.5.0](https://github.com/zbcoding/ImpastoPaint/releases/tag/v0.5.0) - 2026-09-27
 

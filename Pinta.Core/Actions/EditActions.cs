@@ -60,12 +60,6 @@ public sealed class EditActions
 	private Gio.File? last_palette_dir = null;
 	private Document? active_document = null;
 
-	// Escape must be double-tapped to deselect, so a single stray Escape doesn't
-	// discard a selection. Window falls back to 400ms if GTK's own double-click
-	// interval isn't available.
-	private const int DEFAULT_DOUBLE_ESCAPE_MS = 400;
-	private DateTime? last_escape_time;
-
 	private readonly ChromeManager chrome;
 	private readonly PaletteFormatManager palette_formats;
 	private readonly PaletteManager palette;
@@ -179,7 +173,7 @@ public sealed class EditActions
 
 		DeselectSelection = new Command (
 			"deselect-on-escape",
-			Translations.GetString ("Deselect All"),
+			Translations.GetString ("Deselect All (Quick)"),
 			null,
 			Resources.Icons.EditSelectionNone,
 			shortcuts: ["Escape"]);
@@ -487,28 +481,15 @@ public sealed class EditActions
 		return ObjectRasterizer.Confirm (chrome, labels);
 	}
 
-	// Escape (double-tap) clears the current editing state no matter which tool is active.
-	// It first finalizes any in-progress shape or text edit through the active tool's commit
-	// (baking a half-drawn Raster-mode shape or half-typed text onto the layer, and persisting
-	// an Object-mode shape/text as an editable object), then clears any visible selection, so
-	// a selection still outlined after switching to another tool can still be dismissed. A
-	// single stray Escape leaves everything intact. Credit: Sam-Gledhill, PR #2205.
+	// Escape clears the current editing state no matter which tool is active. It first
+	// finalizes any in-progress shape or text edit through the active tool's commit (baking
+	// a half-drawn Raster-mode shape or half-typed text onto the layer, and persisting an
+	// Object-mode shape/text as an editable object), then clears any visible selection, so a
+	// selection still outlined after switching to another tool can still be dismissed. Tools
+	// that bind Escape themselves (Lasso cancel, Text stop-editing) consume it first while the
+	// pointer is on the canvas. Credit: Sam-Gledhill, PR #2205.
 	private void HandlePintaCoreActionsEditDeselectSelectionActivated (object sender, EventArgs e)
 	{
-		DateTime now = DateTime.UtcNow;
-		int double_click_ms = Gtk.Settings.GetDefault ()?.GtkDoubleClickTime ?? DEFAULT_DOUBLE_ESCAPE_MS;
-
-		bool is_double_tap =
-			last_escape_time is DateTime previous &&
-			(now - previous).TotalMilliseconds <= double_click_ms;
-
-		if (!is_double_tap) {
-			last_escape_time = now;
-			return;
-		}
-
-		last_escape_time = null;
-
 		Document? doc = workspace.ActiveDocumentOrDefault;
 		if (doc is null)
 			return;

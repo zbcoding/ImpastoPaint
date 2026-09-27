@@ -144,18 +144,12 @@ public sealed class ActionManager
 		header.PackStart (CreateDeselectToolBarItem ());
 	}
 
-	// Impasto: the Deselect toolbar button is also reachable via a quick
-	// double-tap of Escape (see EditActions.HandlePintaCoreActionsEditDeselectSelectionActivated),
-	// which isn't a real accelerator on the command itself, so mention it manually.
+	// Impasto: the Deselect toolbar button's tooltip also names the quick-deselect
+	// (Escape) command's shortcut, which may be rebound in Keyboard Shortcuts.
 	private Gtk.Button CreateDeselectToolBarItem ()
-	{
-		Gtk.Button button = Edit.Deselect.CreateToolBarItem ();
-		string escLabel = GtkExtensions.TryParseAccelerator ("Escape", out uint key, out Gdk.ModifierType mods)
-			? Gtk.Functions.AcceleratorGetLabel (key, mods)
-			: "Escape";
-		button.TooltipText += "\n" + Translations.GetString ("Quick deselect: {0} (×2)", escLabel);
-		return button;
-	}
+		=> Edit.Deselect.CreateToolBarItem (
+			alternate: Edit.DeselectSelection,
+			alternate_description: Translations.GetString ("Quick deselect"));
 
 	private Gtk.Widget? cursor_position_icon;
 	private Gtk.Widget? cursor_position_label;

@@ -161,13 +161,19 @@ public sealed partial class PreferencesDialog
 		canvasPage.Append (canvasSurroundGrid);
 
 		Gtk.CheckButton pasteExternalImagesCheckButton = Gtk.CheckButton.NewWithLabel (Translations.GetString ("Paste external images onto a new layer by default"));
-		Gtk.Box clipboardPage = Gtk.Box.New (Gtk.Orientation.Vertical, SPACING);
-		clipboardPage.SetAllMargins (12);
+		Gtk.Box keyboardPage = Gtk.Box.New (Gtk.Orientation.Vertical, SPACING);
+		keyboardPage.SetAllMargins (12);
 		Gtk.Box clipboardRow = Gtk.Box.New (Gtk.Orientation.Horizontal, SPACING);
 		pasteExternalImagesCheckButton.Hexpand = true;
 		clipboardRow.Append (pasteExternalImagesCheckButton);
 		clipboardRow.Append (CreateResetButton (ResetClipboard));
-		clipboardPage.Append (clipboardRow);
+		keyboardPage.Append (clipboardRow);
+
+		// Same window as Help > Keyboard Shortcuts; it applies its own changes on OK.
+		Gtk.Button keyboardShortcutsButton = Gtk.Button.NewWithLabel (Translations.GetString ("Keyboard Shortcuts..."));
+		keyboardShortcutsButton.Halign = Gtk.Align.Start;
+		keyboardShortcutsButton.OnClicked += (_, _) => PintaCore.Actions.App.KeyboardShortcuts.Activate ();
+		keyboardPage.Append (keyboardShortcutsButton);
 
 		Gtk.ToggleButton popoverHintModeAllButton = CreateHintModeButton (
 			"All",
@@ -316,7 +322,7 @@ public sealed partial class PreferencesDialog
 
 		Gtk.Notebook notebook = Gtk.Notebook.New ();
 		notebook.AppendPage (canvasPage, Gtk.Label.New (Translations.GetString ("Canvas")));
-		notebook.AppendPage (clipboardPage, Gtk.Label.New (Translations.GetString ("Clipboard")));
+		notebook.AppendPage (keyboardPage, Gtk.Label.New (Translations.GetString ("Keyboard")));
 		notebook.AppendPage (popoverHintPage, Gtk.Label.New (Translations.GetString ("UI")));
 		notebook.AppendPage (backupPage, Gtk.Label.New (Translations.GetString ("Backup")));
 		contentArea.Append (notebook);

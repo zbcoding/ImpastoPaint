@@ -95,7 +95,8 @@ internal sealed class KeyboardShortcutsDialogAction : IActionHandler
 		}
 
 		Gtk.Window window = Gtk.Window.New ();
-		window.SetTransientFor (chrome.MainWindow);
+		// Opened from Settings too, so stack it over whichever window is active.
+		window.SetTransientFor (chrome.Application.GetActiveWindow () ?? chrome.MainWindow);
 		window.Modal = true;
 		window.Title = Translations.GetString ("Keyboard Shortcuts");
 		window.SetDefaultSize (640, 480);
@@ -168,17 +169,7 @@ internal sealed class KeyboardShortcutsDialogAction : IActionHandler
 
 		notebook.AppendPage (BuildCommandsPage (GetCommands (actions.Layers), states, refreshers, searchableLists, Query, searchResults), Gtk.Label.New (Translations.GetString ("Layers")));
 		notebook.AppendPage (BuildCommandsPage (GetCommands (actions.File), states, refreshers, searchableLists, Query, searchResults), Gtk.Label.New (Translations.GetString ("File")));
-		string escLabel = GtkExtensions.TryParseAccelerator ("Escape", out uint escKey, out Gdk.ModifierType escMods)
-			? Gtk.Functions.AcceleratorGetLabel (escKey, escMods)
-			: "Escape";
-		notebook.AppendPage (
-			BuildCommandsPage (
-				GetCommands (actions.Edit), states, refreshers, searchableLists, Query, searchResults,
-				extraStaticRowFactory: () => BuildStaticInfoRow (
-					Translations.GetString ("Deselect All (Quick, ×2)"),
-					escLabel,
-					Translations.GetString ("Press {0} twice quickly to deselect. Reference only — not independently rebindable.", escLabel))),
-			Gtk.Label.New (Translations.GetString ("Edit")));
+		notebook.AppendPage (BuildCommandsPage (GetCommands (actions.Edit), states, refreshers, searchableLists, Query, searchResults), Gtk.Label.New (Translations.GetString ("Edit")));
 		notebook.AppendPage (BuildCommandsPage (GetCommands (actions.View), states, refreshers, searchableLists, Query, searchResults), Gtk.Label.New (Translations.GetString ("View")));
 		notebook.AppendPage (BuildCommandsPage (GetCommands (actions.Image), states, refreshers, searchableLists, Query, searchResults), Gtk.Label.New (Translations.GetString ("Image")));
 		notebook.AppendPage (BuildCommandsPage (actions.Adjustments.Actions, states, refreshers, searchableLists, Query, searchResults), Gtk.Label.New (Translations.GetString ("Adjustments")));
@@ -216,8 +207,7 @@ internal sealed class KeyboardShortcutsDialogAction : IActionHandler
 	}
 
 	private Gtk.Widget BuildCommandsPage (
-		IEnumerable<Command> commands, List<ShortcutRowState> states, List<Action> refreshers, List<Gtk.ListBox> searchableLists, Func<string> query, Gtk.ListBox searchResults,
-		Func<Gtk.Widget>? extraStaticRowFactory = null)
+		IEnumerable<Command> commands, List<ShortcutRowState> states, List<Action> refreshers, List<Gtk.ListBox> searchableLists, Func<string> query, Gtk.ListBox searchResults)
 	{
 		Gtk.ListBox list = MakeSearchableList (query);
 
@@ -258,41 +248,8 @@ internal sealed class KeyboardShortcutsDialogAction : IActionHandler
 			}
 		}
 
-		if (extraStaticRowFactory is not null) {
-			list.Append (extraStaticRowFactory ());
-			searchResults.Append (extraStaticRowFactory ());
-		}
-
 		searchableLists.Add (list);
 		return Wrap (list);
-	}
-
-	// Impasto: a non-editable, reference-only row — e.g. "Esc (×2)" for the quick
-	// double-tap deselect gesture, which isn't a real rebindable accelerator on any
-	// Command and so must never participate in ShortcutRowState/RefreshDuplicates.
-	private static Gtk.Widget BuildStaticInfoRow (string label, string shortcutText, string tooltip)
-	{
-		Gtk.Box row = Gtk.Box.New (Gtk.Orientation.Horizontal, 8);
-		row.SetAllMargins (6);
-		row.Sensitive = false;
-
-		Gtk.Label nameLabel = Gtk.Label.New (label);
-		nameLabel.Halign = Gtk.Align.Start;
-		nameLabel.Hexpand = true;
-		row.Append (nameLabel);
-
-		Gtk.Label shortcutLabel = Gtk.Label.New (shortcutText);
-		shortcutLabel.WidthRequest = 180;
-		row.Append (shortcutLabel);
-
-		Gtk.ListBoxRow listRow = Gtk.ListBoxRow.New ();
-		listRow.Activatable = false;
-		listRow.Selectable = false;
-		listRow.Sensitive = false;
-		listRow.Name = $"{label} {shortcutText}";
-		listRow.TooltipText = tooltip;
-		listRow.Child = row;
-		return listRow;
 	}
 
 	private Gtk.Widget BuildToolsPage (List<ShortcutRowState> states, List<Action> refreshers, List<Gtk.ListBox> searchableLists, Func<string> query, Gtk.ListBox searchResults)
@@ -346,6 +303,10 @@ internal sealed class KeyboardShortcutsDialogAction : IActionHandler
 		return Wrap (list);
 	}
 
+	// Rows remember their raw accelerator so search-by-key can match "ctrl-A" style queries
+	// while the tooltip shows the readable label.
+	private static readonly System.Runtime.CompilerServices.ConditionalWeakTable<Gtk.ListBoxRow, ShortcutRowState> row_states = [];
+
 	private static Gtk.ListBox MakeSearchableList (Func<string> query, bool searchByKey = false)
 	{
 		Gtk.ListBox list = Gtk.ListBox.New ();
@@ -353,7 +314,7 @@ internal sealed class KeyboardShortcutsDialogAction : IActionHandler
 		list.SetFilterFunc (row =>
 			string.IsNullOrWhiteSpace (query ()) ||
 			(row.Name?.Contains (query (), StringComparison.OrdinalIgnoreCase) == true ||
-				(searchByKey && MatchesShortcut (row.TooltipText, query ()))));
+				(searchByKey && row_states.TryGetValue (row, out ShortcutRowState? state) && MatchesShortcut (state.Value, query ()))));
 		return list;
 	}
 
@@ -409,7 +370,7 @@ internal sealed class KeyboardShortcutsDialogAction : IActionHandler
 			listening = false;
 			shortcutButton.Label = FormatAccel (state.Value);
 			listRow.Name = $"{state.Label} {state.Value} {FormatAccel (state.Value)}";
-			listRow.TooltipText = state.Value;
+			listRow.TooltipText = FormatAccel (state.Value);
 			state.RefreshDuplicateState ();
 		}
 		Refresh ();
@@ -457,7 +418,7 @@ internal sealed class KeyboardShortcutsDialogAction : IActionHandler
 		row.Append (resetButton);
 
 		listRow.Child = row;
-		listRow.TooltipText = state.Value;
+		row_states.Add (listRow, state);
 		return listRow;
 	}
 

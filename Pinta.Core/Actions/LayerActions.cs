@@ -469,7 +469,8 @@ public sealed class LayerActions
 			}
 		}
 
-		throw new AggregateException (Translations.GetString ("Unsupported file format"), failures);
+		// The message is the dialog heading, so the per-importer failures go in the details only.
+		throw new NotSupportedException (Translations.GetString ("Unsupported file format"), new AggregateException (failures));
 	}
 
 	private void HandlePintaCoreActionsLayersFlipVerticalActivated (object sender, EventArgs e)

@@ -1,0 +1,13 @@
+Corrected message:
+
+Drop no-telemetry section and update-check note from privacy policy
+
+- Open the policy with "While this policy is subject to change" and
+  say Impasto "currently" sends no data.
+- Remove the sentence calling the automatic update check the one
+  unprompted connection that sends nothing about you.
+- Rename "Outgoing connections" to "Connections".
+- Delete the note that ms-screenclip talks to the OS, not a network.
+- Delete the "Nothing else" section: no telemetry, crash reporting,
+  analytics or account; images, layers, settings and usage are not
+  transmitted; and the source files behind each table row.

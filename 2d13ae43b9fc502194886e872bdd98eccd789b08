@@ -1,0 +1,11 @@
+Corrected message:
+
+Apply the Raster/Object dropdown to the selected shape
+
+Changing the shape tools' Raster/Object dropdown only affected the
+next shape drawn. The shape currently selected kept its old mode, so
+switching it to Object still rasterized it on finalize and the layers
+dock never added or removed its object row. The selected shape now
+takes the new mode immediately, matching the text tool's dropdown.
+
+Adds a regression test.

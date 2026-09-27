@@ -1,0 +1,9 @@
+Corrected message:
+
+Clear leftover object edit boxes after deleting or baking objects
+
+Object editing marks (text re-edit rectangles, handle dots, "Obj."
+badges) had moved to the overlay layer, but deleting an object from
+the layers dock and baking objects (rasterize, resize) still cleared
+the tool layer. The dashed rectangles stayed on screen over pixels
+that were no longer objects. Both paths now clear the overlay layer.

@@ -1,0 +1,10 @@
+Corrected message:
+
+Add Close shape strings to all catalogues, drop the pot workflow
+
+- Merge "Close shape" and its tooltip into all 73 .po catalogues, which
+  were two strings behind the template; also refresh the template's
+  creation date and source references and rewrap the tooltip msgid.
+- Remove the scheduled update-translation-template workflow inherited
+  from Pinta. It was failing with a 403 on push and only ever updated
+  the template, not the catalogues; the release checklist does both.

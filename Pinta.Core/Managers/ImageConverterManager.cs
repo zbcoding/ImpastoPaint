@@ -60,8 +60,10 @@ public sealed class ImageConverterManager
 			string? name = format.GetName ();
 
 			// AVIF is handled by our own importer/exporter below, so that saving
-			// works even though gdk-pixbuf's AVIF loader is read-only.
-			if (name?.Equals ("avif", StringComparison.OrdinalIgnoreCase) == true)
+			// works even though gdk-pixbuf's AVIF loader is read-only. PSD is also ours,
+			// because a pixbuf loader (where one is installed) flattens the layers.
+			if (name?.Equals ("avif", StringComparison.OrdinalIgnoreCase) == true
+				|| name?.Equals ("psd", StringComparison.OrdinalIgnoreCase) == true)
 				continue;
 
 			if (name is not null && !seen.Add (name))
@@ -81,6 +83,16 @@ public sealed class ImageConverterManager
 			exporter: null,
 			supportsLayers: true);
 		yield return pdnFormatDescriptor;
+
+		PsdFormat psdHandler = new ();
+		FormatDescriptor psdFormatDescriptor = new (
+			displayPrefix: "Photoshop",
+			extensions: ["psd", "PSD"],
+			mimes: ["image/vnd.adobe.photoshop", "image/x-photoshop"],
+			importer: psdHandler,
+			exporter: null,
+			supportsLayers: true);
+		yield return psdFormatDescriptor;
 
 		OraFormat oraHandler = new ();
 		FormatDescriptor oraFormatDescriptor = new (

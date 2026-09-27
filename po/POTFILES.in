@@ -277,6 +277,7 @@ Pinta.Core/ImageFormats/JpegFormat.cs
 Pinta.Core/ImageFormats/NetpbmPortablePixmap.cs
 Pinta.Core/ImageFormats/OraFormat.cs
 Pinta.Core/ImageFormats/PdnFormat.cs
+Pinta.Core/ImageFormats/PsdFormat.cs
 Pinta.Core/ImageFormats/TgaExporter.cs
 Pinta.Core/ImageFormats/WebPFormat.cs
 Pinta.Core/Managers/ActionManager.cs

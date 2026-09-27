@@ -1,0 +1,12 @@
+Corrected message:
+
+Test that autosave held off by a drag is forced through at 300 s
+
+Adds a test that holds the pointer down across simulated autosave
+ticks and checks the save is deferred at 0 s and 299 s, then forced
+through at 300 s.
+
+To make that possible headlessly, AutosaveManager gains internal test
+hooks (PointerButtonHeldOverride, Clock, ExporterOverride) and
+TryAutosave becomes internal. No behavior change when the hooks are
+unset.

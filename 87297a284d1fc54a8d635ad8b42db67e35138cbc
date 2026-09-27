@@ -1,0 +1,7 @@
+Corrected message:
+
+Switch tools when right-dragging another shape tool's shape edge
+
+With curved segments off, right-dragging the edge of a shape drawn
+by a different shape tool moved that shape without switching to its
+tool. It now switches first, as the curved-segments-on path did.

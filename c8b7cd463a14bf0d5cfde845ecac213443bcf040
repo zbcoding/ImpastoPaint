@@ -1,0 +1,12 @@
+Corrected message:
+
+Make edge strokes undoable in eraser, pencil, recolor and freeform
+
+These tools decided whether a stroke changed anything from whether the
+pointer was inside the canvas. A wide stroke dragged along an edge, or
+a fast drag sampled off opposite edges, painted the canvas with the
+pointer outside it and left no undo step. Each tool now checks whether
+the area it actually painted overlaps the canvas, as the paintbrush
+already did; the paintbrush now shares the same helper.
+
+Adds a regression test and updates the changelog entry.

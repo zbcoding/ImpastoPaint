@@ -1,0 +1,11 @@
+Corrected message:
+
+Keep palette size when the Resize Palette row reset is declined
+
+The dialog rounds its palette-size and recent-colors fields down to fit
+whichever row count is selected. Those rounded values were applied
+even when the user then declined the palette-reset prompt, so the rows
+stayed the same but the palette size and recent-color count shrank
+(e.g. 8 recent colors became 6). Declining the reset now keeps the
+palette size and recent-color count the palette had before the
+dialog.

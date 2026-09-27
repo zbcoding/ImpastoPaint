@@ -1,0 +1,19 @@
+Corrected message:
+
+Replace shape and text tool key-binding if-chains with tables
+
+No behavior change.
+
+Shape tools: the configured-binding checks become one ordered
+binding-to-command table, and a single command switch runs both those
+bindings and the default-key fallback.
+
+Text tool: the 17 configured-binding checks become one ordered table
+and switch, and font size up/down share one handler across the binding
+and fallback paths. The rest of the default-key fallback is left
+separate, because several of its keys behave differently from the
+binding path (they read live Ctrl/Shift state, or skip the final
+redraw).
+
+Adds tests that each table lists every command exactly once and that
+each binding's gesture on a fresh profile equals its default.

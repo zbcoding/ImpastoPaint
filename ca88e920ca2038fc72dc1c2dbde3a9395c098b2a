@@ -1,0 +1,11 @@
+Corrected message:
+
+Refresh the shape overlay only when layer visibility changes
+
+Every layer property change on any layer (opacity while dragging, each
+keystroke of a rename, blend mode) resynced and redrew the shape badge
+and control-point overlay. Only visibility changes do now.
+
+Also, in the overlay visibility test: clear static tool state in
+teardown so later tests start clean, and check after a layer delete
+that the deleted shape's control points are gone.

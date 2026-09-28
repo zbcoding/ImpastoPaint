@@ -355,4 +355,110 @@ internal sealed class TextModeSwitchTest : ToolsTestHarness
 		Assert.That (afterSwitchBackToObject, Is.EqualTo (withBadge),
 			"switching back to Object must redraw the overlay immediately, restoring the badge exactly");
 	}
+
+	private static void Mouse (string method, TextTool t, Document doc, PointD at)
+		=> typeof (BaseTool).GetMethod (method, NonPublicInstance)!
+			.Invoke (t, [doc, new ToolMouseEventArgs { PointDouble = at, MouseButton = MouseButton.Left }]);
+
+	private static void LeftDown (TextTool t, Document doc, PointD at) => Mouse ("DoMouseDown", t, doc, at);
+
+	private static TextObject? CurrentObject (TextTool t)
+		=> (TextObject?) typeof (TextTool).GetField ("current_text_object", NonPublicInstance)!.GetValue (t);
+
+	/// <summary>
+	/// Creating a new object synced the toolbar from it before its Area wrap width was set, so the
+	/// sync read it as point text: the dropdown flipped back to Point and the object was created
+	/// as point text - every click on empty canvas in Area mode made point text instead of a box.
+	/// </summary>
+	[Test]
+	public void ClickingEmptyCanvasInAreaModeCreatesAreaTextAndKeepsTheDropdownOnArea ()
+	{
+		TextTool t = ActivateOnLayer ();
+		TextModeButton (t).SelectedIndex = 1; // Area
+
+		LeftDown (t, Document, new PointD (10, 10));
+
+		Assert.Multiple (() => {
+			Assert.That (TextModeButton (t).SelectedIndex, Is.EqualTo (1), "the dropdown must stay on Area");
+			Assert.That (CurrentObject (t)?.Engine.WrapWidth, Is.GreaterThan (0), "the new object must be area text");
+		});
+	}
+
+	/// <summary>
+	/// Click in Point mode (a blank point object starts), change your mind to Area, then click
+	/// elsewhere: the blank point is dropped and the new click starts an area box - no need to
+	/// deselect the blank point first.
+	/// </summary>
+	[Test]
+	public void SwitchingToAreaAfterABlankPointClickLetsTheNextClickDrawABox ()
+	{
+		UserLayer layer = Layer (0);
+		TextTool t = ActivateOnLayer ();
+		TextModeButton (t).SelectedIndex = 0; // Point
+
+		LeftDown (t, Document, new PointD (10, 10));
+		TextObject? blank = CurrentObject (t);
+		Assert.That (blank?.Engine.WrapWidth, Is.Zero, "setup: the first click starts a blank point object");
+
+		TextModeButton (t).SelectedIndex = 1; // Area
+		LeftDown (t, Document, new PointD (40, 40));
+
+		TextObject? created = CurrentObject (t);
+		Assert.Multiple (() => {
+			Assert.That (created, Is.Not.SameAs (blank), "the second click must start a new object");
+			Assert.That (created?.Engine.WrapWidth, Is.GreaterThan (0), "the new object must be area text");
+			Assert.That (TextModeButton (t).SelectedIndex, Is.EqualTo (1), "the dropdown must stay on Area");
+			Assert.That (layer.Objects, Does.Not.Contain (blank), "the abandoned blank point object must be dropped");
+		});
+	}
+
+	/// <summary>
+	/// An area box placed with a click has no text yet, but it's still a box: its corner handle
+	/// must resize it before anything is typed, rather than the click dropping the blank box.
+	/// </summary>
+	[Test]
+	public void AnEmptyAreaBoxCanBeResizedBeforeTyping ()
+	{
+		TextTool t = ActivateOnLayer ();
+		TextModeButton (t).SelectedIndex = 1; // Area
+
+		Mouse ("DoMouseDown", t, Document, new PointD (10, 10));
+		Mouse ("DoMouseUp", t, Document, new PointD (10, 10)); // plain click -> default-width box
+		TextObject box = CurrentObject (t)!;
+		int placedWidth = box.Engine.WrapWidth;
+
+		PointD[] corners = (PointD[]) typeof (TextTool).GetMethod ("GetInteractionCorners", NonPublicInstance)!.Invoke (t, [box])!;
+		PointD bottomRight = corners[2];
+		Mouse ("DoMouseDown", t, Document, bottomRight);
+		Mouse ("DoMouseMove", t, Document, new PointD (bottomRight.X + 100, bottomRight.Y + 20));
+		Mouse ("DoMouseUp", t, Document, new PointD (bottomRight.X + 100, bottomRight.Y + 20));
+
+		Assert.Multiple (() => {
+			Assert.That (CurrentObject (t), Is.SameAs (box), "grabbing the empty box's corner must keep editing the same box");
+			Assert.That (box.Engine.WrapWidth, Is.GreaterThan (placedWidth), "dragging the corner outward must widen the empty box");
+		});
+	}
+
+	/// <summary>
+	/// Converting a long single-line point object to Area must not produce a box running off the
+	/// canvas: the width stops at the canvas's right edge so the text re-wraps inside it.
+	/// </summary>
+	[Test]
+	public void PointToAreaStopsTheBoxAtTheCanvasEdge ()
+	{
+		UserLayer layer = Layer (0);
+
+		TextObject obj = new (new TextEngine ());
+		obj.Engine.InsertText (new string ('W', 200));
+		layer.AddText (obj);
+
+		TextTool t = ActivateOnLayer ();
+		TextModeButton (t).SelectedIndex = 0; // Point, matching the object.
+		Select (t, obj);
+
+		TextModeButton (t).SelectedIndex = 1; // Area
+
+		Assert.That (obj.Engine.Origin.X + obj.Engine.WrapWidth, Is.LessThanOrEqualTo (Document.ImageSize.Width),
+			"the converted box must end at or before the canvas's right edge");
+	}
 }

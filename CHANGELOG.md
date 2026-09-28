@@ -40,6 +40,13 @@ entries, is upstream Pinta work; the Impasto sections cover changes made in this
   Deselect All as duplicated even after Reset to default. Normal Size keeps Ctrl+0.
 - Keyboard Shortcuts row tooltips show the key as "Shift+Ctrl+A" rather than the raw
   "<Primary><Shift>A".
+- The Text tool's Area mode now creates area text. Every new click used to flip the Point/Area
+  menu back to Point and make point text.
+- An empty area box can be moved and resized before you type into it.
+- Changing Point/Area after clicking but before typing drops the blank text, so the next click
+  starts fresh in the new mode.
+- Switching point text to Area no longer makes a box that runs off the canvas. The box stops at
+  the canvas's right edge and the text wraps inside it.
 
 ## Impasto - [0.5.0](https://github.com/zbcoding/ImpastoPaint/releases/tag/v0.5.0) - 2026-09-27
 

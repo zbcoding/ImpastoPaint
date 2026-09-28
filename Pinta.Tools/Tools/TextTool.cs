@@ -303,8 +303,16 @@ public sealed class TextTool : BaseTool
 				// also works as a convert-in-place control: Point -> Area boxes it at its current
 				// width (no jump); Area -> Point drops the box and lets it grow free again.
 				if (current_text_object is { } obj) {
+					// Nothing typed yet: the user changed their mind about what to place, so drop the
+					// blank object and let the next click start fresh in the new mode (e.g. drag out
+					// an area box) instead of converting an empty caret into a stray box.
+					if (obj.IsEmpty) {
+						CommitCurrentText ();
+						return;
+					}
+
 					if (AreaMode && obj.Engine.WrapWidth == 0)
-						obj.Engine.WrapWidth = Math.Max (MinAreaWidth, obj.TextBounds.Width);
+						obj.Engine.WrapWidth = PointToAreaWidth (obj);
 					else if (!AreaMode && obj.Engine.WrapWidth != 0)
 						obj.Engine.WrapWidth = 0;
 
@@ -835,6 +843,23 @@ public sealed class TextTool : BaseTool
 		UpdateFont ();
 	}
 
+	//Wrap width for converting point text to area text: the text's own natural (unpadded,
+	//unrotated) width so it doesn't jump, but never past the canvas's right edge — a long
+	//single-line point object would otherwise become a box running off the canvas.
+	private int PointToAreaWidth (TextObject obj)
+	{
+		layout.Engine = obj.Engine;
+		int natural = layout.GetLayoutBounds ().Width;
+		int toCanvasEdge = workspace.ImageSize.Width - obj.Engine.Origin.X;
+		return Math.Max (MinAreaWidth, Math.Min (natural, toCanvasEdge));
+	}
+
+	//An empty object normally has no box to grab, but an empty area box is still a placed
+	//box: it keeps its chrome and handles so it can be moved/resized before typing into it.
+	//Only the object being edited can be empty (commit drops blank objects).
+	private bool HasInteractionBox (TextObject obj)
+		=> !obj.IsEmpty || (obj == current_text_object && obj.Engine.WrapWidth > 0);
+
 	//Whether the toolbar is set to create area (flow) text rather than point text.
 	private bool AreaMode => text_mode_btn?.SelectedIndex == 1;
 
@@ -1233,6 +1258,15 @@ public sealed class TextTool : BaseTool
 
 		// Start editing at the cursor location as a brand new text object.
 		TextObject newObject = new (new TextEngine ()) { RasterizeOnFinalize = RasterizeText };
+		//Read the mode before StartEditing: it syncs the toolbar from the new object, so a
+		//still-zero wrap width would flip the dropdown back to Point.
+		bool areaMode = AreaMode;
+		if (areaMode) {
+			//Draw-the-box-first: give it a provisional width and let the drag define the
+			//real one (OnMouseMove). A click / tiny drag falls back to DefaultAreaWidth on
+			//mouse up.
+			newObject.Engine.WrapWidth = DefaultAreaWidth;
+		}
 		current_text_object = newObject;
 		click_point = pt;
 		UpdateFont ();
@@ -1248,11 +1282,7 @@ public sealed class TextTool : BaseTool
 		LayerObjectSelection.RaiseObjectsChanged ();
 		StartEditing (newObject, isNewObject: true);
 		undo_objects = objectsBeforeAdd;
-		if (AreaMode) {
-			//Draw-the-box-first: give it a provisional width and let the drag define the
-			//real one (OnMouseMove). A click / tiny drag falls back to DefaultAreaWidth on
-			//mouse up.
-			newObject.Engine.WrapWidth = DefaultAreaWidth;
+		if (areaMode) {
 			drawing_new_box = true;
 			new_box_start_x = pt.X;
 			tracking = true;
@@ -2468,7 +2498,7 @@ public sealed class TextTool : BaseTool
 		foreach (TextObject obj in CurrentUserLayer.TextObjects) {
 			// A hidden object draws nothing, so neither does its chrome — hiding just the text's
 			// own sub-row has to take its rectangle and badge with it.
-			if (obj.IsEmpty || obj.Hidden)
+			if (!HasInteractionBox (obj) || obj.Hidden)
 				continue;
 
 			drewAnything = true;
@@ -2647,7 +2677,7 @@ public sealed class TextTool : BaseTool
 	//Classifies where the cursor is relative to a text object's interaction rectangle.
 	private HitZone GetHitZone (TextObject obj, PointD p)
 	{
-		if (obj.IsEmpty)
+		if (!HasInteractionBox (obj))
 			return HitZone.None;
 
 		RectangleD pr = GetPaddedLocalRect (obj);

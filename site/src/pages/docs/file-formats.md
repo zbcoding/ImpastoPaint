@@ -13,12 +13,12 @@ Impasto opens and saves the common image formats, plus layered OpenRaster files.
 | Photoshop | `.psd` | Yes | No | Yes, on open |
 | JPEG | `.jpg`, `.jpeg` | Yes | Yes, with a quality setting | No |
 | WebP | `.webp` | Yes | Yes, with a quality setting or lossless | No |
-| AVIF | `.avif` | Yes | Yes, with a quality setting, when libavif is available | No |
+| AVIF | `.avif` | If your system can read it | Yes, with a quality setting, when libavif is available | No |
 | Netpbm Portable Pixmap | `.ppm` | Yes | Yes | No |
-| TGA | `.tga` | If your system can read it | Yes | No |
+| TGA | `.tga` | If your system can read it | If your system can read it | No |
 | PNG, BMP, GIF, TIFF, ICO and others | various | If your system can read them | If your system can write them | No |
 
-Besides the formats Impasto handles itself, it uses the image loaders installed on your system, so the exact list of other formats you can open or save depends on your platform. If you try to open a file Impasto can't read, the error message lists every format it supports on your system.
+Besides the formats Impasto handles itself, it uses the image loaders installed on your system, so the exact list of other formats you can open or save depends on your platform. TGA is one of those: it appears in the list only when a system TGA loader is installed, and if it is, Impasto writes `.tga` files with its own exporter. If you try to open a file Impasto can't read, the error message lists every format it supports on your system.
 
 ## Saving
 
@@ -43,7 +43,7 @@ The first time you save a document as JPEG, WebP or AVIF in a session, Impasto s
 | Format | Default quality | Notes |
 |---|---|---|
 | JPEG | 85 | JPEG has no transparency. |
-| WebP | 80 | Check **Lossless** to save without any quality loss. |
+| WebP | 80 | Check **Lossless** to save without any quality loss, when libwebp is available on your system. |
 | AVIF | 80 | |
 
 ## OpenRaster (.ora): Impasto projects
@@ -84,7 +84,7 @@ Limitations:
 
 ## AVIF
 
-Impasto can open AVIF images, and saves them using the libavif library. The Windows and macOS builds include it. On Linux, AVIF saving is available when libavif is installed on your system; without it, AVIF is open-only.
+Impasto can open AVIF images when your system has a gdk-pixbuf AVIF loader, and saves them using the libavif library. The Windows and macOS builds include libavif. On Linux, AVIF saving is available when libavif is installed on your system; without it, AVIF is open-only.
 
 ## ICO
 

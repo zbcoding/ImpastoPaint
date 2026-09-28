@@ -11,7 +11,7 @@ There are four ways to set the primary or secondary color:
 - The **palette** in the status bar, which holds your swatches plus quick and recent colors.
 - The **color wheel** button next to those swatches, which opens a popover with a live picker on top of whichever palette sections have folded away.
 - The **floating colors window**, a full picker you can leave open while you work.
-- The **Color Picker** tool (<kbd>K</kbd>), which reads a color out of the image; hold <kbd>Alt</kbd> and click with most other tools to sample without switching tools. See [Paint tools](/docs/tools/paint/#color-picker).
+- The **Color Picker** tool (<kbd>K</kbd>), which reads a color out of the image. See [Paint tools](/docs/tools/paint/#color-picker).
 
 <kbd>X</kbd> swaps the primary and secondary colors; the two small arrows next to the swatches do the same. The reset button beside them restores black and white.
 
@@ -73,8 +73,8 @@ The primary and secondary colors are read and written by the tools in ways worth
 | Gradient | The start of the transition, in Color Mode. | The end of the transition. |
 | Color Picker | Left click sets it. | Right click sets it. |
 | Text | Fills the text. | Outlines it, or fills its background. |
-| Shapes | Outlines the shape, or fills it in Fill Shape mode. | Fills the interior. |
-| Recolor | The color that gets replaced. | The color it is replaced with. |
+| Shapes | Outlines the shape. | Fills the interior, in **Fill Shape** and **Fill and Outline Shape** modes. |
+| Recolor | The color painted in: left click replaces the secondary color on the canvas with it. | The color replaced by a normal left-drag stroke; the color painted in by <kbd>Alt</kbd>+drag or right drag. |
 | Fill Selection | Fills the selection. | |
 
 Both colors are global rather than per document, so they stay put as you switch between tabs.

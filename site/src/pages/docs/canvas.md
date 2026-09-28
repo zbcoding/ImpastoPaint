@@ -88,4 +88,4 @@ The status bar reports the cursor position and the canvas size and aspect ratio;
 
 ## Multiple images
 
-Every image opens in its own tab. Switch with <kbd>Ctrl</kbd>+<kbd>Tab</kbd> or <kbd>Alt</kbd>+<kbd>1</kbd> to <kbd>Alt</kbd>+<kbd>9</kbd>; **Window** has Save All (<kbd>Ctrl</kbd>+<kbd>Alt</kbd>+<kbd>A</kbd>) and Close All (<kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>W</kbd>). Each tab keeps its own zoom, scroll position, selection, and history.
+Every image opens in its own tab; click a tab to switch to it. **Window** has Save All (<kbd>Ctrl</kbd>+<kbd>Alt</kbd>+<kbd>A</kbd>) and Close All (<kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>W</kbd>). Each tab keeps its own zoom, scroll position, selection, and history.

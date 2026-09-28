@@ -60,7 +60,7 @@ Drag **Impasto** from Applications to the Trash. Settings, keyboard shortcuts, a
 Install .NET 10 and the GTK dependencies from Homebrew:
 
 ```bash
-brew install dotnet-sdk libadwaita adwaita-icon-theme gettext webp-pixbuf-loader
+brew install dotnet-sdk libadwaita adwaita-icon-theme gettext webp-pixbuf-loader libavif
 ```
 
 Then set the library path so the GTK libraries can be found, or the application fails at startup with a library-loading error:

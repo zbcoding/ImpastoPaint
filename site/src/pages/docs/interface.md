@@ -23,7 +23,7 @@ On macOS the menu bar is the system menu bar at the top of the screen, and the *
 
 ## The menu bar
 
-The menus are **File**, **Edit**, **View**, **Image**, **Layers**, **Adjustments**, **Effects**, **Window**, and **Help**. Effects and Adjustments also collect whatever add-ins have contributed, so those menus grow as you install add-ins.
+The menus are **File**, **Edit**, **View**, **Image**, **Adjustments**, **Effects**, **Add-ins**, **Window**, and **Help**. Layer commands live in the Layers pad's menu rather than a menu of their own. When Impasto uses a header bar, the View, Image, Adjustments, and Effects menus become buttons in the toolbar instead. Effects and Adjustments also collect whatever add-ins have contributed, so those menus grow as you install add-ins.
 
 **Edit > Settings...** opens the preferences dialog, and **Help > Keyboard Shortcuts** opens the shortcut editor. Both are covered below.
 
@@ -35,7 +35,7 @@ The zoom control lives at the right-hand end of this row. It offers fixed steps 
 
 ## The toolbox
 
-A vertical column of tool buttons down the left edge, divided into sections by separators: Move, View, Select, Paint, Shapes, Retouch, and the user's pinned tools. The **[toolbox overview](/docs/tools/)** describes every tool.
+A vertical column of tool buttons down the left edge, divided into sections by separators: Move, View, Select, Paint, Shapes, Retouch, and - once an add-in contributes one - a final Add-ins section. Pinned tools are copied into a highlighted strip above the sections. The **[toolbox overview](/docs/tools/)** describes every tool.
 
 - Several tools share a slot, indicated by a small marker in the button's corner. Press and hold the button, or click the marker, to open the flyout of the other tools in that group.
 - Drag a tool out of the flyout onto the toolbox to pin it, so it keeps its own button instead of hiding behind the stack. Drag a pinned tool back to unpin it.
@@ -56,7 +56,7 @@ The image sits in the middle, surrounded by a glow in a shade of the canvas surr
 
 - **Rulers**, off by default, turned on from **View > Show/Hide > Rulers**. Their unit is set under **View > Ruler Units**: Pixels, Inches, or Centimeters.
 - **The grid**, off by default, from **View > Show Grid**. **View > Edit Canvas Grid** sets the cell size, the color, and the optional axonometric lattice. See [Snapping and guides](/docs/snapping/).
-- **Image tabs**, one per open document, appearing above the canvas once there is more than one. Switch with <kbd>Ctrl</kbd>+<kbd>Tab</kbd>.
+- **Image tabs**, one per open document, appearing above the canvas once there is more than one. Click a tab to switch to that image.
 
 ## The docks and pads
 

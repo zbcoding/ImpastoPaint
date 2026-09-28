@@ -4,7 +4,7 @@ layout: ../../../layouts/DocsLayout.astro
 
 A selection is a mask over the current image. Once one exists, every paint tool, adjustment, effect, and clipboard command works only inside it, and a selection outline is drawn as a moving dashed line around the marked area.
 
-The Select section of the toolbox holds four tools that create selections. All four share the same selection-mode dropdown, and all four are antialiased by default, so a curved or diagonal edge is softened rather than jagged.
+The Select section of the toolbox holds four tools that create selections. All four share the same selection-mode dropdown.
 
 | Tool | Key | Gesture |
 |---|---|---|
@@ -35,7 +35,7 @@ The dropdown is only the default: the mouse buttons and modifiers override it wh
 | Right drag | Exclude |
 | <kbd>Ctrl</kbd> + right drag | Xor |
 
-On macOS the modifiers are <kbd>⌘ Command</kbd> and <kbd>Option</kbd> respectively. Note that with a tool other than a selection tool, <kbd>Alt</kbd>+click is how you sample a color for the palette, and right-drag paints with the secondary color.
+On macOS the modifiers are <kbd>⌘ Command</kbd> and <kbd>Option</kbd> respectively. Note that right-drag paints with the secondary color when the tool is not a selection tool.
 
 ## The Lasso
 
@@ -95,7 +95,7 @@ Selections are per document. Each image remembers its own, and switching tabs do
 | Copy Merged | <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>C</kbd> | Copies what is visible, with all layers composited. |
 | Paste | <kbd>Ctrl</kbd>+<kbd>V</kbd> | Pastes onto the current layer. |
 | Paste Alternate | <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>V</kbd> | Pastes onto a new layer. |
-| Paste Into New Image | <kbd>Shift</kbd>+<kbd>V</kbd> | Pastes into a new image, sized to fit. |
+| Paste Into New Image | <kbd>Shift</kbd>+<kbd>V</kbd> or <kbd>Ctrl</kbd>+<kbd>Alt</kbd>+<kbd>V</kbd> | Pastes into a new image, sized to fit. |
 
 Pasting leaves the new content under a selection of its own, so it can be moved straight away. Turning on **Edit > Settings... > Keyboard > Paste external images onto a new layer by default** swaps the first two: Paste then goes to a new layer and Paste Alternate to the current one.
 

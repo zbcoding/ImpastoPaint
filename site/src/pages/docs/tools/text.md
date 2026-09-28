@@ -2,7 +2,7 @@
 layout: ../../../layouts/DocsLayout.astro
 ---
 
-The Text tool places text on the canvas. Text is an object, not pixels: after you commit it, you can come back, change the words, the font, the color, or the alignment, and every one of those changes is its own undo step.
+The Text tool places text on the canvas. Text can stay an object rather than becoming pixels: with the **Mode** dropdown set to **Object**, you can come back, change the words, the font, the color, or the alignment, and every one of those changes is its own undo step. Text is rasterized into the layer by default; see [Raster or object](/docs/tools/shapes/#raster-or-object).
 
 ## Placing and typing
 
@@ -14,7 +14,7 @@ While an object is selected or being edited, its dashed border and corner grips 
 
 ## Point text and area text
 
-The **Mode** dropdown decides how the text behaves:
+The text-mode dropdown at the left of the tool options bar decides how the text behaves:
 
 | Mode | Behaviour |
 |---|---|
@@ -50,7 +50,7 @@ The **Fill** dropdown decides what the letters are made of:
 
 | Option | Result |
 |---|---|
-| **Fill** | The text is filled with the primary color. |
+| **Normal** | The text is filled with the primary color. |
 | **Outline** | Only the outline of the letters is drawn, in the secondary color. |
 | **Normal and Outline** | The text is filled with the primary color and outlined with the secondary color. |
 | **Fill Background** | The text is filled with the primary color and its bounding box is filled with the secondary color, behind the text. |
@@ -69,7 +69,7 @@ Text objects stay editable, so there are several ways back into one:
 
 Selecting an existing object shows *its* settings in the tool options bar - its font, size, alignment, and fill - and does not overwrite them with whatever the toolbar happened to be set to. Clicking a text object's row in the Layers pad likewise leaves its alignment and font alone, so selecting a centred text object does not quietly left-align it.
 
-Text is committed as an object by default; the **Mode** dropdown's other choice, **Raster — fuses to layer**, paints it into the layer's pixels on commit instead. That version can be cut, moved, and erased immediately like any artwork, but it can never be edited as text again. Whatever the mode, a text object is baked into pixels by anything that needs flat pixels - cutting, erasing, cropping, resizing, rotating, flipping, flattening, or running an effect across it - and Impasto warns you first unless you have turned that warning off in **Edit > Settings... > UI**.
+The **Mode** dropdown next to it decides how committing works: by default text is rasterized, and choosing **Object — editable later** instead keeps it a live text object. A rasterized version can be cut, moved, and erased immediately like any artwork, but it can never be edited as text again. Whatever the mode, a text object is baked into pixels by anything that needs flat pixels - cutting, erasing, cropping, resizing, rotating, flipping, flattening, or running an effect across it - and Impasto warns you first unless you have turned that warning off in **Edit > Settings... > UI**.
 
 ## Text and the keyboard
 

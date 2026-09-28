@@ -16,13 +16,13 @@ Windows and macOS builds are not code-signed, so both systems show a warning the
 
 ## Open your first image
 
-Choose **File > Open**, or press <kbd>Ctrl</kbd>+<kbd>O</kbd>, and pick a file. Every file opens in its own tab, so you can keep several images side by side and switch between them with <kbd>Ctrl</kbd>+<kbd>Tab</kbd>.
+Choose **File > Open**, or press <kbd>Ctrl</kbd>+<kbd>O</kbd>, and pick a file. Every file opens in its own tab, so you can keep several images side by side and click between them.
 
 To start from nothing instead, choose **File > New** (<kbd>Ctrl</kbd>+<kbd>N</kbd>) and set the size, orientation, and background color. The default size for new images is configurable in **Edit > Settings > Canvas**.
 
 ![The Impasto window showing a document, the toolbox, and the docked pads](/assets/screenshot-text-tool.png)
 
-Drop a file onto the window to open it. Dragging an image from another application onto the canvas pastes it as a new layer, which is the usual way to combine two images.
+Drop an image file onto the window to open it in a new tab. To combine two images, open the second one and copy and paste it in: **Paste** puts the clipboard content on the current layer, and **Paste Alternate** (<kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>V</kbd>) puts it on a new layer. **Edit > Settings... > Keyboard > Paste external images onto a new layer by default** swaps the two if you usually want the new layer.
 
 ## Find your way around
 
@@ -30,7 +30,7 @@ The window is made of a few regions, described in full under [The interface](/do
 
 | Region | What it is for |
 |---|---|
-| Menu bar | Every command, grouped by File, Edit, View, Image, Layers, Adjustments, Effects, and Help. |
+| Menu bar | Every command, grouped by File, Edit, View, Image, Adjustments, Effects, Add-ins, Window, and Help. Layer commands are in the Layers pad's menu. |
 | Quick access toolbar | New, Open, Save, Undo, Redo, and the clipboard commands. |
 | Toolbox | The column of tools on the left, divided into sections. |
 | Tool options bar | The settings for the tool that is currently selected. It changes as you change tools. |

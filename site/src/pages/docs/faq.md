@@ -20,10 +20,11 @@ Paint.NET is a separate, proprietary Windows application. Pinta was inspired by 
 
 ## Does Impasto work offline?
 
-Yes. Drawing, editing, saving, and loading all work with no network at all. Only three things touch the network, and only when they apply:
+Yes. Drawing, editing, saving, and loading all work with no network at all. Only four things touch the network, and only when they apply:
 
 - An update check once per launch.
 - The add-in repository index, when the add-in gallery refreshes.
+- Downloading an add-in, when you install one from the gallery.
 - Opening a link, such as Help > Website or File a Bug, which hands the URL to your browser.
 
 ## What does Impasto send?
@@ -46,7 +47,7 @@ The releases are not code-signed. Windows SmartScreen therefore shows *Windows p
 ## Which systems does Impasto support?
 
 - **Linux**: x86-64, with GTK 4.18 and libadwaita 1.8. The Flatpak and AppImage bundle their own; the zip uses your system's.
-- **Windows**: x64, and arm64 on Windows 11 ARM.
+- **Windows**: x64, and arm64 on Windows on ARM.
 - **macOS**: Apple Silicon and Intel.
 
 Builds need the .NET 10 runtime, which the installers and packages carry. There is no mobile, tablet, or web version.

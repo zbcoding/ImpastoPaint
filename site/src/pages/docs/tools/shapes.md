@@ -13,7 +13,7 @@ The Shape tools draw figures that stay editable. A rectangle you drew an hour ag
 | Freeform Shape | A closed shape with an outline you draw by hand. |
 | Line/Curve | A line or curve, optionally with arrowheads. |
 
-All of them are on the **Shapes** stack in the toolbox, so <kbd>O</kbd> cycles through the group; press and hold the toolbox button, or click its corner marker, to pick one directly.
+Rectangle, Rounded Rectangle, Ellipse, Triangle, and Freeform Shape share one button in the toolbox, so <kbd>O</kbd> cycles through them; press and hold the toolbox button, or click its corner marker, to pick one directly. Line/Curve has a button of its own, also on <kbd>O</kbd>.
 
 ## Drawing a shape
 
@@ -47,7 +47,7 @@ Keyboard equivalents, from the **Tool Specific** tab of the shortcut editor:
 | Key | Effect |
 |---|---|
 | Arrow keys | Move the selected control point one pixel. |
-| <kbd>Space</kbd> | Add a control point at the pointer, or at the pointer's exact position with <kbd>Ctrl</kbd> held. |
+| <kbd>A</kbd> | Add a control point at the pointer, or at the pointer's exact position with <kbd>Ctrl</kbd>+<kbd>Space</kbd>. |
 | <kbd>Delete</kbd> | Delete the selected control point. |
 | <kbd>S</kbd> / <kbd>D</kbd> | Make the selected point curve / straighten it. |
 | <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>←</kbd> / <kbd>→</kbd> | Select the previous / next control point by order. |
@@ -72,8 +72,8 @@ The **Mode** dropdown decides what committing the shape does:
 
 | Mode | Result |
 |---|---|
-| **Object — editable later** | The shape stays a live object inside the layer: re-editable, movable, and each edit is its own history step. This is the default. |
-| **Raster — fuses to layer** | The shape is painted into the layer's pixels when committed. It can be cut, moved, and erased immediately like any artwork, but never edited again. |
+| **Raster — fuses to layer** | The shape is painted into the layer's pixels when committed. It can be cut, moved, and erased immediately like any artwork, but never edited again. This is the default. |
+| **Object — editable later** | The shape stays a live object inside the layer: re-editable, movable, and each edit is its own history step. |
 
 Objects sit in the layer's own object surfaces, above its pixels, so painting on a layer does not touch them. Anything that needs flat pixels - cutting, erasing, cropping, resizing, rotating, flipping, flattening, or running an effect across one - bakes them down permanently first. Impasto normally warns you before that happens and lets you cancel; **Edit > Settings... > UI > Skip the "Rasterize Objects?" confirmation** makes it bake silently instead.
 

@@ -7,7 +7,7 @@ Download the installer from the [releases page](https://github.com/zbcoding/Impa
 | File | For |
 |---|---|
 | `Impasto-win-x64.exe` | Intel and AMD 64-bit Windows. |
-| `Impasto-win-arm64.exe` | Windows on ARM, such as Snapdragon X laptops. Needs Windows 11 ARM. |
+| `Impasto-win-arm64.exe` | Windows on ARM, such as Snapdragon X laptops (built and tested on Windows 11 ARM). |
 
 Both are Inno Setup installers. The wizard asks whether to install for all users or only for you, installs into Program Files or your own profile accordingly, and adds a Start menu entry. It does not register file associations: to open an image with Impasto, use **Open with** or launch Impasto and choose **File > Open**.
 
@@ -35,8 +35,11 @@ Your settings, keyboard shortcuts, and recent-file list live in `%APPDATA%\Impas
 Install [MSYS2](https://www.msys2.org), then from the **CLANG64** terminal:
 
 ```bash
-pacman -S mingw-w64-clang-x86_64-libadwaita mingw-w64-clang-x86_64-webp-pixbuf-loader
+pacman -S mingw-w64-clang-x86_64-libadwaita mingw-w64-clang-x86_64-webp-pixbuf-loader \
+          mingw-w64-clang-x86_64-libavif mingw-w64-clang-x86_64-aom
 ```
+
+The last two carry the AVIF exporter; without them the build still succeeds but saving AVIF is unavailable.
 
 On ARM64 Windows, use the **CLANGARM64** terminal and replace `clang-x86_64` with `clang-aarch64`.
 

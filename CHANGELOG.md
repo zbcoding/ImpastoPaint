@@ -17,6 +17,8 @@ entries, is upstream Pinta work; the Impasto sections cover changes made in this
   of an empty submenu.
 - The Text tool's font dropdown has a search box. Typing filters the list to families whose name
   contains the text, so "mono" finds "DejaVu Sans Mono".
+- Help ▸ Contents (F1) opens the new user guide at <https://impastopaint.com/docs/>, and Help ▸
+  Impasto Website opens <https://impastopaint.com/>. Both used to open the GitHub repository.
 
 ### Changed
 

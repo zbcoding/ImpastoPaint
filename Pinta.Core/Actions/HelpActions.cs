@@ -105,11 +105,11 @@ public sealed class HelpActions
 
 	private async void DisplayHelp (object sender, EventArgs e)
 	{
-		await system.LaunchUri ("https://github.com/zbcoding/ImpastoPaint");
+		await system.LaunchUri ("https://impastopaint.com/docs/");
 	}
 
 	private async void Website_Activated (object sender, EventArgs e)
 	{
-		await system.LaunchUri ("https://github.com/zbcoding/ImpastoPaint");
+		await system.LaunchUri ("https://impastopaint.com/");
 	}
 }

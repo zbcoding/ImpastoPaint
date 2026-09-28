@@ -168,8 +168,6 @@ public sealed partial class LayersListViewItem
 		if (document is null || UserLayer is null)
 			throw new InvalidOperationException ($"{nameof (LayersListViewItem)} is not initialized");
 
-		ImageSurface surface = CairoExtensions.CreateImageSurface (Format.Argb32, widthRequest, heightRequest);
-
 		List<Layer> layers = UserLayer.GetLayersToPaint ().ToList ();
 		// For the current layer, show the selection layer too (e.g. when moving the selection's contents).
 		if (UserLayer == document.Layers.CurrentUserLayer && document.Layers.ShowSelectionLayer)
@@ -179,15 +177,29 @@ public sealed partial class LayersListViewItem
 		if (layers.Count == 1)
 			return layers[0].Surface;
 
+		// The renderer scales by width alone, so a surface with the row's shape rather than the
+		// image's would show an empty band (or crop) that the image itself does not have.
+		Size fitted = FitInside (document.ImageSize, widthRequest, heightRequest);
+		ImageSurface surface = CairoExtensions.CreateImageSurface (Format.Argb32, fitted.Width, fitted.Height);
+
 		canvas_renderer ??= new CanvasRenderer (
 			PintaCore.LivePreview,
 			PintaCore.Workspace,
 			enableLivePreview: false,
 			enableBackgroundPattern: true);
-		canvas_renderer.Initialize (document.ImageSize, new Size (widthRequest, heightRequest));
+		canvas_renderer.Initialize (document.ImageSize, fitted);
 		canvas_renderer.Render (layers, surface, PointI.Zero);
 
 		return surface;
+	}
+
+	/// <summary>The largest size with <paramref name="image"/>'s aspect ratio that fits the box.</summary>
+	private static Size FitInside (Size image, int boxWidth, int boxHeight)
+	{
+		double scale = Math.Min (boxWidth / (double) image.Width, boxHeight / (double) image.Height);
+		return new Size (
+			Math.Max (1, (int) Math.Round (image.Width * scale)),
+			Math.Max (1, (int) Math.Round (image.Height * scale)));
 	}
 
 	public void HandleVisibilityToggled (bool visible)

@@ -71,6 +71,9 @@ entries, is upstream Pinta work; the Impasto sections cover changes made in this
 - The AppImage's bundled-library notice (`usr/share/doc/impasto/THIRD-PARTY.AppImage.md`) said
   its libraries came from Ubuntu 24.04, but the AppImage has been built on Ubuntu 26.04. The
   notice now names the release of whatever system builds the image.
+- The Layers panel thumbnail of a layer holding shapes or text keeps the image's shape. A wide
+  image used to show an extra transparent strip along the bottom of its thumbnail that the image
+  itself does not have (a tall one was cropped instead).
 
 ## Impasto - [0.5.0](https://github.com/zbcoding/ImpastoPaint/releases/tag/v0.5.0) - 2026-09-27
 

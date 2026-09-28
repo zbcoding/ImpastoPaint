@@ -381,7 +381,6 @@ public sealed class TextTool : BaseTool
 			font_button = new FontFamilyDropDown (Pango.FontDescription.FromString (
 				Settings.GetSetting (SettingNames.TEXT_FONT,
 					Gtk.Settings.GetDefault ()!.GtkFontName!)));
-			font_button.Widget.CanFocus = false;
 			font_button.FontChanged += (_, _) => HandleFontChanged ();
 		}
 

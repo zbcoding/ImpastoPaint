@@ -31,4 +31,17 @@ partial class GtkExtensions
 		out GLib.Internal.NonNullableUtf8StringOwnedHandle str,
 		out Pango.Internal.AttrListOwnedHandle attrs,
 		out int cursor_pos);
+
+	/// <summary>
+	/// Sets the dropdown's search expression to a <see cref="Gtk.StringObject"/>'s "string"
+	/// property, which the popup's search entry filters on.
+	/// TODO-GTK4 (bindings) - gir.core 0.8 has no public Gtk.PropertyExpression constructor.
+	/// </summary>
+	public static void SetStringObjectExpression (this Gtk.DropDown dropDown)
+	{
+		using var property = GLib.Internal.NonNullableUtf8StringOwnedHandle.Create ("string");
+		IntPtr expression = Gtk.Internal.PropertyExpression.New (Gtk.StringObject.GetGType (), IntPtr.Zero, property);
+		Gtk.Internal.DropDown.SetExpression (dropDown.Handle.DangerousGetHandle (), expression);
+		Gtk.Internal.Expression.Unref (expression); // the dropdown holds its own reference
+	}
 }

@@ -9,6 +9,7 @@ namespace Pinta.Core;
 /// Pango cannot describe ("gtk_font_chooser_widget_merge_font_desc: assertion failed").
 /// This widget enumerates families ourselves from the Pango font map — skipping any with
 /// no describable face — and shows each name rendered in its own font as a live preview.
+/// The popup has a search entry that filters families by substring.
 /// Only the family is chosen here; size/weight/style/variant come from the other toolbar
 /// controls, exactly as with the old button (which was set to <c>FontLevel.Family</c>).
 /// </summary>
@@ -71,6 +72,18 @@ public sealed class FontFamilyDropDown
 		Widget = Gtk.DropDown.New (Gtk.StringList.New ([]), expression: null);
 		families = GetFamilies (Widget.GetPangoContext ());
 		Widget.SetModel (Gtk.StringList.New (families));
+
+		// Search entry at the top of the popup, matching the family name anywhere ("sans" finds
+		// "DejaVu Sans"). The dropdown filters the popup only; indices stay relative to `families`.
+		Widget.SetStringObjectExpression ();
+		Widget.SetSearchMatchMode (Gtk.StringFilterMatchMode.Substring);
+		Widget.SetEnableSearch (true);
+
+		// Clicking the collapsed button must not pull keyboard focus off the text being edited.
+		// Only its inner toggle button opts out: CanFocus=false on the dropdown itself would also
+		// block the popup's search entry, which is a descendant, from ever taking focus.
+		if (Widget.GetFirstChild () is Gtk.Button button)
+			button.FocusOnClick = false;
 
 		// Popup rows: family name, plus a sample of the current text when there's room.
 		Widget.SetListFactory (BuildListFactory ());

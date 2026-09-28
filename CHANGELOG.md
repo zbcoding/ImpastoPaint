@@ -15,6 +15,8 @@ entries, is upstream Pinta work; the Impasto sections cover changes made in this
   in the Help menu too.
 - Open Recent shows a greyed "No recent items..." entry when there are no recent files, instead
   of an empty submenu.
+- The Text tool's font dropdown has a search box. Typing filters the list to families whose name
+  contains the text, so "mono" finds "DejaVu Sans Mono".
 
 ### Changed
 

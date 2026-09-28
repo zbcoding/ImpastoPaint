@@ -132,7 +132,6 @@ internal sealed class TextPropertiesDialog : IDisposable
 
 		// --- Font family ---
 		font_button = new FontFamilyDropDown (font);
-		font_button.Widget.CanFocus = false;
 		font_button.FontChanged += (_, _) => Apply ();
 		content.Append (font_button.Widget);
 

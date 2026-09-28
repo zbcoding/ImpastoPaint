@@ -430,7 +430,8 @@ internal sealed class KeyboardShortcutsDialogAction : IActionHandler
 				state.Value = string.Empty;
 				state.RefreshRows ();
 				refreshDuplicates ();
-			});
+			}
+			);
 			shortcutButton.Label = Translations.GetString ("Press keys…");
 			shortcutButton.GrabFocus ();
 		};

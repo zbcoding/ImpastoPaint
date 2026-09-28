@@ -1,5 +1,6 @@
 // @ts-check
 import { defineConfig } from 'astro/config';
+import sitemap from '@astrojs/sitemap';
 
 // Custom domain via GitHub Pages: https://impastopaint.com/
 export default defineConfig({
@@ -9,4 +10,5 @@ export default defineConfig({
   // expect — matters because GitHub Pages serves directory-style output
   // (site/es/index.html) at both /es and /es/.
   trailingSlash: 'ignore',
+  integrations: [sitemap()],
 });

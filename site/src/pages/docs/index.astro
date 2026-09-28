@@ -1,0 +1,36 @@
+---
+import DocsLayout from '../../layouts/DocsLayout.astro';
+import { docsSections } from '../../docs/nav';
+
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+---
+<DocsLayout>
+  <p>
+    How to use Impasto, from installing it to writing add-ins. Hover over any button or field in
+    the app to see a tooltip that says what it does.
+  </p>
+  {docsSections.map((section) => (
+    <section>
+      <h2>{section.label}</h2>
+      <ul class="cards">
+        {section.pages.map((page) => (
+          <li>
+            <a href={`${base}${page.path}`}>
+              <strong>{page.label}</strong>
+              <span>{page.blurb}</span>
+            </a>
+          </li>
+        ))}
+      </ul>
+    </section>
+  ))}
+</DocsLayout>
+
+<style>
+  .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 1rem; margin: 0.75rem 0 1.5rem; padding: 0; list-style: none; }
+  .cards li { margin: 0; }
+  .cards a { display: flex; flex-direction: column; gap: 0.4rem; height: 100%; padding: 1rem 1.1rem; border: 1px solid var(--border); border-radius: 10px; background: var(--bg-raised); text-decoration: none; }
+  .cards a:hover { border-color: var(--accent-2); }
+  .cards strong { color: var(--fg); }
+  .cards span { color: var(--fg-muted); font-size: 0.9rem; }
+</style>

@@ -1,0 +1,187 @@
+---
+/**
+ * Layout for every page under /docs/. Markdown pages select it with `layout:` in their
+ * frontmatter; the page's title, description, sidebar entry, breadcrumb and previous/next
+ * links all come from its entry in src/docs/nav.ts, looked up by URL, so the frontmatter
+ * carries nothing but the layout.
+ */
+import Layout from './Layout.astro';
+import { docsSections, docsRoot, docsPageAt, docsNeighbors, type DocsPage } from '../docs/nav';
+
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+const siteUrl = (path: string) => `${base}${path}`;
+
+// Astro.url.pathname includes the base; nav.ts paths are relative to it, with a trailing slash.
+const withoutBase = Astro.url.pathname.slice(base.length);
+const path = withoutBase.endsWith('/') ? withoutBase : `${withoutBase}/`;
+
+const isRoot = path === docsRoot;
+const page: DocsPage = isRoot
+  ? {
+      path: docsRoot,
+      label: 'Overview',
+      title: 'Impasto documentation',
+      blurb:
+        'User guide for Impasto, the open-source paint app for Linux, Windows, and macOS: ' +
+        'installing, tools, layers and objects, effects, file formats, and shortcuts.',
+    }
+  : docsPageAt(path);
+const section = docsSections.find((candidate) => candidate.pages.includes(page));
+const { prev, next } = isRoot ? { prev: undefined, next: undefined } : docsNeighbors(path);
+
+const absolute = (p: string) => new URL(siteUrl(p), Astro.site).href;
+const crumbs = [
+  { name: 'Impasto', item: absolute('/') },
+  { name: 'Docs', item: absolute(docsRoot) },
+  ...(isRoot ? [] : [{ name: page.label, item: absolute(page.path) }]),
+];
+const schemas = [
+  {
+    '@context': 'https://schema.org',
+    '@type': isRoot ? 'CollectionPage' : 'TechArticle',
+    headline: page.title,
+    description: page.blurb,
+    url: absolute(page.path),
+    about: { '@type': 'SoftwareApplication', name: 'Impasto' },
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: crumbs.map((crumb, index) => ({ '@type': 'ListItem', position: index + 1, ...crumb })),
+  },
+];
+---
+<Layout
+  lang="en"
+  title={isRoot ? page.title : `${page.title} — Impasto docs`}
+  description={page.blurb}
+  localeAlternates={false}
+  schemas={schemas}
+>
+  <header class="docs-header">
+    <div class="docs-header-row">
+      <a href={siteUrl('/')} class="brand">
+        <img src={siteUrl('/assets/impasto-logo.svg')} width="28" height="28" alt="" />
+        <span>Impasto</span>
+      </a>
+      <nav class="docs-header-nav">
+        <a href={siteUrl(docsRoot)}>Docs</a>
+        <a href="https://github.com/zbcoding/ImpastoPaint/releases">Download</a>
+        <a href="https://github.com/zbcoding/ImpastoPaint">GitHub</a>
+      </nav>
+    </div>
+  </header>
+
+  <div class="docs-shell">
+    <aside class="docs-sidebar">
+      <details open>
+        <summary>Contents</summary>
+        <nav aria-label="Documentation">
+          <a href={siteUrl(docsRoot)} aria-current={isRoot ? 'page' : undefined}>Overview</a>
+          {docsSections.map((navSection) => (
+            <section>
+              <h2>{navSection.label}</h2>
+              <ul>
+                {navSection.pages.map((navPage) => (
+                  <li>
+                    <a href={siteUrl(navPage.path)} aria-current={navPage === page ? 'page' : undefined}>
+                      {navPage.label}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </section>
+          ))}
+        </nav>
+      </details>
+    </aside>
+
+    <main class="docs-main">
+      <nav class="breadcrumb" aria-label="Breadcrumb">
+        <a href={siteUrl(docsRoot)}>Docs</a>
+        {section && <span>{section.label}</span>}
+      </nav>
+      <h1>{page.title}</h1>
+      <article class="docs-body">
+        <slot />
+      </article>
+
+      {(prev || next) && (
+        <nav class="pager" aria-label="Previous and next page">
+          {prev ? (
+            <a class="pager-prev" href={siteUrl(prev.path)}>
+              <small>Previous</small>
+              <span>{prev.label}</span>
+            </a>
+          ) : <span />}
+          {next && (
+            <a class="pager-next" href={siteUrl(next.path)}>
+              <small>Next</small>
+              <span>{next.label}</span>
+            </a>
+          )}
+        </nav>
+      )}
+    </main>
+  </div>
+</Layout>
+
+<style>
+  .docs-header { border-bottom: 1px solid var(--border); padding: 0.85rem 0; position: sticky; top: 0; background: rgba(20, 21, 26, 0.92); backdrop-filter: blur(6px); z-index: 10; }
+  .docs-header-row { max-width: 1240px; margin: 0 auto; padding: 0 1.5rem; display: flex; align-items: center; justify-content: space-between; gap: 1rem; }
+  .brand { display: flex; align-items: center; gap: 0.5rem; font-weight: 700; font-size: 1.1rem; color: var(--fg); text-decoration: none; }
+  .docs-header-nav { display: flex; gap: 1.25rem; }
+  .docs-header-nav a { color: var(--fg-muted); text-decoration: none; font-size: 0.95rem; }
+  .docs-header-nav a:hover { color: var(--fg); }
+
+  .docs-shell { max-width: 1240px; margin: 0 auto; padding: 0 1.5rem; display: grid; grid-template-columns: 250px minmax(0, 1fr); gap: 3rem; }
+
+  .docs-sidebar { position: sticky; top: 4.2rem; align-self: start; max-height: calc(100vh - 4.2rem); overflow-y: auto; padding: 1.75rem 0 2rem; }
+  .docs-sidebar summary { display: none; }
+  .docs-sidebar nav > a { display: block; padding: 0.3rem 0.6rem; margin-bottom: 0.5rem; }
+  .docs-sidebar h2 { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--fg-muted); margin: 1.1rem 0 0.4rem; padding: 0 0.6rem; }
+  .docs-sidebar ul { list-style: none; margin: 0; padding: 0; }
+  .docs-sidebar a { display: block; padding: 0.3rem 0.6rem; border-radius: 6px; color: var(--fg-muted); text-decoration: none; font-size: 0.93rem; }
+  .docs-sidebar a:hover { color: var(--fg); background: var(--bg-raised); }
+  .docs-sidebar a[aria-current='page'] { color: var(--fg); background: var(--bg-raised); box-shadow: inset 2px 0 0 var(--accent); }
+
+  .docs-main { padding: 1.75rem 0 4rem; min-width: 0; max-width: 780px; }
+  .breadcrumb { display: flex; gap: 0.5rem; font-size: 0.88rem; color: var(--fg-muted); }
+  .breadcrumb > * + *::before { content: '/'; margin-right: 0.5rem; opacity: 0.6; }
+  .breadcrumb a { color: var(--fg-muted); }
+  .docs-main h1 { font-size: clamp(1.7rem, 3.2vw, 2.3rem); line-height: 1.2; margin: 0.6rem 0 1.5rem; }
+
+  .docs-body :global(h2) { font-size: 1.4rem; margin: 2.4rem 0 0.75rem; padding-top: 0.5rem; border-top: 1px solid var(--border); }
+  .docs-body :global(h3) { font-size: 1.1rem; margin: 1.8rem 0 0.5rem; }
+  .docs-body :global(p), .docs-body :global(li) { color: #d5d9e4; }
+  .docs-body :global(li) { margin: 0.3rem 0; }
+  .docs-body :global(table) { width: 100%; border-collapse: collapse; margin: 1.25rem 0; font-size: 0.93rem; display: block; overflow-x: auto; }
+  .docs-body :global(th), .docs-body :global(td) { border: 1px solid var(--border); padding: 0.45rem 0.7rem; text-align: left; vertical-align: top; }
+  .docs-body :global(th) { background: var(--bg-raised); }
+  .docs-body :global(kbd) { font-family: inherit; font-size: 0.85em; padding: 0.1em 0.45em; border: 1px solid var(--border); border-bottom-width: 2px; border-radius: 4px; background: var(--bg-raised); white-space: nowrap; }
+  .docs-body :global(pre) { background: var(--bg-raised); border: 1px solid var(--border); border-radius: 8px; padding: 0.9rem 1rem; overflow-x: auto; }
+  .docs-body :global(pre code) { border: none; padding: 0; background: none; }
+  .docs-body :global(blockquote) { margin: 1.25rem 0; padding: 0.6rem 1rem; border-left: 3px solid var(--accent); background: var(--bg-raised); border-radius: 0 6px 6px 0; }
+  .docs-body :global(blockquote p) { margin: 0.3rem 0; }
+  .docs-body :global(img) { border: 1px solid var(--border); border-radius: 8px; margin: 1.25rem 0; }
+
+  .pager { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: 3.5rem; }
+  .pager a { display: flex; flex-direction: column; padding: 0.9rem 1.1rem; border: 1px solid var(--border); border-radius: 8px; text-decoration: none; color: var(--fg); }
+  .pager a:hover { border-color: var(--accent-2); }
+  .pager small { color: var(--fg-muted); }
+  .pager-next { text-align: right; grid-column: 2; }
+
+  @media (max-width: 860px) {
+    .docs-shell { grid-template-columns: 1fr; gap: 0; }
+    .docs-sidebar { position: static; max-height: none; padding: 1rem 0 0; border-bottom: 1px solid var(--border); }
+    .docs-sidebar summary { display: block; cursor: pointer; padding: 0.4rem 0.6rem; font-weight: 600; }
+    .docs-header-nav { gap: 0.9rem; }
+  }
+</style>
+
+<script>
+  // The contents list starts closed on narrow screens, where it would push the page body far down.
+  if (window.matchMedia('(max-width: 860px)').matches) {
+    document.querySelector('.docs-sidebar details')?.removeAttribute('open');
+  }
+</script>

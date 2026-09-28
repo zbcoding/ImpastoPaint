@@ -39,12 +39,7 @@ export interface Dict {
   macosCta: string;
   docsH2: string;
   docsIntro: string;
-  docsReadme: string;
-  docsMid: string;
-  docsFolder: string;
-  docsMid2: string;
-  docsChangelog: string;
-  docsOutro: string;
+  docsLink: string;
   docsTooltip: string;
   footerLicense: string;
   footerGithub: string;
@@ -101,13 +96,9 @@ export const strings: Record<Lang, Dict> = {
     macosP: 'A native macOS build is published with every release. It is unsigned, so Gatekeeper will block it - right-click (or Control-click) the app and choose "Open" the first time.',
     macosCta: 'macOS download',
     docsH2: 'Documentation',
-    docsIntro: 'User docs for Impasto are coming to this site soon. Until then, the',
-    docsReadme: 'README',
-    docsMid: ', the',
-    docsFolder: 'docs folder',
-    docsMid2: ', and the',
-    docsChangelog: 'CHANGELOG.md',
-    docsOutro: 'on GitHub cover the current feature set, file formats, and add-ins.',
+    docsIntro:
+      'The user guide covers installing Impasto, every tool, layers and objects, effects, file formats, keyboard shortcuts, and add-ins.',
+    docsLink: 'Read the documentation',
     docsTooltip:
       'Impasto also has tooltips throughout the interface - hover over a button or field to see what it does.',
     footerLicense: 'Impasto is free and open source, licensed under the MIT License.',
@@ -164,13 +155,9 @@ export const strings: Record<Lang, Dict> = {
     macosP: 'Con cada versión se publica una compilación nativa para macOS. No está firmada, así que Gatekeeper la bloqueará: haz clic derecho (o Ctrl-clic) en la app y elige "Abrir" la primera vez.',
     macosCta: 'Descargar para macOS',
     docsH2: 'Documentación',
-    docsIntro: 'La documentación de usuario de Impasto llegará pronto a este sitio. Mientras tanto, el',
-    docsReadme: 'README',
-    docsMid: ', la',
-    docsFolder: 'carpeta de documentación',
-    docsMid2: ', y el',
-    docsChangelog: 'CHANGELOG.md',
-    docsOutro: 'en GitHub describen las funciones actuales, los formatos de archivo y los complementos.',
+    docsIntro:
+      'La guía de usuario explica cómo instalar Impasto, cada herramienta, las capas y objetos, los efectos, los formatos de archivo, los atajos de teclado y los complementos.',
+    docsLink: 'Leer la documentación (en inglés)',
     docsTooltip:
       'Impasto también tiene información sobre las herramientas en toda la interfaz: pasa el cursor sobre un botón o campo para ver qué hace.',
     footerLicense: 'Impasto es software libre y de código abierto, con licencia MIT.',
@@ -229,13 +216,9 @@ export const strings: Record<Lang, Dict> = {
     macosP: "Une version native pour macOS est publiée à chaque version. Elle n'est pas signée, donc Gatekeeper la bloquera : faites un clic droit (ou Ctrl-clic) sur l'app et choisissez « Ouvrir » la première fois.",
     macosCta: 'Télécharger pour macOS',
     docsH2: 'Documentation',
-    docsIntro: "La documentation utilisateur d'Impasto arrivera bientôt sur ce site. En attendant, le",
-    docsReadme: 'README',
-    docsMid: ', le',
-    docsFolder: 'dossier docs',
-    docsMid2: ', et le',
-    docsChangelog: 'CHANGELOG.md',
-    docsOutro: 'sur GitHub couvrent les fonctionnalités actuelles, les formats de fichiers et les extensions.',
+    docsIntro:
+      "Le guide utilisateur couvre l'installation d'Impasto, chaque outil, les calques et objets, les effets, les formats de fichiers, les raccourcis clavier et les extensions.",
+    docsLink: 'Lire la documentation (en anglais)',
     docsTooltip:
       "Impasto propose aussi des infobulles dans toute l'interface : survolez un bouton ou un champ pour voir sa fonction.",
     footerLicense: 'Impasto est un logiciel libre et open source, sous licence MIT.',
@@ -292,13 +275,9 @@ export const strings: Record<Lang, Dict> = {
     macosP: 'Mit jedem Release wird ein natives macOS-Build veröffentlicht. Es ist unsigniert, daher blockiert Gatekeeper es - beim ersten Start mit Rechtsklick (oder Ctrl-Klick) auf die App "Öffnen" wählen.',
     macosCta: 'macOS-Download',
     docsH2: 'Dokumentation',
-    docsIntro: 'Nutzerdokumentation für Impasto folgt bald auf dieser Seite. Bis dahin decken das',
-    docsReadme: 'README',
-    docsMid: ', der',
-    docsFolder: 'Docs-Ordner',
-    docsMid2: ' und das',
-    docsChangelog: 'CHANGELOG.md',
-    docsOutro: 'auf GitHub den aktuellen Funktionsumfang, die Dateiformate und die Add-ins ab.',
+    docsIntro:
+      'Das Benutzerhandbuch behandelt die Installation von Impasto, alle Werkzeuge, Ebenen und Objekte, Effekte, Dateiformate, Tastenkürzel und Add-ins.',
+    docsLink: 'Zur Dokumentation (auf Englisch)',
     docsTooltip:
       'Impasto zeigt außerdem in der gesamten Oberfläche Tooltips: Cursor über eine Schaltfläche oder ein Feld halten, um ihre Funktion zu sehen.',
     footerLicense: 'Impasto ist freie und quelloffene Software unter der MIT-Lizenz.',
@@ -354,13 +333,9 @@ export const strings: Record<Lang, Dict> = {
     macosP: 'リリースごとにネイティブのmacOSビルドが公開されます。署名されていないため、Gatekeeperにブロックされます。初回はアプリを右クリック(またはControlキーを押しながらクリック)して「開く」を選んでください。',
     macosCta: 'macOS版をダウンロード',
     docsH2: 'ドキュメント',
-    docsIntro: 'Impastoのユーザードキュメントは近日中にこのサイトに追加予定です。それまでは、',
-    docsReadme: 'README',
-    docsMid: '、',
-    docsFolder: 'docsフォルダ',
-    docsMid2: '、',
-    docsChangelog: 'CHANGELOG.md',
-    docsOutro: '(GitHub上)に、現在の機能一覧、ファイル形式、アドインについての説明があります。',
+    docsIntro:
+      'ユーザーガイドでは、Impastoのインストール、各ツール、レイヤーとオブジェクト、エフェクト、ファイル形式、キーボードショートカット、アドインについて説明しています。',
+    docsLink: 'ドキュメントを読む(英語)',
     docsTooltip:
       'Impastoの各所にはツールチップも用意されており、ボタンや項目にカーソルを合わせると機能の説明が表示されます。',
     footerLicense: 'ImpastoはMITライセンスの下で提供される、無料でオープンソースのソフトウェアです。',
@@ -415,13 +390,9 @@ export const strings: Record<Lang, Dict> = {
     macosP: '每次发布都会提供原生 macOS 构建版本。由于未签名,Gatekeeper 会拦截打开 —— 首次打开时请右键(或按住 Control 点击)应用并选择"打开"。',
     macosCta: '下载 macOS 版',
     docsH2: '文档',
-    docsIntro: 'Impasto 的用户文档即将上线本站。在此之前,可参阅',
-    docsReadme: 'README',
-    docsMid: '、',
-    docsFolder: 'docs 文件夹',
-    docsMid2: '和',
-    docsChangelog: 'CHANGELOG.md',
-    docsOutro: '(位于 GitHub),其中介绍了当前的功能集、文件格式和插件。',
+    docsIntro:
+      '用户指南介绍了 Impasto 的安装、各个工具、图层与对象、效果、文件格式、键盘快捷键和插件。',
+    docsLink: '阅读文档(英文)',
     docsTooltip: 'Impasto 界面中还有大量工具提示,将鼠标悬停在按钮或输入框上即可查看其作用。',
     footerLicense: 'Impasto 是遵循 MIT 许可证的免费开源软件。',
     footerGithub: 'GitHub',

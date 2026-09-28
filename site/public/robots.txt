@@ -1,2 +1,4 @@
 User-agent: *
 Allow: /
+
+Sitemap: https://impastopaint.com/sitemap-index.xml

@@ -35,7 +35,7 @@ const langEntries = Object.entries(languages) as [Lang, (typeof languages)[Lang]
         <a href="#screenshots">{t.navScreenshots}</a>
         <a href="#about">{t.navAbout}</a>
         <a href="#platforms">{t.navGet}</a>
-        <a href="#docs">{t.navDocs}</a>
+        <a href={`${base}/docs/`}>{t.navDocs}</a>
         <details class="lang-dd">
           <summary>{languages[lang].name}{lang !== 'en' && <abbr class="ai-badge" title={t.aiTranslatedLabel}>AI</abbr>}</summary>
           <ul>
@@ -149,7 +149,8 @@ const langEntries = Object.entries(languages) as [Lang, (typeof languages)[Lang]
   <section id="docs" class="section alt">
     <div class="wrap prose">
       <h2>{t.docsH2}</h2>
-      <p>{t.docsIntro} <a href={`${repo}#readme`}>{t.docsReadme}</a>{t.docsMid} <a href={`${repo}/tree/main/docs`}>{t.docsFolder}</a>{t.docsMid2} <a href={`${repo}/blob/main/CHANGELOG.md`}>{t.docsChangelog}</a> {t.docsOutro}</p>
+      <p>{t.docsIntro}</p>
+      <p><a class="btn btn-small" href={`${base}/docs/`}>{t.docsLink}</a></p>
       <p>{t.docsTooltip}</p>
     </div>
   </section>

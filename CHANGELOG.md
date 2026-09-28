@@ -54,6 +54,9 @@ entries, is upstream Pinta work; the Impasto sections cover changes made in this
 - Selecting a text object, for example by clicking its row in the Layers panel, no longer
   changes how it looks. It used to pick up the previous text's alignment and underline, so
   centred text could become left-aligned.
+- The AppImage's bundled-library notice (`usr/share/doc/impasto/THIRD-PARTY.AppImage.md`) said
+  its libraries came from Ubuntu 24.04, but the AppImage has been built on Ubuntu 26.04. The
+  notice now names the release of whatever system builds the image.
 
 ## Impasto - [0.5.0](https://github.com/zbcoding/ImpastoPaint/releases/tag/v0.5.0) - 2026-09-27
 

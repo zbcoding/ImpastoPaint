@@ -145,7 +145,11 @@ if command -v dpkg-query >/dev/null 2>&1; then
       [ -n "$pkg" ] && [ -f "$src" ] && cp "$src" "$docdir/third-party/$pkg.copyright"
     done
 fi
-cat > "$docdir/THIRD-PARTY.AppImage.md" <<'EOF'
+# The bundled libraries are whatever this host has installed, so the notice names the
+# host's release instead of a fixed one; it follows the CI runner when that moves.
+host_release=$(. /etc/os-release && echo "${NAME:-Linux}${VERSION_ID:+ $VERSION_ID}${VERSION_CODENAME:+ ($VERSION_CODENAME)}")
+{
+  cat <<'EOF'
 # Bundled libraries
 
 This AppImage carries the GTK 4 / libadwaita runtime that Impasto loads at run
@@ -153,16 +157,18 @@ time, plus its supporting stack (GLib, Pango, Cairo, gdk-pixbuf, Graphene,
 HarfBuzz, librsvg, FreeType, Fontconfig, pixman, ICU and the usual image
 codecs), and the .NET runtime.
 
-Every bundled library is an unmodified build taken from the Ubuntu 24.04
-archive. Per-library license texts are in ./third-party/. Corresponding source
-is the matching `deb-src` entry for Ubuntu 24.04 (noble); the .NET runtime is
-MIT, https://github.com/dotnet/runtime.
-
+EOF
+  printf 'Every bundled library is an unmodified build taken from the %s\n' "$host_release"
+  printf 'archive. Per-library license texts are in ./third-party/. Corresponding source\n'
+  printf 'is the matching source package in that archive; the .NET runtime is MIT,\n'
+  printf 'https://github.com/dotnet/runtime.\n\n'
+  cat <<'EOF'
 The LGPL libraries are dynamically linked and kept as separate files under
 usr/lib/ inside the image. To use your own build of one: extract the AppImage
 (`./Impasto-x86_64.AppImage --appimage-extract`), replace the file in
 `squashfs-root/usr/lib/`, and repack with `appimagetool squashfs-root`.
 EOF
+} > "$docdir/THIRD-PARTY.AppImage.md"
 
 # --- 8. AppRun + pack --------------------------------------------------
 # linuxdeploy left AppRun as a symlink to usr/bin/Impasto; drop it so the

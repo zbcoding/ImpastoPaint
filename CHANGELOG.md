@@ -47,6 +47,9 @@ entries, is upstream Pinta work; the Impasto sections cover changes made in this
   starts fresh in the new mode.
 - Switching point text to Area no longer makes a box that runs off the canvas. The box stops at
   the canvas's right edge and the text wraps inside it.
+- Selecting a text object, for example by clicking its row in the Layers panel, no longer
+  changes how it looks. It used to pick up the previous text's alignment and underline, so
+  centred text could become left-aligned.
 
 ## Impasto - [0.5.0](https://github.com/zbcoding/ImpastoPaint/releases/tag/v0.5.0) - 2026-09-27
 

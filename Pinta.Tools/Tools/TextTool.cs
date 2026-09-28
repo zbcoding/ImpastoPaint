@@ -72,6 +72,10 @@ public sealed class TextTool : BaseTool
 	//while the font size is being set programmatically (e.g. live during a corner resize).
 	private bool is_updating_font_size;
 
+	//True while SyncToolbarFromObject copies an object's style into the toolbar: the controls'
+	//change handlers must not write the half-synced toolbar back onto the object.
+	private bool is_syncing_toolbar;
+
 	//The text object currently being edited or moved, or null.
 	private TextObject? current_text_object;
 	//The layer current_text_object actually lives on. Tracked separately from
@@ -302,7 +306,7 @@ public sealed class TextTool : BaseTool
 				// Retroactively flip the object currently selected/being edited too, so the dropdown
 				// also works as a convert-in-place control: Point -> Area boxes it at its current
 				// width (no jump); Area -> Point drops the box and lets it grow free again.
-				if (current_text_object is { } obj) {
+				if (!is_syncing_toolbar && current_text_object is { } obj) {
 					// Nothing typed yet: the user changed their mind about what to place, so drop the
 					// blank object and let the next click start fresh in the new mode (e.g. drag out
 					// an area box) instead of converting an empty caret into a stray box.
@@ -355,7 +359,7 @@ public sealed class TextTool : BaseTool
 			rasterize_mode_btn.SelectedItemChanged += (_, _) => {
 				Settings.PutSetting (SettingNames.TEXT_RASTERIZE_MODE, RasterizeText);
 
-				if (current_text_object is { } obj) {
+				if (!is_syncing_toolbar && current_text_object is { } obj) {
 					obj.RasterizeOnFinalize = RasterizeText;
 					LayerObjectSelection.RaiseObjectsChanged ();
 					RedrawText (is_editing);
@@ -786,7 +790,7 @@ public sealed class TextTool : BaseTool
 	{
 		//When the font size is being set programmatically (e.g. live while resizing by
 		//dragging a corner), skip re-applying the toolbar font to the object.
-		if (is_updating_font_size)
+		if (is_updating_font_size || is_syncing_toolbar)
 			return;
 
 		var font = font_button.FontDesc!.Copy ()!;
@@ -833,6 +837,9 @@ public sealed class TextTool : BaseTool
 
 	private void HandleFontChanged ()
 	{
+		if (is_syncing_toolbar)
+			return;
+
 		var font = font_button.FontDesc!.Copy ()!;
 		font.SetSize (PangoExtensions.UnitsFromPixels (font_size.GetValueAsInt ()));
 		font_button.FontDesc = font;
@@ -989,6 +996,9 @@ public sealed class TextTool : BaseTool
 
 	private void UpdateFont ()
 	{
+		if (is_syncing_toolbar)
+			return;
+
 		if (workspace.HasOpenDocuments && current_text_object is not null) {
 
 			var font = font_button.FontDesc!.Copy ()!; // NRT: Only nullable when nullptr is passed.
@@ -2006,10 +2016,10 @@ public sealed class TextTool : BaseTool
 
 		//Show this object's own font/style in the toolbar, rather than whatever the
 		//toolbar last showed for a different object (or its defaults, for a brand new
-		//one). UpdateFont() feeds any of these controls back onto `obj` as it applies
-		//them, so this is a no-op for a freshly created object (whose font/style were
-		//already set from the toolbar just before StartEditing was called).
+		//one). The sync never writes back onto `obj`, so redraw explicitly to show the
+		//caret and editing chrome for the newly edited object.
 		SyncToolbarFromObject (obj);
+		RedrawText (true);
 		SignalEditSelection (obj);
 	}
 
@@ -2019,36 +2029,41 @@ public sealed class TextTool : BaseTool
 	/// </summary>
 	private void SyncToolbarFromObject (TextObject obj)
 	{
-		TextEngine engine = obj.Engine;
-		Pango.FontDescription font = engine.Font;
+		// Each control's change handler re-applies the whole toolbar onto the object, and the
+		// toolbar is only partly synced mid-way: setting the font first would write the previous
+		// object's alignment/underline onto this one. Suppress that write-back until every control
+		// shows this object's values; the toolbar then matches the object, so nothing to re-apply.
+		is_syncing_toolbar = true;
+		try {
+			TextEngine engine = obj.Engine;
+			Pango.FontDescription font = engine.Font;
 
-		font_button.FontDesc = font.Copy ()!;
-		font_size.Adjustment!.Value = PangoExtensions.UnitsToPixels (font.GetSize ());
-		variant_btn.SelectedIndex = IndexOfTag (variant_btn, font.GetVariant ());
-		weight_btn.SelectedIndex = IndexOfTag (weight_btn, font.GetWeight ());
-		italic_btn.Active = font.GetStyle () == Pango.Style.Italic;
-		underscore_btn.Active = engine.Underline;
+			font_button.FontDesc = font.Copy ()!;
+			font_size.Adjustment!.Value = PangoExtensions.UnitsToPixels (font.GetSize ());
+			variant_btn.SelectedIndex = IndexOfTag (variant_btn, font.GetVariant ());
+			weight_btn.SelectedIndex = IndexOfTag (weight_btn, font.GetWeight ());
+			italic_btn.Active = font.GetStyle () == Pango.Style.Italic;
+			underscore_btn.Active = engine.Underline;
 
-		left_alignment_btn.Active = engine.Alignment == TextAlignment.Left;
-		center_alignment_btn.Active = engine.Alignment == TextAlignment.Center;
-		right_alignment_btn.Active = engine.Alignment == TextAlignment.Right;
-		justify_alignment_btn.Active = engine.Alignment == TextAlignment.Justify;
+			left_alignment_btn.Active = engine.Alignment == TextAlignment.Left;
+			center_alignment_btn.Active = engine.Alignment == TextAlignment.Center;
+			right_alignment_btn.Active = engine.Alignment == TextAlignment.Right;
+			justify_alignment_btn.Active = engine.Alignment == TextAlignment.Justify;
 
-		fill_button.SelectedIndex = obj.FillStyle;
-		outline_width.Adjustment!.Value = obj.OutlineWidth;
-		join_btn.SelectedIndex = IndexOfTag (join_btn, obj.LineJoin);
+			fill_button.SelectedIndex = obj.FillStyle;
+			outline_width.Adjustment!.Value = obj.OutlineWidth;
+			join_btn.SelectedIndex = IndexOfTag (join_btn, obj.LineJoin);
 
-		// Show this object's own Raster/Object mode, not whatever the toolbar last defaulted to.
-		// index 0 = Raster, 1 = Object (see the button's AddItem calls in OnBuildToolBar). The
-		// dropdown's change handler writes this same value straight back onto current_text_object
-		// (already this obj by now), so it stays a faithful copy like the controls above.
-		rasterize_mode_btn.SelectedIndex = obj.RasterizeOnFinalize ? 0 : 1;
+			// Show this object's own Raster/Object mode, not whatever the toolbar last defaulted to.
+			// index 0 = Raster, 1 = Object (see the button's AddItem calls in OnBuildToolBar).
+			rasterize_mode_btn.SelectedIndex = obj.RasterizeOnFinalize ? 0 : 1;
 
-		// Same for Point/Area: show the object's own mode (WrapWidth nonzero = Area), or it keeps
-		// showing the tool's last-used default and misreports the object. Its change handler's
-		// convert-in-place branches both no-op when the mode already matches, so this stays a
-		// faithful copy too.
-		text_mode_btn.SelectedIndex = obj.Engine.WrapWidth != 0 ? 1 : 0;
+			// Same for Point/Area: show the object's own mode (WrapWidth nonzero = Area), or it keeps
+			// showing the tool's last-used default and misreports the object.
+			text_mode_btn.SelectedIndex = obj.Engine.WrapWidth != 0 ? 1 : 0;
+		} finally {
+			is_syncing_toolbar = false;
+		}
 
 		outline_width.Visible = outline_width_label.Visible = outline_sep.Visible = join_btn.Visible = join_sep.Visible = StrokeText;
 	}

@@ -73,6 +73,35 @@ internal sealed class TextModeSwitchTest : ToolsTestHarness
 		=> typeof (TextTool).GetMethod ("StartEditing", NonPublicInstance,
 			[typeof (TextObject), typeof (bool)])!.Invoke (t, [obj, false]);
 
+	/// <summary>
+	/// Selecting an object (e.g. clicking its sub-row in the layers dock) copies its style into the
+	/// toolbar. Setting the font controls fired their change handlers, which re-applied the whole
+	/// toolbar - including the not-yet-synced alignment - onto the object: a centred object turned
+	/// left-aligned just by being selected.
+	/// </summary>
+	[Test]
+	public void SelectingAnObjectKeepsItsOwnAlignmentAndFont ()
+	{
+		UserLayer layer = Layer (0);
+
+		TextObject obj = new (new TextEngine ());
+		Pango.FontDescription font = Pango.FontDescription.FromString ("Sans Bold Italic 40");
+		obj.Engine.SetFont (font, TextAlignment.Center, underline: true);
+		obj.Engine.InsertText ("hello");
+		layer.AddText (obj);
+
+		TextTool t = ActivateOnLayer ();
+		Select (t, obj);
+
+		Assert.Multiple (() => {
+			Assert.That (obj.Engine.Alignment, Is.EqualTo (TextAlignment.Center), "selecting must not realign the object");
+			Assert.That (obj.Engine.Font.GetWeight (), Is.EqualTo (Pango.Weight.Bold), "selecting must not change the weight");
+			Assert.That (obj.Engine.Font.GetStyle (), Is.EqualTo (Pango.Style.Italic), "selecting must not change the style");
+			Assert.That (PangoExtensions.UnitsToPixels (obj.Engine.Font.GetSize ()), Is.EqualTo (40), "selecting must not change the size");
+			Assert.That (obj.Engine.Underline, Is.True, "selecting must not drop the underline");
+		});
+	}
+
 	[Test]
 	public void SwitchingDropdownToAreaGivesTheSelectedObjectAWrapWidth ()
 	{
@@ -331,6 +360,9 @@ internal sealed class TextModeSwitchTest : ToolsTestHarness
 		UserLayer layer = Layer (0);
 
 		TextObject obj = new (new TextEngine ()) { RasterizeOnFinalize = false };
+		// Tiny, so its dashed box and badge land inside the harness's 32px canvas.
+		obj.Engine.SetFont (Pango.FontDescription.FromString ("Sans 2"), TextAlignment.Left, underline: false);
+		obj.Engine.Origin = new PointI (2, 2);
 		obj.Engine.InsertText ("hello");
 		layer.AddText (obj);
 

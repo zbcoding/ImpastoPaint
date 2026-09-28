@@ -20,8 +20,8 @@ internal sealed class ZoomScrollTest
 
 	[TestCase (950)]
 	[TestCase (999)]
-	[TestCase (600)]
-	public void PointerOnRightHalfKeepsTheVisibleRightEdgeInView (double pointer)
+	[TestCase (880)]
+	public void PointerNearTheRightEdgeKeepsTheVisibleRightEdgeInView (double pointer)
 	{
 		double scroll = DocumentWorkspace.ScrollAfterZoom (pointer, Page, scroll: 0, oldExtent: 1000, newExtent: 2000);
 
@@ -29,8 +29,8 @@ internal sealed class ZoomScrollTest
 	}
 
 	[TestCase (60)]
-	[TestCase (400)]
-	public void PointerOnLeftHalfKeepsTheVisibleLeftEdgeInView (double pointer)
+	[TestCase (120)]
+	public void PointerNearTheLeftEdgeKeepsTheVisibleLeftEdgeInView (double pointer)
 	{
 		double scroll = DocumentWorkspace.ScrollAfterZoom (pointer, Page, scroll: 0, oldExtent: 1000, newExtent: 4000);
 
@@ -40,11 +40,26 @@ internal sealed class ZoomScrollTest
 	[Test]
 	public void EdgeInsideTheViewStaysOnScreenAfterZoomingIn ()
 	{
-		// A 600px image is centered (200..800); the pointer at 450 is well inside it, left of middle.
-		double scroll = DocumentWorkspace.ScrollAfterZoom (pointer: 450, Page, scroll: 0, oldExtent: 600, newExtent: 1200);
+		// A 600px image is centered (200..800); the pointer at 270 is near its left edge.
+		double scroll = DocumentWorkspace.ScrollAfterZoom (pointer: 270, Page, scroll: 0, oldExtent: 600, newExtent: 2400);
 
-		// Pure pointer anchoring would scroll to 50 and cut off the image's left 50px.
+		// Pure pointer anchoring would scroll to 10 and cut off the image's left 10px.
 		Assert.That (scroll, Is.Zero);
+	}
+
+	[TestCase (500, 500)]
+	[TestCase (450, 450)]
+	[TestCase (350, 350)]
+	[TestCase (225, 150)]
+	public void PointerZoomAwayFromAnEdgeFollowsThePointer (double pointer, double expectedZoomPoint)
+	{
+		// Both edges of a 1000px image are on screen. Past 30% from an edge the zoom point is the
+		// pointer, so zooming near the middle neither snaps to an edge nor drifts toward one;
+		// between 15% and 30% it blends from the edge back to the pointer without a jump.
+		double scroll = DocumentWorkspace.ScrollAfterZoom (pointer, Page, scroll: 0, oldExtent: 1000, newExtent: 2000);
+
+		// The image point at expectedZoomPoint is now at 2x and must still be at the same screen spot.
+		Assert.That (2 * expectedZoomPoint - scroll, Is.EqualTo (expectedZoomPoint).Within (1e-9));
 	}
 
 	[Test]

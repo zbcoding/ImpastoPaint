@@ -566,9 +566,14 @@ public sealed class KeyboardShortcutManager
 		// than iterating the (possibly still-empty) registered tool set so the saved
 		// toolbox activation-key overrides are never silently dropped at startup.
 		foreach (var kv in tool_overrides)
-			if (KeyGesture.TryParse (kv.Value) is KeyGesture gesture)
+			if (ParseOverride (kv.Value) is KeyGesture gesture)
 				this.tools.SetShortcutKeyOverride (kv.Key, gesture);
 	}
+
+	// A saved empty override means the user removed the key ("None"), which is distinct
+	// from "no override" (use the default). Null only for an unparseable value.
+	private static KeyGesture? ParseOverride (string keyName)
+		=> keyName.Length == 0 ? KeyGesture.None : KeyGesture.TryParse (keyName);
 
 	/// <summary>
 	/// A snapshot of the user's shortcut overrides, matching the on-disk shape of
@@ -758,7 +763,7 @@ public sealed class KeyboardShortcutManager
 	// --- Tool-specific in-canvas bindings ---
 
 	public KeyGesture GetToolBinding (ToolBindingDescriptor descriptor)
-		=> binding_overrides.TryGetValue (descriptor.Id, out var keyName) && KeyGesture.TryParse (keyName) is KeyGesture gesture
+		=> binding_overrides.TryGetValue (descriptor.Id, out var keyName) && ParseOverride (keyName) is KeyGesture gesture
 			? gesture
 			: descriptor.DefaultGesture;
 
@@ -848,6 +853,9 @@ public sealed class KeyboardShortcutManager
 	// Prevents two tools from sharing the same toolbox activation key.
 	private void ClearToolConflicts (KeyGesture gesture, BaseTool except)
 	{
+		if (!gesture.IsValid)
+			return;
+
 		foreach (var tool in tools)
 			if (tool != except && tools.GetEffectiveShortcutKey (tool) == gesture)
 				tools.ResetShortcutKeyOverride (tool);

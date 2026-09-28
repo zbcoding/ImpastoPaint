@@ -26,6 +26,7 @@
 
 using System;
 using System.Diagnostics.CodeAnalysis;
+using System.Globalization;
 using System.Linq;
 using Pinta.Core;
 using Pinta.Gui.Widgets;
@@ -44,6 +45,7 @@ public sealed partial class CanvasWindow
 	private Ruler vertical_ruler;
 	private Gtk.ScrolledWindow scrolled_window;
 	private Gtk.CssProvider viewport_css_provider;
+	private Gtk.CssProvider canvas_css_provider;
 	private Gtk.StyleContext viewport_style_context;
 	private Cairo.Color default_canvas_surround_color;
 	private Gtk.Widget? horizontal_scrollbar;
@@ -80,6 +82,8 @@ public sealed partial class CanvasWindow
 
 	public Cairo.Color? CanvasSurroundColor {
 		set {
+			ApplyCanvasEdgeShadow (value ?? default_canvas_surround_color);
+
 			if (value is null) {
 				viewport_style_context.RemoveProvider (viewport_css_provider);
 				return;
@@ -91,10 +95,26 @@ public sealed partial class CanvasWindow
 		}
 	}
 
+	// The canvas edge glow is a shade of the surround color, darker on a light surround and
+	// lighter on a dark one, blurred so it fades from near-opaque at the image edge to fully
+	// transparent into the surround. It still outlines an image that matches the surround.
+	private void ApplyCanvasEdgeShadow (Cairo.Color surround)
+	{
+		double luminance = 0.2126 * surround.R + 0.7152 * surround.G + 0.0722 * surround.B;
+		(double target, double amount) = luminance > 0.5 ? (0.0, 0.45) : (1.0, 0.35);
+
+		static int Channel (double c, double target, double amount)
+			=> (int) Math.Round (255 * (c + (target - c) * amount));
+
+		string rgba = string.Create (CultureInfo.InvariantCulture,
+			$"rgba({Channel (surround.R, target, amount)},{Channel (surround.G, target, amount)},{Channel (surround.B, target, amount)},0.85)");
+		canvas_css_provider.LoadFromString ($"#canvas {{ box-shadow: 0 0 10px 1px {rgba}; }}");
+	}
+
 	public Cairo.Color DefaultCanvasSurroundColor => default_canvas_surround_color;
 
 	[MemberNotNull (nameof (canvas))]
-	[MemberNotNull (nameof (viewport_css_provider))]
+	[MemberNotNull (nameof (viewport_css_provider), nameof (canvas_css_provider))]
 	[MemberNotNull (nameof (viewport_style_context))]
 	[MemberNotNull (nameof (horizontal_ruler), nameof (vertical_ruler))]
 	[MemberNotNull (nameof (scrolled_window), nameof (horizontal_scrollbar), nameof (vertical_scrollbar))]
@@ -178,6 +198,10 @@ public sealed partial class CanvasWindow
 			default_canvas_surround_color = defaultColor.ToCairoColor ();
 		else
 			default_canvas_surround_color = new Cairo.Color (0.2, 0.2, 0.2);
+
+		canvas_css_provider = Gtk.CssProvider.New ();
+		canvas.GetStyleContext ().AddProvider (canvas_css_provider, Gtk.Constants.STYLE_PROVIDER_PRIORITY_APPLICATION);
+		ApplyCanvasEdgeShadow (default_canvas_surround_color);
 
 		scrolled_window = scrolledWindow;
 		gesture_zoom = gestureZoom;

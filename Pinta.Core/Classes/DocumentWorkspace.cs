@@ -365,9 +365,12 @@ public sealed class DocumentWorkspace
 	/// <summary>
 	/// Scroll value on one axis after the zoomed image changes from <paramref name="oldExtent"/>
 	/// to <paramref name="newExtent"/> pixels. The image point under the pointer stays under it,
-	/// except that, with <paramref name="keepEdgesInView"/>, an image edge which is on screen, on
-	/// the pointer's half of the visible image, is never pushed off screen, together with the
-	/// <paramref name="margin"/> around it: zooming in toward a corner keeps the whole corner in view.
+	/// except that, with <paramref name="keepEdgesInView"/>, an image edge which is on screen acts
+	/// as a magnet: a pointer within <see cref="EDGE_ZOOM_PIN"/> of the visible image next to it
+	/// zooms around the edge itself, so that edge and its <paramref name="margin"/> stay in view and
+	/// zooming toward a corner keeps the whole corner. Out to <see cref="EDGE_ZOOM_RAMP"/> the zoom
+	/// point blends back to the pointer, so it never jumps, and further in it is the pointer: zooming
+	/// at the center stays centered instead of drifting toward an edge.
 	/// </summary>
 	/// <param name="pointer">Pointer position relative to the viewport's start.</param>
 	/// <param name="page">Visible size of the viewport.</param>
@@ -383,21 +386,43 @@ public sealed class DocumentWorkspace
 			return Math.Clamp (scroll, 0, maxScroll);
 
 		double anchor = Math.Clamp (pointer, visibleStart, visibleEnd);
+		bool startOnScreen = imageStart >= 0;
+		bool endOnScreen = imageEnd <= page;
+
+		// Fraction of the visible image the zoom point sits at: 0 pins the visible start, 1 the end.
+		double visibleFraction = (anchor - visibleStart) / (visibleEnd - visibleStart);
+		if (keepEdgesInView) {
+			if (startOnScreen)
+				visibleFraction = PullTowardEdge (visibleFraction);
+			if (endOnScreen)
+				visibleFraction = 1 - PullTowardEdge (1 - visibleFraction);
+			anchor = visibleStart + visibleFraction * (visibleEnd - visibleStart);
+		}
+
 		double imageFraction = (anchor - imageStart) / oldExtent;
 		double newOrigin = CanvasOrigin (page, newExtent, margin);
 		double newScroll = newOrigin + imageFraction * newExtent - anchor;
 
-		if (!keepEdgesInView)
-			return Math.Clamp (newScroll, 0, maxScroll);
-
-		bool nearStart = anchor - visibleStart <= visibleEnd - anchor;
-		if (nearStart && imageStart >= 0)
+		if (keepEdgesInView && visibleFraction == 0 && startOnScreen)
 			newScroll = Math.Min (newScroll, newOrigin - margin); // new image start and its margin stay at or right of 0
-		else if (!nearStart && imageEnd <= page)
+		else if (keepEdgesInView && visibleFraction == 1 && endOnScreen)
 			newScroll = Math.Max (newScroll, newOrigin + newExtent + margin - page); // new image end and its margin stay at or left of page
 
 		return Math.Clamp (newScroll, 0, maxScroll);
 	}
+
+	/// <summary>
+	/// Share of the visible image, next to an on-screen image edge, in which pointer zoom pins that
+	/// edge, and the share past which pointer zoom is unaffected by it.
+	/// </summary>
+	private const double EDGE_ZOOM_PIN = 0.15;
+	private const double EDGE_ZOOM_RAMP = 0.3;
+
+	// Maps a pointer's distance from an edge (as a fraction of the visible image) to the zoom
+	// point's distance: 0 inside the pin zone, rising linearly to meet the pointer at the ramp end.
+	private static double PullTowardEdge (double distance)
+		=> distance >= EDGE_ZOOM_RAMP ? distance
+		: Math.Max (0, distance - EDGE_ZOOM_PIN) * EDGE_ZOOM_RAMP / (EDGE_ZOOM_RAMP - EDGE_ZOOM_PIN);
 
 	/// <summary>
 	/// Zoom in/out around a specific point.

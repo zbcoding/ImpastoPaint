@@ -25,6 +25,7 @@
 // THE SOFTWARE.
 
 using System;
+using System.Collections.Generic;
 using Pinta.Core;
 
 namespace Pinta.Actions;
@@ -61,6 +62,11 @@ internal sealed class OpenDocumentAction : IActionHandler
 		open_recent_action.OnActivate += OnOpenRecentActivated;
 		chrome.Application.AddAction (open_recent_action);
 
+		// Always-disabled action so the empty-list placeholder renders greyed out.
+		Gio.SimpleAction noRecentAction = Gio.SimpleAction.New ("open-recent-none", null);
+		noRecentAction.Enabled = false;
+		chrome.Application.AddAction (noRecentAction);
+
 		recent_files.RecentFilesChanged += (_, _) => RefreshRecentMenu ();
 		RefreshRecentMenu ();
 	}
@@ -74,7 +80,14 @@ internal sealed class OpenDocumentAction : IActionHandler
 	{
 		file.OpenRecentMenu.RemoveAll ();
 
-		foreach (var recent in recent_files.GetRecentFiles ()) {
+		IReadOnlyList<Gio.File> recents = recent_files.GetRecentFiles ();
+
+		if (recents.Count == 0) {
+			file.OpenRecentMenu.Append (Translations.GetString ("No recent items..."), "app.open-recent-none");
+			return;
+		}
+
+		foreach (var recent in recents) {
 			var item = Gio.MenuItem.New (recent.GetDisplayName (), null);
 			item.SetActionAndTargetValue ("app.open-recent", GLib.Variant.NewString (recent.GetUri ()));
 			file.OpenRecentMenu.AppendItem (item);

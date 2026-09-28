@@ -57,6 +57,10 @@ internal sealed class KeyboardShortcutsDialogAction : IActionHandler
 	private static KeyGesture? ParseGesture (string shortcut)
 		=> KeyGesture.TryParse (NormalizeAccelForPlatform (shortcut));
 
+	// An emptied row (shown as "None") unbinds the key rather than being ignored.
+	private static KeyGesture? ParseValue (string shortcut)
+		=> shortcut.Length == 0 ? KeyGesture.None : ParseGesture (shortcut);
+
 	private static bool MatchesShortcut (string? shortcut, string query)
 	{
 		if (string.IsNullOrWhiteSpace (shortcut))
@@ -82,8 +86,23 @@ internal sealed class KeyboardShortcutsDialogAction : IActionHandler
 		return expected.Length > 0 && Tokens (shortcut).SequenceEqual (expected);
 	}
 
+	// The shortcut button showing "Press keys…" and how to leave it as None. Leaving the
+	// capture without pressing a key (clicking another shortcut, or OK) removes the
+	// shortcut, which is how a user unbinds one. Escape still cancels and keeps it.
+	private (Gtk.Button button, Action clear)? pending_capture;
+
+	private void ClearPendingCapture ()
+	{
+		if (pending_capture is not { } capture)
+			return;
+
+		pending_capture = null;
+		capture.clear ();
+	}
+
 	private void Activated (object sender, EventArgs e)
 	{
+		pending_capture = null;
 		List<ShortcutRowState> states = [];
 		List<Action> refreshers = [];
 
@@ -125,6 +144,7 @@ internal sealed class KeyboardShortcutsDialogAction : IActionHandler
 		Gtk.Button okButton = Gtk.Button.NewWithLabel (Translations.GetString ("OK"));
 		okButton.AddCssClass (AdwaitaStyles.SuggestedAction);
 		okButton.OnClicked += (_, _) => {
+			ClearPendingCapture ();
 			PintaCore.Shortcuts.BeginBatch ();
 			try {
 				foreach (var state in states)
@@ -265,7 +285,7 @@ internal sealed class KeyboardShortcutsDialogAction : IActionHandler
 				(value, isDefault) => {
 					if (isDefault)
 						PintaCore.Shortcuts.ResetToolShortcut (tool);
-					else if (ParseGesture (value) is KeyGesture gesture)
+					else if (ParseValue (value) is KeyGesture gesture)
 						PintaCore.Shortcuts.SetToolShortcut (tool, gesture);
 				},
 				ShortcutCategory.Tool);
@@ -290,7 +310,7 @@ internal sealed class KeyboardShortcutsDialogAction : IActionHandler
 				(value, isDefault) => {
 					if (isDefault)
 						PintaCore.Shortcuts.ResetToolBinding (descriptor);
-					else if (ParseGesture (value) is KeyGesture gesture)
+					else if (ParseValue (value) is KeyGesture gesture)
 						PintaCore.Shortcuts.SetToolBinding (descriptor, gesture);
 				},
 				ShortcutCategory.ToolBinding);
@@ -327,7 +347,7 @@ internal sealed class KeyboardShortcutsDialogAction : IActionHandler
 		return scroller;
 	}
 
-	private static Gtk.Widget BuildRow (
+	private Gtk.Widget BuildRow (
 		ShortcutRowState state,
 		Action refreshDuplicates,
 		List<Action> refreshers)
@@ -368,6 +388,8 @@ internal sealed class KeyboardShortcutsDialogAction : IActionHandler
 		void Refresh ()
 		{
 			listening = false;
+			if (pending_capture?.button == shortcutButton)
+				pending_capture = null;
 			shortcutButton.Label = FormatAccel (state.Value);
 			listRow.Name = $"{state.Label} {state.Value} {FormatAccel (state.Value)}";
 			listRow.TooltipText = FormatAccel (state.Value);
@@ -400,7 +422,15 @@ internal sealed class KeyboardShortcutsDialogAction : IActionHandler
 		shortcutButton.AddController (capture);
 
 		shortcutButton.OnClicked += (_, _) => {
+			if (pending_capture?.button != shortcutButton)
+				ClearPendingCapture ();
+
 			listening = true;
+			pending_capture = (shortcutButton, () => {
+				state.Value = string.Empty;
+				state.RefreshRows ();
+				refreshDuplicates ();
+			});
 			shortcutButton.Label = Translations.GetString ("Press keys…");
 			shortcutButton.GrabFocus ();
 		};

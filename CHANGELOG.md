@@ -13,6 +13,8 @@ entries, is upstream Pinta work; the Impasto sections cover changes made in this
 - Settings has a Keyboard tab, which replaces the Clipboard tab. It keeps the "Paste external
   images onto a new layer" option and has a button that opens Keyboard Shortcuts, which is still
   in the Help menu too.
+- Open Recent shows a greyed "No recent items..." entry when there are no recent files, instead
+  of an empty submenu.
 
 ### Changed
 
@@ -23,6 +25,14 @@ entries, is upstream Pinta work; the Impasto sections cover changes made in this
 - The quick deselect appears in Keyboard Shortcuts as the rebindable "Deselect All (Quick)" row.
   The read-only "×2" reference row is gone, and the Deselect toolbar tooltip now shows whatever
   key it is bound to.
+- In Keyboard Shortcuts, a binding waiting on "Press keys..." is set to None if you click another
+  binding or OK instead of pressing a key. This is how to remove a shortcut, and it works for tool
+  shortcuts too. Escape still cancels and keeps the old key.
+- The glow around the canvas is now a shade of the canvas surround color, darker on light
+  surrounds and lighter on dark ones, fading out to transparent, instead of a fixed grey border.
+- Zooming with the pointer keeps an edge or corner of the image pinned only when the pointer is
+  within 15% of it, then blends back to zooming at the pointer by 30%, so zooming near the middle
+  follows the pointer instead of drifting toward an edge.
 
 ### Fixed
 

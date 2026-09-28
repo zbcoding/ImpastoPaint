@@ -46,10 +46,6 @@
     font-size: 0.85rem;
 }
 
-#canvas {
-    box-shadow: 0px 0px 2px 2px #7F7F7F;
-}
-
 #new-image-preview {
     box-shadow: 0px 0px 2px 2px #7F7F7F;
 }

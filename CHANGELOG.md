@@ -26,6 +26,10 @@ entries, is upstream Pinta work; the Impasto sections cover changes made in this
   not only by its padded box, so two sizes of text can share one baseline. It is on by default;
   View ▸ Align to objects, below the snap toggle, turns it off. It works whether or not
   grid/ruler/center snapping is on.
+- When moving selected pixels that overlap shapes or text on the same layer, the rasterize
+  prompt also offers "Move to New Layer". It lifts only the layer's pixels onto a new layer
+  directly above, with the same blend mode and opacity, and leaves the shapes and text editable
+  where they were. Layers with effects still have to be rasterized first.
 
 ### Changed
 
@@ -47,6 +51,9 @@ entries, is upstream Pinta work; the Impasto sections cover changes made in this
 
 ### Fixed
 
+- Dragging a pasted image, or a selection already lifted by an earlier drag, no longer asks to
+  rasterize the shapes or text it happens to cover. Those pixels float above the layer until the
+  selection is finished, so there was nothing to bake.
 - Ctrl+Shift+A was also a default shortcut for View > Normal Size, so Keyboard Shortcuts marked
   Deselect All as duplicated even after Reset to default. Normal Size keeps Ctrl+0.
 - Keyboard Shortcuts row tooltips show the key as "Shift+Ctrl+A" rather than the raw

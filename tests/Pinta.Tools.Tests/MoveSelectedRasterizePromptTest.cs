@@ -78,6 +78,86 @@ internal sealed class MoveSelectedRasterizePromptTest : ToolsTestHarness
 		});
 	}
 
+	// A paste lands floating over whatever sits at the viewport's corner, often a text object. The
+	// drag only moves the selection layer and never touches the raster beneath until the selection
+	// is finished, so asking to rasterize that object blocked the move for nothing.
+	[Test]
+	public void DraggingAFloatingPasteOverAnObjectMovesWithoutAskingToRasterize ()
+	{
+		UserLayer layer = Layer (0);
+		AddObject (layer, NamedBox ("Open Curve Shape 1", new RectangleI (4, 4, 8, 8)), "First");
+
+		Document.Layers.CreateSelectionLayer ();
+		Document.Layers.ShowSelectionLayer = true;
+		Fill (Document.Layers.SelectionLayer.Surface, Red);
+		Document.Selection = SelectionOf (new RectangleI (0, 0, 16, 16));
+		Document.Selection.Visible = true;
+
+		int prompts = 0;
+		ObjectRasterizer.ConfirmPrompt = _ => { prompts++; return false; };
+		ObjectRasterizer.ConfirmLiftPrompt = _ => { prompts++; return SelectionLiftChoice.Cancel; };
+		try {
+			Activate (new MoveSelectedTool (PintaCore.Services));
+			Click (new PointD (8, 8));
+		} finally {
+			ObjectRasterizer.ConfirmPrompt = null;
+			ObjectRasterizer.ConfirmLiftPrompt = null;
+		}
+
+		Assert.Multiple (() => {
+			Assert.That (prompts, Is.Zero, "a floating selection has nothing on the raster to bake");
+			Assert.That (layer.ShapeObjects, Has.Count.EqualTo (1), "the object beneath stays editable");
+			Assert.That (Document.History.Current, Is.InstanceOf<MovePixelsHistoryItem> (), "the move was not declined");
+		});
+	}
+
+	// Choosing "Move to New Layer" lifts only the base raster onto a new layer above, so the pixels
+	// move while the objects stay live on the source - and undo puts back the one-layer document.
+	[Test]
+	public void MoveToNewLayerCarriesRasterPixelsAndLeavesObjectsOnTheSource ()
+	{
+		UserLayer source = Layer (0);
+		Fill (source.Surface, Red);
+		AddObject (source, NamedBox ("Open Curve Shape 1", new RectangleI (4, 4, 8, 8)), "First");
+		Document.Selection = SelectionOf (new RectangleI (0, 0, 16, 16));
+		Document.Selection.Visible = true;
+
+		ObjectRasterizer.ConfirmLiftPrompt = _ => SelectionLiftChoice.NewLayer;
+		try {
+			Activate (new MoveSelectedTool (PintaCore.Services));
+			Click (new PointD (8, 8));
+		} finally {
+			ObjectRasterizer.ConfirmLiftPrompt = null;
+		}
+		Document.FinishSelection ();
+
+		Assert.Multiple (() => {
+			Assert.That (Document.Layers.UserLayers, Has.Count.EqualTo (2));
+			Assert.That (source.ShapeObjects, Has.Count.EqualTo (1), "the object was not rasterized");
+			Assert.That (source.Surface.GetColorBgra (new PointI (2, 2)), Is.EqualTo (Transparent), "the lifted region left the source");
+			Assert.That (source.Surface.GetColorBgra (new PointI (20, 20)), Is.EqualTo (Red), "pixels outside the selection stayed");
+			Assert.That (Layer (1).Surface.GetColorBgra (new PointI (2, 2)), Is.EqualTo (Red), "the lifted pixels landed on the new layer");
+		});
+
+		Document.History.Undo (); // finish
+		Document.History.Undo (); // move to new layer
+
+		Assert.Multiple (() => {
+			Assert.That (Document.Layers.UserLayers, Has.Count.EqualTo (1), "one undo step removes the new layer");
+			Assert.That (Layer (0).Surface.GetColorBgra (new PointI (2, 2)), Is.EqualTo (Red), "and restores the lifted pixels");
+			Assert.That (Layer (0).ShapeObjects, Has.Count.EqualTo (1));
+		});
+	}
+
+	// Down and up at one point: starts (and ends) the move without displacing anything, so the
+	// lifted pixels stay where the assertions look for them.
+	private static void Click (PointD point)
+	{
+		ToolMouseEventArgs args = new () { PointDouble = point, MouseButton = MouseButton.Left };
+		PintaCore.Tools.DoMouseDown (PintaCore.Workspace.ActiveDocument, args);
+		PintaCore.Tools.DoMouseUp (PintaCore.Workspace.ActiveDocument, args);
+	}
+
 	private static ShapeObject NamedBox (string name, RectangleI region)
 	{
 		ShapeObject shape = Box (new Color (0, 0, 1), region);

@@ -67,6 +67,8 @@ There are two ways to move what you have selected, and they are different tools:
 
 Both live in the Move section, so pressing <kbd>M</kbd> again cycles between them. Arrow keys nudge, <kbd>Shift</kbd>+arrow keys nudge in larger steps.
 
+Starting a move over shapes or text on the same layer asks first, because lifting pixels out of a layer only reaches its painted pixels. **Rasterize** bakes the shapes and text the selection covers into the layer, then moves everything. **Move to New Layer** moves only the painted pixels, onto a new layer directly above, and leaves the shapes and text editable where they were. A pasted image, or a selection an earlier drag already lifted, floats above the layer and moves without asking.
+
 While a selection is visible, its corner and edge grips are drawn, and dragging a grip resizes the selection. Grips that belong to a hidden selection are not grabbable, so a press near the canvas origin starts a new selection rather than grabbing an invisible full-canvas rectangle.
 
 ## Acting on a selection

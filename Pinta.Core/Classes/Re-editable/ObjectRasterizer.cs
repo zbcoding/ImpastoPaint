@@ -384,17 +384,11 @@ public static class ObjectRasterizer
 
 	/// <summary>
 	/// Makes <paramref name="layer"/> safe for a destructive raster operation confined to
-	/// <paramref name="selection"/> — cut, erase, or lifting the pixels out to move them. Every such
-	/// operation reads and writes the base raster, but what the user sees is the layer's composite, so
-	/// anything living outside the base raster has to be baked into it first or the operation acts on
-	/// pixels nobody is looking at.
-	/// <para>
-	/// Modifier nodes force a whole-stack bake: the accumulator has already folded the objects beneath
-	/// them into the same pixels, so there is no per-region subset to take. Shapes and text alone stay
-	/// separable, and only the ones the selection overlaps are baked. Prompts before either, listing
-	/// what stops being editable; returns false only when the user cancels, in which case nothing was
-	/// baked and the caller must abort.
-	/// </para>
+	/// <paramref name="selection"/> — cut, erase, or a paint stroke. Every such operation reads and
+	/// writes the base raster, but what the user sees is the layer's composite, so anything living
+	/// outside the base raster has to be baked into it first or the operation acts on pixels nobody
+	/// is looking at. Prompts before baking; returns false only when the user cancels, in which case
+	/// nothing was baked and the caller must abort.
 	/// </summary>
 	public static bool PrepareForSelectionRasterOp (
 		Document doc,
@@ -403,20 +397,64 @@ public static class ObjectRasterizer
 		UserLayer layer,
 		DocumentSelection selection,
 		CompoundHistoryItem? historyGroup = null)
+		=> PlanSelectionBake (doc, workspace, chrome, layer, selection, historyGroup) is not { } plan
+			|| ConfirmThenBake (chrome, plan.Labels, plan.Bake);
+
+	/// <summary>
+	/// The move tool's variant of <see cref="PrepareForSelectionRasterOp"/>, run before it lifts
+	/// <paramref name="selection"/> out of <paramref name="layer"/>'s base raster. When only shapes
+	/// and text stand in the way, the prompt also offers <see cref="SelectionLiftChoice.NewLayer"/>:
+	/// lift the raster pixels onto a new layer and leave the objects editable where they are.
+	/// Modifier stacks never get that offer — their composite is not the base raster (a transform
+	/// node even keeps it in local space), so the lifted pixels would not be what the user sees.
+	/// </summary>
+	public static SelectionLiftChoice PrepareForSelectionLift (
+		Document doc,
+		IWorkspaceService workspace,
+		IChromeService chrome,
+		UserLayer layer,
+		DocumentSelection selection)
+	{
+		if (PlanSelectionBake (doc, workspace, chrome, layer, selection, historyGroup: null) is not { } plan)
+			return SelectionLiftChoice.SameLayer;
+
+		if (!plan.KeepsObjectsSeparable)
+			return ConfirmThenBake (chrome, plan.Labels, plan.Bake) ? SelectionLiftChoice.SameLayer : SelectionLiftChoice.Cancel;
+
+		SelectionLiftChoice choice = ConfirmLift (chrome, plan.Labels);
+		if (choice == SelectionLiftChoice.SameLayer)
+			plan.Bake ();
+		return choice;
+	}
+
+	// What a raster op confined to a selection would have to bake first, or null when nothing.
+	// Modifier nodes force a whole-stack bake: the accumulator has already folded the objects
+	// beneath them into the same pixels, so there is no per-region subset to take. Shapes and text
+	// alone stay separable, and only the ones the selection overlaps are baked.
+	private static SelectionBakePlan? PlanSelectionBake (
+		Document doc,
+		IWorkspaceService workspace,
+		IChromeService chrome,
+		UserLayer layer,
+		DocumentSelection selection,
+		CompoundHistoryItem? historyGroup)
 	{
 		if (!layer.HasAnyObjects)
-			return true;
+			return null;
+
+		SelectionBakePlan StackBake () => new (
+			[.. DescribeAll (layer)],
+			() => RasterizeModifierStack (doc, workspace, chrome, layer, historyGroup),
+			KeepsObjectsSeparable: false);
 
 		RectangleD region = selection.GetBounds ();
-		if (layer.HasModifiers && SelectionReachesAnyModifier (layer, selection, region)) {
-			List<string> labels = DescribeAll (layer).ToList ();
-			return ConfirmThenBake (chrome, labels, () => RasterizeModifierStack (doc, workspace, chrome, layer, historyGroup));
-		}
+		if (layer.HasModifiers && SelectionReachesAnyModifier (layer, selection, region))
+			return StackBake ();
 
 		FindIntersecting (layer, selection, out List<int> shapeIndices, out List<int> textIndices);
 
 		if (shapeIndices.Count == 0 && textIndices.Count == 0)
-			return true; // the selection misses every object; nothing to bake.
+			return null; // the selection misses every object; nothing to bake.
 
 		// The selection itself can miss a clipped modifier's region while that region still reaches
 		// one of the objects just picked for the subset bake. RasterizeSubset's walk has no arm for
@@ -424,14 +462,52 @@ public static class ObjectRasterizer
 		// pixels straight into the base raster - silently different from what the live composite is
 		// showing through the modifier. Fall back to the whole-stack bake whenever that overlap
 		// exists, same as if the selection had reached the modifier itself.
-		if (layer.HasModifiers && ModifierClipOverlapsAnyBakedObject (layer, shapeIndices, textIndices)) {
-			List<string> stackLabels = DescribeAll (layer).ToList ();
-			return ConfirmThenBake (chrome, stackLabels, () => RasterizeModifierStack (doc, workspace, chrome, layer, historyGroup));
-		}
+		if (layer.HasModifiers && ModifierClipOverlapsAnyBakedObject (layer, shapeIndices, textIndices))
+			return StackBake ();
 
-		List<string> objectLabels = Describe (layer, shapeIndices, textIndices).ToList ();
-		return ConfirmThenBake (chrome, objectLabels,
-			() => RasterizeSubset (doc, workspace, chrome, layer, shapeIndices, textIndices, historyGroup: historyGroup));
+		return new SelectionBakePlan (
+			[.. Describe (layer, shapeIndices, textIndices)],
+			() => RasterizeSubset (doc, workspace, chrome, layer, shapeIndices, textIndices, historyGroup: historyGroup),
+			KeepsObjectsSeparable: true);
+	}
+
+	private sealed record SelectionBakePlan (List<string> Labels, Action Bake, bool KeepsObjectsSeparable);
+
+	/// <summary>Stands in for the lift prompt when set; see <see cref="ConfirmPrompt"/>.</summary>
+	internal static Func<IReadOnlyList<string>, SelectionLiftChoice>? ConfirmLiftPrompt { get; set; }
+
+	private static SelectionLiftChoice ConfirmLift (IChromeService chrome, IReadOnlyList<string> labels)
+	{
+		if (ConfirmLiftPrompt is not null)
+			return ConfirmLiftPrompt (labels);
+
+		// Headless callers that only answer the yes/no prompt, and users who silenced it, keep the
+		// plain rasterize-or-cancel behaviour.
+		if (ConfirmPrompt is not null || PintaCore.Settings.GetSetting (SettingNames.SKIP_RASTERIZE_OBJECTS_DIALOG, false))
+			return Confirm (chrome, labels) ? SelectionLiftChoice.SameLayer : SelectionLiftChoice.Cancel;
+
+		string body = Translations.GetString ("To move these pixels, these objects must be rasterized (baked into the layer's pixels and no longer editable):")
+			+ "\n\n" + FormatObjectList (labels)
+			+ "\n\n" + Translations.GetString ("Or move only the layer's pixels onto a new layer and leave the objects editable.");
+
+		using Adw.MessageDialog dialog = Adw.MessageDialog.New (chrome.MainWindow, Translations.GetString ("Rasterize Objects?"), body);
+
+		const string cancel_response = "cancel";
+		const string new_layer_response = "new-layer";
+		const string rasterize_response = "rasterize";
+		dialog.AddResponse (cancel_response, Translations.GetString ("_Cancel"));
+		dialog.AddResponse (new_layer_response, Translations.GetString ("Move to _New Layer"));
+		dialog.AddResponse (rasterize_response, Translations.GetString ("_Rasterize"));
+		dialog.SetResponseAppearance (new_layer_response, Adw.ResponseAppearance.Suggested);
+		dialog.SetResponseAppearance (rasterize_response, Adw.ResponseAppearance.Destructive);
+		dialog.CloseResponse = cancel_response;
+		dialog.DefaultResponse = rasterize_response;
+
+		return dialog.RunBlocking () switch {
+			rasterize_response => SelectionLiftChoice.SameLayer,
+			new_layer_response => SelectionLiftChoice.NewLayer,
+			_ => SelectionLiftChoice.Cancel,
+		};
 	}
 
 	// Bounds-only overlap, matching FindIntersecting's own conservatism: a false positive here only
@@ -633,4 +709,15 @@ public static class ObjectRasterizer
 			[.. Enumerable.Range (0, layer.ShapeObjects.Count)],
 			[.. Enumerable.Range (0, layer.TextObjects.Count)])
 		.Concat (layer.ModifierNodes.Select (node => node.DisplayName));
+}
+
+/// <summary>Where the move tool lifts selected pixels to, as settled by <see cref="ObjectRasterizer.PrepareForSelectionLift"/>.</summary>
+public enum SelectionLiftChoice
+{
+	/// <summary>The user declined; the move must not happen.</summary>
+	Cancel,
+	/// <summary>Lift from the current layer (any objects in the way are already baked).</summary>
+	SameLayer,
+	/// <summary>Lift the raster pixels onto a new layer above; the objects stay live.</summary>
+	NewLayer,
 }

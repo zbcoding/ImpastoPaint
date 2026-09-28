@@ -33,6 +33,8 @@ namespace Pinta.Tools;
 public sealed class MoveSelectedTool : BaseTransformTool
 {
 	private MovePixelsHistoryItem? hist;
+	// Set when this drag lifted the pixels onto a new layer; recorded with hist as one undo step.
+	private AddLayerHistoryItem? added_layer_hist;
 	private DocumentSelection? original_selection;
 
 	// Set when the user declined the rasterize prompt below. The gesture has already begun by then
@@ -96,18 +98,26 @@ public sealed class MoveSelectedTool : BaseTransformTool
 			document.Selection.CreateRectangleSelection (imageBounds);
 		}
 
+		// A floating selection (a paste, or pixels an earlier drag already lifted) moves on the
+		// selection layer alone: the base raster and the objects over it are untouched until the
+		// selection is finished, so nothing needs baking.
+		bool lifts = !document.Layers.ShowSelectionLayer;
+
 		// The lift below reads the layer's base raster and clears the moved region from it. Effect
 		// nodes, shapes and text are not in that raster — the canvas shows them through the layer's
 		// composite — so without this the drag carries un-effected pixels away, leaves the node
 		// applying over the hole it left, and moves nothing at all when the selection covered a text
-		// or shape object. Bake what the selection reaches, then lift.
-		move_declined = !ObjectRasterizer.PrepareForSelectionRasterOp (
-			document,
-			PintaCore.Workspace,
-			PintaCore.Chrome,
-			document.Layers.CurrentUserLayer,
-			document.Selection);
+		// or shape object. Bake what the selection reaches, or send the pixels to a new layer, then lift.
+		SelectionLiftChoice choice = lifts
+			? ObjectRasterizer.PrepareForSelectionLift (
+				document,
+				PintaCore.Workspace,
+				PintaCore.Chrome,
+				document.Layers.CurrentUserLayer,
+				document.Selection)
+			: SelectionLiftChoice.SameLayer;
 
+		move_declined = choice == SelectionLiftChoice.Cancel;
 		if (move_declined)
 			return;
 
@@ -115,21 +125,19 @@ public sealed class MoveSelectedTool : BaseTransformTool
 		original_transform.InitMatrix (document.Layers.SelectionLayer.Transform);
 
 		hist = new MovePixelsHistoryItem (Icon, Name, document);
-		hist.TakeSnapshot (!document.Layers.ShowSelectionLayer);
+		hist.TakeSnapshot (lifts);
 
-		if (!document.Layers.ShowSelectionLayer) {
+		if (lifts) {
+			UserLayer source = document.Layers.CurrentUserLayer;
+
 			// Copy the selection to the temp layer
 			document.Layers.CreateSelectionLayer ();
 			document.Layers.ShowSelectionLayer = true;
-			// Use same BlendMode, Opacity and Visibility for SelectionLayer
-			document.Layers.SelectionLayer.BlendMode = document.Layers.CurrentUserLayer.BlendMode;
-			document.Layers.SelectionLayer.Opacity = document.Layers.CurrentUserLayer.Opacity;
-			document.Layers.SelectionLayer.Hidden = document.Layers.CurrentUserLayer.Hidden;
 
 			using Context selection_ctx = new (document.Layers.SelectionLayer.Surface);
 			selection_ctx.AppendPath (document.Selection.SelectionPath);
 			selection_ctx.FillRule = FillRule.EvenOdd;
-			selection_ctx.SetSourceSurface (document.Layers.CurrentUserLayer.Surface, 0, 0);
+			selection_ctx.SetSourceSurface (source.Surface, 0, 0);
 			selection_ctx.Clip ();
 			selection_ctx.Paint ();
 
@@ -138,11 +146,34 @@ public sealed class MoveSelectedTool : BaseTransformTool
 			// showed no movement until the composite was rebuilt on mouse release.
 			ObjectOpacity.LiftSelectionFromRaster (
 				PintaCore.Chrome,
-				document.Layers.CurrentUserLayer,
+				source,
 				document.Selection);
+
+			if (choice == SelectionLiftChoice.NewLayer)
+				AddLayerForLiftedPixels (document, source);
+
+			// Use same BlendMode, Opacity and Visibility for SelectionLayer
+			document.Layers.SelectionLayer.BlendMode = document.Layers.CurrentUserLayer.BlendMode;
+			document.Layers.SelectionLayer.Opacity = document.Layers.CurrentUserLayer.Opacity;
+			document.Layers.SelectionLayer.Hidden = document.Layers.CurrentUserLayer.Hidden;
 		}
 
 		document.Workspace.Invalidate ();
+	}
+
+	// Finishing a selection draws it into the current layer, so making the new layer current is
+	// what lands the lifted pixels on it. It copies the source's blend mode and opacity so the
+	// pixels look the same after the move as before it.
+	private void AddLayerForLiftedPixels (Document document, UserLayer source)
+	{
+		UserLayer target = document.Layers.AddNewLayer (string.Empty);
+		target.BlendMode = source.BlendMode;
+		target.Opacity = source.Opacity;
+
+		added_layer_hist = new AddLayerHistoryItem (
+			Pinta.Resources.Icons.LayerNew,
+			Translations.GetString ("Add New Layer"),
+			document.Layers.IndexOf (target));
 	}
 
 	protected override void OnUpdateTransform (Document document, Matrix transform)
@@ -181,11 +212,22 @@ public sealed class MoveSelectedTool : BaseTransformTool
 		}
 
 		if (hist != null)
-			document.History.PushNewItem (hist);
+			document.History.PushNewItem (added_layer_hist is null ? hist : GroupWithAddedLayer (hist, added_layer_hist));
 
 		hist = null;
+		added_layer_hist = null;
 		original_selection = null;
 		original_transform.InitIdentity ();
+	}
+
+	// Undo runs children in reverse: the layer goes first, then the lift is put back on the
+	// source layer, whose index the new layer (inserted above it) never shifted.
+	private CompoundHistoryItem GroupWithAddedLayer (MovePixelsHistoryItem move, AddLayerHistoryItem addLayer)
+	{
+		CompoundHistoryItem group = new (Icon, Translations.GetString ("Move to New Layer"));
+		group.Push (move);
+		group.Push (addLayer);
+		return group;
 	}
 
 	protected override void OnCommit (Document? document)

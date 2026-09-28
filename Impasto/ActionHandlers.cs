@@ -91,6 +91,7 @@ public sealed class ActionHandlers
 			new EditCanvasGridAction (actions.View, chrome, canvasGrid),
 			new ShowGridToggledAction (actions.View, canvasGrid),
 			new SnapToGridToggledAction (actions.View, canvasGrid),
+			new AlignToObjectsToggledAction (actions.View, canvasGrid),
 
 			// Window
 			new CloseAllDocumentsAction (actions, workspace),

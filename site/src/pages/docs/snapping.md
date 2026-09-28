@@ -37,6 +37,18 @@ The rulers choose their tick spacing from the zoom level and from how wide their
 
 A dragged shape, a moved text object, and a moved selection snap by their whole bounding box rather than by the corner under the pointer. Each edge of the box and its centre line is offered to the snapping target, and the nearest match within tolerance wins, so a box being dragged onto the canvas centre falls into place by its own centre and a box being dragged toward an edge aligns by that edge.
 
+## Aligning to other objects
+
+**View > Align to objects**, just below the snap toggle, lines a moved object up with the other objects in the image. It is on by default and works whether or not snapping is on.
+
+While you drag a shape, a text object, or a moved selection or pasted image, its left edge, centre line and right edge - and its top, middle and bottom - are pulled onto the same lines of every other visible shape, text object, and image within 8 screen pixels. A solid pink guide shows the line it is held on, drawn from the moved object to the object it lines up with. This is how to centre a caption under an image, or line up the tops of a row of text boxes, by eye.
+
+Text lines up by its letters as well as its box. The box around a text object is padded for its grips, so text also offers the left, centre and right of its glyphs, their top, middle and bottom, and its first line's baseline. Dragging one text near another's baseline puts both on the same line of type, whatever their sizes. Rotated text lines up by its box only.
+
+An "image" here is the painted part of any visible layer: an image pasted onto a layer of its own counts by the box around its pixels. A layer painted edge to edge only lines up with the canvas edges, which belong to the snap toggle instead. Hidden layers and hidden objects are ignored.
+
+When a canvas guide and another object are both within reach, the nearer one wins. With the grid or rulers showing, an object line within reach takes precedence over the grid step on that axis.
+
 ## The canvas grid
 
 **View > Show Grid** draws the grid; **View > Edit Canvas Grid** opens a dialog with:

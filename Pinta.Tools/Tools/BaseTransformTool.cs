@@ -59,6 +59,7 @@ public abstract class BaseTransformTool : BaseTool
 	// aligns the content's own corner - or its center, while "c" is held - to the
 	// grid instead of preserving the grab offset.
 	private bool center_snap_held = false;
+	private AlignmentDrag alignment = AlignmentDrag.None;
 	public override IEnumerable<IToolHandle> Handles => [handle];
 
 	public override bool UseSnapping => true;
@@ -146,6 +147,11 @@ public abstract class BaseTransformTool : BaseTool
 		using_mouse = true;
 
 		OnStartTransform (document);
+
+		// After OnStartTransform, which lifts moved pixels out of the layer, so the content being
+		// moved is not among what it aligns to.
+		if (is_dragging)
+			alignment = ObjectAlignment.BeginDrag (document, PintaCore.Chrome, CurrentBounds ());
 	}
 
 	protected override void OnMouseMove (
@@ -334,14 +340,12 @@ public abstract class BaseTransformTool : BaseTool
 	/// </summary>
 	private (double, double) SnapTranslation (double dx, double dy)
 	{
-		if (!PintaCore.CanvasGrid.SnapEnabled)
-			return (dx, dy);
-
 		RectangleD bounds = CurrentBounds ();
 
 		PointD snapped = PintaCore.CanvasGrid.SnapRect (
 			new (new PointD (bounds.X + dx, bounds.Y + dy), bounds.Width, bounds.Height),
-			center_snap_held);
+			center_snap_held,
+			alignment);
 
 		return (snapped.X - bounds.X, snapped.Y - bounds.Y);
 	}

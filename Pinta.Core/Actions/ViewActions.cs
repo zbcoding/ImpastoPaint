@@ -43,6 +43,7 @@ public sealed class ViewActions
 	public Command EditCanvasGrid { get; }
 	public ToggleCommand ShowGrid { get; }
 	public ToggleCommand SnapToGrid { get; }
+	public ToggleCommand AlignToObjects { get; }
 	public ToggleCommand MenuBar { get; }
 	public ToggleCommand StatusBar { get; }
 	public ToggleCommand ToolBox { get; }
@@ -147,6 +148,14 @@ public sealed class ViewActions
 			null,
 			Resources.Icons.ViewGrid,
 			shortcuts: ["<Primary><Alt>G"]);
+
+		AlignToObjects = new ToggleCommand (
+			"AlignToObjects",
+			// Translators: While an object is moved, lines its edges and centre up
+			// with the edges and centres of the other shapes, text and images.
+			Translations.GetString ("Align to objects"),
+			null,
+			Resources.Icons.ViewGrid);
 
 		MenuBar = new ToggleCommand (
 			"MenuBar",
@@ -265,6 +274,7 @@ public sealed class ViewActions
 		grid_section.AppendItem (ShowGrid.CreateMenuItem ());
 		grid_section.AppendItem (EditCanvasGrid.CreateMenuItem ());
 		grid_section.AppendItem (SnapToGrid.CreateMenuItem ());
+		grid_section.AppendItem (AlignToObjects.CreateMenuItem ());
 
 		Gio.Menu metric_menu = Gio.Menu.New ();
 		metric_menu.Append (Translations.GetString ("Pixels"), $"app.{RulerMetric.Name}(0)");
@@ -314,6 +324,7 @@ public sealed class ViewActions
 			EditCanvasGrid,
 			ShowGrid,
 			SnapToGrid,
+			AlignToObjects,
 			Rulers,
 			MenuBar,
 			StatusBar,

@@ -25,6 +25,9 @@ internal static class SettingNames
 	// Impasto: snap tool input to the grid, or to ruler units when the grid is hidden.
 	internal const string SNAP_TO_GRID = "snap-to-grid";
 
+	// Impasto: line a moved object up with the edges and centre lines of the other objects.
+	internal const string ALIGN_TO_OBJECTS = "align-to-objects";
+
 	internal const string SHOW_CANVAS_AXONOMETRIC_GRID = "show-canvas-axonometric-grid";
 	internal const string CANVAS_AXONOMETRIC_WIDTH = "canvas-axonometric-grid-width";
 	internal const string CANVAS_AXONOMETRIC_ANGLE = "canvas-axonometric-grid-angle";

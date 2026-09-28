@@ -47,6 +47,7 @@ public sealed class TextTool : BaseTool
 	//The object's bounding box when a move gesture started. Snapping aligns that
 	//box - its edges and its centre lines - rather than the cursor alone.
 	private RectangleD move_start_bounds;
+	private AlignmentDrag move_alignment = AlignmentDrag.None;
 	//The corner (0 TL, 1 TR, 2 BR, 3 BL) being dragged during a resize.
 	private int resize_corner;
 	//The object's rotation (degrees) and pointer angle (degrees) at gesture start.
@@ -1336,14 +1337,15 @@ public sealed class TextTool : BaseTool
 	/// </summary>
 	private PointD SnapMovedBounds (PointD delta)
 	{
-		if (!PintaCore.CanvasGrid.SnapEnabled || move_start_bounds.Width <= 0)
+		if (move_start_bounds.Width <= 0)
 			return new (0, 0);
 
 		PointD wanted = new (move_start_bounds.X + delta.X, move_start_bounds.Y + delta.Y);
 
 		PointD snapped = PintaCore.CanvasGrid.SnapRect (
 			new RectangleD (wanted, move_start_bounds.Width, move_start_bounds.Height),
-			centerAnchor: false);
+			centerAnchor: false,
+			move_alignment);
 
 		return new (snapped.X - wanted.X, snapped.Y - wanted.Y);
 	}
@@ -1367,6 +1369,7 @@ public sealed class TextTool : BaseTool
 			case TextManipulation.Move:
 				start_click_point = obj.Engine.Origin;
 				move_start_bounds = obj.TextBounds.ToDouble ();
+				move_alignment = ObjectAlignment.BeginDrag (document, chrome, obj);
 				break;
 			case TextManipulation.Rotate:
 				start_rotation_angle = obj.Rotation;

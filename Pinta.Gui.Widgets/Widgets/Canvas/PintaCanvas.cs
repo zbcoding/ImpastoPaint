@@ -192,6 +192,7 @@ internal sealed partial class PintaCanvas
 		DrawCanvasGrid (snapshot, canvasViewBounds);
 		DrawCanvasAxonometricGrid (snapshot, canvasViewBounds);
 		DrawSnapGuides (snapshot, canvasViewBounds);
+		DrawAlignmentGuides (snapshot, canvasViewBounds);
 		DrawMaskEditingIndicator (snapshot, canvasViewBounds);
 
 		// In the future, this would be cleaner to implement as a custom widget once gir.core supports virtual methods
@@ -373,6 +374,41 @@ internal sealed partial class PintaCanvas
 		stroke.SetDash ([4.0f / scale, 4.0f / scale]);
 
 		Gdk.RGBA color = new () { Red = 0.2f, Green = 0.5f, Blue = 1.0f, Alpha = 0.5f };
+		snapshot.AppendStroke (pathBuilder.ToPath (), stroke, color);
+
+		snapshot.Restore ();
+		snapshot.Pop ();
+	}
+
+	/// <summary>
+	/// Impasto: shows the other objects' edges and centre lines that a moved object is lined up
+	/// with, drawn solid and in a different colour from the canvas guides so the two read apart.
+	/// </summary>
+	private void DrawAlignmentGuides (Gtk.Snapshot snapshot, Graphene.Rect canvasViewBounds)
+	{
+		IReadOnlyList<AlignmentGuide> guides = canvas_grid.ActiveAlignmentGuides;
+		if (guides.Count == 0)
+			return;
+
+		Gsk.PathBuilder pathBuilder = Gsk.PathBuilder.New ();
+		foreach (AlignmentGuide guide in guides) {
+			if (guide.Vertical) {
+				pathBuilder.MoveTo ((float) guide.Position, (float) guide.Start);
+				pathBuilder.LineTo ((float) guide.Position, (float) guide.End);
+			} else {
+				pathBuilder.MoveTo ((float) guide.Start, (float) guide.Position);
+				pathBuilder.LineTo ((float) guide.End, (float) guide.Position);
+			}
+		}
+
+		snapshot.PushClip (canvasViewBounds);
+		snapshot.Save ();
+
+		float scale = (float) document.Workspace.Scale;
+		snapshot.Scale (scale, scale);
+
+		Gsk.Stroke stroke = Gsk.Stroke.New (lineWidth: 1.0f / scale);
+		Gdk.RGBA color = new () { Red = 0.95f, Green = 0.2f, Blue = 0.75f, Alpha = 0.9f };
 		snapshot.AppendStroke (pathBuilder.ToPath (), stroke, color);
 
 		snapshot.Restore ();

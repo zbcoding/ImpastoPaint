@@ -19,6 +19,13 @@ entries, is upstream Pinta work; the Impasto sections cover changes made in this
   contains the text, so "mono" finds "DejaVu Sans Mono".
 - Help ▸ Contents (F1) opens the new user guide at <https://impastopaint.com/docs/>, and Help ▸
   Impasto Website opens <https://impastopaint.com/>. Both used to open the GitHub repository.
+- Moved objects line up with the other objects in the image. While you drag a shape, a text
+  object, or a moved selection or pasted image, its edges and centre lines are pulled onto the
+  edges and centre lines of every other visible shape, text object and image, and a pink guide
+  shows what it lines up with. Text also lines up by its letters and its first line's baseline,
+  not only by its padded box, so two sizes of text can share one baseline. It is on by default;
+  View ▸ Align to objects, below the snap toggle, turns it off. It works whether or not
+  grid/ruler/center snapping is on.
 
 ### Changed
 

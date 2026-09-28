@@ -243,6 +243,7 @@ public abstract class BaseEditEngine
 	// inside the snap tolerance, and comes off it cleanly afterwards.
 	private PointD shape_move_grab_point;
 	private RectangleD shape_move_start_bounds;
+	private AlignmentDrag shape_alignment = AlignmentDrag.None;
 
 	// Alt + left-drag on a control point spins the shape about its bounding box centre.
 	private bool rotating_whole_shape = false;
@@ -1350,6 +1351,7 @@ public abstract class BaseEditEngine
 		shape_move_start_bounds = ActiveShapeEngine is null
 			? default
 			: ShapeBounds (ActiveShapeEngine);
+		shape_alignment = ObjectAlignment.BeginDrag (workspace.ActiveDocument, PintaCore.Chrome, shape_move_start_bounds);
 	}
 
 	/// <summary>Inserts a new control point at a generated (edge) point, undoably.</summary>
@@ -1462,12 +1464,10 @@ public abstract class BaseEditEngine
 
 		PointD wanted = new (shape_move_start_bounds.X + dx, shape_move_start_bounds.Y + dy);
 
-		if (!PintaCore.CanvasGrid.SnapEnabled)
-			return (wanted.X - current.X, wanted.Y - current.Y);
-
 		PointD snapped = PintaCore.CanvasGrid.SnapRect (
 			new RectangleD (wanted, shape_move_start_bounds.Width, shape_move_start_bounds.Height),
-			centerAnchor: false);
+			centerAnchor: false,
+			shape_alignment);
 
 		return (snapped.X - current.X, snapped.Y - current.Y);
 	}

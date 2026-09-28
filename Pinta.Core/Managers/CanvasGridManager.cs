@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Pinta.Core;
 
@@ -28,6 +30,12 @@ public interface ICanvasGridService
 	bool SnapEnabled { get; set; }
 
 	/// <summary>
+	/// Whether a moved object lines up with the other objects on the canvas. Independent of
+	/// <see cref="SnapEnabled"/>, which covers the grid, the ruler and the canvas itself.
+	/// </summary>
+	bool AlignToObjects { get; set; }
+
+	/// <summary>
 	/// Spacing that tool input snaps to, or null when nothing to snap to is
 	/// visible.
 	/// </summary>
@@ -39,17 +47,25 @@ public interface ICanvasGridService
 	/// Snaps a whole object rather than a single point: with no grid or ruler to
 	/// quantize to, each of the box's edges and its centre line are offered to
 	/// the canvas guides and the nearest match within tolerance wins, so a drag
-	/// falls into centred or edge-aligned by itself. Returns the box's new
-	/// origin. <paramref name="centerAnchor"/> only picks which point the grid
-	/// and ruler path pins to the spacing.
+	/// falls into centred or edge-aligned by itself. With <see cref="AlignToObjects"/>
+	/// on, the moved object's lines are also offered to the other objects' lines in
+	/// <paramref name="alignment"/> (see <see cref="ObjectAlignment.BeginDrag(Document, IChromeService, RectangleD)"/>).
+	/// Returns the box's new origin. <paramref name="centerAnchor"/> only picks which
+	/// point the grid and ruler path pins to the spacing.
 	/// </summary>
-	PointD SnapRect (RectangleD rect, bool centerAnchor);
+	PointD SnapRect (RectangleD rect, bool centerAnchor, AlignmentDrag alignment);
 
 	/// <summary>
 	/// Which canvas guides the last snapped point landed on, so the canvas can
 	/// show them while they are holding the point.
 	/// </summary>
 	SnapGuides ActiveGuides { get; }
+
+	/// <summary>
+	/// The lines the last snapped box is lined up with other objects on, so the canvas can show
+	/// them while they are holding it.
+	/// </summary>
+	IReadOnlyList<AlignmentGuide> ActiveAlignmentGuides { get; }
 
 	/// <summary>
 	/// Drops the guide display, e.g. once the drag that was snapping ends.
@@ -97,6 +113,7 @@ public sealed class CanvasGridManager : ICanvasGridService
 	private int cell_height;
 	private Cairo.Color grid_color;
 	private bool snap_enabled;
+	private bool align_to_objects;
 
 	private bool show_axonometric_grid;
 	private int axonometric_width;
@@ -125,6 +142,11 @@ public sealed class CanvasGridManager : ICanvasGridService
 	public bool SnapEnabled {
 		get => snap_enabled;
 		set => SetProperty (ref snap_enabled, value);
+	}
+
+	public bool AlignToObjects {
+		get => align_to_objects;
+		set => SetProperty (ref align_to_objects, value);
 	}
 
 	/// <summary>
@@ -195,7 +217,21 @@ public sealed class CanvasGridManager : ICanvasGridService
 	}
 	private SnapGuides active_guides;
 
-	public void ClearActiveGuides () => ActiveGuides = SnapGuides.None;
+	public IReadOnlyList<AlignmentGuide> ActiveAlignmentGuides {
+		get => active_alignment_guides;
+		private set {
+			if (active_alignment_guides.SequenceEqual (value)) return;
+			active_alignment_guides = value;
+			workspace.Invalidate ();
+		}
+	}
+	private IReadOnlyList<AlignmentGuide> active_alignment_guides = [];
+
+	public void ClearActiveGuides ()
+	{
+		ActiveGuides = SnapGuides.None;
+		ActiveAlignmentGuides = [];
+	}
 
 	public PointD SnapPoint (PointD point)
 	{
@@ -243,7 +279,61 @@ public sealed class CanvasGridManager : ICanvasGridService
 		return new (x, y);
 	}
 
-	public PointD SnapRect (RectangleD rect, bool centerAnchor)
+	private const SnapGuides HORIZONTAL_GUIDES = SnapGuides.Left | SnapGuides.HorizontalCenter | SnapGuides.Right;
+	private const SnapGuides VERTICAL_GUIDES = SnapGuides.Top | SnapGuides.VerticalCenter | SnapGuides.Bottom;
+
+	public PointD SnapRect (RectangleD rect, bool centerAnchor, AlignmentDrag alignment)
+	{
+		PointD snapped = SnapRectToCanvas (rect, centerAnchor);
+		IReadOnlyList<AlignmentLines> alignTargets = alignment.Targets;
+
+		if (!AlignToObjects || alignTargets.Count == 0 || !workspace.HasOpenDocuments) {
+			ActiveAlignmentGuides = [];
+			return snapped;
+		}
+
+		double tolerance = CANVAS_GUIDE_TOLERANCE / workspace.GetScale ();
+		var alignedX = ObjectAlignment.AlignExtent (rect.X, alignment.Moving, alignTargets, horizontal: true, tolerance);
+		var alignedY = ObjectAlignment.AlignExtent (rect.Y, alignment.Moving, alignTargets, horizontal: false, tolerance);
+
+		// Per axis, an object line within tolerance beats the grid, and beats a canvas guide
+		// unless the canvas guide is the nearer of the two.
+		SnapGuides guides = ActiveGuides;
+		double x = snapped.X;
+		double y = snapped.Y;
+		double? lineX = null;
+		double? lineY = null;
+
+		if (alignedX is (double originX, double foundX) && Math.Abs (originX - rect.X) < CanvasGuidePull (guides & HORIZONTAL_GUIDES, snapped.X, rect.X)) {
+			x = originX;
+			lineX = foundX;
+			guides &= ~HORIZONTAL_GUIDES;
+		}
+
+		if (alignedY is (double originY, double foundY) && Math.Abs (originY - rect.Y) < CanvasGuidePull (guides & VERTICAL_GUIDES, snapped.Y, rect.Y)) {
+			y = originY;
+			lineY = foundY;
+			guides &= ~VERTICAL_GUIDES;
+		}
+
+		ActiveGuides = guides;
+
+		RectangleD moved = rect with { X = x, Y = y };
+		List<AlignmentGuide> shown = [];
+		if (lineX is double vertical)
+			shown.Add (ObjectAlignment.GuideFor (moved, vertical, alignTargets, vertical: true));
+		if (lineY is double horizontal)
+			shown.Add (ObjectAlignment.GuideFor (moved, horizontal, alignTargets, vertical: false));
+		ActiveAlignmentGuides = shown;
+
+		return new (x, y);
+	}
+
+	/// <summary>How far a canvas guide moved the box on one axis; infinite when none holds it.</summary>
+	private static double CanvasGuidePull (SnapGuides axisGuides, double snapped, double wanted)
+		=> axisGuides == SnapGuides.None ? double.PositiveInfinity : Math.Abs (snapped - wanted);
+
+	private PointD SnapRectToCanvas (RectangleD rect, bool centerAnchor)
 	{
 		PointD origin = new (rect.X, rect.Y);
 		PointD half = new (rect.Width / 2.0, rect.Height / 2.0);
@@ -410,6 +500,7 @@ public sealed class CanvasGridManager : ICanvasGridService
 		settings.PutSetting (SettingNames.CANVAS_GRID_HEIGHT, CellHeight);
 		settings.PutSetting (SettingNames.CANVAS_GRID_COLOR, GridColor.ToHex ());
 		settings.PutSetting (SettingNames.SNAP_TO_GRID, SnapEnabled);
+		settings.PutSetting (SettingNames.ALIGN_TO_OBJECTS, AlignToObjects);
 
 		settings.PutSetting (SettingNames.SHOW_CANVAS_AXONOMETRIC_GRID, ShowAxonometricGrid);
 		settings.PutSetting (SettingNames.CANVAS_AXONOMETRIC_WIDTH, AxonometricWidth);
@@ -427,6 +518,7 @@ public sealed class CanvasGridManager : ICanvasGridService
 		CellWidth = Math.Max (MIN_SPACING, settings.GetSetting (SettingNames.CANVAS_GRID_WIDTH, 64));
 		CellHeight = Math.Max (MIN_SPACING, settings.GetSetting (SettingNames.CANVAS_GRID_HEIGHT, 64));
 		SnapEnabled = settings.GetSetting (SettingNames.SNAP_TO_GRID, false);
+		AlignToObjects = settings.GetSetting (SettingNames.ALIGN_TO_OBJECTS, true);
 		GridColor = Cairo.Color.FromHex (settings.GetSetting (SettingNames.CANVAS_GRID_COLOR, string.Empty)) ?? new Cairo.Color (0, 0, 0);
 
 		ShowAxonometricGrid = settings.GetSetting (SettingNames.SHOW_CANVAS_AXONOMETRIC_GRID, false);

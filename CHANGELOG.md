@@ -10,6 +10,9 @@ entries, is upstream Pinta work; the Impasto sections cover changes made in this
 
 ### Added
 
+- The eraser has an Opacity slider (1-100%). A stroke erases each pixel to at most that share
+  however often it passes over it, so scrubbing does not build up; right-click strokes blend
+  toward the secondary color by the same share.
 - The Smooth eraser has a Feather slider (0-100%, shown only for that type). It sets how much of
   the brush radius fades out at the edge; 0 gives a hard edge and 100 is the old softness.
   The fade now ends at the cursor's circle, so the eraser no longer clears pixels outside it.

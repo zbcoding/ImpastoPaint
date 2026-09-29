@@ -8,6 +8,7 @@ internal static class SettingNames
 
 	internal const string ERASER_ERASE_TYPE = "eraser-erase-type";
 	internal const string ERASER_FEATHER = "eraser-feather";
+	internal const string ERASER_OPACITY = "eraser-opacity";
 
 	internal const string PAINT_BRUSH_BRUSH = "paint-brush-brush";
 

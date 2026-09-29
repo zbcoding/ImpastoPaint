@@ -40,10 +40,16 @@ public sealed class EraserTool : BaseBrushTool
 	}
 
 	private PointI? last_point = null;
+
+	// How much of each pixel the current stroke has erased so far, 0-255. A stroke erases a pixel
+	// to at most the Opacity setting however often it passes over it, so each dab raises this
+	// (never adds to it) and the pixel is recomputed from undo_surface, its state before the stroke.
+	private byte[]? stroke_erased;
 	private EraserType eraser_type = EraserType.Normal;
 
 	private const int LUT_Resolution = 256;
 	private const int DefaultFeatherPercent = 100;
+	private const int DefaultOpacityPercent = 100;
 	private byte[]? lut_factor;
 	private int lut_feather_percent;
 	private readonly IWorkspaceService workspace;
@@ -98,6 +104,9 @@ public sealed class EraserTool : BaseBrushTool
 		tb.Append (TypeLabel);
 		tb.Append (TypeComboBox);
 
+		tb.Append (OpacityLabel);
+		tb.Append (OpacitySlider);
+
 		tb.Append (FeatherLabel);
 		tb.Append (FeatherSlider);
 		UpdateFeatherVisibility ();
@@ -106,9 +115,8 @@ public sealed class EraserTool : BaseBrushTool
 	protected override void OnMouseMove (Document document, ToolMouseEventArgs e)
 	{
 		PointI newPoint = e.Point;
-		PointD newPointD = e.PointDouble;
 
-		if (mouse_button == MouseButton.None) {
+		if (mouse_button == MouseButton.None || undo_surface is null) {
 			last_point = null;
 			return;
 		}
@@ -116,10 +124,9 @@ public sealed class EraserTool : BaseBrushTool
 		if (!last_point.HasValue)
 			last_point = newPoint;
 
-		// Both erase modes reach half the brush width out from the segment - EraseSmooth's own
-		// radius, rounded the way it rounds it. That reach, not the pointer's position, is what
-		// tells us pixels changed: a wide eraser scrubbed along an edge never puts the pointer on
-		// the canvas but clears a good strip of it.
+		// Both erase modes reach half the brush width out from the segment, rounded up. That reach,
+		// not the pointer's position, is what tells us pixels changed: a wide eraser scrubbed along
+		// an edge never puts the pointer on the canvas but clears a good strip of it.
 		int erasedReach = (BrushWidth / 2) + 1;
 
 		RectangleI erased =
@@ -135,29 +142,12 @@ public sealed class EraserTool : BaseBrushTool
 
 		using Context g = document.CreateClippedContext ();
 
-		PointD lastPointD = (PointD) last_point.Value;
-
-		switch (eraser_type) {
-
-			case EraserType.Normal:
-
-				EraseNormal (
-					g,
-					lastPointD,
-					newPointD);
-
-				break;
-
-			case EraserType.Smooth:
-
-				EraseSmooth (
-					document.Layers.CurrentPaintSurface,
-					g,
-					lastPointD,
-					newPointD);
-
-				break;
-		}
+		EraseSegment (
+			document.Layers.CurrentPaintSurface,
+			undo_surface,
+			g,
+			last_point.Value,
+			newPoint);
 
 		int dirtyPadding = BrushWidth + 2;
 
@@ -182,12 +172,21 @@ public sealed class EraserTool : BaseBrushTool
 		last_point = newPoint;
 	}
 
+	protected override void OnMouseUp (Document document, ToolMouseEventArgs e)
+	{
+		stroke_erased = null;
+		base.OnMouseUp (document, e);
+	}
+
 	protected override void OnSaveSettings (ISettingsService settings)
 	{
 		base.OnSaveSettings (settings);
 
 		if (type_combobox is not null)
 			settings.PutSetting (SettingNames.ERASER_ERASE_TYPE, type_combobox.ComboBox.Active);
+
+		if (opacity_slider is not null)
+			settings.PutSetting (SettingNames.ERASER_OPACITY, (int) opacity_slider.GetValue ());
 
 		if (feather_slider is not null)
 			settings.PutSetting (SettingNames.ERASER_FEATHER, (int) feather_slider.GetValue ());
@@ -233,15 +232,6 @@ public sealed class EraserTool : BaseBrushTool
 		}
 
 		return lut_factor;
-	}
-
-	/// <summary>How much of a pixel survives, given its offset in pixels from the brush centre.</summary>
-	private static byte SurvivingAlphaAt (byte[] lut, int dx, int dy, double brushRadius)
-	{
-		double distance = Math.Sqrt (dx * dx + dy * dy) / brushRadius;
-
-		// Checked exactly: a table index would round a pixel on the rim inside the circle.
-		return distance >= 1.0 ? (byte) 255 : lut[(int) (distance * LUT_Resolution)];
 	}
 
 	private static ImageSurface CopySurfacePart (ImageSurface surface, RectangleI destinationBounds)
@@ -292,104 +282,115 @@ public sealed class EraserTool : BaseBrushTool
 		g.Fill ();
 	}
 
-	private void EraseNormal (Context g, PointD start, PointD end)
+	/// <summary>
+	/// Erases the capsule of <paramref name="brushWidth"/> pixels around the segment between two pixel
+	/// centres. Each pixel's share of the erase is raised to this dab's value if that is higher, and
+	/// the pixel is rebuilt from <paramref name="before"/>, the surface as the stroke found it.
+	/// </summary>
+	private void EraseSegment (ImageSurface surface, ImageSurface before, Context g, PointI start, PointI end)
 	{
-		g.Antialias = UseAntialiasing ? Antialias.Subpixel : Antialias.None;
-
-		// Adding 0.5 forces cairo into the correct square:
-		// See https://bugs.launchpad.net/bugs/672232
-		g.MoveTo (start.X + 0.5, start.Y + 0.5);
-		g.LineTo (end.X + 0.5, end.Y + 0.5);
-
-		// Right-click is erase to background color, left-click is transparent
-		if (mouse_button == MouseButton.Right) {
-			g.Operator = Operator.Source;
-			g.SetSourceColor (Palette.SecondaryColor);
-		} else
-			g.Operator = Operator.Clear;
-
-		g.LineWidth = BrushWidth;
-		g.LineJoin = LineJoin.Round;
-		g.LineCap = LineCap.Round;
-
-		g.Stroke ();
-	}
-
-	private void EraseSmooth (ImageSurface surf, Context g, PointD start, PointD end)
-	{
-		int rad = (int) (BrushWidth / 2.0) + 1;
-
-		// The cursor's circle: distances are relative to this, not to the padded box, so nothing
-		// outside the circle is touched.
 		double brushRadius = BrushWidth / 2.0;
+		int reach = (int) Math.Ceiling (brushRadius) + 1;
+		RectangleI surfaceBounds = new (0, 0, surface.Width, surface.Height);
+		RectangleI destinationBounds = RectangleI.Intersect (
+			surfaceBounds,
+			RectangleI.FromPoints (start, end).Inflated (reach, reach));
 
-		// Premultiply with alpha value
-		byte backgroundA = (byte) (Palette.SecondaryColor.A * 255.0);
-		byte backgroundR = (byte) (Palette.SecondaryColor.R * backgroundA);
-		byte backgroundG = (byte) (Palette.SecondaryColor.G * backgroundA);
-		byte backgroundB = (byte) (Palette.SecondaryColor.B * backgroundA);
+		if (destinationBounds.Width <= 0 || destinationBounds.Height <= 0)
+			return;
 
-		int numberOfSteps = (int) start.Distance (end) / rad + 1;
+		stroke_erased ??= new byte[surface.Width * surface.Height];
 
 		byte[] lut = GetLookupTable ();
+		int opacityPercent = OpacityPercent;
+		ColorBgra background = PremultipliedSecondaryColor ();
+		PointD from = new (start.X + 0.5, start.Y + 0.5);
+		PointD to = new (end.X + 0.5, end.Y + 0.5);
 
-		for (var step = 0; step < numberOfSteps; step++) {
+		// Allow clipping through a temporary surface
+		ImageSurface temporarySurface = CopySurfacePart (surface, destinationBounds);
+		Span<ColorBgra> temporaryData = temporarySurface.GetPixelData ();
+		ReadOnlySpan<ColorBgra> beforeData = before.GetReadOnlyPixelData ();
 
-			PointD pt = Utility.Lerp (
-				start,
-				end,
-				(float) step / numberOfSteps);
+		// Right/Bottom are the last pixel inside destinationBounds; stopping short of them left
+		// the canvas's final column and row un-erasable, since that is where the clip lands.
+		for (int iy = destinationBounds.Top; iy <= destinationBounds.Bottom; iy++) {
+			for (int ix = destinationBounds.Left; ix <= destinationBounds.Right; ix++) {
 
-			int x = (int) pt.X;
-			int y = (int) pt.Y;
+				double distance = DistanceToSegment (ix + 0.5, iy + 0.5, from, to);
+				int erased = EraseCoverage (distance, brushRadius, lut) * opacityPercent / 100;
+				int surfaceIndex = iy * surface.Width + ix;
 
-			RectangleI surfaceBounds = new (0, 0, surf.Width, surf.Height);
-			RectangleI brushBounds = new (x - rad, y - rad, 2 * rad, 2 * rad);
-			RectangleI destinationBounds = RectangleI.Intersect (surfaceBounds, brushBounds);
+				if (erased <= stroke_erased[surfaceIndex])
+					continue;
 
-			if (destinationBounds.Width <= 0 || destinationBounds.Height <= 0)
-				continue;
+				stroke_erased[surfaceIndex] = (byte) erased;
 
-			// Allow Clipping through a temporary surface
-			ImageSurface temporarySurface = CopySurfacePart (surf, destinationBounds);
-			Span<ColorBgra> temporaryData = temporarySurface.GetPixelData ();
-
-			// Right/Bottom are the last pixel inside destinationBounds; stopping short of them left
-			// the canvas's final column and row un-erasable, since that is where the clip lands.
-			for (int iy = destinationBounds.Top; iy <= destinationBounds.Bottom; iy++) {
-
-				var srcRow = temporaryData[(temporarySurface.Width * (iy - destinationBounds.Top))..];
-				int dy = iy - y;
-
-				for (var ix = destinationBounds.Left; ix <= destinationBounds.Right; ix++) {
-
-					byte force = SurvivingAlphaAt (lut, ix - x, dy, brushRadius);
-
-					// Note: premultiplied alpha is used!
-					int idx = ix - destinationBounds.Left;
-
-					ColorBgra original = srcRow[idx];
-
-					srcRow[idx] = mouse_button switch {
-
-						MouseButton.Right => ColorBgra.FromBgra (
-							b: (byte) ((original.B * force + backgroundB * (255 - force)) / 255),
-							g: (byte) ((original.G * force + backgroundG * (255 - force)) / 255),
-							r: (byte) ((original.R * force + backgroundR * (255 - force)) / 255),
-							a: (byte) ((original.A * force + backgroundA * (255 - force)) / 255)),
-
-						_ => ColorBgra.FromBgra (
-							b: (byte) (original.B * force / 255),
-							g: (byte) (original.G * force / 255),
-							r: (byte) (original.R * force / 255),
-							a: (byte) (original.A * force / 255)),
-					};
-				}
+				temporaryData[(iy - destinationBounds.Top) * temporarySurface.Width + ix - destinationBounds.Left] =
+					ErasedPixel (beforeData[surfaceIndex], background, (byte) (255 - erased));
 			}
-
-			// Draw the final result on the surface
-			PasteSurfacePart (g, temporarySurface, destinationBounds);
 		}
+
+		// Draw the final result on the surface
+		PasteSurfacePart (g, temporarySurface, destinationBounds);
+	}
+
+	/// <summary>How much of a pixel the eraser reaches, 0-255, when its centre is <paramref name="distance"/> pixels from the stroke.</summary>
+	private int EraseCoverage (double distance, double brushRadius, byte[] lut)
+	{
+		if (eraser_type == EraserType.Smooth) {
+			// Checked exactly: a table index would round a pixel on the rim inside the circle.
+			return distance >= brushRadius ? 0 : 255 - lut[(int) (distance / brushRadius * LUT_Resolution)];
+		}
+
+		if (!UseAntialiasing)
+			return distance < brushRadius ? 255 : 0;
+
+		return (int) (Math.Clamp (brushRadius - distance + 0.5, 0.0, 1.0) * 255.0);
+	}
+
+	/// <summary>
+	/// Left-click erases to transparent; right-click erases toward the secondary colour.
+	/// <paramref name="surviving"/> is how much of <paramref name="original"/> is left. Premultiplied alpha is used.
+	/// </summary>
+	private ColorBgra ErasedPixel (ColorBgra original, ColorBgra background, byte surviving)
+	{
+		if (mouse_button != MouseButton.Right) {
+			return ColorBgra.FromBgra (
+				b: (byte) (original.B * surviving / 255),
+				g: (byte) (original.G * surviving / 255),
+				r: (byte) (original.R * surviving / 255),
+				a: (byte) (original.A * surviving / 255));
+		}
+
+		return ColorBgra.FromBgra (
+			b: (byte) ((original.B * surviving + background.B * (255 - surviving)) / 255),
+			g: (byte) ((original.G * surviving + background.G * (255 - surviving)) / 255),
+			r: (byte) ((original.R * surviving + background.R * (255 - surviving)) / 255),
+			a: (byte) ((original.A * surviving + background.A * (255 - surviving)) / 255));
+	}
+
+	private ColorBgra PremultipliedSecondaryColor ()
+	{
+		byte a = (byte) (Palette.SecondaryColor.A * 255.0);
+
+		return ColorBgra.FromBgra (
+			b: (byte) (Palette.SecondaryColor.B * a),
+			g: (byte) (Palette.SecondaryColor.G * a),
+			r: (byte) (Palette.SecondaryColor.R * a),
+			a: a);
+	}
+
+	private static double DistanceToSegment (double x, double y, PointD from, PointD to)
+	{
+		double dx = to.X - from.X;
+		double dy = to.Y - from.Y;
+		double lengthSquared = dx * dx + dy * dy;
+		double along = lengthSquared == 0.0
+			? 0.0
+			: Math.Clamp (((x - from.X) * dx + (y - from.Y) * dy) / lengthSquared, 0.0, 1.0);
+
+		return Math.Sqrt (Math.Pow (x - (from.X + along * dx), 2) + Math.Pow (y - (from.Y + along * dy), 2));
 	}
 
 	private Label? type_label;
@@ -412,6 +413,15 @@ public sealed class EraserTool : BaseBrushTool
 			return type_combobox;
 		}
 	}
+
+	private Label? opacity_label;
+	private Scale? opacity_slider;
+
+	private Label OpacityLabel => opacity_label ??= Label.New (string.Format ("  {0}: ", Translations.GetString ("Opacity")));
+	private Scale OpacitySlider => opacity_slider ??= GtkExtensions.CreateToolBarSlider (1, 100, 1, Settings.GetSetting (SettingNames.ERASER_OPACITY, DefaultOpacityPercent));
+
+	/// <summary>The most a stroke erases of any pixel, in percent.</summary>
+	private int OpacityPercent => (int) OpacitySlider.GetValue ();
 
 	private Label? feather_label;
 	private Scale? feather_slider;

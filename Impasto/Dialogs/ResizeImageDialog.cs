@@ -256,7 +256,7 @@ public sealed partial class ResizeImageDialog
 			return;
 
 		value_changing = true;
-		width_spinner.Value = (int) (height_spinner.Value * workspace.ImageSize.Width / workspace.ImageSize.Height);
+		width_spinner.Value = Math.Round (height_spinner.Value * workspace.ImageSize.Width / workspace.ImageSize.Height, MidpointRounding.AwayFromZero);
 		value_changing = false;
 	}
 
@@ -269,7 +269,7 @@ public sealed partial class ResizeImageDialog
 			return;
 
 		value_changing = true;
-		height_spinner.Value = (int) (width_spinner.Value * workspace.ImageSize.Height / workspace.ImageSize.Width);
+		height_spinner.Value = Math.Round (width_spinner.Value * workspace.ImageSize.Height / workspace.ImageSize.Width, MidpointRounding.AwayFromZero);
 		value_changing = false;
 	}
 

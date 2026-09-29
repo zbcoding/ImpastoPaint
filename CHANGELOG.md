@@ -60,6 +60,9 @@ entries, is upstream Pinta work; the Impasto sections cover changes made in this
 - Resize Canvas opens with the current canvas size. It used to reopen with the width and height
   from the last resize, so a newly opened image showed the wrong numbers.
 
+- With Maintain aspect ratio on, Resize Canvas and Resize Image round the linked width or height to
+  the nearest pixel instead of dropping the fraction, so the result is closer to the original shape.
+
 - Dropping a folder onto the window no longer tries to read it as an image and fails with a list
   of loader errors. Folders and files that are not images are skipped and named in one message.
   Dropping more than 10 files asks before opening them all. Opening a folder any other way says

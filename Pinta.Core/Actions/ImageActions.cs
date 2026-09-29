@@ -253,8 +253,19 @@ public sealed class ImageActions
 				bottom.Mask is { Hidden: false } mask
 				? mask.Surface.Clone ()
 				: null;
+			LayerProperties bottomPropertiesBefore = new (bottom.Name, bottom.Hidden, bottom.Opacity, bottom.BlendMode);
 
 			doc.Layers.FlattenLayers ();
+
+			// FlattenLayers resets the bottom layer to a plain visible layer; undo must bring back
+			// what it was.
+			hist.Push (
+				new UpdateLayerPropertiesHistoryItem (
+					string.Empty,
+					string.Empty,
+					0,
+					bottomPropertiesBefore,
+					new LayerProperties (bottom.Name, bottom.Hidden, bottom.Opacity, bottom.BlendMode)));
 
 			if (bottomMask is not null) {
 				hist.Push (

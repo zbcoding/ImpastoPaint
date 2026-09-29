@@ -51,6 +51,11 @@ entries, is upstream Pinta work; the Impasto sections cover changes made in this
 
 ### Fixed
 
+- Saving to a format without layers (PNG, JPEG, ...) no longer writes a blank or faded image when
+  the bottom layer is hidden or translucent. Flatten folded every layer into the bottom layer but
+  left its hidden flag, opacity and blend mode on it, so they were applied a second time. The
+  flattened layer is now visible, fully opaque and Normal blend, and undoing the flatten restores
+  the old settings.
 - Dragging a pasted image, or a selection already lifted by an earlier drag, no longer asks to
   rasterize the shapes or text it happens to cover. Those pixels float above the layer until the
   selection is finished, so there was nothing to bake.

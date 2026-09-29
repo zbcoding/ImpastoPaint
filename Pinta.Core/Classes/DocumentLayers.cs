@@ -316,6 +316,13 @@ public sealed class DocumentLayers
 		// and dispose the old surface
 		bottom_layer.Surface = GetFlattenedImage ();
 
+		// The flattened pixels already carry the bottom layer's own visibility, opacity and blend
+		// mode. Left in place they are applied a second time: a hidden bottom layer would render
+		// (and export) as a blank image.
+		bottom_layer.Hidden = false;
+		bottom_layer.Opacity = 1.0;
+		bottom_layer.BlendMode = BlendMode.Normal;
+
 		// Reset our layer pointer to the only remaining layer
 		CurrentUserLayerIndex = 0;
 

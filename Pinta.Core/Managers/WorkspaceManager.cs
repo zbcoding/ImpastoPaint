@@ -343,6 +343,17 @@ public sealed class WorkspaceManager : IWorkspaceService
 			return false;
 		}
 
+		// A folder has no image in it to read; without this it falls through to trying every
+		// loader on it and reports a wall of "failed to load as ..." errors.
+		if (DroppedFilesPlan.IsFolder (file)) {
+			ShowOpenFileErrorDialog (
+				parent,
+				file.GetParseName (),
+				Translations.GetString ("Folders cannot be opened."),
+				string.Empty);
+			return false;
+		}
+
 		try {
 			// Open the image and add it to the layers
 			IImageImporter? importer = image_formats.GetImporterByFile (file.GetDisplayName ());

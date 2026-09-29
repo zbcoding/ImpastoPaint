@@ -57,6 +57,12 @@ entries, is upstream Pinta work; the Impasto sections cover changes made in this
 
 ### Fixed
 
+- Dropping a folder onto the window no longer tries to read it as an image and fails with a list
+  of loader errors. Folders and files that are not images are skipped and named in one message.
+  Dropping more than 10 files asks before opening them all. Opening a folder any other way says
+  "Folders cannot be opened." The drop's skipped items follow the same rule, so a dropped file
+  with an extension that is not an image format is no longer tried against every loader.
+
 - Saving to a format without layers (PNG, JPEG, ...) no longer writes a blank or faded image when
   the bottom layer is hidden or translucent. Flatten folded every layer into the bottom layer but
   left its hidden flag, opacity and blend mode on it, so they were applied a second time. The

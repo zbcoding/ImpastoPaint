@@ -27,6 +27,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Cairo;
 using Mono.Addins;
 using Pinta.Core;
@@ -1135,29 +1136,91 @@ internal sealed class MainWindow
 		if (args.Value.GetBoxed (Gdk.FileList.GetGType ()) is not Gdk.FileList file_list)
 			return false;
 
-		foreach (Gio.File file_dropped in file_list.GetFilesHelper ()) {
-			Gio.File file = file_dropped;
+		// Read the list now: it belongs to the drop and is not valid once the handler returns.
+		List<Gio.File> dropped = [.. file_list.GetFilesHelper ().Select (RepairDroppedFile)];
 
-			// On macOS, GTK4 pasteboard currently provides malformed URIs where the scheme is URL-encoded
-			// (e.g., "file%3A///" instead of "file:///"). Because of this, GIO fails to recognize it as a local file.
-			// This was fixed in GTK 4.23.1, so this workaround can be removed once Pinta requires GTK >= 4.23.1.
-			string parseName = file_dropped.GetParseName ();
-			if (parseName.StartsWith ("file%3A///", StringComparison.OrdinalIgnoreCase)) {
-				string decodedUri = Uri.UnescapeDataString (parseName);
-				file = Gio.FileHelper.NewForUri (decodedUri);
-			}
-
-			PintaCore.Workspace.OpenFile (file);
-
-			if (file.GetUriScheme () is string scheme &&
-			   (scheme.StartsWith ("http") || scheme.StartsWith ("ftp"))) {
-				// If the file was likely dragged from a browser, mark as not having a file
-				// so that the user must choose a new file to save to instead of hitting a permission error.
-				PintaCore.Workspace.ActiveDocument.ClearFileReference ();
-			}
-		}
+		_ = OpenDroppedFiles (dropped);
 
 		return true;
+	}
+
+	// On macOS, GTK4 pasteboard currently provides malformed URIs where the scheme is URL-encoded
+	// (e.g., "file%3A///" instead of "file:///"). Because of this, GIO fails to recognize it as a local file.
+	// This was fixed in GTK 4.23.1, so this workaround can be removed once Pinta requires GTK >= 4.23.1.
+	private static Gio.File RepairDroppedFile (Gio.File file)
+	{
+		string parseName = file.GetParseName ();
+		if (!parseName.StartsWith ("file%3A///", StringComparison.OrdinalIgnoreCase))
+			return file;
+
+		return Gio.FileHelper.NewForUri (Uri.UnescapeDataString (parseName));
+	}
+
+	private async Task OpenDroppedFiles (IReadOnlyList<Gio.File> dropped)
+	{
+		DroppedFilesPlan plan = DroppedFilesPlan.Create (dropped, PintaCore.ImageFormats);
+
+		if (plan.NeedsConfirmation && !await ConfirmOpeningManyFiles (plan.ToOpen.Count))
+			return;
+
+		foreach (Gio.File file in plan.ToOpen)
+			OpenDroppedFile (file);
+
+		if (plan.SkipsAnything)
+			await ShowSkippedDropItems (plan);
+	}
+
+	private static void OpenDroppedFile (Gio.File file)
+	{
+		PintaCore.Workspace.OpenFile (file);
+
+		if (file.GetUriScheme () is string scheme &&
+		   (scheme.StartsWith ("http") || scheme.StartsWith ("ftp"))) {
+			// If the file was likely dragged from a browser, mark as not having a file
+			// so that the user must choose a new file to save to instead of hitting a permission error.
+			PintaCore.Workspace.ActiveDocument.ClearFileReference ();
+		}
+	}
+
+	private async Task<bool> ConfirmOpeningManyFiles (int count)
+	{
+		const string cancel_response = "cancel";
+		const string open_response = "open";
+
+		using Adw.MessageDialog dialog = Adw.MessageDialog.New (
+			PintaCore.Chrome.MainWindow,
+			Translations.GetString ("Open {0} files?", count),
+			Translations.GetString ("Each file opens as its own image. If you dropped these by accident, choose Cancel."));
+
+		dialog.AddResponse (cancel_response, Translations.GetString ("_Cancel"));
+		dialog.AddResponse (open_response, Translations.GetString ("_Open"));
+		dialog.SetResponseAppearance (open_response, Adw.ResponseAppearance.Suggested);
+		dialog.CloseResponse = cancel_response;
+		dialog.DefaultResponse = cancel_response;
+
+		return await dialog.RunAsync () == open_response;
+	}
+
+	private const int MaxSkippedNamesListed = 8;
+
+	private static Task ShowSkippedDropItems (DroppedFilesPlan plan)
+	{
+		string heading = plan.ToOpen.Count == 0
+			? Translations.GetString ("Nothing to open")
+			: Translations.GetString ("Some dropped items were not opened");
+
+		List<string> lines = [];
+		if (plan.Folders.Count > 0)
+			lines.Add (Translations.GetString ("Folders cannot be opened. Drop the image files inside instead."));
+		if (plan.Unsupported.Count > 0)
+			lines.Add (Translations.GetString ("Not an image format Impasto can open."));
+
+		string[] names = [.. plan.Folders, .. plan.Unsupported];
+		lines.Add (string.Join (", ", names.Take (MaxSkippedNamesListed)));
+		if (names.Length > MaxSkippedNamesListed)
+			lines.Add (Translations.GetString ("…and {0} more", names.Length - MaxSkippedNamesListed));
+
+		return PintaCore.Chrome.ShowMessageDialog (PintaCore.Chrome.MainWindow, heading, string.Join ("\n", lines));
 	}
 
 	private void ZoomToSelection_Activated (object sender, EventArgs e)

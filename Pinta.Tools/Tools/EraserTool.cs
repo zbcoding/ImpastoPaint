@@ -43,7 +43,9 @@ public sealed class EraserTool : BaseBrushTool
 	private EraserType eraser_type = EraserType.Normal;
 
 	private const int LUT_Resolution = 256;
-	private readonly Lazy<byte[,]> lazy_lut_factor = new (CreateLookupTable);
+	private const int DefaultFeatherPercent = 100;
+	private byte[]? lut_factor;
+	private int lut_feather_percent;
 	private readonly IWorkspaceService workspace;
 
 	public EraserTool (IServiceProvider services) : base (services)
@@ -95,6 +97,10 @@ public sealed class EraserTool : BaseBrushTool
 
 		tb.Append (TypeLabel);
 		tb.Append (TypeComboBox);
+
+		tb.Append (FeatherLabel);
+		tb.Append (FeatherSlider);
+		UpdateFeatherVisibility ();
 	}
 
 	protected override void OnMouseMove (Document document, ToolMouseEventArgs e)
@@ -182,22 +188,60 @@ public sealed class EraserTool : BaseBrushTool
 
 		if (type_combobox is not null)
 			settings.PutSetting (SettingNames.ERASER_ERASE_TYPE, type_combobox.ComboBox.Active);
+
+		if (feather_slider is not null)
+			settings.PutSetting (SettingNames.ERASER_FEATHER, (int) feather_slider.GetValue ());
 	}
 
-	private static byte[,] CreateLookupTable ()
+	/// <summary>
+	/// How much of a pixel survives, 0-255, at <paramref name="distance"/> - measured in brush radii
+	/// from the centre. The brush erases fully out to (1 - feather) of its radius and fades to nothing
+	/// at the radius itself, so the erased area never leaves the cursor's circle. A feather of 0 has no
+	/// fade at all.
+	/// </summary>
+	internal static byte SurvivingAlpha (double distance, double feather)
 	{
-		int arrayDimensions = LUT_Resolution + 1;
-		byte[,] result = new byte[arrayDimensions, arrayDimensions];
-		for (int dy = 0; dy < arrayDimensions; dy++) {
-			for (int dx = 0; dx < arrayDimensions; dx++) {
-				double d = Mathematics.Magnitude<double> (dx, dy) / LUT_Resolution;
-				result[dy, dx] =
-					d > 1.0
-					? (byte) 255
-					: (byte) (255.0 - Math.Cos (Math.Sqrt (d) * Math.PI / 2.0) * 255.0);
-			}
-		}
+		if (distance >= 1.0)
+			return 255;
+
+		if (feather <= 0.0)
+			return 0;
+
+		double fade = Math.Max (0.0, (distance - (1.0 - feather)) / feather);
+
+		return (byte) (255.0 - Math.Cos (Math.Sqrt (fade) * Math.PI / 2.0) * 255.0);
+	}
+
+	/// <summary>Surviving alpha by distance from the centre, in 1/<see cref="LUT_Resolution"/> brush radii.</summary>
+	internal static byte[] CreateLookupTable (int featherPercent)
+	{
+		double feather = featherPercent / 100.0;
+		byte[] result = new byte[LUT_Resolution + 1];
+		for (int i = 0; i < result.Length; i++)
+			result[i] = SurvivingAlpha ((double) i / LUT_Resolution, feather);
 		return result;
+	}
+
+	private byte[] GetLookupTable ()
+	{
+		int featherPercent = FeatherPercent;
+
+		// Built on first use, and again when the slider has moved.
+		if (lut_factor is null || lut_feather_percent != featherPercent) {
+			lut_factor = CreateLookupTable (featherPercent);
+			lut_feather_percent = featherPercent;
+		}
+
+		return lut_factor;
+	}
+
+	/// <summary>How much of a pixel survives, given its offset in pixels from the brush centre.</summary>
+	private static byte SurvivingAlphaAt (byte[] lut, int dx, int dy, double brushRadius)
+	{
+		double distance = Math.Sqrt (dx * dx + dy * dy) / brushRadius;
+
+		// Checked exactly: a table index would round a pixel on the rim inside the circle.
+		return distance >= 1.0 ? (byte) 255 : lut[(int) (distance * LUT_Resolution)];
 	}
 
 	private static ImageSurface CopySurfacePart (ImageSurface surface, RectangleI destinationBounds)
@@ -275,6 +319,10 @@ public sealed class EraserTool : BaseBrushTool
 	{
 		int rad = (int) (BrushWidth / 2.0) + 1;
 
+		// The cursor's circle: distances are relative to this, not to the padded box, so nothing
+		// outside the circle is touched.
+		double brushRadius = BrushWidth / 2.0;
+
 		// Premultiply with alpha value
 		byte backgroundA = (byte) (Palette.SecondaryColor.A * 255.0);
 		byte backgroundR = (byte) (Palette.SecondaryColor.R * backgroundA);
@@ -283,8 +331,7 @@ public sealed class EraserTool : BaseBrushTool
 
 		int numberOfSteps = (int) start.Distance (end) / rad + 1;
 
-		// Initialize lookup table when first used (to prevent slower startup of the application)
-		byte[,] lut_factor = lazy_lut_factor.Value;
+		byte[] lut = GetLookupTable ();
 
 		for (var step = 0; step < numberOfSteps; step++) {
 
@@ -312,13 +359,11 @@ public sealed class EraserTool : BaseBrushTool
 			for (int iy = destinationBounds.Top; iy <= destinationBounds.Bottom; iy++) {
 
 				var srcRow = temporaryData[(temporarySurface.Width * (iy - destinationBounds.Top))..];
-				int dy = Math.Abs ((iy - y) * LUT_Resolution / rad);
+				int dy = iy - y;
 
 				for (var ix = destinationBounds.Left; ix <= destinationBounds.Right; ix++) {
 
-					int dx = Math.Abs ((ix - x) * LUT_Resolution / rad);
-
-					byte force = lut_factor[dy, dx];
+					byte force = SurvivingAlphaAt (lut, ix - x, dy, brushRadius);
 
 					// Note: premultiplied alpha is used!
 					int idx = ix - destinationBounds.Left;
@@ -358,6 +403,7 @@ public sealed class EraserTool : BaseBrushTool
 
 				type_combobox.ComboBox.OnChanged += (o, e) => {
 					eraser_type = (EraserType) type_combobox.ComboBox.Active;
+					UpdateFeatherVisibility ();
 				};
 
 				type_combobox.ComboBox.Active = Settings.GetSetting (SettingNames.ERASER_ERASE_TYPE, 0);
@@ -365,5 +411,22 @@ public sealed class EraserTool : BaseBrushTool
 
 			return type_combobox;
 		}
+	}
+
+	private Label? feather_label;
+	private Scale? feather_slider;
+
+	private Label FeatherLabel => feather_label ??= Label.New (string.Format ("  {0}: ", Translations.GetString ("Feather")));
+	private Scale FeatherSlider => feather_slider ??= GtkExtensions.CreateToolBarSlider (0, 100, 1, Settings.GetSetting (SettingNames.ERASER_FEATHER, DefaultFeatherPercent));
+
+	/// <summary>Softness of the Smooth eraser's edge, in percent of the brush radius.</summary>
+	private int FeatherPercent => (int) FeatherSlider.GetValue ();
+
+	// Only the Smooth eraser has a soft edge; Normal is governed by the antialiasing toggle.
+	private void UpdateFeatherVisibility ()
+	{
+		bool smooth = eraser_type == EraserType.Smooth;
+		FeatherLabel.Visible = smooth;
+		FeatherSlider.Visible = smooth;
 	}
 }

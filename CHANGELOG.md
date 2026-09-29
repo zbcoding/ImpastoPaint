@@ -10,6 +10,9 @@ entries, is upstream Pinta work; the Impasto sections cover changes made in this
 
 ### Added
 
+- The Smooth eraser has a Feather slider (0-100%, shown only for that type). It sets how much of
+  the brush radius fades out at the edge; 0 gives a hard edge and 100 is the old softness.
+  The fade now ends at the cursor's circle, so the eraser no longer clears pixels outside it.
 - Settings has a Keyboard tab, which replaces the Clipboard tab. It keeps the "Paste external
   images onto a new layer" option and has a button that opens Keyboard Shortcuts, which is still
   in the Help menu too.

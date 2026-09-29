@@ -57,6 +57,9 @@ entries, is upstream Pinta work; the Impasto sections cover changes made in this
 
 ### Fixed
 
+- Resize Canvas opens with the current canvas size. It used to reopen with the width and height
+  from the last resize, so a newly opened image showed the wrong numbers.
+
 - Dropping a folder onto the window no longer tries to read it as an image and fails with a list
   of loader errors. Folders and files that are not images are skipped and named in one message.
   Dropping more than 10 files asks before opening them all. Opening a folder any other way says

@@ -52,8 +52,6 @@ internal static class SettingNames
 	internal const string RESIZE_CANVAS_MAINTAIN_ASPECT = "resize-canvas-maintain-aspect";
 	internal const string RESIZE_CANVAS_USE_PERCENTAGE = "resize-canvas-use-percentage";
 	internal const string RESIZE_CANVAS_PERCENTAGE = "resize-canvas-percentage";
-	internal const string RESIZE_CANVAS_WIDTH = "resize-canvas-width";
-	internal const string RESIZE_CANVAS_HEIGHT = "resize-canvas-height";
 
 	internal const string RESIZE_IMAGE_MAINTAIN_ASPECT = "resize-image-maintain-aspect";
 	internal const string RESIZE_IMAGE_USE_PERCENTAGE = "resize-image-use-percentage";

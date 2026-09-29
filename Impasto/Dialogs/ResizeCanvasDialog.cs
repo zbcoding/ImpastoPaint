@@ -254,9 +254,13 @@ public sealed partial class ResizeCanvasDialog
 		this.workspace = workspace;
 		this.settings = settings;
 
+		// Width and height always start from the current canvas; only the percentage is remembered.
+		bool usePercentage = settings.GetSetting (SettingNames.RESIZE_CANVAS_USE_PERCENTAGE, true);
 		percentage_spinner.Value = settings.GetSetting (SettingNames.RESIZE_CANVAS_PERCENTAGE, 100);
-		width_spinner.Value = settings.GetSetting (SettingNames.RESIZE_CANVAS_WIDTH, workspace.ImageSize.Width);
-		height_spinner.Value = settings.GetSetting (SettingNames.RESIZE_CANVAS_HEIGHT, workspace.ImageSize.Height);
+		if (usePercentage)
+			percentageSpinner_ValueChanged (percentage_spinner, EventArgs.Empty);
+		else
+			ResetSizeToImage ();
 		aspect_checkbox.Active = settings.GetSetting (SettingNames.RESIZE_CANVAS_MAINTAIN_ASPECT, true);
 
 		// Final initialization
@@ -264,7 +268,7 @@ public sealed partial class ResizeCanvasDialog
 		Anchor savedAnchor = (Anchor) settings.GetSetting (SettingNames.RESIZE_CANVAS_ANCHOR, (int) Anchor.Center);
 		SetAnchor (savedAnchor);
 
-		if (settings.GetSetting (SettingNames.RESIZE_CANVAS_USE_PERCENTAGE, true))
+		if (usePercentage)
 			percentage_radio.Active = true;
 		else
 			absolute_radio.Active = true;
@@ -289,8 +293,6 @@ public sealed partial class ResizeCanvasDialog
 		settings.PutSetting (SettingNames.RESIZE_CANVAS_MAINTAIN_ASPECT, aspect_checkbox.Active);
 		settings.PutSetting (SettingNames.RESIZE_CANVAS_USE_PERCENTAGE, percentage_radio.Active);
 		settings.PutSetting (SettingNames.RESIZE_CANVAS_PERCENTAGE, percentage_spinner.GetValueAsInt ());
-		settings.PutSetting (SettingNames.RESIZE_CANVAS_WIDTH, width_spinner.GetValueAsInt ());
-		settings.PutSetting (SettingNames.RESIZE_CANVAS_HEIGHT, height_spinner.GetValueAsInt ());
 	}
 
 	private static Gtk.Button CreateAnchorButton ()
@@ -342,6 +344,11 @@ public sealed partial class ResizeCanvasDialog
 	}
 
 	void OnResetButtonClicked (Gtk.Button button, EventArgs eventArgs)
+	{
+		ResetSizeToImage ();
+	}
+
+	private void ResetSizeToImage ()
 	{
 		value_changing = true;
 		width_spinner.Value = workspace.ImageSize.Width;

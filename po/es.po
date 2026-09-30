@@ -19,7 +19,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: pinta\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-27 06:16-0500\n"
+"POT-Creation-Date: 2026-09-30 04:19-0500\n"
 "PO-Revision-Date: 2026-06-22 17:01+0000\n"
 "Last-Translator: Adolfo Jayme Barrientos <fitojb@ubuntu.com>\n"
 "Language-Team: Spanish\n"
@@ -64,7 +64,13 @@ msgstr "Región de 9 × 9"
 msgid "A triangle with equal sides, growing up or down from the first point."
 msgstr ""
 
-#: ../Impasto/MainWindow.cs:544
+#. Translators: {0} and {1} are the width and height of an image in pixels.
+#: ../Pinta.Core/ImageFormats/PsdFormat.cs:119
+#, csharp-format
+msgid "A {0} x {1} pixel image is too large to open"
+msgstr ""
+
+#: ../Impasto/MainWindow.cs:563
 msgid "A_dd-ins"
 msgstr "C_omplementos"
 
@@ -84,6 +90,7 @@ msgstr ""
 #: ../Impasto/Actions/Edit/PasteAction.cs:192
 #: ../Pinta.Core/Actions/LayerActions.cs:73
 #: ../Pinta.Core/Actions/LayerActions.cs:688
+#: ../Pinta.Tools/Tools/MoveSelectedTool.cs:175
 msgid "Add New Layer"
 msgstr "Añadir una capa nueva"
 
@@ -119,18 +126,18 @@ msgstr "Gestor de complementos..."
 msgid "Add-ins"
 msgstr ""
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:1297
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:1298
 msgid "Added"
 msgstr "Añadido"
 
-#: ../Impasto/Dialogs/PreferencesDialog.cs:198
+#: ../Impasto/Dialogs/PreferencesDialog.cs:204
 msgid ""
 "Adds a darker shade of each color beneath the standard palette. The status "
 "bar grows taller to fit the extra row."
 msgstr ""
 
-#: ../Impasto/Actions/Help/KeyboardShortcutsDialogAction.cs:184
-#: ../Impasto/MainWindow.cs:610
+#: ../Impasto/Actions/Help/KeyboardShortcutsDialogAction.cs:205
+#: ../Impasto/MainWindow.cs:629
 msgid "Adjustments"
 msgstr "Ajustes"
 
@@ -143,20 +150,26 @@ msgstr "Tras seleccionar"
 msgid "Align Object"
 msgstr "Alinear objeto"
 
+#. Translators: While an object is moved, lines its edges and centre up
+#. with the edges and centres of the other shapes, text and images.
+#: ../Pinta.Core/Actions/ViewActions.cs:156
+msgid "Align to objects"
+msgstr ""
+
 #. Translators: 'All Petite Caps' refers to the font-variant text property
-#: ../Pinta.Tools/Dialogs/TextPropertiesDialog.cs:251
-#: ../Pinta.Tools/Tools/TextTool.cs:413
+#: ../Pinta.Tools/Dialogs/TextPropertiesDialog.cs:250
+#: ../Pinta.Tools/Tools/TextTool.cs:425
 msgid "All Petite Caps"
 msgstr "Todas miniversales"
 
 #. Translators: 'All Small Caps' refers to the font-variant text property
-#: ../Pinta.Tools/Dialogs/TextPropertiesDialog.cs:249
-#: ../Pinta.Tools/Tools/TextTool.cs:399
+#: ../Pinta.Tools/Dialogs/TextPropertiesDialog.cs:248
+#: ../Pinta.Tools/Tools/TextTool.cs:411
 msgid "All Small Caps"
 msgstr "Todas versalitas"
 
-#: ../Impasto/Actions/File/OpenDocumentAction.cs:140
-#: ../Pinta.Core/Actions/EditActions.cs:725
+#: ../Impasto/Actions/File/OpenDocumentAction.cs:153
+#: ../Pinta.Core/Actions/EditActions.cs:706
 #: ../Pinta.Gui.Addins/AddinManagerDialog.cs:335
 msgid "All files"
 msgstr "Todos los archivos"
@@ -216,11 +229,11 @@ msgstr "Antidentado desactivado"
 msgid "Antialiasing On"
 msgstr "Antidentado activado"
 
-#: ../Pinta.Tools/Tools/TextTool.cs:285
+#: ../Pinta.Tools/Tools/TextTool.cs:290
 msgid "Area"
 msgstr ""
 
-#: ../Pinta.Tools/Tools/TextTool.cs:286
+#: ../Pinta.Tools/Tools/TextTool.cs:291
 msgid ""
 "Area text: the text flows to fit a box. Drag a corner to resize the box and "
 "re-wrap the text."
@@ -291,17 +304,17 @@ msgstr "Color del fondo"
 msgid "Background:"
 msgstr "Fondo:"
 
-#: ../Impasto/Dialogs/PreferencesDialog.cs:321
+#: ../Impasto/Dialogs/PreferencesDialog.cs:327
 msgid "Backup"
 msgstr ""
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:934
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:946
 msgid ""
 "Bake this layer's effects and objects into its pixels; they stop being "
 "editable."
 msgstr ""
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:935
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:947
 msgid "Bake this object into the layer's pixels; it stops being editable."
 msgstr ""
 
@@ -310,12 +323,12 @@ msgstr ""
 msgid "Beautiful Italy"
 msgstr "La bella Italia"
 
-#: ../Pinta.Core/Actions/ViewActions.cs:91
+#: ../Pinta.Core/Actions/ViewActions.cs:92
 msgid "Best Fit"
 msgstr "Ajuste óptimo"
 
 #. Translators: 'Bevel Join' refers to the Cairo.LineJoin property
-#: ../Pinta.Tools/Tools/TextTool.cs:680
+#: ../Pinta.Tools/Tools/TextTool.cs:692
 msgid "Bevel Join"
 msgstr ""
 
@@ -333,7 +346,7 @@ msgstr "Blanco y negro"
 msgid "Blend Mode"
 msgstr "Modo de mezcla"
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:879
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:891
 msgid "Blend Mode:"
 msgstr ""
 
@@ -362,7 +375,7 @@ msgid "Blurs"
 msgstr "Desenfoques"
 
 #. Translators: 'Bold' (700) refers to the font-weight text property
-#: ../Pinta.Tools/Tools/TextTool.cs:509
+#: ../Pinta.Tools/Tools/TextTool.cs:521
 msgid "Bold"
 msgstr "Negrita"
 
@@ -372,11 +385,11 @@ msgid "Bonfire"
 msgstr "Hoguera"
 
 #. Translators: 'Book' (380) refers to the font-weight text property
-#: ../Pinta.Tools/Tools/TextTool.cs:485
+#: ../Pinta.Tools/Tools/TextTool.cs:497
 msgid "Book"
 msgstr "Libro"
 
-#: ../Pinta.Tools/Tools/TextTool.cs:402
+#: ../Pinta.Tools/Tools/TextTool.cs:414
 msgid ""
 "Both upper and lower case letters are replaced with smaller capital letters."
 msgstr ""
@@ -473,13 +486,13 @@ msgid ""
 msgstr ""
 
 #: ../Impasto/Actions/File/SaveDocumentImplementationAction.cs:145
-#: ../Impasto/Actions/Help/KeyboardShortcutsDialogAction.cs:108
-#: ../Impasto/Actions/Help/KeyboardShortcutsDialogAction.cs:121
-#: ../Impasto/Dialogs/PreferencesDialog.cs:433
-#: ../Pinta.Core/Actions/EditActions.cs:662
+#: ../Impasto/Actions/Help/KeyboardShortcutsDialogAction.cs:138
+#: ../Impasto/Actions/Help/KeyboardShortcutsDialogAction.cs:151
+#: ../Impasto/Dialogs/PreferencesDialog.cs:439
+#: ../Pinta.Core/Actions/EditActions.cs:643
 #: ../Pinta.Gui.Addins/InstallDialog.cs:126
 #: ../Pinta.Gui.Widgets/Widgets/ColorPickerDialog.cs:497
-#: ../Pinta.Tools/Dialogs/TextPropertiesDialog.cs:265
+#: ../Pinta.Tools/Dialogs/TextPropertiesDialog.cs:264
 msgid "Cancel"
 msgstr "Cancelar"
 
@@ -492,7 +505,7 @@ msgstr ""
 msgid "Cannot be recovered: {0}"
 msgstr ""
 
-#: ../Impasto/Dialogs/PreferencesDialog.cs:318 ../Impasto/Pads/CanvasPad.cs:41
+#: ../Impasto/Dialogs/PreferencesDialog.cs:324 ../Impasto/Pads/CanvasPad.cs:41
 msgid "Canvas"
 msgstr "Lienzo"
 
@@ -500,11 +513,11 @@ msgstr "Lienzo"
 msgid "Canvas Grid Settings"
 msgstr "Configuración de retícula del lienzo"
 
-#: ../Pinta.Core/Actions/ViewActions.cs:130
+#: ../Pinta.Core/Actions/ViewActions.cs:131
 msgid "Canvas Grid..."
 msgstr "Retícula del lienzo..."
 
-#: ../Pinta.Core/Managers/ActionManager.cs:338
+#: ../Pinta.Core/Managers/ActionManager.cs:332
 msgid ""
 "Canvas size in pixels and its aspect ratio.\n"
 "Double click to change the canvas size."
@@ -530,8 +543,8 @@ msgstr "Celdas"
 msgid "Center"
 msgstr "Centro"
 
-#: ../Pinta.Tools/Dialogs/TextPropertiesDialog.cs:221
-#: ../Pinta.Tools/Tools/TextTool.cs:578
+#: ../Pinta.Tools/Dialogs/TextPropertiesDialog.cs:220
+#: ../Pinta.Tools/Tools/TextTool.cs:590
 msgid "Center Align"
 msgstr "Centrar"
 
@@ -553,7 +566,7 @@ msgstr "Centro derecha"
 msgid "Centered"
 msgstr "Centrado"
 
-#: ../Pinta.Core/Actions/ViewActions.cs:272
+#: ../Pinta.Core/Actions/ViewActions.cs:282
 msgid "Centimeters"
 msgstr "Centímetros"
 
@@ -565,7 +578,7 @@ msgstr "Cambiar la anchura del pincel."
 msgid "Change control point tension while dragging"
 msgstr ""
 
-#: ../Pinta.Tools/Tools/TextTool.cs:771
+#: ../Pinta.Tools/Tools/TextTool.cs:783
 msgid "Change font size."
 msgstr "Cambiar tamaño de fuente."
 
@@ -573,12 +586,12 @@ msgstr "Cambiar tamaño de fuente."
 msgid "Change outline width."
 msgstr ""
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:924
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:936
 msgid ""
 "Change this effect's settings; the layer re-renders with the new values."
 msgstr ""
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:919
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:931
 msgid ""
 "Change this transform's settings; the layer re-renders with the new values."
 msgstr ""
@@ -592,13 +605,13 @@ msgstr ""
 msgid "Cherry Blossom"
 msgstr "Flor del cerezo"
 
-#: ../Impasto/Dialogs/PreferencesDialog.cs:413
+#: ../Impasto/Dialogs/PreferencesDialog.cs:419
 #: ../Pinta.Effects/Dialogs/Effects.LevelsDialog.cs:666
 #: ../Pinta.Gui.Widgets/Dialogs/SimpleEffectDialog.cs:366
 msgid "Choose Color"
 msgstr "Elegir el color"
 
-#: ../Impasto/MainWindow.cs:977
+#: ../Impasto/MainWindow.cs:996
 msgid "Choose Colors"
 msgstr "Elegir Colores"
 
@@ -662,7 +675,7 @@ msgstr ""
 msgid "Click and drag to navigate image."
 msgstr "Pulse y arrastre para desplazarse por la imagen."
 
-#: ../Impasto/MainWindow.cs:960
+#: ../Impasto/MainWindow.cs:979
 #: ../Pinta.Gui.Widgets/Widgets/StatusBarColorPaletteWidget.cs:798
 msgid "Click to reset primary and secondary color."
 msgstr "Pulse para restablecer los colores primario y secundario."
@@ -687,14 +700,14 @@ msgstr ""
 msgid "Click to select secondary color."
 msgstr "Pulse para seleccionar el color secundario."
 
-#: ../Impasto/MainWindow.cs:953
+#: ../Impasto/MainWindow.cs:972
 #: ../Pinta.Gui.Widgets/Widgets/ColorPickerDialog.cs:366
 #: ../Pinta.Gui.Widgets/Widgets/ColorPickerPanel.cs:171
 #: ../Pinta.Gui.Widgets/Widgets/StatusBarColorPaletteWidget.cs:793
 msgid "Click to switch between primary and secondary color."
 msgstr "Pulse para cambiar entre el color primario y el secundario."
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:522
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:523
 msgid ""
 "Clicking a segment while editing inserts a control point to smoothly curve "
 "it."
@@ -704,7 +717,6 @@ msgstr ""
 #: ../Impasto/Dialogs/NewImageDialog.cs:430
 #: ../Impasto/Dialogs/NewImageDialog.cs:449
 #: ../Impasto/Dialogs/NewImageDialog.cs:545
-#: ../Impasto/Dialogs/PreferencesDialog.cs:319
 msgid "Clipboard"
 msgstr "Portapapeles"
 
@@ -775,7 +787,7 @@ msgstr "Intervalo de colores"
 msgid "Color Saturation"
 msgstr "Saturación de color"
 
-#: ../Pinta.Core/Actions/ViewActions.cs:300
+#: ../Pinta.Core/Actions/ViewActions.cs:310
 #: ../Pinta.Effects/Effects/CellsEffect.cs:183
 #: ../Pinta.Effects/Effects/CloudsEffect.cs:148
 #: ../Pinta.Effects/Effects/JuliaFractalEffect.cs:158
@@ -806,8 +818,14 @@ msgstr ""
 msgid "Coloring"
 msgstr "Color"
 
-#: ../Impasto/MainWindow.cs:772 ../Pinta.Core/Actions/ViewActions.cs:171
+#: ../Impasto/MainWindow.cs:791 ../Pinta.Core/Actions/ViewActions.cs:180
 msgid "Colors"
+msgstr ""
+
+#. Translators: {0} is the number of a compression method stored in the file.
+#: ../Pinta.Core/ImageFormats/PsdFormat.cs:705
+#, csharp-format
+msgid "Composite image compression {0} is not supported"
 msgstr ""
 
 #: ../Pinta.Tools/Tools/GradientTool.cs:323
@@ -833,11 +851,11 @@ msgstr "Contiguo"
 msgid "Contrast"
 msgstr "Contraste"
 
-#: ../Pinta.Core/Actions/EditActions.cs:104
+#: ../Pinta.Core/Actions/EditActions.cs:98
 msgid "Copy"
 msgstr "Copiar"
 
-#: ../Pinta.Core/Actions/EditActions.cs:111
+#: ../Pinta.Core/Actions/EditActions.cs:105
 msgid "Copy Merged"
 msgstr "Copiar combinado"
 
@@ -860,7 +878,7 @@ msgstr ""
 msgid "Cotton Candy"
 msgstr "Algodón de azúcar"
 
-#: ../Impasto/MainWindow.cs:171
+#: ../Impasto/MainWindow.cs:172
 msgid "Could not check for autosaved documents"
 msgstr ""
 
@@ -872,8 +890,8 @@ msgstr "No se pudo importar la capa «{0}» de {1}"
 
 #: ../Pinta.Core/Actions/LayerActions.cs:415
 #: ../Pinta.Core/Extensions/OtherExtensions.cs:169
-#: ../Pinta.Core/Managers/WorkspaceManager.cs:460
-#: ../Pinta.Core/Managers/WorkspaceManager.cs:494
+#: ../Pinta.Core/Managers/WorkspaceManager.cs:471
+#: ../Pinta.Core/Managers/WorkspaceManager.cs:505
 #, csharp-format
 msgid "Could not open file: {0}"
 msgstr "No se pudo abrir el archivo: {0}"
@@ -892,8 +910,8 @@ msgid "Create new shape at selected control point"
 msgstr ""
 
 #: ../Pinta.Core/Actions/ImageActions.cs:56
-#: ../Pinta.Core/Actions/ImageActions.cs:357
-#: ../Pinta.Core/Actions/ImageActions.cs:363
+#: ../Pinta.Core/Actions/ImageActions.cs:368
+#: ../Pinta.Core/Actions/ImageActions.cs:374
 msgid "Crop to Selection"
 msgstr "Recortar a selección"
 
@@ -910,11 +928,11 @@ msgstr ""
 msgid "Curved"
 msgstr "Curvo"
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:523
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:524
 msgid "Curved Segments Off"
 msgstr "Segmentos curvos desactivados"
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:522
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:523
 msgid "Curved Segments On"
 msgstr "Segmentos curvos activados"
 
@@ -930,13 +948,13 @@ msgstr "Curvas"
 msgid "Custom"
 msgstr "Personalizar"
 
-#: ../Pinta.Core/Actions/EditActions.cs:97
-#: ../Pinta.Core/Actions/EditActions.cs:419
+#: ../Pinta.Core/Actions/EditActions.cs:91
+#: ../Pinta.Core/Actions/EditActions.cs:413
 msgid "Cut"
 msgstr "Cortar"
 
 #. Translators: This refers to using a dark variant of the color scheme.
-#: ../Pinta.Core/Actions/ViewActions.cs:297
+#: ../Pinta.Core/Actions/ViewActions.cs:307
 msgid "Dark"
 msgstr "Oscuro"
 
@@ -957,7 +975,7 @@ msgid "Decrease font size"
 msgstr ""
 
 #. Translators: This refers to using the system's default color scheme.
-#: ../Pinta.Core/Actions/ViewActions.cs:293
+#: ../Pinta.Core/Actions/ViewActions.cs:303
 msgid "Default"
 msgstr "Predeterminada"
 
@@ -965,7 +983,7 @@ msgstr "Predeterminada"
 msgid "Default canvas size (on application open):"
 msgstr ""
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:944
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:956
 msgid "Delete"
 msgstr ""
 
@@ -974,15 +992,15 @@ msgstr ""
 msgid "Delete Layer"
 msgstr "Eliminar capa"
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:322
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:334
 msgid "Delete Layer Mask"
 msgstr ""
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:984
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:996
 msgid "Delete Mask"
 msgstr ""
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:299
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:311
 msgid "Delete Object"
 msgstr ""
 
@@ -998,7 +1016,7 @@ msgstr ""
 msgid "Delete selected control point"
 msgstr ""
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:1059
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:1060
 msgid "Deleted"
 msgstr "Eliminado"
 
@@ -1007,18 +1025,17 @@ msgstr "Eliminado"
 msgid "Dents"
 msgstr "Abolladuras"
 
-#: ../Pinta.Core/Actions/EditActions.cs:449
-#: ../Pinta.Core/Actions/EditActions.cs:454
+#: ../Pinta.Core/Actions/EditActions.cs:443
+#: ../Pinta.Core/Actions/EditActions.cs:448
 msgid "Deselect"
 msgstr "Deseleccionar"
 
-#: ../Pinta.Core/Actions/EditActions.cs:175
-#: ../Pinta.Core/Actions/EditActions.cs:182
+#: ../Pinta.Core/Actions/EditActions.cs:169
 msgid "Deselect All"
 msgstr "Deseleccionar todo"
 
-#: ../Impasto/Actions/Help/KeyboardShortcutsDialogAction.cs:178
-msgid "Deselect All (Quick, ×2)"
+#: ../Pinta.Core/Actions/EditActions.cs:176
+msgid "Deselect All (Quick)"
 msgstr ""
 
 #: ../Impasto/Dialogs/ErrorDialog.cs:60
@@ -1066,7 +1083,7 @@ msgstr ""
 msgid "Download size: {0}"
 msgstr "Tamaño de la descarga: {0}"
 
-#: ../Pinta.Tools/Tools/TextTool.cs:161
+#: ../Pinta.Tools/Tools/TextTool.cs:166
 msgid "Drag a corner grip to resize, or the dashed border to move."
 msgstr ""
 
@@ -1074,27 +1091,27 @@ msgstr ""
 msgid "Drag and drop to reorder"
 msgstr ""
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:1302
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:1314
 msgid "Drag and drop to reorder it on this layer"
 msgstr ""
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:1305
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:1317
 msgid "Drag and drop to reorder, or onto another layer to move it there"
 msgstr ""
 
-#: ../Pinta.Tools/Tools/TextTool.cs:2813
+#: ../Pinta.Tools/Tools/TextTool.cs:2860
 msgid "Drag corner to resize (changes font size)"
 msgstr ""
 
-#: ../Pinta.Tools/Tools/TextTool.cs:2812
+#: ../Pinta.Tools/Tools/TextTool.cs:2859
 msgid "Drag corner to resize the text box"
 msgstr ""
 
-#: ../Pinta.Tools/Tools/TextTool.cs:625
+#: ../Pinta.Tools/Tools/TextTool.cs:637
 msgid "Draw only the outline of the text, using the secondary color."
 msgstr "Dibuja solo el contorno del texto, usando el color secundario."
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:558
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:559
 #: ../Pinta.Tools/Tools/FreeformShapeTool.cs:222
 msgid "Draw only the shape's outline, using the primary color."
 msgstr "Dibuja solo el contorno de la forma, usando el color primario."
@@ -1104,7 +1121,7 @@ msgstr "Dibuja solo el contorno de la forma, usando el color primario."
 msgid "Duplicate Layer"
 msgstr "Duplicar la capa"
 
-#: ../Impasto/Actions/Help/KeyboardShortcutsDialogAction.cs:391
+#: ../Impasto/Actions/Help/KeyboardShortcutsDialogAction.cs:384
 msgid "Duplicated"
 msgstr ""
 
@@ -1116,6 +1133,12 @@ msgstr ""
 #: ../Pinta.Tools/Editable/EditEngines/ArrowedEditEngine.cs:373
 #: ../Pinta.Tools/Editable/EditEngines/ArrowedEditEngine.cs:407
 msgid "Each added point joins its neighbors with a straight segment."
+msgstr ""
+
+#: ../Impasto/MainWindow.cs:1214
+msgid ""
+"Each file opens as its own image. If you dropped these by accident, choose "
+"Cancel."
 msgstr ""
 
 #: ../Impasto/Actions/Help/AboutDialogAction.cs:73
@@ -1133,11 +1156,11 @@ msgstr "Comportamiento de los bordes"
 msgid "Edge Detect"
 msgstr "Detección de bordes"
 
-#: ../Impasto/Actions/Help/KeyboardShortcutsDialogAction.cs:181
+#: ../Impasto/Actions/Help/KeyboardShortcutsDialogAction.cs:202
 msgid "Edit"
 msgstr ""
 
-#: ../Impasto/Dialogs/PreferencesDialog.cs:275
+#: ../Impasto/Dialogs/PreferencesDialog.cs:281
 msgid ""
 "Editable shapes and text stay editable on their own sub-layers. Operations "
 "that need flat pixels — cut, erase, crop, resize, rotate, flip, flatten — "
@@ -1146,16 +1169,16 @@ msgid ""
 "to bake silently and skip the warning."
 msgstr ""
 
-#: ../Impasto/MainWindow.cs:542
+#: ../Impasto/MainWindow.cs:561
 msgid "Effe_cts"
 msgstr "E_fectos"
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:923
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:935
 msgid "Effect Settings..."
 msgstr ""
 
-#: ../Impasto/Actions/Help/KeyboardShortcutsDialogAction.cs:185
-#: ../Impasto/MainWindow.cs:605
+#: ../Impasto/Actions/Help/KeyboardShortcutsDialogAction.cs:206
+#: ../Impasto/MainWindow.cs:624
 msgid "Effects"
 msgstr "Efectos"
 
@@ -1188,12 +1211,12 @@ msgstr ""
 msgid "Equilateral Triangle"
 msgstr ""
 
-#: ../Pinta.Core/Actions/EditActions.cs:140
-#: ../Pinta.Core/Actions/EditActions.cs:420
+#: ../Pinta.Core/Actions/EditActions.cs:134
+#: ../Pinta.Core/Actions/EditActions.cs:414
 msgid "Erase Selection"
 msgstr "Borrar la selección"
 
-#: ../Pinta.Tools/Tools/EraserTool.cs:62
+#: ../Pinta.Tools/Tools/EraserTool.cs:70
 msgid "Eraser"
 msgstr "Goma de borrar"
 
@@ -1214,15 +1237,15 @@ msgstr "Excluir (−) (clic derecho)"
 msgid "Expand"
 msgstr "Expandir"
 
-#: ../Impasto/Dialogs/PreferencesDialog.cs:432
+#: ../Impasto/Dialogs/PreferencesDialog.cs:438
 msgid "Export"
 msgstr ""
 
-#: ../Impasto/Dialogs/PreferencesDialog.cs:429
+#: ../Impasto/Dialogs/PreferencesDialog.cs:435
 msgid "Export Settings"
 msgstr ""
 
-#: ../Impasto/Dialogs/PreferencesDialog.cs:304
+#: ../Impasto/Dialogs/PreferencesDialog.cs:310
 msgid "Export Settings..."
 msgstr ""
 
@@ -1239,12 +1262,12 @@ msgstr "Factor"
 msgid "Failed to access XDG Desktop Portals"
 msgstr "No se pudieron acceder a los portales de escritorio XDG"
 
-#: ../Impasto/Dialogs/PreferencesDialog.cs:456
+#: ../Impasto/Dialogs/PreferencesDialog.cs:462
 #, csharp-format
 msgid "Failed to export settings: {0}"
 msgstr ""
 
-#: ../Impasto/MainWindow.cs:429
+#: ../Impasto/MainWindow.cs:448
 msgid "Failed to initialize add-in"
 msgstr "Error al inicializar el complemento"
 
@@ -1252,11 +1275,11 @@ msgstr "Error al inicializar el complemento"
 msgid "Failed to load extension package"
 msgstr "Error al cargar el paquete de la extensión"
 
-#: ../Pinta.Core/Managers/WorkspaceManager.cs:514
+#: ../Pinta.Core/Managers/WorkspaceManager.cs:525
 msgid "Failed to open image"
 msgstr "No se ha podido abrir la imagen"
 
-#: ../Impasto/Dialogs/PreferencesDialog.cs:483
+#: ../Impasto/Dialogs/PreferencesDialog.cs:489
 #, csharp-format
 msgid "Failed to read settings file: {0}"
 msgstr ""
@@ -1270,6 +1293,10 @@ msgstr "No se ha podido guardar la imagen"
 msgid "Failed to take screenshot"
 msgstr "No se ha podido realizar la captura de pantalla"
 
+#: ../Pinta.Tools/Tools/EraserTool.cs:429
+msgid "Feather"
+msgstr "Pluma"
+
 #: ../Pinta.Effects/Effects/FeatherEffect.cs:175
 msgid "Feather Canvas Edge"
 msgstr "Suaviza el borde del lienzo"
@@ -1278,7 +1305,7 @@ msgstr "Suaviza el borde del lienzo"
 msgid "Feather Object"
 msgstr "Pluma"
 
-#: ../Impasto/Actions/Help/KeyboardShortcutsDialogAction.cs:170
+#: ../Impasto/Actions/Help/KeyboardShortcutsDialogAction.cs:201
 msgid "File"
 msgstr ""
 
@@ -1290,7 +1317,7 @@ msgstr "Informar de un error"
 msgid "Files to open"
 msgstr "Archivos para abrir"
 
-#: ../Pinta.Tools/Tools/TextTool.cs:626
+#: ../Pinta.Tools/Tools/TextTool.cs:638
 msgid "Fill Background"
 msgstr "Rellenar el fondo"
 
@@ -1298,22 +1325,22 @@ msgstr "Rellenar el fondo"
 msgid "Fill Object Background"
 msgstr "Rellenar el fondo del objeto"
 
-#: ../Pinta.Core/Actions/EditActions.cs:147
-#: ../Pinta.Core/Actions/EditActions.cs:358
+#: ../Pinta.Core/Actions/EditActions.cs:141
+#: ../Pinta.Core/Actions/EditActions.cs:352
 msgid "Fill Selection"
 msgstr "Rellenar la selección"
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:559
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:560
 #: ../Pinta.Tools/Tools/FreeformShapeTool.cs:223
 msgid "Fill Shape"
 msgstr "Forma"
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:549
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:550
 #: ../Pinta.Tools/Tools/FreeformShapeTool.cs:216
 msgid "Fill Style"
 msgstr "Relleno"
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:560
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:561
 #: ../Pinta.Tools/Tools/FreeformShapeTool.cs:224
 msgid "Fill and Outline Shape"
 msgstr "Rellenar y contornear forma"
@@ -1329,28 +1356,28 @@ msgid ""
 "Fill only the connected region of similar color touching the click point."
 msgstr ""
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:560
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:561
 #: ../Pinta.Tools/Tools/FreeformShapeTool.cs:224
 msgid ""
 "Fill the interior with the secondary color and outline it with the primary "
 "color."
 msgstr ""
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:559
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:560
 #: ../Pinta.Tools/Tools/FreeformShapeTool.cs:223
 msgid "Fill the shape's interior with the secondary color, no outline."
 msgstr "Rellena el interior de la forma con el color secundario, sin contorno."
 
-#: ../Pinta.Tools/Tools/TextTool.cs:624
+#: ../Pinta.Tools/Tools/TextTool.cs:636
 msgid ""
 "Fill the text with the primary color and outline it with the secondary color."
 msgstr ""
 
-#: ../Pinta.Tools/Tools/TextTool.cs:623
+#: ../Pinta.Tools/Tools/TextTool.cs:635
 msgid "Fill the text with the primary color."
 msgstr "Rellena el texto con el color primario."
 
-#: ../Pinta.Tools/Tools/TextTool.cs:626
+#: ../Pinta.Tools/Tools/TextTool.cs:638
 msgid "Fill the text's bounding box with the secondary color, behind the text."
 msgstr ""
 "Rellena el cuadro delimitador del texto con el color secundario, detrás del "
@@ -1378,12 +1405,12 @@ msgstr "Finalizar píxeles"
 msgid "Finish selection"
 msgstr ""
 
-#: ../Pinta.Core/Extensions/Gtk/GtkExtensions.Widget.cs:229
+#: ../Pinta.Core/Extensions/Gtk/GtkExtensions.Widget.cs:236
 #: ../Pinta.Tools/Tools/LassoSelectTool.cs:311
 msgid "Finish selection (Enter)"
 msgstr ""
 
-#: ../Pinta.Tools/Tools/TextTool.cs:763
+#: ../Pinta.Tools/Tools/TextTool.cs:775
 #, csharp-format
 msgid "Finish typing ({0})"
 msgstr "Terminar de escribir ({0})"
@@ -1394,7 +1421,7 @@ msgstr "Terminar de escribir ({0})"
 msgid "Flatten"
 msgstr "Acoplar"
 
-#: ../Pinta.Tools/Tools/TextTool.cs:683
+#: ../Pinta.Tools/Tools/TextTool.cs:695
 msgid "Flattened, squared-off corners on the outline."
 msgstr "Esquinas achaflanadas y aplanadas en el contorno."
 
@@ -1403,7 +1430,7 @@ msgid "Flattening the image will merge all layers into a single layer."
 msgstr "Aplanar la imagen fusionará todas las capas en una sola."
 
 #: ../Pinta.Core/Actions/ImageActions.cs:84
-#: ../Pinta.Core/Actions/ImageActions.cs:314
+#: ../Pinta.Core/Actions/ImageActions.cs:325
 #: ../Pinta.Core/Actions/LayerActions.cs:107
 msgid "Flip Horizontal"
 msgstr "Voltear horizontalmente"
@@ -1429,7 +1456,7 @@ msgid "Flip Layer Vertical"
 msgstr "Voltear capa verticalmente"
 
 #: ../Pinta.Core/Actions/ImageActions.cs:90
-#: ../Pinta.Core/Actions/ImageActions.cs:299
+#: ../Pinta.Core/Actions/ImageActions.cs:310
 #: ../Pinta.Core/Actions/LayerActions.cs:113
 msgid "Flip Vertical"
 msgstr "Voltear verticalmente"
@@ -1438,7 +1465,7 @@ msgstr "Voltear verticalmente"
 msgid "Flip Vertically"
 msgstr ""
 
-#: ../Pinta.Core/Actions/ViewActions.cs:177
+#: ../Pinta.Core/Actions/ViewActions.cs:186
 #: ../Pinta.Gui.Widgets/Widgets/StatusBarColorPaletteWidget.cs:766
 msgid "Float Colors"
 msgstr ""
@@ -1461,7 +1488,15 @@ msgstr "Floyd-Steinberg"
 msgid "Floyd-Steinberg Lite"
 msgstr "Floyd-Steinberg ligero"
 
-#: ../Pinta.Tools/Tools/TextTool.cs:362
+#: ../Pinta.Core/Managers/WorkspaceManager.cs:352
+msgid "Folders cannot be opened."
+msgstr ""
+
+#: ../Impasto/MainWindow.cs:1233
+msgid "Folders cannot be opened. Drop the image files inside instead."
+msgstr ""
+
+#: ../Pinta.Tools/Tools/TextTool.cs:375
 msgid "Font"
 msgstr "Tipo de letra"
 
@@ -1485,7 +1520,7 @@ msgstr "Forma libre"
 msgid "Frosted Glass"
 msgstr "Vidrio esmerilado"
 
-#: ../Pinta.Core/Actions/ViewActions.cs:199
+#: ../Pinta.Core/Actions/ViewActions.cs:208
 msgid "Fullscreen"
 msgstr "Pantalla completa"
 
@@ -1550,7 +1585,7 @@ msgid "Hard Light"
 msgstr "Luz fuerte"
 
 #. Translators: 'Heavy' (900) refers to the font-weight text property
-#: ../Pinta.Tools/Tools/TextTool.cs:521
+#: ../Pinta.Tools/Tools/TextTool.cs:533
 msgid "Heavy"
 msgstr ""
 
@@ -1562,7 +1597,7 @@ msgstr ""
 msgid "Height:"
 msgstr "Altura:"
 
-#: ../Impasto/Actions/Help/KeyboardShortcutsDialogAction.cs:187
+#: ../Impasto/Actions/Help/KeyboardShortcutsDialogAction.cs:208
 msgid "Help"
 msgstr ""
 
@@ -1571,19 +1606,19 @@ msgid "Hex"
 msgstr "Hexadecimal"
 
 #: ../Impasto/Actions/Layers/LayerPropertiesAction.cs:121
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:218
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:230
 msgid "Hide Layer"
 msgstr "Ocultar la capa"
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:373
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:385
 msgid "Hide Layer Mask"
 msgstr ""
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:444
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:456
 msgid "Hide Object"
 msgstr ""
 
-#: ../Impasto/Dialogs/PreferencesDialog.cs:267
+#: ../Impasto/Dialogs/PreferencesDialog.cs:273
 msgid ""
 "Hides the column of tool buttons and turns the tool name shown above the "
 "canvas into a dropdown that picks the tool. The tool box can still be shown "
@@ -1639,12 +1674,12 @@ msgstr "Verde horizontal (G)"
 msgid "Horizontal red (R)"
 msgstr "Rojo horizontal (R)"
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:901
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:913
 msgid ""
 "How much of the effect is applied. At 0 the layer looks as it did before."
 msgstr ""
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:882
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:894
 msgid "How the effect's result is mixed back into the image it was applied to."
 msgstr ""
 
@@ -1687,8 +1722,8 @@ msgstr ""
 msgid "If you don't save, all changes will be permanently lost."
 msgstr "Si no guarda los cambios, se perderán permanentemente."
 
-#: ../Impasto/Actions/Help/KeyboardShortcutsDialogAction.cs:183
-#: ../Impasto/MainWindow.cs:615 ../Pinta.Tools/Tools/ColorPickerTool.cs:277
+#: ../Impasto/Actions/Help/KeyboardShortcutsDialogAction.cs:204
+#: ../Impasto/MainWindow.cs:634 ../Pinta.Tools/Tools/ColorPickerTool.cs:277
 msgid "Image"
 msgstr "Imagen"
 
@@ -1696,7 +1731,7 @@ msgstr "Imagen"
 msgid "Image Quality"
 msgstr ""
 
-#: ../Pinta.Core/Actions/ViewActions.cs:117
+#: ../Pinta.Core/Actions/ViewActions.cs:118
 msgid "Image Tabs"
 msgstr "Pestañas de imágenes"
 
@@ -1704,7 +1739,7 @@ msgstr "Pestañas de imágenes"
 msgid "Image cannot be pasted"
 msgstr "No se puede pegar la imagen"
 
-#: ../Impasto/Actions/File/OpenDocumentAction.cs:149
+#: ../Impasto/Actions/File/OpenDocumentAction.cs:162
 #: ../Pinta.Core/Actions/LayerActions.cs:377
 msgid "Image files"
 msgstr "Archivos de imagen"
@@ -1719,7 +1754,7 @@ msgstr "Imagen demasiado grande"
 
 #: ../xdg/com.github.zbcoding.Impasto.desktop.in.h:1
 #: ../Impasto/Actions/Help/AboutDialogAction.cs:67 ../Impasto/Main.cs:71
-#: ../Impasto/MainWindow.cs:69
+#: ../Impasto/MainWindow.cs:70
 msgid "Impasto"
 msgstr ""
 
@@ -1739,7 +1774,7 @@ msgstr ""
 msgid "Impasto by"
 msgstr ""
 
-#: ../Pinta.Core/Managers/WorkspaceManager.cs:479
+#: ../Pinta.Core/Managers/WorkspaceManager.cs:490
 #, csharp-format
 msgid "Impasto can open .{0} files but cannot save them"
 msgstr ""
@@ -1770,7 +1805,7 @@ msgid ""
 "organize your creativity."
 msgstr ""
 
-#: ../Pinta.Core/Managers/WorkspaceManager.cs:495
+#: ../Pinta.Core/Managers/WorkspaceManager.cs:506
 msgid "Impasto supports the following file formats:"
 msgstr ""
 
@@ -1778,7 +1813,7 @@ msgstr ""
 msgid "Impasto supports the following palette formats:"
 msgstr "Impasto admite los formatos de paleta siguientes:"
 
-#: ../Impasto/Dialogs/PreferencesDialog.cs:538
+#: ../Impasto/Dialogs/PreferencesDialog.cs:544
 msgid "Import"
 msgstr ""
 
@@ -1786,15 +1821,15 @@ msgstr ""
 msgid "Import From File"
 msgstr "Importar desde un archivo"
 
-#: ../Impasto/Dialogs/PreferencesDialog.cs:534
+#: ../Impasto/Dialogs/PreferencesDialog.cs:540
 msgid "Import Keyboard Shortcuts?"
 msgstr ""
 
-#: ../Impasto/Dialogs/PreferencesDialog.cs:470
+#: ../Impasto/Dialogs/PreferencesDialog.cs:476
 msgid "Import Settings"
 msgstr ""
 
-#: ../Impasto/Dialogs/PreferencesDialog.cs:306
+#: ../Impasto/Dialogs/PreferencesDialog.cs:312
 msgid "Import Settings..."
 msgstr ""
 
@@ -1802,7 +1837,7 @@ msgstr ""
 msgid "Import from File..."
 msgstr "Importar desde un archivo…"
 
-#: ../Impasto/Dialogs/PreferencesDialog.cs:521
+#: ../Impasto/Dialogs/PreferencesDialog.cs:527
 #, csharp-format
 msgid ""
 "Imported {0} setting(s); {1} entry(ies) were skipped (unrecognized or "
@@ -1837,7 +1872,7 @@ msgid ""
 "Press Backspace to delete the last point."
 msgstr ""
 
-#: ../Pinta.Core/Actions/ViewActions.cs:271
+#: ../Pinta.Core/Actions/ViewActions.cs:281
 msgid "Inches"
 msgstr "Pulgadas"
 
@@ -1915,13 +1950,13 @@ msgstr "Entrecruzar ({0} + clic izquierdo)"
 msgid "Invert Colors"
 msgstr "Invertir los colores"
 
-#: ../Pinta.Core/Actions/EditActions.cs:154
-#: ../Pinta.Core/Actions/EditActions.cs:747
+#: ../Pinta.Core/Actions/EditActions.cs:148
+#: ../Pinta.Core/Actions/EditActions.cs:728
 msgid "Invert Selection"
 msgstr "Invertir la selección"
 
-#: ../Pinta.Tools/Dialogs/TextPropertiesDialog.cs:190
-#: ../Pinta.Tools/Tools/TextTool.cs:541
+#: ../Pinta.Tools/Dialogs/TextPropertiesDialog.cs:189
+#: ../Pinta.Tools/Tools/TextTool.cs:553
 msgid "Italic"
 msgstr "Cursiva"
 
@@ -1934,12 +1969,12 @@ msgstr "Jarvis-Judice-Ninke"
 msgid "Julia Fractal"
 msgstr "Fractal de Julia"
 
-#: ../Pinta.Tools/Dialogs/TextPropertiesDialog.cs:237
-#: ../Pinta.Tools/Tools/TextTool.cs:600
+#: ../Pinta.Tools/Dialogs/TextPropertiesDialog.cs:236
+#: ../Pinta.Tools/Tools/TextTool.cs:612
 msgid "Justify"
 msgstr ""
 
-#: ../Impasto/Dialogs/PreferencesDialog.cs:537
+#: ../Impasto/Dialogs/PreferencesDialog.cs:543
 msgid "Keep Mine"
 msgstr ""
 
@@ -1947,22 +1982,34 @@ msgstr ""
 msgid "Keep using the Color Picker after a color is chosen."
 msgstr "Sigue usando el Selector de color después de elegir un color."
 
-#: ../Impasto/Actions/Help/KeyboardShortcutsDialogAction.cs:100
+#: ../Impasto/Dialogs/PreferencesDialog.cs:325
+msgid "Keyboard"
+msgstr ""
+
+#: ../Impasto/Actions/Help/KeyboardShortcutsDialogAction.cs:130
 #: ../Pinta.Core/Actions/AppActions.cs:48
 msgid "Keyboard Shortcuts"
 msgstr ""
 
-#: ../Impasto/Dialogs/PreferencesDialog.cs:517
+#: ../Impasto/Dialogs/PreferencesDialog.cs:173
+msgid "Keyboard Shortcuts..."
+msgstr ""
+
+#: ../Impasto/Dialogs/PreferencesDialog.cs:523
 msgid "Keyboard shortcuts were imported, replacing your current ones."
 msgstr ""
 
-#: ../Impasto/Dialogs/PreferencesDialog.cs:518
+#: ../Impasto/Dialogs/PreferencesDialog.cs:524
 msgid "Keyboard shortcuts were left unchanged."
 msgstr ""
 
 #: ../Impasto/Dialogs/NewImageDialog.cs:315
 msgid "Landscape"
 msgstr "Horizontal"
+
+#: ../Pinta.Core/ImageFormats/PsdFormat.cs:101
+msgid "Large Photoshop documents (PSB) are not supported"
+msgstr ""
 
 #: ../Pinta.Core/Managers/KeyboardShortcutManager.cs:55
 #: ../Pinta.Core/Managers/KeyboardShortcutManager.cs:61
@@ -1982,7 +2029,7 @@ msgstr "Selección con lazo"
 msgid "Layer"
 msgstr "Capa"
 
-#: ../Pinta.Core/Classes/Re-editable/ObjectRasterizer.cs:623
+#: ../Pinta.Core/Classes/Re-editable/ObjectRasterizer.cs:699
 #: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:116
 msgid "Layer Mask"
 msgstr ""
@@ -2000,17 +2047,17 @@ msgstr "Propiedades de capa"
 msgid "Layer Properties..."
 msgstr "Propiedades de capa…"
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:1300
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:1312
 msgid ""
 "Layer effect: applies to everything below it on this layer, and stays "
 "editable."
 msgstr ""
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:1281
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:1293
 msgid "Layer mask: an alpha channel applied to the whole layer."
 msgstr ""
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:1299
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:1311
 msgid ""
 "Layer transform: applies to everything below it on this layer, and stays "
 "editable."
@@ -2022,17 +2069,17 @@ msgstr ""
 msgid "Layer {0}"
 msgstr "Capa {0}"
 
-#: ../Impasto/Actions/Help/KeyboardShortcutsDialogAction.cs:169
+#: ../Impasto/Actions/Help/KeyboardShortcutsDialogAction.cs:200
 #: ../Impasto/Pads/LayersPad.cs:49
 msgid "Layers"
 msgstr "Capas"
 
-#: ../Pinta.Tools/Dialogs/TextPropertiesDialog.cs:213
-#: ../Pinta.Tools/Tools/TextTool.cs:567
+#: ../Pinta.Tools/Dialogs/TextPropertiesDialog.cs:212
+#: ../Pinta.Tools/Tools/TextTool.cs:579
 msgid "Left Align"
 msgstr "Alinear a la izquierda"
 
-#: ../Pinta.Tools/Tools/MoveSelectedTool.cs:61
+#: ../Pinta.Tools/Tools/MoveSelectedTool.cs:63
 #, csharp-format
 msgid ""
 "Left click and drag the selection to move selected content.\n"
@@ -2125,7 +2172,7 @@ msgstr ""
 "Clic izquierdo para dibujar con el color primario. Clic derecho para dibujar "
 "con el color secundario."
 
-#: ../Pinta.Tools/Tools/EraserTool.cs:68
+#: ../Pinta.Tools/Tools/EraserTool.cs:76
 msgid ""
 "Left click to erase to transparent, right click to erase to secondary color. "
 msgstr ""
@@ -2139,7 +2186,7 @@ msgid ""
 "Hold Shift to use Global mode."
 msgstr ""
 
-#: ../Pinta.Tools/Tools/TextTool.cs:159
+#: ../Pinta.Tools/Tools/TextTool.cs:164
 msgid ""
 "Left click to place the cursor, then type. Text is drawn in the primary "
 "color."
@@ -2209,8 +2256,8 @@ msgstr "Ajuste de niveles"
 
 #. Translators: This refers to using a light variant of the color scheme.
 #. Translators: 'Light' (300) refers to the font-weight text property
-#: ../Pinta.Core/Actions/ViewActions.cs:295
-#: ../Pinta.Tools/Tools/TextTool.cs:473
+#: ../Pinta.Core/Actions/ViewActions.cs:305
+#: ../Pinta.Tools/Tools/TextTool.cs:485
 msgid "Light"
 msgstr "Claro"
 
@@ -2226,13 +2273,13 @@ msgstr "Iluminación"
 msgid "Lightness"
 msgstr "Luminosidad"
 
-#: ../Pinta.Tools/Tools/TextTool.cs:416
+#: ../Pinta.Tools/Tools/TextTool.cs:428
 msgid "Like All Small Caps, but the substituted capitals are slightly smaller."
 msgstr ""
 "Como Todo en versalitas, pero las mayúsculas sustituidas son ligeramente más "
 "pequeñas."
 
-#: ../Pinta.Tools/Tools/TextTool.cs:409
+#: ../Pinta.Tools/Tools/TextTool.cs:421
 msgid "Like Small Caps, but the substituted capitals are slightly smaller."
 msgstr ""
 "Como Versalitas, pero las mayúsculas sustituidas son ligeramente más "
@@ -2274,7 +2321,7 @@ msgstr "Vinculado"
 msgid "Lossless"
 msgstr ""
 
-#: ../Pinta.Tools/Tools/TextTool.cs:395
+#: ../Pinta.Tools/Tools/TextTool.cs:407
 msgid "Lower case letters are replaced with smaller capital letters."
 msgstr "Las letras minúsculas se reemplazan por mayúsculas más pequeñas."
 
@@ -2295,7 +2342,7 @@ msgstr ""
 msgid "Magic Wand Select"
 msgstr "Varita mágica"
 
-#: ../Impasto/MainWindow.cs:600
+#: ../Impasto/MainWindow.cs:619
 msgid "Main Menu"
 msgstr "Menú principal"
 
@@ -2326,11 +2373,11 @@ msgid "Median"
 msgstr "Mediana"
 
 #. Translators: 'Medium' (500) refers to the font-weight text property
-#: ../Pinta.Tools/Tools/TextTool.cs:497
+#: ../Pinta.Tools/Tools/TextTool.cs:509
 msgid "Medium"
 msgstr "Medio"
 
-#: ../Pinta.Core/Actions/ViewActions.cs:153
+#: ../Pinta.Core/Actions/ViewActions.cs:162
 msgid "Menu Bar"
 msgstr "Barra de menús"
 
@@ -2352,23 +2399,23 @@ msgid "Mirrors the linear transition on both sides of the start point."
 msgstr "Refleja la transición lineal a ambos lados del punto inicial."
 
 #. Translators: 'Miter Join' refers to the Cairo.LineJoin property
-#: ../Pinta.Tools/Tools/TextTool.cs:666
+#: ../Pinta.Tools/Tools/TextTool.cs:678
 msgid "Miter Join"
 msgstr ""
 
-#: ../Pinta.Tools/Tools/TextTool.cs:423
+#: ../Pinta.Tools/Tools/TextTool.cs:435
 msgid ""
 "Mixes small capital letters for upper case with normal lower case letters."
 msgstr ""
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:468
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:469
 #: ../Pinta.Tools/Tools/GradientTool.cs:347
-#: ../Pinta.Tools/Tools/TextTool.cs:319
+#: ../Pinta.Tools/Tools/TextTool.cs:332
 msgid "Mode"
 msgstr "Modo"
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:903
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:905
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:904
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:906
 #: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:1557
 #: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:1582
 msgid "Modified"
@@ -2386,7 +2433,7 @@ msgstr "Desenfoque de movimiento"
 msgid "Move"
 msgstr ""
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:1187
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:1199
 msgid "Move Layer"
 msgstr ""
 
@@ -2400,11 +2447,11 @@ msgstr "Bajar la capa"
 msgid "Move Layer Up"
 msgstr "Subir la capa"
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:538
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:550
 msgid "Move Object to Layer"
 msgstr ""
 
-#: ../Pinta.Tools/Tools/MoveSelectedTool.cs:57
+#: ../Pinta.Tools/Tools/MoveSelectedTool.cs:59
 msgid "Move Selected Pixels"
 msgstr "Mover los píxeles seleccionados"
 
@@ -2452,6 +2499,14 @@ msgstr ""
 msgid "Move selected control point up"
 msgstr ""
 
+#: ../Pinta.Tools/Tools/MoveSelectedTool.cs:229
+msgid "Move to New Layer"
+msgstr ""
+
+#: ../Pinta.Core/Classes/Re-editable/ObjectRasterizer.cs:499
+msgid "Move to _New Layer"
+msgstr ""
+
 #: ../Pinta.Core/Algorithms/PixelOps/UserBlendOps.cs:32
 msgid "Multiply"
 msgstr "Multiplicar"
@@ -2489,6 +2544,10 @@ msgstr "Imagen nueva..."
 msgid "No Items Found"
 msgstr "No se encontraron artículos"
 
+#: ../Impasto/Actions/File/OpenDocumentAction.cs:86
+msgid "No recent items..."
+msgstr ""
+
 #: ../Pinta.Effects/Effects/AddNoiseEffect.cs:28
 #: ../Pinta.Effects/Effects/MedianEffect.cs:27
 #: ../Pinta.Effects/Effects/ReduceNoiseEffect.cs:32
@@ -2497,7 +2556,7 @@ msgstr "Ruido"
 
 #: ../Impasto/Actions/Edit/ResizePaletteAction.cs:160
 #: ../Impasto/Actions/Help/KeyboardShortcutsDialogAction.cs:48
-#: ../Impasto/Dialogs/PreferencesDialog.cs:216
+#: ../Impasto/Dialogs/PreferencesDialog.cs:222
 #: ../Pinta.Core/Classes/KeyGesture.cs:31
 #: ../Pinta.Core/Extensions/Gtk/GtkExtensions.Interaction.cs:78
 msgid "None"
@@ -2507,9 +2566,9 @@ msgstr "Ninguno"
 #. Translators: 'Normal' (400) refers to the font-weight text property
 #: ../Pinta.Core/Algorithms/PixelOps/UserBlendOps.cs:31
 #: ../Pinta.Tools/Brushes/PlainBrush.cs:41
-#: ../Pinta.Tools/Dialogs/TextPropertiesDialog.cs:247
-#: ../Pinta.Tools/Tools/EraserTool.cs:357 ../Pinta.Tools/Tools/TextTool.cs:385
-#: ../Pinta.Tools/Tools/TextTool.cs:491 ../Pinta.Tools/Tools/TextTool.cs:623
+#: ../Pinta.Tools/Dialogs/TextPropertiesDialog.cs:246
+#: ../Pinta.Tools/Tools/EraserTool.cs:403 ../Pinta.Tools/Tools/TextTool.cs:397
+#: ../Pinta.Tools/Tools/TextTool.cs:503 ../Pinta.Tools/Tools/TextTool.cs:635
 msgid "Normal"
 msgstr "Normal"
 
@@ -2517,25 +2576,29 @@ msgstr "Normal"
 msgid "Normal Blending"
 msgstr "Mezcla normal"
 
-#: ../Pinta.Core/Actions/ViewActions.cs:104
+#: ../Pinta.Core/Actions/ViewActions.cs:105
 msgid "Normal Size"
 msgstr "Tamaño normal"
 
-#: ../Pinta.Tools/Tools/TextTool.cs:624
+#: ../Pinta.Tools/Tools/TextTool.cs:636
 msgid "Normal and Outline"
 msgstr "Normal y contorno"
 
-#: ../Pinta.Tools/Tools/BaseTransformTool.cs:734
+#: ../Impasto/MainWindow.cs:1230
+msgid "Nothing to open"
+msgstr ""
+
+#: ../Pinta.Tools/Tools/BaseTransformTool.cs:738
 #, csharp-format
 msgid "Nudge 10% of canvas: {0}"
 msgstr ""
 
-#: ../Pinta.Tools/Tools/BaseTransformTool.cs:733
+#: ../Pinta.Tools/Tools/BaseTransformTool.cs:737
 #, csharp-format
 msgid "Nudge 10px: {0}"
 msgstr ""
 
-#: ../Pinta.Tools/Tools/BaseTransformTool.cs:735
+#: ../Pinta.Tools/Tools/BaseTransformTool.cs:739
 #, csharp-format
 msgid "Nudge 20% of canvas: {0}"
 msgstr ""
@@ -2604,17 +2667,17 @@ msgstr ""
 msgid "Nudge selection up (5% canvas)"
 msgstr ""
 
-#: ../Pinta.Tools/Tools/BaseTransformTool.cs:507
+#: ../Pinta.Tools/Tools/BaseTransformTool.cs:511
 #, csharp-format
 msgid "Nudge {0} ({1}): {2}"
 msgstr ""
 
-#: ../Pinta.Tools/Tools/BaseTransformTool.cs:506
+#: ../Pinta.Tools/Tools/BaseTransformTool.cs:510
 #, csharp-format
 msgid "Nudge {0}: {1}"
 msgstr ""
 
-#: ../Pinta.Tools/Tools/BaseTransformTool.cs:732
+#: ../Pinta.Tools/Tools/BaseTransformTool.cs:736
 msgid "Nudge: Arrow keys"
 msgstr ""
 
@@ -2627,10 +2690,10 @@ msgstr "Número de celdas"
 msgid "Number of threads to use for rendering"
 msgstr "Número de hilos a utilizar para el renderizado"
 
-#: ../Impasto/Actions/Help/KeyboardShortcutsDialogAction.cs:124
-#: ../Impasto/Dialogs/PreferencesDialog.cs:581
+#: ../Impasto/Actions/Help/KeyboardShortcutsDialogAction.cs:154
+#: ../Impasto/Dialogs/PreferencesDialog.cs:587
 #: ../Pinta.Gui.Widgets/Widgets/ColorPickerDialog.cs:492
-#: ../Pinta.Tools/Dialogs/TextPropertiesDialog.cs:268
+#: ../Pinta.Tools/Dialogs/TextPropertiesDialog.cs:267
 msgid "OK"
 msgstr "Aceptar"
 
@@ -2640,16 +2703,16 @@ msgstr "Aceptar"
 msgid "Object"
 msgstr "Objeto"
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:414
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:426
 msgid "Object Blend Mode"
 msgstr ""
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:393
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:405
 msgid "Object Opacity"
 msgstr ""
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:479
-#: ../Pinta.Tools/Tools/TextTool.cs:328
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:480
+#: ../Pinta.Tools/Tools/TextTool.cs:341
 msgid "Object — editable later"
 msgstr ""
 
@@ -2667,7 +2730,7 @@ msgstr "Desplazamiento"
 
 #: ../Impasto/Actions/Edit/OffsetSelectionAction.cs:79
 #: ../Impasto/Dialogs/OffsetSelectionDialog.cs:52
-#: ../Pinta.Core/Actions/EditActions.cs:161
+#: ../Pinta.Core/Actions/EditActions.cs:155
 msgid "Offset Selection"
 msgstr "Selección de desplazamiento"
 
@@ -2675,7 +2738,11 @@ msgstr "Selección de desplazamiento"
 msgid "Oil Painting"
 msgstr "Pintura al óleo"
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:899
+#: ../Pinta.Tools/Tools/EraserTool.cs:420
+msgid "Opacity"
+msgstr ""
+
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:911
 #: ../Pinta.Gui.Widgets/Widgets/Layers/PropertiesDialogGridBuilder.cs:44
 msgid "Opacity:"
 msgstr "Opacidad:"
@@ -2693,16 +2760,16 @@ msgstr "Abrir"
 msgid "Open Curve Shape"
 msgstr "Curva abierta"
 
-#: ../Pinta.Core/Managers/WorkspaceManager.cs:381
+#: ../Pinta.Core/Managers/WorkspaceManager.cs:392
 msgid "Open Image"
 msgstr "Abrir imagen"
 
-#: ../Impasto/Actions/File/OpenDocumentAction.cs:111
+#: ../Impasto/Actions/File/OpenDocumentAction.cs:124
 #: ../Pinta.Core/Actions/LayerActions.cs:395
 msgid "Open Image File"
 msgstr "Abrir archivo de imagen"
 
-#: ../Pinta.Core/Actions/EditActions.cs:627
+#: ../Pinta.Core/Actions/EditActions.cs:608
 msgid "Open Palette File"
 msgstr "Abrir una paleta"
 
@@ -2714,10 +2781,21 @@ msgstr "Abrir un archivo reciente"
 msgid "Open text properties"
 msgstr ""
 
-#: ../Pinta.Core/Actions/EditActions.cs:189
+#: ../Impasto/MainWindow.cs:1213
+#, csharp-format
+msgid "Open {0} files?"
+msgstr ""
+
+#: ../Pinta.Core/Actions/EditActions.cs:183
 #: ../Pinta.Core/Actions/FileActions.cs:96
 msgid "Open..."
 msgstr "Abrir…"
+
+#: ../Pinta.Core/Classes/Re-editable/ObjectRasterizer.cs:491
+msgid ""
+"Or move only the layer's pixels onto a new layer and leave the objects "
+"editable."
+msgstr ""
 
 #: ../Impasto/Dialogs/NewImageDialog.cs:331
 msgid "Orientation:"
@@ -2727,7 +2805,7 @@ msgstr "Orientación:"
 msgid "Original"
 msgstr "Original"
 
-#: ../Pinta.Tools/Tools/TextTool.cs:625
+#: ../Pinta.Tools/Tools/TextTool.cs:637
 msgid "Outline"
 msgstr "Contorno"
 
@@ -2743,13 +2821,13 @@ msgstr "Borde del contorno"
 msgid "Outline Object"
 msgstr "Contorno del objeto"
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:558
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:559
 #: ../Pinta.Tools/Tools/FreeformShapeTool.cs:222
 msgid "Outline Shape"
 msgstr "Contorno"
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:575
-#: ../Pinta.Tools/Tools/TextTool.cs:639
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:576
+#: ../Pinta.Tools/Tools/TextTool.cs:651
 msgid "Outline width"
 msgstr "Anchura del contorno"
 
@@ -2781,7 +2859,7 @@ msgstr ""
 msgid "Paint Bucket"
 msgstr "Cubo de pintura"
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:973
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:985
 msgid ""
 "Paint on the canvas to reveal the layer; erase to hide it. Right-click the "
 "row again for options."
@@ -2795,26 +2873,26 @@ msgstr ""
 msgid "Paintbrush"
 msgstr "Pincel"
 
-#: ../Pinta.Tools/Tools/TextTool.cs:327
+#: ../Pinta.Tools/Tools/TextTool.cs:340
 msgid ""
 "Painted into the active layer's pixels on commit. Immediately cut/move/erase "
 "like any artwork, but not editable later."
 msgstr ""
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:478
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:479
 msgid ""
 "Painted into the layer's pixels on commit. Immediately cut/move/erase like "
 "any artwork, but not editable later."
 msgstr ""
 
-#: ../Pinta.Core/Classes/Re-editable/ObjectRasterizer.cs:544
+#: ../Pinta.Core/Classes/Re-editable/ObjectRasterizer.cs:620
 msgid ""
 "Painting on a transformed layer is blocked while the transform is active. "
 "Rasterize the transform to paint here? The transform and everything beneath "
 "it become part of the layer's pixels."
 msgstr ""
 
-#: ../Pinta.Core/Actions/EditActions.cs:261
+#: ../Pinta.Core/Actions/EditActions.cs:255
 #: ../Pinta.Effects/Effects/DitheringEffect.cs:176
 msgid "Palette"
 msgstr "Paleta"
@@ -2823,7 +2901,7 @@ msgstr "Paleta"
 msgid "Palette Source"
 msgstr "Fuente de la paleta"
 
-#: ../Pinta.Core/Actions/EditActions.cs:708
+#: ../Pinta.Core/Actions/EditActions.cs:689
 msgid "Palette files"
 msgstr "Archivos de paleta"
 
@@ -2831,7 +2909,7 @@ msgstr "Archivos de paleta"
 msgid "Palette rows:"
 msgstr ""
 
-#: ../Impasto/Dialogs/PreferencesDialog.cs:242
+#: ../Impasto/Dialogs/PreferencesDialog.cs:248
 msgid "Palette size:"
 msgstr ""
 
@@ -2840,16 +2918,16 @@ msgid "Pan"
 msgstr "Desplazamiento"
 
 #: ../Impasto/Actions/Edit/PasteAction.cs:133
-#: ../Pinta.Core/Actions/EditActions.cs:118
+#: ../Pinta.Core/Actions/EditActions.cs:112
 #: ../Pinta.Core/HistoryItems/PasteHistoryItem.cs:41
 msgid "Paste"
 msgstr "Pegar"
 
-#: ../Pinta.Core/Actions/EditActions.cs:125
+#: ../Pinta.Core/Actions/EditActions.cs:119
 msgid "Paste Alternate"
 msgstr ""
 
-#: ../Pinta.Core/Actions/EditActions.cs:133
+#: ../Pinta.Core/Actions/EditActions.cs:127
 msgid "Paste Into New Image"
 msgstr "Pegar en una imagen nueva"
 
@@ -2865,11 +2943,11 @@ msgstr ""
 msgid "Paste text"
 msgstr ""
 
-#: ../Impasto/MainWindow.cs:592
+#: ../Impasto/MainWindow.cs:611
 msgid "Paste to Active Layer"
 msgstr ""
 
-#: ../Impasto/MainWindow.cs:593
+#: ../Impasto/MainWindow.cs:612
 msgid "Paste to New Layer"
 msgstr ""
 
@@ -2890,8 +2968,8 @@ msgid "Percentile"
 msgstr "Percentil"
 
 #. Translators: 'Petite Caps' refers to the font-variant text property
-#: ../Pinta.Tools/Dialogs/TextPropertiesDialog.cs:250
-#: ../Pinta.Tools/Tools/TextTool.cs:406
+#: ../Pinta.Tools/Dialogs/TextPropertiesDialog.cs:249
+#: ../Pinta.Tools/Tools/TextTool.cs:418
 msgid "Petite Caps"
 msgstr "Miniversales"
 
@@ -2903,12 +2981,24 @@ msgstr "Miniversales"
 msgid "Photo"
 msgstr "Fotografía"
 
+#. Translators: {0} is the number Photoshop stores for a color mode, such as 4 for CMYK.
+#: ../Pinta.Core/ImageFormats/PsdFormat.cs:128
+#, csharp-format
+msgid "Photoshop color mode {0} is not supported; only RGB and grayscale are"
+msgstr ""
+
+#. Translators: {0} is a number of bits, such as 16 or 32.
+#: ../Pinta.Core/ImageFormats/PsdFormat.cs:122
+#, csharp-format
+msgid "Photoshop documents with {0} bits per channel are not supported"
+msgstr ""
+
 #. Translators: Arrangement of points similar to how sunflower seeds are arranged
 #: ../Pinta.Core/Algorithms/SpatialPartition.cs:174
 msgid "Phyllotaxis"
 msgstr "Filotaxis"
 
-#: ../Impasto/Dialogs/PreferencesDialog.cs:266
+#: ../Impasto/Dialogs/PreferencesDialog.cs:272
 msgid "Pick tools from a dropdown instead of the tool box"
 msgstr ""
 
@@ -2947,7 +3037,7 @@ msgstr ""
 msgid "Pixelate"
 msgstr "Pixelado"
 
-#: ../Pinta.Core/Actions/ViewActions.cs:270
+#: ../Pinta.Core/Actions/ViewActions.cs:280
 msgid "Pixels"
 msgstr "Píxeles"
 
@@ -2966,12 +3056,12 @@ msgstr ""
 "Reinicie Impasto para que el cambio de diseño de la caja de herramientas "
 "surta efecto."
 
-#: ../Pinta.Tools/Tools/TextTool.cs:283
+#: ../Pinta.Tools/Tools/TextTool.cs:288
 msgid "Point"
 msgstr ""
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:997
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:1359
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:998
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:1361
 msgid "Point Added"
 msgstr "Punto añadido"
 
@@ -2985,7 +3075,7 @@ msgstr "Distribución de puntos"
 msgid "Point Color"
 msgstr "Color de punto"
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:1042
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:1043
 msgid "Point Deleted"
 msgstr "Punto eliminado"
 
@@ -2994,13 +3084,13 @@ msgstr "Punto eliminado"
 msgid "Point Size"
 msgstr "Tamaño de punto"
 
-#: ../Pinta.Tools/Tools/TextTool.cs:284
+#: ../Pinta.Tools/Tools/TextTool.cs:289
 msgid ""
 "Point text: the text grows to its natural width and only wraps where you "
 "press Enter."
 msgstr ""
 
-#: ../Pinta.Core/Managers/ActionManager.cs:313
+#: ../Pinta.Core/Managers/ActionManager.cs:307
 msgid "Pointer position on the canvas, in pixels from the top-left corner."
 msgstr ""
 
@@ -3012,7 +3102,7 @@ msgstr "Inversión polar"
 msgid "Polygon"
 msgstr "Polígono"
 
-#: ../Impasto/Dialogs/PreferencesDialog.cs:186
+#: ../Impasto/Dialogs/PreferencesDialog.cs:192
 msgid "Popover hints:"
 msgstr "Sugerencias emergentes:"
 
@@ -3050,7 +3140,7 @@ msgstr "Paletas preconfiguradas"
 msgid "Preset:"
 msgstr "Preconfiguración:"
 
-#: ../Impasto/Actions/Help/KeyboardShortcutsDialogAction.cs:443
+#: ../Impasto/Actions/Help/KeyboardShortcutsDialogAction.cs:448
 msgid "Press keys…"
 msgstr ""
 
@@ -3059,7 +3149,7 @@ msgstr ""
 msgid "Press {0} to decrease brush width"
 msgstr "Presione {0} para reducir el tamaño de pincel"
 
-#: ../Pinta.Tools/Tools/TextTool.cs:773
+#: ../Pinta.Tools/Tools/TextTool.cs:785
 #, csharp-format
 msgid "Press {0} to decrease font size"
 msgstr "Presione {0} para reducir el tamaño de fuente"
@@ -3074,7 +3164,7 @@ msgstr ""
 msgid "Press {0} to increase brush width"
 msgstr ""
 
-#: ../Pinta.Tools/Tools/TextTool.cs:774
+#: ../Pinta.Tools/Tools/TextTool.cs:786
 #, csharp-format
 msgid "Press {0} to increase font size"
 msgstr "Presione {0} para aumentar el tamaño de fuente"
@@ -3082,13 +3172,6 @@ msgstr "Presione {0} para aumentar el tamaño de fuente"
 #: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:149
 #, csharp-format
 msgid "Press {0} to increase outline width"
-msgstr ""
-
-#: ../Impasto/Actions/Help/KeyboardShortcutsDialogAction.cs:180
-#, csharp-format
-msgid ""
-"Press {0} twice quickly to deselect. Reference only — not independently "
-"rebindable."
 msgstr ""
 
 #: ../Impasto/Dialogs/NewImageDialog.cs:169
@@ -3103,7 +3186,7 @@ msgstr "Primario"
 msgid "Print"
 msgstr "Imprimir"
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:939
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:951
 msgid "Properties..."
 msgstr ""
 
@@ -3125,9 +3208,8 @@ msgstr "Calidad: "
 msgid "Quick colors"
 msgstr ""
 
-#: ../Pinta.Core/Managers/ActionManager.cs:156
-#, csharp-format
-msgid "Quick deselect: {0} (×2)"
+#: ../Pinta.Core/Managers/ActionManager.cs:152
+msgid "Quick deselect"
 msgstr ""
 
 #: ../Pinta.Core/Actions/AppActions.cs:54
@@ -3204,12 +3286,12 @@ msgstr "Semilla de ruido aleatorio"
 msgid "Random Point Locations"
 msgstr "Localización aleatoria de puntos"
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:477
-#: ../Pinta.Tools/Tools/TextTool.cs:326
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:478
+#: ../Pinta.Tools/Tools/TextTool.cs:339
 msgid "Raster — fuses to layer"
 msgstr ""
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:932
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:944
 msgid "Rasterize"
 msgstr ""
 
@@ -3217,7 +3299,7 @@ msgstr ""
 msgid "Rasterize All Objects"
 msgstr ""
 
-#: ../Pinta.Core/Classes/Re-editable/ObjectRasterizer.cs:607
+#: ../Pinta.Core/Classes/Re-editable/ObjectRasterizer.cs:683
 msgid "Rasterize Layer Effects"
 msgstr ""
 
@@ -3226,10 +3308,11 @@ msgid "Rasterize Objects"
 msgstr ""
 
 #: ../Pinta.Core/Classes/Re-editable/ObjectRasterizer.cs:178
+#: ../Pinta.Core/Classes/Re-editable/ObjectRasterizer.cs:493
 msgid "Rasterize Objects?"
 msgstr ""
 
-#: ../Pinta.Core/Classes/Re-editable/ObjectRasterizer.cs:547
+#: ../Pinta.Core/Classes/Re-editable/ObjectRasterizer.cs:623
 msgid "Rasterize to Paint?"
 msgstr ""
 
@@ -3237,7 +3320,7 @@ msgstr ""
 msgid "Re-edit existing text"
 msgstr ""
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:1303
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:1315
 msgid ""
 "Re-editable object: a live shape or text you can keep editing until you "
 "rasterize it."
@@ -3248,7 +3331,7 @@ msgid "Recently Used Colors"
 msgstr "Colores usados recientemente"
 
 #: ../Impasto/Actions/Edit/ResizePaletteAction.cs:160
-#: ../Impasto/Dialogs/PreferencesDialog.cs:216
+#: ../Impasto/Dialogs/PreferencesDialog.cs:222
 #: ../Pinta.Gui.Widgets/Widgets/PaletteWidget.cs:156
 msgid "Recently picked colors"
 msgstr ""
@@ -3296,7 +3379,7 @@ msgstr "Rojo  "
 msgid "Red Eye Removal"
 msgstr "Eliminación de ojos rojos"
 
-#: ../Pinta.Core/Actions/EditActions.cs:90
+#: ../Pinta.Core/Actions/EditActions.cs:84
 msgid "Redo"
 msgstr "Rehacer"
 
@@ -3316,7 +3399,7 @@ msgstr "Refracción"
 msgid "Refresh"
 msgstr "Actualizar"
 
-#: ../Pinta.Tools/Tools/TextTool.cs:388
+#: ../Pinta.Tools/Tools/TextTool.cs:400
 msgid "Regular upper and lower case letters."
 msgstr "Letras mayúsculas y minúsculas normales."
 
@@ -3324,12 +3407,12 @@ msgstr "Letras mayúsculas y minúsculas normales."
 msgid "Relief"
 msgstr "Relieve"
 
-#: ../Pinta.Core/Extensions/Gtk/GtkExtensions.Widget.cs:241
+#: ../Pinta.Core/Extensions/Gtk/GtkExtensions.Widget.cs:248
 #: ../Pinta.Tools/Tools/LassoSelectTool.cs:287
 msgid "Remove last point (Backspace)"
 msgstr ""
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:985
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:997
 msgid "Remove this layer's mask; the layer renders unmasked."
 msgstr ""
 
@@ -3337,11 +3420,11 @@ msgstr ""
 msgid "Rename Layer"
 msgstr "Cambiar nombre de capa"
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:792
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:804
 msgid "Rename Layer..."
 msgstr ""
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:457
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:469
 msgid "Rename Object"
 msgstr ""
 
@@ -3357,7 +3440,7 @@ msgstr "Renderizado"
 msgid "Rendering Effect"
 msgstr "Efecto de renderizado"
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:480
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:492
 msgid "Reorder Object"
 msgstr ""
 
@@ -3381,28 +3464,28 @@ msgstr "Remuestreo:"
 msgid "Reseed"
 msgstr "Reiniciar"
 
-#: ../Impasto/Actions/Help/KeyboardShortcutsDialogAction.cs:108
+#: ../Impasto/Actions/Help/KeyboardShortcutsDialogAction.cs:138
 #: ../Pinta.Effects/Dialogs/Effects.CurvesDialog.cs:207
 #: ../Pinta.Effects/Dialogs/Effects.LevelsDialog.cs:274
 #: ../Pinta.Gui.Widgets/Widgets/ColorPickerDialog.cs:480
 msgid "Reset"
 msgstr "Restablecer"
 
-#: ../Impasto/Actions/Help/KeyboardShortcutsDialogAction.cs:106
+#: ../Impasto/Actions/Help/KeyboardShortcutsDialogAction.cs:136
 msgid "Reset All Keyboard Shortcuts?"
 msgstr ""
 
-#: ../Impasto/Actions/Help/KeyboardShortcutsDialogAction.cs:103
+#: ../Impasto/Actions/Help/KeyboardShortcutsDialogAction.cs:133
 msgid "Reset All to Defaults"
 msgstr ""
 
-#: ../Pinta.Core/Actions/EditActions.cs:201
+#: ../Pinta.Core/Actions/EditActions.cs:195
 msgid "Reset to Default"
 msgstr "Restablecer valores predeterminados"
 
 #: ../Impasto/Actions/Edit/ResizePaletteAction.cs:200
-#: ../Impasto/Actions/Help/KeyboardShortcutsDialogAction.cs:449
-#: ../Impasto/Dialogs/PreferencesDialog.cs:603
+#: ../Impasto/Actions/Help/KeyboardShortcutsDialogAction.cs:454
+#: ../Impasto/Dialogs/PreferencesDialog.cs:609
 msgid "Reset to default"
 msgstr ""
 
@@ -3411,7 +3494,7 @@ msgstr ""
 msgid "Reset to image size"
 msgstr "Restablecer a tamaño de imagen"
 
-#: ../Impasto/MainWindow.cs:729
+#: ../Impasto/MainWindow.cs:748
 msgid "Reset window"
 msgstr ""
 
@@ -3467,8 +3550,8 @@ msgstr "Esquema de colores inverso"
 msgid "Reverse Color Sorting"
 msgstr "Ordenación inversa de colores"
 
-#: ../Pinta.Tools/Dialogs/TextPropertiesDialog.cs:229
-#: ../Pinta.Tools/Tools/TextTool.cs:589
+#: ../Pinta.Tools/Dialogs/TextPropertiesDialog.cs:228
+#: ../Pinta.Tools/Tools/TextTool.cs:601
 msgid "Right Align"
 msgstr "Alinear a la derecha"
 
@@ -3480,19 +3563,19 @@ msgstr ""
 msgid "Right click + drag: move the whole shape."
 msgstr ""
 
-#: ../Pinta.Tools/Tools/TextTool.cs:2806
+#: ../Pinta.Tools/Tools/TextTool.cs:2853
 msgid "Right click to move"
 msgstr ""
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:1301
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:1313
 msgid "Right-click to change its settings, blending and strength"
 msgstr ""
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:1283
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:1295
 msgid "Right-click to delete the mask"
 msgstr ""
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:1304
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:1316
 msgid "Right-click to set blend mode and opacity, or open its properties"
 msgstr ""
 
@@ -3501,7 +3584,7 @@ msgid "Rotate / Zoom Layer..."
 msgstr "Girar o ampliar la capa…"
 
 #: ../Pinta.Core/Actions/ImageActions.cs:110
-#: ../Pinta.Core/Actions/ImageActions.cs:284
+#: ../Pinta.Core/Actions/ImageActions.cs:295
 #: ../Pinta.Core/HistoryItems/InvertHistoryItem.cs:47
 msgid "Rotate 180°"
 msgstr "Girar 180°"
@@ -3535,7 +3618,7 @@ msgstr ""
 msgid "Rotation"
 msgstr "Giro"
 
-#: ../Pinta.Tools/Dialogs/TextPropertiesDialog.cs:159
+#: ../Pinta.Tools/Dialogs/TextPropertiesDialog.cs:158
 msgid "Rotation: "
 msgstr ""
 
@@ -3544,7 +3627,7 @@ msgid "Roughness"
 msgstr "Rugosidad"
 
 #. Translators: 'Round Join' refers to the Cairo.LineJoin property
-#: ../Pinta.Tools/Tools/TextTool.cs:673
+#: ../Pinta.Tools/Tools/TextTool.cs:685
 msgid "Round Join"
 msgstr ""
 
@@ -3558,15 +3641,15 @@ msgstr "Línea redondeada"
 msgid "Rounded Rectangle"
 msgstr "Rectángulo redondeado"
 
-#: ../Pinta.Tools/Tools/TextTool.cs:676
+#: ../Pinta.Tools/Tools/TextTool.cs:688
 msgid "Rounded corners on the outline."
 msgstr "Esquinas redondeadas en el contorno."
 
-#: ../Pinta.Core/Actions/ViewActions.cs:275
+#: ../Pinta.Core/Actions/ViewActions.cs:285
 msgid "Ruler Units"
 msgstr "Unidades de las reglas"
 
-#: ../Pinta.Core/Actions/ViewActions.cs:183
+#: ../Pinta.Core/Actions/ViewActions.cs:192
 msgid "Rulers"
 msgstr "Reglas"
 
@@ -3603,7 +3686,7 @@ msgstr "Porcentaje de saturación"
 
 #: ../Impasto/Actions/File/SaveDocumentImplementationAction.cs:144
 #: ../Impasto/Actions/File/SaveDocumentImplementationAction.cs:397
-#: ../Pinta.Core/Actions/EditActions.cs:661
+#: ../Pinta.Core/Actions/EditActions.cs:642
 #: ../Pinta.Core/Actions/FileActions.cs:111
 msgid "Save"
 msgstr "Guardar"
@@ -3612,7 +3695,7 @@ msgstr "Guardar"
 msgid "Save All"
 msgstr "Guardar todo"
 
-#: ../Pinta.Core/Actions/EditActions.cs:195
+#: ../Pinta.Core/Actions/EditActions.cs:189
 #: ../Pinta.Core/Actions/FileActions.cs:118
 msgid "Save As..."
 msgstr "Guardar como…"
@@ -3621,7 +3704,7 @@ msgstr "Guardar como…"
 msgid "Save Image File"
 msgstr "Guardar archivo de imagen"
 
-#: ../Pinta.Core/Actions/EditActions.cs:658
+#: ../Pinta.Core/Actions/EditActions.cs:639
 msgid "Save Palette File"
 msgstr "Guardar archivo de paleta"
 
@@ -3634,7 +3717,7 @@ msgstr ""
 msgid "Save changes to image \"{0}\" before closing?"
 msgstr "¿Quiere guardar los cambios en la imagen «{0}» antes de cerrar?"
 
-#: ../Impasto/Dialogs/PreferencesDialog.cs:311
+#: ../Impasto/Dialogs/PreferencesDialog.cs:317
 msgid ""
 "Save your settings and preferences to a file, or load them from a previously "
 "exported file."
@@ -3649,7 +3732,7 @@ msgstr "Escala"
 msgid "Screen"
 msgstr "Trama"
 
-#: ../Impasto/Actions/Help/KeyboardShortcutsDialogAction.cs:139
+#: ../Impasto/Actions/Help/KeyboardShortcutsDialogAction.cs:170
 msgid "Search by name or key with quotes like \"ctrl-A\""
 msgstr ""
 
@@ -3657,7 +3740,7 @@ msgstr ""
 msgid "Secondary"
 msgstr "Secundario"
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:523
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:524
 msgid ""
 "Segments stay straight; clicking a segment does not insert curve control "
 "points."
@@ -3667,8 +3750,8 @@ msgstr ""
 msgid "Select"
 msgstr ""
 
-#: ../Pinta.Core/Actions/EditActions.cs:168
-#: ../Pinta.Core/Actions/EditActions.cs:375
+#: ../Pinta.Core/Actions/EditActions.cs:162
+#: ../Pinta.Core/Actions/EditActions.cs:369
 msgid "Select All"
 msgstr "Seleccionar todo"
 
@@ -3684,7 +3767,7 @@ msgstr ""
 msgid "Select previous control point"
 msgstr ""
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:1282
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:1294
 msgid "Select this row to paint the mask; paint reveals, erase hides"
 msgstr ""
 
@@ -3692,7 +3775,7 @@ msgstr ""
 msgid "Selected Colors"
 msgstr "Colores seleccionados"
 
-#: ../Pinta.Core/Managers/ActionManager.cs:285
+#: ../Pinta.Core/Managers/ActionManager.cs:279
 msgid "Selection: top-left corner in pixels, then its width and height."
 msgstr ""
 
@@ -3710,12 +3793,12 @@ msgid "Selects the color on the current layer and current selected area."
 msgstr ""
 
 #. Translators: 'Semibold' (600) refers to the font-weight text property
-#: ../Pinta.Tools/Tools/TextTool.cs:503
+#: ../Pinta.Tools/Tools/TextTool.cs:515
 msgid "Semibold"
 msgstr "Seminegrita"
 
 #. Translators: 'Semilight' (350) refers to the font-weight text property
-#: ../Pinta.Tools/Tools/TextTool.cs:479
+#: ../Pinta.Tools/Tools/TextTool.cs:491
 msgid "Semilight"
 msgstr "Semiclara"
 
@@ -3723,7 +3806,7 @@ msgstr "Semiclara"
 msgid "Sepia"
 msgstr "Sepia"
 
-#: ../Pinta.Core/Actions/EditActions.cs:207
+#: ../Pinta.Core/Actions/EditActions.cs:201
 msgid "Set Number of Colors"
 msgstr "Configurar el número de colores"
 
@@ -3735,16 +3818,16 @@ msgstr ""
 msgid "Set selected control point to line"
 msgstr ""
 
-#: ../Impasto/Dialogs/PreferencesDialog.cs:324
-#: ../Impasto/Dialogs/PreferencesDialog.cs:581
+#: ../Impasto/Dialogs/PreferencesDialog.cs:330
+#: ../Impasto/Dialogs/PreferencesDialog.cs:587
 msgid "Settings"
 msgstr ""
 
-#: ../Impasto/Dialogs/PreferencesDialog.cs:463
+#: ../Impasto/Dialogs/PreferencesDialog.cs:469
 msgid "Settings files"
 msgstr ""
 
-#: ../Pinta.Core/Actions/EditActions.cs:213
+#: ../Pinta.Core/Actions/EditActions.cs:207
 msgid "Settings..."
 msgstr ""
 
@@ -3783,7 +3866,7 @@ msgstr ""
 msgid "Sharp Edges"
 msgstr "Bordes afilados"
 
-#: ../Pinta.Tools/Tools/TextTool.cs:669
+#: ../Pinta.Tools/Tools/TextTool.cs:681
 msgid "Sharp, pointed corners on the outline."
 msgstr "Esquinas puntiagudas en el contorno."
 
@@ -3801,7 +3884,7 @@ msgstr ""
 
 #: ../Pinta.Core/Extensions/Gtk/GtkExtensions.Interaction.cs:112
 #: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:2112
-#: ../Pinta.Tools/Tools/BaseTransformTool.cs:729
+#: ../Pinta.Tools/Tools/BaseTransformTool.cs:733
 msgid "Shift"
 msgstr ""
 
@@ -3819,7 +3902,7 @@ msgstr "Atajos de teclado"
 
 #: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:147
 #: ../Pinta.Tools/Tools/BaseBrushTool.cs:155
-#: ../Pinta.Tools/Tools/TextTool.cs:772
+#: ../Pinta.Tools/Tools/TextTool.cs:784
 msgid "Shortcut keys:"
 msgstr "Atajos de teclado:"
 
@@ -3833,20 +3916,20 @@ msgid "Show Axonometric Grid"
 msgstr "Mostrar retícula axonométrica"
 
 #: ../Impasto/Dialogs/CanvasGridSettingsDialog.cs:57
-#: ../Pinta.Core/Actions/ViewActions.cs:136
+#: ../Pinta.Core/Actions/ViewActions.cs:137
 msgid "Show Grid"
 msgstr "Mostrar retícula"
 
 #: ../Impasto/Actions/Layers/LayerPropertiesAction.cs:121
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:218
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:230
 msgid "Show Layer"
 msgstr "Mostrar la capa"
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:373
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:385
 msgid "Show Layer Mask"
 msgstr ""
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:444
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:456
 msgid "Show Object"
 msgstr ""
 
@@ -3855,7 +3938,7 @@ msgstr ""
 msgid "Show Points"
 msgstr "Mostrar los puntos"
 
-#: ../Impasto/Dialogs/PreferencesDialog.cs:197
+#: ../Impasto/Dialogs/PreferencesDialog.cs:203
 msgid "Show a third row of darker colors in the palette"
 msgstr ""
 
@@ -3871,15 +3954,15 @@ msgstr "Muestra una punta de flecha en el punto inicial."
 msgid "Show color wheel"
 msgstr ""
 
-#: ../Impasto/Dialogs/PreferencesDialog.cs:290
+#: ../Impasto/Dialogs/PreferencesDialog.cs:296
 msgid "Show cursor position in the status bar"
 msgstr ""
 
-#: ../Impasto/Dialogs/PreferencesDialog.cs:297
+#: ../Impasto/Dialogs/PreferencesDialog.cs:303
 msgid "Show image size and aspect ratio in the status bar"
 msgstr ""
 
-#: ../Impasto/Dialogs/PreferencesDialog.cs:282
+#: ../Impasto/Dialogs/PreferencesDialog.cs:288
 msgid "Show quick access toolbar"
 msgstr ""
 
@@ -3892,7 +3975,7 @@ msgstr "Mostrar el brillo de la selección en la vista previa"
 msgid "Show selection opacity in preview"
 msgstr ""
 
-#: ../Pinta.Core/Actions/ViewActions.cs:289
+#: ../Pinta.Core/Actions/ViewActions.cs:299
 msgid "Show/Hide"
 msgstr "Mostrar u ocultar"
 
@@ -3919,11 +4002,11 @@ msgstr "Tamaño"
 msgid "Size of the layer thumbnails; the lowest setting hides them"
 msgstr ""
 
-#: ../Pinta.Tools/Dialogs/TextPropertiesDialog.cs:148
+#: ../Pinta.Tools/Dialogs/TextPropertiesDialog.cs:147
 msgid "Size: "
 msgstr ""
 
-#: ../Impasto/Dialogs/PreferencesDialog.cs:274
+#: ../Impasto/Dialogs/PreferencesDialog.cs:280
 msgid "Skip the \"Rasterize Objects?\" confirmation"
 msgstr ""
 
@@ -3932,19 +4015,19 @@ msgid "Slash"
 msgstr ""
 
 #. Translators: 'Small Caps' refers to the font-variant text property
-#: ../Pinta.Tools/Dialogs/TextPropertiesDialog.cs:248
-#: ../Pinta.Tools/Tools/TextTool.cs:392
+#: ../Pinta.Tools/Dialogs/TextPropertiesDialog.cs:247
+#: ../Pinta.Tools/Tools/TextTool.cs:404
 msgid "Small Caps"
 msgstr "Versalitas"
 
-#: ../Pinta.Tools/Tools/EraserTool.cs:357
+#: ../Pinta.Tools/Tools/EraserTool.cs:403
 msgid "Smooth"
 msgstr "Suave"
 
 #. Translators: Snaps tool input to the canvas grid, to the ruler's unit
 #. marks when the grid is hidden, or to the canvas edges and centre
 #. lines when neither is shown.
-#: ../Pinta.Core/Actions/ViewActions.cs:146
+#: ../Pinta.Core/Actions/ViewActions.cs:147
 msgid "Snap to grid/ruler/center"
 msgstr ""
 
@@ -3971,6 +4054,10 @@ msgstr ""
 msgid "Solo Layer {0}"
 msgstr ""
 
+#: ../Impasto/MainWindow.cs:1231
+msgid "Some dropped items were not opened"
+msgstr ""
+
 #: ../Impasto/Actions/File/SaveDocumentImplementationAction.cs:387
 msgid "Some effects cannot be saved as editable. Save anyway?"
 msgstr ""
@@ -3991,17 +4078,17 @@ msgstr "Salpicaduras"
 msgid "Squares"
 msgstr "Cuadrados"
 
-#: ../Pinta.Core/Actions/ViewActions.cs:159
+#: ../Pinta.Core/Actions/ViewActions.cs:168
 msgid "Status Bar"
 msgstr "Barra de estado"
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:480
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:481
 msgid ""
 "Stays a live, re-editable shape. Cutting, erasing, or filtering across it "
 "will rasterize it first."
 msgstr ""
 
-#: ../Pinta.Tools/Tools/TextTool.cs:329
+#: ../Pinta.Tools/Tools/TextTool.cs:342
 msgid ""
 "Stays a live, re-editable text object. Cutting, erasing, or filtering across "
 "it will rasterize it first."
@@ -4016,7 +4103,7 @@ msgstr ""
 msgid "Strength"
 msgstr "Intensidad"
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:899
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:911
 msgid "Strength:"
 msgstr ""
 
@@ -4060,7 +4147,7 @@ msgstr ""
 
 #: ../Pinta.Core/Classes/Re-editable/ObjectRasterizer.cs:142
 #: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:123
-#: ../Pinta.Tools/Tools/TextTool.cs:144
+#: ../Pinta.Tools/Tools/TextTool.cs:149
 msgid "Text"
 msgstr "Texto"
 
@@ -4072,7 +4159,7 @@ msgstr ""
 msgid "Text Properties"
 msgstr ""
 
-#: ../Pinta.Tools/Tools/TextTool.cs:614
+#: ../Pinta.Tools/Tools/TextTool.cs:626
 msgid "Text Style"
 msgstr "Estilo del texto"
 
@@ -4102,13 +4189,13 @@ msgstr "Estilo del texto"
 msgid "Text Tool"
 msgstr ""
 
-#: ../Pinta.Tools/Tools/TextTool.cs:759
+#: ../Pinta.Tools/Tools/TextTool.cs:771
 #, csharp-format
 msgid "Text properties ({0})"
 msgstr ""
 
 #. Translators: {0} is the name of an add-in.
-#: ../Impasto/MainWindow.cs:426
+#: ../Impasto/MainWindow.cs:445
 #, csharp-format
 msgid "The '{0}' add-in may not be compatible with this version of Impasto"
 msgstr ""
@@ -4125,7 +4212,7 @@ msgid ""
 "of rows."
 msgstr ""
 
-#: ../Impasto/Dialogs/PreferencesDialog.cs:515
+#: ../Impasto/Dialogs/PreferencesDialog.cs:521
 msgid "The file had no keyboard shortcuts to import."
 msgstr ""
 
@@ -4190,7 +4277,7 @@ msgstr "Falló la instalación."
 msgid "The installation has completed with warnings."
 msgstr "La instalación se ha completado con avisos."
 
-#: ../Impasto/Dialogs/PreferencesDialog.cs:283
+#: ../Impasto/Dialogs/PreferencesDialog.cs:289
 msgid ""
 "The row of icon buttons below the menu bar (New, Open, Save, Undo, Redo, "
 "Cut, Copy, Paste, and so on)."
@@ -4231,12 +4318,12 @@ msgstr ""
 msgid "Thickness"
 msgstr "Grosor"
 
-#: ../Pinta.Tools/Tools/TextTool.cs:651
+#: ../Pinta.Tools/Tools/TextTool.cs:663
 msgid "Thickness of the text outline, in pixels."
 msgstr "Grosor del contorno del texto, en píxeles."
 
 #. Translators: 'Thin' (100) refers to the font-weight text property
-#: ../Pinta.Tools/Tools/TextTool.cs:461
+#: ../Pinta.Tools/Tools/TextTool.cs:473
 msgid "Thin"
 msgstr "Fina"
 
@@ -4246,11 +4333,11 @@ msgstr "Fina"
 msgid "Third-Party Notices"
 msgstr ""
 
-#: ../Impasto/Dialogs/PreferencesDialog.cs:488
+#: ../Impasto/Dialogs/PreferencesDialog.cs:494
 msgid "This does not look like a valid settings file."
 msgstr ""
 
-#: ../Impasto/Dialogs/PreferencesDialog.cs:535
+#: ../Impasto/Dialogs/PreferencesDialog.cs:541
 msgid ""
 "This file also contains keyboard shortcut overrides. Importing them will "
 "overwrite your current keyboard-shortcuts.json."
@@ -4261,10 +4348,14 @@ msgid "This format does not support layers. Flatten image?"
 msgstr "Este formato no admite capas. ¿Quiere aplanar la imagen?"
 
 #: ../Impasto/Actions/Image/LargeImagePrompt.cs:21
+msgid "This image size is too large"
+msgstr ""
+
+#: ../Impasto/Actions/Image/LargeImagePrompt.cs:37
 msgid "This image size may slow down your computer"
 msgstr ""
 
-#: ../Impasto/Actions/Help/KeyboardShortcutsDialogAction.cs:107
+#: ../Impasto/Actions/Help/KeyboardShortcutsDialogAction.cs:137
 msgid ""
 "This resets every command, tool, and tool binding shortcut to its default."
 msgstr ""
@@ -4295,9 +4386,15 @@ msgid "Tip: Right-click to remove control points."
 msgstr "Consejo: pulse con el botón secundario para quitar puntos de control."
 
 #. Translators: 'Title Caps' refers to the font-variant text property
-#: ../Pinta.Tools/Dialogs/TextPropertiesDialog.cs:253
-#: ../Pinta.Tools/Tools/TextTool.cs:427
+#: ../Pinta.Tools/Dialogs/TextPropertiesDialog.cs:252
+#: ../Pinta.Tools/Tools/TextTool.cs:439
 msgid "Title Caps"
+msgstr ""
+
+#: ../Pinta.Core/Classes/Re-editable/ObjectRasterizer.cs:489
+msgid ""
+"To move these pixels, these objects must be rasterized (baked into the "
+"layer's pixels and no longer editable):"
 msgstr ""
 
 #: ../Pinta.Core/Classes/Re-editable/ObjectRasterizer.cs:175
@@ -4322,7 +4419,7 @@ msgstr ""
 #: ../Pinta.Effects/Effects/OutlineObjectEffect.cs:208
 #: ../Pinta.Effects/Effects/RedEyeRemoveEffect.cs:53
 #: ../Pinta.Tools/Tools/FloodTool.cs:183
-#: ../Pinta.Tools/Tools/RecolorTool.cs:326
+#: ../Pinta.Tools/Tools/RecolorTool.cs:329
 msgid "Tolerance"
 msgstr "Tolerancia"
 
@@ -4331,27 +4428,27 @@ msgstr "Tolerancia"
 msgid "Tool"
 msgstr "Herramienta"
 
-#: ../Pinta.Core/Actions/ViewActions.cs:165
+#: ../Pinta.Core/Actions/ViewActions.cs:174
 msgid "Tool Box"
 msgstr "Caja de herramientas"
 
-#: ../Impasto/Actions/Help/KeyboardShortcutsDialogAction.cs:167
+#: ../Impasto/Actions/Help/KeyboardShortcutsDialogAction.cs:198
 msgid "Tool Specific"
 msgstr ""
 
-#: ../Pinta.Core/Actions/ViewActions.cs:123
+#: ../Pinta.Core/Actions/ViewActions.cs:124
 msgid "Tool Windows"
 msgstr "Ventanas de herramientas"
 
-#: ../Pinta.Core/Actions/ViewActions.cs:111
+#: ../Pinta.Core/Actions/ViewActions.cs:112
 msgid "Toolbar"
 msgstr "Barra de herramientas"
 
-#: ../Impasto/Actions/Help/KeyboardShortcutsDialogAction.cs:163
+#: ../Impasto/Actions/Help/KeyboardShortcutsDialogAction.cs:194
 msgid "Tools"
 msgstr "Herramientas"
 
-#: ../Impasto/Dialogs/PreferencesDialog.cs:251
+#: ../Impasto/Dialogs/PreferencesDialog.cs:257
 msgid ""
 "Tools fill one column instead of the sectioned 2-column grid, overflowing "
 "into another column once it runs out of vertical space. Requires a restart."
@@ -4403,7 +4500,7 @@ msgstr ""
 msgid "Transform Settings"
 msgstr ""
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:918
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:930
 msgid "Transform Settings..."
 msgstr ""
 
@@ -4500,36 +4597,36 @@ msgstr "Sierra de dos filas"
 
 #: ../Pinta.Tools/Editable/EditEngines/ArrowedEditEngine.cs:361
 #: ../Pinta.Tools/Editable/EditEngines/TriangleEditEngine.cs:121
-#: ../Pinta.Tools/Tools/EraserTool.cs:353
+#: ../Pinta.Tools/Tools/EraserTool.cs:399
 #: ../Pinta.Tools/Tools/PaintBrushTool.cs:258
 msgid "Type"
 msgstr "Tipo"
 
-#: ../Impasto/Dialogs/PreferencesDialog.cs:320
+#: ../Impasto/Dialogs/PreferencesDialog.cs:326
 msgid "UI"
 msgstr "Interfaz"
 
 #. Translators: 'Ultrabold' (800) refers to the font-weight text property
-#: ../Pinta.Tools/Tools/TextTool.cs:515
+#: ../Pinta.Tools/Tools/TextTool.cs:527
 msgid "Ultrabold"
 msgstr "Ultranegrita"
 
 #. Translators: 'Ultraheavy' (1000) refers to the font-weight text property
-#: ../Pinta.Tools/Tools/TextTool.cs:527
+#: ../Pinta.Tools/Tools/TextTool.cs:539
 msgid "Ultraheavy"
 msgstr ""
 
 #. Translators: 'Ultralight' (200) refers to the font-weight text property
-#: ../Pinta.Tools/Tools/TextTool.cs:467
+#: ../Pinta.Tools/Tools/TextTool.cs:479
 msgid "Ultralight"
 msgstr "Ultraclara"
 
-#: ../Pinta.Tools/Dialogs/TextPropertiesDialog.cs:198
-#: ../Pinta.Tools/Tools/TextTool.cs:552
+#: ../Pinta.Tools/Dialogs/TextPropertiesDialog.cs:197
+#: ../Pinta.Tools/Tools/TextTool.cs:564
 msgid "Underline"
 msgstr "Subrayado"
 
-#: ../Pinta.Core/Actions/EditActions.cs:83
+#: ../Pinta.Core/Actions/EditActions.cs:77
 msgid "Undo"
 msgstr "Deshacer"
 
@@ -4546,8 +4643,8 @@ msgid "Unfocus"
 msgstr "Desenfoque"
 
 #. Translators: 'Unicase' refers to the font-variant text property
-#: ../Pinta.Tools/Dialogs/TextPropertiesDialog.cs:252
-#: ../Pinta.Tools/Tools/TextTool.cs:420
+#: ../Pinta.Tools/Dialogs/TextPropertiesDialog.cs:251
+#: ../Pinta.Tools/Tools/TextTool.cs:432
 msgid "Unicase"
 msgstr ""
 
@@ -4576,11 +4673,11 @@ msgid "Unsaved Image {0}"
 msgstr "Imagen no guardada {0}"
 
 #: ../Pinta.Core/Actions/LayerActions.cs:473
-#: ../Pinta.Core/Managers/WorkspaceManager.cs:376
+#: ../Pinta.Core/Managers/WorkspaceManager.cs:387
 msgid "Unsupported file format"
 msgstr "Formato de archivo no admitido"
 
-#: ../Pinta.Core/Actions/EditActions.cs:650
+#: ../Pinta.Core/Actions/EditActions.cs:631
 msgid "Unsupported palette format"
 msgstr "Formato de paleta no admitido"
 
@@ -4609,11 +4706,11 @@ msgstr ""
 "reducidos. Use la calidad alta para imágenes finales, grandes y ángulos "
 "amplios."
 
-#: ../Impasto/Dialogs/PreferencesDialog.cs:250
+#: ../Impasto/Dialogs/PreferencesDialog.cs:256
 msgid "Use thin column toolbox layout"
 msgstr "Usar el diseño de columna fina en la caja de herramientas"
 
-#: ../Pinta.Tools/Tools/TextTool.cs:430
+#: ../Pinta.Tools/Tools/TextTool.cs:442
 msgid "Uses title-specific capital letter forms where available."
 msgstr ""
 "Usa formas de letra mayúscula específicas para títulos cuando estén "
@@ -4647,8 +4744,8 @@ msgstr "Verde vertical (G)"
 msgid "Vertical red (R)"
 msgstr "Rojo vertical (R)"
 
-#: ../Impasto/Actions/Help/KeyboardShortcutsDialogAction.cs:182
-#: ../Impasto/MainWindow.cs:620 ../Pinta.Core/Classes/ToolSections.cs:24
+#: ../Impasto/Actions/Help/KeyboardShortcutsDialogAction.cs:203
+#: ../Impasto/MainWindow.cs:639 ../Pinta.Core/Classes/ToolSections.cs:24
 msgid "View"
 msgstr "Vista"
 
@@ -4669,7 +4766,7 @@ msgstr "Diagrama de Voronói"
 msgid "Warmth"
 msgstr "Calidez"
 
-#: ../Impasto/Dialogs/PreferencesDialog.cs:259
+#: ../Impasto/Dialogs/PreferencesDialog.cs:265
 msgid ""
 "When the window is too narrow for all of the current tool's settings, they "
 "continue on another row instead of scrolling horizontally."
@@ -4688,11 +4785,11 @@ msgstr "Blanco"
 msgid "Width:"
 msgstr "Anchura:"
 
-#: ../Impasto/Actions/Help/KeyboardShortcutsDialogAction.cs:186
-#: ../Pinta.Core/Actions/ViewActions.cs:250
-#: ../Pinta.Core/Actions/ViewActions.cs:446
-#: ../Pinta.Core/Classes/DocumentWorkspace.cs:429
-#: ../Pinta.Core/Classes/DocumentWorkspace.cs:438
+#: ../Impasto/Actions/Help/KeyboardShortcutsDialogAction.cs:207
+#: ../Pinta.Core/Actions/ViewActions.cs:259
+#: ../Pinta.Core/Actions/ViewActions.cs:457
+#: ../Pinta.Core/Classes/DocumentWorkspace.cs:473
+#: ../Pinta.Core/Classes/DocumentWorkspace.cs:482
 #: ../Pinta.Core/Managers/KeyboardShortcutManager.cs:243
 msgid "Window"
 msgstr "Ventana"
@@ -4701,7 +4798,7 @@ msgstr "Ventana"
 msgid "Wrap"
 msgstr "Ajustar"
 
-#: ../Impasto/Dialogs/PreferencesDialog.cs:258
+#: ../Impasto/Dialogs/PreferencesDialog.cs:264
 msgid "Wrap tool settings onto extra rows"
 msgstr ""
 
@@ -4716,7 +4813,7 @@ msgid "Xor ({0} + Right Click)"
 msgstr "XOR ({0} + pulsación secundaria)"
 
 #. Translators: {0} is the name of a file that the user does not have permission to open.
-#: ../Pinta.Core/Managers/WorkspaceManager.cs:517
+#: ../Pinta.Core/Managers/WorkspaceManager.cs:528
 #, csharp-format
 msgid "You do not have access to '{0}'."
 msgstr "No tiene acceso a «{0}»."
@@ -4730,7 +4827,7 @@ msgstr ""
 "No tiene acceso para modificar «{0}». Es posible que el archivo o la carpeta "
 "sean de solo lectura."
 
-#: ../Pinta.Core/Managers/WorkspaceManager.cs:481
+#: ../Pinta.Core/Managers/WorkspaceManager.cs:492
 #, csharp-format
 msgid ""
 "Your changes to {0} can't be saved back to that file. Use Save As to save "
@@ -4747,33 +4844,34 @@ msgstr "Zum"
 msgid "Zoom Blur"
 msgstr "Desenfoque por ampliación"
 
-#: ../Pinta.Core/Actions/ViewActions.cs:77
+#: ../Pinta.Core/Actions/ViewActions.cs:78
 msgid "Zoom In"
 msgstr "Acercar"
 
-#: ../Pinta.Core/Actions/ViewActions.cs:84
+#: ../Pinta.Core/Actions/ViewActions.cs:85
 msgid "Zoom Out"
 msgstr "Alejar"
 
-#: ../Pinta.Core/Actions/ViewActions.cs:98
+#: ../Pinta.Core/Actions/ViewActions.cs:99
 msgid "Zoom to Selection"
 msgstr "Zum a selección"
 
-#: ../Impasto/MainWindow.cs:541
+#: ../Impasto/MainWindow.cs:560
 msgid "_Adjustments"
 msgstr "Aju_stes"
 
 #: ../Impasto/Actions/Edit/PasteAction.cs:241
 #: ../Impasto/Actions/File/CloseDocumentAction.cs:83
-#: ../Impasto/Dialogs/ProgressDialog.cs:71
+#: ../Impasto/Dialogs/ProgressDialog.cs:71 ../Impasto/MainWindow.cs:1216
 #: ../Pinta.Core/Classes/Re-editable/ObjectRasterizer.cs:197
+#: ../Pinta.Core/Classes/Re-editable/ObjectRasterizer.cs:498
 #: ../Pinta.Core/Extensions/Gtk/GtkExtensions.Dialog.cs:209
-#: ../Pinta.Core/Extensions/Gtk/GtkExtensions.Widget.cs:311
-#: ../Pinta.Core/Extensions/Gtk/GtkExtensions.Widget.cs:313
+#: ../Pinta.Core/Extensions/Gtk/GtkExtensions.Widget.cs:318
+#: ../Pinta.Core/Extensions/Gtk/GtkExtensions.Widget.cs:320
 msgid "_Cancel"
 msgstr "_Cancelar"
 
-#: ../Impasto/Actions/Image/LargeImagePrompt.cs:32
+#: ../Impasto/Actions/Image/LargeImagePrompt.cs:48
 msgid "_Continue"
 msgstr ""
 
@@ -4782,19 +4880,19 @@ msgstr ""
 msgid "_Discard"
 msgstr "_Descartar"
 
-#: ../Impasto/MainWindow.cs:537
+#: ../Impasto/MainWindow.cs:556
 msgid "_Edit"
 msgstr "_Editar"
 
-#: ../Impasto/MainWindow.cs:536
+#: ../Impasto/MainWindow.cs:555
 msgid "_File"
 msgstr "_Archivo"
 
-#: ../Impasto/MainWindow.cs:546
+#: ../Impasto/MainWindow.cs:565
 msgid "_Help"
 msgstr "Ay_uda"
 
-#: ../Impasto/MainWindow.cs:540
+#: ../Impasto/MainWindow.cs:559
 msgid "_Image"
 msgstr "_Imagen"
 
@@ -4802,14 +4900,20 @@ msgstr "_Imagen"
 msgid "_Not Now"
 msgstr ""
 
+#: ../Impasto/Actions/Image/LargeImagePrompt.cs:29
 #: ../Impasto/Dialogs/ErrorDialog.cs:42 ../Impasto/Dialogs/ErrorDialog.cs:67
-#: ../Pinta.Core/Extensions/Gtk/GtkExtensions.Widget.cs:310
-#: ../Pinta.Core/Extensions/Gtk/GtkExtensions.Widget.cs:314
+#: ../Pinta.Core/Extensions/Gtk/GtkExtensions.Widget.cs:317
+#: ../Pinta.Core/Extensions/Gtk/GtkExtensions.Widget.cs:321
 #: ../Pinta.Gui.Addins/InstallDialog.cs:226
 msgid "_OK"
 msgstr "_Aceptar"
 
+#: ../Impasto/MainWindow.cs:1217
+msgid "_Open"
+msgstr ""
+
 #: ../Pinta.Core/Classes/Re-editable/ObjectRasterizer.cs:198
+#: ../Pinta.Core/Classes/Re-editable/ObjectRasterizer.cs:500
 msgid "_Rasterize"
 msgstr ""
 
@@ -4825,11 +4929,11 @@ msgstr ""
 msgid "_Save"
 msgstr "_Guardar"
 
-#: ../Impasto/MainWindow.cs:539
+#: ../Impasto/MainWindow.cs:558
 msgid "_View"
 msgstr "_Ver"
 
-#: ../Impasto/MainWindow.cs:545
+#: ../Impasto/MainWindow.cs:564
 msgid "_Window"
 msgstr "Ve_ntana"
 
@@ -4837,7 +4941,7 @@ msgstr "Ve_ntana"
 msgid "draw;drawing;paint;painting;graphics;raster;2d;"
 msgstr "dibujar;dibujo;pintar;pintura;gráficos;trama;2d;"
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:253
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:265
 msgid "every effect and object on this layer"
 msgstr ""
 
@@ -4878,12 +4982,12 @@ msgstr ""
 msgid "zbcoding — based on Pinta, (c) 2010-2026 the Pinta Project contributors"
 msgstr ""
 
-#: ../Impasto/Actions/Help/KeyboardShortcutsDialogAction.cs:241
+#: ../Impasto/Actions/Help/KeyboardShortcutsDialogAction.cs:263
 #, csharp-format
 msgid "{0} (Alternate {1})"
 msgstr ""
 
-#: ../Impasto/Actions/Help/KeyboardShortcutsDialogAction.cs:240
+#: ../Impasto/Actions/Help/KeyboardShortcutsDialogAction.cs:262
 #, csharp-format
 msgid "{0} (Alternate)"
 msgstr ""
@@ -4950,41 +5054,48 @@ msgstr "Imagen {0} ({1})"
 msgid "{0} palette ({1})"
 msgstr "Paleta {0} ({1})"
 
-#: ../Pinta.Tools/Tools/TextTool.cs:2804
+#: ../Pinta.Tools/Tools/TextTool.cs:2851
 #, csharp-format
 msgid "{0} to edit"
 msgstr ""
 
-#: ../Pinta.Tools/Tools/TextTool.cs:2805
+#: ../Pinta.Tools/Tools/TextTool.cs:2852
 #, csharp-format
 msgid "{0} to open text properties"
 msgstr ""
 
-#: ../Pinta.Tools/Tools/TextTool.cs:160
+#: ../Pinta.Tools/Tools/TextTool.cs:165
 #, csharp-format
 msgid "{0} to re-edit an existing text object."
 msgstr ""
 
-#: ../Pinta.Tools/Tools/TextTool.cs:2814
+#: ../Pinta.Tools/Tools/TextTool.cs:2861
 #, csharp-format
 msgid "{0} to rotate"
 msgstr ""
 
-#: ../Pinta.Tools/Tools/TextTool.cs:162
+#: ../Pinta.Tools/Tools/TextTool.cs:167
 #, csharp-format
 msgid "{0} to rotate, {1} to finish typing."
 msgstr ""
 
-#: ../Impasto/Actions/Image/LargeImagePrompt.cs:23
+#: ../Impasto/Actions/Image/LargeImagePrompt.cs:39
 #, csharp-format
 msgid ""
 "{0} x {1} pixels needs about {2} MB of memory per layer, plus more for undo "
 "history."
 msgstr ""
 
+#: ../Impasto/Actions/Image/LargeImagePrompt.cs:24
+#, csharp-format
+msgid ""
+"{0} x {1} pixels would need {2} MB of memory per layer, more than the {3} MB "
+"an image can hold."
+msgstr ""
+
 #. Translators: This specifies the format of the zoom percentage choices
 #. in the toolbar.
-#: ../Pinta.Core/Actions/ViewActions.cs:427
+#: ../Pinta.Core/Actions/ViewActions.cs:438
 #, csharp-format
 msgid "{0}%"
 msgstr "{0} %"
@@ -5000,6 +5111,7 @@ msgstr ""
 msgid "{0}: curve the line around the selected point; {1}: straighten it."
 msgstr ""
 
+#: ../Impasto/MainWindow.cs:1238
 #: ../Pinta.Core/Classes/Re-editable/ObjectRasterizer.cs:187
 #, csharp-format
 msgid "…and {0} more"
@@ -5192,9 +5304,6 @@ msgstr ""
 
 #~ msgid "Pixel Grid"
 #~ msgstr "Rejilla de píxeles"
-
-#~ msgid "Feather"
-#~ msgstr "Pluma"
 
 #~ msgid "Don't change canvas size"
 #~ msgstr "No redimensionar el lienzo"

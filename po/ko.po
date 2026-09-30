@@ -19,7 +19,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: pinta\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-27 06:16-0500\n"
+"POT-Creation-Date: 2026-09-30 04:19-0500\n"
 "PO-Revision-Date: 2026-04-07 03:55+0000\n"
 "Last-Translator: VenusGirl <VenusGirl@outlook.com>\n"
 "Language-Team: Korean\n"
@@ -64,7 +64,13 @@ msgstr "9 x 9 영역"
 msgid "A triangle with equal sides, growing up or down from the first point."
 msgstr ""
 
-#: ../Impasto/MainWindow.cs:544
+#. Translators: {0} and {1} are the width and height of an image in pixels.
+#: ../Pinta.Core/ImageFormats/PsdFormat.cs:119
+#, csharp-format
+msgid "A {0} x {1} pixel image is too large to open"
+msgstr ""
+
+#: ../Impasto/MainWindow.cs:563
 msgid "A_dd-ins"
 msgstr "애드인(_D)"
 
@@ -84,6 +90,7 @@ msgstr ""
 #: ../Impasto/Actions/Edit/PasteAction.cs:192
 #: ../Pinta.Core/Actions/LayerActions.cs:73
 #: ../Pinta.Core/Actions/LayerActions.cs:688
+#: ../Pinta.Tools/Tools/MoveSelectedTool.cs:175
 msgid "Add New Layer"
 msgstr "새 레이어 추가"
 
@@ -119,18 +126,18 @@ msgstr "애드인 관리자..."
 msgid "Add-ins"
 msgstr ""
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:1297
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:1298
 msgid "Added"
 msgstr "추가됨"
 
-#: ../Impasto/Dialogs/PreferencesDialog.cs:198
+#: ../Impasto/Dialogs/PreferencesDialog.cs:204
 msgid ""
 "Adds a darker shade of each color beneath the standard palette. The status "
 "bar grows taller to fit the extra row."
 msgstr ""
 
-#: ../Impasto/Actions/Help/KeyboardShortcutsDialogAction.cs:184
-#: ../Impasto/MainWindow.cs:610
+#: ../Impasto/Actions/Help/KeyboardShortcutsDialogAction.cs:205
+#: ../Impasto/MainWindow.cs:629
 msgid "Adjustments"
 msgstr "조정"
 
@@ -143,20 +150,26 @@ msgstr "선택 후"
 msgid "Align Object"
 msgstr "객체 정렬"
 
+#. Translators: While an object is moved, lines its edges and centre up
+#. with the edges and centres of the other shapes, text and images.
+#: ../Pinta.Core/Actions/ViewActions.cs:156
+msgid "Align to objects"
+msgstr ""
+
 #. Translators: 'All Petite Caps' refers to the font-variant text property
-#: ../Pinta.Tools/Dialogs/TextPropertiesDialog.cs:251
-#: ../Pinta.Tools/Tools/TextTool.cs:413
+#: ../Pinta.Tools/Dialogs/TextPropertiesDialog.cs:250
+#: ../Pinta.Tools/Tools/TextTool.cs:425
 msgid "All Petite Caps"
 msgstr ""
 
 #. Translators: 'All Small Caps' refers to the font-variant text property
-#: ../Pinta.Tools/Dialogs/TextPropertiesDialog.cs:249
-#: ../Pinta.Tools/Tools/TextTool.cs:399
+#: ../Pinta.Tools/Dialogs/TextPropertiesDialog.cs:248
+#: ../Pinta.Tools/Tools/TextTool.cs:411
 msgid "All Small Caps"
 msgstr ""
 
-#: ../Impasto/Actions/File/OpenDocumentAction.cs:140
-#: ../Pinta.Core/Actions/EditActions.cs:725
+#: ../Impasto/Actions/File/OpenDocumentAction.cs:153
+#: ../Pinta.Core/Actions/EditActions.cs:706
 #: ../Pinta.Gui.Addins/AddinManagerDialog.cs:335
 msgid "All files"
 msgstr "모든 파일"
@@ -216,11 +229,11 @@ msgstr "앤티앨리어싱 끄기"
 msgid "Antialiasing On"
 msgstr "앤티앨리어싱 켜기"
 
-#: ../Pinta.Tools/Tools/TextTool.cs:285
+#: ../Pinta.Tools/Tools/TextTool.cs:290
 msgid "Area"
 msgstr ""
 
-#: ../Pinta.Tools/Tools/TextTool.cs:286
+#: ../Pinta.Tools/Tools/TextTool.cs:291
 msgid ""
 "Area text: the text flows to fit a box. Drag a corner to resize the box and "
 "re-wrap the text."
@@ -291,17 +304,17 @@ msgstr "배경색"
 msgid "Background:"
 msgstr "배경:"
 
-#: ../Impasto/Dialogs/PreferencesDialog.cs:321
+#: ../Impasto/Dialogs/PreferencesDialog.cs:327
 msgid "Backup"
 msgstr ""
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:934
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:946
 msgid ""
 "Bake this layer's effects and objects into its pixels; they stop being "
 "editable."
 msgstr ""
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:935
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:947
 msgid "Bake this object into the layer's pixels; it stops being editable."
 msgstr ""
 
@@ -310,12 +323,12 @@ msgstr ""
 msgid "Beautiful Italy"
 msgstr "아름다운 비너스걸"
 
-#: ../Pinta.Core/Actions/ViewActions.cs:91
+#: ../Pinta.Core/Actions/ViewActions.cs:92
 msgid "Best Fit"
 msgstr "최적 맞춤"
 
 #. Translators: 'Bevel Join' refers to the Cairo.LineJoin property
-#: ../Pinta.Tools/Tools/TextTool.cs:680
+#: ../Pinta.Tools/Tools/TextTool.cs:692
 msgid "Bevel Join"
 msgstr "비너스걸"
 
@@ -333,7 +346,7 @@ msgstr "흑백"
 msgid "Blend Mode"
 msgstr "혼합 모드"
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:879
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:891
 msgid "Blend Mode:"
 msgstr ""
 
@@ -362,7 +375,7 @@ msgid "Blurs"
 msgstr "흐림"
 
 #. Translators: 'Bold' (700) refers to the font-weight text property
-#: ../Pinta.Tools/Tools/TextTool.cs:509
+#: ../Pinta.Tools/Tools/TextTool.cs:521
 msgid "Bold"
 msgstr "굵게"
 
@@ -372,11 +385,11 @@ msgid "Bonfire"
 msgstr "모닥불"
 
 #. Translators: 'Book' (380) refers to the font-weight text property
-#: ../Pinta.Tools/Tools/TextTool.cs:485
+#: ../Pinta.Tools/Tools/TextTool.cs:497
 msgid "Book"
 msgstr "책"
 
-#: ../Pinta.Tools/Tools/TextTool.cs:402
+#: ../Pinta.Tools/Tools/TextTool.cs:414
 msgid ""
 "Both upper and lower case letters are replaced with smaller capital letters."
 msgstr ""
@@ -473,13 +486,13 @@ msgid ""
 msgstr ""
 
 #: ../Impasto/Actions/File/SaveDocumentImplementationAction.cs:145
-#: ../Impasto/Actions/Help/KeyboardShortcutsDialogAction.cs:108
-#: ../Impasto/Actions/Help/KeyboardShortcutsDialogAction.cs:121
-#: ../Impasto/Dialogs/PreferencesDialog.cs:433
-#: ../Pinta.Core/Actions/EditActions.cs:662
+#: ../Impasto/Actions/Help/KeyboardShortcutsDialogAction.cs:138
+#: ../Impasto/Actions/Help/KeyboardShortcutsDialogAction.cs:151
+#: ../Impasto/Dialogs/PreferencesDialog.cs:439
+#: ../Pinta.Core/Actions/EditActions.cs:643
 #: ../Pinta.Gui.Addins/InstallDialog.cs:126
 #: ../Pinta.Gui.Widgets/Widgets/ColorPickerDialog.cs:497
-#: ../Pinta.Tools/Dialogs/TextPropertiesDialog.cs:265
+#: ../Pinta.Tools/Dialogs/TextPropertiesDialog.cs:264
 msgid "Cancel"
 msgstr "취소"
 
@@ -492,7 +505,7 @@ msgstr ""
 msgid "Cannot be recovered: {0}"
 msgstr ""
 
-#: ../Impasto/Dialogs/PreferencesDialog.cs:318 ../Impasto/Pads/CanvasPad.cs:41
+#: ../Impasto/Dialogs/PreferencesDialog.cs:324 ../Impasto/Pads/CanvasPad.cs:41
 msgid "Canvas"
 msgstr "캔버스"
 
@@ -500,11 +513,11 @@ msgstr "캔버스"
 msgid "Canvas Grid Settings"
 msgstr "캔버스 격자 설정"
 
-#: ../Pinta.Core/Actions/ViewActions.cs:130
+#: ../Pinta.Core/Actions/ViewActions.cs:131
 msgid "Canvas Grid..."
 msgstr "캔버스 격자..."
 
-#: ../Pinta.Core/Managers/ActionManager.cs:338
+#: ../Pinta.Core/Managers/ActionManager.cs:332
 msgid ""
 "Canvas size in pixels and its aspect ratio.\n"
 "Double click to change the canvas size."
@@ -530,8 +543,8 @@ msgstr "셀"
 msgid "Center"
 msgstr "가운데"
 
-#: ../Pinta.Tools/Dialogs/TextPropertiesDialog.cs:221
-#: ../Pinta.Tools/Tools/TextTool.cs:578
+#: ../Pinta.Tools/Dialogs/TextPropertiesDialog.cs:220
+#: ../Pinta.Tools/Tools/TextTool.cs:590
 msgid "Center Align"
 msgstr "가운데 정렬"
 
@@ -553,7 +566,7 @@ msgstr "가운데 오른쪽"
 msgid "Centered"
 msgstr "가운데"
 
-#: ../Pinta.Core/Actions/ViewActions.cs:272
+#: ../Pinta.Core/Actions/ViewActions.cs:282
 msgid "Centimeters"
 msgstr "센티미터"
 
@@ -565,7 +578,7 @@ msgstr ""
 msgid "Change control point tension while dragging"
 msgstr ""
 
-#: ../Pinta.Tools/Tools/TextTool.cs:771
+#: ../Pinta.Tools/Tools/TextTool.cs:783
 msgid "Change font size."
 msgstr ""
 
@@ -573,12 +586,12 @@ msgstr ""
 msgid "Change outline width."
 msgstr ""
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:924
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:936
 msgid ""
 "Change this effect's settings; the layer re-renders with the new values."
 msgstr ""
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:919
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:931
 msgid ""
 "Change this transform's settings; the layer re-renders with the new values."
 msgstr ""
@@ -592,13 +605,13 @@ msgstr ""
 msgid "Cherry Blossom"
 msgstr "벚꽃"
 
-#: ../Impasto/Dialogs/PreferencesDialog.cs:413
+#: ../Impasto/Dialogs/PreferencesDialog.cs:419
 #: ../Pinta.Effects/Dialogs/Effects.LevelsDialog.cs:666
 #: ../Pinta.Gui.Widgets/Dialogs/SimpleEffectDialog.cs:366
 msgid "Choose Color"
 msgstr "색상 선택"
 
-#: ../Impasto/MainWindow.cs:977
+#: ../Impasto/MainWindow.cs:996
 msgid "Choose Colors"
 msgstr "색상 선택"
 
@@ -662,7 +675,7 @@ msgstr ""
 msgid "Click and drag to navigate image."
 msgstr "이미지를 탐색하려면 클릭하고 끌어서 놓으세요."
 
-#: ../Impasto/MainWindow.cs:960
+#: ../Impasto/MainWindow.cs:979
 #: ../Pinta.Gui.Widgets/Widgets/StatusBarColorPaletteWidget.cs:798
 msgid "Click to reset primary and secondary color."
 msgstr "기본 색상과 보조 색상을 재설정하려면 클릭하세요."
@@ -685,14 +698,14 @@ msgstr ""
 msgid "Click to select secondary color."
 msgstr "보조 색상을 선택하려면 클릭하세요."
 
-#: ../Impasto/MainWindow.cs:953
+#: ../Impasto/MainWindow.cs:972
 #: ../Pinta.Gui.Widgets/Widgets/ColorPickerDialog.cs:366
 #: ../Pinta.Gui.Widgets/Widgets/ColorPickerPanel.cs:171
 #: ../Pinta.Gui.Widgets/Widgets/StatusBarColorPaletteWidget.cs:793
 msgid "Click to switch between primary and secondary color."
 msgstr "기본 색상과 보조 색상을 전환하려면 클릭하세요."
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:522
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:523
 msgid ""
 "Clicking a segment while editing inserts a control point to smoothly curve "
 "it."
@@ -702,7 +715,6 @@ msgstr ""
 #: ../Impasto/Dialogs/NewImageDialog.cs:430
 #: ../Impasto/Dialogs/NewImageDialog.cs:449
 #: ../Impasto/Dialogs/NewImageDialog.cs:545
-#: ../Impasto/Dialogs/PreferencesDialog.cs:319
 msgid "Clipboard"
 msgstr "클립보드"
 
@@ -773,7 +785,7 @@ msgstr "색상 범위"
 msgid "Color Saturation"
 msgstr "색상 채도"
 
-#: ../Pinta.Core/Actions/ViewActions.cs:300
+#: ../Pinta.Core/Actions/ViewActions.cs:310
 #: ../Pinta.Effects/Effects/CellsEffect.cs:183
 #: ../Pinta.Effects/Effects/CloudsEffect.cs:148
 #: ../Pinta.Effects/Effects/JuliaFractalEffect.cs:158
@@ -804,8 +816,14 @@ msgstr ""
 msgid "Coloring"
 msgstr "채색"
 
-#: ../Impasto/MainWindow.cs:772 ../Pinta.Core/Actions/ViewActions.cs:171
+#: ../Impasto/MainWindow.cs:791 ../Pinta.Core/Actions/ViewActions.cs:180
 msgid "Colors"
+msgstr ""
+
+#. Translators: {0} is the number of a compression method stored in the file.
+#: ../Pinta.Core/ImageFormats/PsdFormat.cs:705
+#, csharp-format
+msgid "Composite image compression {0} is not supported"
 msgstr ""
 
 #: ../Pinta.Tools/Tools/GradientTool.cs:323
@@ -831,11 +849,11 @@ msgstr "연속"
 msgid "Contrast"
 msgstr "대비"
 
-#: ../Pinta.Core/Actions/EditActions.cs:104
+#: ../Pinta.Core/Actions/EditActions.cs:98
 msgid "Copy"
 msgstr "복사"
 
-#: ../Pinta.Core/Actions/EditActions.cs:111
+#: ../Pinta.Core/Actions/EditActions.cs:105
 msgid "Copy Merged"
 msgstr "복사 병합"
 
@@ -856,7 +874,7 @@ msgstr "도형의 각 점에 적용되는 모서리 둥글림 반경(픽셀 단�
 msgid "Cotton Candy"
 msgstr "솜사탕"
 
-#: ../Impasto/MainWindow.cs:171
+#: ../Impasto/MainWindow.cs:172
 msgid "Could not check for autosaved documents"
 msgstr ""
 
@@ -868,8 +886,8 @@ msgstr "{1}에서 레이어 \"{0}\"을 가져올 수 없습니다"
 
 #: ../Pinta.Core/Actions/LayerActions.cs:415
 #: ../Pinta.Core/Extensions/OtherExtensions.cs:169
-#: ../Pinta.Core/Managers/WorkspaceManager.cs:460
-#: ../Pinta.Core/Managers/WorkspaceManager.cs:494
+#: ../Pinta.Core/Managers/WorkspaceManager.cs:471
+#: ../Pinta.Core/Managers/WorkspaceManager.cs:505
 #, csharp-format
 msgid "Could not open file: {0}"
 msgstr "파일을 열 수 없습니다: {0}"
@@ -888,8 +906,8 @@ msgid "Create new shape at selected control point"
 msgstr ""
 
 #: ../Pinta.Core/Actions/ImageActions.cs:56
-#: ../Pinta.Core/Actions/ImageActions.cs:357
-#: ../Pinta.Core/Actions/ImageActions.cs:363
+#: ../Pinta.Core/Actions/ImageActions.cs:368
+#: ../Pinta.Core/Actions/ImageActions.cs:374
 msgid "Crop to Selection"
 msgstr "선택 영역으로 자르기"
 
@@ -906,11 +924,11 @@ msgstr ""
 msgid "Curved"
 msgstr "곡선 모양"
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:523
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:524
 msgid "Curved Segments Off"
 msgstr "곡선 세그먼트 꺼짐"
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:522
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:523
 msgid "Curved Segments On"
 msgstr "곡선 세그먼트 켜짐"
 
@@ -926,13 +944,13 @@ msgstr "곡선"
 msgid "Custom"
 msgstr "사용자 지정"
 
-#: ../Pinta.Core/Actions/EditActions.cs:97
-#: ../Pinta.Core/Actions/EditActions.cs:419
+#: ../Pinta.Core/Actions/EditActions.cs:91
+#: ../Pinta.Core/Actions/EditActions.cs:413
 msgid "Cut"
 msgstr "잘라내기"
 
 #. Translators: This refers to using a dark variant of the color scheme.
-#: ../Pinta.Core/Actions/ViewActions.cs:297
+#: ../Pinta.Core/Actions/ViewActions.cs:307
 msgid "Dark"
 msgstr "어두운"
 
@@ -953,7 +971,7 @@ msgid "Decrease font size"
 msgstr ""
 
 #. Translators: This refers to using the system's default color scheme.
-#: ../Pinta.Core/Actions/ViewActions.cs:293
+#: ../Pinta.Core/Actions/ViewActions.cs:303
 msgid "Default"
 msgstr "기본값"
 
@@ -961,7 +979,7 @@ msgstr "기본값"
 msgid "Default canvas size (on application open):"
 msgstr ""
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:944
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:956
 msgid "Delete"
 msgstr ""
 
@@ -970,15 +988,15 @@ msgstr ""
 msgid "Delete Layer"
 msgstr "레이어 삭제"
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:322
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:334
 msgid "Delete Layer Mask"
 msgstr ""
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:984
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:996
 msgid "Delete Mask"
 msgstr ""
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:299
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:311
 msgid "Delete Object"
 msgstr ""
 
@@ -994,7 +1012,7 @@ msgstr ""
 msgid "Delete selected control point"
 msgstr ""
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:1059
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:1060
 msgid "Deleted"
 msgstr "삭제됨"
 
@@ -1003,18 +1021,17 @@ msgstr "삭제됨"
 msgid "Dents"
 msgstr "흠집"
 
-#: ../Pinta.Core/Actions/EditActions.cs:449
-#: ../Pinta.Core/Actions/EditActions.cs:454
+#: ../Pinta.Core/Actions/EditActions.cs:443
+#: ../Pinta.Core/Actions/EditActions.cs:448
 msgid "Deselect"
 msgstr "선택 해제"
 
-#: ../Pinta.Core/Actions/EditActions.cs:175
-#: ../Pinta.Core/Actions/EditActions.cs:182
+#: ../Pinta.Core/Actions/EditActions.cs:169
 msgid "Deselect All"
 msgstr "전체 선택 해제"
 
-#: ../Impasto/Actions/Help/KeyboardShortcutsDialogAction.cs:178
-msgid "Deselect All (Quick, ×2)"
+#: ../Pinta.Core/Actions/EditActions.cs:176
+msgid "Deselect All (Quick)"
 msgstr ""
 
 #: ../Impasto/Dialogs/ErrorDialog.cs:60
@@ -1062,7 +1079,7 @@ msgstr ""
 msgid "Download size: {0}"
 msgstr "다운로드 크기: {0}"
 
-#: ../Pinta.Tools/Tools/TextTool.cs:161
+#: ../Pinta.Tools/Tools/TextTool.cs:166
 msgid "Drag a corner grip to resize, or the dashed border to move."
 msgstr ""
 
@@ -1070,27 +1087,27 @@ msgstr ""
 msgid "Drag and drop to reorder"
 msgstr ""
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:1302
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:1314
 msgid "Drag and drop to reorder it on this layer"
 msgstr ""
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:1305
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:1317
 msgid "Drag and drop to reorder, or onto another layer to move it there"
 msgstr ""
 
-#: ../Pinta.Tools/Tools/TextTool.cs:2813
+#: ../Pinta.Tools/Tools/TextTool.cs:2860
 msgid "Drag corner to resize (changes font size)"
 msgstr ""
 
-#: ../Pinta.Tools/Tools/TextTool.cs:2812
+#: ../Pinta.Tools/Tools/TextTool.cs:2859
 msgid "Drag corner to resize the text box"
 msgstr ""
 
-#: ../Pinta.Tools/Tools/TextTool.cs:625
+#: ../Pinta.Tools/Tools/TextTool.cs:637
 msgid "Draw only the outline of the text, using the secondary color."
 msgstr "보조 색상을 사용하여 텍스트의 윤곽선만 그립니다."
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:558
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:559
 #: ../Pinta.Tools/Tools/FreeformShapeTool.cs:222
 msgid "Draw only the shape's outline, using the primary color."
 msgstr "기본 색상을 사용하여 도형의 윤곽선만 그립니다."
@@ -1100,7 +1117,7 @@ msgstr "기본 색상을 사용하여 도형의 윤곽선만 그립니다."
 msgid "Duplicate Layer"
 msgstr "레이어 복제"
 
-#: ../Impasto/Actions/Help/KeyboardShortcutsDialogAction.cs:391
+#: ../Impasto/Actions/Help/KeyboardShortcutsDialogAction.cs:384
 msgid "Duplicated"
 msgstr ""
 
@@ -1112,6 +1129,12 @@ msgstr ""
 #: ../Pinta.Tools/Editable/EditEngines/ArrowedEditEngine.cs:373
 #: ../Pinta.Tools/Editable/EditEngines/ArrowedEditEngine.cs:407
 msgid "Each added point joins its neighbors with a straight segment."
+msgstr ""
+
+#: ../Impasto/MainWindow.cs:1214
+msgid ""
+"Each file opens as its own image. If you dropped these by accident, choose "
+"Cancel."
 msgstr ""
 
 #: ../Impasto/Actions/Help/AboutDialogAction.cs:73
@@ -1129,11 +1152,11 @@ msgstr "엣지 동작"
 msgid "Edge Detect"
 msgstr "엣지 감지"
 
-#: ../Impasto/Actions/Help/KeyboardShortcutsDialogAction.cs:181
+#: ../Impasto/Actions/Help/KeyboardShortcutsDialogAction.cs:202
 msgid "Edit"
 msgstr ""
 
-#: ../Impasto/Dialogs/PreferencesDialog.cs:275
+#: ../Impasto/Dialogs/PreferencesDialog.cs:281
 msgid ""
 "Editable shapes and text stay editable on their own sub-layers. Operations "
 "that need flat pixels — cut, erase, crop, resize, rotate, flip, flatten — "
@@ -1142,16 +1165,16 @@ msgid ""
 "to bake silently and skip the warning."
 msgstr ""
 
-#: ../Impasto/MainWindow.cs:542
+#: ../Impasto/MainWindow.cs:561
 msgid "Effe_cts"
 msgstr "효과(_C)"
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:923
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:935
 msgid "Effect Settings..."
 msgstr ""
 
-#: ../Impasto/Actions/Help/KeyboardShortcutsDialogAction.cs:185
-#: ../Impasto/MainWindow.cs:605
+#: ../Impasto/Actions/Help/KeyboardShortcutsDialogAction.cs:206
+#: ../Impasto/MainWindow.cs:624
 msgid "Effects"
 msgstr "효과"
 
@@ -1183,12 +1206,12 @@ msgstr "디버깅을 위해 추가 로깅 또는 동작 변경 활성화"
 msgid "Equilateral Triangle"
 msgstr ""
 
-#: ../Pinta.Core/Actions/EditActions.cs:140
-#: ../Pinta.Core/Actions/EditActions.cs:420
+#: ../Pinta.Core/Actions/EditActions.cs:134
+#: ../Pinta.Core/Actions/EditActions.cs:414
 msgid "Erase Selection"
 msgstr "선택 영역 지우기"
 
-#: ../Pinta.Tools/Tools/EraserTool.cs:62
+#: ../Pinta.Tools/Tools/EraserTool.cs:70
 msgid "Eraser"
 msgstr "지우개"
 
@@ -1209,15 +1232,15 @@ msgstr "제외 (-) (오른쪽 클릭)"
 msgid "Expand"
 msgstr "확장"
 
-#: ../Impasto/Dialogs/PreferencesDialog.cs:432
+#: ../Impasto/Dialogs/PreferencesDialog.cs:438
 msgid "Export"
 msgstr ""
 
-#: ../Impasto/Dialogs/PreferencesDialog.cs:429
+#: ../Impasto/Dialogs/PreferencesDialog.cs:435
 msgid "Export Settings"
 msgstr ""
 
-#: ../Impasto/Dialogs/PreferencesDialog.cs:304
+#: ../Impasto/Dialogs/PreferencesDialog.cs:310
 msgid "Export Settings..."
 msgstr ""
 
@@ -1234,12 +1257,12 @@ msgstr "요소"
 msgid "Failed to access XDG Desktop Portals"
 msgstr "XDG 데스크톱 포털에 액세스하는 데 실패했습니다"
 
-#: ../Impasto/Dialogs/PreferencesDialog.cs:456
+#: ../Impasto/Dialogs/PreferencesDialog.cs:462
 #, csharp-format
 msgid "Failed to export settings: {0}"
 msgstr ""
 
-#: ../Impasto/MainWindow.cs:429
+#: ../Impasto/MainWindow.cs:448
 msgid "Failed to initialize add-in"
 msgstr "애드인을 초기화하는 데 실패했습니다"
 
@@ -1247,11 +1270,11 @@ msgstr "애드인을 초기화하는 데 실패했습니다"
 msgid "Failed to load extension package"
 msgstr "확장 패키지를 로드하는 데 실패했습니다"
 
-#: ../Pinta.Core/Managers/WorkspaceManager.cs:514
+#: ../Pinta.Core/Managers/WorkspaceManager.cs:525
 msgid "Failed to open image"
 msgstr "이미지를 여는 데 실패했습니다"
 
-#: ../Impasto/Dialogs/PreferencesDialog.cs:483
+#: ../Impasto/Dialogs/PreferencesDialog.cs:489
 #, csharp-format
 msgid "Failed to read settings file: {0}"
 msgstr ""
@@ -1265,6 +1288,10 @@ msgstr "이미지를 저장하는 데 실패했습니다"
 msgid "Failed to take screenshot"
 msgstr "스크린샷을 찍는 데 실패했습니다"
 
+#: ../Pinta.Tools/Tools/EraserTool.cs:429
+msgid "Feather"
+msgstr ""
+
 #: ../Pinta.Effects/Effects/FeatherEffect.cs:175
 msgid "Feather Canvas Edge"
 msgstr "깃털 캔버스 가장자리"
@@ -1273,7 +1300,7 @@ msgstr "깃털 캔버스 가장자리"
 msgid "Feather Object"
 msgstr "깃털 객체"
 
-#: ../Impasto/Actions/Help/KeyboardShortcutsDialogAction.cs:170
+#: ../Impasto/Actions/Help/KeyboardShortcutsDialogAction.cs:201
 msgid "File"
 msgstr ""
 
@@ -1285,7 +1312,7 @@ msgstr "버그 파일"
 msgid "Files to open"
 msgstr "열어야 할 파일"
 
-#: ../Pinta.Tools/Tools/TextTool.cs:626
+#: ../Pinta.Tools/Tools/TextTool.cs:638
 msgid "Fill Background"
 msgstr "배경 채우기"
 
@@ -1293,22 +1320,22 @@ msgstr "배경 채우기"
 msgid "Fill Object Background"
 msgstr "객체 배경 채우기"
 
-#: ../Pinta.Core/Actions/EditActions.cs:147
-#: ../Pinta.Core/Actions/EditActions.cs:358
+#: ../Pinta.Core/Actions/EditActions.cs:141
+#: ../Pinta.Core/Actions/EditActions.cs:352
 msgid "Fill Selection"
 msgstr "선택 영역 채우기"
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:559
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:560
 #: ../Pinta.Tools/Tools/FreeformShapeTool.cs:223
 msgid "Fill Shape"
 msgstr "모양 채우기"
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:549
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:550
 #: ../Pinta.Tools/Tools/FreeformShapeTool.cs:216
 msgid "Fill Style"
 msgstr "채우기 스타일"
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:560
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:561
 #: ../Pinta.Tools/Tools/FreeformShapeTool.cs:224
 msgid "Fill and Outline Shape"
 msgstr "채우기 및 윤곽선 모양"
@@ -1324,28 +1351,28 @@ msgid ""
 "Fill only the connected region of similar color touching the click point."
 msgstr ""
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:560
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:561
 #: ../Pinta.Tools/Tools/FreeformShapeTool.cs:224
 msgid ""
 "Fill the interior with the secondary color and outline it with the primary "
 "color."
 msgstr ""
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:559
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:560
 #: ../Pinta.Tools/Tools/FreeformShapeTool.cs:223
 msgid "Fill the shape's interior with the secondary color, no outline."
 msgstr "보조 색상으로 도형의 내부를 채우고 윤곽선은 그리지 않습니다."
 
-#: ../Pinta.Tools/Tools/TextTool.cs:624
+#: ../Pinta.Tools/Tools/TextTool.cs:636
 msgid ""
 "Fill the text with the primary color and outline it with the secondary color."
 msgstr ""
 
-#: ../Pinta.Tools/Tools/TextTool.cs:623
+#: ../Pinta.Tools/Tools/TextTool.cs:635
 msgid "Fill the text with the primary color."
 msgstr "기본 색상으로 텍스트를 채웁니다."
 
-#: ../Pinta.Tools/Tools/TextTool.cs:626
+#: ../Pinta.Tools/Tools/TextTool.cs:638
 msgid "Fill the text's bounding box with the secondary color, behind the text."
 msgstr "텍스트 뒤의 경계 상자를 보조 색상으로 채웁니다."
 
@@ -1371,12 +1398,12 @@ msgstr "픽셀 완료"
 msgid "Finish selection"
 msgstr ""
 
-#: ../Pinta.Core/Extensions/Gtk/GtkExtensions.Widget.cs:229
+#: ../Pinta.Core/Extensions/Gtk/GtkExtensions.Widget.cs:236
 #: ../Pinta.Tools/Tools/LassoSelectTool.cs:311
 msgid "Finish selection (Enter)"
 msgstr ""
 
-#: ../Pinta.Tools/Tools/TextTool.cs:763
+#: ../Pinta.Tools/Tools/TextTool.cs:775
 #, csharp-format
 msgid "Finish typing ({0})"
 msgstr "입력 완료 ({0})"
@@ -1387,7 +1414,7 @@ msgstr "입력 완료 ({0})"
 msgid "Flatten"
 msgstr "평탄화"
 
-#: ../Pinta.Tools/Tools/TextTool.cs:683
+#: ../Pinta.Tools/Tools/TextTool.cs:695
 msgid "Flattened, squared-off corners on the outline."
 msgstr "윤곽선의 평평하고 각진 모서리입니다."
 
@@ -1396,7 +1423,7 @@ msgid "Flattening the image will merge all layers into a single layer."
 msgstr "이미지를 평탄화하면 모든 레이어가 하나의 레이어로 병합됩니다."
 
 #: ../Pinta.Core/Actions/ImageActions.cs:84
-#: ../Pinta.Core/Actions/ImageActions.cs:314
+#: ../Pinta.Core/Actions/ImageActions.cs:325
 #: ../Pinta.Core/Actions/LayerActions.cs:107
 msgid "Flip Horizontal"
 msgstr "수평 뒤집기"
@@ -1422,7 +1449,7 @@ msgid "Flip Layer Vertical"
 msgstr "레이어 수직 뒤집기"
 
 #: ../Pinta.Core/Actions/ImageActions.cs:90
-#: ../Pinta.Core/Actions/ImageActions.cs:299
+#: ../Pinta.Core/Actions/ImageActions.cs:310
 #: ../Pinta.Core/Actions/LayerActions.cs:113
 msgid "Flip Vertical"
 msgstr "수직 뒤집기"
@@ -1431,7 +1458,7 @@ msgstr "수직 뒤집기"
 msgid "Flip Vertically"
 msgstr ""
 
-#: ../Pinta.Core/Actions/ViewActions.cs:177
+#: ../Pinta.Core/Actions/ViewActions.cs:186
 #: ../Pinta.Gui.Widgets/Widgets/StatusBarColorPaletteWidget.cs:766
 msgid "Float Colors"
 msgstr ""
@@ -1454,7 +1481,15 @@ msgstr "플로이드-스타인버그"
 msgid "Floyd-Steinberg Lite"
 msgstr "플로이드-스타인버그 라이트"
 
-#: ../Pinta.Tools/Tools/TextTool.cs:362
+#: ../Pinta.Core/Managers/WorkspaceManager.cs:352
+msgid "Folders cannot be opened."
+msgstr ""
+
+#: ../Impasto/MainWindow.cs:1233
+msgid "Folders cannot be opened. Drop the image files inside instead."
+msgstr ""
+
+#: ../Pinta.Tools/Tools/TextTool.cs:375
 msgid "Font"
 msgstr "글꼴"
 
@@ -1478,7 +1513,7 @@ msgstr "자유형 모양"
 msgid "Frosted Glass"
 msgstr "젖빛 유리"
 
-#: ../Pinta.Core/Actions/ViewActions.cs:199
+#: ../Pinta.Core/Actions/ViewActions.cs:208
 msgid "Fullscreen"
 msgstr "전체 화면"
 
@@ -1543,7 +1578,7 @@ msgid "Hard Light"
 msgstr "강렬한 빛"
 
 #. Translators: 'Heavy' (900) refers to the font-weight text property
-#: ../Pinta.Tools/Tools/TextTool.cs:521
+#: ../Pinta.Tools/Tools/TextTool.cs:533
 msgid "Heavy"
 msgstr "무거운"
 
@@ -1555,7 +1590,7 @@ msgstr "무거운"
 msgid "Height:"
 msgstr "높이:"
 
-#: ../Impasto/Actions/Help/KeyboardShortcutsDialogAction.cs:187
+#: ../Impasto/Actions/Help/KeyboardShortcutsDialogAction.cs:208
 msgid "Help"
 msgstr ""
 
@@ -1564,19 +1599,19 @@ msgid "Hex"
 msgstr "16진수"
 
 #: ../Impasto/Actions/Layers/LayerPropertiesAction.cs:121
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:218
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:230
 msgid "Hide Layer"
 msgstr "레이어 숨기기"
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:373
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:385
 msgid "Hide Layer Mask"
 msgstr ""
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:444
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:456
 msgid "Hide Object"
 msgstr ""
 
-#: ../Impasto/Dialogs/PreferencesDialog.cs:267
+#: ../Impasto/Dialogs/PreferencesDialog.cs:273
 msgid ""
 "Hides the column of tool buttons and turns the tool name shown above the "
 "canvas into a dropdown that picks the tool. The tool box can still be shown "
@@ -1631,12 +1666,12 @@ msgstr "가로 녹색(G)"
 msgid "Horizontal red (R)"
 msgstr "가로 빨간색 (R)"
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:901
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:913
 msgid ""
 "How much of the effect is applied. At 0 the layer looks as it did before."
 msgstr ""
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:882
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:894
 msgid "How the effect's result is mixed back into the image it was applied to."
 msgstr ""
 
@@ -1679,8 +1714,8 @@ msgstr ""
 msgid "If you don't save, all changes will be permanently lost."
 msgstr "저장하지 않으면 모든 변경 사항이 영구적으로 사라집니다."
 
-#: ../Impasto/Actions/Help/KeyboardShortcutsDialogAction.cs:183
-#: ../Impasto/MainWindow.cs:615 ../Pinta.Tools/Tools/ColorPickerTool.cs:277
+#: ../Impasto/Actions/Help/KeyboardShortcutsDialogAction.cs:204
+#: ../Impasto/MainWindow.cs:634 ../Pinta.Tools/Tools/ColorPickerTool.cs:277
 msgid "Image"
 msgstr "이미지"
 
@@ -1688,7 +1723,7 @@ msgstr "이미지"
 msgid "Image Quality"
 msgstr ""
 
-#: ../Pinta.Core/Actions/ViewActions.cs:117
+#: ../Pinta.Core/Actions/ViewActions.cs:118
 msgid "Image Tabs"
 msgstr "이미지 탭"
 
@@ -1696,7 +1731,7 @@ msgstr "이미지 탭"
 msgid "Image cannot be pasted"
 msgstr "이미지를 붙여넣을 수 없습니다"
 
-#: ../Impasto/Actions/File/OpenDocumentAction.cs:149
+#: ../Impasto/Actions/File/OpenDocumentAction.cs:162
 #: ../Pinta.Core/Actions/LayerActions.cs:377
 msgid "Image files"
 msgstr "이미지 파일"
@@ -1711,7 +1746,7 @@ msgstr "너무 큰 이미지"
 
 #: ../xdg/com.github.zbcoding.Impasto.desktop.in.h:1
 #: ../Impasto/Actions/Help/AboutDialogAction.cs:67 ../Impasto/Main.cs:71
-#: ../Impasto/MainWindow.cs:69
+#: ../Impasto/MainWindow.cs:70
 msgid "Impasto"
 msgstr ""
 
@@ -1731,7 +1766,7 @@ msgstr ""
 msgid "Impasto by"
 msgstr ""
 
-#: ../Pinta.Core/Managers/WorkspaceManager.cs:479
+#: ../Pinta.Core/Managers/WorkspaceManager.cs:490
 #, csharp-format
 msgid "Impasto can open .{0} files but cannot save them"
 msgstr ""
@@ -1762,7 +1797,7 @@ msgid ""
 "organize your creativity."
 msgstr ""
 
-#: ../Pinta.Core/Managers/WorkspaceManager.cs:495
+#: ../Pinta.Core/Managers/WorkspaceManager.cs:506
 msgid "Impasto supports the following file formats:"
 msgstr ""
 
@@ -1770,7 +1805,7 @@ msgstr ""
 msgid "Impasto supports the following palette formats:"
 msgstr "Impasto는 다음 팔레트 형식을 지원합니다:"
 
-#: ../Impasto/Dialogs/PreferencesDialog.cs:538
+#: ../Impasto/Dialogs/PreferencesDialog.cs:544
 msgid "Import"
 msgstr ""
 
@@ -1778,15 +1813,15 @@ msgstr ""
 msgid "Import From File"
 msgstr "파일에서 가져오기"
 
-#: ../Impasto/Dialogs/PreferencesDialog.cs:534
+#: ../Impasto/Dialogs/PreferencesDialog.cs:540
 msgid "Import Keyboard Shortcuts?"
 msgstr ""
 
-#: ../Impasto/Dialogs/PreferencesDialog.cs:470
+#: ../Impasto/Dialogs/PreferencesDialog.cs:476
 msgid "Import Settings"
 msgstr ""
 
-#: ../Impasto/Dialogs/PreferencesDialog.cs:306
+#: ../Impasto/Dialogs/PreferencesDialog.cs:312
 msgid "Import Settings..."
 msgstr ""
 
@@ -1794,7 +1829,7 @@ msgstr ""
 msgid "Import from File..."
 msgstr "파일에서 가져오기..."
 
-#: ../Impasto/Dialogs/PreferencesDialog.cs:521
+#: ../Impasto/Dialogs/PreferencesDialog.cs:527
 #, csharp-format
 msgid ""
 "Imported {0} setting(s); {1} entry(ies) were skipped (unrecognized or "
@@ -1827,7 +1862,7 @@ msgid ""
 "Press Backspace to delete the last point."
 msgstr ""
 
-#: ../Pinta.Core/Actions/ViewActions.cs:271
+#: ../Pinta.Core/Actions/ViewActions.cs:281
 msgid "Inches"
 msgstr "인치"
 
@@ -1905,13 +1940,13 @@ msgstr "교차 ({0} + 왼쪽 클릭)"
 msgid "Invert Colors"
 msgstr "색상 반전"
 
-#: ../Pinta.Core/Actions/EditActions.cs:154
-#: ../Pinta.Core/Actions/EditActions.cs:747
+#: ../Pinta.Core/Actions/EditActions.cs:148
+#: ../Pinta.Core/Actions/EditActions.cs:728
 msgid "Invert Selection"
 msgstr "선택 영역 반전"
 
-#: ../Pinta.Tools/Dialogs/TextPropertiesDialog.cs:190
-#: ../Pinta.Tools/Tools/TextTool.cs:541
+#: ../Pinta.Tools/Dialogs/TextPropertiesDialog.cs:189
+#: ../Pinta.Tools/Tools/TextTool.cs:553
 msgid "Italic"
 msgstr "기울임꼴"
 
@@ -1924,12 +1959,12 @@ msgstr "자비스-주디스-닌케"
 msgid "Julia Fractal"
 msgstr "줄리아 프랙탈"
 
-#: ../Pinta.Tools/Dialogs/TextPropertiesDialog.cs:237
-#: ../Pinta.Tools/Tools/TextTool.cs:600
+#: ../Pinta.Tools/Dialogs/TextPropertiesDialog.cs:236
+#: ../Pinta.Tools/Tools/TextTool.cs:612
 msgid "Justify"
 msgstr ""
 
-#: ../Impasto/Dialogs/PreferencesDialog.cs:537
+#: ../Impasto/Dialogs/PreferencesDialog.cs:543
 msgid "Keep Mine"
 msgstr ""
 
@@ -1937,22 +1972,34 @@ msgstr ""
 msgid "Keep using the Color Picker after a color is chosen."
 msgstr "색상을 선택한 후에도 색상 선택 도구를 계속 사용합니다."
 
-#: ../Impasto/Actions/Help/KeyboardShortcutsDialogAction.cs:100
+#: ../Impasto/Dialogs/PreferencesDialog.cs:325
+msgid "Keyboard"
+msgstr ""
+
+#: ../Impasto/Actions/Help/KeyboardShortcutsDialogAction.cs:130
 #: ../Pinta.Core/Actions/AppActions.cs:48
 msgid "Keyboard Shortcuts"
 msgstr ""
 
-#: ../Impasto/Dialogs/PreferencesDialog.cs:517
+#: ../Impasto/Dialogs/PreferencesDialog.cs:173
+msgid "Keyboard Shortcuts..."
+msgstr ""
+
+#: ../Impasto/Dialogs/PreferencesDialog.cs:523
 msgid "Keyboard shortcuts were imported, replacing your current ones."
 msgstr ""
 
-#: ../Impasto/Dialogs/PreferencesDialog.cs:518
+#: ../Impasto/Dialogs/PreferencesDialog.cs:524
 msgid "Keyboard shortcuts were left unchanged."
 msgstr ""
 
 #: ../Impasto/Dialogs/NewImageDialog.cs:315
 msgid "Landscape"
 msgstr "가로"
+
+#: ../Pinta.Core/ImageFormats/PsdFormat.cs:101
+msgid "Large Photoshop documents (PSB) are not supported"
+msgstr ""
 
 #: ../Pinta.Core/Managers/KeyboardShortcutManager.cs:55
 #: ../Pinta.Core/Managers/KeyboardShortcutManager.cs:61
@@ -1972,7 +2019,7 @@ msgstr "올가미 선택"
 msgid "Layer"
 msgstr "레이어"
 
-#: ../Pinta.Core/Classes/Re-editable/ObjectRasterizer.cs:623
+#: ../Pinta.Core/Classes/Re-editable/ObjectRasterizer.cs:699
 #: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:116
 msgid "Layer Mask"
 msgstr ""
@@ -1990,17 +2037,17 @@ msgstr "레이어 속성"
 msgid "Layer Properties..."
 msgstr "레이어 속성.."
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:1300
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:1312
 msgid ""
 "Layer effect: applies to everything below it on this layer, and stays "
 "editable."
 msgstr ""
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:1281
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:1293
 msgid "Layer mask: an alpha channel applied to the whole layer."
 msgstr ""
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:1299
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:1311
 msgid ""
 "Layer transform: applies to everything below it on this layer, and stays "
 "editable."
@@ -2012,17 +2059,17 @@ msgstr ""
 msgid "Layer {0}"
 msgstr "레이어 {0}"
 
-#: ../Impasto/Actions/Help/KeyboardShortcutsDialogAction.cs:169
+#: ../Impasto/Actions/Help/KeyboardShortcutsDialogAction.cs:200
 #: ../Impasto/Pads/LayersPad.cs:49
 msgid "Layers"
 msgstr "레이어"
 
-#: ../Pinta.Tools/Dialogs/TextPropertiesDialog.cs:213
-#: ../Pinta.Tools/Tools/TextTool.cs:567
+#: ../Pinta.Tools/Dialogs/TextPropertiesDialog.cs:212
+#: ../Pinta.Tools/Tools/TextTool.cs:579
 msgid "Left Align"
 msgstr "왼쪽 정렬"
 
-#: ../Pinta.Tools/Tools/MoveSelectedTool.cs:61
+#: ../Pinta.Tools/Tools/MoveSelectedTool.cs:63
 #, csharp-format
 msgid ""
 "Left click and drag the selection to move selected content.\n"
@@ -2106,7 +2153,7 @@ msgstr ""
 "왼쪽을 클릭하면 기본 색상으로, 오른쪽을 클릭하면 보조 색상으로 그림을 그립니"
 "다."
 
-#: ../Pinta.Tools/Tools/EraserTool.cs:68
+#: ../Pinta.Tools/Tools/EraserTool.cs:76
 msgid ""
 "Left click to erase to transparent, right click to erase to secondary color. "
 msgstr ""
@@ -2120,7 +2167,7 @@ msgid ""
 "Hold Shift to use Global mode."
 msgstr ""
 
-#: ../Pinta.Tools/Tools/TextTool.cs:159
+#: ../Pinta.Tools/Tools/TextTool.cs:164
 msgid ""
 "Left click to place the cursor, then type. Text is drawn in the primary "
 "color."
@@ -2189,8 +2236,8 @@ msgstr "색보정"
 
 #. Translators: This refers to using a light variant of the color scheme.
 #. Translators: 'Light' (300) refers to the font-weight text property
-#: ../Pinta.Core/Actions/ViewActions.cs:295
-#: ../Pinta.Tools/Tools/TextTool.cs:473
+#: ../Pinta.Core/Actions/ViewActions.cs:305
+#: ../Pinta.Tools/Tools/TextTool.cs:485
 msgid "Light"
 msgstr "밝은"
 
@@ -2206,11 +2253,11 @@ msgstr "조명"
 msgid "Lightness"
 msgstr "명도"
 
-#: ../Pinta.Tools/Tools/TextTool.cs:416
+#: ../Pinta.Tools/Tools/TextTool.cs:428
 msgid "Like All Small Caps, but the substituted capitals are slightly smaller."
 msgstr "모든 작은 대문자와 비슷하지만 대체된 대문자가 약간 더 작습니다."
 
-#: ../Pinta.Tools/Tools/TextTool.cs:409
+#: ../Pinta.Tools/Tools/TextTool.cs:421
 msgid "Like Small Caps, but the substituted capitals are slightly smaller."
 msgstr "작은 대문자와 비슷하지만 대체된 대문자가 약간 더 작습니다."
 
@@ -2250,7 +2297,7 @@ msgstr "연결됨"
 msgid "Lossless"
 msgstr ""
 
-#: ../Pinta.Tools/Tools/TextTool.cs:395
+#: ../Pinta.Tools/Tools/TextTool.cs:407
 msgid "Lower case letters are replaced with smaller capital letters."
 msgstr "소문자가 더 작은 대문자로 대체됩니다."
 
@@ -2271,7 +2318,7 @@ msgstr ""
 msgid "Magic Wand Select"
 msgstr "요술봉 선택"
 
-#: ../Impasto/MainWindow.cs:600
+#: ../Impasto/MainWindow.cs:619
 msgid "Main Menu"
 msgstr "기본 메뉴"
 
@@ -2302,11 +2349,11 @@ msgid "Median"
 msgstr "중간값"
 
 #. Translators: 'Medium' (500) refers to the font-weight text property
-#: ../Pinta.Tools/Tools/TextTool.cs:497
+#: ../Pinta.Tools/Tools/TextTool.cs:509
 msgid "Medium"
 msgstr "중간"
 
-#: ../Pinta.Core/Actions/ViewActions.cs:153
+#: ../Pinta.Core/Actions/ViewActions.cs:162
 msgid "Menu Bar"
 msgstr "메뉴 표시줄"
 
@@ -2328,23 +2375,23 @@ msgid "Mirrors the linear transition on both sides of the start point."
 msgstr "시작점을 기준으로 선형 전환을 양쪽으로 대칭시킵니다."
 
 #. Translators: 'Miter Join' refers to the Cairo.LineJoin property
-#: ../Pinta.Tools/Tools/TextTool.cs:666
+#: ../Pinta.Tools/Tools/TextTool.cs:678
 msgid "Miter Join"
 msgstr "사각 결합"
 
-#: ../Pinta.Tools/Tools/TextTool.cs:423
+#: ../Pinta.Tools/Tools/TextTool.cs:435
 msgid ""
 "Mixes small capital letters for upper case with normal lower case letters."
 msgstr ""
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:468
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:469
 #: ../Pinta.Tools/Tools/GradientTool.cs:347
-#: ../Pinta.Tools/Tools/TextTool.cs:319
+#: ../Pinta.Tools/Tools/TextTool.cs:332
 msgid "Mode"
 msgstr "모드"
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:903
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:905
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:904
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:906
 #: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:1557
 #: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:1582
 msgid "Modified"
@@ -2362,7 +2409,7 @@ msgstr "모션 효과"
 msgid "Move"
 msgstr ""
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:1187
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:1199
 msgid "Move Layer"
 msgstr ""
 
@@ -2376,11 +2423,11 @@ msgstr "레이어 아래로 이동"
 msgid "Move Layer Up"
 msgstr "레이어 위로 이동"
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:538
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:550
 msgid "Move Object to Layer"
 msgstr ""
 
-#: ../Pinta.Tools/Tools/MoveSelectedTool.cs:57
+#: ../Pinta.Tools/Tools/MoveSelectedTool.cs:59
 msgid "Move Selected Pixels"
 msgstr "선택 영역 이동"
 
@@ -2428,6 +2475,14 @@ msgstr ""
 msgid "Move selected control point up"
 msgstr ""
 
+#: ../Pinta.Tools/Tools/MoveSelectedTool.cs:229
+msgid "Move to New Layer"
+msgstr ""
+
+#: ../Pinta.Core/Classes/Re-editable/ObjectRasterizer.cs:499
+msgid "Move to _New Layer"
+msgstr ""
+
 #: ../Pinta.Core/Algorithms/PixelOps/UserBlendOps.cs:32
 msgid "Multiply"
 msgstr "곱하기"
@@ -2465,6 +2520,10 @@ msgstr "새로 만들기..."
 msgid "No Items Found"
 msgstr "항목을 찾을 수 없습니다"
 
+#: ../Impasto/Actions/File/OpenDocumentAction.cs:86
+msgid "No recent items..."
+msgstr ""
+
 #: ../Pinta.Effects/Effects/AddNoiseEffect.cs:28
 #: ../Pinta.Effects/Effects/MedianEffect.cs:27
 #: ../Pinta.Effects/Effects/ReduceNoiseEffect.cs:32
@@ -2473,7 +2532,7 @@ msgstr "노이즈"
 
 #: ../Impasto/Actions/Edit/ResizePaletteAction.cs:160
 #: ../Impasto/Actions/Help/KeyboardShortcutsDialogAction.cs:48
-#: ../Impasto/Dialogs/PreferencesDialog.cs:216
+#: ../Impasto/Dialogs/PreferencesDialog.cs:222
 #: ../Pinta.Core/Classes/KeyGesture.cs:31
 #: ../Pinta.Core/Extensions/Gtk/GtkExtensions.Interaction.cs:78
 msgid "None"
@@ -2483,9 +2542,9 @@ msgstr "없음"
 #. Translators: 'Normal' (400) refers to the font-weight text property
 #: ../Pinta.Core/Algorithms/PixelOps/UserBlendOps.cs:31
 #: ../Pinta.Tools/Brushes/PlainBrush.cs:41
-#: ../Pinta.Tools/Dialogs/TextPropertiesDialog.cs:247
-#: ../Pinta.Tools/Tools/EraserTool.cs:357 ../Pinta.Tools/Tools/TextTool.cs:385
-#: ../Pinta.Tools/Tools/TextTool.cs:491 ../Pinta.Tools/Tools/TextTool.cs:623
+#: ../Pinta.Tools/Dialogs/TextPropertiesDialog.cs:246
+#: ../Pinta.Tools/Tools/EraserTool.cs:403 ../Pinta.Tools/Tools/TextTool.cs:397
+#: ../Pinta.Tools/Tools/TextTool.cs:503 ../Pinta.Tools/Tools/TextTool.cs:635
 msgid "Normal"
 msgstr "일반"
 
@@ -2493,25 +2552,29 @@ msgstr "일반"
 msgid "Normal Blending"
 msgstr "일반 혼합"
 
-#: ../Pinta.Core/Actions/ViewActions.cs:104
+#: ../Pinta.Core/Actions/ViewActions.cs:105
 msgid "Normal Size"
 msgstr "일반 크기"
 
-#: ../Pinta.Tools/Tools/TextTool.cs:624
+#: ../Pinta.Tools/Tools/TextTool.cs:636
 msgid "Normal and Outline"
 msgstr "일반 및 윤곽선"
 
-#: ../Pinta.Tools/Tools/BaseTransformTool.cs:734
+#: ../Impasto/MainWindow.cs:1230
+msgid "Nothing to open"
+msgstr ""
+
+#: ../Pinta.Tools/Tools/BaseTransformTool.cs:738
 #, csharp-format
 msgid "Nudge 10% of canvas: {0}"
 msgstr ""
 
-#: ../Pinta.Tools/Tools/BaseTransformTool.cs:733
+#: ../Pinta.Tools/Tools/BaseTransformTool.cs:737
 #, csharp-format
 msgid "Nudge 10px: {0}"
 msgstr ""
 
-#: ../Pinta.Tools/Tools/BaseTransformTool.cs:735
+#: ../Pinta.Tools/Tools/BaseTransformTool.cs:739
 #, csharp-format
 msgid "Nudge 20% of canvas: {0}"
 msgstr ""
@@ -2580,17 +2643,17 @@ msgstr ""
 msgid "Nudge selection up (5% canvas)"
 msgstr ""
 
-#: ../Pinta.Tools/Tools/BaseTransformTool.cs:507
+#: ../Pinta.Tools/Tools/BaseTransformTool.cs:511
 #, csharp-format
 msgid "Nudge {0} ({1}): {2}"
 msgstr ""
 
-#: ../Pinta.Tools/Tools/BaseTransformTool.cs:506
+#: ../Pinta.Tools/Tools/BaseTransformTool.cs:510
 #, csharp-format
 msgid "Nudge {0}: {1}"
 msgstr ""
 
-#: ../Pinta.Tools/Tools/BaseTransformTool.cs:732
+#: ../Pinta.Tools/Tools/BaseTransformTool.cs:736
 msgid "Nudge: Arrow keys"
 msgstr ""
 
@@ -2603,10 +2666,10 @@ msgstr "셀의 수"
 msgid "Number of threads to use for rendering"
 msgstr "렌더링에 사용할 스레드 수"
 
-#: ../Impasto/Actions/Help/KeyboardShortcutsDialogAction.cs:124
-#: ../Impasto/Dialogs/PreferencesDialog.cs:581
+#: ../Impasto/Actions/Help/KeyboardShortcutsDialogAction.cs:154
+#: ../Impasto/Dialogs/PreferencesDialog.cs:587
 #: ../Pinta.Gui.Widgets/Widgets/ColorPickerDialog.cs:492
-#: ../Pinta.Tools/Dialogs/TextPropertiesDialog.cs:268
+#: ../Pinta.Tools/Dialogs/TextPropertiesDialog.cs:267
 msgid "OK"
 msgstr "확인"
 
@@ -2616,16 +2679,16 @@ msgstr "확인"
 msgid "Object"
 msgstr "객체"
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:414
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:426
 msgid "Object Blend Mode"
 msgstr ""
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:393
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:405
 msgid "Object Opacity"
 msgstr ""
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:479
-#: ../Pinta.Tools/Tools/TextTool.cs:328
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:480
+#: ../Pinta.Tools/Tools/TextTool.cs:341
 msgid "Object — editable later"
 msgstr ""
 
@@ -2643,7 +2706,7 @@ msgstr "오프셋"
 
 #: ../Impasto/Actions/Edit/OffsetSelectionAction.cs:79
 #: ../Impasto/Dialogs/OffsetSelectionDialog.cs:52
-#: ../Pinta.Core/Actions/EditActions.cs:161
+#: ../Pinta.Core/Actions/EditActions.cs:155
 msgid "Offset Selection"
 msgstr "오프셋 선택"
 
@@ -2651,7 +2714,11 @@ msgstr "오프셋 선택"
 msgid "Oil Painting"
 msgstr "유화"
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:899
+#: ../Pinta.Tools/Tools/EraserTool.cs:420
+msgid "Opacity"
+msgstr ""
+
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:911
 #: ../Pinta.Gui.Widgets/Widgets/Layers/PropertiesDialogGridBuilder.cs:44
 msgid "Opacity:"
 msgstr "투명도:"
@@ -2669,16 +2736,16 @@ msgstr "열기"
 msgid "Open Curve Shape"
 msgstr "열린 곡선 모양"
 
-#: ../Pinta.Core/Managers/WorkspaceManager.cs:381
+#: ../Pinta.Core/Managers/WorkspaceManager.cs:392
 msgid "Open Image"
 msgstr "이미지 열기"
 
-#: ../Impasto/Actions/File/OpenDocumentAction.cs:111
+#: ../Impasto/Actions/File/OpenDocumentAction.cs:124
 #: ../Pinta.Core/Actions/LayerActions.cs:395
 msgid "Open Image File"
 msgstr "이미지 파일 열기"
 
-#: ../Pinta.Core/Actions/EditActions.cs:627
+#: ../Pinta.Core/Actions/EditActions.cs:608
 msgid "Open Palette File"
 msgstr "팔레트 파일 열기"
 
@@ -2690,10 +2757,21 @@ msgstr ""
 msgid "Open text properties"
 msgstr ""
 
-#: ../Pinta.Core/Actions/EditActions.cs:189
+#: ../Impasto/MainWindow.cs:1213
+#, csharp-format
+msgid "Open {0} files?"
+msgstr ""
+
+#: ../Pinta.Core/Actions/EditActions.cs:183
 #: ../Pinta.Core/Actions/FileActions.cs:96
 msgid "Open..."
 msgstr "열기..."
+
+#: ../Pinta.Core/Classes/Re-editable/ObjectRasterizer.cs:491
+msgid ""
+"Or move only the layer's pixels onto a new layer and leave the objects "
+"editable."
+msgstr ""
 
 #: ../Impasto/Dialogs/NewImageDialog.cs:331
 msgid "Orientation:"
@@ -2703,7 +2781,7 @@ msgstr "방향:"
 msgid "Original"
 msgstr "원본"
 
-#: ../Pinta.Tools/Tools/TextTool.cs:625
+#: ../Pinta.Tools/Tools/TextTool.cs:637
 msgid "Outline"
 msgstr "윤곽선"
 
@@ -2719,13 +2797,13 @@ msgstr "윤곽선 가장자리"
 msgid "Outline Object"
 msgstr "윤곽선 객체"
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:558
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:559
 #: ../Pinta.Tools/Tools/FreeformShapeTool.cs:222
 msgid "Outline Shape"
 msgstr "윤곽선 모양"
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:575
-#: ../Pinta.Tools/Tools/TextTool.cs:639
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:576
+#: ../Pinta.Tools/Tools/TextTool.cs:651
 msgid "Outline width"
 msgstr "외곽선 너비"
 
@@ -2757,7 +2835,7 @@ msgstr ""
 msgid "Paint Bucket"
 msgstr "색칠"
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:973
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:985
 msgid ""
 "Paint on the canvas to reveal the layer; erase to hide it. Right-click the "
 "row again for options."
@@ -2771,26 +2849,26 @@ msgstr ""
 msgid "Paintbrush"
 msgstr "페인트브러시"
 
-#: ../Pinta.Tools/Tools/TextTool.cs:327
+#: ../Pinta.Tools/Tools/TextTool.cs:340
 msgid ""
 "Painted into the active layer's pixels on commit. Immediately cut/move/erase "
 "like any artwork, but not editable later."
 msgstr ""
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:478
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:479
 msgid ""
 "Painted into the layer's pixels on commit. Immediately cut/move/erase like "
 "any artwork, but not editable later."
 msgstr ""
 
-#: ../Pinta.Core/Classes/Re-editable/ObjectRasterizer.cs:544
+#: ../Pinta.Core/Classes/Re-editable/ObjectRasterizer.cs:620
 msgid ""
 "Painting on a transformed layer is blocked while the transform is active. "
 "Rasterize the transform to paint here? The transform and everything beneath "
 "it become part of the layer's pixels."
 msgstr ""
 
-#: ../Pinta.Core/Actions/EditActions.cs:261
+#: ../Pinta.Core/Actions/EditActions.cs:255
 #: ../Pinta.Effects/Effects/DitheringEffect.cs:176
 msgid "Palette"
 msgstr "팔레트"
@@ -2799,7 +2877,7 @@ msgstr "팔레트"
 msgid "Palette Source"
 msgstr "팔레트 소스"
 
-#: ../Pinta.Core/Actions/EditActions.cs:708
+#: ../Pinta.Core/Actions/EditActions.cs:689
 msgid "Palette files"
 msgstr "팔레트 파일"
 
@@ -2807,7 +2885,7 @@ msgstr "팔레트 파일"
 msgid "Palette rows:"
 msgstr ""
 
-#: ../Impasto/Dialogs/PreferencesDialog.cs:242
+#: ../Impasto/Dialogs/PreferencesDialog.cs:248
 msgid "Palette size:"
 msgstr ""
 
@@ -2816,16 +2894,16 @@ msgid "Pan"
 msgstr "잡기"
 
 #: ../Impasto/Actions/Edit/PasteAction.cs:133
-#: ../Pinta.Core/Actions/EditActions.cs:118
+#: ../Pinta.Core/Actions/EditActions.cs:112
 #: ../Pinta.Core/HistoryItems/PasteHistoryItem.cs:41
 msgid "Paste"
 msgstr "붙여넣기"
 
-#: ../Pinta.Core/Actions/EditActions.cs:125
+#: ../Pinta.Core/Actions/EditActions.cs:119
 msgid "Paste Alternate"
 msgstr ""
 
-#: ../Pinta.Core/Actions/EditActions.cs:133
+#: ../Pinta.Core/Actions/EditActions.cs:127
 msgid "Paste Into New Image"
 msgstr "새 이미지로 붙여넣기"
 
@@ -2841,11 +2919,11 @@ msgstr ""
 msgid "Paste text"
 msgstr ""
 
-#: ../Impasto/MainWindow.cs:592
+#: ../Impasto/MainWindow.cs:611
 msgid "Paste to Active Layer"
 msgstr ""
 
-#: ../Impasto/MainWindow.cs:593
+#: ../Impasto/MainWindow.cs:612
 msgid "Paste to New Layer"
 msgstr ""
 
@@ -2866,8 +2944,8 @@ msgid "Percentile"
 msgstr "백분위수"
 
 #. Translators: 'Petite Caps' refers to the font-variant text property
-#: ../Pinta.Tools/Dialogs/TextPropertiesDialog.cs:250
-#: ../Pinta.Tools/Tools/TextTool.cs:406
+#: ../Pinta.Tools/Dialogs/TextPropertiesDialog.cs:249
+#: ../Pinta.Tools/Tools/TextTool.cs:418
 msgid "Petite Caps"
 msgstr ""
 
@@ -2879,12 +2957,24 @@ msgstr ""
 msgid "Photo"
 msgstr "사진"
 
+#. Translators: {0} is the number Photoshop stores for a color mode, such as 4 for CMYK.
+#: ../Pinta.Core/ImageFormats/PsdFormat.cs:128
+#, csharp-format
+msgid "Photoshop color mode {0} is not supported; only RGB and grayscale are"
+msgstr ""
+
+#. Translators: {0} is a number of bits, such as 16 or 32.
+#: ../Pinta.Core/ImageFormats/PsdFormat.cs:122
+#, csharp-format
+msgid "Photoshop documents with {0} bits per channel are not supported"
+msgstr ""
+
 #. Translators: Arrangement of points similar to how sunflower seeds are arranged
 #: ../Pinta.Core/Algorithms/SpatialPartition.cs:174
 msgid "Phyllotaxis"
 msgstr "엽서 배열"
 
-#: ../Impasto/Dialogs/PreferencesDialog.cs:266
+#: ../Impasto/Dialogs/PreferencesDialog.cs:272
 msgid "Pick tools from a dropdown instead of the tool box"
 msgstr ""
 
@@ -2923,7 +3013,7 @@ msgstr ""
 msgid "Pixelate"
 msgstr "픽셀화"
 
-#: ../Pinta.Core/Actions/ViewActions.cs:270
+#: ../Pinta.Core/Actions/ViewActions.cs:280
 msgid "Pixels"
 msgstr "픽셀"
 
@@ -2940,12 +3030,12 @@ msgstr "변경 사항을 적용하려면 Impasto를 재시작해 주세요."
 msgid "Please restart Impasto for the toolbox layout change to take effect."
 msgstr "도구 상자 레이아웃 변경 사항을 적용하려면 Impasto를 재시작하세요."
 
-#: ../Pinta.Tools/Tools/TextTool.cs:283
+#: ../Pinta.Tools/Tools/TextTool.cs:288
 msgid "Point"
 msgstr ""
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:997
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:1359
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:998
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:1361
 msgid "Point Added"
 msgstr "추가된 포인트"
 
@@ -2959,7 +3049,7 @@ msgstr "포인트 배열"
 msgid "Point Color"
 msgstr "포인트 색상"
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:1042
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:1043
 msgid "Point Deleted"
 msgstr "삭제된 포인트"
 
@@ -2968,13 +3058,13 @@ msgstr "삭제된 포인트"
 msgid "Point Size"
 msgstr "포인트 크기"
 
-#: ../Pinta.Tools/Tools/TextTool.cs:284
+#: ../Pinta.Tools/Tools/TextTool.cs:289
 msgid ""
 "Point text: the text grows to its natural width and only wraps where you "
 "press Enter."
 msgstr ""
 
-#: ../Pinta.Core/Managers/ActionManager.cs:313
+#: ../Pinta.Core/Managers/ActionManager.cs:307
 msgid "Pointer position on the canvas, in pixels from the top-left corner."
 msgstr ""
 
@@ -2986,7 +3076,7 @@ msgstr "극 반전"
 msgid "Polygon"
 msgstr "다각형"
 
-#: ../Impasto/Dialogs/PreferencesDialog.cs:186
+#: ../Impasto/Dialogs/PreferencesDialog.cs:192
 msgid "Popover hints:"
 msgstr "팝오버 힌트:"
 
@@ -3024,7 +3114,7 @@ msgstr "사전 설정 팔레트"
 msgid "Preset:"
 msgstr "사전 설정:"
 
-#: ../Impasto/Actions/Help/KeyboardShortcutsDialogAction.cs:443
+#: ../Impasto/Actions/Help/KeyboardShortcutsDialogAction.cs:448
 msgid "Press keys…"
 msgstr ""
 
@@ -3033,7 +3123,7 @@ msgstr ""
 msgid "Press {0} to decrease brush width"
 msgstr ""
 
-#: ../Pinta.Tools/Tools/TextTool.cs:773
+#: ../Pinta.Tools/Tools/TextTool.cs:785
 #, csharp-format
 msgid "Press {0} to decrease font size"
 msgstr ""
@@ -3048,7 +3138,7 @@ msgstr ""
 msgid "Press {0} to increase brush width"
 msgstr ""
 
-#: ../Pinta.Tools/Tools/TextTool.cs:774
+#: ../Pinta.Tools/Tools/TextTool.cs:786
 #, csharp-format
 msgid "Press {0} to increase font size"
 msgstr ""
@@ -3056,13 +3146,6 @@ msgstr ""
 #: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:149
 #, csharp-format
 msgid "Press {0} to increase outline width"
-msgstr ""
-
-#: ../Impasto/Actions/Help/KeyboardShortcutsDialogAction.cs:180
-#, csharp-format
-msgid ""
-"Press {0} twice quickly to deselect. Reference only — not independently "
-"rebindable."
 msgstr ""
 
 #: ../Impasto/Dialogs/NewImageDialog.cs:169
@@ -3077,7 +3160,7 @@ msgstr "기본"
 msgid "Print"
 msgstr "출력"
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:939
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:951
 msgid "Properties..."
 msgstr ""
 
@@ -3099,9 +3182,8 @@ msgstr "폼질: "
 msgid "Quick colors"
 msgstr ""
 
-#: ../Pinta.Core/Managers/ActionManager.cs:156
-#, csharp-format
-msgid "Quick deselect: {0} (×2)"
+#: ../Pinta.Core/Managers/ActionManager.cs:152
+msgid "Quick deselect"
 msgstr ""
 
 #: ../Pinta.Core/Actions/AppActions.cs:54
@@ -3178,12 +3260,12 @@ msgstr "랜덤 노이즈 시드"
 msgid "Random Point Locations"
 msgstr "무작위 포인트 위치"
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:477
-#: ../Pinta.Tools/Tools/TextTool.cs:326
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:478
+#: ../Pinta.Tools/Tools/TextTool.cs:339
 msgid "Raster — fuses to layer"
 msgstr ""
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:932
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:944
 msgid "Rasterize"
 msgstr ""
 
@@ -3191,7 +3273,7 @@ msgstr ""
 msgid "Rasterize All Objects"
 msgstr ""
 
-#: ../Pinta.Core/Classes/Re-editable/ObjectRasterizer.cs:607
+#: ../Pinta.Core/Classes/Re-editable/ObjectRasterizer.cs:683
 msgid "Rasterize Layer Effects"
 msgstr ""
 
@@ -3200,10 +3282,11 @@ msgid "Rasterize Objects"
 msgstr ""
 
 #: ../Pinta.Core/Classes/Re-editable/ObjectRasterizer.cs:178
+#: ../Pinta.Core/Classes/Re-editable/ObjectRasterizer.cs:493
 msgid "Rasterize Objects?"
 msgstr ""
 
-#: ../Pinta.Core/Classes/Re-editable/ObjectRasterizer.cs:547
+#: ../Pinta.Core/Classes/Re-editable/ObjectRasterizer.cs:623
 msgid "Rasterize to Paint?"
 msgstr ""
 
@@ -3211,7 +3294,7 @@ msgstr ""
 msgid "Re-edit existing text"
 msgstr ""
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:1303
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:1315
 msgid ""
 "Re-editable object: a live shape or text you can keep editing until you "
 "rasterize it."
@@ -3222,7 +3305,7 @@ msgid "Recently Used Colors"
 msgstr "최근 사용한 색상"
 
 #: ../Impasto/Actions/Edit/ResizePaletteAction.cs:160
-#: ../Impasto/Dialogs/PreferencesDialog.cs:216
+#: ../Impasto/Dialogs/PreferencesDialog.cs:222
 #: ../Pinta.Gui.Widgets/Widgets/PaletteWidget.cs:156
 msgid "Recently picked colors"
 msgstr ""
@@ -3270,7 +3353,7 @@ msgstr "빨강  "
 msgid "Red Eye Removal"
 msgstr "적목현상 제거"
 
-#: ../Pinta.Core/Actions/EditActions.cs:90
+#: ../Pinta.Core/Actions/EditActions.cs:84
 msgid "Redo"
 msgstr "다시 실행"
 
@@ -3290,7 +3373,7 @@ msgstr "굴절"
 msgid "Refresh"
 msgstr "새로 고침"
 
-#: ../Pinta.Tools/Tools/TextTool.cs:388
+#: ../Pinta.Tools/Tools/TextTool.cs:400
 msgid "Regular upper and lower case letters."
 msgstr "일반 대소문자입니다."
 
@@ -3298,12 +3381,12 @@ msgstr "일반 대소문자입니다."
 msgid "Relief"
 msgstr "돋을새김"
 
-#: ../Pinta.Core/Extensions/Gtk/GtkExtensions.Widget.cs:241
+#: ../Pinta.Core/Extensions/Gtk/GtkExtensions.Widget.cs:248
 #: ../Pinta.Tools/Tools/LassoSelectTool.cs:287
 msgid "Remove last point (Backspace)"
 msgstr ""
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:985
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:997
 msgid "Remove this layer's mask; the layer renders unmasked."
 msgstr ""
 
@@ -3311,11 +3394,11 @@ msgstr ""
 msgid "Rename Layer"
 msgstr "레이어 이름 바꾸기"
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:792
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:804
 msgid "Rename Layer..."
 msgstr ""
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:457
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:469
 msgid "Rename Object"
 msgstr ""
 
@@ -3331,7 +3414,7 @@ msgstr "렌더링"
 msgid "Rendering Effect"
 msgstr "렌더링 효과"
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:480
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:492
 msgid "Reorder Object"
 msgstr ""
 
@@ -3355,28 +3438,28 @@ msgstr "리샘플링:"
 msgid "Reseed"
 msgstr "다시 시드"
 
-#: ../Impasto/Actions/Help/KeyboardShortcutsDialogAction.cs:108
+#: ../Impasto/Actions/Help/KeyboardShortcutsDialogAction.cs:138
 #: ../Pinta.Effects/Dialogs/Effects.CurvesDialog.cs:207
 #: ../Pinta.Effects/Dialogs/Effects.LevelsDialog.cs:274
 #: ../Pinta.Gui.Widgets/Widgets/ColorPickerDialog.cs:480
 msgid "Reset"
 msgstr "초기화"
 
-#: ../Impasto/Actions/Help/KeyboardShortcutsDialogAction.cs:106
+#: ../Impasto/Actions/Help/KeyboardShortcutsDialogAction.cs:136
 msgid "Reset All Keyboard Shortcuts?"
 msgstr ""
 
-#: ../Impasto/Actions/Help/KeyboardShortcutsDialogAction.cs:103
+#: ../Impasto/Actions/Help/KeyboardShortcutsDialogAction.cs:133
 msgid "Reset All to Defaults"
 msgstr ""
 
-#: ../Pinta.Core/Actions/EditActions.cs:201
+#: ../Pinta.Core/Actions/EditActions.cs:195
 msgid "Reset to Default"
 msgstr "기본값으로 재설정"
 
 #: ../Impasto/Actions/Edit/ResizePaletteAction.cs:200
-#: ../Impasto/Actions/Help/KeyboardShortcutsDialogAction.cs:449
-#: ../Impasto/Dialogs/PreferencesDialog.cs:603
+#: ../Impasto/Actions/Help/KeyboardShortcutsDialogAction.cs:454
+#: ../Impasto/Dialogs/PreferencesDialog.cs:609
 msgid "Reset to default"
 msgstr ""
 
@@ -3385,7 +3468,7 @@ msgstr ""
 msgid "Reset to image size"
 msgstr "이미지 크기로 재설정"
 
-#: ../Impasto/MainWindow.cs:729
+#: ../Impasto/MainWindow.cs:748
 msgid "Reset window"
 msgstr ""
 
@@ -3441,8 +3524,8 @@ msgstr "반전 색상 구성표"
 msgid "Reverse Color Sorting"
 msgstr "반전 색상 정렬"
 
-#: ../Pinta.Tools/Dialogs/TextPropertiesDialog.cs:229
-#: ../Pinta.Tools/Tools/TextTool.cs:589
+#: ../Pinta.Tools/Dialogs/TextPropertiesDialog.cs:228
+#: ../Pinta.Tools/Tools/TextTool.cs:601
 msgid "Right Align"
 msgstr "오른쪽 정렬"
 
@@ -3454,19 +3537,19 @@ msgstr ""
 msgid "Right click + drag: move the whole shape."
 msgstr ""
 
-#: ../Pinta.Tools/Tools/TextTool.cs:2806
+#: ../Pinta.Tools/Tools/TextTool.cs:2853
 msgid "Right click to move"
 msgstr ""
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:1301
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:1313
 msgid "Right-click to change its settings, blending and strength"
 msgstr ""
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:1283
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:1295
 msgid "Right-click to delete the mask"
 msgstr ""
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:1304
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:1316
 msgid "Right-click to set blend mode and opacity, or open its properties"
 msgstr ""
 
@@ -3475,7 +3558,7 @@ msgid "Rotate / Zoom Layer..."
 msgstr "회전 / 레이어 확대↔축소..."
 
 #: ../Pinta.Core/Actions/ImageActions.cs:110
-#: ../Pinta.Core/Actions/ImageActions.cs:284
+#: ../Pinta.Core/Actions/ImageActions.cs:295
 #: ../Pinta.Core/HistoryItems/InvertHistoryItem.cs:47
 msgid "Rotate 180°"
 msgstr "180° 회전"
@@ -3509,7 +3592,7 @@ msgstr ""
 msgid "Rotation"
 msgstr "회전"
 
-#: ../Pinta.Tools/Dialogs/TextPropertiesDialog.cs:159
+#: ../Pinta.Tools/Dialogs/TextPropertiesDialog.cs:158
 msgid "Rotation: "
 msgstr ""
 
@@ -3518,7 +3601,7 @@ msgid "Roughness"
 msgstr "거칠기"
 
 #. Translators: 'Round Join' refers to the Cairo.LineJoin property
-#: ../Pinta.Tools/Tools/TextTool.cs:673
+#: ../Pinta.Tools/Tools/TextTool.cs:685
 msgid "Round Join"
 msgstr "원형 결합"
 
@@ -3532,15 +3615,15 @@ msgstr "둥근 선 모양"
 msgid "Rounded Rectangle"
 msgstr "둥근 사각형"
 
-#: ../Pinta.Tools/Tools/TextTool.cs:676
+#: ../Pinta.Tools/Tools/TextTool.cs:688
 msgid "Rounded corners on the outline."
 msgstr "윤곽선의 둥근 모서리입니다."
 
-#: ../Pinta.Core/Actions/ViewActions.cs:275
+#: ../Pinta.Core/Actions/ViewActions.cs:285
 msgid "Ruler Units"
 msgstr "눈금 단위"
 
-#: ../Pinta.Core/Actions/ViewActions.cs:183
+#: ../Pinta.Core/Actions/ViewActions.cs:192
 msgid "Rulers"
 msgstr "눈금자"
 
@@ -3577,7 +3660,7 @@ msgstr "채도 비율"
 
 #: ../Impasto/Actions/File/SaveDocumentImplementationAction.cs:144
 #: ../Impasto/Actions/File/SaveDocumentImplementationAction.cs:397
-#: ../Pinta.Core/Actions/EditActions.cs:661
+#: ../Pinta.Core/Actions/EditActions.cs:642
 #: ../Pinta.Core/Actions/FileActions.cs:111
 msgid "Save"
 msgstr "저장"
@@ -3586,7 +3669,7 @@ msgstr "저장"
 msgid "Save All"
 msgstr "모두 저장"
 
-#: ../Pinta.Core/Actions/EditActions.cs:195
+#: ../Pinta.Core/Actions/EditActions.cs:189
 #: ../Pinta.Core/Actions/FileActions.cs:118
 msgid "Save As..."
 msgstr "다른 이름으로 저장..."
@@ -3595,7 +3678,7 @@ msgstr "다른 이름으로 저장..."
 msgid "Save Image File"
 msgstr "이미지 파일 저장"
 
-#: ../Pinta.Core/Actions/EditActions.cs:658
+#: ../Pinta.Core/Actions/EditActions.cs:639
 msgid "Save Palette File"
 msgstr "팔레트 파일 저장"
 
@@ -3608,7 +3691,7 @@ msgstr ""
 msgid "Save changes to image \"{0}\" before closing?"
 msgstr "닫기 전에 이미지 \"{0}\"에 변경 사항을 저장하시겠습니까?"
 
-#: ../Impasto/Dialogs/PreferencesDialog.cs:311
+#: ../Impasto/Dialogs/PreferencesDialog.cs:317
 msgid ""
 "Save your settings and preferences to a file, or load them from a previously "
 "exported file."
@@ -3623,7 +3706,7 @@ msgstr "배율"
 msgid "Screen"
 msgstr "화면"
 
-#: ../Impasto/Actions/Help/KeyboardShortcutsDialogAction.cs:139
+#: ../Impasto/Actions/Help/KeyboardShortcutsDialogAction.cs:170
 msgid "Search by name or key with quotes like \"ctrl-A\""
 msgstr ""
 
@@ -3631,7 +3714,7 @@ msgstr ""
 msgid "Secondary"
 msgstr "보조"
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:523
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:524
 msgid ""
 "Segments stay straight; clicking a segment does not insert curve control "
 "points."
@@ -3641,8 +3724,8 @@ msgstr ""
 msgid "Select"
 msgstr ""
 
-#: ../Pinta.Core/Actions/EditActions.cs:168
-#: ../Pinta.Core/Actions/EditActions.cs:375
+#: ../Pinta.Core/Actions/EditActions.cs:162
+#: ../Pinta.Core/Actions/EditActions.cs:369
 msgid "Select All"
 msgstr "전체 선택"
 
@@ -3658,7 +3741,7 @@ msgstr ""
 msgid "Select previous control point"
 msgstr ""
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:1282
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:1294
 msgid "Select this row to paint the mask; paint reveals, erase hides"
 msgstr ""
 
@@ -3666,7 +3749,7 @@ msgstr ""
 msgid "Selected Colors"
 msgstr "선택된 색상"
 
-#: ../Pinta.Core/Managers/ActionManager.cs:285
+#: ../Pinta.Core/Managers/ActionManager.cs:279
 msgid "Selection: top-left corner in pixels, then its width and height."
 msgstr ""
 
@@ -3684,12 +3767,12 @@ msgid "Selects the color on the current layer and current selected area."
 msgstr ""
 
 #. Translators: 'Semibold' (600) refers to the font-weight text property
-#: ../Pinta.Tools/Tools/TextTool.cs:503
+#: ../Pinta.Tools/Tools/TextTool.cs:515
 msgid "Semibold"
 msgstr "중간 굵게"
 
 #. Translators: 'Semilight' (350) refers to the font-weight text property
-#: ../Pinta.Tools/Tools/TextTool.cs:479
+#: ../Pinta.Tools/Tools/TextTool.cs:491
 msgid "Semilight"
 msgstr "중간 밝게"
 
@@ -3697,7 +3780,7 @@ msgstr "중간 밝게"
 msgid "Sepia"
 msgstr "세피아"
 
-#: ../Pinta.Core/Actions/EditActions.cs:207
+#: ../Pinta.Core/Actions/EditActions.cs:201
 msgid "Set Number of Colors"
 msgstr "색상 수 설정"
 
@@ -3709,16 +3792,16 @@ msgstr ""
 msgid "Set selected control point to line"
 msgstr ""
 
-#: ../Impasto/Dialogs/PreferencesDialog.cs:324
-#: ../Impasto/Dialogs/PreferencesDialog.cs:581
+#: ../Impasto/Dialogs/PreferencesDialog.cs:330
+#: ../Impasto/Dialogs/PreferencesDialog.cs:587
 msgid "Settings"
 msgstr ""
 
-#: ../Impasto/Dialogs/PreferencesDialog.cs:463
+#: ../Impasto/Dialogs/PreferencesDialog.cs:469
 msgid "Settings files"
 msgstr ""
 
-#: ../Pinta.Core/Actions/EditActions.cs:213
+#: ../Pinta.Core/Actions/EditActions.cs:207
 msgid "Settings..."
 msgstr ""
 
@@ -3757,7 +3840,7 @@ msgstr ""
 msgid "Sharp Edges"
 msgstr "날카로운 모서리"
 
-#: ../Pinta.Tools/Tools/TextTool.cs:669
+#: ../Pinta.Tools/Tools/TextTool.cs:681
 msgid "Sharp, pointed corners on the outline."
 msgstr "윤곽선의 날카롭고 뾰족한 모서리입니다."
 
@@ -3775,7 +3858,7 @@ msgstr ""
 
 #: ../Pinta.Core/Extensions/Gtk/GtkExtensions.Interaction.cs:112
 #: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:2112
-#: ../Pinta.Tools/Tools/BaseTransformTool.cs:729
+#: ../Pinta.Tools/Tools/BaseTransformTool.cs:733
 msgid "Shift"
 msgstr ""
 
@@ -3793,7 +3876,7 @@ msgstr "단축키"
 
 #: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:147
 #: ../Pinta.Tools/Tools/BaseBrushTool.cs:155
-#: ../Pinta.Tools/Tools/TextTool.cs:772
+#: ../Pinta.Tools/Tools/TextTool.cs:784
 msgid "Shortcut keys:"
 msgstr ""
 
@@ -3807,20 +3890,20 @@ msgid "Show Axonometric Grid"
 msgstr "축사투영 격자 표시"
 
 #: ../Impasto/Dialogs/CanvasGridSettingsDialog.cs:57
-#: ../Pinta.Core/Actions/ViewActions.cs:136
+#: ../Pinta.Core/Actions/ViewActions.cs:137
 msgid "Show Grid"
 msgstr "격자 표시"
 
 #: ../Impasto/Actions/Layers/LayerPropertiesAction.cs:121
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:218
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:230
 msgid "Show Layer"
 msgstr "레이어 표시"
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:373
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:385
 msgid "Show Layer Mask"
 msgstr ""
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:444
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:456
 msgid "Show Object"
 msgstr ""
 
@@ -3829,7 +3912,7 @@ msgstr ""
 msgid "Show Points"
 msgstr "포인트 표시"
 
-#: ../Impasto/Dialogs/PreferencesDialog.cs:197
+#: ../Impasto/Dialogs/PreferencesDialog.cs:203
 msgid "Show a third row of darker colors in the palette"
 msgstr ""
 
@@ -3845,15 +3928,15 @@ msgstr "시작점에 화살촉을 표시합니다."
 msgid "Show color wheel"
 msgstr ""
 
-#: ../Impasto/Dialogs/PreferencesDialog.cs:290
+#: ../Impasto/Dialogs/PreferencesDialog.cs:296
 msgid "Show cursor position in the status bar"
 msgstr ""
 
-#: ../Impasto/Dialogs/PreferencesDialog.cs:297
+#: ../Impasto/Dialogs/PreferencesDialog.cs:303
 msgid "Show image size and aspect ratio in the status bar"
 msgstr ""
 
-#: ../Impasto/Dialogs/PreferencesDialog.cs:282
+#: ../Impasto/Dialogs/PreferencesDialog.cs:288
 msgid "Show quick access toolbar"
 msgstr ""
 
@@ -3866,7 +3949,7 @@ msgstr "미리보기에 선택 항목의 밝기 표시"
 msgid "Show selection opacity in preview"
 msgstr ""
 
-#: ../Pinta.Core/Actions/ViewActions.cs:289
+#: ../Pinta.Core/Actions/ViewActions.cs:299
 msgid "Show/Hide"
 msgstr "표시/숨기기"
 
@@ -3893,11 +3976,11 @@ msgstr "크기"
 msgid "Size of the layer thumbnails; the lowest setting hides them"
 msgstr ""
 
-#: ../Pinta.Tools/Dialogs/TextPropertiesDialog.cs:148
+#: ../Pinta.Tools/Dialogs/TextPropertiesDialog.cs:147
 msgid "Size: "
 msgstr ""
 
-#: ../Impasto/Dialogs/PreferencesDialog.cs:274
+#: ../Impasto/Dialogs/PreferencesDialog.cs:280
 msgid "Skip the \"Rasterize Objects?\" confirmation"
 msgstr ""
 
@@ -3906,19 +3989,19 @@ msgid "Slash"
 msgstr "슬래시"
 
 #. Translators: 'Small Caps' refers to the font-variant text property
-#: ../Pinta.Tools/Dialogs/TextPropertiesDialog.cs:248
-#: ../Pinta.Tools/Tools/TextTool.cs:392
+#: ../Pinta.Tools/Dialogs/TextPropertiesDialog.cs:247
+#: ../Pinta.Tools/Tools/TextTool.cs:404
 msgid "Small Caps"
 msgstr ""
 
-#: ../Pinta.Tools/Tools/EraserTool.cs:357
+#: ../Pinta.Tools/Tools/EraserTool.cs:403
 msgid "Smooth"
 msgstr "매끄러운"
 
 #. Translators: Snaps tool input to the canvas grid, to the ruler's unit
 #. marks when the grid is hidden, or to the canvas edges and centre
 #. lines when neither is shown.
-#: ../Pinta.Core/Actions/ViewActions.cs:146
+#: ../Pinta.Core/Actions/ViewActions.cs:147
 msgid "Snap to grid/ruler/center"
 msgstr ""
 
@@ -3945,6 +4028,10 @@ msgstr ""
 msgid "Solo Layer {0}"
 msgstr ""
 
+#: ../Impasto/MainWindow.cs:1231
+msgid "Some dropped items were not opened"
+msgstr ""
+
 #: ../Impasto/Actions/File/SaveDocumentImplementationAction.cs:387
 msgid "Some effects cannot be saved as editable. Save anyway?"
 msgstr ""
@@ -3965,17 +4052,17 @@ msgstr "흩뿌리기"
 msgid "Squares"
 msgstr "사각형"
 
-#: ../Pinta.Core/Actions/ViewActions.cs:159
+#: ../Pinta.Core/Actions/ViewActions.cs:168
 msgid "Status Bar"
 msgstr "상태 표시줄"
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:480
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:481
 msgid ""
 "Stays a live, re-editable shape. Cutting, erasing, or filtering across it "
 "will rasterize it first."
 msgstr ""
 
-#: ../Pinta.Tools/Tools/TextTool.cs:329
+#: ../Pinta.Tools/Tools/TextTool.cs:342
 msgid ""
 "Stays a live, re-editable text object. Cutting, erasing, or filtering across "
 "it will rasterize it first."
@@ -3990,7 +4077,7 @@ msgstr ""
 msgid "Strength"
 msgstr "세기"
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:899
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:911
 msgid "Strength:"
 msgstr ""
 
@@ -4033,7 +4120,7 @@ msgstr "연필 도구로 전환하여 선택한 색상으로 바로 그릴 수 �
 
 #: ../Pinta.Core/Classes/Re-editable/ObjectRasterizer.cs:142
 #: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:123
-#: ../Pinta.Tools/Tools/TextTool.cs:144
+#: ../Pinta.Tools/Tools/TextTool.cs:149
 msgid "Text"
 msgstr "글자"
 
@@ -4045,7 +4132,7 @@ msgstr ""
 msgid "Text Properties"
 msgstr ""
 
-#: ../Pinta.Tools/Tools/TextTool.cs:614
+#: ../Pinta.Tools/Tools/TextTool.cs:626
 msgid "Text Style"
 msgstr "글꼴 스타일"
 
@@ -4075,13 +4162,13 @@ msgstr "글꼴 스타일"
 msgid "Text Tool"
 msgstr ""
 
-#: ../Pinta.Tools/Tools/TextTool.cs:759
+#: ../Pinta.Tools/Tools/TextTool.cs:771
 #, csharp-format
 msgid "Text properties ({0})"
 msgstr ""
 
 #. Translators: {0} is the name of an add-in.
-#: ../Impasto/MainWindow.cs:426
+#: ../Impasto/MainWindow.cs:445
 #, csharp-format
 msgid "The '{0}' add-in may not be compatible with this version of Impasto"
 msgstr "'{0}' 추가 기능이 이 버전의 Impasto와 호환되지 않을 수 있습니다"
@@ -4097,7 +4184,7 @@ msgid ""
 "of rows."
 msgstr ""
 
-#: ../Impasto/Dialogs/PreferencesDialog.cs:515
+#: ../Impasto/Dialogs/PreferencesDialog.cs:521
 msgid "The file had no keyboard shortcuts to import."
 msgstr ""
 
@@ -4161,7 +4248,7 @@ msgstr "설치에 실패했습니다!"
 msgid "The installation has completed with warnings."
 msgstr "설치가 경고와 함께 완료되었습니다."
 
-#: ../Impasto/Dialogs/PreferencesDialog.cs:283
+#: ../Impasto/Dialogs/PreferencesDialog.cs:289
 msgid ""
 "The row of icon buttons below the menu bar (New, Open, Save, Undo, Redo, "
 "Cut, Copy, Paste, and so on)."
@@ -4198,12 +4285,12 @@ msgstr ""
 msgid "Thickness"
 msgstr "두께"
 
-#: ../Pinta.Tools/Tools/TextTool.cs:651
+#: ../Pinta.Tools/Tools/TextTool.cs:663
 msgid "Thickness of the text outline, in pixels."
 msgstr "텍스트 윤곽선의 두께(픽셀 단위)입니다."
 
 #. Translators: 'Thin' (100) refers to the font-weight text property
-#: ../Pinta.Tools/Tools/TextTool.cs:461
+#: ../Pinta.Tools/Tools/TextTool.cs:473
 msgid "Thin"
 msgstr "얇은"
 
@@ -4213,11 +4300,11 @@ msgstr "얇은"
 msgid "Third-Party Notices"
 msgstr ""
 
-#: ../Impasto/Dialogs/PreferencesDialog.cs:488
+#: ../Impasto/Dialogs/PreferencesDialog.cs:494
 msgid "This does not look like a valid settings file."
 msgstr ""
 
-#: ../Impasto/Dialogs/PreferencesDialog.cs:535
+#: ../Impasto/Dialogs/PreferencesDialog.cs:541
 msgid ""
 "This file also contains keyboard shortcut overrides. Importing them will "
 "overwrite your current keyboard-shortcuts.json."
@@ -4228,10 +4315,14 @@ msgid "This format does not support layers. Flatten image?"
 msgstr "이 형식은 레이어를 지원하지 않습니다. 이미지를 평평하게 하시겠습니까?"
 
 #: ../Impasto/Actions/Image/LargeImagePrompt.cs:21
+msgid "This image size is too large"
+msgstr ""
+
+#: ../Impasto/Actions/Image/LargeImagePrompt.cs:37
 msgid "This image size may slow down your computer"
 msgstr ""
 
-#: ../Impasto/Actions/Help/KeyboardShortcutsDialogAction.cs:107
+#: ../Impasto/Actions/Help/KeyboardShortcutsDialogAction.cs:137
 msgid ""
 "This resets every command, tool, and tool binding shortcut to its default."
 msgstr ""
@@ -4262,9 +4353,15 @@ msgid "Tip: Right-click to remove control points."
 msgstr "팁: 제어점을 제거하려면 마우스 오른쪽 버튼을 클릭하세요."
 
 #. Translators: 'Title Caps' refers to the font-variant text property
-#: ../Pinta.Tools/Dialogs/TextPropertiesDialog.cs:253
-#: ../Pinta.Tools/Tools/TextTool.cs:427
+#: ../Pinta.Tools/Dialogs/TextPropertiesDialog.cs:252
+#: ../Pinta.Tools/Tools/TextTool.cs:439
 msgid "Title Caps"
+msgstr ""
+
+#: ../Pinta.Core/Classes/Re-editable/ObjectRasterizer.cs:489
+msgid ""
+"To move these pixels, these objects must be rasterized (baked into the "
+"layer's pixels and no longer editable):"
 msgstr ""
 
 #: ../Pinta.Core/Classes/Re-editable/ObjectRasterizer.cs:175
@@ -4289,7 +4386,7 @@ msgstr ""
 #: ../Pinta.Effects/Effects/OutlineObjectEffect.cs:208
 #: ../Pinta.Effects/Effects/RedEyeRemoveEffect.cs:53
 #: ../Pinta.Tools/Tools/FloodTool.cs:183
-#: ../Pinta.Tools/Tools/RecolorTool.cs:326
+#: ../Pinta.Tools/Tools/RecolorTool.cs:329
 msgid "Tolerance"
 msgstr "허용 오차"
 
@@ -4298,27 +4395,27 @@ msgstr "허용 오차"
 msgid "Tool"
 msgstr "도구"
 
-#: ../Pinta.Core/Actions/ViewActions.cs:165
+#: ../Pinta.Core/Actions/ViewActions.cs:174
 msgid "Tool Box"
 msgstr "도구 상자"
 
-#: ../Impasto/Actions/Help/KeyboardShortcutsDialogAction.cs:167
+#: ../Impasto/Actions/Help/KeyboardShortcutsDialogAction.cs:198
 msgid "Tool Specific"
 msgstr ""
 
-#: ../Pinta.Core/Actions/ViewActions.cs:123
+#: ../Pinta.Core/Actions/ViewActions.cs:124
 msgid "Tool Windows"
 msgstr "도구 창"
 
-#: ../Pinta.Core/Actions/ViewActions.cs:111
+#: ../Pinta.Core/Actions/ViewActions.cs:112
 msgid "Toolbar"
 msgstr "도구 모음"
 
-#: ../Impasto/Actions/Help/KeyboardShortcutsDialogAction.cs:163
+#: ../Impasto/Actions/Help/KeyboardShortcutsDialogAction.cs:194
 msgid "Tools"
 msgstr ""
 
-#: ../Impasto/Dialogs/PreferencesDialog.cs:251
+#: ../Impasto/Dialogs/PreferencesDialog.cs:257
 msgid ""
 "Tools fill one column instead of the sectioned 2-column grid, overflowing "
 "into another column once it runs out of vertical space. Requires a restart."
@@ -4370,7 +4467,7 @@ msgstr ""
 msgid "Transform Settings"
 msgstr ""
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:918
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:930
 msgid "Transform Settings..."
 msgstr ""
 
@@ -4463,36 +4560,36 @@ msgstr "2열 시에라"
 
 #: ../Pinta.Tools/Editable/EditEngines/ArrowedEditEngine.cs:361
 #: ../Pinta.Tools/Editable/EditEngines/TriangleEditEngine.cs:121
-#: ../Pinta.Tools/Tools/EraserTool.cs:353
+#: ../Pinta.Tools/Tools/EraserTool.cs:399
 #: ../Pinta.Tools/Tools/PaintBrushTool.cs:258
 msgid "Type"
 msgstr "형식"
 
-#: ../Impasto/Dialogs/PreferencesDialog.cs:320
+#: ../Impasto/Dialogs/PreferencesDialog.cs:326
 msgid "UI"
 msgstr "UI"
 
 #. Translators: 'Ultrabold' (800) refers to the font-weight text property
-#: ../Pinta.Tools/Tools/TextTool.cs:515
+#: ../Pinta.Tools/Tools/TextTool.cs:527
 msgid "Ultrabold"
 msgstr "초굵게"
 
 #. Translators: 'Ultraheavy' (1000) refers to the font-weight text property
-#: ../Pinta.Tools/Tools/TextTool.cs:527
+#: ../Pinta.Tools/Tools/TextTool.cs:539
 msgid "Ultraheavy"
 msgstr "초무거운"
 
 #. Translators: 'Ultralight' (200) refers to the font-weight text property
-#: ../Pinta.Tools/Tools/TextTool.cs:467
+#: ../Pinta.Tools/Tools/TextTool.cs:479
 msgid "Ultralight"
 msgstr "초경량"
 
-#: ../Pinta.Tools/Dialogs/TextPropertiesDialog.cs:198
-#: ../Pinta.Tools/Tools/TextTool.cs:552
+#: ../Pinta.Tools/Dialogs/TextPropertiesDialog.cs:197
+#: ../Pinta.Tools/Tools/TextTool.cs:564
 msgid "Underline"
 msgstr "밑줄"
 
-#: ../Pinta.Core/Actions/EditActions.cs:83
+#: ../Pinta.Core/Actions/EditActions.cs:77
 msgid "Undo"
 msgstr "실행 취소"
 
@@ -4509,8 +4606,8 @@ msgid "Unfocus"
 msgstr "초점 해제"
 
 #. Translators: 'Unicase' refers to the font-variant text property
-#: ../Pinta.Tools/Dialogs/TextPropertiesDialog.cs:252
-#: ../Pinta.Tools/Tools/TextTool.cs:420
+#: ../Pinta.Tools/Dialogs/TextPropertiesDialog.cs:251
+#: ../Pinta.Tools/Tools/TextTool.cs:432
 msgid "Unicase"
 msgstr ""
 
@@ -4539,11 +4636,11 @@ msgid "Unsaved Image {0}"
 msgstr "저장되지 않은 이미지 {0}"
 
 #: ../Pinta.Core/Actions/LayerActions.cs:473
-#: ../Pinta.Core/Managers/WorkspaceManager.cs:376
+#: ../Pinta.Core/Managers/WorkspaceManager.cs:387
 msgid "Unsupported file format"
 msgstr "지원하지 않는 파일 형식"
 
-#: ../Pinta.Core/Actions/EditActions.cs:650
+#: ../Pinta.Core/Actions/EditActions.cs:631
 msgid "Unsupported palette format"
 msgstr "지원되지 않는 팔레트 형식"
 
@@ -4571,11 +4668,11 @@ msgstr ""
 "미리보기, 작은 이미지 및 작은 각도에는 낮은 품질을 사용하세요. 최종 품질, 큰 "
 "이미지, 큰 각도에는 높은 품질을 사용하세요."
 
-#: ../Impasto/Dialogs/PreferencesDialog.cs:250
+#: ../Impasto/Dialogs/PreferencesDialog.cs:256
 msgid "Use thin column toolbox layout"
 msgstr "얇은 열 도구 상자 레이아웃 사용"
 
-#: ../Pinta.Tools/Tools/TextTool.cs:430
+#: ../Pinta.Tools/Tools/TextTool.cs:442
 msgid "Uses title-specific capital letter forms where available."
 msgstr "가능한 경우 제목 전용 대문자 형태를 사용합니다."
 
@@ -4607,8 +4704,8 @@ msgstr "세로 녹색 (G)"
 msgid "Vertical red (R)"
 msgstr "세로 빨간색 (R)"
 
-#: ../Impasto/Actions/Help/KeyboardShortcutsDialogAction.cs:182
-#: ../Impasto/MainWindow.cs:620 ../Pinta.Core/Classes/ToolSections.cs:24
+#: ../Impasto/Actions/Help/KeyboardShortcutsDialogAction.cs:203
+#: ../Impasto/MainWindow.cs:639 ../Pinta.Core/Classes/ToolSections.cs:24
 msgid "View"
 msgstr "보기"
 
@@ -4629,7 +4726,7 @@ msgstr "보로노이 다이어그램"
 msgid "Warmth"
 msgstr "따뜻함"
 
-#: ../Impasto/Dialogs/PreferencesDialog.cs:259
+#: ../Impasto/Dialogs/PreferencesDialog.cs:265
 msgid ""
 "When the window is too narrow for all of the current tool's settings, they "
 "continue on another row instead of scrolling horizontally."
@@ -4648,11 +4745,11 @@ msgstr "흰색"
 msgid "Width:"
 msgstr "너비:"
 
-#: ../Impasto/Actions/Help/KeyboardShortcutsDialogAction.cs:186
-#: ../Pinta.Core/Actions/ViewActions.cs:250
-#: ../Pinta.Core/Actions/ViewActions.cs:446
-#: ../Pinta.Core/Classes/DocumentWorkspace.cs:429
-#: ../Pinta.Core/Classes/DocumentWorkspace.cs:438
+#: ../Impasto/Actions/Help/KeyboardShortcutsDialogAction.cs:207
+#: ../Pinta.Core/Actions/ViewActions.cs:259
+#: ../Pinta.Core/Actions/ViewActions.cs:457
+#: ../Pinta.Core/Classes/DocumentWorkspace.cs:473
+#: ../Pinta.Core/Classes/DocumentWorkspace.cs:482
 #: ../Pinta.Core/Managers/KeyboardShortcutManager.cs:243
 msgid "Window"
 msgstr "창"
@@ -4661,7 +4758,7 @@ msgstr "창"
 msgid "Wrap"
 msgstr "포장"
 
-#: ../Impasto/Dialogs/PreferencesDialog.cs:258
+#: ../Impasto/Dialogs/PreferencesDialog.cs:264
 msgid "Wrap tool settings onto extra rows"
 msgstr ""
 
@@ -4676,7 +4773,7 @@ msgid "Xor ({0} + Right Click)"
 msgstr "Xor ({0} + 오른쪽 클릭)"
 
 #. Translators: {0} is the name of a file that the user does not have permission to open.
-#: ../Pinta.Core/Managers/WorkspaceManager.cs:517
+#: ../Pinta.Core/Managers/WorkspaceManager.cs:528
 #, csharp-format
 msgid "You do not have access to '{0}'."
 msgstr "'{0}'에 액세스할 수 없습니다."
@@ -4690,7 +4787,7 @@ msgstr ""
 "'{0}'을 수정할 수 있는 권한이 없습니다. 파일이나 폴더는 읽기 전용일 수 있습니"
 "다."
 
-#: ../Pinta.Core/Managers/WorkspaceManager.cs:481
+#: ../Pinta.Core/Managers/WorkspaceManager.cs:492
 #, csharp-format
 msgid ""
 "Your changes to {0} can't be saved back to that file. Use Save As to save "
@@ -4707,33 +4804,34 @@ msgstr "확대↔축소"
 msgid "Zoom Blur"
 msgstr "확대 흐림"
 
-#: ../Pinta.Core/Actions/ViewActions.cs:77
+#: ../Pinta.Core/Actions/ViewActions.cs:78
 msgid "Zoom In"
 msgstr "확대"
 
-#: ../Pinta.Core/Actions/ViewActions.cs:84
+#: ../Pinta.Core/Actions/ViewActions.cs:85
 msgid "Zoom Out"
 msgstr "축소"
 
-#: ../Pinta.Core/Actions/ViewActions.cs:98
+#: ../Pinta.Core/Actions/ViewActions.cs:99
 msgid "Zoom to Selection"
 msgstr "선택 영역 확대↔축소"
 
-#: ../Impasto/MainWindow.cs:541
+#: ../Impasto/MainWindow.cs:560
 msgid "_Adjustments"
 msgstr "조정(_A)"
 
 #: ../Impasto/Actions/Edit/PasteAction.cs:241
 #: ../Impasto/Actions/File/CloseDocumentAction.cs:83
-#: ../Impasto/Dialogs/ProgressDialog.cs:71
+#: ../Impasto/Dialogs/ProgressDialog.cs:71 ../Impasto/MainWindow.cs:1216
 #: ../Pinta.Core/Classes/Re-editable/ObjectRasterizer.cs:197
+#: ../Pinta.Core/Classes/Re-editable/ObjectRasterizer.cs:498
 #: ../Pinta.Core/Extensions/Gtk/GtkExtensions.Dialog.cs:209
-#: ../Pinta.Core/Extensions/Gtk/GtkExtensions.Widget.cs:311
-#: ../Pinta.Core/Extensions/Gtk/GtkExtensions.Widget.cs:313
+#: ../Pinta.Core/Extensions/Gtk/GtkExtensions.Widget.cs:318
+#: ../Pinta.Core/Extensions/Gtk/GtkExtensions.Widget.cs:320
 msgid "_Cancel"
 msgstr "취소(_C)"
 
-#: ../Impasto/Actions/Image/LargeImagePrompt.cs:32
+#: ../Impasto/Actions/Image/LargeImagePrompt.cs:48
 msgid "_Continue"
 msgstr ""
 
@@ -4742,19 +4840,19 @@ msgstr ""
 msgid "_Discard"
 msgstr "버리기(_D)"
 
-#: ../Impasto/MainWindow.cs:537
+#: ../Impasto/MainWindow.cs:556
 msgid "_Edit"
 msgstr "편집(_E)"
 
-#: ../Impasto/MainWindow.cs:536
+#: ../Impasto/MainWindow.cs:555
 msgid "_File"
 msgstr "파일(_F)"
 
-#: ../Impasto/MainWindow.cs:546
+#: ../Impasto/MainWindow.cs:565
 msgid "_Help"
 msgstr "도움말(_H)"
 
-#: ../Impasto/MainWindow.cs:540
+#: ../Impasto/MainWindow.cs:559
 msgid "_Image"
 msgstr "이미지(_I)"
 
@@ -4762,14 +4860,20 @@ msgstr "이미지(_I)"
 msgid "_Not Now"
 msgstr ""
 
+#: ../Impasto/Actions/Image/LargeImagePrompt.cs:29
 #: ../Impasto/Dialogs/ErrorDialog.cs:42 ../Impasto/Dialogs/ErrorDialog.cs:67
-#: ../Pinta.Core/Extensions/Gtk/GtkExtensions.Widget.cs:310
-#: ../Pinta.Core/Extensions/Gtk/GtkExtensions.Widget.cs:314
+#: ../Pinta.Core/Extensions/Gtk/GtkExtensions.Widget.cs:317
+#: ../Pinta.Core/Extensions/Gtk/GtkExtensions.Widget.cs:321
 #: ../Pinta.Gui.Addins/InstallDialog.cs:226
 msgid "_OK"
 msgstr "확인(_O)"
 
+#: ../Impasto/MainWindow.cs:1217
+msgid "_Open"
+msgstr ""
+
 #: ../Pinta.Core/Classes/Re-editable/ObjectRasterizer.cs:198
+#: ../Pinta.Core/Classes/Re-editable/ObjectRasterizer.cs:500
 msgid "_Rasterize"
 msgstr ""
 
@@ -4785,11 +4889,11 @@ msgstr ""
 msgid "_Save"
 msgstr "저장(_S)"
 
-#: ../Impasto/MainWindow.cs:539
+#: ../Impasto/MainWindow.cs:558
 msgid "_View"
 msgstr "보기(_V)"
 
-#: ../Impasto/MainWindow.cs:545
+#: ../Impasto/MainWindow.cs:564
 msgid "_Window"
 msgstr "창(_W)"
 
@@ -4797,7 +4901,7 @@ msgstr "창(_W)"
 msgid "draw;drawing;paint;painting;graphics;raster;2d;"
 msgstr "그리기;그림;페인트;회화;그래픽;래스터;2D;"
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:253
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:265
 msgid "every effect and object on this layer"
 msgstr ""
 
@@ -4826,12 +4930,12 @@ msgstr "비너스걸: https://venusgirls.tistory.com/"
 msgid "zbcoding — based on Pinta, (c) 2010-2026 the Pinta Project contributors"
 msgstr ""
 
-#: ../Impasto/Actions/Help/KeyboardShortcutsDialogAction.cs:241
+#: ../Impasto/Actions/Help/KeyboardShortcutsDialogAction.cs:263
 #, csharp-format
 msgid "{0} (Alternate {1})"
 msgstr ""
 
-#: ../Impasto/Actions/Help/KeyboardShortcutsDialogAction.cs:240
+#: ../Impasto/Actions/Help/KeyboardShortcutsDialogAction.cs:262
 #, csharp-format
 msgid "{0} (Alternate)"
 msgstr ""
@@ -4898,41 +5002,48 @@ msgstr "{0} 이미지 ({1})"
 msgid "{0} palette ({1})"
 msgstr "{0} 팔레트 ({1})"
 
-#: ../Pinta.Tools/Tools/TextTool.cs:2804
+#: ../Pinta.Tools/Tools/TextTool.cs:2851
 #, csharp-format
 msgid "{0} to edit"
 msgstr ""
 
-#: ../Pinta.Tools/Tools/TextTool.cs:2805
+#: ../Pinta.Tools/Tools/TextTool.cs:2852
 #, csharp-format
 msgid "{0} to open text properties"
 msgstr ""
 
-#: ../Pinta.Tools/Tools/TextTool.cs:160
+#: ../Pinta.Tools/Tools/TextTool.cs:165
 #, csharp-format
 msgid "{0} to re-edit an existing text object."
 msgstr ""
 
-#: ../Pinta.Tools/Tools/TextTool.cs:2814
+#: ../Pinta.Tools/Tools/TextTool.cs:2861
 #, csharp-format
 msgid "{0} to rotate"
 msgstr ""
 
-#: ../Pinta.Tools/Tools/TextTool.cs:162
+#: ../Pinta.Tools/Tools/TextTool.cs:167
 #, csharp-format
 msgid "{0} to rotate, {1} to finish typing."
 msgstr ""
 
-#: ../Impasto/Actions/Image/LargeImagePrompt.cs:23
+#: ../Impasto/Actions/Image/LargeImagePrompt.cs:39
 #, csharp-format
 msgid ""
 "{0} x {1} pixels needs about {2} MB of memory per layer, plus more for undo "
 "history."
 msgstr ""
 
+#: ../Impasto/Actions/Image/LargeImagePrompt.cs:24
+#, csharp-format
+msgid ""
+"{0} x {1} pixels would need {2} MB of memory per layer, more than the {3} MB "
+"an image can hold."
+msgstr ""
+
 #. Translators: This specifies the format of the zoom percentage choices
 #. in the toolbar.
-#: ../Pinta.Core/Actions/ViewActions.cs:427
+#: ../Pinta.Core/Actions/ViewActions.cs:438
 #, csharp-format
 msgid "{0}%"
 msgstr "{0}%"
@@ -4948,6 +5059,7 @@ msgstr ""
 msgid "{0}: curve the line around the selected point; {1}: straighten it."
 msgstr ""
 
+#: ../Impasto/MainWindow.cs:1238
 #: ../Pinta.Core/Classes/Re-editable/ObjectRasterizer.cs:187
 #, csharp-format
 msgid "…and {0} more"

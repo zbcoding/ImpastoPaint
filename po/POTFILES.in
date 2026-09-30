@@ -29,6 +29,7 @@ Impasto/Actions/Image/ResizeCanvasAction.cs
 Impasto/Actions/Image/ResizeImageAction.cs
 Impasto/Actions/Layers/LayerPropertiesAction.cs
 Impasto/Actions/Layers/RotateZoomLayerAction.cs
+Impasto/Actions/View/AlignToObjectsToggledAction.cs
 Impasto/Actions/View/ColorSchemeChangedAction.cs
 Impasto/Actions/View/EditCanvasGridAction.cs
 Impasto/Actions/View/ImageTabsToggledAction.cs
@@ -138,6 +139,7 @@ Pinta.Core/Classes/DocumentHistory.cs
 Pinta.Core/Classes/DocumentLayers.cs
 Pinta.Core/Classes/DocumentSelection.cs
 Pinta.Core/Classes/DocumentWorkspace.cs
+Pinta.Core/Classes/DroppedFilesPlan.cs
 Pinta.Core/Classes/Fraction.cs
 Pinta.Core/Classes/HsvColor.cs
 Pinta.Core/Classes/IColor.cs
@@ -288,6 +290,7 @@ Pinta.Core/Managers/EffectsManager.cs
 Pinta.Core/Managers/ImageConverterManager.cs
 Pinta.Core/Managers/KeyboardShortcutManager.cs
 Pinta.Core/Managers/LivePreviewManager.cs
+Pinta.Core/Managers/ObjectAlignment.cs
 Pinta.Core/Managers/PaintBrushManager.cs
 Pinta.Core/Managers/PaletteFormatManager.cs
 Pinta.Core/Managers/PaletteManager.cs

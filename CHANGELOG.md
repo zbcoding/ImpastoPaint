@@ -42,7 +42,8 @@ entries, is upstream Pinta work; the Impasto sections cover changes made in this
 - A single Escape now deselects. It used to take two quick presses. Escape still finalizes any
   text or shape being edited first, and while the pointer is over the canvas the Text and Lasso
   tools still take the first press to finish typing or cancel the outline. Ctrl+Z restores a
-  selection cleared by accident.
+  selection cleared by accident. Escape in a toolbar field, such as the brush width or font size,
+  only returns focus to the canvas; it no longer finalizes the edit or deselects.
 - The quick deselect appears in Keyboard Shortcuts as the rebindable "Deselect All (Quick)" row.
   The read-only "×2" reference row is gone, and the Deselect toolbar tooltip now shows whatever
   key it is bound to.

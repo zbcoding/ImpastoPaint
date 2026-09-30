@@ -338,6 +338,9 @@ internal sealed class MainWindow
 		if (SendToFocusWidget (controller))
 			return true;
 
+		if (LeaveTextFieldOnEscape (args))
+			return true;
+
 		// Give the Canvas (and by extension the tools)
 		// first shot at handling the event if
 		// the mouse pointer is on the canvas
@@ -388,6 +391,21 @@ internal sealed class MainWindow
 		var widget = window_shell.Window.FocusWidget;
 		if (widget != null && key_controller.Forward (widget)) return true;
 		return false;
+	}
+
+	// Escape in a text field (a toolbar spin button or entry) that did not handle it means "leave the
+	// field": return focus to the canvas and consume the key, so it reaches neither the tool (which
+	// would finalize an in-progress edit) nor the Escape shortcut (which would commit and deselect).
+	private bool LeaveTextFieldOnEscape (Gtk.EventControllerKey.KeyPressedSignalArgs args)
+	{
+		if (args.GetKey ().Value != Gdk.Constants.KEY_Escape)
+			return false;
+
+		if (window_shell.Window.FocusWidget is not Gtk.Editable || !PintaCore.Workspace.HasOpenDocuments)
+			return false;
+
+		PintaCore.Workspace.ActiveWorkspace.GrabFocusToCanvas ();
+		return true;
 	}
 
 	// Called when an extension node is added or removed

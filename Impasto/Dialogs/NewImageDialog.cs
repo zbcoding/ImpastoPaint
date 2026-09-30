@@ -415,7 +415,7 @@ public sealed partial class NewImageDialog
 			if (!int.TryParse (height_entry.Buffer!.Text!, out int height))
 				return false;
 
-			return width > 0 && height > 0;
+			return CairoExtensions.IsSupportedImageSize (new Size (width, height));
 		}
 	}
 

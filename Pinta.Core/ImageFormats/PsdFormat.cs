@@ -23,7 +23,6 @@ namespace Pinta.Core;
 
 public sealed class PsdFormat : IImageImporter
 {
-	private const int MaxDocumentSide = 30000;
 	private const int MaxLayerSide = 300000;
 	private const int MaxChannels = 56;
 
@@ -112,8 +111,12 @@ public sealed class PsdFormat : IImageImporter
 
 		if (channels < 1 || channels > MaxChannels)
 			throw new InvalidDataException ($"Invalid channel count {channels}");
-		if (width < 1 || height < 1 || width > MaxDocumentSide || height > MaxDocumentSide)
+		if (width < 1 || height < 1)
 			throw new InvalidDataException ($"Invalid image size {width}x{height}");
+		// A side above int.MaxValue wraps negative here and is refused with the rest.
+		if (!CairoExtensions.IsSupportedImageSize (new Size ((int) width, (int) height)))
+			// Translators: {0} and {1} are the width and height of an image in pixels.
+			throw new InvalidDataException (Translations.GetString ("A {0} x {1} pixel image is too large to open", width, height));
 		if (depth != 8)
 			// Translators: {0} is a number of bits, such as 16 or 32.
 			throw new NotSupportedException (Translations.GetString ("Photoshop documents with {0} bits per channel are not supported", depth));

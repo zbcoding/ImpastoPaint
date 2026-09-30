@@ -87,14 +87,25 @@ internal sealed class PsdFormatTest : DocumentHarness
 	[TestCase (true, Description = "The merged image of a file without layers")]
 	public void ATinyFileClaimingAHugeImageIsRejectedBeforeItIsAllocated (bool composite)
 	{
-		// A 30000x30000 canvas whose channels hold a few bytes, where 900 MB would be needed.
+		// A 23000x23000 canvas whose channels hold a few bytes, where 529 MB would be needed.
 		byte[] psd = composite
-			? Psd (30000, 30000, LayerSection ([]), [0, 0, 0, 0, 0, 0])
-			: Psd (30000, 30000, LayerSection (LayerRecord (30000, 30000, [(0, [0, 1, 0, 0])], mask: [])), []);
+			? Psd (23000, 23000, LayerSection ([]), [0, 0, 0, 0, 0, 0])
+			: Psd (23000, 23000, LayerSection (LayerRecord (23000, 23000, [(0, [0, 1, 0, 0])], mask: [])), []);
 
 		long before = GC.GetAllocatedBytesForCurrentThread ();
 		Assert.That (() => PsdFormat.Import (psd, null), Throws.InstanceOf<InvalidDataException> ());
 		Assert.That (GC.GetAllocatedBytesForCurrentThread () - before, Is.LessThan (10_000_000));
+	}
+
+	[Test]
+	public void AnImageTooLargeForItsPixelsToBeAddressedIsRefusedFromItsHeader ()
+	{
+		// Each side is within Photoshop's own limit and the file is otherwise complete: one 1x1
+		// layer. Its canvas needs 3.6 GB per layer, past what a surface's pixel span can reach.
+		byte[] psd = Psd (30000, 30000, LayerSection (LayerRecord (1, 1, [(0, [0, 0, 255])], mask: [])), []);
+
+		Assert.That (() => PsdFormat.Import (psd, null), Throws.InstanceOf<InvalidDataException> (),
+			"the open-file error dialog shows this refusal instead of a crash on the first pixel write");
 	}
 
 	[Test]

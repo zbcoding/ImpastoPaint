@@ -4,8 +4,9 @@ using Pinta.Core;
 namespace Pinta.Actions;
 
 /// <summary>
-/// Confirmation for resizes big enough to bog the machine down. Cairo still accepts these
-/// sizes, but every layer costs width * height * 4 bytes and history snapshots multiply that.
+/// Gate for resizes: refuses sizes an image surface cannot hold, and asks for confirmation on
+/// sizes big enough to bog the machine down, since every layer costs width * height * 4 bytes
+/// and history snapshots multiply that.
 /// </summary>
 internal static class LargeImagePrompt
 {
@@ -14,6 +15,21 @@ internal static class LargeImagePrompt
 
 	public static async Task<bool> ConfirmIfLarge (IChromeService chrome, Size newSize)
 	{
+		if (!CairoExtensions.IsSupportedImageSize (newSize)) {
+			await GtkExtensions.RunInfoAsync (
+				chrome.MainWindow,
+				Translations.GetString ("This image size is too large"),
+				// Translators: {0} and {1} are image dimensions; {2} and {3} are memory in megabytes.
+				Translations.GetString (
+					"{0} x {1} pixels would need {2} MB of memory per layer, more than the {3} MB an image can hold.",
+					newSize.Width,
+					newSize.Height,
+					(long) newSize.Width * newSize.Height * 4 / (1024 * 1024),
+					CairoExtensions.MaxImageBytes / (1024 * 1024)),
+				Translations.GetString ("_OK"));
+			return false;
+		}
+
 		long pixels = (long) newSize.Width * newSize.Height;
 		if (pixels <= WarnPixelCount)
 			return true;

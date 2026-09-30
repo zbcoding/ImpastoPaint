@@ -59,6 +59,11 @@ entries, is upstream Pinta work; the Impasto sections cover changes made in this
 
 ### Fixed
 
+- Images too large to hold in memory, such as 30000 x 30000, are refused instead of crashing. The
+  limit is about 2 GB of pixels per layer (up to 23170 x 23170 for a square, or 30000 x 10000 for
+  a wide image): New Image keeps OK disabled, Resize Image and Resize Canvas explain the limit, and
+  opening such a Photoshop file reports it as too large.
+
 - Redoing "Move to New Layer" puts the moved pixels only on the new layer. They used to be
   painted back onto the original layer as well.
 

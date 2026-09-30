@@ -79,6 +79,22 @@ partial class CairoExtensions
 	public const int MaxImageDimension = 32767;
 
 	/// <summary>
+	/// Largest pixel buffer an image surface can expose: <see cref="ImageSurface.GetData"/>
+	/// returns a span, so stride * height must fit in an int.
+	/// </summary>
+	public const long MaxImageBytes = int.MaxValue;
+
+	/// <summary>
+	/// Whether an ARGB32 image surface of this size can be created and read back: each side
+	/// within <see cref="MaxImageDimension"/>, and all pixels within <see cref="MaxImageBytes"/>.
+	/// The byte limit is what binds for a square image, at about 23170 x 23170.
+	/// </summary>
+	public static bool IsSupportedImageSize (Size size)
+		=> size.Width is >= 1 and <= MaxImageDimension
+		&& size.Height is >= 1 and <= MaxImageDimension
+		&& (long) size.Width * ColorBgra.SizeOf * size.Height <= MaxImageBytes;
+
+	/// <summary>
 	/// Wrapper method to create an ImageSurface and handle allocation failures.
 	/// </summary>
 	public static ImageSurface CreateImageSurface (
@@ -95,6 +111,13 @@ partial class CairoExtensions
 		// which otherwise only blows up later when the surface is uploaded to a texture.
 		if (surf.Status != Cairo.Status.Success)
 			throw new InvalidOperationException ($"Unable to create a {width}x{height} image surface: {surf.Status}");
+
+		// Cairo accepts a surface up to 32767 on each side, but its pixels can only be read
+		// back as a span of at most MaxImageBytes.
+		if ((long) surf.Stride * height > MaxImageBytes) {
+			surf.Dispose ();
+			throw new InvalidOperationException ($"Unable to create a {width}x{height} image surface: larger than {MaxImageBytes} bytes");
+		}
 
 		return surf;
 	}

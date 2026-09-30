@@ -73,12 +73,25 @@ internal sealed class DroppedFilesPlanTest : DocumentHarness
 	[Test]
 	public void FilesWithAnExtensionNoImporterClaimsAreStillTried ()
 	{
-		string[] names = ["photo.jfif", "scan.pgm", "picture.dat", "image.php?id=3"];
+		string[] names = ["photo.jfif", "scan.pgm", "picture.dat"];
 
 		DroppedFilesPlan plan = Plan ([.. names.Select (name => Make (name))]);
 
 		Assert.That (plan.ToOpen.Select (f => f.GetDisplayName ()), Is.EqualTo (names),
 			"a loader may read these even though no importer is registered for the extension");
+		Assert.That (plan.SkipsAnything, Is.False);
+	}
+
+	[Test]
+	public void AnImageDraggedFromABrowserIsStillTried ()
+	{
+		// A browser drop is a URL whose "extension" is often a query string. It is not a local
+		// file, and '?' is not a valid character in a Windows file name, so it is never made on disk.
+		const string uri = "https://example.invalid/image.php?id=3";
+
+		DroppedFilesPlan plan = Plan (Gio.FileHelper.NewForUri (uri));
+
+		Assert.That (plan.ToOpen.Select (f => f.GetUri ()), Is.EqualTo (new[] { uri }));
 		Assert.That (plan.SkipsAnything, Is.False);
 	}
 

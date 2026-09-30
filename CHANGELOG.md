@@ -8,6 +8,10 @@ entries, is upstream Pinta work; the Impasto sections cover changes made in this
 
 ## Impasto - [Unreleased](https://github.com/zbcoding/ImpastoPaint/compare/v0.5.0...main)
 
+Changes for the next release go here.
+
+## Impasto - [0.5.0](https://github.com/zbcoding/ImpastoPaint/releases/tag/v0.5.0) - 2026-09-30
+
 ### Added
 
 - The eraser has an Opacity slider (1-100%). A stroke erases each pixel to at most that share
@@ -36,108 +40,6 @@ entries, is upstream Pinta work; the Impasto sections cover changes made in this
   prompt also offers "Move to New Layer". It lifts only the layer's pixels onto a new layer
   directly above, with the same blend mode and opacity, and leaves the shapes and text editable
   where they were. Layers with effects still have to be rasterized first.
-
-### Changed
-
-- A single Escape now deselects. It used to take two quick presses. Escape still finalizes any
-  text or shape being edited first, and while the pointer is over the canvas the Text and Lasso
-  tools still take the first press to finish typing or cancel the outline. Ctrl+Z restores a
-  selection cleared by accident. Escape in a toolbar field, such as the brush width or font size,
-  only returns focus to the canvas; it no longer finalizes the edit or deselects.
-- The quick deselect appears in Keyboard Shortcuts as the rebindable "Deselect All (Quick)" row.
-  The read-only "×2" reference row is gone, and the Deselect toolbar tooltip now shows whatever
-  key it is bound to.
-- In Keyboard Shortcuts, a binding waiting on "Press keys..." is set to None if you click another
-  binding or OK instead of pressing a key. This is how to remove a shortcut, and it works for tool
-  shortcuts too. Escape, switching tabs or typing in the search box cancels instead and keeps the
-  old key.
-- The glow around the canvas is now a shade of the canvas surround color, darker on light
-  surrounds and lighter on dark ones, fading out to transparent, instead of a fixed grey border.
-- Zooming with the pointer keeps an edge or corner of the image pinned only when the pointer is
-  within 15% of it, then blends back to zooming at the pointer by 30%, so zooming near the middle
-  follows the pointer instead of drifting toward an edge.
-
-### Fixed
-
-- Images too large to hold in memory, such as 30000 x 30000, are refused instead of crashing. The
-  limit is about 2 GB of pixels per layer (up to 23170 x 23170 for a square, or 30000 x 10000 for
-  a wide image): New Image keeps OK disabled, Resize Image and Resize Canvas explain the limit, and
-  opening such a Photoshop file reports it as too large.
-
-- Redoing "Move to New Layer" puts the moved pixels only on the new layer. They used to be
-  painted back onto the original layer as well.
-
-- With View ▸ Align to objects off, starting to drag a shape, text object or selection no longer
-  scans every layer for things to line up with, so drags start sooner on large images.
-
-- Resize Canvas opens with the current canvas size. It used to reopen with the width and height
-  from the last resize, so a newly opened image showed the wrong numbers.
-
-- With Maintain aspect ratio on, Resize Canvas and Resize Image round the linked width or height to
-  the nearest pixel instead of dropping the fraction, so the result is closer to the original shape.
-
-- Dropping a folder onto the window no longer tries to read it as an image and fails with a list
-  of loader errors. Dropped folders are skipped and named in one message; every dropped file is
-  still tried, whatever its extension. Dropping more than 10 files asks before opening them all.
-  Opening a folder any other way says "Folders cannot be opened."
-- An image dragged in from a web browser that fails to open no longer clears the save location
-  of whichever image was already active. With no image open, the failure no longer silently
-  stops the rest of the drop from opening.
-- A Photoshop layer mask that stores no pixels now covers the whole layer with its background
-  color at its density, so an all-black mask hides the layer. It used to be dropped, so the layer
-  showed in full.
-- A small, malformed Photoshop file listing hundreds of empty layers is refused with an error
-  instead of claiming gigabytes of memory for them.
-- A Photoshop file whose compressed layer data ends early is refused as truncated channel data,
-  like other damaged files, instead of with "Unable to read beyond the end of the stream".
-- Opening a Photoshop file holds one copy of the file in memory while reading it, not two.
-- The reason shown when a Photoshop file is refused (16/32-bit, CMYK and other color modes, PSB)
-  can now be translated.
-
-- Saving to a format without layers (PNG, JPEG, ...) no longer writes a blank or faded image when
-  the bottom layer is hidden or translucent. Flatten folded every layer into the bottom layer but
-  left its hidden flag, opacity and blend mode on it, so they were applied a second time. The
-  flattened layer is now visible, fully opaque and Normal blend, and undoing the flatten restores
-  the old settings.
-- Slash brush strokes can be undone again. The brush reported no painted area, so its strokes
-  left no history entry.
-- A Recolor stroke that passes near the canvas without touching it no longer adds an empty undo
-  step.
-- The eraser frees the scratch image it makes for each mouse movement right away, instead of
-  leaving it for the garbage collector during long strokes.
-- Dragging a pasted image, or a selection already lifted by an earlier drag, no longer asks to
-  rasterize the shapes or text it happens to cover. Those pixels float above the layer until the
-  selection is finished, so there was nothing to bake.
-- Ctrl+Shift+A was also a default shortcut for View > Normal Size, so Keyboard Shortcuts marked
-  Deselect All as duplicated even after Reset to default. Normal Size keeps Ctrl+0.
-- Keyboard Shortcuts row tooltips show the key as "Shift+Ctrl+A" rather than the raw
-  "<Primary><Shift>A".
-- The Text tool's Area mode now creates area text. Every new click used to flip the Point/Area
-  menu back to Point and make point text.
-- An empty area box can be moved and resized before you type into it.
-- Changing Point/Area after clicking but before typing drops the blank text, so the next click
-  starts fresh in the new mode.
-- Switching point text to Area no longer makes a box that runs off the canvas. The box stops at
-  the canvas's right edge and the text wraps inside it.
-- Selecting a text object, for example by clicking its row in the Layers panel, no longer
-  changes how it looks. It used to pick up the previous text's alignment and underline, so
-  centred text could become left-aligned.
-- The AppImage's bundled-library notice (`usr/share/doc/impasto/THIRD-PARTY.AppImage.md`) said
-  its libraries came from Ubuntu 24.04, but the AppImage has been built on Ubuntu 26.04. The
-  notice now names the release of whatever system builds the image.
-- The Layers panel thumbnail of a layer holding shapes or text keeps the image's shape. A wide
-  image used to show an extra transparent strip along the bottom of its thumbnail that the image
-  itself does not have (a tall one was cropped instead).
-- Best Fit no longer leaves scrollbars when the image and the window have nearly the same shape.
-  It chose the limiting side before taking the surround around the canvas into account, so the
-  other side could end up a few pixels too big.
-- Toolbar button tooltips show the new key after a shortcut is changed in Keyboard Shortcuts,
-  including the quick-deselect key on Deselect and the Paste Alternate key on Paste. They used
-  to keep showing the key from when the window opened until restart.
-
-## Impasto - [0.5.0](https://github.com/zbcoding/ImpastoPaint/releases/tag/v0.5.0) - 2026-09-27
-
-### Added
 
 - Dragging with a tool past the edge of a zoomed-in canvas now scrolls the view that way, faster
   the further past the edge the pointer goes, and the tool keeps working on the part of the image
@@ -168,6 +70,24 @@ entries, is upstream Pinta work; the Impasto sections cover changes made in this
 
 ### Changed
 
+- A single Escape now deselects. It used to take two quick presses. Escape still finalizes any
+  text or shape being edited first, and while the pointer is over the canvas the Text and Lasso
+  tools still take the first press to finish typing or cancel the outline. Ctrl+Z restores a
+  selection cleared by accident. Escape in a toolbar field, such as the brush width or font size,
+  only returns focus to the canvas; it no longer finalizes the edit or deselects.
+- The quick deselect appears in Keyboard Shortcuts as the rebindable "Deselect All (Quick)" row.
+  The read-only "×2" reference row is gone, and the Deselect toolbar tooltip now shows whatever
+  key it is bound to.
+- In Keyboard Shortcuts, a binding waiting on "Press keys..." is set to None if you click another
+  binding or OK instead of pressing a key. This is how to remove a shortcut, and it works for tool
+  shortcuts too. Escape, switching tabs or typing in the search box cancels instead and keeps the
+  old key.
+- The glow around the canvas is now a shade of the canvas surround color, darker on light
+  surrounds and lighter on dark ones, fading out to transparent, instead of a fixed grey border.
+- Zooming with the pointer keeps an edge or corner of the image pinned only when the pointer is
+  within 15% of it, then blends back to zooming at the pointer by 30%, so zooming near the middle
+  follows the pointer instead of drifting toward an edge.
+
 - License files are simpler. The Paint.NET license moved into `THIRD-PARTY-NOTICES.md`, which
   now opens with a short list of what each license file covers, and its separate "PDN Reference
   License" section is gone from Help > About. The Windows installer's license page now shows
@@ -184,6 +104,56 @@ entries, is upstream Pinta work; the Impasto sections cover changes made in this
   pointer also no longer drifts when the image is smaller than the window and centered in it.
 
 ### Fixed
+
+- Images too large to hold in memory, such as 30000 x 30000, are refused instead of crashing. The
+  limit is about 2 GB of pixels per layer (up to 23170 x 23170 for a square, or 30000 x 10000 for
+  a wide image): New Image keeps OK disabled, Resize Image and Resize Canvas explain the limit, and
+  opening such a Photoshop file reports it as too large.
+
+- Resize Canvas opens with the current canvas size. It used to reopen with the width and height
+  from the last resize, so a newly opened image showed the wrong numbers.
+
+- With Maintain aspect ratio on, Resize Canvas and Resize Image round the linked width or height to
+  the nearest pixel instead of dropping the fraction, so the result is closer to the original shape.
+
+- Dropping a folder onto the window no longer tries to read it as an image and fails with a list
+  of loader errors. Dropped folders are skipped and named in one message; every dropped file is
+  still tried, whatever its extension. Dropping more than 10 files asks before opening them all.
+  Opening a folder any other way says "Folders cannot be opened."
+- An image dragged in from a web browser that fails to open no longer clears the save location
+  of whichever image was already active.
+
+- Saving to a format without layers (PNG, JPEG, ...) no longer writes a blank or faded image when
+  the bottom layer is hidden or translucent. Flatten folded every layer into the bottom layer but
+  left its hidden flag, opacity and blend mode on it, so they were applied a second time. The
+  flattened layer is now visible, fully opaque and Normal blend, and undoing the flatten restores
+  the old settings.
+- Dragging a pasted image, or a selection already lifted by an earlier drag, no longer asks to
+  rasterize the shapes or text it happens to cover. Those pixels float above the layer until the
+  selection is finished, so there was nothing to bake.
+- Ctrl+Shift+A was also a default shortcut for View > Normal Size, so Keyboard Shortcuts marked
+  Deselect All as duplicated even after Reset to default. Normal Size keeps Ctrl+0.
+- Keyboard Shortcuts row tooltips show the key as "Shift+Ctrl+A" rather than the raw
+  "<Primary><Shift>A".
+- The Text tool's Area mode now creates area text. Every new click used to flip the Point/Area
+  menu back to Point and make point text.
+- An empty area box can be moved and resized before you type into it.
+- Changing Point/Area after clicking but before typing drops the blank text, so the next click
+  starts fresh in the new mode.
+- Switching point text to Area no longer makes a box that runs off the canvas. The box stops at
+  the canvas's right edge and the text wraps inside it.
+- Selecting a text object, for example by clicking its row in the Layers panel, no longer
+  changes how it looks. It used to pick up the previous text's alignment and underline, so
+  centred text could become left-aligned.
+- The AppImage's bundled-library notice (`usr/share/doc/impasto/THIRD-PARTY.AppImage.md`) said
+  its libraries came from Ubuntu 24.04, but the AppImage has been built on Ubuntu 26.04. The
+  notice now names the release of whatever system builds the image.
+- The Layers panel thumbnail of a layer holding shapes or text keeps the image's shape. A wide
+  image used to show an extra transparent strip along the bottom of its thumbnail that the image
+  itself does not have (a tall one was cropped instead).
+- Toolbar button tooltips show the new key after a shortcut is changed in Keyboard Shortcuts,
+  including the quick-deselect key on Deselect and the Paste Alternate key on Paste. They used
+  to keep showing the key from when the window opened until restart.
 
 - A paintbrush stroke now finishes drawn: the stroke is painted on a scratch layer and only moved
   onto the real layer when the button is released, and nothing asked the canvas to repaint that

@@ -2,6 +2,7 @@ using System;
 using System.Buffers.Binary;
 using System.Collections.Generic;
 using System.IO;
+using System.IO.Compression;
 using System.Linq;
 using Cairo;
 using NUnit.Framework;
@@ -107,6 +108,20 @@ internal sealed class PsdFormatTest : DocumentHarness
 		byte[] psd = Psd (4000, 4000, LayerSection (layers), []);
 
 		Assert.That (() => PsdFormat.Import (psd, null), Throws.InstanceOf<InvalidDataException> ());
+	}
+
+	[Test]
+	public void ZipChannelDataThatEndsEarlyIsRejectedAsCorrupt ()
+	{
+		// A whole deflate stream, but only one of the 2x2 channel's two rows.
+		using MemoryStream compressed = new ();
+		using (ZLibStream zlib = new (compressed, CompressionLevel.Optimal, leaveOpen: true))
+			zlib.Write ([255, 255]);
+		byte[] channel = [0, 2, .. compressed.ToArray ()]; // Compression 2: ZIP.
+		byte[] psd = Psd (2, 2, LayerSection (LayerRecord (2, 2, [(0, channel)], mask: [])), []);
+
+		Assert.That (() => PsdFormat.Import (psd, null), Throws.InstanceOf<InvalidDataException> (),
+			"the importer's callers treat InvalidDataException as a corrupt file");
 	}
 
 	[Test]

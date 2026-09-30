@@ -559,7 +559,8 @@ public sealed class PsdFormat : IImageImporter
 		using ZLibStream zlib = new (new MemoryStream (data, start, end - start, writable: false), CompressionMode.Decompress);
 		byte[] row = new byte[rect.Width];
 		for (int y = 0; y < rect.Height; y++) {
-			zlib.ReadExactly (row);
+			if (zlib.ReadAtLeast (row, row.Length, throwOnEndOfStream: false) < row.Length)
+				throw new InvalidDataException ("Truncated ZIP channel data");
 			if (predicted) {
 				// Each byte was stored as the difference from the one to its left.
 				for (int x = 1; x < row.Length; x++)

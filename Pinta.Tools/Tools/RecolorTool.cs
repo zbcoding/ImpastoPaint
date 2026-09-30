@@ -234,10 +234,13 @@ public class RecolorTool : BaseBrushTool
 		int roiPadding = BrushWidth + 2;
 		RectangleI roi = RectangleI.FromPoints (last_point.Value, new PointI (x, y)).Inflated (roiPadding, roiPadding);
 
-		// Tested before the clamp, and against the stroke rather than the pointer: a wide brush
-		// dragged along an edge recolors on-canvas pixels with the pointer outside the canvas the
-		// whole time, and that has to be undoable.
-		if (document.Workspace.RectangleIntersectsCanvas (roi))
+		// Tested against the stroke rather than the pointer: a wide brush dragged along an edge
+		// recolors on-canvas pixels with the pointer outside the canvas the whole time, and that has
+		// to be undoable. The round-capped stroke reaches half the brush width, rounded up, from the
+		// segment; the wider roi above would record strokes that recolored nothing.
+		int recoloredReach = (BrushWidth / 2) + 1;
+		RectangleI recolored = RectangleI.FromPoints (last_point.Value, new PointI (x, y)).Inflated (recoloredReach, recoloredReach);
+		if (document.Workspace.RectangleIntersectsCanvas (recolored))
 			surface_modified = true;
 
 		roi = workspace.ClampToImageSize (roi);

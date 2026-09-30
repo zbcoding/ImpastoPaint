@@ -140,6 +140,27 @@ internal sealed class EdgeStrokeUndoTest : ToolsTestHarness
 	}
 
 	[Test]
+	public void RecolorStrokeThatMissesTheCanvasLeavesNoUndoStep ()
+	{
+		ImageSurface surface = Layer (0).Surface;
+		Fill (surface, WhitePixel);
+		PintaCore.Palette.PrimaryColor = RedInk;
+		PintaCore.Palette.SecondaryColor = White;
+
+		RecolorTool t = Activate<RecolorTool> ();
+		SetBrushWidth (t, 10);
+		int historyBefore = HistoryCount ();
+
+		// Half the brush width is 5, so a stroke 8 pixels above the canvas stops 3 pixels short of it.
+		Stroke (t, (10, -8), (40, -8));
+
+		Assert.That (surface.GetColorBgra (new PointI (25, 0)), Is.EqualTo (WhitePixel),
+			"the stroke must not reach the canvas");
+		Assert.That (HistoryCount (), Is.EqualTo (historyBefore),
+			"a stroke that recolored nothing must not leave an empty undo step");
+	}
+
+	[Test]
 	public void FreeformShapeDrawnAroundTheCanvasIsUndoable ()
 	{
 		FreeformShapeTool t = Activate<FreeformShapeTool> ();

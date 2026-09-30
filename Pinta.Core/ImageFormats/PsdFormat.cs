@@ -99,7 +99,7 @@ public sealed class PsdFormat : IImageImporter
 
 		int version = reader.ReadUInt16 ();
 		if (version == 2)
-			throw new NotSupportedException ("Large Photoshop documents (PSB) are not supported");
+			throw new NotSupportedException (Translations.GetString ("Large Photoshop documents (PSB) are not supported"));
 		if (version != 1)
 			throw new InvalidDataException ($"Unknown Photoshop document version {version}");
 
@@ -115,12 +115,14 @@ public sealed class PsdFormat : IImageImporter
 		if (width < 1 || height < 1 || width > MaxDocumentSide || height > MaxDocumentSide)
 			throw new InvalidDataException ($"Invalid image size {width}x{height}");
 		if (depth != 8)
-			throw new NotSupportedException ($"Photoshop documents with {depth} bits per channel are not supported");
+			// Translators: {0} is a number of bits, such as 16 or 32.
+			throw new NotSupportedException (Translations.GetString ("Photoshop documents with {0} bits per channel are not supported", depth));
 
 		bool isGray = colorMode switch {
 			1 => true,
 			3 => false,
-			_ => throw new NotSupportedException ($"Photoshop color mode {colorMode} is not supported; only RGB and grayscale are"),
+			// Translators: {0} is the number Photoshop stores for a color mode, such as 4 for CMYK.
+			_ => throw new NotSupportedException (Translations.GetString ("Photoshop color mode {0} is not supported; only RGB and grayscale are", colorMode)),
 		};
 
 		Header header = new ((int) width, (int) height, channels, isGray);
@@ -696,7 +698,8 @@ public sealed class PsdFormat : IImageImporter
 		int end = reader.Data.Length;
 
 		if (compression is not (0 or 1))
-			throw new NotSupportedException ($"Composite image compression {compression} is not supported");
+			// Translators: {0} is the number of a compression method stored in the file.
+			throw new NotSupportedException (Translations.GetString ("Composite image compression {0} is not supported", compression));
 
 		// All of it must be there before any plane is allocated. RLE row counts cover every channel, used or not.
 		long minimum = (channels * MinimumChannelLength (compression, canvas))

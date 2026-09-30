@@ -149,6 +149,47 @@ internal sealed class MoveSelectedRasterizePromptTest : ToolsTestHarness
 		});
 	}
 
+	// Undo leaves the move tool current (undoing the finish selects it), and redoing the added layer
+	// switched layers through the path that commits the current tool - which finished the floating
+	// pixels onto the source layer before the finish step put them on the new one, duplicating them.
+	[Test]
+	public void RedoingMoveToNewLayerPutsThePixelsOnlyOnTheNewLayer ()
+	{
+		UserLayer source = Layer (0);
+		Fill (source.Surface, Red);
+		AddObject (source, NamedBox ("Open Curve Shape 1", new RectangleI (4, 4, 8, 8)), "First");
+		Document.Selection = SelectionOf (new RectangleI (0, 0, 16, 16));
+		Document.Selection.Visible = true;
+
+		ObjectRasterizer.ConfirmLiftPrompt = _ => SelectionLiftChoice.NewLayer;
+		try {
+			Activate (new MoveSelectedTool (PintaCore.Services));
+			Click (new PointD (8, 8));
+		} finally {
+			ObjectRasterizer.ConfirmLiftPrompt = null;
+		}
+		Document.FinishSelection ();
+
+		Document.History.Undo (); // finish
+		Document.History.Undo (); // move to new layer
+		Document.History.Redo (); // move to new layer
+
+		Assert.Multiple (() => {
+			Assert.That (Document.Layers.UserLayers, Has.Count.EqualTo (2));
+			Assert.That (Document.Layers.CurrentUserLayerIndex, Is.EqualTo (1), "the new layer is current again");
+			Assert.That (Document.Layers.ShowSelectionLayer, Is.True, "the lifted pixels float until the finish is redone");
+			Assert.That (source.Surface.GetColorBgra (new PointI (2, 2)), Is.EqualTo (Transparent), "the lifted region stays off the source");
+		});
+
+		Document.History.Redo (); // finish
+
+		Assert.Multiple (() => {
+			Assert.That (source.Surface.GetColorBgra (new PointI (2, 2)), Is.EqualTo (Transparent), "the pixels were not finished onto the source");
+			Assert.That (source.Surface.GetColorBgra (new PointI (20, 20)), Is.EqualTo (Red), "pixels outside the selection stayed");
+			Assert.That (Layer (1).Surface.GetColorBgra (new PointI (2, 2)), Is.EqualTo (Red), "the lifted pixels landed on the new layer");
+		});
+	}
+
 	// Down and up at one point: starts (and ends) the move without displacing anything, so the
 	// lifted pixels stay where the assertions look for them.
 	private static void Click (PointD point)

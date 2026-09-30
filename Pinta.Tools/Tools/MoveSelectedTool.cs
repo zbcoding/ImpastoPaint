@@ -220,13 +220,15 @@ public sealed class MoveSelectedTool : BaseTransformTool
 		original_transform.InitIdentity ();
 	}
 
-	// Undo runs children in reverse: the layer goes first, then the lift is put back on the
-	// source layer, whose index the new layer (inserted above it) never shifted.
+	// Redo re-adds the layer before the lift floats the pixels again: re-adding switches layers,
+	// which commits the current tool, and committing a move while the pixels float would finish
+	// them onto the source. Undo runs children in reverse, so the lift is put back on the source
+	// layer (whose index the new layer, inserted above it, never shifted) and then the layer goes.
 	private CompoundHistoryItem GroupWithAddedLayer (MovePixelsHistoryItem move, AddLayerHistoryItem addLayer)
 	{
 		CompoundHistoryItem group = new (Icon, Translations.GetString ("Move to New Layer"));
-		group.Push (move);
 		group.Push (addLayer);
+		group.Push (move);
 		return group;
 	}
 

@@ -57,6 +57,9 @@ entries, is upstream Pinta work; the Impasto sections cover changes made in this
 
 ### Fixed
 
+- Redoing "Move to New Layer" puts the moved pixels only on the new layer. They used to be
+  painted back onto the original layer as well.
+
 - Resize Canvas opens with the current canvas size. It used to reopen with the width and height
   from the last resize, so a newly opened image showed the wrong numbers.
 

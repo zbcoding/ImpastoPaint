@@ -1234,21 +1234,9 @@ internal sealed class MainWindow
 		if (PintaCore.Workspace.ImageFitsInWindow) {
 			PintaCore.Actions.View.ActualSize.Activate ();
 		} else {
-			int image_x = PintaCore.Workspace.ImageSize.Width;
-			int image_y = PintaCore.Workspace.ImageSize.Height;
-
 			var canvas_viewport = PintaCore.Workspace.ActiveWorkspace.Canvas.Parent!;
-
-			int window_x = canvas_viewport.GetAllocatedWidth ();
-			int window_y = canvas_viewport.GetAllocatedHeight ();
-
-			int surround = 2 * DocumentWorkspace.CanvasMargin;
-			double ratio =
-				(image_x / (double) window_x >= image_y / (double) window_y)
-				? (window_x - surround) / (double) image_x
-				: (window_y - surround) / (double) image_y;
-
-			// The image is more constrained by width than height
+			Size viewport_size = new (canvas_viewport.GetAllocatedWidth (), canvas_viewport.GetAllocatedHeight ());
+			double ratio = DocumentWorkspace.BestFitScale (PintaCore.Workspace.ImageSize, viewport_size);
 
 			PintaCore.Workspace.Scale = ratio;
 			PintaCore.Actions.View.SuspendZoomUpdate ();

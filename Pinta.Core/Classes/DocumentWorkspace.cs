@@ -138,6 +138,17 @@ public sealed class DocumentWorkspace
 		return new (new_x, new_y);
 	}
 
+	/// <summary>
+	/// Largest scale at which the image and its surround fit inside the viewport on both axes.
+	/// </summary>
+	public static double BestFitScale (Size imageSize, Size viewportSize)
+	{
+		int surround = 2 * CanvasMargin;
+		double width_scale = (viewportSize.Width - surround) / (double) imageSize.Width;
+		double height_scale = (viewportSize.Height - surround) / (double) imageSize.Height;
+		return Math.Min (width_scale, height_scale);
+	}
+
 	#endregion
 
 	#region Public Methods

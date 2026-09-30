@@ -86,10 +86,11 @@ internal sealed class KeyboardShortcutsDialogAction : IActionHandler
 		return expected.Length > 0 && Tokens (shortcut).SequenceEqual (expected);
 	}
 
-	// The shortcut button showing "Press keys…" and how to leave it as None. Leaving the
-	// capture without pressing a key (clicking another shortcut, or OK) removes the
-	// shortcut, which is how a user unbinds one. Escape still cancels and keeps it.
-	private (Gtk.Button button, Action clear)? pending_capture;
+	// The shortcut button showing "Press keys…", how to leave it as None, and how to put its
+	// shortcut back. Leaving the capture without pressing a key (clicking another shortcut,
+	// or OK) removes the shortcut, which is how a user unbinds one. Escape, switching tabs
+	// or searching cancels it and keeps the shortcut, since the row is no longer in view.
+	private (Gtk.Button button, Action clear, Action restore)? pending_capture;
 
 	private void ClearPendingCapture ()
 	{
@@ -98,6 +99,15 @@ internal sealed class KeyboardShortcutsDialogAction : IActionHandler
 
 		pending_capture = null;
 		capture.clear ();
+	}
+
+	private void CancelPendingCapture ()
+	{
+		if (pending_capture is not { } capture)
+			return;
+
+		pending_capture = null;
+		capture.restore ();
 	}
 
 	private void Activated (object sender, EventArgs e)
@@ -196,6 +206,7 @@ internal sealed class KeyboardShortcutsDialogAction : IActionHandler
 		notebook.AppendPage (BuildCommandsPage (actions.Effects.Actions, states, refreshers, searchableLists, Query, searchResults), Gtk.Label.New (Translations.GetString ("Effects")));
 		notebook.AppendPage (BuildCommandsPage (GetCommands (actions.Window), states, refreshers, searchableLists, Query, searchResults), Gtk.Label.New (Translations.GetString ("Window")));
 		notebook.AppendPage (BuildCommandsPage (GetCommands (actions.Help), states, refreshers, searchableLists, Query, searchResults), Gtk.Label.New (Translations.GetString ("Help")));
+		notebook.OnSwitchPage += (_, _) => CancelPendingCapture ();
 
 		notebook.Vexpand = true;
 		notebook.Hexpand = true;
@@ -205,6 +216,7 @@ internal sealed class KeyboardShortcutsDialogAction : IActionHandler
 		content.Append (notebook);
 		content.Append (searchResults);
 		searchEntry.OnSearchChanged += (_, _) => {
+			CancelPendingCapture ();
 			bool searching = !string.IsNullOrWhiteSpace (Query ());
 			notebook.Visible = !searching;
 			searchResults.Visible = searching;
@@ -430,7 +442,8 @@ internal sealed class KeyboardShortcutsDialogAction : IActionHandler
 				state.Value = string.Empty;
 				state.RefreshRows ();
 				refreshDuplicates ();
-			}
+			},
+			state.RefreshRows
 			);
 			shortcutButton.Label = Translations.GetString ("Press keys…");
 			shortcutButton.GrabFocus ();

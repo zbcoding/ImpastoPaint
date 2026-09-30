@@ -80,6 +80,8 @@ entries, is upstream Pinta work; the Impasto sections cover changes made in this
   left its hidden flag, opacity and blend mode on it, so they were applied a second time. The
   flattened layer is now visible, fully opaque and Normal blend, and undoing the flatten restores
   the old settings.
+- Slash brush strokes can be undone again. The brush reported no painted area, so its strokes
+  left no history entry.
 - Dragging a pasted image, or a selection already lifted by an earlier drag, no longer asks to
   rasterize the shapes or text it happens to cover. Those pixels float above the layer until the
   selection is finished, so there was nothing to bake.

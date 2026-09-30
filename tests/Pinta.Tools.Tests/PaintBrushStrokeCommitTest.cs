@@ -97,8 +97,14 @@ internal sealed class PaintBrushStrokeCommitTest : ToolsTestHarness
 	[TestCase (typeof (Brushes.CircleBrush))]
 	[TestCase (typeof (Brushes.GridBrush))]
 	public void BrushReportsEveryPixelItPainted (System.Type brushType)
+		=> AssertReportsEveryPixelPainted ((BasePaintBrush) System.Activator.CreateInstance (brushType)!);
+
+	[Test]
+	public void SlashBrushReportsEveryPixelItPainted ()
+		=> AssertReportsEveryPixelPainted (new Brushes.SlashBrush (PintaCore.Settings, PintaCore.Workspace));
+
+	private static void AssertReportsEveryPixelPainted (BasePaintBrush brush)
 	{
-		BasePaintBrush brush = (BasePaintBrush) System.Activator.CreateInstance (brushType)!;
 		using ImageSurface surface = CairoExtensions.CreateImageSurface (Format.Argb32, 200, 200);
 		RectangleI reported;
 		using (Context g = new (surface)) {

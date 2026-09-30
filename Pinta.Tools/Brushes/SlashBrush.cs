@@ -101,6 +101,8 @@ internal sealed class SlashBrush : BasePaintBrush
 		g.LineTo (new_bottom.X, new_bottom.Y);
 		g.LineTo (old_bottom.X, old_bottom.Y);
 
+		// Measured before the fill consumes the path, which would leave nothing to measure.
+		RectangleI dirty = g.StrokeExtents ().ToInt ();
 		g.Fill ();
 
 		/*
@@ -120,12 +122,11 @@ internal sealed class SlashBrush : BasePaintBrush
 			g.MoveTo (antialias_correction_top.X, antialias_correction_top.Y);
 			g.LineTo (antialias_correction_bottom.X, antialias_correction_bottom.Y);
 			g.LineWidth = 2;
+			dirty = dirty.Union (g.StrokeExtents ().ToInt ());
 			g.Stroke ();
 			g.Antialias = previous_antialias;
 			g.LineWidth = line_width;
 		}
-
-		RectangleI dirty = g.StrokeExtents ().ToInt ();
 
 		return dirty;
 	}

@@ -16,6 +16,7 @@ using System.Buffers.Binary;
 using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
+using System.Linq;
 using System.Text;
 
 namespace Pinta.Core;
@@ -25,6 +26,11 @@ public sealed class PsdFormat : IImageImporter
 	private const int MaxDocumentSide = 30000;
 	private const int MaxLayerSide = 300000;
 	private const int MaxChannels = 56;
+
+	// Every layer, and every layer mask, is a full-canvas surface whatever its channels hold, so
+	// a few-KB file could list thousands of them. The cap fits one masked layer at the largest
+	// canvas, or about 500 layers at 2000x2000.
+	private const long MaxLayerSurfaceBytes = 8L << 30;
 
 	private const short TransparencyChannel = -1;
 	private const short UserMaskChannel = -2;
@@ -567,6 +573,8 @@ public sealed class PsdFormat : IImageImporter
 
 	private static void AddLayers (Document document, Header header, byte[] data, List<LayerRecord> records)
 	{
+		EnsureLayerSurfacesFit (header, records);
+
 		Dictionary<LayerRecord, Plane?> groupMasks = [];
 		for (int i = 0; i < records.Count; i++) {
 			LayerRecord record = records[i];
@@ -607,6 +615,17 @@ public sealed class PsdFormat : IImageImporter
 			document.Layers.Insert (layer, i);
 		}
 	}
+
+	private static void EnsureLayerSurfacesFit (Header header, List<LayerRecord> records)
+	{
+		int surfaceCount = records.Count + records.Count (HasAnyMask);
+		long surfaceBytes = (long) surfaceCount * header.Width * header.Height * 4;
+		if (surfaceBytes > MaxLayerSurfaceBytes)
+			throw new InvalidDataException ($"Too many layers ({records.Count}) for a {header.Width}x{header.Height} image");
+	}
+
+	private static bool HasAnyMask (LayerRecord record)
+		=> record.Mask is not null || record.EnclosingGroups.Exists (group => group.Mask is not null);
 
 	private static void WriteLayerPixels (Cairo.ImageSurface surface, Header header, Bounds rect, Dictionary<short, Plane> planes)
 	{

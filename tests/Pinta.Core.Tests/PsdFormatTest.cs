@@ -97,6 +97,19 @@ internal sealed class PsdFormatTest : DocumentHarness
 	}
 
 	[Test]
+	public void ATinyFileListingMoreLayersThanMemoryHoldsIsRejectedBeforeAnyIsCreated ()
+	{
+		// Layers with no channels cost a few bytes each in the file but a full canvas surface each
+		// once imported: 150 at 4000x4000 need 9.6 GB.
+		const int count = 150;
+		byte[] layer = LayerRecord (4000, 4000, [], mask: [])[2..]; // Without its layer count.
+		byte[] layers = [0, count, .. Enumerable.Repeat (layer, count).SelectMany (bytes => bytes)];
+		byte[] psd = Psd (4000, 4000, LayerSection (layers), []);
+
+		Assert.That (() => PsdFormat.Import (psd, null), Throws.InstanceOf<InvalidDataException> ());
+	}
+
+	[Test]
 	public void MaskDensityIsReadPastTheRealUserMaskOfALayerWithAVectorMask ()
 	{
 		// With a vector mask (channel -3) too, the real user mask's flags, background and rect

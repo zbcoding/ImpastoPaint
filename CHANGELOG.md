@@ -80,6 +80,8 @@ entries, is upstream Pinta work; the Impasto sections cover changes made in this
 - A Photoshop layer mask that stores no pixels now covers the whole layer with its background
   color at its density, so an all-black mask hides the layer. It used to be dropped, so the layer
   showed in full.
+- A small, malformed Photoshop file listing hundreds of empty layers is refused with an error
+  instead of claiming gigabytes of memory for them.
 
 - Saving to a format without layers (PNG, JPEG, ...) no longer writes a blank or faded image when
   the bottom layer is hidden or translucent. Flatten folded every layer into the bottom layer but

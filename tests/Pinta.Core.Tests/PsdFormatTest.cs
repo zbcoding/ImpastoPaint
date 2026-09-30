@@ -115,6 +115,22 @@ internal sealed class PsdFormatTest : DocumentHarness
 		Assert.That (layer.Mask!.Surface.GetColorBgra (PointI.Zero).A, Is.EqualTo (127));
 	}
 
+	[TestCase (255, 0, Description = "Hide All: the whole layer is hidden")]
+	[TestCase (128, 127, Description = "At half density, about half shows")]
+	public void AMaskWithAnEmptyRectIsItsDefaultColorEverywhere (int density, int expectedAlpha)
+	{
+		byte[] mask = [
+			.. Int32s (0, 0, 0, 0), 0, 0x10, // Empty rect, default color black, flags: parameters follow.
+			0x01, (byte) density, // Parameters: user mask density follows; density.
+		];
+		byte[] psd = Psd (2, 2, LayerSection (LayerRecord (2, 2, [(0, [0, 0, 255, 255, 255, 255]), (-2, [0, 0])], mask)), []);
+
+		UserLayer layer = PsdFormat.Import (psd, null).Layers.UserLayers.Single ();
+
+		Assert.That (layer.Mask, Is.Not.Null, "the mask has no pixels stored, but it still hides");
+		Assert.That (layer.Mask!.Surface.GetColorBgra (new PointI (1, 1)).A, Is.EqualTo (expectedAlpha));
+	}
+
 	[Test]
 	public void OpenFindsThePsdImporterByExtension ()
 	{

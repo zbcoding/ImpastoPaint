@@ -426,7 +426,8 @@ public sealed class PsdFormat : IImageImporter
 			int start = reader.Position;
 			int channelEnd = start + (int) channel.Length;
 
-			if (ChannelBounds (header, record, channel.Id) is Bounds rect && !rect.IsEmpty)
+			// A user mask with an empty rect is its default color everywhere, so it is kept too.
+			if (ChannelBounds (header, record, channel.Id) is Bounds rect && (!rect.IsEmpty || channel.Id == UserMaskChannel))
 				record.ChannelData.Add (new (channel.Id, rect, start, channelEnd));
 
 			reader.Seek (channelEnd);

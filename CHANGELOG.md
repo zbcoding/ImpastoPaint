@@ -77,6 +77,9 @@ entries, is upstream Pinta work; the Impasto sections cover changes made in this
 - An image dragged in from a web browser that fails to open no longer clears the save location
   of whichever image was already active. With no image open, the failure no longer silently
   stops the rest of the drop from opening.
+- A Photoshop layer mask that stores no pixels now covers the whole layer with its background
+  color at its density, so an all-black mask hides the layer. It used to be dropped, so the layer
+  showed in full.
 
 - Saving to a format without layers (PNG, JPEG, ...) no longer writes a blank or faded image when
   the bottom layer is hidden or translucent. Flatten folded every layer into the bottom layer but

@@ -7,9 +7,9 @@ using NUnit.Framework;
 namespace Pinta.Core.Tests;
 
 /// <summary>
-/// An accidental drop - a whole folder, or a folder's worth of mixed files - must not open every
-/// item as an image. Folders are never read as images; files that are not images are left alone;
-/// and a large batch waits for the user to confirm.
+/// An accidental drop - a whole folder - must not be read as an image, and a large batch waits
+/// for the user to confirm. Every other file is tried, as Open tries it: a name is no reliable
+/// guide to whether some loader can read the file.
 /// </summary>
 [TestFixture]
 internal sealed class DroppedFilesPlanTest : DocumentHarness
@@ -38,8 +38,8 @@ internal sealed class DroppedFilesPlanTest : DocumentHarness
 		return Gio.FileHelper.NewForPath (path);
 	}
 
-	private DroppedFilesPlan Plan (params Gio.File[] dropped)
-		=> DroppedFilesPlan.Create (dropped, PintaCore.ImageFormats);
+	private static DroppedFilesPlan Plan (params Gio.File[] dropped)
+		=> DroppedFilesPlan.Create (dropped);
 
 	[Test]
 	public void AFolderIsSkippedNotOpened ()
@@ -71,12 +71,15 @@ internal sealed class DroppedFilesPlanTest : DocumentHarness
 	}
 
 	[Test]
-	public void FilesThatAreNotImagesAreSkipped ()
+	public void FilesWithAnExtensionNoImporterClaimsAreStillTried ()
 	{
-		DroppedFilesPlan plan = Plan (Make ("notes.txt"), Make ("archive.zip"), Make ("a.png"));
+		string[] names = ["photo.jfif", "scan.pgm", "picture.dat", "image.php?id=3"];
 
-		Assert.That (plan.ToOpen.Select (f => f.GetDisplayName ()), Is.EqualTo (new[] { "a.png" }));
-		Assert.That (plan.Unsupported, Is.EqualTo (new[] { "notes.txt", "archive.zip" }));
+		DroppedFilesPlan plan = Plan ([.. names.Select (name => Make (name))]);
+
+		Assert.That (plan.ToOpen.Select (f => f.GetDisplayName ()), Is.EqualTo (names),
+			"a loader may read these even though no importer is registered for the extension");
+		Assert.That (plan.SkipsAnything, Is.False);
 	}
 
 	[Test]
@@ -88,13 +91,12 @@ internal sealed class DroppedFilesPlanTest : DocumentHarness
 	}
 
 	[Test]
-	public void AMixedDropKeepsTheImagesAndReportsTheRest ()
+	public void AMixedDropOpensTheFilesAndReportsTheFolders ()
 	{
 		DroppedFilesPlan plan = Plan (Make ("dir", folder: true), Make ("a.png"), Make ("b.txt"));
 
-		Assert.That (plan.ToOpen, Has.Count.EqualTo (1));
-		Assert.That (plan.Folders, Has.Count.EqualTo (1));
-		Assert.That (plan.Unsupported, Has.Count.EqualTo (1));
+		Assert.That (plan.ToOpen.Select (f => f.GetDisplayName ()), Is.EqualTo (new[] { "a.png", "b.txt" }));
+		Assert.That (plan.Folders, Is.EqualTo (new[] { "dir" }));
 		Assert.That (plan.SkipsAnything, Is.True);
 	}
 

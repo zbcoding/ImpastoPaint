@@ -1158,7 +1158,7 @@ internal sealed class MainWindow
 
 	private async Task OpenDroppedFiles (IReadOnlyList<Gio.File> dropped)
 	{
-		DroppedFilesPlan plan = DroppedFilesPlan.Create (dropped, PintaCore.ImageFormats);
+		DroppedFilesPlan plan = DroppedFilesPlan.Create (dropped);
 
 		if (plan.NeedsConfirmation && !await ConfirmOpeningManyFiles (plan.ToOpen.Count))
 			return;
@@ -1209,16 +1209,12 @@ internal sealed class MainWindow
 			? Translations.GetString ("Nothing to open")
 			: Translations.GetString ("Some dropped items were not opened");
 
-		List<string> lines = [];
-		if (plan.Folders.Count > 0)
-			lines.Add (Translations.GetString ("Folders cannot be opened. Drop the image files inside instead."));
-		if (plan.Unsupported.Count > 0)
-			lines.Add (Translations.GetString ("Not an image format Impasto can open."));
+		List<string> lines = [Translations.GetString ("Folders cannot be opened. Drop the image files inside instead.")];
 
-		string[] names = [.. plan.Folders, .. plan.Unsupported];
+		IReadOnlyList<string> names = plan.Folders;
 		lines.Add (string.Join (", ", names.Take (MaxSkippedNamesListed)));
-		if (names.Length > MaxSkippedNamesListed)
-			lines.Add (Translations.GetString ("…and {0} more", names.Length - MaxSkippedNamesListed));
+		if (names.Count > MaxSkippedNamesListed)
+			lines.Add (Translations.GetString ("…and {0} more", names.Count - MaxSkippedNamesListed));
 
 		return PintaCore.Chrome.ShowMessageDialog (PintaCore.Chrome.MainWindow, heading, string.Join ("\n", lines));
 	}

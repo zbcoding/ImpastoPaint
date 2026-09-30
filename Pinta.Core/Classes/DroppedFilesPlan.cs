@@ -1,13 +1,12 @@
 using System.Collections.Generic;
-using System.IO;
 
 namespace Pinta.Core;
 
 /// <summary>
 /// What to do with the items a drag-and-drop delivered to the main window: which to open, and
-/// which to leave alone. Dropping a whole folder, or a mixed selection, is usually an accident;
-/// opening every item as if it were an image floods the window with documents or with error
-/// dialogs, one per item.
+/// which to leave alone. Dropping a whole folder is usually an accident, and a folder holds no
+/// image to read. Every other file is tried, as Open does: a file's name is no reliable guide to
+/// whether some loader can read it.
 /// </summary>
 public sealed class DroppedFilesPlan
 {
@@ -22,50 +21,31 @@ public sealed class DroppedFilesPlan
 	/// <summary>Display names of dropped folders. Folders are never opened or expanded.</summary>
 	public IReadOnlyList<string> Folders { get; }
 
-	/// <summary>Display names of dropped files whose extension is not an image format Impasto reads.</summary>
-	public IReadOnlyList<string> Unsupported { get; }
-
 	public bool NeedsConfirmation => ToOpen.Count > ConfirmAboveCount;
 
-	public bool SkipsAnything => Folders.Count > 0 || Unsupported.Count > 0;
+	public bool SkipsAnything => Folders.Count > 0;
 
-	private DroppedFilesPlan (List<Gio.File> toOpen, List<string> folders, List<string> unsupported)
+	private DroppedFilesPlan (List<Gio.File> toOpen, List<string> folders)
 	{
 		ToOpen = toOpen;
 		Folders = folders;
-		Unsupported = unsupported;
 	}
 
-	public static DroppedFilesPlan Create (IEnumerable<Gio.File> dropped, ImageConverterManager formats)
+	public static DroppedFilesPlan Create (IEnumerable<Gio.File> dropped)
 	{
 		List<Gio.File> toOpen = [];
 		List<string> folders = [];
-		List<string> unsupported = [];
 
 		foreach (Gio.File file in dropped) {
-			string name = file.GetDisplayName ();
-
 			if (IsFolder (file))
-				folders.Add (name);
-			else if (IsOpenable (name, formats))
-				toOpen.Add (file);
+				folders.Add (file.GetDisplayName ());
 			else
-				unsupported.Add (name);
+				toOpen.Add (file);
 		}
 
-		return new (toOpen, folders, unsupported);
+		return new (toOpen, folders);
 	}
 
 	public static bool IsFolder (Gio.File file)
 		=> file.QueryFileType (Gio.FileQueryInfoFlags.None, null) == Gio.FileType.Directory;
-
-	// A name with no extension is still tried against every loader, as Open does: a picture
-	// dragged out of a browser often arrives without one. A name whose extension is not an image
-	// format at all is not worth an attempt.
-	private static bool IsOpenable (string displayName, ImageConverterManager formats)
-	{
-		string extension = Path.GetExtension (displayName);
-
-		return extension.Length == 0 || formats.GetImporterByFile (displayName) is not null;
-	}
 }

@@ -71,10 +71,9 @@ entries, is upstream Pinta work; the Impasto sections cover changes made in this
   the nearest pixel instead of dropping the fraction, so the result is closer to the original shape.
 
 - Dropping a folder onto the window no longer tries to read it as an image and fails with a list
-  of loader errors. Folders and files that are not images are skipped and named in one message.
-  Dropping more than 10 files asks before opening them all. Opening a folder any other way says
-  "Folders cannot be opened." The drop's skipped items follow the same rule, so a dropped file
-  with an extension that is not an image format is no longer tried against every loader.
+  of loader errors. Dropped folders are skipped and named in one message; every dropped file is
+  still tried, whatever its extension. Dropping more than 10 files asks before opening them all.
+  Opening a folder any other way says "Folders cannot be opened."
 
 - Saving to a format without layers (PNG, JPEG, ...) no longer writes a blank or faded image when
   the bottom layer is hidden or translucent. Flatten folded every layer into the bottom layer but

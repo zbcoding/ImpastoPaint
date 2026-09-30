@@ -39,9 +39,19 @@ public sealed class PsdFormat : IImageImporter
 	public Document Import (Gio.File file)
 	{
 		using GioStream stream = new (file.Read (cancellable: null));
-		using MemoryStream bytes = new ();
+		return Import (ReadToEnd (stream), file);
+	}
+
+	/// <summary>
+	/// Reads the whole file into one array, sized up front when the stream knows its length, so
+	/// a large file is not held twice while it is copied out.
+	/// </summary>
+	private static byte[] ReadToEnd (Stream stream)
+	{
+		int expectedLength = stream.CanSeek ? (int) Math.Clamp (stream.Length - stream.Position, 0, Array.MaxLength) : 0;
+		using MemoryStream bytes = new (expectedLength);
 		stream.CopyTo (bytes);
-		return Import (bytes.ToArray (), file);
+		return bytes.Length == bytes.Capacity ? bytes.GetBuffer () : bytes.ToArray ();
 	}
 
 	/// <summary>Decodes a whole PSD file already in memory. <paramref name="file"/> may be null in tests.</summary>

@@ -84,6 +84,7 @@ entries, is upstream Pinta work; the Impasto sections cover changes made in this
   instead of claiming gigabytes of memory for them.
 - A Photoshop file whose compressed layer data ends early is refused as truncated channel data,
   like other damaged files, instead of with "Unable to read beyond the end of the stream".
+- Opening a Photoshop file holds one copy of the file in memory while reading it, not two.
 
 - Saving to a format without layers (PNG, JPEG, ...) no longer writes a blank or faded image when
   the bottom layer is hidden or translucent. Flatten folded every layer into the bottom layer but

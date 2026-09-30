@@ -44,10 +44,10 @@
     <binary>impasto</binary>
   </provides>
   <releases>
-    <release version="0.5.0" date="2026-09-27">
+    <release version="0.5.0" date="2026-09-30">
       <url>https://github.com/zbcoding/ImpastoPaint/releases/tag/v0.5.0</url>
       <description>
-        <p>Photoshop documents open with their layers, names, blend modes and masks, dragging a tool past the edge of a zoomed-in canvas scrolls the view, and a text or shape object can be dragged onto another layer in the Layers panel. Opening a file Impasto can read but not save now says so up front, Ctrl+scroll zoom keeps the image's edges in view, and Import from File reads OpenRaster, PDN and AVIF files as layers.</p>
+        <p>Photoshop documents open with their layers, names, blend modes and masks, dragging a tool past the edge of a zoomed-in canvas scrolls the view, and moved shapes, text and selections line up with the other objects in the image under a pink guide. The eraser gains Opacity and Feather sliders, a single Escape now deselects, the Text tool's font list can be searched, and a text or shape object can be dragged onto another layer in the Layers panel.</p>
       </description>
     </release>
     <release version="0.4.0" date="2026-09-15">

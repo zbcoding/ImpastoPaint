@@ -84,6 +84,8 @@ entries, is upstream Pinta work; the Impasto sections cover changes made in this
   left no history entry.
 - A Recolor stroke that passes near the canvas without touching it no longer adds an empty undo
   step.
+- The eraser frees the scratch image it makes for each mouse movement right away, instead of
+  leaving it for the garbage collector during long strokes.
 - Dragging a pasted image, or a selection already lifted by an earlier drag, no longer asks to
   rasterize the shapes or text it happens to cover. Those pixels float above the layer until the
   selection is finished, so there was nothing to bake.

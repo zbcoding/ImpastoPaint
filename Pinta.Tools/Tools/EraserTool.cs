@@ -308,7 +308,7 @@ public sealed class EraserTool : BaseBrushTool
 		PointD to = new (end.X + 0.5, end.Y + 0.5);
 
 		// Allow clipping through a temporary surface
-		ImageSurface temporarySurface = CopySurfacePart (surface, destinationBounds);
+		using ImageSurface temporarySurface = CopySurfacePart (surface, destinationBounds);
 		Span<ColorBgra> temporaryData = temporarySurface.GetPixelData ();
 		ReadOnlySpan<ColorBgra> beforeData = before.GetReadOnlyPixelData ();
 

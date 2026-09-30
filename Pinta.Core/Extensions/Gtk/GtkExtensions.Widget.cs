@@ -166,24 +166,15 @@ partial class GtkExtensions
 
 	// Impasto: lets a toolbar button's tooltip mention a related command's shortcut,
 	// e.g. Paste mentioning the Paste Alternate shortcut and its (setting-dependent) destination.
+	// The tooltip is rebuilt whenever the user rebinds shortcuts.
 	public static Gtk.Button CreateToolBarItem (this Command action, bool force_icon_only = false, Command? alternate = null, string? alternate_description = null)
 	{
 		string label = action.ShortLabel ?? action.Label;
 
-		string baseTooltip = action.Tooltip ?? action.Label;
-
-		string fullTooltip = action.Shortcuts.Length switch {
-			0 => baseTooltip,
-			1 => $"{baseTooltip}\n{shortcut_label}: {ReadableAcceleratorLabel (action.Shortcuts[0])}",
-			_ => $"{baseTooltip}\n{shortcuts_label}:\n" + string.Join ('\n', action.Shortcuts.Select (s => $"- {ReadableAcceleratorLabel (s)}")),
-		};
-
-		if (alternate_description is not null && alternate?.Shortcuts.Length > 0)
-			fullTooltip += $"\n{alternate_description}: {ReadableAcceleratorLabel (alternate.Shortcuts[0])}";
-
 		Gtk.Button button = Gtk.Button.New ();
 		button.ActionName = action.FullName;
-		button.TooltipText = fullTooltip;
+		button.TooltipText = ToolBarItemTooltip (action, alternate, alternate_description);
+		PintaCore.Shortcuts.ShortcutsChanged += (_, _) => button.TooltipText = ToolBarItemTooltip (action, alternate, alternate_description);
 
 		// Press-time activation (keyboard still goes through the ActionName on `clicked`).
 		button.ActivateOnPress (action.Activate);
@@ -199,6 +190,22 @@ partial class GtkExtensions
 		}
 
 		return button;
+	}
+
+	private static string ToolBarItemTooltip (Command action, Command? alternate, string? alternate_description)
+	{
+		string baseTooltip = action.Tooltip ?? action.Label;
+
+		string fullTooltip = action.Shortcuts.Length switch {
+			0 => baseTooltip,
+			1 => $"{baseTooltip}\n{shortcut_label}: {ReadableAcceleratorLabel (action.Shortcuts[0])}",
+			_ => $"{baseTooltip}\n{shortcuts_label}:\n" + string.Join ('\n', action.Shortcuts.Select (s => $"- {ReadableAcceleratorLabel (s)}")),
+		};
+
+		if (alternate_description is not null && alternate?.Shortcuts.Length > 0)
+			fullTooltip += $"\n{alternate_description}: {ReadableAcceleratorLabel (alternate.Shortcuts[0])}";
+
+		return fullTooltip;
 	}
 
 	public static Gtk.Button CreateDockToolBarItem (this Command action)

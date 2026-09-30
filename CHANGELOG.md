@@ -112,6 +112,9 @@ entries, is upstream Pinta work; the Impasto sections cover changes made in this
 - Best Fit no longer leaves scrollbars when the image and the window have nearly the same shape.
   It chose the limiting side before taking the surround around the canvas into account, so the
   other side could end up a few pixels too big.
+- Toolbar button tooltips show the new key after a shortcut is changed in Keyboard Shortcuts,
+  including the quick-deselect key on Deselect and the Paste Alternate key on Paste. They used
+  to keep showing the key from when the window opened until restart.
 
 ## Impasto - [0.5.0](https://github.com/zbcoding/ImpastoPaint/releases/tag/v0.5.0) - 2026-09-27
 

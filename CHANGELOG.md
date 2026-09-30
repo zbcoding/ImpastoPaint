@@ -74,6 +74,9 @@ entries, is upstream Pinta work; the Impasto sections cover changes made in this
   of loader errors. Dropped folders are skipped and named in one message; every dropped file is
   still tried, whatever its extension. Dropping more than 10 files asks before opening them all.
   Opening a folder any other way says "Folders cannot be opened."
+- An image dragged in from a web browser that fails to open no longer clears the save location
+  of whichever image was already active. With no image open, the failure no longer silently
+  stops the rest of the drop from opening.
 
 - Saving to a format without layers (PNG, JPEG, ...) no longer writes a blank or faded image when
   the bottom layer is hidden or translucent. Flatten folded every layer into the bottom layer but

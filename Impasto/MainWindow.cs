@@ -1139,7 +1139,7 @@ internal sealed class MainWindow
 		// Read the list now: it belongs to the drop and is not valid once the handler returns.
 		List<Gio.File> dropped = [.. file_list.GetFilesHelper ().Select (RepairDroppedFile)];
 
-		_ = OpenDroppedFiles (dropped);
+		OpenDroppedFiles (dropped);
 
 		return true;
 	}
@@ -1156,7 +1156,9 @@ internal sealed class MainWindow
 		return Gio.FileHelper.NewForUri (Uri.UnescapeDataString (parseName));
 	}
 
-	private async Task OpenDroppedFiles (IReadOnlyList<Gio.File> dropped)
+	// async void, like the action handlers: a fault reaches the unhandled-exception dialog
+	// instead of vanishing with a discarded task.
+	private async void OpenDroppedFiles (IReadOnlyList<Gio.File> dropped)
 	{
 		DroppedFilesPlan plan = DroppedFilesPlan.Create (dropped);
 
@@ -1172,7 +1174,8 @@ internal sealed class MainWindow
 
 	private static void OpenDroppedFile (Gio.File file)
 	{
-		PintaCore.Workspace.OpenFile (file);
+		if (!PintaCore.Workspace.OpenFile (file))
+			return;
 
 		if (file.GetUriScheme () is string scheme &&
 		   (scheme.StartsWith ("http") || scheme.StartsWith ("ftp"))) {

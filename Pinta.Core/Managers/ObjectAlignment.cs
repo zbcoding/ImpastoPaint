@@ -47,7 +47,8 @@ public static class ObjectAlignment
 {
 	/// <summary>
 	/// Starts a drag of a box - a shape or a moved selection - collecting every visible shape and
-	/// text object, and the painted content of every visible layer, to align it to.
+	/// text object, and the painted content of every visible layer, to align it to. With Align to
+	/// objects off this is <see cref="AlignmentDrag.None"/>, so the drag skips that scan.
 	/// </summary>
 	/// <param name="moving">
 	/// The dragged box when the drag starts. A target with the same box is the dragged object
@@ -56,11 +57,19 @@ public static class ObjectAlignment
 	/// belong to the separate snap toggle.
 	/// </param>
 	public static AlignmentDrag BeginDrag (Document document, IChromeService chrome, RectangleD moving)
-		=> new (AlignmentLines.OfBox (moving), CollectTargets (document, chrome, moving, null));
+	{
+		if (!PintaCore.CanvasGrid.AlignToObjects)
+			return AlignmentDrag.None;
+
+		return new (AlignmentLines.OfBox (moving), CollectTargets (document, chrome, moving, null));
+	}
 
 	/// <summary>Starts a drag of a text object, which aligns by its glyphs and baseline as well as its box.</summary>
 	public static AlignmentDrag BeginDrag (Document document, IChromeService chrome, TextObject moving)
 	{
+		if (!PintaCore.CanvasGrid.AlignToObjects)
+			return AlignmentDrag.None;
+
 		TextLayout layout = new (chrome);
 		RectangleD box = moving.TextBounds.ToDouble ();
 		return new (LinesOf (moving, layout), CollectTargets (document, chrome, box, moving));

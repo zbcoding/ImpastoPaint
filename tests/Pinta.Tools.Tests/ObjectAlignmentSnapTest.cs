@@ -75,6 +75,24 @@ internal sealed class ObjectAlignmentSnapTest : ToolsTestHarness
 		Assert.That (PintaCore.CanvasGrid.ActiveAlignmentGuides, Is.Empty);
 	}
 
+	// Collecting targets scans every visible layer's pixels, so a drag started with alignment off
+	// must not pay for it - yet switching alignment back on has to work from the very next drag.
+	[Test]
+	public void ADragStartedWithAlignToObjectsOffCollectsNoTargets_AndTheNextDragAfterTurningItOnAligns ()
+	{
+		PasteImage (new RectangleI (4, 2, 12, 8));
+		RectangleD caption = new (20, 20, 6, 3);
+
+		PintaCore.CanvasGrid.AlignToObjects = false;
+		AlignmentDrag offDrag = ObjectAlignment.BeginDrag (Document, PintaCore.Chrome, caption);
+
+		PintaCore.CanvasGrid.AlignToObjects = true;
+		PointD landed = Drag (caption, caption with { X = 7.5 });
+
+		Assert.That (offDrag.Targets, Is.Empty, "nothing is collected while alignment is off");
+		Assert.That (landed.X, Is.EqualTo (7), "the next drag lines up with the image again");
+	}
+
 	// The shape being dragged is still in its layer at its starting position. Aligning to that
 	// copy would pull every small drag back to where it began.
 	[Test]

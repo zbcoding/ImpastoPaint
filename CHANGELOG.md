@@ -60,6 +60,9 @@ entries, is upstream Pinta work; the Impasto sections cover changes made in this
 - Redoing "Move to New Layer" puts the moved pixels only on the new layer. They used to be
   painted back onto the original layer as well.
 
+- With View ▸ Align to objects off, starting to drag a shape, text object or selection no longer
+  scans every layer for things to line up with, so drags start sooner on large images.
+
 - Resize Canvas opens with the current canvas size. It used to reopen with the width and height
   from the last resize, so a newly opened image showed the wrong numbers.
 

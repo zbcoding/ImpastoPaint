@@ -66,15 +66,16 @@ internal sealed class LayerThumbnailRowLayoutTest : DocumentHarness
 	// --- Size -----------------------------------------------------------------------------------
 
 	/// <summary>
-	/// The row asks for exactly the slider's size, which is how the pad grows when the slider moves.
+	/// The row asks for exactly the width the list hands it, which is how the pad grows when the
+	/// slider moves and shrinks when the pad narrows.
 	/// </summary>
 	[Test]
-	public void ThumbnailTakesTheSliderSize ()
+	public void ThumbnailTakesTheListsSize ()
 	{
 		LayerThumbnailScale.Step = LayerThumbnailScale.MaxStep;
 		LayersListViewItemWidget row = LayerRow ();
 
-		row.ApplyThumbnailLayout (labelBelow: false);
+		row.ApplyThumbnailLayout (LayerThumbnailScale.Width, labelBelow: false);
 
 		Assert.That (Thumbnail (row).WidthRequest, Is.EqualTo (LayerThumbnailScale.Width));
 		Assert.That (Thumbnail (row).HeightRequest, Is.EqualTo (LayerThumbnailScale.Height));
@@ -90,11 +91,11 @@ internal sealed class LayerThumbnailRowLayoutTest : DocumentHarness
 	{
 		LayerThumbnailScale.Step = 1;
 		LayersListViewItemWidget row = LayerRow ();
-		row.ApplyThumbnailLayout (labelBelow: false);
+		row.ApplyThumbnailLayout (LayerThumbnailScale.Width, labelBelow: false);
 		int small = Thumbnail (row).WidthRequest;
 
 		LayerThumbnailScale.Step = 4;
-		row.ApplyThumbnailLayout (labelBelow: false);
+		row.ApplyThumbnailLayout (LayerThumbnailScale.Width, labelBelow: false);
 
 		Assert.That (Thumbnail (row).WidthRequest, Is.EqualTo (LayerThumbnailScale.Width));
 		Assert.That (Thumbnail (row).WidthRequest, Is.GreaterThan (small));
@@ -111,7 +112,7 @@ internal sealed class LayerThumbnailRowLayoutTest : DocumentHarness
 		LayerThumbnailScale.Step = 2;
 		LayersListViewItemWidget row = LayerRow ();
 
-		row.ApplyThumbnailLayout (labelBelow: false);
+		row.ApplyThumbnailLayout (LayerThumbnailScale.Width, labelBelow: false);
 
 		Assert.That (ContentBox (row).GetOrientation (), Is.EqualTo (Gtk.Orientation.Horizontal));
 		Assert.That (ContentOrder (row), Is.EqualTo (new[] { "label", "thumbnail" }));
@@ -128,7 +129,7 @@ internal sealed class LayerThumbnailRowLayoutTest : DocumentHarness
 		LayerThumbnailScale.Step = 5;
 		LayersListViewItemWidget row = LayerRow ();
 
-		row.ApplyThumbnailLayout (labelBelow: true);
+		row.ApplyThumbnailLayout (LayerThumbnailScale.Width, labelBelow: true);
 
 		Assert.That (ContentBox (row).GetOrientation (), Is.EqualTo (Gtk.Orientation.Vertical));
 		Assert.That (ContentOrder (row), Is.EqualTo (new[] { "thumbnail", "label" }));
@@ -144,9 +145,9 @@ internal sealed class LayerThumbnailRowLayoutTest : DocumentHarness
 	{
 		LayerThumbnailScale.Step = 5;
 		LayersListViewItemWidget row = LayerRow ();
-		row.ApplyThumbnailLayout (labelBelow: true);
+		row.ApplyThumbnailLayout (LayerThumbnailScale.Width, labelBelow: true);
 
-		row.ApplyThumbnailLayout (labelBelow: false);
+		row.ApplyThumbnailLayout (LayerThumbnailScale.Width, labelBelow: false);
 
 		Assert.That (ContentBox (row).GetOrientation (), Is.EqualTo (Gtk.Orientation.Horizontal));
 		Assert.That (ContentOrder (row), Is.EqualTo (new[] { "label", "thumbnail" }));
@@ -164,7 +165,7 @@ internal sealed class LayerThumbnailRowLayoutTest : DocumentHarness
 		LayerThumbnailScale.Step = 0;
 		LayersListViewItemWidget row = LayerRow ();
 
-		row.ApplyThumbnailLayout (labelBelow: false);
+		row.ApplyThumbnailLayout (LayerThumbnailScale.Width, labelBelow: false);
 
 		Assert.That (Thumbnail (row).GetVisible (), Is.False);
 		Assert.That (RowLabel (row).GetVisible (), Is.True);
@@ -182,7 +183,7 @@ internal sealed class LayerThumbnailRowLayoutTest : DocumentHarness
 		LayersListViewItemWidget row = LayersListViewItemWidget.New ();
 		row.SetItem (LayersListViewItem.NewMaskRow (Document, Layer (0)));
 
-		row.ApplyThumbnailLayout (labelBelow: false);
+		row.ApplyThumbnailLayout (LayerThumbnailScale.Width, labelBelow: false);
 
 		Assert.That (Thumbnail (row).GetVisible (), Is.False);
 	}
@@ -197,10 +198,10 @@ internal sealed class LayerThumbnailRowLayoutTest : DocumentHarness
 		LayerThumbnailScale.Step = 3;
 		LayersListViewItemWidget row = LayersListViewItemWidget.New ();
 		row.SetItem (LayersListViewItem.NewMaskRow (Document, Layer (0)));
-		row.ApplyThumbnailLayout (labelBelow: false);
+		row.ApplyThumbnailLayout (LayerThumbnailScale.Width, labelBelow: false);
 
 		row.SetItem (LayersListViewItem.New (Document, Layer (0)));
-		row.ApplyThumbnailLayout (labelBelow: false);
+		row.ApplyThumbnailLayout (LayerThumbnailScale.Width, labelBelow: false);
 
 		Assert.That (Thumbnail (row).GetVisible (), Is.True);
 		Assert.That (Thumbnail (row).WidthRequest, Is.EqualTo (LayerThumbnailScale.Width));
@@ -216,7 +217,7 @@ internal sealed class LayerThumbnailRowLayoutTest : DocumentHarness
 	public void ViewportTooNarrowForTheNameStacksIt ()
 	{
 		LayerThumbnailScale.Step = 4;
-		double needed = LayerThumbnailScale.Width + 90 + 60; // name + row chrome
+		double needed = LayerThumbnailScale.Width + 90 + LayersListView.RowChromeWidth; // name + row chrome
 
 		Assert.That (LayersListView.LabelBelowForViewport (needed - 1), Is.True);
 		Assert.That (LayersListView.LabelBelowForViewport (needed), Is.False);
@@ -238,6 +239,26 @@ internal sealed class LayerThumbnailRowLayoutTest : DocumentHarness
 
 		LayerThumbnailScale.Step = LayerThumbnailScale.MaxStep;
 		Assert.That (LayersListView.LabelBelowForViewport (pad_width), Is.True);
+	}
+
+	/// <summary>
+	/// The slider sets the size a thumbnail asks for; a pad too narrow for it shrinks the thumbnail
+	/// to the room left after the row's chrome, so the biggest steps fill the pad instead of
+	/// running off its edge. A pad with room keeps the slider's size.
+	/// </summary>
+	[Test]
+	public void ThumbnailFitsThePadWidth ()
+	{
+		LayerThumbnailScale.Step = LayerThumbnailScale.MaxStep;
+		const double narrow_pad = 300;
+
+		Assert.That (
+			LayersListView.ThumbnailWidthForViewport (narrow_pad),
+			Is.EqualTo (narrow_pad - LayersListView.RowChromeWidth));
+		Assert.That (LayersListView.LabelBelowForViewport (narrow_pad), Is.True);
+
+		double wide_pad = LayerThumbnailScale.Width + LayersListView.RowChromeWidth + 500;
+		Assert.That (LayersListView.ThumbnailWidthForViewport (wide_pad), Is.EqualTo (LayerThumbnailScale.Width));
 	}
 
 	/// <summary>

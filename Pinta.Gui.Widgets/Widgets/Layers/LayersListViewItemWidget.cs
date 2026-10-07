@@ -614,6 +614,7 @@ public sealed partial class LayersListViewItemWidget
 
 	private LayersListViewItem? item;
 	private ImageSurface? thumbnail_surface;
+	private bool label_below;
 
 	private Gtk.DrawingArea item_thumbnail;
 	private Gtk.Label item_label;
@@ -1229,20 +1230,21 @@ public sealed partial class LayersListViewItemWidget
 		=> LayerThumbnailScale.Enabled && item is not null && !item.IsObjectRow && !item.IsMaskRow;
 
 	/// <summary>
-	/// Resizes the thumbnail to the current slider step and shapes the row around it.
+	/// Resizes the thumbnail to <paramref name="thumbnailWidth"/> and shapes the row around it.
 	/// <paramref name="labelBelow"/> stacks the label under the thumbnail instead of beside it,
 	/// which is what keeps a wide thumbnail from squeezing the layer name out of the row.
 	/// </summary>
-	public void ApplyThumbnailLayout (bool labelBelow)
+	public void ApplyThumbnailLayout (int thumbnailWidth, bool labelBelow)
 	{
-		item_thumbnail.WidthRequest = LayerThumbnailScale.Width;
-		item_thumbnail.HeightRequest = LayerThumbnailScale.Height;
+		item_thumbnail.WidthRequest = thumbnailWidth;
+		item_thumbnail.HeightRequest = LayerThumbnailScale.HeightForWidth (thumbnailWidth);
 
 		content_box.SetOrientation (labelBelow ? Gtk.Orientation.Vertical : Gtk.Orientation.Horizontal);
 
 		// Vertical: thumbnail first, label underneath. Horizontal: label first, thumbnail trailing.
 		content_box.ReorderChildAfter (item_thumbnail, labelBelow ? null : item_label);
 		item_thumbnail.Halign = labelBelow ? Gtk.Align.Start : Gtk.Align.End;
+		label_below = labelBelow;
 
 		item_thumbnail.SetVisible (ShowsThumbnail);
 
@@ -1400,8 +1402,9 @@ public sealed partial class LayersListViewItemWidget
 			draw_height = thumbnail_surface.Height * width / thumbnail_surface.Width;
 		}
 
+		// Stacked, the image starts at the thumbnail's left edge so the name under it lines up with it.
 		PointI offset = new (
-			X: (int) ((width - draw_width) / 2f),
+			X: label_below ? 0 : (int) ((width - draw_width) / 2f),
 			Y: (int) ((height - draw_height) / 2f)
 		);
 

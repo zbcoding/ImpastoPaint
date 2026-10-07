@@ -15,10 +15,11 @@ public static class LayerThumbnailScale
 	public const string SettingKey = "layers-thumbnail-size";
 
 	/// <summary>
-	/// Thumbnail widths in pixels, one per slider step. The first is "off". Heights follow from
-	/// <see cref="Height"/>, which keeps the 3:2 shape the rows have always used.
+	/// Thumbnail widths in pixels, one per slider step. The first is "off". These are the widths a
+	/// row asks for; the layer list shrinks them to fit its own width, so the biggest steps fill the
+	/// pad. Heights follow from <see cref="HeightForWidth"/>, which keeps the 3:2 row shape.
 	/// </summary>
-	private static readonly ImmutableArray<int> widths = [0, 40, 60, 90, 130, 180];
+	private static readonly ImmutableArray<int> widths = [0, 40, 60, 90, 130, 180, 240, 320, 420, 560];
 
 	private const int DefaultStep = 2; // 60px, the size before the slider existed.
 
@@ -45,7 +46,9 @@ public static class LayerThumbnailScale
 	/// <summary>Thumbnail width in pixels, or 0 when thumbnails are off.</summary>
 	public static int Width => widths[Step];
 
-	public static int Height => Width * 2 / 3;
+	public static int Height => HeightForWidth (Width);
+
+	public static int HeightForWidth (int width) => width * 2 / 3;
 
 	public static bool Enabled => Width > 0;
 }

@@ -53,14 +53,16 @@ public sealed partial class LayersListView
 	// Up/Down runs would otherwise leave the command with nothing selected to move.
 	private (UserLayer Layer, int Index)? last_object_row;
 
-	// Impasto: whether rows currently stack the layer name under its thumbnail. Recomputed from the
-	// thumbnail size and the list's own width, so a big thumbnail in a narrow pad still leaves the
-	// name readable instead of pushing it off the row.
+	// Impasto: the row shape, recomputed from the thumbnail slider and the list's own width.
+	// thumbnail_width is the slider's size shrunk to what fits the list, so the biggest steps fill
+	// the pad; label_below stacks the layer name under the thumbnail once a name beside it would
+	// not be readable.
+	private int thumbnail_width = LayerThumbnailScale.Width;
 	private bool label_below;
 
 	// Row space the thumbnail does not get: the tree expander's indent, the visibility check button,
-	// box spacing and margins.
-	private const int RowChromeWidth = 60;
+	// box spacing, margins and row padding.
+	internal const int RowChromeWidth = 76;
 
 	// Narrower than this and a layer name beside the thumbnail is not worth showing.
 	private const int MinLabelWidth = 90;
@@ -128,42 +130,51 @@ public sealed partial class LayersListView
 		// Impasto: the thumbnail slider (layers pad menu) and the pad's own width both decide the
 		// row shape, so react to each of them.
 		LayerThumbnailScale.Changed += (_, _) => {
-			label_below = ComputeLabelBelow ();
+			UpdateRowShape ();
 			ApplyRowLayout ();
 		};
 
 		Hadjustment!.OnNotify += (_, args) => {
 			if (args.Pspec.GetName () != "page-size")
 				return;
-			if (!UpdateLabelBelow ())
+			if (!UpdateRowShape ())
 				return;
 			ApplyRowLayout ();
 		};
 	}
 
 	/// <summary>
-	/// Whether the layer name has to move under the thumbnail for the list's current width.
+	/// The slider's thumbnail width, shrunk so a row's chrome and thumbnail fit the viewport. A
+	/// viewport of 0 has not been measured yet, so the slider's width stands.
 	/// </summary>
-	private bool ComputeLabelBelow ()
-		=> LabelBelowForViewport (Hadjustment?.PageSize ?? 0);
+	internal static int ThumbnailWidthForViewport (double viewportWidth)
+	{
+		int requested = LayerThumbnailScale.Width;
+		if (requested == 0 || viewportWidth <= 0)
+			return requested;
+
+		return Math.Clamp ((int) viewportWidth - RowChromeWidth, 1, requested);
+	}
 
 	/// <summary>
-	/// The width policy behind <see cref="ComputeLabelBelow"/>: a row keeps the name beside the
-	/// thumbnail only while the viewport has room for the chrome, the thumbnail and a readable
-	/// name. A viewport of 0 has not been measured yet, so the row keeps its default shape.
+	/// Whether the layer name has to move under the thumbnail: a row keeps it beside the thumbnail
+	/// only while the viewport has room for the chrome, the thumbnail and a readable name.
 	/// </summary>
 	internal static bool LabelBelowForViewport (double viewportWidth)
 		=> LayerThumbnailScale.Enabled
 			&& viewportWidth > 0
-			&& viewportWidth < LayerThumbnailScale.Width + MinLabelWidth + RowChromeWidth;
+			&& viewportWidth < ThumbnailWidthForViewport (viewportWidth) + MinLabelWidth + RowChromeWidth;
 
-	/// <summary>Recomputes <see cref="label_below"/>; true when it changed.</summary>
-	private bool UpdateLabelBelow ()
+	/// <summary>Recomputes the row shape for the current viewport; true when it changed.</summary>
+	private bool UpdateRowShape ()
 	{
-		bool below = ComputeLabelBelow ();
-		if (below == label_below)
+		double viewportWidth = Hadjustment?.PageSize ?? 0;
+		int width = ThumbnailWidthForViewport (viewportWidth);
+		bool below = LabelBelowForViewport (viewportWidth);
+		if (width == thumbnail_width && below == label_below)
 			return false;
 
+		thumbnail_width = width;
 		label_below = below;
 		return true;
 	}
@@ -176,7 +187,7 @@ public sealed partial class LayersListView
 	{
 		for (Gtk.Widget? row = list_view.GetFirstChild (); row is not null; row = row.GetNextSibling ())
 			foreach (LayersListViewItemWidget widget in RowItemWidgets (row))
-				widget.ApplyThumbnailLayout (label_below);
+				widget.ApplyThumbnailLayout (thumbnail_width, label_below);
 	}
 
 	private static IEnumerable<LayersListViewItemWidget> RowItemWidgets (Gtk.Widget parent)
@@ -253,7 +264,7 @@ public sealed partial class LayersListView
 		// A TreeExpander supplies the expand/collapse arrow and indentation; it wraps the row widget.
 		Gtk.TreeExpander expander = Gtk.TreeExpander.New ();
 		LayersListViewItemWidget widget = LayersListViewItemWidget.New ();
-		widget.ApplyThumbnailLayout (label_below);
+		widget.ApplyThumbnailLayout (thumbnail_width, label_below);
 		expander.SetChild (widget);
 		item.SetChild (expander);
 
@@ -275,7 +286,7 @@ public sealed partial class LayersListView
 		expander.SetListRow (row);
 		var widget = (LayersListViewItemWidget) expander.GetChild ()!;
 		widget.SetItem (model_item);
-		widget.ApplyThumbnailLayout (label_below);
+		widget.ApplyThumbnailLayout (thumbnail_width, label_below);
 	}
 
 	// A layer expands to a tree of sub-rows when it holds editable objects (shapes/text/modifiers)

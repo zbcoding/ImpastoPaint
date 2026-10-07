@@ -8,7 +8,11 @@ entries, is upstream Pinta work; the Impasto sections cover changes made in this
 
 ## Impasto - [Unreleased](https://github.com/zbcoding/ImpastoPaint/compare/v0.5.0...main)
 
-Changes for the next release go here.
+### Changed
+
+- The Layers panel Thumbnail Size slider goes bigger, and thumbnails shrink to fit the panel's
+  width, so the largest settings fill the sidebar instead of running past its edge. When the
+  layer name sits under its thumbnail, it lines up with the thumbnail's left edge.
 
 ## Impasto - [0.5.0](https://github.com/zbcoding/ImpastoPaint/releases/tag/v0.5.0) - 2026-09-30
 

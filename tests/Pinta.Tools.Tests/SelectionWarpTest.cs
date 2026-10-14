@@ -234,6 +234,49 @@ internal sealed class SelectionWarpTest : ToolsTestHarness
 		Assert.That (CornersOf (Document.Selection), Is.EqualTo (new PointI[] { new (6, 6), new (14, 6), new (14, 14), new (6, 14) }));
 	}
 
+	[Test]
+	public void AnotherToolsSelectionChangesDoNotRedrawTheWholeCanvas ()
+	{
+		// Built but never made current, as every registered tool is while another one draws a
+		// selection; that tool changes the selection on every mouse move.
+		_ = new MoveSelectedTool (PintaCore.Services);
+
+		int redraws = 0;
+		void Count (object? _, CanvasInvalidatedEventArgs args) => redraws++;
+		Document.Workspace.CanvasInvalidated += Count;
+		try {
+			Document.Selection = SelectionOf (new RectangleI (2, 2, 4, 4));
+		} finally {
+			Document.Workspace.CanvasInvalidated -= Count;
+		}
+
+		Assert.That (redraws, Is.Zero, "a tool that is not in use must not repaint for a selection it does not show");
+	}
+
+	[Test]
+	public void HoldingAltOverAWarpGripShowsTheRotateItWouldDo ()
+	{
+		MoveSelectedTool t = Activate (TransformMode.Skew);
+		Gdk.Cursor rotate = (Gdk.Cursor) typeof (BaseTransformTool).GetProperty ("RotateCursor", NonPublicInstance)!.GetValue (t)!;
+		PointD topGrip = new (12, 8);
+
+		Hover (t, topGrip, alt: false);
+		Gdk.Cursor? gripCursor = t.CurrentCursor;
+		Assert.That (gripCursor, Is.Not.SameAs (rotate));
+
+		Hover (t, topGrip, alt: true);
+		Assert.That (t.CurrentCursor, Is.SameAs (rotate), "an Alt press on the grip rotates, so the cursor must say so");
+
+		// Alt-drag from the grip rotates; finishing it resets the cursor, and the grip's must return.
+		typeof (BaseTool).GetMethod ("DoMouseDown", NonPublicInstance)!.Invoke (t, [Document, MouseArgs (topGrip, alt: true)]);
+		typeof (BaseTool).GetMethod ("DoMouseUp", NonPublicInstance)!.Invoke (t, [Document, MouseArgs (topGrip, alt: true)]);
+		Hover (t, topGrip, alt: false);
+		Assert.That (t.CurrentCursor, Is.SameAs (gripCursor), "hovering the grip after a rotate must show its cursor again");
+	}
+
+	private void Hover (BaseTool t, PointD at, bool alt)
+		=> typeof (BaseTool).GetMethod ("DoMouseMove", NonPublicInstance)!.Invoke (t, [Document, MouseArgs (at, alt)]);
+
 	// Through the saved setting, the way the mode last chosen comes back in a new session.
 	private MoveSelectedTool Activate (TransformMode mode)
 	{
@@ -273,10 +316,11 @@ internal sealed class SelectionWarpTest : ToolsTestHarness
 	private ColorBgra LayerPixel (int x, int y)
 		=> Layer (0).Surface.GetReadOnlyPixelData ()[(y * CanvasSize) + x];
 
-	private static ToolMouseEventArgs MouseArgs (PointD canvasPos) => new () {
+	private static ToolMouseEventArgs MouseArgs (PointD canvasPos, bool alt = false) => new () {
 		PointDouble = canvasPos,
 		WindowPoint = PintaCore.Workspace.CanvasPointToView (canvasPos),
 		MouseButton = MouseButton.Left,
+		State = alt ? Gdk.ModifierType.AltMask : default,
 	};
 
 	private ColorBgra FloatingPixel (int x, int y)

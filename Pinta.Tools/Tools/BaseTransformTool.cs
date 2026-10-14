@@ -68,6 +68,9 @@ public abstract class BaseTransformTool : BaseTool
 	/// </summary>
 	protected virtual bool ResizeGripsEnabled => true;
 
+	/// <summary>Shown while a press would rotate, for subclasses that draw their own grips.</summary>
+	protected Gdk.Cursor RotateCursor => rotate_cursor;
+
 	public override bool UseSnapping => true;
 
 	// Live orientation of the moved content (issue #4): maps the axis-aligned

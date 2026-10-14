@@ -72,7 +72,10 @@ public sealed class MoveSelectedTool : BaseTransformTool
 		workspace.SelectionChanged += (_, _) => {
 			if (!warp.IsApplying)
 				warp.Forget ();
-			RefreshQuadHandle ();
+			// Other tools change the selection on every mouse move; redrawing the canvas for grips
+			// that are not shown made them recomposite the whole image each time.
+			if (IsActiveTool ())
+				RefreshQuadHandle ();
 		};
 	}
 
@@ -224,18 +227,26 @@ public sealed class MoveSelectedTool : BaseTransformTool
 		base.OnMouseMove (document, e);
 
 		if (mode != TransformMode.Move && !IsActive)
-			UpdateGripCursor (e.WindowPoint);
+			UpdateGripCursor (e);
 	}
 
+	// Alt turns any left press into a rotate, so while it is held the grip under the cursor is
+	// not what a click would do.
+	private const int ALT_ROTATE_HOVER = -2;
+
 	// Only on a change: DefaultCursor builds a fresh texture every time it is read.
-	private void UpdateGripCursor (PointD windowPoint)
+	private void UpdateGripCursor (ToolMouseEventArgs e)
 	{
-		int grip = quad_handle.GripAt (windowPoint);
-		if (grip == hover_grip)
+		int hover = e.IsAltPressed && quad_handle.Active ? ALT_ROTATE_HOVER : quad_handle.GripAt (e.WindowPoint);
+		if (hover == hover_grip)
 			return;
 
-		hover_grip = grip;
-		SetCursor (grip >= 0 ? quad_handle.CursorOf (grip) : DefaultCursor);
+		hover_grip = hover;
+		SetCursor (hover switch {
+			ALT_ROTATE_HOVER => RotateCursor,
+			>= 0 => quad_handle.CursorOf (hover),
+			_ => DefaultCursor,
+		});
 	}
 
 	protected override void OnMouseUp (Document document, ToolMouseEventArgs e)
@@ -393,6 +404,8 @@ public sealed class MoveSelectedTool : BaseTransformTool
 	protected override void OnFinishTransform (Document document, Matrix transform)
 	{
 		base.OnFinishTransform (document, transform);
+		// The base just restored the default cursor; the next hover must set the grip's again.
+		hover_grip = -1;
 
 		if (move_declined) {
 			move_declined = false;

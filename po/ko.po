@@ -5071,6 +5071,48 @@ msgstr ""
 msgid "▼ {0}"
 msgstr ""
 
+#. Translators: Status-bar line for Move Selected Pixels; Skew and Perspective are the Mode choices on this tool's toolbar and must match their translations.
+#. AI-generated translation; human review requested.
+#: ../Pinta.Tools/Tools/MoveSelectedTool.cs:90
+#, fuzzy
+msgid "In Skew or Perspective mode, drag the grips on the selection's edges or corners."
+msgstr "기울이기 또는 원근 모드에서는 선택 영역의 가장자리나 모서리에 있는 핸들을 끄십시오."
+
+#. Translators: Tooltip for the Move choice of Move Selected Pixels' Mode dropdown; grips are the round handles on the selection outline.
+#. AI-generated translation; human review requested.
+#: ../Pinta.Tools/Tools/MoveSelectedTool.cs:144
+#, fuzzy
+msgid "Drag the grips to resize the selected pixels."
+msgstr "핸들을 끌어 선택한 픽셀의 크기를 조정합니다."
+
+#. Translators: Move Selected Pixels mode and undo-history label: slants the pixels by sliding one edge along itself (shear).
+#. AI-generated translation; human review requested.
+#: ../Pinta.Tools/Tools/MoveSelectedTool.cs:146 ../Pinta.Tools/Tools/MoveSelectedTool.cs:256
+#, fuzzy
+msgid "Skew"
+msgstr "기울이기"
+
+#. Translators: Tooltip for the Skew choice of Move Selected Pixels' Mode dropdown.
+#. AI-generated translation; human review requested.
+#: ../Pinta.Tools/Tools/MoveSelectedTool.cs:147
+#, fuzzy
+msgid "Drag an edge's grip to slide that edge along itself, slanting the selected pixels."
+msgstr "가장자리의 핸들을 끌면 그 가장자리가 자신을 따라 미끄러지며 선택한 픽셀이 기울어집니다."
+
+#. Translators: Move Selected Pixels mode and undo-history label: each corner moves on its own, to fit the pixels onto an angled surface.
+#. AI-generated translation; human review requested.
+#: ../Pinta.Tools/Tools/MoveSelectedTool.cs:149 ../Pinta.Tools/Tools/MoveSelectedTool.cs:257
+#, fuzzy
+msgid "Perspective"
+msgstr "원근"
+
+#. Translators: Tooltip for the Perspective choice of Move Selected Pixels' Mode dropdown.
+#. AI-generated translation; human review requested.
+#: ../Pinta.Tools/Tools/MoveSelectedTool.cs:150
+#, fuzzy
+msgid "Drag any corner on its own to fit the selected pixels onto an angled surface."
+msgstr "모서리를 하나씩 끌어 선택한 픽셀을 기울어진 표면에 맞춥니다."
+
 #~ msgid "About Pinta"
 #~ msgstr "Pinta 정보"
 

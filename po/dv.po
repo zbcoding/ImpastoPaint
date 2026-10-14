@@ -5012,6 +5012,48 @@ msgstr ""
 msgid "▼ {0}"
 msgstr ""
 
+#. Translators: Status-bar line for Move Selected Pixels; Skew and Perspective are the Mode choices on this tool's toolbar and must match their translations.
+#. AI-generated translation; human review requested.
+#: ../Pinta.Tools/Tools/MoveSelectedTool.cs:90
+#, fuzzy
+msgid "In Skew or Perspective mode, drag the grips on the selection's edges or corners."
+msgstr "ސްކިއު ނުވަތަ ޕާސްޕެކްޓިވް މޯޑުގައި، ހޮވުމުގެ ކައިރިތަކުގައި ނުވަތަ ކަންތަކުގައިވާ ހިފާ ތަންތަން ދަމާލާ."
+
+#. Translators: Tooltip for the Move choice of Move Selected Pixels' Mode dropdown; grips are the round handles on the selection outline.
+#. AI-generated translation; human review requested.
+#: ../Pinta.Tools/Tools/MoveSelectedTool.cs:144
+#, fuzzy
+msgid "Drag the grips to resize the selected pixels."
+msgstr "ހޮވާފައިވާ ޕިކްސެލްތަކުގެ ސައިޒު ބަދަލުކުރުމަށް ހިފާ ތަންތަން ދަމާލާ."
+
+#. Translators: Move Selected Pixels mode and undo-history label: slants the pixels by sliding one edge along itself (shear).
+#. AI-generated translation; human review requested.
+#: ../Pinta.Tools/Tools/MoveSelectedTool.cs:146 ../Pinta.Tools/Tools/MoveSelectedTool.cs:256
+#, fuzzy
+msgid "Skew"
+msgstr "ސްކިއު"
+
+#. Translators: Tooltip for the Skew choice of Move Selected Pixels' Mode dropdown.
+#. AI-generated translation; human review requested.
+#: ../Pinta.Tools/Tools/MoveSelectedTool.cs:147
+#, fuzzy
+msgid "Drag an edge's grip to slide that edge along itself, slanting the selected pixels."
+msgstr "ކައިރިއެއްގެ ހިފާ ތަން ދަމާލާ، އެ ކައިރި އޭގެ ދިގުމިނަށް ޖައްސާ، ހޮވާފައިވާ ޕިކްސެލްތައް ފުށްޖައްސާ."
+
+#. Translators: Move Selected Pixels mode and undo-history label: each corner moves on its own, to fit the pixels onto an angled surface.
+#. AI-generated translation; human review requested.
+#: ../Pinta.Tools/Tools/MoveSelectedTool.cs:149 ../Pinta.Tools/Tools/MoveSelectedTool.cs:257
+#, fuzzy
+msgid "Perspective"
+msgstr "ޕާސްޕެކްޓިވް"
+
+#. Translators: Tooltip for the Perspective choice of Move Selected Pixels' Mode dropdown.
+#. AI-generated translation; human review requested.
+#: ../Pinta.Tools/Tools/MoveSelectedTool.cs:150
+#, fuzzy
+msgid "Drag any corner on its own to fit the selected pixels onto an angled surface."
+msgstr "ހޮވާފައިވާ ޕިކްސެލްތައް ފުށްޖެހިފައިވާ ސަތަޙަކަށް ފެތޭގޮތަށް، ކޮންމެ ކަނެއްވެސް ވަކިން ދަމާލާ."
+
 #~ msgid "Draws a line or curve with a start and an end point."
 #~ msgstr "ފެށޭ ޕޮއިންޓަކާއި ނިމޭ ޕޮއިންޓަކާއެކު ރޮނގެއް ނުވަތަ ކާވްއެއް ކުރަހާ."
 

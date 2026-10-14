@@ -5064,6 +5064,48 @@ msgstr ""
 msgid "▼ {0}"
 msgstr ""
 
+#. Translators: Status-bar line for Move Selected Pixels; Skew and Perspective are the Mode choices on this tool's toolbar and must match their translations.
+#. AI-generated translation; human review requested.
+#: ../Pinta.Tools/Tools/MoveSelectedTool.cs:90
+#, fuzzy
+msgid "In Skew or Perspective mode, drag the grips on the selection's edges or corners."
+msgstr "Režīmā Šķiebt vai Perspektīva velciet turus uz iezīmējuma malām vai stūriem."
+
+#. Translators: Tooltip for the Move choice of Move Selected Pixels' Mode dropdown; grips are the round handles on the selection outline.
+#. AI-generated translation; human review requested.
+#: ../Pinta.Tools/Tools/MoveSelectedTool.cs:144
+#, fuzzy
+msgid "Drag the grips to resize the selected pixels."
+msgstr "Velciet turus, lai mainītu iezīmēto pikseļu izmēru."
+
+#. Translators: Move Selected Pixels mode and undo-history label: slants the pixels by sliding one edge along itself (shear).
+#. AI-generated translation; human review requested.
+#: ../Pinta.Tools/Tools/MoveSelectedTool.cs:146 ../Pinta.Tools/Tools/MoveSelectedTool.cs:256
+#, fuzzy
+msgid "Skew"
+msgstr "Šķiebt"
+
+#. Translators: Tooltip for the Skew choice of Move Selected Pixels' Mode dropdown.
+#. AI-generated translation; human review requested.
+#: ../Pinta.Tools/Tools/MoveSelectedTool.cs:147
+#, fuzzy
+msgid "Drag an edge's grip to slide that edge along itself, slanting the selected pixels."
+msgstr "Velciet malas turi, lai pabīdītu šo malu gar to pašu, sašķiebjot iezīmētos pikseļus."
+
+#. Translators: Move Selected Pixels mode and undo-history label: each corner moves on its own, to fit the pixels onto an angled surface.
+#. AI-generated translation; human review requested.
+#: ../Pinta.Tools/Tools/MoveSelectedTool.cs:149 ../Pinta.Tools/Tools/MoveSelectedTool.cs:257
+#, fuzzy
+msgid "Perspective"
+msgstr "Perspektīva"
+
+#. Translators: Tooltip for the Perspective choice of Move Selected Pixels' Mode dropdown.
+#. AI-generated translation; human review requested.
+#: ../Pinta.Tools/Tools/MoveSelectedTool.cs:150
+#, fuzzy
+msgid "Drag any corner on its own to fit the selected pixels onto an angled surface."
+msgstr "Velciet jebkuru stūri atsevišķi, lai pielāgotu iezīmētos pikseļus slīpai virsmai."
+
 #~ msgid "About Pinta"
 #~ msgstr "Par Pinta"
 

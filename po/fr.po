@@ -5149,6 +5149,48 @@ msgstr ""
 msgid "▼ {0}"
 msgstr ""
 
+#. Translators: Status-bar line for Move Selected Pixels; Skew and Perspective are the Mode choices on this tool's toolbar and must match their translations.
+#. AI-generated translation; human review requested.
+#: ../Pinta.Tools/Tools/MoveSelectedTool.cs:90
+#, fuzzy
+msgid "In Skew or Perspective mode, drag the grips on the selection's edges or corners."
+msgstr "En mode Inclinaison ou Perspective, faites glisser les poignées sur les bords ou les coins de la sélection."
+
+#. Translators: Tooltip for the Move choice of Move Selected Pixels' Mode dropdown; grips are the round handles on the selection outline.
+#. AI-generated translation; human review requested.
+#: ../Pinta.Tools/Tools/MoveSelectedTool.cs:144
+#, fuzzy
+msgid "Drag the grips to resize the selected pixels."
+msgstr "Faites glisser les poignées pour redimensionner les pixels sélectionnés."
+
+#. Translators: Move Selected Pixels mode and undo-history label: slants the pixels by sliding one edge along itself (shear).
+#. AI-generated translation; human review requested.
+#: ../Pinta.Tools/Tools/MoveSelectedTool.cs:146 ../Pinta.Tools/Tools/MoveSelectedTool.cs:256
+#, fuzzy
+msgid "Skew"
+msgstr "Inclinaison"
+
+#. Translators: Tooltip for the Skew choice of Move Selected Pixels' Mode dropdown.
+#. AI-generated translation; human review requested.
+#: ../Pinta.Tools/Tools/MoveSelectedTool.cs:147
+#, fuzzy
+msgid "Drag an edge's grip to slide that edge along itself, slanting the selected pixels."
+msgstr "Faites glisser la poignée d'un bord pour faire coulisser ce bord le long de lui-même et incliner les pixels sélectionnés."
+
+#. Translators: Move Selected Pixels mode and undo-history label: each corner moves on its own, to fit the pixels onto an angled surface.
+#. AI-generated translation; human review requested.
+#: ../Pinta.Tools/Tools/MoveSelectedTool.cs:149 ../Pinta.Tools/Tools/MoveSelectedTool.cs:257
+#, fuzzy
+msgid "Perspective"
+msgstr "Perspective"
+
+#. Translators: Tooltip for the Perspective choice of Move Selected Pixels' Mode dropdown.
+#. AI-generated translation; human review requested.
+#: ../Pinta.Tools/Tools/MoveSelectedTool.cs:150
+#, fuzzy
+msgid "Drag any corner on its own to fit the selected pixels onto an angled surface."
+msgstr "Faites glisser n'importe quel coin indépendamment pour ajuster les pixels sélectionnés sur une surface inclinée."
+
 #~ msgid "About Pinta"
 #~ msgstr "À propos de Pinta"
 

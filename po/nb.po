@@ -5036,6 +5036,48 @@ msgstr ""
 msgid "▼ {0}"
 msgstr ""
 
+#. Translators: Status-bar line for Move Selected Pixels; Skew and Perspective are the Mode choices on this tool's toolbar and must match their translations.
+#. AI-generated translation; human review requested.
+#: ../Pinta.Tools/Tools/MoveSelectedTool.cs:90
+#, fuzzy
+msgid "In Skew or Perspective mode, drag the grips on the selection's edges or corners."
+msgstr "I modusen Skjev eller Perspektiv kan du dra i håndtakene på kantene eller hjørnene av utvalget."
+
+#. Translators: Tooltip for the Move choice of Move Selected Pixels' Mode dropdown; grips are the round handles on the selection outline.
+#. AI-generated translation; human review requested.
+#: ../Pinta.Tools/Tools/MoveSelectedTool.cs:144
+#, fuzzy
+msgid "Drag the grips to resize the selected pixels."
+msgstr "Dra i håndtakene for å endre størrelsen på de valgte pikslene."
+
+#. Translators: Move Selected Pixels mode and undo-history label: slants the pixels by sliding one edge along itself (shear).
+#. AI-generated translation; human review requested.
+#: ../Pinta.Tools/Tools/MoveSelectedTool.cs:146 ../Pinta.Tools/Tools/MoveSelectedTool.cs:256
+#, fuzzy
+msgid "Skew"
+msgstr "Skjev"
+
+#. Translators: Tooltip for the Skew choice of Move Selected Pixels' Mode dropdown.
+#. AI-generated translation; human review requested.
+#: ../Pinta.Tools/Tools/MoveSelectedTool.cs:147
+#, fuzzy
+msgid "Drag an edge's grip to slide that edge along itself, slanting the selected pixels."
+msgstr "Dra i håndtaket på en kant for å skyve kanten langs seg selv, slik at de valgte pikslene blir skråstilt."
+
+#. Translators: Move Selected Pixels mode and undo-history label: each corner moves on its own, to fit the pixels onto an angled surface.
+#. AI-generated translation; human review requested.
+#: ../Pinta.Tools/Tools/MoveSelectedTool.cs:149 ../Pinta.Tools/Tools/MoveSelectedTool.cs:257
+#, fuzzy
+msgid "Perspective"
+msgstr "Perspektiv"
+
+#. Translators: Tooltip for the Perspective choice of Move Selected Pixels' Mode dropdown.
+#. AI-generated translation; human review requested.
+#: ../Pinta.Tools/Tools/MoveSelectedTool.cs:150
+#, fuzzy
+msgid "Drag any corner on its own to fit the selected pixels onto an angled surface."
+msgstr "Dra et hvilket som helst hjørne for seg for å tilpasse de valgte pikslene til en skrå flate."
+
 #~ msgid "About Pinta"
 #~ msgstr "Om Pinta"
 

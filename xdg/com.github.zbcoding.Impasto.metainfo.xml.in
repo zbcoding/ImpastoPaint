@@ -44,6 +44,12 @@
     <binary>impasto</binary>
   </provides>
   <releases>
+    <release version="0.6.0" date="2026-10-14">
+      <url>https://github.com/zbcoding/ImpastoPaint/releases/tag/v0.6.0</url>
+      <description>
+        <p>Move Selected Pixels gains Skew, Perspective and 3D modes: slant the selected pixels, fit them onto an angled surface in a photo by dragging each corner, or turn, tilt and push their corners in 3D with an adjustable field of view. Layer thumbnails can be larger and shrink to fit the panel, Rotate / Zoom Layer no longer skips some perspective settings, and Impasto has a new app logo.</p>
+      </description>
+    </release>
     <release version="0.5.0" date="2026-09-30">
       <url>https://github.com/zbcoding/ImpastoPaint/releases/tag/v0.5.0</url>
       <description>

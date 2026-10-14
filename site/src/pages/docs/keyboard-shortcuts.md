@@ -204,7 +204,7 @@ These keys only work while the matching tool is active. They are on the **Tool S
 | Transform Tools | Nudge selection 10 pixels | <kbd>Shift</kbd>+arrow keys |
 | Transform Tools | Nudge selection 5% of the canvas | <kbd>Ctrl</kbd>+arrow keys |
 | Transform Tools | Nudge selection 20% of the canvas | <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+arrow keys |
-| Transform Tools | 3D mode: push a corner away or pull it closer (hold while dragging) | <kbd>D</kbd> |
+| Transform Tools | 3D mode: push a corner away or pull it closer (hold while dragging) | <kbd>Shift</kbd> |
 | Transform Tools | 3D mode: turn selection left or right 5° | <kbd>Alt</kbd>+<kbd>←</kbd> / <kbd>Alt</kbd>+<kbd>→</kbd> |
 | Transform Tools | 3D mode: tilt selection back or forward 5° | <kbd>Alt</kbd>+<kbd>↑</kbd> / <kbd>Alt</kbd>+<kbd>↓</kbd> |
 

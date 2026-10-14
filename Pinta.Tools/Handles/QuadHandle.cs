@@ -34,6 +34,9 @@ internal sealed class QuadHandle : IToolHandle
 
 	public bool Active { get; set; }
 
+	/// <summary>The hover hint for the grip the pointer last came over; the tool sets it.</summary>
+	public string? TooltipText { get; set; }
+
 	/// <summary>The cursor shown over a corner grip while the depth key is held.</summary>
 	public static Gdk.Cursor DepthCursor => depth_cursor.Value;
 

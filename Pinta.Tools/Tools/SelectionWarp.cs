@@ -77,6 +77,12 @@ internal sealed class SelectionWarp
 
 	public bool IsDragging => gesture is not null;
 
+	/// <summary>The grip the open gesture drags, or -1 when none does (a keyboard turn, a new field of view).</summary>
+	public int DraggedGrip => gesture?.Grip ?? -1;
+
+	/// <summary>The mode the open gesture began in, which a mode change since cannot alter.</summary>
+	public TransformMode? DraggedMode => gesture?.Mode;
+
 	/// <summary>True while this class itself is replacing the document's selection.</summary>
 	public bool IsApplying { get; private set; }
 
@@ -151,16 +157,20 @@ internal sealed class SelectionWarp
 
 	/// <summary>
 	/// Shows the session's corners again through the current <see cref="FieldOfView"/>. When the
-	/// new camera cannot show them, the shape stays as it is and its depths are dropped.
+	/// new camera cannot show them, the shape stays as it is, its depths are dropped, and this
+	/// returns false.
 	/// </summary>
-	public void Reproject (Document document)
+	public bool Reproject (Document document)
 	{
 		if (gesture is null)
-			return;
+			return false;
 
 		Session s = gesture.Session;
-		if (!Place (document, s.CurrentCorners))
-			s.Corners = null;
+		if (Place (document, s.CurrentCorners))
+			return true;
+
+		s.Corners = null;
+		return false;
 	}
 
 	private Point3D[] Drag3D (Document document, Gesture g, PointD point, bool pushingDepth, bool snapAngle)

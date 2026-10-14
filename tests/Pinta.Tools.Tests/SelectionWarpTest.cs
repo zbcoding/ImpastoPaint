@@ -269,8 +269,8 @@ internal sealed class SelectionWarpTest : ToolsTestHarness
 		Assert.That (t.CurrentCursor, Is.SameAs (rotate), "an Alt press on the grip rotates, so the cursor must say so");
 
 		// Alt-drag from the grip rotates; finishing it resets the cursor, and the grip's must return.
-		typeof (BaseTool).GetMethod ("DoMouseDown", NonPublicInstance)!.Invoke (t, [Document, MouseArgs (topGrip, alt: true)]);
-		typeof (BaseTool).GetMethod ("DoMouseUp", NonPublicInstance)!.Invoke (t, [Document, MouseArgs (topGrip, alt: true)]);
+		MouseDown (t, topGrip, Gdk.ModifierType.AltMask);
+		MouseUp (t, topGrip, Gdk.ModifierType.AltMask);
 		Hover (t, topGrip, alt: false);
 		Assert.That (t.CurrentCursor, Is.SameAs (gripCursor), "hovering the grip after a rotate must show its cursor again");
 	}
@@ -279,23 +279,107 @@ internal sealed class SelectionWarpTest : ToolsTestHarness
 	public void HoldingTheDepthKeyPushesTheCornerBackAndLettingGoMovesItOnWithoutAJump ()
 	{
 		MoveSelectedTool t = Activate (TransformMode.ThreeD);
-		Gdk.Key depthKey = new (Gdk.Constants.KEY_d);
 
 		// Corner 0 is the top-left, (8,8); the 32px canvas's centre is (16,16). Up a sixteenth of
 		// the canvas is half a doubling, so the corner's distance grows by √2 and it shows 1/√2 as
 		// far from the centre: (10.34, 10.34).
-		Press (t, depthKey);
-		MouseDown (t, new PointD (8, 8));
-		MouseMove (t, new PointD (8, 4));
+		MouseDown (t, new PointD (8, 8), Gdk.ModifierType.ShiftMask);
+		MouseMove (t, new PointD (8, 4), Gdk.ModifierType.ShiftMask);
 		Assert.That (CornersOf (Document.Selection)[0], Is.EqualTo (new PointI (10, 10)),
 			"pushed back, the corner slides toward the canvas centre instead of following the pointer");
 
-		// Released mid-drag: the next 2px down moves the corner 2px down from where it shows.
-		Release (t, depthKey);
+		// Let go mid-drag: the next 2px down moves the corner 2px down from where it shows.
 		MouseMove (t, new PointD (8, 6));
 		MouseUp (t, new PointD (8, 6));
 
 		Assert.That (CornersOf (Document.Selection), Is.EqualTo (new PointI[] { new (10, 12), new (16, 8), new (16, 16), new (8, 16) }));
+	}
+
+	[Test]
+	public void ACornerGripsHintNamesTheDepthKeyTheUserBound ()
+	{
+		MoveSelectedTool t = Activate (TransformMode.ThreeD);
+		PintaCore.Shortcuts.SetToolBinding (KeyboardShortcutManager.Transform3DPushDepth, new KeyGesture (new Gdk.Key (Gdk.Constants.KEY_Alt_R)));
+		try {
+			Hover (t, new PointD (8, 8), alt: false);
+			string? hint = t.Handles.Single ().TooltipText;
+			Assert.That (hint, Does.Contain (PintaCore.Shortcuts.GetToolBinding (KeyboardShortcutManager.Transform3DPushDepth).ModifierKeyLabel (PintaCore.System)));
+
+			Hover (t, new PointD (12, 12), alt: false);
+			Assert.That (t.Handles.Single ().TooltipText, Is.Null, "off the grips, no grip hint");
+		} finally {
+			PintaCore.Shortcuts.ResetToolBinding (KeyboardShortcutManager.Transform3DPushDepth);
+		}
+	}
+
+	[Test]
+	public void APlainKeyDepthBindingLeavesItsCtrlShortcutToTheApp ()
+	{
+		MoveSelectedTool t = Activate (TransformMode.ThreeD);
+		Gdk.Key d = new (Gdk.Constants.KEY_d);
+		PintaCore.Shortcuts.SetToolBinding (KeyboardShortcutManager.Transform3DPushDepth, new KeyGesture (d));
+		try {
+			Assert.That (Press (t, d, Gdk.ModifierType.ControlMask), Is.False, "Ctrl+D is Deselect All, not the depth key");
+			Assert.That (Press (t, d), Is.True, "the bare key is the depth key, and 3D mode keeps it");
+		} finally {
+			PintaCore.Shortcuts.ResetToolBinding (KeyboardShortcutManager.Transform3DPushDepth);
+		}
+	}
+
+	[Test]
+	public void TheCursorFollowsTheDepthKeyDuringACornerDrag ()
+	{
+		MoveSelectedTool t = Activate (TransformMode.ThreeD);
+		Gdk.Key shift = new (Gdk.Constants.KEY_Shift_L);
+
+		MouseDown (t, new PointD (8, 8));
+		MouseMove (t, new PointD (8, 7));
+		Gdk.Cursor? moving = t.CurrentCursor;
+
+		Press (t, shift);
+		Assert.That (t.CurrentCursor, Is.SameAs (QuadHandle.DepthCursor), "the corner now pushes in depth, so the cursor must say so");
+
+		Release (t, shift);
+		MouseMove (t, new PointD (8, 6));
+		Assert.That (t.CurrentCursor, Is.SameAs (moving));
+		MouseUp (t, new PointD (8, 6));
+	}
+
+	[Test]
+	public void TurningThereAndBackLeavesNothingForANewViewToReshape ()
+	{
+		MoveSelectedTool t = Activate (TransformMode.ThreeD);
+		Gdk.Key left = new (Gdk.Constants.KEY_Left);
+		Gdk.Key right = new (Gdk.Constants.KEY_Right);
+		for (int i = 0; i < 9; i++)
+			Press (t, left, Gdk.ModifierType.AltMask);
+		Release (t, left, Gdk.ModifierType.AltMask);
+		for (int i = 0; i < 9; i++)
+			Press (t, right, Gdk.ModifierType.AltMask);
+		Release (t, right, Gdk.ModifierType.AltMask);
+		int historyBefore = Document.History.Pointer;
+
+		SetFieldOfView (t, 120);
+
+		Assert.That (Document.History.Pointer, Is.EqualTo (historyBefore), "back on the canvas plane, a new view changes nothing to undo");
+	}
+
+	[Test]
+	public void AViewThatCannotShowTheCornersKeepsTheShapeWithoutAnUndoStep ()
+	{
+		MoveSelectedTool t = Activate (TransformMode.ThreeD);
+
+		// Down a quarter of the canvas halves the corner's distance, which a 150° view puts behind its camera.
+		MouseDown (t, new PointD (8, 8), Gdk.ModifierType.ShiftMask);
+		MouseMove (t, new PointD (8, 16), Gdk.ModifierType.ShiftMask);
+		MouseUp (t, new PointD (8, 16), Gdk.ModifierType.ShiftMask);
+		PointI[] pulled = CornersOf (Document.Selection);
+		int historyBefore = Document.History.Pointer;
+
+		SetFieldOfView (t, 150);
+
+		Assert.That (CornersOf (Document.Selection), Is.EqualTo (pulled));
+		Assert.That (Document.History.Pointer, Is.EqualTo (historyBefore), "nothing changed on screen, so there is nothing to undo");
 	}
 
 	[Test]
@@ -367,23 +451,23 @@ internal sealed class SelectionWarpTest : ToolsTestHarness
 	private static void SetFieldOfView (MoveSelectedTool t, double degrees)
 		=> typeof (MoveSelectedTool).GetMethod ("ChangeFieldOfView", NonPublicInstance)!.Invoke (t, [degrees]);
 
-	private void Press (BaseTool t, Gdk.Key key, Gdk.ModifierType state = default)
-		=> typeof (BaseTool).GetMethod ("DoKeyDown", NonPublicInstance)!.Invoke (t, [Document, new ToolKeyEventArgs { Key = key, State = state }]);
+	private bool Press (BaseTool t, Gdk.Key key, Gdk.ModifierType state = default)
+		=> (bool) typeof (BaseTool).GetMethod ("DoKeyDown", NonPublicInstance)!.Invoke (t, [Document, new ToolKeyEventArgs { Key = key, State = state }])!;
 
 	private void Release (BaseTool t, Gdk.Key key, Gdk.ModifierType state = default)
 		=> typeof (BaseTool).GetMethod ("DoKeyUp", NonPublicInstance)!.Invoke (t, [Document, new ToolKeyEventArgs { Key = key, State = state }]);
 
-	private void MouseDown (BaseTool t, PointD at)
-		=> typeof (BaseTool).GetMethod ("DoMouseDown", NonPublicInstance)!.Invoke (t, [Document, MouseArgs (at)]);
+	private void MouseDown (BaseTool t, PointD at, Gdk.ModifierType state = default)
+		=> typeof (BaseTool).GetMethod ("DoMouseDown", NonPublicInstance)!.Invoke (t, [Document, MouseArgs (at, state)]);
 
-	private void MouseMove (BaseTool t, PointD at)
-		=> typeof (BaseTool).GetMethod ("DoMouseMove", NonPublicInstance)!.Invoke (t, [Document, MouseArgs (at)]);
+	private void MouseMove (BaseTool t, PointD at, Gdk.ModifierType state = default)
+		=> typeof (BaseTool).GetMethod ("DoMouseMove", NonPublicInstance)!.Invoke (t, [Document, MouseArgs (at, state)]);
 
-	private void MouseUp (BaseTool t, PointD at)
-		=> typeof (BaseTool).GetMethod ("DoMouseUp", NonPublicInstance)!.Invoke (t, [Document, MouseArgs (at)]);
+	private void MouseUp (BaseTool t, PointD at, Gdk.ModifierType state = default)
+		=> typeof (BaseTool).GetMethod ("DoMouseUp", NonPublicInstance)!.Invoke (t, [Document, MouseArgs (at, state)]);
 
 	private void Hover (BaseTool t, PointD at, bool alt)
-		=> typeof (BaseTool).GetMethod ("DoMouseMove", NonPublicInstance)!.Invoke (t, [Document, MouseArgs (at, alt)]);
+		=> MouseMove (t, at, alt ? Gdk.ModifierType.AltMask : default);
 
 	// Through the saved setting, the way the mode last chosen comes back in a new session.
 	private MoveSelectedTool Activate (TransformMode mode)
@@ -424,11 +508,11 @@ internal sealed class SelectionWarpTest : ToolsTestHarness
 	private ColorBgra LayerPixel (int x, int y)
 		=> Layer (0).Surface.GetReadOnlyPixelData ()[(y * CanvasSize) + x];
 
-	private static ToolMouseEventArgs MouseArgs (PointD canvasPos, bool alt = false) => new () {
+	private static ToolMouseEventArgs MouseArgs (PointD canvasPos, Gdk.ModifierType state = default) => new () {
 		PointDouble = canvasPos,
 		WindowPoint = PintaCore.Workspace.CanvasPointToView (canvasPos),
 		MouseButton = MouseButton.Left,
-		State = alt ? Gdk.ModifierType.AltMask : default,
+		State = state,
 	};
 
 	private ColorBgra FloatingPixel (int x, int y)

@@ -465,7 +465,7 @@ public sealed class KeyboardShortcutManager
 		"TransformTool.PushDepth",
 		Translations.GetString ("Transform Tools"),
 		Translations.GetString ("3D mode: hold while dragging a corner to push it away or pull it closer"),
-		new KeyGesture (new Gdk.Key (Gdk.Constants.KEY_D)));
+		new KeyGesture (new Gdk.Key (Gdk.Constants.KEY_Shift_L)));
 
 	public static readonly ToolBindingDescriptor Transform3DTurnLeft = new (
 		"TransformTool.TurnLeft",

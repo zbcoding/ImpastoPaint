@@ -118,10 +118,13 @@ internal static class Quad3D
 		return result;
 	}
 
+	// Turning there and back leaves rounding-sized depths, far below a pixel; those still count as flat.
+	private const double FLAT_DEPTH = 1e-6;
+
 	public static bool IsFlat (ReadOnlySpan<Point3D> corners)
 	{
 		foreach (Point3D p in corners)
-			if (p.Z != 0)
+			if (Math.Abs (p.Z) > FLAT_DEPTH)
 				return false;
 		return true;
 	}

@@ -13,14 +13,16 @@ entries, is upstream Pinta work; the Impasto sections cover changes made in this
 - Move Selected Pixels has a Mode dropdown: Move (the default), Skew and Perspective. Skew puts a
   grip on each edge; dragging one slides that edge along itself and slants the pixels. Perspective
   puts a grip on each corner; each moves on its own, for fitting a flat image onto an angled
-  surface in a photo. Both grips have their own cursors, and each drag is one undo step.
+  surface in a photo. Both grips have their own cursors, and holding Alt over one shows the
+  rotate cursor, since an Alt-drag rotates. Each drag is one undo step.
   Adjusting the same selection again resamples from the pixels as they were before the first
   skew or perspective drag, so repeated adjustments do not blur them further.
 - Move Selected Pixels has a 3D mode. Corners drag across the screen as in Perspective, and
-  holding D while dragging one up or down pushes it away or pulls it closer. A ring of grips
+  holding Shift while dragging one up or down pushes it away or pulls it closer. A ring of grips
   outside the edges turns and tilts the selection in 3D (Shift for 15° steps), and Alt+arrow
   keys turn it 5° at a time. A Field of view setting on the toolbar sets how strong the
-  perspective is. The depth and turn keys can be rebound under Transform Tools.
+  perspective is. Hovering a Skew, Perspective or 3D grip shows a hint naming its keys. The
+  depth and turn keys can be rebound under Transform Tools.
 
 ### Fixed
 

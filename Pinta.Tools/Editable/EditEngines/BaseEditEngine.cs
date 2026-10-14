@@ -1181,7 +1181,7 @@ public abstract class BaseEditEngine
 		// A plain right click drags the whole shape (mirroring the Text tool). Only while holding
 		// the tension modifier (default Ctrl) does a right-drag on a control point change its tension.
 		KeyGesture tensionGesture = PintaCore.Shortcuts.GetToolBinding (KeyboardShortcutManager.ShapeChangeTension);
-		bool tension_modifier_down = IsSwitchGesturePressed (tensionGesture, e.State);
+		bool tension_modifier_down = ModifierKeys.IsHeld (tensionGesture, e.State);
 		changing_tension = rightButton && tension_modifier_down;
 
 		bool ctrlKey = e.IsControlPressed;
@@ -1209,7 +1209,7 @@ public abstract class BaseEditEngine
 		clicked_without_modifying = clicked_control_point;
 
 		// Alt + left-drag on a control point rotates the whole shape instead of moving that point.
-		rotate_modifier_down = IsSwitchGesturePressed (RotateGesture, e.State);
+		rotate_modifier_down = ModifierKeys.IsHeld (RotateGesture, e.State);
 		if (!rightButton && rotate_modifier_down && (clicked_control_point || clicked_generated_point)) {
 			SelectedShapeIndex = clicked_control_point ? closestCPShapeIndex : closestShapeIndex;
 
@@ -1509,8 +1509,8 @@ public abstract class BaseEditEngine
 		current_point = e.PointDouble;
 		bool shiftKey = e.IsShiftPressed;
 		KeyGesture switchGesture = PintaCore.Shortcuts.GetToolBinding (KeyboardShortcutManager.TriangleTypeSwitch);
-		triangle_switch_down = IsSwitchGesturePressed (switchGesture, e.State);
-		rotate_modifier_down = IsSwitchGesturePressed (RotateGesture, e.State);
+		triangle_switch_down = ModifierKeys.IsHeld (switchGesture, e.State);
+		rotate_modifier_down = ModifierKeys.IsHeld (RotateGesture, e.State);
 
 		if (!is_drawing) {
 			//Redraw the active shape to show a (temporary) highlighted control point (over any shape) when applicable.
@@ -1656,23 +1656,6 @@ public abstract class BaseEditEngine
 
 		last_mouse_pos = current_point;
 	}
-
-	private static bool IsSwitchGesturePressed (KeyGesture gesture, Gdk.ModifierType state)
-	{
-		Gdk.ModifierType modifier = gesture.Key.Value switch {
-			Gdk.Constants.KEY_Control_L or Gdk.Constants.KEY_Control_R => Gdk.ModifierType.ControlMask,
-			Gdk.Constants.KEY_Shift_L or Gdk.Constants.KEY_Shift_R => Gdk.ModifierType.ShiftMask,
-			Gdk.Constants.KEY_Alt_L or Gdk.Constants.KEY_Alt_R => Gdk.ModifierType.AltMask,
-			Gdk.Constants.KEY_Meta_L or Gdk.Constants.KEY_Meta_R => Gdk.ModifierType.MetaMask,
-			Gdk.Constants.KEY_Super_L or Gdk.Constants.KEY_Super_R => Gdk.ModifierType.SuperMask,
-			Gdk.Constants.KEY_Hyper_L or Gdk.Constants.KEY_Hyper_R => Gdk.ModifierType.HyperMask,
-			_ => default,
-		};
-
-		Gdk.ModifierType required = gesture.Modifiers | modifier;
-		return required != default && (state & required) == required;
-	}
-
 
 	/// <summary>
 	/// Draw the currently active shape.

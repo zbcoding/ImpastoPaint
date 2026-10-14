@@ -168,7 +168,7 @@ public sealed partial class LayersListView
 	/// <summary>Recomputes the row shape for the current viewport; true when it changed.</summary>
 	private bool UpdateRowShape ()
 	{
-		double viewportWidth = Hadjustment?.PageSize ?? 0;
+		double viewportWidth = RowLayoutWidth ();
 		int width = ThumbnailWidthForViewport (viewportWidth);
 		bool below = LabelBelowForViewport (viewportWidth);
 		if (width == thumbnail_width && below == label_below)
@@ -177,6 +177,26 @@ public sealed partial class LayersListView
 		thumbnail_width = width;
 		label_below = below;
 		return true;
+	}
+
+	/// <summary>
+	/// The pad's width less any room a vertical scrollbar takes, whether or not one shows right
+	/// now. Sized to the viewport alone, rows shrunk when the scrollbar appeared, which could make
+	/// the list fit and the scrollbar go away again, flickering between the two.
+	/// </summary>
+	private double RowLayoutWidth ()
+	{
+		int padWidth = GetWidth ();
+		if (padWidth <= 0)
+			return 0;
+
+		// Overlay scrollbars float over the rows and take no room.
+		Gtk.Widget scrollbar = GetVscrollbar ();
+		if (scrollbar.HasCssClass ("overlay-indicator"))
+			return padWidth;
+
+		scrollbar.Measure (Gtk.Orientation.Horizontal, -1, out _, out int scrollbarWidth, out _, out _);
+		return padWidth - scrollbarWidth;
 	}
 
 	/// <summary>

@@ -8,6 +8,12 @@ entries, is upstream Pinta work; the Impasto sections cover changes made in this
 
 ## Impasto - [Unreleased](https://github.com/zbcoding/ImpastoPaint/compare/v0.5.0...main)
 
+### Fixed
+
+- Rotate / Zoom Layer no longer leaves the layer untransformed for some combinations of offset
+  and perspective values, where the perspective's vanishing line crossed the image's top-left
+  corner.
+
 ### Changed
 
 - The Layers panel Thumbnail Size slider goes bigger, and thumbnails shrink to fit the panel's

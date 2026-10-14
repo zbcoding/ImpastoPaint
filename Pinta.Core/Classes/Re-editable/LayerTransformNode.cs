@@ -219,19 +219,18 @@ public sealed class LayerTransformNode : ILayerModifierNode
 			|| !double.IsFinite (bottomLeft.X) || !double.IsFinite (bottomLeft.Y))
 			return false;
 
-		Span<double> inverse = stackalloc double[9];
-		if (!TryHomography (
+		if (!Homography.TryCreate (
 			[topLeft, topRight, bottomRight, bottomLeft],
 			[new PointD (0, 0), new PointD (width - 1, 0), new PointD (width - 1, height - 1), new PointD (0, height - 1)],
-			inverse))
+			out Homography inverse))
 			return false;
 
 		// Rows are independent, so the per-pixel inverse sample parallelizes across cores — a node
 		// re-renders on every stroke, undo and visibility toggle, same as the effect path. The
-		// solved values are hoisted to plain locals because the stackalloc span cannot be captured.
-		double i0 = inverse[0], i1 = inverse[1], i2 = inverse[2];
-		double i3 = inverse[3], i4 = inverse[4], i5 = inverse[5];
-		double i6 = inverse[6], i7 = inverse[7], i8 = inverse[8];
+		// solved values are hoisted to plain locals for the hot loop.
+		double i0 = inverse.M00, i1 = inverse.M01, i2 = inverse.M02;
+		double i3 = inverse.M10, i4 = inverse.M11, i5 = inverse.M12;
+		double i6 = inverse.M20, i7 = inverse.M21, i8 = inverse.M22;
 
 		// The two buffers are fetched once per band rather than once per row: the rows a band owns are
 		// contiguous and disjoint from every other band's, so one lookup covers all of them.
@@ -304,69 +303,4 @@ public sealed class LayerTransformNode : ILayerModifierNode
 	}
 
 	private static double DegreesToRadians (double degrees) => degrees * Math.PI / 180.0;
-
-	// Solves the projective mapping from four destination points to four source points. Keeping the
-	// inverse directly avoids a second matrix inversion for every render.
-	private static bool TryHomography (ReadOnlySpan<PointD> from, ReadOnlySpan<PointD> to, Span<double> result)
-	{
-		Span<double> equations = stackalloc double[8 * 9];
-		for (int i = 0; i < 4; i++) {
-			double x = from[i].X;
-			double y = from[i].Y;
-			double u = to[i].X;
-			double v = to[i].Y;
-			int first = (i * 2) * 9;
-			int second = first + 9;
-
-			equations[first] = x;
-			equations[first + 1] = y;
-			equations[first + 2] = 1;
-			equations[first + 6] = -u * x;
-			equations[first + 7] = -u * y;
-			equations[first + 8] = u;
-
-			equations[second + 3] = x;
-			equations[second + 4] = y;
-			equations[second + 5] = 1;
-			equations[second + 6] = -v * x;
-			equations[second + 7] = -v * y;
-			equations[second + 8] = v;
-		}
-
-		for (int column = 0; column < 8; column++) {
-			int pivot = column;
-			double pivotMagnitude = Math.Abs (equations[(pivot * 9) + column]);
-			for (int row = column + 1; row < 8; row++) {
-				double magnitude = Math.Abs (equations[(row * 9) + column]);
-				if (magnitude > pivotMagnitude) {
-					pivot = row;
-					pivotMagnitude = magnitude;
-				}
-			}
-			if (pivotMagnitude < 1e-12)
-				return false;
-
-			if (pivot != column)
-				for (int entry = column; entry < 9; entry++)
-					(equations[(column * 9) + entry], equations[(pivot * 9) + entry]) =
-						(equations[(pivot * 9) + entry], equations[(column * 9) + entry]);
-
-			double divisor = equations[(column * 9) + column];
-			for (int entry = column; entry < 9; entry++)
-				equations[(column * 9) + entry] /= divisor;
-
-			for (int row = 0; row < 8; row++) {
-				if (row == column)
-					continue;
-				double factor = equations[(row * 9) + column];
-				for (int entry = column; entry < 9; entry++)
-					equations[(row * 9) + entry] -= factor * equations[(column * 9) + entry];
-			}
-		}
-
-		for (int i = 0; i < 8; i++)
-			result[i] = equations[(i * 9) + 8];
-		result[8] = 1;
-		return true;
-	}
 }

@@ -28,6 +28,9 @@ entries, is upstream Pinta work; the Impasto sections cover changes made in this
 - The Layers panel Thumbnail Size slider goes bigger, and thumbnails shrink to fit the panel's
   width, so the largest settings fill the sidebar instead of running past its edge. When the
   layer name sits under its thumbnail, it lines up with the thumbnail's left edge.
+- New app logo: the painted "I" sits on a white canvas tile, with a palette and brush in front.
+  It keeps the old orange-to-blue colours, now laid on in brush strokes. Earlier logos are kept
+  in `docs/logos/`.
 
 ## Impasto - [0.5.0](https://github.com/zbcoding/ImpastoPaint/releases/tag/v0.5.0) - 2026-09-30
 

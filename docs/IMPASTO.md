@@ -13,6 +13,7 @@ in its own document in this directory:
 | [ora-format.md](ora-format.md) | What Impasto writes into an `.ora` file, and how re-editable objects are stored |
 | [addins.md](addins.md) | What an add-in may reach: the entry point, menu placement, icons, tools, and what is not available yet |
 | [releases.md](releases.md) | The step-by-step checklist for cutting a `v*` release |
+| [logos/](logos/README.md) | The current app logo and every earlier one, by release, plus the files rendered from it |
 
 Working notes for individual subsystems stay in `../docs-private/`, which is untracked —
 they are scratch, not published documentation.

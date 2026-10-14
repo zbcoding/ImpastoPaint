@@ -88,6 +88,7 @@ Pinta.Core/Algorithms/BlendOpHelper.cs
 Pinta.Core/Algorithms/ColorDifference.cs
 Pinta.Core/Algorithms/Histogram.cs
 Pinta.Core/Algorithms/HistogramRGB.cs
+Pinta.Core/Algorithms/Homography.cs
 Pinta.Core/Algorithms/Julia.cs
 Pinta.Core/Algorithms/Mandelbrot.cs
 Pinta.Core/Algorithms/Mathematics.cs
@@ -459,11 +460,14 @@ Pinta.Tools/FriendAssemblies.cs
 Pinta.Tools/Handles/BrushHandle.cs
 Pinta.Tools/Handles/LineHandle.cs
 Pinta.Tools/Handles/MoveHandle.cs
+Pinta.Tools/Handles/QuadHandle.cs
 Pinta.Tools/Handles/RectangleHandle.cs
 Pinta.Tools/Handles/ResizeCursors.cs
 Pinta.Tools/HistoryItems/GradientHistoryItem.cs
+Pinta.Tools/HistoryItems/SelectionLayerSurfaceHistoryItem.cs
 Pinta.Tools/HistoryItems/ShapesHistoryItem.cs
 Pinta.Tools/HistoryItems/ShapesModifyHistoryItem.cs
+Pinta.Tools/ModifierKeys.cs
 Pinta.Tools/SettingNames.cs
 Pinta.Tools/Tools/BaseBrushTool.cs
 Pinta.Tools/Tools/BaseTransformTool.cs
@@ -484,10 +488,12 @@ Pinta.Tools/Tools/PaintBrushTool.cs
 Pinta.Tools/Tools/PaintBucketTool.cs
 Pinta.Tools/Tools/PanTool.cs
 Pinta.Tools/Tools/PencilTool.cs
+Pinta.Tools/Tools/Quad3D.cs
 Pinta.Tools/Tools/RecolorTool.cs
 Pinta.Tools/Tools/RectangleSelectTool.cs
 Pinta.Tools/Tools/RectangleTool.cs
 Pinta.Tools/Tools/RoundedRectangleTool.cs
+Pinta.Tools/Tools/SelectionWarp.cs
 Pinta.Tools/Tools/SelectTool.cs
 Pinta.Tools/Tools/ShapeTool.cs
 Pinta.Tools/Tools/TextTool.cs

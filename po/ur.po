@@ -19,7 +19,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-30 04:19-0500\n"
+"POT-Creation-Date: 2026-10-14 14:28-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
@@ -45,6 +45,40 @@ msgstr ""
 #: ../Pinta.Tools/Tools/ColorPickerTool.cs:259
 msgid "3 x 3 Region"
 msgstr ""
+
+#. Translators: Move Selected Pixels mode that moves the pixels' corners in 3D space, viewed in perspective.
+#: ../Pinta.Tools/Tools/MoveSelectedTool.cs:235
+#: ../Pinta.Tools/Tools/MoveSelectedTool.cs:530
+#, fuzzy
+msgid "3D"
+msgstr "3D"
+
+#: ../Pinta.Core/Managers/KeyboardShortcutManager.cs:467
+#, fuzzy
+msgid "3D mode: hold while dragging a corner to push it away or pull it closer"
+msgstr ""
+"3D موڈ: کسی کونے کو گھسیٹتے ہوئے دبائے رکھیں تاکہ اسے دور دھکیلا یا قریب "
+"کھینچا جا سکے"
+
+#: ../Pinta.Core/Managers/KeyboardShortcutManager.cs:485
+#, fuzzy
+msgid "3D mode: tilt selection back (5°)"
+msgstr "3D موڈ: انتخاب کو پیچھے جھکائیں (5°)"
+
+#: ../Pinta.Core/Managers/KeyboardShortcutManager.cs:491
+#, fuzzy
+msgid "3D mode: tilt selection forward (5°)"
+msgstr "3D موڈ: انتخاب کو آگے جھکائیں (5°)"
+
+#: ../Pinta.Core/Managers/KeyboardShortcutManager.cs:473
+#, fuzzy
+msgid "3D mode: turn selection left (5°)"
+msgstr "3D موڈ: انتخاب کو بائیں گھمائیں (5°)"
+
+#: ../Pinta.Core/Managers/KeyboardShortcutManager.cs:479
+#, fuzzy
+msgid "3D mode: turn selection right (5°)"
+msgstr "3D موڈ: انتخاب کو دائیں گھمائیں (5°)"
 
 #: ../Pinta.Tools/Tools/ColorPickerTool.cs:260
 msgid "5 x 5 Region"
@@ -88,7 +122,7 @@ msgstr ""
 #: ../Impasto/Actions/Edit/PasteAction.cs:192
 #: ../Pinta.Core/Actions/LayerActions.cs:73
 #: ../Pinta.Core/Actions/LayerActions.cs:688
-#: ../Pinta.Tools/Tools/MoveSelectedTool.cs:175
+#: ../Pinta.Tools/Tools/MoveSelectedTool.cs:652
 msgid "Add New Layer"
 msgstr ""
 
@@ -306,13 +340,13 @@ msgstr ""
 msgid "Backup"
 msgstr ""
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:946
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:947
 msgid ""
 "Bake this layer's effects and objects into its pixels; they stop being "
 "editable."
 msgstr ""
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:947
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:948
 msgid "Bake this object into the layer's pixels; it stops being editable."
 msgstr ""
 
@@ -344,7 +378,7 @@ msgstr ""
 msgid "Blend Mode"
 msgstr ""
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:891
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:892
 msgid "Blend Mode:"
 msgstr ""
 
@@ -584,12 +618,12 @@ msgstr ""
 msgid "Change outline width."
 msgstr ""
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:936
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:937
 msgid ""
 "Change this effect's settings; the layer re-renders with the new values."
 msgstr ""
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:931
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:932
 msgid ""
 "Change this transform's settings; the layer re-renders with the new values."
 msgstr ""
@@ -970,7 +1004,7 @@ msgstr ""
 msgid "Default canvas size (on application open):"
 msgstr ""
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:956
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:957
 msgid "Delete"
 msgstr ""
 
@@ -983,7 +1017,7 @@ msgstr ""
 msgid "Delete Layer Mask"
 msgstr ""
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:996
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:997
 msgid "Delete Mask"
 msgstr ""
 
@@ -1074,17 +1108,34 @@ msgstr ""
 msgid "Drag a corner grip to resize, or the dashed border to move."
 msgstr ""
 
+#: ../Pinta.Tools/Tools/MoveSelectedTool.cs:138
+#, fuzzy
+msgid ""
+"Drag an edge's grip to slide that edge along itself, slanting the selected "
+"pixels."
+msgstr ""
+"کسی کنارے کے دستے کو گھسیٹ کر اس کنارے کو اسی کی سمت میں سرکائیں، جس سے "
+"منتخب پکسلز ترچھے ہو جائیں گے۔"
+
 #: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:160
 msgid "Drag and drop to reorder"
 msgstr ""
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:1314
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:1316
 msgid "Drag and drop to reorder it on this layer"
 msgstr ""
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:1317
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:1319
 msgid "Drag and drop to reorder, or onto another layer to move it there"
 msgstr ""
+
+#: ../Pinta.Tools/Tools/MoveSelectedTool.cs:141
+#, fuzzy
+msgid ""
+"Drag any corner on its own to fit the selected pixels onto an angled surface."
+msgstr ""
+"منتخب پکسلز کو کسی ترچھی سطح پر فٹ کرنے کے لیے کسی بھی کونے کو الگ سے "
+"گھسیٹیں۔"
 
 #: ../Pinta.Tools/Tools/TextTool.cs:2860
 msgid "Drag corner to resize (changes font size)"
@@ -1093,6 +1144,31 @@ msgstr ""
 #: ../Pinta.Tools/Tools/TextTool.cs:2859
 msgid "Drag corner to resize the text box"
 msgstr ""
+
+#: ../Pinta.Tools/Tools/MoveSelectedTool.cs:229
+#, fuzzy
+msgid "Drag the grips to resize the selected pixels."
+msgstr "منتخب پکسلز کا سائز بدلنے کے لیے دستوں کو گھسیٹیں۔"
+
+#: ../Pinta.Tools/Tools/MoveSelectedTool.cs:155
+#, fuzzy, csharp-format
+msgid ""
+"Drag to move this corner\n"
+"{0}+drag up or down: push it away or pull it closer"
+msgstr ""
+"اس کونے کو منتقل کرنے کے لیے گھسیٹیں\n"
+"{0}+اوپر یا نیچے گھسیٹیں: دور دھکیلیں یا قریب کھینچیں"
+
+#: ../Pinta.Tools/Tools/MoveSelectedTool.cs:159
+#, fuzzy, csharp-format
+msgid ""
+"Drag to turn or tilt the selection\n"
+"Shift+drag: 15° steps\n"
+"{0}, {1}, {2}, {3}: 5° steps"
+msgstr ""
+"انتخاب کو گھمانے یا جھکانے کے لیے گھسیٹیں\n"
+"Shift+گھسیٹیں: 15° کے قدم\n"
+"{0}، {1}، {2}، {3}: 5° کے قدم"
 
 #: ../Pinta.Tools/Tools/TextTool.cs:637
 msgid "Draw only the outline of the text, using the secondary color."
@@ -1160,7 +1236,7 @@ msgstr ""
 msgid "Effe_cts"
 msgstr ""
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:935
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:936
 msgid "Effect Settings..."
 msgstr ""
 
@@ -1291,6 +1367,11 @@ msgstr ""
 msgid "Feather Object"
 msgstr ""
 
+#: ../Pinta.Tools/Tools/MoveSelectedTool.cs:265
+#, fuzzy
+msgid "Field of view"
+msgstr "منظر کا دائرہ"
+
 #: ../Impasto/Actions/Help/KeyboardShortcutsDialogAction.cs:201
 msgid "File"
 msgstr ""
@@ -1375,8 +1456,8 @@ msgstr ""
 msgid "Finalize shape"
 msgstr ""
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:1837
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:2431
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:1820
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:2414
 #: ../Pinta.Tools/Tools/GradientTool.cs:195
 msgid "Finalized"
 msgstr ""
@@ -1656,14 +1737,23 @@ msgstr ""
 msgid "Horizontal red (R)"
 msgstr ""
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:913
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:914
 msgid ""
 "How much of the effect is applied. At 0 the layer looks as it did before."
 msgstr ""
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:894
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:895
 msgid "How the effect's result is mixed back into the image it was applied to."
 msgstr ""
+
+#: ../Pinta.Tools/Tools/MoveSelectedTool.cs:274
+#, fuzzy
+msgid ""
+"How wide 3D mode's view is, in degrees. A wide view makes depth look "
+"stronger; a narrow one flattens it."
+msgstr ""
+"3D موڈ کا منظر کتنا چوڑا ہے، ڈگری میں۔ چوڑا منظر گہرائی کو زیادہ نمایاں "
+"دکھاتا ہے؛ تنگ منظر اسے چپٹا کر دیتا ہے۔"
 
 #: ../Pinta.Core/Algorithms/PixelOps/UserBlendOps.cs:45
 #: ../Pinta.Effects/Adjustments/HueSaturationEffect.cs:61
@@ -1824,6 +1914,18 @@ msgid ""
 "invalid). {2} Restart Impasto for all changes to fully take effect."
 msgstr ""
 
+#: ../Pinta.Tools/Tools/MoveSelectedTool.cs:130
+#, fuzzy, csharp-format
+msgid ""
+"In 3D mode, drag a corner to move it, or hold {0} and drag it up or down to "
+"push it away or pull it closer. Drag a grip outside an edge to turn or tilt "
+"the selection, holding Shift for 15° steps, or press {1}, {2}, {3} or {4}."
+msgstr ""
+"3D موڈ میں، کسی کونے کو منتقل کرنے کے لیے اسے گھسیٹیں، یا {0} دبائے رکھیں "
+"اور اسے دور دھکیلنے یا قریب کھینچنے کے لیے اوپر یا نیچے گھسیٹیں۔ انتخاب کو "
+"گھمانے یا جھکانے کے لیے کسی کنارے کے باہر موجود دستے کو گھسیٹیں، 15° کے "
+"قدموں کے لیے Shift دبائے رکھیں، یا {1}، {2}، {3} یا {4} دبائیں۔"
+
 #: ../Pinta.Tools/Tools/LassoSelectTool.cs:359
 msgid ""
 "In Freeform mode, click and drag to draw the outline for a selection area."
@@ -1844,6 +1946,16 @@ msgid ""
 "Press Enter to finish the selection.\n"
 "Press Backspace to delete the last point."
 msgstr ""
+
+#. Translators: Skew and Perspective are the Mode choices on this tool's toolbar.
+#: ../Pinta.Tools/Tools/MoveSelectedTool.cs:124
+#, fuzzy
+msgid ""
+"In Skew or Perspective mode, drag the grips on the selection's edges or "
+"corners."
+msgstr ""
+"ترچھا کریں یا تناظر موڈ میں، انتخاب کے کناروں یا کونوں پر موجود دستوں کو "
+"گھسیٹیں۔"
 
 #: ../Pinta.Core/Actions/ViewActions.cs:281
 msgid "Inches"
@@ -2020,17 +2132,17 @@ msgstr ""
 msgid "Layer Properties..."
 msgstr ""
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:1312
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:1314
 msgid ""
 "Layer effect: applies to everything below it on this layer, and stays "
 "editable."
 msgstr ""
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:1293
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:1295
 msgid "Layer mask: an alpha channel applied to the whole layer."
 msgstr ""
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:1311
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:1313
 msgid ""
 "Layer transform: applies to everything below it on this layer, and stays "
 "editable."
@@ -2052,7 +2164,7 @@ msgstr ""
 msgid "Left Align"
 msgstr ""
 
-#: ../Pinta.Tools/Tools/MoveSelectedTool.cs:63
+#: ../Pinta.Tools/Tools/MoveSelectedTool.cs:117
 #, csharp-format
 msgid ""
 "Left click and drag the selection to move selected content.\n"
@@ -2330,6 +2442,7 @@ msgstr ""
 
 #: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:469
 #: ../Pinta.Tools/Tools/GradientTool.cs:347
+#: ../Pinta.Tools/Tools/MoveSelectedTool.cs:220
 #: ../Pinta.Tools/Tools/TextTool.cs:332
 msgid "Mode"
 msgstr ""
@@ -2350,10 +2463,11 @@ msgid "Motion Blur"
 msgstr ""
 
 #: ../Pinta.Core/Classes/ToolSections.cs:23
+#: ../Pinta.Tools/Tools/MoveSelectedTool.cs:228
 msgid "Move"
 msgstr ""
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:1199
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:1200
 msgid "Move Layer"
 msgstr ""
 
@@ -2371,7 +2485,7 @@ msgstr ""
 msgid "Move Object to Layer"
 msgstr ""
 
-#: ../Pinta.Tools/Tools/MoveSelectedTool.cs:59
+#: ../Pinta.Tools/Tools/MoveSelectedTool.cs:113
 msgid "Move Selected Pixels"
 msgstr ""
 
@@ -2419,7 +2533,13 @@ msgstr ""
 msgid "Move selected control point up"
 msgstr ""
 
-#: ../Pinta.Tools/Tools/MoveSelectedTool.cs:229
+#: ../Pinta.Tools/Tools/MoveSelectedTool.cs:236
+#, fuzzy
+msgid "Move the corners, or turn and tilt the selected pixels, in 3D space."
+msgstr ""
+"3D اسپیس میں کونوں کو منتقل کریں، یا منتخب پکسلز کو گھمائیں اور جھکائیں۔"
+
+#: ../Pinta.Tools/Tools/MoveSelectedTool.cs:713
 msgid "Move to New Layer"
 msgstr ""
 
@@ -2508,17 +2628,17 @@ msgstr ""
 msgid "Nothing to open"
 msgstr ""
 
-#: ../Pinta.Tools/Tools/BaseTransformTool.cs:738
+#: ../Pinta.Tools/Tools/BaseTransformTool.cs:747
 #, csharp-format
 msgid "Nudge 10% of canvas: {0}"
 msgstr ""
 
-#: ../Pinta.Tools/Tools/BaseTransformTool.cs:737
+#: ../Pinta.Tools/Tools/BaseTransformTool.cs:746
 #, csharp-format
 msgid "Nudge 10px: {0}"
 msgstr ""
 
-#: ../Pinta.Tools/Tools/BaseTransformTool.cs:739
+#: ../Pinta.Tools/Tools/BaseTransformTool.cs:748
 #, csharp-format
 msgid "Nudge 20% of canvas: {0}"
 msgstr ""
@@ -2587,17 +2707,17 @@ msgstr ""
 msgid "Nudge selection up (5% canvas)"
 msgstr ""
 
-#: ../Pinta.Tools/Tools/BaseTransformTool.cs:511
+#: ../Pinta.Tools/Tools/BaseTransformTool.cs:520
 #, csharp-format
 msgid "Nudge {0} ({1}): {2}"
 msgstr ""
 
-#: ../Pinta.Tools/Tools/BaseTransformTool.cs:510
+#: ../Pinta.Tools/Tools/BaseTransformTool.cs:519
 #, csharp-format
 msgid "Nudge {0}: {1}"
 msgstr ""
 
-#: ../Pinta.Tools/Tools/BaseTransformTool.cs:736
+#: ../Pinta.Tools/Tools/BaseTransformTool.cs:745
 msgid "Nudge: Arrow keys"
 msgstr ""
 
@@ -2662,7 +2782,7 @@ msgstr ""
 msgid "Opacity"
 msgstr ""
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:911
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:912
 #: ../Pinta.Gui.Widgets/Widgets/Layers/PropertiesDialogGridBuilder.cs:44
 msgid "Opacity:"
 msgstr ""
@@ -2779,7 +2899,7 @@ msgstr ""
 msgid "Paint Bucket"
 msgstr ""
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:985
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:986
 msgid ""
 "Paint on the canvas to reveal the layer; erase to hide it. Right-click the "
 "row again for options."
@@ -2886,6 +3006,13 @@ msgstr ""
 #: ../Pinta.Effects/Effects/MedianEffect.cs:63
 msgid "Percentile"
 msgstr ""
+
+#. Translators: Move Selected Pixels mode where each corner moves on its own, to fit the pixels onto an angled surface.
+#: ../Pinta.Tools/Tools/MoveSelectedTool.cs:233
+#: ../Pinta.Tools/Tools/MoveSelectedTool.cs:529
+#, fuzzy
+msgid "Perspective"
+msgstr "تناظر"
 
 #. Translators: 'Petite Caps' refers to the font-variant text property
 #: ../Pinta.Tools/Dialogs/TextPropertiesDialog.cs:249
@@ -3105,7 +3232,7 @@ msgstr ""
 msgid "Print"
 msgstr ""
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:951
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:952
 msgid "Properties..."
 msgstr ""
 
@@ -3210,7 +3337,7 @@ msgstr ""
 msgid "Raster — fuses to layer"
 msgstr ""
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:944
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:945
 msgid "Rasterize"
 msgstr ""
 
@@ -3239,7 +3366,7 @@ msgstr ""
 msgid "Re-edit existing text"
 msgstr ""
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:1315
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:1317
 msgid ""
 "Re-editable object: a live shape or text you can keep editing until you "
 "rasterize it."
@@ -3331,7 +3458,7 @@ msgstr ""
 msgid "Remove last point (Backspace)"
 msgstr ""
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:997
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:998
 msgid "Remove this layer's mask; the layer renders unmasked."
 msgstr ""
 
@@ -3339,7 +3466,7 @@ msgstr ""
 msgid "Rename Layer"
 msgstr ""
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:804
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:805
 msgid "Rename Layer..."
 msgstr ""
 
@@ -3478,7 +3605,7 @@ msgstr ""
 msgid "Right Triangle"
 msgstr ""
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:2113
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:2096
 msgid "Right click + drag: move the whole shape."
 msgstr ""
 
@@ -3486,15 +3613,15 @@ msgstr ""
 msgid "Right click to move"
 msgstr ""
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:1313
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:1315
 msgid "Right-click to change its settings, blending and strength"
 msgstr ""
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:1295
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:1297
 msgid "Right-click to delete the mask"
 msgstr ""
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:1316
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:1318
 msgid "Right-click to set blend mode and opacity, or open its properties"
 msgstr ""
 
@@ -3686,7 +3813,7 @@ msgstr ""
 msgid "Select previous control point"
 msgstr ""
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:1294
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:1296
 msgid "Select this row to paint the mask; paint reveals, erase hides"
 msgstr ""
 
@@ -3802,8 +3929,8 @@ msgid "Shear Vertically"
 msgstr ""
 
 #: ../Pinta.Core/Extensions/Gtk/GtkExtensions.Interaction.cs:112
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:2112
-#: ../Pinta.Tools/Tools/BaseTransformTool.cs:733
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:2095
+#: ../Pinta.Tools/Tools/BaseTransformTool.cs:742
 msgid "Shift"
 msgstr ""
 
@@ -3925,6 +4052,13 @@ msgstr ""
 msgid "Size: "
 msgstr ""
 
+#. Translators: Move Selected Pixels mode that slants the pixels by sliding one edge along itself.
+#: ../Pinta.Tools/Tools/MoveSelectedTool.cs:231
+#: ../Pinta.Tools/Tools/MoveSelectedTool.cs:528
+#, fuzzy
+msgid "Skew"
+msgstr "ترچھا کریں"
+
 #: ../Impasto/Dialogs/PreferencesDialog.cs:280
 msgid "Skip the \"Rasterize Objects?\" confirmation"
 msgstr ""
@@ -4022,7 +4156,7 @@ msgstr ""
 msgid "Strength"
 msgstr ""
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:911
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:912
 msgid "Strength:"
 msgstr ""
 
@@ -4411,7 +4545,7 @@ msgstr ""
 msgid "Transform Settings"
 msgstr ""
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:930
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:931
 msgid "Transform Settings..."
 msgstr ""
 
@@ -4431,6 +4565,11 @@ msgstr ""
 #: ../Pinta.Core/Managers/KeyboardShortcutManager.cs:447
 #: ../Pinta.Core/Managers/KeyboardShortcutManager.cs:453
 #: ../Pinta.Core/Managers/KeyboardShortcutManager.cs:459
+#: ../Pinta.Core/Managers/KeyboardShortcutManager.cs:466
+#: ../Pinta.Core/Managers/KeyboardShortcutManager.cs:472
+#: ../Pinta.Core/Managers/KeyboardShortcutManager.cs:478
+#: ../Pinta.Core/Managers/KeyboardShortcutManager.cs:484
+#: ../Pinta.Core/Managers/KeyboardShortcutManager.cs:490
 msgid "Transform Tools"
 msgstr ""
 
@@ -4881,7 +5020,7 @@ msgstr ""
 msgid "{0} (Alternate)"
 msgstr ""
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:2117
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:2100
 #, csharp-format
 msgid "{0} + click: start a new shape here."
 msgstr ""
@@ -4892,7 +5031,7 @@ msgstr ""
 msgid "{0} + left click to set origin, left click to paint."
 msgstr ""
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:2114
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:2097
 #, csharp-format
 msgid "{0} + right drag: change tension."
 msgstr ""
@@ -4912,7 +5051,7 @@ msgstr ""
 msgid "{0} - never saved to a file"
 msgstr ""
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:2116
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:2099
 #, csharp-format
 msgid "{0} and drag: rotate the whole shape."
 msgstr ""
@@ -4989,13 +5128,13 @@ msgstr ""
 msgid "{0}%"
 msgstr ""
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:2112
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:2095
 #, csharp-format
 msgid "{0}-drag: snap the adjacent segment to a 15° angle."
 msgstr ""
 
 #: ../Pinta.Tools/Editable/EditEngines/ArrowedEditEngine.cs:410
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:2115
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:2098
 #, csharp-format
 msgid "{0}: curve the line around the selected point; {1}: straighten it."
 msgstr ""
@@ -5011,142 +5150,6 @@ msgstr ""
 #, csharp-format
 msgid "▼ {0}"
 msgstr ""
-
-#. Translators: Status-bar line for Move Selected Pixels; Skew and Perspective are the Mode choices on this tool's toolbar and must match their translations.
-#. AI-generated translation; human review requested.
-#: ../Pinta.Tools/Tools/MoveSelectedTool.cs:90
-#, fuzzy
-msgid "In Skew or Perspective mode, drag the grips on the selection's edges or corners."
-msgstr "ترچھا کریں یا تناظر موڈ میں، انتخاب کے کناروں یا کونوں پر موجود دستوں کو گھسیٹیں۔"
-
-#. Translators: Tooltip for the Move choice of Move Selected Pixels' Mode dropdown; grips are the round handles on the selection outline.
-#. AI-generated translation; human review requested.
-#: ../Pinta.Tools/Tools/MoveSelectedTool.cs:144
-#, fuzzy
-msgid "Drag the grips to resize the selected pixels."
-msgstr "منتخب پکسلز کا سائز بدلنے کے لیے دستوں کو گھسیٹیں۔"
-
-#. Translators: Move Selected Pixels mode and undo-history label: slants the pixels by sliding one edge along itself (shear).
-#. AI-generated translation; human review requested.
-#: ../Pinta.Tools/Tools/MoveSelectedTool.cs:146 ../Pinta.Tools/Tools/MoveSelectedTool.cs:256
-#, fuzzy
-msgid "Skew"
-msgstr "ترچھا کریں"
-
-#. Translators: Tooltip for the Skew choice of Move Selected Pixels' Mode dropdown.
-#. AI-generated translation; human review requested.
-#: ../Pinta.Tools/Tools/MoveSelectedTool.cs:147
-#, fuzzy
-msgid "Drag an edge's grip to slide that edge along itself, slanting the selected pixels."
-msgstr "کسی کنارے کے دستے کو گھسیٹ کر اس کنارے کو اسی کی سمت میں سرکائیں، جس سے منتخب پکسلز ترچھے ہو جائیں گے۔"
-
-#. Translators: Move Selected Pixels mode and undo-history label: each corner moves on its own, to fit the pixels onto an angled surface.
-#. AI-generated translation; human review requested.
-#: ../Pinta.Tools/Tools/MoveSelectedTool.cs:149 ../Pinta.Tools/Tools/MoveSelectedTool.cs:257
-#, fuzzy
-msgid "Perspective"
-msgstr "تناظر"
-
-#. Translators: Tooltip for the Perspective choice of Move Selected Pixels' Mode dropdown.
-#. AI-generated translation; human review requested.
-#: ../Pinta.Tools/Tools/MoveSelectedTool.cs:150
-#, fuzzy
-msgid "Drag any corner on its own to fit the selected pixels onto an angled surface."
-msgstr "منتخب پکسلز کو کسی ترچھی سطح پر فٹ کرنے کے لیے کسی بھی کونے کو الگ سے گھسیٹیں۔"
-
-#. Translators: Keyboard-shortcuts dialog row (Transform Tools tab) for Move Selected Pixels' 3D mode; the key is held while dragging a corner grip, which then moves toward or away from the viewer. "3D" must match the 3D mode name.
-#. AI-generated translation; human review requested.
-#: ../Pinta.Core/Managers/KeyboardShortcutManager.cs:467
-#, fuzzy
-msgid "3D mode: hold while dragging a corner to push it away or pull it closer"
-msgstr "3D موڈ: کسی کونے کو گھسیٹتے ہوئے دبائے رکھیں تاکہ اسے دور دھکیلا یا قریب کھینچا جا سکے"
-
-#. Translators: Keyboard-shortcuts dialog row: turns the selected pixels about an upright axis, so the left side moves away from the viewer.
-#. AI-generated translation; human review requested.
-#: ../Pinta.Core/Managers/KeyboardShortcutManager.cs:473
-#, fuzzy
-msgid "3D mode: turn selection left (5°)"
-msgstr "3D موڈ: انتخاب کو بائیں گھمائیں (5°)"
-
-#. Translators: Keyboard-shortcuts dialog row: turns the selected pixels about an upright axis, so the right side moves away from the viewer.
-#. AI-generated translation; human review requested.
-#: ../Pinta.Core/Managers/KeyboardShortcutManager.cs:479
-#, fuzzy
-msgid "3D mode: turn selection right (5°)"
-msgstr "3D موڈ: انتخاب کو دائیں گھمائیں (5°)"
-
-#. Translators: Keyboard-shortcuts dialog row: tilts the selected pixels about a level axis, so the top moves away from the viewer.
-#. AI-generated translation; human review requested.
-#: ../Pinta.Core/Managers/KeyboardShortcutManager.cs:485
-#, fuzzy
-msgid "3D mode: tilt selection back (5°)"
-msgstr "3D موڈ: انتخاب کو پیچھے جھکائیں (5°)"
-
-#. Translators: Keyboard-shortcuts dialog row: tilts the selected pixels about a level axis, so the top comes toward the viewer.
-#. AI-generated translation; human review requested.
-#: ../Pinta.Core/Managers/KeyboardShortcutManager.cs:491
-#, fuzzy
-msgid "3D mode: tilt selection forward (5°)"
-msgstr "3D موڈ: انتخاب کو آگے جھکائیں (5°)"
-
-#. Translators: Status bar and Mode tooltip for Move Selected Pixels. {0} is the key held to push a corner in depth; {1} to {4} are the keys that turn left, turn right, tilt back and tilt forward. 3D is a Mode choice on this tool's toolbar and must match its translation. Keep {0}..{4} exactly.
-#. AI-generated translation; human review requested.
-#: ../Pinta.Tools/Tools/MoveSelectedTool.cs:130
-#, fuzzy, csharp-format
-msgid "In 3D mode, drag a corner to move it, or hold {0} and drag it up or down to push it away or pull it closer. Drag a grip outside an edge to turn or tilt the selection, holding Shift for 15° steps, or press {1}, {2}, {3} or {4}."
-msgstr "3D موڈ میں، کسی کونے کو منتقل کرنے کے لیے اسے گھسیٹیں، یا {0} دبائے رکھیں اور اسے دور دھکیلنے یا قریب کھینچنے کے لیے اوپر یا نیچے گھسیٹیں۔ انتخاب کو گھمانے یا جھکانے کے لیے کسی کنارے کے باہر موجود دستے کو گھسیٹیں، 15° کے قدموں کے لیے Shift دبائے رکھیں، یا {1}، {2}، {3} یا {4} دبائیں۔"
-
-#. Translators: Move Selected Pixels mode and undo-history label: moves the pixels' corners in 3D space, viewed in perspective. Usually left as "3D" or the language's usual abbreviation for three-dimensional.
-#. AI-generated translation; human review requested.
-#: ../Pinta.Tools/Tools/MoveSelectedTool.cs:235 ../Pinta.Tools/Tools/MoveSelectedTool.cs:530
-#, fuzzy
-msgid "3D"
-msgstr "3D"
-
-#. Translators: Tooltip for the 3D choice of Move Selected Pixels' Mode dropdown.
-#. AI-generated translation; human review requested.
-#: ../Pinta.Tools/Tools/MoveSelectedTool.cs:236
-#, fuzzy
-msgid "Move the corners, or turn and tilt the selected pixels, in 3D space."
-msgstr "3D اسپیس میں کونوں کو منتقل کریں، یا منتخب پکسلز کو گھمائیں اور جھکائیں۔"
-
-#. Translators: Toolbar label for 3D mode's camera angle, in degrees (as in photography).
-#. AI-generated translation; human review requested.
-#: ../Pinta.Tools/Tools/MoveSelectedTool.cs:265
-#, fuzzy
-msgid "Field of view"
-msgstr "منظر کا دائرہ"
-
-#. Translators: Tooltip of the Field of view spin button.
-#. AI-generated translation; human review requested.
-#: ../Pinta.Tools/Tools/MoveSelectedTool.cs:274
-#, fuzzy
-msgid "How wide 3D mode's view is, in degrees. A wide view makes depth look stronger; a narrow one flattens it."
-msgstr "3D موڈ کا منظر کتنا چوڑا ہے، ڈگری میں۔ چوڑا منظر گہرائی کو زیادہ نمایاں دکھاتا ہے؛ تنگ منظر اسے چپٹا کر دیتا ہے۔"
-
-#. Translators: hint shown when hovering a 3D mode corner grip. {0} is the key held to push the corner in depth, such as 'Shift'.
-#. AI-generated translation; human review requested.
-#: ../Pinta.Tools/Tools/MoveSelectedTool.cs:155
-#, fuzzy, csharp-format
-msgid ""
-"Drag to move this corner\n"
-"{0}+drag up or down: push it away or pull it closer"
-msgstr ""
-"اس کونے کو منتقل کرنے کے لیے گھسیٹیں\n"
-"{0}+اوپر یا نیچے گھسیٹیں: دور دھکیلیں یا قریب کھینچیں"
-
-#. Translators: hint shown when hovering a 3D mode turn/tilt grip outside an edge. {0} to {3} are the keys that turn left and right and tilt back and forward.
-#. AI-generated translation; human review requested.
-#: ../Pinta.Tools/Tools/MoveSelectedTool.cs:159
-#, fuzzy, csharp-format
-msgid ""
-"Drag to turn or tilt the selection\n"
-"Shift+drag: 15° steps\n"
-"{0}, {1}, {2}, {3}: 5° steps"
-msgstr ""
-"انتخاب کو گھمانے یا جھکانے کے لیے گھسیٹیں\n"
-"Shift+گھسیٹیں: 15° کے قدم\n"
-"{0}، {1}، {2}، {3}: 5° کے قدم"
 
 #~ msgid "Draws a line or curve with a start and an end point."
 #~ msgstr "ایک شروع اور ایک اختتامی نقطے کے ساتھ ایک لکیر یا وکر کھینچتا ہے۔"

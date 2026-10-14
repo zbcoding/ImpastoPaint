@@ -16,6 +16,11 @@ entries, is upstream Pinta work; the Impasto sections cover changes made in this
   surface in a photo. Both grips have their own cursors, and each drag is one undo step.
   Adjusting the same selection again resamples from the pixels as they were before the first
   skew or perspective drag, so repeated adjustments do not blur them further.
+- Move Selected Pixels has a 3D mode. Corners drag across the screen as in Perspective, and
+  holding D while dragging one up or down pushes it away or pulls it closer. A ring of grips
+  outside the edges turns and tilts the selection in 3D (Shift for 15° steps), and Alt+arrow
+  keys turn it 5° at a time. A Field of view setting on the toolbar sets how strong the
+  perspective is. The depth and turn keys can be rebound under Transform Tools.
 
 ### Fixed
 

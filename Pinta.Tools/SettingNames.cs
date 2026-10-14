@@ -40,6 +40,7 @@ internal static class SettingNames
 	internal const string SHAPE_CLOSED_SHAPE = "shape-closed-shape";
 
 	internal const string MOVE_SELECTED_MODE = "move-selected-mode";
+	internal const string MOVE_SELECTED_FIELD_OF_VIEW = "move-selected-field-of-view";
 
 	internal static string Arrow1 (string prefix)
 		=> $"{prefix}-arrow1";

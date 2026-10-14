@@ -14,11 +14,14 @@ internal enum TransformMode
 	Move,
 	Skew,
 	Perspective,
+	ThreeD,
 }
 
 /// <summary>
-/// Skew and perspective for the floating selection. The content's outline is a quad (corners in
-/// order around it); a drag reshapes that quad and the lifted pixels are resampled to fill it.
+/// Skew, perspective and 3D for the floating selection. The content's outline is a quad (corners
+/// in order around it); a drag reshapes that quad and the lifted pixels are resampled to fill it.
+/// 3D mode keeps a depth for each corner as well, and shows the corners through a
+/// <see cref="PinholeCamera"/>.
 /// <para>
 /// Consecutive warps form a session that always resamples from the pixels as they were when the
 /// session began, so adjusting the corners over and over blurs them once rather than once per
@@ -40,6 +43,11 @@ internal sealed class SelectionWarp
 		/// <summary>The surface the selection layer shows while this session is still current.</summary>
 		public ImageSurface Shown { get; set; } = null!;
 		public PointD[] Quad { get; set; } = quad;
+
+		/// <summary>3D mode's corners, which project to <see cref="Quad"/>; null while every depth is 0.</summary>
+		public Point3D[]? Corners { get; set; }
+
+		public Point3D[] CurrentCorners => Corners ?? Quad3D.Flat (Quad);
 	}
 
 	private sealed class Gesture (Session session, TransformMode mode, int grip, PointD start, ImageSurface surfaceBefore)
@@ -47,11 +55,22 @@ internal sealed class SelectionWarp
 		public Session Session { get; } = session;
 		public TransformMode Mode { get; } = mode;
 		public int Grip { get; } = grip;
-		public PointD Start { get; } = start;
 		public PointD[] StartQuad { get; } = session.Quad;
 		public ImageSurface SurfaceBefore { get; } = surfaceBefore;
 		public ImageSurface? Output { get; set; }
+
+		// A 3D corner drag restarts from where it is whenever the depth key goes down or up.
+		public PointD Start { get; set; } = start;
+		public PointD Last { get; set; } = start;
+		public Point3D[] StartCorners { get; set; } = session.CurrentCorners;
+		public bool PushingDepth { get; set; }
 	}
+
+	/// <summary>3D mode's tilt grips follow its four corner grips: grip <c>4 + i</c> sits on edge <c>i</c>.</summary>
+	public const int FIRST_TILT_GRIP = 4;
+
+	// Shift-dragging a tilt grip turns in steps of this many degrees.
+	private const double TILT_SNAP_DEGREES = 15;
 
 	private Session? session;
 	private Gesture? gesture;
@@ -60,6 +79,13 @@ internal sealed class SelectionWarp
 
 	/// <summary>True while this class itself is replacing the document's selection.</summary>
 	public bool IsApplying { get; private set; }
+
+	/// <summary>How wide 3D mode's camera sees across the canvas's longer side, in degrees.</summary>
+	public double FieldOfView { get; set; } = 60;
+
+	/// <summary>Whether 3D mode left any corner of the current session off the canvas plane.</summary>
+	public bool HasDepth (Document document)
+		=> IsSessionCurrent (document) && session!.Corners is Point3D[] corners && !Quad3D.IsFlat (corners);
 
 	/// <summary>The outline grips sit on, or null when there is no visible selection.</summary>
 	public PointD[]? CurrentQuad (Document document)
@@ -91,43 +117,142 @@ internal sealed class SelectionWarp
 		gesture = new Gesture (session!, mode, grip, start, document.Layers.SelectionLayer.Surface);
 	}
 
-	public void Update (Document document, PointD point)
+	/// <summary>
+	/// Follows the pointer at <paramref name="point"/>. In 3D mode, <paramref name="pushingDepth"/>
+	/// turns a corner drag into a push away or pull closer, and <paramref name="snapAngle"/> turns a
+	/// tilt drag in steps.
+	/// </summary>
+	public void Update (Document document, PointD point, bool pushingDepth = false, bool snapAngle = false)
 	{
-		if (gesture is null)
+		// A keyboard turn or a new field of view has no grip for the pointer to drive.
+		if (gesture is null || gesture.Grip < 0)
 			return;
+
+		if (gesture.Mode == TransformMode.ThreeD) {
+			Place (document, Drag3D (document, gesture, point, pushingDepth, snapAngle));
+			return;
+		}
 
 		PointD drag = point - gesture.Start;
 		PointD[] target = gesture.Mode == TransformMode.Skew
 			? Skew (gesture.StartQuad, gesture.Grip, drag)
 			: MoveCorner (gesture.StartQuad, gesture.Grip, drag);
+		Show (document, target, corners: null);
+	}
 
-		// A quad folded over itself has no perspective mapping; hold the last good shape.
-		if (!IsConvex (target))
+	/// <summary>Turns the open gesture's corners in 3D by <paramref name="yaw"/> and <paramref name="pitch"/> radians.</summary>
+	public void Tilt (Document document, double yaw, double pitch)
+	{
+		if (gesture is null)
+			return;
+
+		Place (document, Quad3D.Tilt (gesture.Session.CurrentCorners, yaw, pitch));
+	}
+
+	/// <summary>
+	/// Shows the session's corners again through the current <see cref="FieldOfView"/>. When the
+	/// new camera cannot show them, the shape stays as it is and its depths are dropped.
+	/// </summary>
+	public void Reproject (Document document)
+	{
+		if (gesture is null)
 			return;
 
 		Session s = gesture.Session;
+		if (!Place (document, s.CurrentCorners))
+			s.Corners = null;
+	}
+
+	private Point3D[] Drag3D (Document document, Gesture g, PointD point, bool pushingDepth, bool snapAngle)
+	{
+		if (g.Grip >= FIRST_TILT_GRIP)
+			return TiltByGrip (g, point - g.Start, snapAngle);
+
+		// Restart from here, so changing over between moving and pushing never makes the corner jump.
+		if (pushingDepth != g.PushingDepth) {
+			g.Start = g.Last;
+			g.StartCorners = g.Session.CurrentCorners;
+			g.PushingDepth = pushingDepth;
+		}
+		g.Last = point;
+
+		PinholeCamera camera = CameraOf (document);
+		PointD drag = point - g.Start;
+		if (pushingDepth) {
+			// Up pushes the corner away. A quarter of the canvas's longer side doubles its distance.
+			double quarterCanvas = Math.Max (document.ImageSize.Width, document.ImageSize.Height) / 4.0;
+			return Quad3D.PushCorner (camera, g.StartCorners, g.Grip, -drag.Y / quarterCanvas);
+		}
+
+		PointD from = camera.Project (g.StartCorners[g.Grip]);
+		return Quad3D.MoveCorner (camera, g.StartCorners, g.Grip, from + drag);
+	}
+
+	// A grip on a level edge tilts up and down, one on an upright edge turns left and right, and
+	// either way the grip follows the pointer: dragging it by its distance from the centre turns
+	// about one radian.
+	private static Point3D[] TiltByGrip (Gesture g, PointD drag, bool snapAngle)
+	{
+		int edge = g.Grip - FIRST_TILT_GRIP;
+		PointD along = g.StartQuad[(edge + 1) % 4] - g.StartQuad[edge];
+		bool level = Math.Abs (along.X) >= Math.Abs (along.Y);
+
+		RectangleD bounds = BoundsOf (g.StartQuad);
+		double reach = Math.Max (1, (level ? bounds.Height : bounds.Width) / 2);
+		double angle = (level ? drag.Y : drag.X) / reach;
+		if (snapAngle) {
+			double step = TILT_SNAP_DEGREES * Math.PI / 180;
+			angle = Math.Round (angle / step) * step;
+		}
+
+		return level
+			? Quad3D.Tilt (g.StartCorners, 0, angle)
+			: Quad3D.Tilt (g.StartCorners, angle, 0);
+	}
+
+	private PinholeCamera CameraOf (Document document)
+		=> PinholeCamera.Of (document.ImageSize, FieldOfView);
+
+	// Shows 3D corners, or holds the last good shape when the camera cannot show them.
+	private bool Place (Document document, Point3D[] corners)
+		=> Quad3D.Project (CameraOf (document), corners) is PointD[] target && Show (document, target, corners);
+
+	/// <summary>
+	/// Resamples the pixels onto <paramref name="target"/> and moves the selection with them.
+	/// Returns false, changing nothing, for a quad with no perspective mapping.
+	/// </summary>
+	private bool Show (Document document, PointD[] target, Point3D[]? corners)
+	{
+		Gesture g = gesture!;
+
+		// A quad folded over itself has no perspective mapping; hold the last good shape.
+		if (!IsConvex (target))
+			return false;
+
+		Session s = g.Session;
 		if (!Homography.TryCreate (target, s.OriginalQuad, out Homography canvasToOriginal)
 			|| !Homography.TryCreate (s.OriginalQuad, target, out Homography originalToCanvas))
-			return;
+			return false;
 
 		Layer layer = document.Layers.SelectionLayer;
-		if (gesture.Output is null) {
+		if (g.Output is null) {
 			// ponytail: the warped pixels are baked at canvas positions into a surface the size of
 			// the original, so whatever lands outside that surface (left of or above the canvas, or
 			// past its far edges) is dropped once the session ends and a later move cannot bring it
 			// back. Cost ceiling: corner drags well off the canvas. Upgrade: size the output to the
 			// quad's bounds and place it through layer.Transform, once every selection-layer reader
 			// honours that transform.
-			gesture.Output = CairoExtensions.CreateImageSurface (Format.Argb32, s.Pixels.Width, s.Pixels.Height);
-			layer.Surface = gesture.Output;
+			g.Output = CairoExtensions.CreateImageSurface (Format.Argb32, s.Pixels.Width, s.Pixels.Height);
+			layer.Surface = g.Output;
 			layer.Transform.InitIdentity ();
-			s.Shown = gesture.Output;
+			s.Shown = g.Output;
 		}
 
-		Render (s.Pixels, s.PixelsToCanvas, canvasToOriginal, target, gesture.Output);
+		Render (s.Pixels, s.PixelsToCanvas, canvasToOriginal, target, g.Output);
 
 		// Before the selection changes: its SelectionChanged listeners read the quad back.
 		s.Quad = target;
+		s.Corners = corners is null || Quad3D.IsFlat (corners) ? null : corners;
 
 		IsApplying = true;
 		try {
@@ -137,6 +262,7 @@ internal sealed class SelectionWarp
 		}
 
 		document.Workspace.Invalidate ();
+		return true;
 	}
 
 	/// <summary>

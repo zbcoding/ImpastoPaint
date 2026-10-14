@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="24" height="24" version="1.1" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+ <!-- turn: the picture swings left or right about an upright axis; non-symbolic keeps the white halo and dark stroke -->
+ <g fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <g stroke="#ffffff" stroke-width="4.2">
+   <path d="M12 3 V21"/>
+   <path d="M4 9 Q12 17 20 9"/>
+   <path d="M7.5 9 H4 V12.5"/>
+   <path d="M16.5 9 H20 V12.5"/>
+  </g>
+  <g stroke="#1a1a1a" stroke-width="2.2">
+   <path d="M12 3 V21"/>
+   <path d="M4 9 Q12 17 20 9"/>
+   <path d="M7.5 9 H4 V12.5"/>
+   <path d="M16.5 9 H20 V12.5"/>
+  </g>
+ </g>
+</svg>

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="24" height="24" version="1.1" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+ <!-- tilt: the picture swings up or down about a level axis; non-symbolic keeps the white halo and dark stroke -->
+ <g fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <g stroke="#ffffff" stroke-width="4.2">
+   <path d="M3 12 H21"/>
+   <path d="M9 4 Q17 12 9 20"/>
+   <path d="M12.5 4 H9 V7.5"/>
+   <path d="M12.5 20 H9 V16.5"/>
+  </g>
+  <g stroke="#1a1a1a" stroke-width="2.2">
+   <path d="M3 12 H21"/>
+   <path d="M9 4 Q17 12 9 20"/>
+   <path d="M12.5 4 H9 V7.5"/>
+   <path d="M12.5 20 H9 V16.5"/>
+  </g>
+ </g>
+</svg>

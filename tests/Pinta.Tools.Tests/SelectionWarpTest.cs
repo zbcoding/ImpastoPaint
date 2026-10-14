@@ -8,8 +8,8 @@ using Pinta.Core;
 namespace Pinta.Tools.Tests;
 
 /// <summary>
-/// Move Selected Pixels' Skew and Perspective modes: the grips reshape the floating pixels and
-/// their selection together, one drag is one undo step, and re-adjusting within a session
+/// Move Selected Pixels' Skew, Perspective and 3D modes: the grips reshape the floating pixels
+/// and their selection together, one drag is one undo step, and re-adjusting within a session
 /// resamples from the untouched pixels instead of compounding blur.
 /// </summary>
 [TestFixture]
@@ -40,6 +40,7 @@ internal sealed class SelectionWarpTest : ToolsTestHarness
 	public void DeactivateTool ()
 	{
 		PintaCore.Settings.PutSetting (SettingNames.MOVE_SELECTED_MODE, (int) TransformMode.Move);
+		PintaCore.Settings.PutSetting (SettingNames.MOVE_SELECTED_FIELD_OF_VIEW, 60.0);
 		if (tool is null)
 			return;
 
@@ -273,6 +274,113 @@ internal sealed class SelectionWarpTest : ToolsTestHarness
 		Hover (t, topGrip, alt: false);
 		Assert.That (t.CurrentCursor, Is.SameAs (gripCursor), "hovering the grip after a rotate must show its cursor again");
 	}
+
+	[Test]
+	public void HoldingTheDepthKeyPushesTheCornerBackAndLettingGoMovesItOnWithoutAJump ()
+	{
+		MoveSelectedTool t = Activate (TransformMode.ThreeD);
+		Gdk.Key depthKey = new (Gdk.Constants.KEY_d);
+
+		// Corner 0 is the top-left, (8,8); the 32px canvas's centre is (16,16). Up a sixteenth of
+		// the canvas is half a doubling, so the corner's distance grows by √2 and it shows 1/√2 as
+		// far from the centre: (10.34, 10.34).
+		Press (t, depthKey);
+		MouseDown (t, new PointD (8, 8));
+		MouseMove (t, new PointD (8, 4));
+		Assert.That (CornersOf (Document.Selection)[0], Is.EqualTo (new PointI (10, 10)),
+			"pushed back, the corner slides toward the canvas centre instead of following the pointer");
+
+		// Released mid-drag: the next 2px down moves the corner 2px down from where it shows.
+		Release (t, depthKey);
+		MouseMove (t, new PointD (8, 6));
+		MouseUp (t, new PointD (8, 6));
+
+		Assert.That (CornersOf (Document.Selection), Is.EqualTo (new PointI[] { new (10, 12), new (16, 8), new (16, 16), new (8, 16) }));
+	}
+
+	[Test]
+	public void DraggingTheRightTiltGripInwardTurnsThatSideAwayAsOneUndoStep ()
+	{
+		MoveSelectedTool t = Activate (TransformMode.ThreeD);
+		int historyBefore = Document.History.Pointer;
+
+		// The right edge's tilt grip sits 18 screen pixels (2.25 canvas pixels at 8x) outside its
+		// midpoint. Dragging it in by half the square's width turns it about one radian.
+		Drag (t, new PointD (18.25, 12), new PointD (14.25, 12));
+
+		PointI[] corners = CornersOf (Document.Selection);
+		Assert.That (EdgeLength (corners, 1), Is.LessThan (EdgeLength (corners, 3) - 1),
+			"the side turned away must show shorter than the side turned toward the viewer");
+		Assert.That (Document.History.Pointer, Is.EqualTo (historyBefore + 1));
+
+		Document.History.Undo ();
+		Assert.That (CornersOf (Document.Selection), Is.EqualTo (new PointI[] { new (8, 8), new (16, 8), new (16, 16), new (8, 16) }));
+	}
+
+	[Test]
+	public void AHeldTurnKeyIsOneUndoStepAndANarrowerViewFlattensTheTurn ()
+	{
+		MoveSelectedTool t = Activate (TransformMode.ThreeD);
+		int historyBefore = Document.History.Pointer;
+
+		// Alt+Left held through nine key repeats turns the square 45° left, until it is let go.
+		Gdk.Key left = new (Gdk.Constants.KEY_Left);
+		for (int i = 0; i < 9; i++)
+			Press (t, left, Gdk.ModifierType.AltMask);
+		Release (t, left, Gdk.ModifierType.AltMask);
+
+		PointI[] turned = CornersOf (Document.Selection);
+		double turnedDifference = EdgeLength (turned, 1) - EdgeLength (turned, 3);
+		Assert.That (turnedDifference, Is.GreaterThan (1), "turned left, the left side recedes and shows shorter");
+		Assert.That (Document.History.Pointer, Is.EqualTo (historyBefore + 1), "a held key is one undo step");
+
+		SetFieldOfView (t, 10);
+		PointI[] narrowed = CornersOf (Document.Selection);
+		Assert.That (EdgeLength (narrowed, 1) - EdgeLength (narrowed, 3), Is.LessThan (turnedDifference),
+			"through a narrower view the same turn shows less foreshortening");
+		Assert.That (Document.History.Pointer, Is.EqualTo (historyBefore + 2), "the new view is its own undo step");
+
+		Document.History.Undo ();
+		Assert.That (CornersOf (Document.Selection), Is.EqualTo (turned));
+	}
+
+	[Test]
+	public void ChangingTheViewOfAFlatSelectionChangesNothing ()
+	{
+		MoveSelectedTool t = Activate (TransformMode.ThreeD);
+		int historyBefore = Document.History.Pointer;
+
+		SetFieldOfView (t, 120);
+
+		Assert.That (Document.History.Pointer, Is.EqualTo (historyBefore), "nothing off the canvas plane, nothing to reshape or undo");
+		Assert.That (Document.Layers.ShowSelectionLayer, Is.False, "the pixels must not be lifted for a no-op");
+	}
+
+	private static double EdgeLength (PointI[] corners, int edge)
+	{
+		PointI a = corners[edge];
+		PointI b = corners[(edge + 1) % 4];
+		return Math.Sqrt (((b.X - a.X) * (b.X - a.X)) + ((b.Y - a.Y) * (b.Y - a.Y)));
+	}
+
+	// What the toolbar's spin button calls; the button itself needs a canvas that can take focus.
+	private static void SetFieldOfView (MoveSelectedTool t, double degrees)
+		=> typeof (MoveSelectedTool).GetMethod ("ChangeFieldOfView", NonPublicInstance)!.Invoke (t, [degrees]);
+
+	private void Press (BaseTool t, Gdk.Key key, Gdk.ModifierType state = default)
+		=> typeof (BaseTool).GetMethod ("DoKeyDown", NonPublicInstance)!.Invoke (t, [Document, new ToolKeyEventArgs { Key = key, State = state }]);
+
+	private void Release (BaseTool t, Gdk.Key key, Gdk.ModifierType state = default)
+		=> typeof (BaseTool).GetMethod ("DoKeyUp", NonPublicInstance)!.Invoke (t, [Document, new ToolKeyEventArgs { Key = key, State = state }]);
+
+	private void MouseDown (BaseTool t, PointD at)
+		=> typeof (BaseTool).GetMethod ("DoMouseDown", NonPublicInstance)!.Invoke (t, [Document, MouseArgs (at)]);
+
+	private void MouseMove (BaseTool t, PointD at)
+		=> typeof (BaseTool).GetMethod ("DoMouseMove", NonPublicInstance)!.Invoke (t, [Document, MouseArgs (at)]);
+
+	private void MouseUp (BaseTool t, PointD at)
+		=> typeof (BaseTool).GetMethod ("DoMouseUp", NonPublicInstance)!.Invoke (t, [Document, MouseArgs (at)]);
 
 	private void Hover (BaseTool t, PointD at, bool alt)
 		=> typeof (BaseTool).GetMethod ("DoMouseMove", NonPublicInstance)!.Invoke (t, [Document, MouseArgs (at, alt)]);

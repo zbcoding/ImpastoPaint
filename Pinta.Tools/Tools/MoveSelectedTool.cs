@@ -51,12 +51,32 @@ public sealed class MoveSelectedTool : BaseTransformTool
 	private bool had_real_selection;
 	private readonly Matrix original_transform = CairoExtensions.CreateIdentityMatrix ();
 
-	// Skew and Perspective reshape the selection through their own grips; Move keeps the inherited
-	// resize grips. Body drags, rotate and nudge behave the same in every mode.
+	// Skew, Perspective and 3D reshape the selection through their own grips; Move keeps the
+	// inherited resize grips. Body drags, rotate and nudge behave the same in every mode.
 	private TransformMode mode;
 	private readonly SelectionWarp warp = new ();
 	private readonly QuadHandle quad_handle;
-	private int hover_grip = -1;
+	// The cursor last set while hovering the warp grips; null once something else set one.
+	private Gdk.Cursor? hover_cursor;
+	private Gdk.Cursor? move_cursor;
+	private PointD last_hover_point;
+	// ponytail: tracked from key presses, so a release while another window has focus leaves it
+	// held until the key is pressed again. Upgrade: read the keyboard's state on each drag event.
+	private bool depth_key_held;
+	// A 3D turn or tilt from the keyboard is one undo step, from the first press to the release.
+	private bool tilting_by_key;
+
+	private const double DEFAULT_FIELD_OF_VIEW = 60;
+	private const double MIN_FIELD_OF_VIEW = 10;
+	private const double MAX_FIELD_OF_VIEW = 150;
+	private const double KEY_TILT_DEGREES = 5;
+
+	private static readonly (ToolBindingDescriptor Binding, double Yaw, double Pitch)[] key_tilts = [
+		(KeyboardShortcutManager.Transform3DTurnLeft, 1, 0),
+		(KeyboardShortcutManager.Transform3DTurnRight, -1, 0),
+		(KeyboardShortcutManager.Transform3DTiltUp, 0, 1),
+		(KeyboardShortcutManager.Transform3DTiltDown, 0, -1),
+	];
 
 	private readonly SystemManager system_manager;
 	private readonly IWorkspaceService workspace;
@@ -66,6 +86,10 @@ public sealed class MoveSelectedTool : BaseTransformTool
 		workspace = services.GetService<IWorkspaceService> ();
 		quad_handle = new QuadHandle (workspace);
 		mode = ModeFromIndex (Settings.GetSetting (SettingNames.MOVE_SELECTED_MODE, 0));
+		warp.FieldOfView = Math.Clamp (
+			Settings.GetSetting (SettingNames.MOVE_SELECTED_FIELD_OF_VIEW, DEFAULT_FIELD_OF_VIEW),
+			MIN_FIELD_OF_VIEW,
+			MAX_FIELD_OF_VIEW);
 
 		// Undo, redo, nudges and plain moves all replace the selection; a warp session built on
 		// the old one would resample from stale pixels, and the grips must follow the new outline.
@@ -74,6 +98,12 @@ public sealed class MoveSelectedTool : BaseTransformTool
 				warp.Forget ();
 			// Other tools change the selection on every mouse move; redrawing the canvas for grips
 			// that are not shown made them recomposite the whole image each time.
+			if (IsActiveTool ())
+				RefreshQuadHandle ();
+		};
+
+		// The tilt grips sit a fixed number of screen pixels outside the edges.
+		workspace.ViewSizeChanged += (_, _) => {
 			if (IsActiveTool ())
 				RefreshQuadHandle ();
 		};
@@ -90,7 +120,21 @@ public sealed class MoveSelectedTool : BaseTransformTool
 		"\nUse arrow keys to move selected content by a single pixel.",
 		system_manager.CtrlLabel ())
 		// Translators: Skew and Perspective are the Mode choices on this tool's toolbar.
-		+ "\n" + Translations.GetString ("In Skew or Perspective mode, drag the grips on the selection's edges or corners.");
+		+ "\n" + Translations.GetString ("In Skew or Perspective mode, drag the grips on the selection's edges or corners.")
+		+ "\n" + ThreeDHelp ();
+
+	// Translators: {0} is the key held to push a corner in depth; {1} to {4} turn and tilt the selection in steps. 3D is a Mode choice on this tool's toolbar.
+	private static string ThreeDHelp ()
+		=> Translations.GetString (
+			"In 3D mode, drag a corner to move it, or hold {0} and drag it up or down to push it away or pull it closer. Drag a grip outside an edge to turn or tilt the selection, holding Shift for 15° steps, or press {1}, {2}, {3} or {4}.",
+			BindingLabel (KeyboardShortcutManager.Transform3DPushDepth),
+			BindingLabel (KeyboardShortcutManager.Transform3DTurnLeft),
+			BindingLabel (KeyboardShortcutManager.Transform3DTurnRight),
+			BindingLabel (KeyboardShortcutManager.Transform3DTiltUp),
+			BindingLabel (KeyboardShortcutManager.Transform3DTiltDown));
+
+	private static string BindingLabel (ToolBindingDescriptor binding)
+		=> PintaCore.Shortcuts.GetToolBinding (binding).ToLabel ();
 
 	// Rendered at 2x the default 16px and with a centered hotspot so the enlarged
 	// four-way cross still points at the pixel under the cursor.
@@ -123,6 +167,9 @@ public sealed class MoveSelectedTool : BaseTransformTool
 
 		tb.Append (ModeLabel);
 		tb.Append (ModeDropDown);
+		tb.Append (FieldOfViewLabel);
+		tb.Append (FieldOfViewSpinButton);
+		ShowFieldOfView ();
 	}
 
 	protected override void OnSaveSettings (ISettingsService settings)
@@ -130,10 +177,13 @@ public sealed class MoveSelectedTool : BaseTransformTool
 		base.OnSaveSettings (settings);
 
 		settings.PutSetting (SettingNames.MOVE_SELECTED_MODE, (int) mode);
+		settings.PutSetting (SettingNames.MOVE_SELECTED_FIELD_OF_VIEW, warp.FieldOfView);
 	}
 
 	private Gtk.Label? mode_label;
 	private ToolBarDropDownButton? mode_button;
+	private Gtk.Label? field_of_view_label;
+	private Gtk.SpinButton? field_of_view;
 
 	private Gtk.Label ModeLabel => mode_label ??= Gtk.Label.New (string.Format (" {0}: ", Translations.GetString ("Mode")));
 
@@ -151,15 +201,73 @@ public sealed class MoveSelectedTool : BaseTransformTool
 			// Translators: Move Selected Pixels mode where each corner moves on its own, to fit the pixels onto an angled surface.
 			mode_button.AddItem (Translations.GetString ("Perspective"), Pinta.Resources.Icons.TransformPerspective, TransformMode.Perspective,
 				Translations.GetString ("Drag any corner on its own to fit the selected pixels onto an angled surface."));
+			// Translators: Move Selected Pixels mode that moves the pixels' corners in 3D space, viewed in perspective.
+			mode_button.AddItem (Translations.GetString ("3D"), Pinta.Resources.Icons.Transform3D, TransformMode.ThreeD,
+				Translations.GetString ("Move the corners, or turn and tilt the selected pixels, in 3D space."));
+			// The button's own tooltip names the keys 3D mode uses, so it follows the user's bindings.
+			mode_button.UseSelectedItemTooltip = false;
 			mode_button.SelectedIndex = (int) mode;
 			mode_button.SelectedItemChanged += (_, _) => {
 				mode = (TransformMode) mode_button.SelectedItem.Tag!;
-				hover_grip = -1;
+				hover_cursor = null;
+				ShowFieldOfView ();
+				UpdateModeTooltip ();
 				RefreshQuadHandle ();
 			};
+			UpdateModeTooltip ();
+			PintaCore.Shortcuts.ShortcutsChanged += (_, _) => UpdateModeTooltip ();
 
 			return mode_button;
 		}
+	}
+
+	private void UpdateModeTooltip ()
+	{
+		if (mode_button is null)
+			return;
+
+		ToolBarItem item = mode_button.SelectedItem;
+		string help = mode == TransformMode.ThreeD ? ThreeDHelp () : item.Tooltip ?? string.Empty;
+		mode_button.TooltipText = $"{item.Text}\n{help}";
+	}
+
+	private Gtk.Label FieldOfViewLabel
+		=> field_of_view_label ??= Gtk.Label.New (string.Format (" {0}: ", Translations.GetString ("Field of view")));
+
+	private Gtk.SpinButton FieldOfViewSpinButton {
+		get {
+			if (field_of_view is not null)
+				return field_of_view;
+
+			field_of_view = GtkExtensions.CreateToolBarSpinButton (MIN_FIELD_OF_VIEW, MAX_FIELD_OF_VIEW, 5, warp.FieldOfView);
+			field_of_view.TooltipText = Translations.GetString (
+				"How wide 3D mode's view is, in degrees. A wide view makes depth look stronger; a narrow one flattens it.");
+			field_of_view.OnValueChanged += (_, _) => ChangeFieldOfView (field_of_view.Value);
+			return field_of_view;
+		}
+	}
+
+	private void ShowFieldOfView ()
+	{
+		bool shown = mode == TransformMode.ThreeD;
+		FieldOfViewLabel.Visible = shown;
+		FieldOfViewSpinButton.Visible = shown;
+	}
+
+	// The corners keep their places in 3D, so a new field of view reshapes what the camera shows
+	// of them. That reshape is its own undo step.
+	private void ChangeFieldOfView (double degrees)
+	{
+		warp.FieldOfView = degrees;
+		if (!workspace.HasOpenDocuments)
+			return;
+
+		Document document = workspace.ActiveDocument;
+		if (!warp.HasDepth (document) || !BeginWarpWithoutGrip (document))
+			return;
+
+		warp.Reproject (document);
+		FinishWarp (document);
 	}
 
 	private static TransformMode ModeFromIndex (int index)
@@ -187,17 +295,26 @@ public sealed class MoveSelectedTool : BaseTransformTool
 
 	protected override void OnMouseDown (Document document, ToolMouseEventArgs e)
 	{
+		// A click lands a keyboard turn whose key release went astray (say, to a dialog the lift
+		// opened), so the tool never stays stuck in it.
+		if (tilting_by_key)
+			FinishWarp (document);
+
+		// A second button during a grip drag must not start another gesture.
+		if (warp.IsDragging)
+			return;
+
 		if (!TryBeginWarp (document, e))
 			base.OnMouseDown (document, e);
 	}
 
 	/// <summary>
-	/// Starts a skew or perspective drag when a left click lands on one of their grips. Lifts the
-	/// pixels first, exactly as a move would, so the drag reshapes floating content.
+	/// Starts a skew, perspective or 3D drag when a left click lands on one of their grips. Lifts
+	/// the pixels first, exactly as a move would, so the drag reshapes floating content.
 	/// </summary>
 	private bool TryBeginWarp (Document document, ToolMouseEventArgs e)
 	{
-		if (mode == TransformMode.Move || IsActive || warp.IsDragging)
+		if (mode == TransformMode.Move || IsActive)
 			return false;
 		if (e.MouseButton != MouseButton.Left || e.IsAltPressed)
 			return false;
@@ -217,36 +334,78 @@ public sealed class MoveSelectedTool : BaseTransformTool
 		return true;
 	}
 
+	/// <summary>Starts a 3D change that no grip drives: a keyboard turn or a new field of view.</summary>
+	private bool BeginWarpWithoutGrip (Document document)
+	{
+		if (IsActive || warp.IsDragging || !document.Selection.Visible)
+			return false;
+
+		OnStartTransform (document);
+		if (move_declined) {
+			move_declined = false;
+			return false;
+		}
+
+		warp.Begin (document, TransformMode.ThreeD, -1, default);
+		return true;
+	}
+
 	protected override void OnMouseMove (Document document, ToolMouseEventArgs e)
 	{
 		if (warp.IsDragging) {
-			warp.Update (document, e.PointDouble);
+			warp.Update (document, e.PointDouble, depth_key_held, e.IsShiftPressed);
 			return;
 		}
 
 		base.OnMouseMove (document, e);
-
-		if (mode != TransformMode.Move && !IsActive)
-			UpdateGripCursor (e);
+		UpdateGripCursor (e.WindowPoint, e.IsAltPressed);
 	}
 
-	// Alt turns any left press into a rotate, so while it is held the grip under the cursor is
-	// not what a click would do.
-	private const int ALT_ROTATE_HOVER = -2;
-
 	// Only on a change: DefaultCursor builds a fresh texture every time it is read.
-	private void UpdateGripCursor (ToolMouseEventArgs e)
+	private void UpdateGripCursor (PointD windowPoint, bool altPressed)
 	{
-		int hover = e.IsAltPressed && quad_handle.Active ? ALT_ROTATE_HOVER : quad_handle.GripAt (e.WindowPoint);
-		if (hover == hover_grip)
+		last_hover_point = windowPoint;
+		if (mode == TransformMode.Move || IsActive || warp.IsDragging)
 			return;
 
-		hover_grip = hover;
-		SetCursor (hover switch {
-			ALT_ROTATE_HOVER => RotateCursor,
-			>= 0 => quad_handle.CursorOf (hover),
-			_ => DefaultCursor,
-		});
+		Gdk.Cursor cursor = GripCursor (windowPoint, altPressed);
+		if (cursor == hover_cursor)
+			return;
+
+		hover_cursor = cursor;
+		SetCursor (cursor);
+	}
+
+	private Gdk.Cursor GripCursor (PointD windowPoint, bool altPressed)
+	{
+		// Alt turns any left press into a rotate, so while it is held the grip under the cursor is
+		// not what a click would do.
+		if (altPressed && quad_handle.Active)
+			return RotateCursor;
+
+		int grip = quad_handle.GripAt (windowPoint);
+		if (grip < 0)
+			return move_cursor ??= DefaultCursor;
+
+		bool pushesDepth = depth_key_held && mode == TransformMode.ThreeD && grip < SelectionWarp.FIRST_TILT_GRIP;
+		return pushesDepth ? QuadHandle.DepthCursor : quad_handle.CursorOf (grip);
+	}
+
+	private static bool IsDepthKey (Gdk.Key key)
+	{
+		KeyGesture binding = PintaCore.Shortcuts.GetToolBinding (KeyboardShortcutManager.Transform3DPushDepth);
+		return binding.IsValid && key.ToUpper ().Value == binding.Key.ToUpper ().Value;
+	}
+
+	private static (double Yaw, double Pitch)? KeyTilt (KeyGesture gesture)
+	{
+		double step = KEY_TILT_DEGREES * Math.PI / 180;
+		foreach ((ToolBindingDescriptor binding, double yaw, double pitch) in key_tilts) {
+			if (PintaCore.Shortcuts.GetToolBinding (binding) == gesture)
+				return (yaw * step, pitch * step);
+		}
+
+		return null;
 	}
 
 	protected override void OnMouseUp (Document document, ToolMouseEventArgs e)
@@ -257,15 +416,59 @@ public sealed class MoveSelectedTool : BaseTransformTool
 			base.OnMouseUp (document, e);
 	}
 
-	// A mid-drag key would nudge the pixels out from under the warp.
 	protected override bool OnKeyDown (Document document, ToolKeyEventArgs e)
-		=> warp.IsDragging || base.OnKeyDown (document, e);
+	{
+		if (IsDepthKey (e.Key)) {
+			depth_key_held = true;
+			UpdateGripCursor (last_hover_point, e.IsAltPressed);
+			if (mode == TransformMode.ThreeD)
+				return true;
+		}
+
+		if (mode == TransformMode.ThreeD && KeyTilt (e.Gesture) is (double yaw, double pitch)) {
+			TiltByKey (document, yaw, pitch);
+			return true;
+		}
+
+		// A mid-drag key would nudge the pixels out from under the warp.
+		return warp.IsDragging || base.OnKeyDown (document, e);
+	}
+
+	protected override bool OnKeyUp (Document document, ToolKeyEventArgs e)
+	{
+		if (IsDepthKey (e.Key)) {
+			depth_key_held = false;
+			UpdateGripCursor (last_hover_point, e.IsAltPressed);
+		}
+
+		// Any release ends a keyboard turn, as it ends a nudge: the modifier may be let go first.
+		if (tilting_by_key) {
+			FinishWarp (document);
+			return true;
+		}
+
+		return base.OnKeyUp (document, e);
+	}
+
+	private void TiltByKey (Document document, double yaw, double pitch)
+	{
+		if (!tilting_by_key) {
+			if (!BeginWarpWithoutGrip (document))
+				return;
+			tilting_by_key = true;
+		}
+
+		warp.Tilt (document, yaw, pitch);
+	}
 
 	private void FinishWarp (Document document)
 	{
-		string text = mode == TransformMode.Skew
-			? Translations.GetString ("Skew")
-			: Translations.GetString ("Perspective");
+		string text = mode switch {
+			TransformMode.Skew => Translations.GetString ("Skew"),
+			TransformMode.Perspective => Translations.GetString ("Perspective"),
+			_ => Translations.GetString ("3D"),
+		};
+		tilting_by_key = false;
 
 		BaseHistoryItem? pixels = warp.End (document, Icon, text);
 		quad_handle.Select (-1);
@@ -405,7 +608,7 @@ public sealed class MoveSelectedTool : BaseTransformTool
 	{
 		base.OnFinishTransform (document, transform);
 		// The base just restored the default cursor; the next hover must set the grip's again.
-		hover_grip = -1;
+		hover_cursor = null;
 
 		if (move_declined) {
 			move_declined = false;
@@ -446,6 +649,10 @@ public sealed class MoveSelectedTool : BaseTransformTool
 
 	protected override void OnCommit (Document? document)
 	{
+		// Committing mid-warp lands the warp first, so its undo step comes before the commit's.
+		if (warp.IsDragging && document is not null)
+			FinishWarp (document);
+
 		document?.FinishSelection ();
 		warp.Forget ();
 	}
@@ -461,6 +668,7 @@ public sealed class MoveSelectedTool : BaseTransformTool
 		document?.FinishSelection ();
 		warp.Forget ();
 		quad_handle.Active = false;
-		hover_grip = -1;
+		hover_cursor = null;
+		depth_key_held = false;
 	}
 }

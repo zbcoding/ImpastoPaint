@@ -460,6 +460,37 @@ public sealed class KeyboardShortcutManager
 		Translations.GetString ("Nudge selection down (20% canvas)"),
 		new KeyGesture (new Gdk.Key (Gdk.Constants.KEY_Down), Gdk.ModifierType.ControlMask | Gdk.ModifierType.ShiftMask));
 
+	// Move Selected Pixels' 3D mode. The depth key is held while dragging a corner grip.
+	public static readonly ToolBindingDescriptor Transform3DPushDepth = new (
+		"TransformTool.PushDepth",
+		Translations.GetString ("Transform Tools"),
+		Translations.GetString ("3D mode: hold while dragging a corner to push it away or pull it closer"),
+		new KeyGesture (new Gdk.Key (Gdk.Constants.KEY_D)));
+
+	public static readonly ToolBindingDescriptor Transform3DTurnLeft = new (
+		"TransformTool.TurnLeft",
+		Translations.GetString ("Transform Tools"),
+		Translations.GetString ("3D mode: turn selection left (5°)"),
+		new KeyGesture (new Gdk.Key (Gdk.Constants.KEY_Left), Gdk.ModifierType.AltMask));
+
+	public static readonly ToolBindingDescriptor Transform3DTurnRight = new (
+		"TransformTool.TurnRight",
+		Translations.GetString ("Transform Tools"),
+		Translations.GetString ("3D mode: turn selection right (5°)"),
+		new KeyGesture (new Gdk.Key (Gdk.Constants.KEY_Right), Gdk.ModifierType.AltMask));
+
+	public static readonly ToolBindingDescriptor Transform3DTiltUp = new (
+		"TransformTool.TiltUp",
+		Translations.GetString ("Transform Tools"),
+		Translations.GetString ("3D mode: tilt selection back (5°)"),
+		new KeyGesture (new Gdk.Key (Gdk.Constants.KEY_Up), Gdk.ModifierType.AltMask));
+
+	public static readonly ToolBindingDescriptor Transform3DTiltDown = new (
+		"TransformTool.TiltDown",
+		Translations.GetString ("Transform Tools"),
+		Translations.GetString ("3D mode: tilt selection forward (5°)"),
+		new KeyGesture (new Gdk.Key (Gdk.Constants.KEY_Down), Gdk.ModifierType.AltMask));
+
 	public static readonly IReadOnlyList<ToolBindingDescriptor> ToolBindings = [
 		LassoFinalize,
 		LassoBacktrack,
@@ -533,6 +564,11 @@ public sealed class KeyboardShortcutManager
 		TransformNudgeRightPctLarge,
 		TransformNudgeUpPctLarge,
 		TransformNudgeDownPctLarge,
+		Transform3DPushDepth,
+		Transform3DTurnLeft,
+		Transform3DTurnRight,
+		Transform3DTiltUp,
+		Transform3DTiltDown,
 	];
 
 	public event EventHandler? ShortcutsChanged;

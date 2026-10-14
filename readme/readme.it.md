@@ -1,6 +1,6 @@
 # Impasto
 
-[🇬🇧 English](readme.md) · Traduzione automatica — le correzioni sono benvenute tramite pull request.
+[🇬🇧 English](../readme.md) · Traduzione automatica — le correzioni sono benvenute tramite pull request.
 
 Impasto è un'applicazione di disegno e fotoritocco per Linux, Windows e macOS.
 
@@ -8,11 +8,11 @@ Impasto è ideale per disegnare rapidamente, modificare immagini, ritagliare, ri
 Usa gli strumenti di testo per scrivere, gli strumenti forma per tracciare linee a mano libera e gli strumenti di selezione per copiare e incollare porzioni di un livello dell'immagine.
 Guarda le schermate qui sotto.
 
-![Forme e testo come oggetti modificabili, con una cronologia per ogni oggetto](docs/screenshots/impasto-object-layers.png)
+![Forme e testo come oggetti modificabili, con una cronologia per ogni oggetto](../docs/screenshots/impasto-object-layers.png)
 
-![Lo strumento testo, con la finestra di dialogo delle preferenze dell'interfaccia aperta](docs/screenshots/impasto-text-tool.png)
+![Lo strumento testo, con la finestra di dialogo delle preferenze dell'interfaccia aperta](../docs/screenshots/impasto-text-tool.png)
 
-![Un punto di controllo di una forma mantenuto sulla linea centrale dell'area di disegno, con la guida tracciata durante il trascinamento](docs/screenshots/impasto-snap-to-grid.png)
+![Un punto di controllo di una forma mantenuto sulla linea centrale dell'area di disegno, con la guida tracciata durante il trascinamento](../docs/screenshots/impasto-snap-to-grid.png)
 Immagine in evidenza: ciò che sposti e ciò che disegni si agganciano alla griglia dell'area di disegno, alle unità del righello oppure ai bordi e alle linee centrali dell'area di disegno.
 
 ## Download

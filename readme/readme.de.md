@@ -1,6 +1,6 @@
 # Impasto
 
-[🇬🇧 English](readme.md) · Maschinelle Übersetzung — Korrekturen sind als Pull Request willkommen.
+[🇬🇧 English](../readme.md) · Maschinelle Übersetzung — Korrekturen sind als Pull Request willkommen.
 
 Impasto ist eine Anwendung zum Malen und Bearbeiten von Bildern für Linux, Windows und macOS.
 
@@ -8,11 +8,11 @@ Impasto eignet sich hervorragend zum schnellen Malen, für Bildbearbeitungen, Zu
 Mit den Textwerkzeugen schreiben Sie Text, mit den Formwerkzeugen zeichnen Sie freie Linien, und mit den Auswahlwerkzeugen kopieren und fügen Sie Teile einer Bildebene ein.
 Sehen Sie sich die Screenshots unten an.
 
-![Formen und Text als bearbeitbare Objekte, mit eigener Verlaufsgeschichte pro Objekt](docs/screenshots/impasto-object-layers.png)
+![Formen und Text als bearbeitbare Objekte, mit eigener Verlaufsgeschichte pro Objekt](../docs/screenshots/impasto-object-layers.png)
 
-![Das Textwerkzeug bei geöffnetem Dialog für die Oberflächeneinstellungen](docs/screenshots/impasto-text-tool.png)
+![Das Textwerkzeug bei geöffnetem Dialog für die Oberflächeneinstellungen](../docs/screenshots/impasto-text-tool.png)
 
-![Ein Kontrollpunkt einer Form, der auf der Mittellinie der Leinwand gehalten wird, mit der beim Ziehen eingeblendeten Hilfslinie](docs/screenshots/impasto-snap-to-grid.png)
+![Ein Kontrollpunkt einer Form, der auf der Mittellinie der Leinwand gehalten wird, mit der beim Ziehen eingeblendeten Hilfslinie](../docs/screenshots/impasto-snap-to-grid.png)
 Titelbild: Was Sie verschieben und was Sie zeichnen, rastet am Raster der Leinwand, an den Linealeinheiten oder an den Rändern und Mittellinien der Leinwand ein.
 
 ## Download

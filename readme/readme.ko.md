@@ -1,6 +1,6 @@
 # Impasto
 
-[🇬🇧 English](readme.md) · 기계 번역입니다 — 수정 사항은 풀 리퀘스트로 보내주세요.
+[🇬🇧 English](../readme.md) · 기계 번역입니다 — 수정 사항은 풀 리퀘스트로 보내주세요.
 
 Impasto는 Linux, Windows, macOS용 페인팅 및 이미지 편집 애플리케이션입니다.
 
@@ -8,11 +8,11 @@ Impasto는 빠른 그림 작업, 이미지 편집, 자르기, 크기 조정, 레
 텍스트 도구로 글자를 그리고, 도형 도구로 자유 곡선을 그리고, 선택 도구로 이미지 레이어의 일부를 복사하고 붙여넣을 수 있습니다.
 아래 스크린샷을 참고하세요.
 
-![편집 가능한 객체로 다루는 도형과 텍스트, 객체별 작업 내역 포함](docs/screenshots/impasto-object-layers.png)
+![편집 가능한 객체로 다루는 도형과 텍스트, 객체별 작업 내역 포함](../docs/screenshots/impasto-object-layers.png)
 
-![텍스트 도구와 함께 열려 있는 UI 환경 설정 대화 상자](docs/screenshots/impasto-text-tool.png)
+![텍스트 도구와 함께 열려 있는 UI 환경 설정 대화 상자](../docs/screenshots/impasto-text-tool.png)
 
-![캔버스 중심선에 붙어 있는 도형 제어점과 드래그 중 표시되는 안내선](docs/screenshots/impasto-snap-to-grid.png)
+![캔버스 중심선에 붙어 있는 도형 제어점과 드래그 중 표시되는 안내선](../docs/screenshots/impasto-snap-to-grid.png)
 주요 기능 이미지: 옮기는 대상과 그리는 대상이 캔버스 격자, 눈금자 단위, 캔버스 가장자리나 중심선에 맞춰 붙습니다.
 
 ## 다운로드

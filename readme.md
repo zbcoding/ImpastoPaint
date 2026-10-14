@@ -16,15 +16,15 @@ Feature image: What you move and what you draw snaps to the canvas grid, to rule
 <details>
 <summary><h2>🌐 Other languages 🇨🇳 🇪🇸 🇫🇷 🇩🇪 🇯🇵 🇧🇷</h2></summary>
 
-- 🇨🇳 [简体中文](readme.zh-CN.md)
-- 🇪🇸 [Español](readme.es.md)
-- 🇧🇷 [Português (Brasil)](readme.pt-BR.md)
-- 🇫🇷 [Français](readme.fr.md)
-- 🇩🇪 [Deutsch](readme.de.md)
-- 🇮🇹 [Italiano](readme.it.md)
-- 🇷🇺 [Русский](readme.ru.md)
-- 🇯🇵 [日本語](readme.ja.md)
-- 🇰🇷 [한국어](readme.ko.md)
+- 🇨🇳 [简体中文](readme/readme.zh-CN.md)
+- 🇪🇸 [Español](readme/readme.es.md)
+- 🇧🇷 [Português (Brasil)](readme/readme.pt-BR.md)
+- 🇫🇷 [Français](readme/readme.fr.md)
+- 🇩🇪 [Deutsch](readme/readme.de.md)
+- 🇮🇹 [Italiano](readme/readme.it.md)
+- 🇷🇺 [Русский](readme/readme.ru.md)
+- 🇯🇵 [日本語](readme/readme.ja.md)
+- 🇰🇷 [한국어](readme/readme.ko.md)
 
 </details>
 

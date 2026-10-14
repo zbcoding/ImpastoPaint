@@ -1,6 +1,6 @@
 # Impasto
 
-[🇬🇧 English](readme.md) · Traduction automatique — les corrections sont les bienvenues sous forme de pull request.
+[🇬🇧 English](../readme.md) · Traduction automatique — les corrections sont les bienvenues sous forme de pull request.
 
 Impasto est une application de peinture et de retouche d'images pour Linux, Windows et macOS.
 
@@ -8,11 +8,11 @@ Impasto est idéal pour peindre rapidement, retoucher des images, recadrer, redi
 Utilisez les outils de texte pour écrire, les outils de forme pour tracer des lignes à main levée, et les outils de sélection pour copier et coller des parties d'un calque.
 Voir les captures d'écran ci-dessous.
 
-![Formes et textes en tant qu'objets modifiables, avec un historique par objet](docs/screenshots/impasto-object-layers.png)
+![Formes et textes en tant qu'objets modifiables, avec un historique par objet](../docs/screenshots/impasto-object-layers.png)
 
-![L'outil texte, avec la boîte de dialogue des préférences d'interface ouverte](docs/screenshots/impasto-text-tool.png)
+![L'outil texte, avec la boîte de dialogue des préférences d'interface ouverte](../docs/screenshots/impasto-text-tool.png)
 
-![Un point de contrôle de forme maintenu sur l'axe central du canevas, avec le guide affiché pendant le déplacement](docs/screenshots/impasto-snap-to-grid.png)
+![Un point de contrôle de forme maintenu sur l'axe central du canevas, avec le guide affiché pendant le déplacement](../docs/screenshots/impasto-snap-to-grid.png)
 Image de présentation : ce que vous déplacez et ce que vous dessinez s'aligne sur la grille du canevas, sur les unités de la règle, ou sur les bords et les axes centraux du canevas.
 
 ## Téléchargement

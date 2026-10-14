@@ -1,6 +1,6 @@
 # Impasto
 
-[🇬🇧 English](readme.md) · 機械翻訳です。修正はプルリクエストでお寄せください。
+[🇬🇧 English](../readme.md) · 機械翻訳です。修正はプルリクエストでお寄せください。
 
 Impasto は、Linux、Windows、macOS 向けのペイント・画像編集アプリケーションです。
 
@@ -8,11 +8,11 @@ Impasto は、手早いペイント、画像の編集、切り抜き、サイズ
 テキストツールで文字を描き、シェイプツールで自由な線を描き、選択ツールで画像レイヤーの一部をコピー＆ペーストできます。
 下のスクリーンショットをご覧ください。
 
-![編集可能なオブジェクトとしてのシェイプとテキスト、オブジェクトごとの履歴付き](docs/screenshots/impasto-object-layers.png)
+![編集可能なオブジェクトとしてのシェイプとテキスト、オブジェクトごとの履歴付き](../docs/screenshots/impasto-object-layers.png)
 
-![テキストツールと、開いた状態の UI 設定ダイアログ](docs/screenshots/impasto-text-tool.png)
+![テキストツールと、開いた状態の UI 設定ダイアログ](../docs/screenshots/impasto-text-tool.png)
 
-![キャンバスの中心線上で保持されたシェイプの制御点と、ドラッグ中に表示されるガイド](docs/screenshots/impasto-snap-to-grid.png)
+![キャンバスの中心線上で保持されたシェイプの制御点と、ドラッグ中に表示されるガイド](../docs/screenshots/impasto-snap-to-grid.png)
 注目の機能: 移動するものや描くものが、キャンバスのグリッド、ルーラーの単位、あるいはキャンバスの端や中心線にスナップします。
 
 ## ダウンロード

@@ -1,6 +1,6 @@
 # Impasto
 
-[🇬🇧 English](readme.md) · 机器翻译，欢迎通过 pull request 提交修正。
+[🇬🇧 English](../readme.md) · 机器翻译，欢迎通过 pull request 提交修正。
 
 Impasto 是一款适用于 Linux、Windows 和 macOS 的绘画与图像编辑应用。
 
@@ -8,11 +8,11 @@ Impasto 非常适合快速绘画、图像编辑、裁剪、调整尺寸以及基
 使用文本工具书写文字，使用形状工具绘制自由曲线，使用选区工具复制和粘贴图像图层的局部。
 请见下方截图。
 
-![形状和文本作为可编辑对象，并带有各对象独立的历史记录](docs/screenshots/impasto-object-layers.png)
+![形状和文本作为可编辑对象，并带有各对象独立的历史记录](../docs/screenshots/impasto-object-layers.png)
 
-![文本工具，界面首选项对话框处于打开状态](docs/screenshots/impasto-text-tool.png)
+![文本工具，界面首选项对话框处于打开状态](../docs/screenshots/impasto-text-tool.png)
 
-![形状控制点吸附在画布中心线上，拖动时显示参考线](docs/screenshots/impasto-snap-to-grid.png)
+![形状控制点吸附在画布中心线上，拖动时显示参考线](../docs/screenshots/impasto-snap-to-grid.png)
 特色功能图：移动和绘制的内容会吸附到画布网格、标尺单位，或画布边缘与中心线。
 
 ## 下载

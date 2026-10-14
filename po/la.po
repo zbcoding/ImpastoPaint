@@ -5104,38 +5104,62 @@ msgstr "Modus 3D: inclina selectionem prorsum (5°)"
 
 #. Translators: Status bar and Mode tooltip for Move Selected Pixels. {0} is the key held to push a corner in depth; {1} to {4} are the keys that turn left, turn right, tilt back and tilt forward. 3D is a Mode choice on this tool's toolbar and must match its translation. Keep {0}..{4} exactly.
 #. AI-generated translation; human review requested.
-#: ../Pinta.Tools/Tools/MoveSelectedTool.cs:129
+#: ../Pinta.Tools/Tools/MoveSelectedTool.cs:130
 #, fuzzy, csharp-format
 msgid "In 3D mode, drag a corner to move it, or hold {0} and drag it up or down to push it away or pull it closer. Drag a grip outside an edge to turn or tilt the selection, holding Shift for 15° steps, or press {1}, {2}, {3} or {4}."
 msgstr "In modo 3D, trahe angulum ut eum moveas, vel tene {0} et trahe eum sursum vel deorsum ut eum repellas vel propius attrahas. Trahe ansulam extra marginem ut selectionem vertas vel inclines, Shift tenens pro gradibus 15°, vel preme {1}, {2}, {3} vel {4}."
 
 #. Translators: Move Selected Pixels mode and undo-history label: moves the pixels' corners in 3D space, viewed in perspective. Usually left as "3D" or the language's usual abbreviation for three-dimensional.
 #. AI-generated translation; human review requested.
-#: ../Pinta.Tools/Tools/MoveSelectedTool.cs:205 ../Pinta.Tools/Tools/MoveSelectedTool.cs:464
+#: ../Pinta.Tools/Tools/MoveSelectedTool.cs:235 ../Pinta.Tools/Tools/MoveSelectedTool.cs:530
 #, fuzzy
 msgid "3D"
 msgstr "3D"
 
 #. Translators: Tooltip for the 3D choice of Move Selected Pixels' Mode dropdown.
 #. AI-generated translation; human review requested.
-#: ../Pinta.Tools/Tools/MoveSelectedTool.cs:206
+#: ../Pinta.Tools/Tools/MoveSelectedTool.cs:236
 #, fuzzy
 msgid "Move the corners, or turn and tilt the selected pixels, in 3D space."
 msgstr "Move angulos, vel verte et inclina pixela selecta, in spatio 3D."
 
 #. Translators: Toolbar label for 3D mode's camera angle, in degrees (as in photography).
 #. AI-generated translation; human review requested.
-#: ../Pinta.Tools/Tools/MoveSelectedTool.cs:235
+#: ../Pinta.Tools/Tools/MoveSelectedTool.cs:265
 #, fuzzy
 msgid "Field of view"
 msgstr "Campus visus"
 
 #. Translators: Tooltip of the Field of view spin button.
 #. AI-generated translation; human review requested.
-#: ../Pinta.Tools/Tools/MoveSelectedTool.cs:244
+#: ../Pinta.Tools/Tools/MoveSelectedTool.cs:274
 #, fuzzy
 msgid "How wide 3D mode's view is, in degrees. A wide view makes depth look stronger; a narrow one flattens it."
 msgstr "Quam lata sit visio modi 3D, in gradibus. Visio lata profunditatem fortiorem videri facit; angusta eam complanat."
+
+#. Translators: hint shown when hovering a 3D mode corner grip. {0} is the key held to push the corner in depth, such as 'Shift'.
+#. AI-generated translation; human review requested.
+#: ../Pinta.Tools/Tools/MoveSelectedTool.cs:155
+#, fuzzy, csharp-format
+msgid ""
+"Drag to move this corner\n"
+"{0}+drag up or down: push it away or pull it closer"
+msgstr ""
+"Trahe ut hunc angulum moveas\n"
+"{0}+trahe sursum vel deorsum: repelle vel propius attrahe"
+
+#. Translators: hint shown when hovering a 3D mode turn/tilt grip outside an edge. {0} to {3} are the keys that turn left and right and tilt back and forward.
+#. AI-generated translation; human review requested.
+#: ../Pinta.Tools/Tools/MoveSelectedTool.cs:159
+#, fuzzy, csharp-format
+msgid ""
+"Drag to turn or tilt the selection\n"
+"Shift+drag: 15° steps\n"
+"{0}, {1}, {2}, {3}: 5° steps"
+msgstr ""
+"Trahe ut selectionem vertas vel inclines\n"
+"Shift+trahe: gradus 15°\n"
+"{0}, {1}, {2}, {3}: gradus 5°"
 
 #~ msgid "Draws a line or curve with a start and an end point."
 #~ msgstr "Lineam vel curvam cum puncto initiali et finali ducit."

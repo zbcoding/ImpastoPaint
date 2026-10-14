@@ -5049,28 +5049,45 @@ msgstr ""
 msgid "3D mode: tilt selection forward (5°)"
 msgstr ""
 
-#. Translators: Status bar and Mode tooltip for Move Selected Pixels. {0} is the key held to push a corner in depth; {1} to {4} are the keys that turn left, turn right, tilt back and tilt forward. 3D is a Mode choice on this tool's toolbar and must match its translation. Keep {0}..{4} exactly.
-#: ../Pinta.Tools/Tools/MoveSelectedTool.cs:129
+#. Translators: {0} is the key held to push a corner in depth; {1} to {4} turn and tilt the selection in steps. 3D is a Mode choice on this tool's toolbar.
+#: ../Pinta.Tools/Tools/MoveSelectedTool.cs:130
 #, csharp-format
 msgid "In 3D mode, drag a corner to move it, or hold {0} and drag it up or down to push it away or pull it closer. Drag a grip outside an edge to turn or tilt the selection, holding Shift for 15° steps, or press {1}, {2}, {3} or {4}."
 msgstr ""
 
 #. Translators: Move Selected Pixels mode and undo-history label: moves the pixels' corners in 3D space, viewed in perspective. Usually left as "3D" or the language's usual abbreviation for three-dimensional.
-#: ../Pinta.Tools/Tools/MoveSelectedTool.cs:205 ../Pinta.Tools/Tools/MoveSelectedTool.cs:464
+#: ../Pinta.Tools/Tools/MoveSelectedTool.cs:235 ../Pinta.Tools/Tools/MoveSelectedTool.cs:530
 msgid "3D"
 msgstr ""
 
 #. Translators: Tooltip for the 3D choice of Move Selected Pixels' Mode dropdown.
-#: ../Pinta.Tools/Tools/MoveSelectedTool.cs:206
+#: ../Pinta.Tools/Tools/MoveSelectedTool.cs:236
 msgid "Move the corners, or turn and tilt the selected pixels, in 3D space."
 msgstr ""
 
 #. Translators: Toolbar label for 3D mode's camera angle, in degrees (as in photography).
-#: ../Pinta.Tools/Tools/MoveSelectedTool.cs:235
+#: ../Pinta.Tools/Tools/MoveSelectedTool.cs:265
 msgid "Field of view"
 msgstr ""
 
 #. Translators: Tooltip of the Field of view spin button.
-#: ../Pinta.Tools/Tools/MoveSelectedTool.cs:244
+#: ../Pinta.Tools/Tools/MoveSelectedTool.cs:274
 msgid "How wide 3D mode's view is, in degrees. A wide view makes depth look stronger; a narrow one flattens it."
+msgstr ""
+
+#. Translators: hint shown when hovering a 3D mode corner grip. {0} is the key held to push the corner in depth, such as 'Shift'.
+#: ../Pinta.Tools/Tools/MoveSelectedTool.cs:155
+#, csharp-format
+msgid ""
+"Drag to move this corner\n"
+"{0}+drag up or down: push it away or pull it closer"
+msgstr ""
+
+#. Translators: hint shown when hovering a 3D mode turn/tilt grip outside an edge. {0} to {3} are the keys that turn left and right and tilt back and forward.
+#: ../Pinta.Tools/Tools/MoveSelectedTool.cs:159
+#, csharp-format
+msgid ""
+"Drag to turn or tilt the selection\n"
+"Shift+drag: 15° steps\n"
+"{0}, {1}, {2}, {3}: 5° steps"
 msgstr ""

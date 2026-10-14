@@ -5150,38 +5150,62 @@ msgstr "3D 모드: 선택 영역을 앞으로 숙이기 (5°)"
 
 #. Translators: Status bar and Mode tooltip for Move Selected Pixels. {0} is the key held to push a corner in depth; {1} to {4} are the keys that turn left, turn right, tilt back and tilt forward. 3D is a Mode choice on this tool's toolbar and must match its translation. Keep {0}..{4} exactly.
 #. AI-generated translation; human review requested.
-#: ../Pinta.Tools/Tools/MoveSelectedTool.cs:129
+#: ../Pinta.Tools/Tools/MoveSelectedTool.cs:130
 #, fuzzy, csharp-format
 msgid "In 3D mode, drag a corner to move it, or hold {0} and drag it up or down to push it away or pull it closer. Drag a grip outside an edge to turn or tilt the selection, holding Shift for 15° steps, or press {1}, {2}, {3} or {4}."
 msgstr "3D 모드에서는 모서리를 끌어 이동하거나, {0} 키를 누른 채 위아래로 끌어 멀리 밀거나 가까이 당깁니다. 가장자리 바깥의 핸들을 끌면 선택 영역을 돌리거나 젖힐 수 있으며, Shift 키를 누르면 15° 단위로 움직입니다. 또는 {1}, {2}, {3}, {4} 키를 누르십시오."
 
 #. Translators: Move Selected Pixels mode and undo-history label: moves the pixels' corners in 3D space, viewed in perspective. Usually left as "3D" or the language's usual abbreviation for three-dimensional.
 #. AI-generated translation; human review requested.
-#: ../Pinta.Tools/Tools/MoveSelectedTool.cs:205 ../Pinta.Tools/Tools/MoveSelectedTool.cs:464
+#: ../Pinta.Tools/Tools/MoveSelectedTool.cs:235 ../Pinta.Tools/Tools/MoveSelectedTool.cs:530
 #, fuzzy
 msgid "3D"
 msgstr "3D"
 
 #. Translators: Tooltip for the 3D choice of Move Selected Pixels' Mode dropdown.
 #. AI-generated translation; human review requested.
-#: ../Pinta.Tools/Tools/MoveSelectedTool.cs:206
+#: ../Pinta.Tools/Tools/MoveSelectedTool.cs:236
 #, fuzzy
 msgid "Move the corners, or turn and tilt the selected pixels, in 3D space."
 msgstr "3D 공간에서 모서리를 이동하거나, 선택한 픽셀을 돌리고 젖힙니다."
 
 #. Translators: Toolbar label for 3D mode's camera angle, in degrees (as in photography).
 #. AI-generated translation; human review requested.
-#: ../Pinta.Tools/Tools/MoveSelectedTool.cs:235
+#: ../Pinta.Tools/Tools/MoveSelectedTool.cs:265
 #, fuzzy
 msgid "Field of view"
 msgstr "시야각"
 
 #. Translators: Tooltip of the Field of view spin button.
 #. AI-generated translation; human review requested.
-#: ../Pinta.Tools/Tools/MoveSelectedTool.cs:244
+#: ../Pinta.Tools/Tools/MoveSelectedTool.cs:274
 #, fuzzy
 msgid "How wide 3D mode's view is, in degrees. A wide view makes depth look stronger; a narrow one flattens it."
 msgstr "3D 모드 시야의 너비(도 단위)입니다. 넓으면 깊이감이 강해지고, 좁으면 평평해집니다."
+
+#. Translators: hint shown when hovering a 3D mode corner grip. {0} is the key held to push the corner in depth, such as 'Shift'.
+#. AI-generated translation; human review requested.
+#: ../Pinta.Tools/Tools/MoveSelectedTool.cs:155
+#, fuzzy, csharp-format
+msgid ""
+"Drag to move this corner\n"
+"{0}+drag up or down: push it away or pull it closer"
+msgstr ""
+"끌어서 이 모서리 이동\n"
+"{0}+위아래로 끌기: 멀리 밀거나 가까이 당기기"
+
+#. Translators: hint shown when hovering a 3D mode turn/tilt grip outside an edge. {0} to {3} are the keys that turn left and right and tilt back and forward.
+#. AI-generated translation; human review requested.
+#: ../Pinta.Tools/Tools/MoveSelectedTool.cs:159
+#, fuzzy, csharp-format
+msgid ""
+"Drag to turn or tilt the selection\n"
+"Shift+drag: 15° steps\n"
+"{0}, {1}, {2}, {3}: 5° steps"
+msgstr ""
+"끌어서 선택 영역 돌리기 또는 젖히기\n"
+"Shift+끌기: 15° 단위\n"
+"{0}, {1}, {2}, {3}: 5° 단위"
 
 #~ msgid "About Pinta"
 #~ msgstr "Pinta 정보"

@@ -127,10 +127,120 @@ internal sealed class SelectionWarpTest : ToolsTestHarness
 			"skewing back must resample the original pixels, not the already-resampled ones");
 	}
 
+	[Test]
+	public void FinishingTheSelectionPaintsTheWarpedPixelsOntoTheLayer ()
+	{
+		MoveSelectedTool t = Activate (TransformMode.Skew);
+		Drag (t, new PointD (12, 8), new PointD (16, 8));
+
+		Document.FinishSelection ();
+
+		Assert.That (LayerPixel (18, 8), Is.EqualTo (Red), "the slanted top row must land on the layer");
+		Assert.That (LayerPixel (8, 8).A, Is.Zero, "the lifted corner the skew moved away from must stay empty");
+		Assert.That (LayerPixel (10, 15), Is.EqualTo (Red));
+	}
+
+	[Test]
+	public void AWarpAfterAMoveStartsFromWhereTheMoveLeftThePixels ()
+	{
+		MoveSelectedTool t = Activate (TransformMode.Skew);
+		Drag (t, new PointD (12, 8), new PointD (16, 8));
+
+		// A body drag only changes the floating layer's transform, not its pixels.
+		Drag (t, new PointD (14, 12), new PointD (18, 12));
+		Assert.That (CornersOf (Document.Selection), Is.EqualTo (new PointI[] { new (16, 8), new (24, 8), new (20, 16), new (12, 16) }));
+
+		// Slide the top edge back over the bottom edge: a plain square at the moved position.
+		Drag (t, new PointD (20, 8), new PointD (16, 8));
+
+		Assert.That (FloatingPixel (13, 9), Is.EqualTo (Red));
+		Assert.That (FloatingPixel (18, 14), Is.EqualTo (Red));
+		Assert.That (FloatingPixel (9, 12).A, Is.Zero,
+			"the warp must not resample from where the pixels sat before the move");
+	}
+
+	[Test]
+	public void AWarpAfterUndoContinuesFromTheUndoneShape ()
+	{
+		MoveSelectedTool t = Activate (TransformMode.Skew);
+		Drag (t, new PointD (12, 8), new PointD (16, 8));
+		Drag (t, new PointD (16, 8), new PointD (20, 8));
+
+		Document.History.Undo ();
+		Assert.That (CornersOf (Document.Selection), Is.EqualTo (new PointI[] { new (12, 8), new (20, 8), new (16, 16), new (8, 16) }));
+
+		// The top grip is back at the first skew's midpoint; sliding it home restores the square.
+		Drag (t, new PointD (16, 8), new PointD (12, 8));
+
+		Assert.That (CornersOf (Document.Selection), Is.EqualTo (new PointI[] { new (8, 8), new (16, 8), new (16, 16), new (8, 16) }));
+		Assert.That (FloatingPixel (9, 9), Is.EqualTo (Red));
+		Assert.That (FloatingPixel (21, 8).A, Is.Zero, "nothing from the undone second skew may survive");
+	}
+
+	[Test]
+	public void ADragThatWouldFoldTheShapeHoldsTheLastShapeThatWorked ()
+	{
+		MoveSelectedTool t = Activate (TransformMode.Perspective);
+
+		// Bottom-right corner out to (20,20), then across the top-left corner, which folds the quad.
+		DragThrough (t, new PointD (16, 16), new PointD (20, 20), new PointD (4, 4));
+
+		Assert.That (CornersOf (Document.Selection), Is.EqualTo (new PointI[] { new (8, 8), new (16, 8), new (20, 20), new (8, 16) }));
+		Assert.That (FloatingPixel (9, 9), Is.EqualTo (Red));
+	}
+
+	[Test]
+	public void SwitchingToolsMidDragKeepsTheWarpAsItsOwnUndoStep ()
+	{
+		MoveSelectedTool t = Activate (TransformMode.Skew);
+		int historyBefore = Document.History.Pointer;
+
+		typeof (BaseTool).GetMethod ("DoMouseDown", NonPublicInstance)!.Invoke (t, [Document, MouseArgs (new PointD (12, 8))]);
+		typeof (BaseTool).GetMethod ("DoMouseMove", NonPublicInstance)!.Invoke (t, [Document, MouseArgs (new PointD (16, 8))]);
+		DeactivateTool ();
+
+		Assert.That (LayerPixel (18, 8), Is.EqualTo (Red), "the switch must land the skew on the layer");
+		Assert.That (Document.History.Pointer, Is.EqualTo (historyBefore + 2), "the skew, then finishing the selection");
+
+		Document.History.Undo ();
+		Document.History.Undo ();
+		Assert.That (LayerPixel (8, 8), Is.EqualTo (Red), "undoing both must put the square back unskewed");
+		Assert.That (LayerPixel (18, 8).A, Is.Zero);
+	}
+
+	[Test]
+	public void MoveModeGripsStillResize ()
+	{
+		MoveSelectedTool t = Activate (TransformMode.Move);
+
+		Drag (t, new PointD (12, 8), new PointD (12, 4));
+		Assert.That (CornersOf (Document.Selection), Is.EqualTo (new PointI[] { new (8, 4), new (16, 4), new (16, 16), new (8, 16) }),
+			"the top grip stretches the selection rather than skewing it");
+
+		Drag (t, new PointD (8, 4), new PointD (4, 4));
+		Assert.That (CornersOf (Document.Selection), Is.EqualTo (new PointI[] { new (4, 4), new (16, 4), new (16, 16), new (4, 16) }),
+			"a corner grip resizes about the opposite corner rather than moving that corner alone");
+	}
+
+	[Test]
+	public void SkewModeHasNoHiddenResizeGrips ()
+	{
+		MoveSelectedTool t = Activate (TransformMode.Skew);
+
+		// No skew grip sits on a corner, and the resize grips are not drawn in this mode, so a press
+		// there is a plain move.
+		Drag (t, new PointD (8, 8), new PointD (6, 6));
+
+		Assert.That (CornersOf (Document.Selection), Is.EqualTo (new PointI[] { new (6, 6), new (14, 6), new (14, 14), new (6, 14) }));
+	}
+
 	// Through the saved setting, the way the mode last chosen comes back in a new session.
 	private MoveSelectedTool Activate (TransformMode mode)
 	{
+		// Zoomed in, as a user working on an 8px square would be; at 1:1 the grips' hit areas
+		// cover the whole square and every press lands on one of them.
 		PintaCore.Workspace.ActiveWorkspace.Canvas = Gtk.DrawingArea.New ();
+		Document.Workspace.Scale = 8;
 		PintaCore.Settings.PutSetting (SettingNames.MOVE_SELECTED_MODE, (int) mode);
 
 		MoveSelectedTool t = new (PintaCore.Services);
@@ -150,11 +260,18 @@ internal sealed class SelectionWarpTest : ToolsTestHarness
 	}
 
 	private void Drag (BaseTool t, PointD from, PointD to)
+		=> DragThrough (t, from, to);
+
+	private void DragThrough (BaseTool t, PointD from, params PointD[] path)
 	{
 		typeof (BaseTool).GetMethod ("DoMouseDown", NonPublicInstance)!.Invoke (t, [Document, MouseArgs (from)]);
-		typeof (BaseTool).GetMethod ("DoMouseMove", NonPublicInstance)!.Invoke (t, [Document, MouseArgs (to)]);
-		typeof (BaseTool).GetMethod ("DoMouseUp", NonPublicInstance)!.Invoke (t, [Document, MouseArgs (to)]);
+		foreach (PointD point in path)
+			typeof (BaseTool).GetMethod ("DoMouseMove", NonPublicInstance)!.Invoke (t, [Document, MouseArgs (point)]);
+		typeof (BaseTool).GetMethod ("DoMouseUp", NonPublicInstance)!.Invoke (t, [Document, MouseArgs (path[^1])]);
 	}
+
+	private ColorBgra LayerPixel (int x, int y)
+		=> Layer (0).Surface.GetReadOnlyPixelData ()[(y * CanvasSize) + x];
 
 	private static ToolMouseEventArgs MouseArgs (PointD canvasPos) => new () {
 		PointDouble = canvasPos,

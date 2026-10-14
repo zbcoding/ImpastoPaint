@@ -5067,6 +5067,76 @@ msgstr "פרספקטיבה"
 msgid "Drag any corner on its own to fit the selected pixels onto an angled surface."
 msgstr "יש לגרור כל פינה בנפרד כדי להתאים את הפיקסלים הנבחרים למשטח משופע."
 
+#. Translators: Keyboard-shortcuts dialog row (Transform Tools tab) for Move Selected Pixels' 3D mode; the key is held while dragging a corner grip, which then moves toward or away from the viewer. "3D" must match the 3D mode name.
+#. AI-generated translation; human review requested.
+#: ../Pinta.Core/Managers/KeyboardShortcutManager.cs:467
+#, fuzzy
+msgid "3D mode: hold while dragging a corner to push it away or pull it closer"
+msgstr "מצב 3D: להחזיק תוך כדי גרירת פינה כדי להרחיק אותה או לקרב אותה"
+
+#. Translators: Keyboard-shortcuts dialog row: turns the selected pixels about an upright axis, so the left side moves away from the viewer.
+#. AI-generated translation; human review requested.
+#: ../Pinta.Core/Managers/KeyboardShortcutManager.cs:473
+#, fuzzy
+msgid "3D mode: turn selection left (5°)"
+msgstr "מצב 3D: סיבוב הבחירה שמאלה (5°)"
+
+#. Translators: Keyboard-shortcuts dialog row: turns the selected pixels about an upright axis, so the right side moves away from the viewer.
+#. AI-generated translation; human review requested.
+#: ../Pinta.Core/Managers/KeyboardShortcutManager.cs:479
+#, fuzzy
+msgid "3D mode: turn selection right (5°)"
+msgstr "מצב 3D: סיבוב הבחירה ימינה (5°)"
+
+#. Translators: Keyboard-shortcuts dialog row: tilts the selected pixels about a level axis, so the top moves away from the viewer.
+#. AI-generated translation; human review requested.
+#: ../Pinta.Core/Managers/KeyboardShortcutManager.cs:485
+#, fuzzy
+msgid "3D mode: tilt selection back (5°)"
+msgstr "מצב 3D: הטיית הבחירה לאחור (5°)"
+
+#. Translators: Keyboard-shortcuts dialog row: tilts the selected pixels about a level axis, so the top comes toward the viewer.
+#. AI-generated translation; human review requested.
+#: ../Pinta.Core/Managers/KeyboardShortcutManager.cs:491
+#, fuzzy
+msgid "3D mode: tilt selection forward (5°)"
+msgstr "מצב 3D: הטיית הבחירה קדימה (5°)"
+
+#. Translators: Status bar and Mode tooltip for Move Selected Pixels. {0} is the key held to push a corner in depth; {1} to {4} are the keys that turn left, turn right, tilt back and tilt forward. 3D is a Mode choice on this tool's toolbar and must match its translation. Keep {0}..{4} exactly.
+#. AI-generated translation; human review requested.
+#: ../Pinta.Tools/Tools/MoveSelectedTool.cs:129
+#, fuzzy, csharp-format
+msgid "In 3D mode, drag a corner to move it, or hold {0} and drag it up or down to push it away or pull it closer. Drag a grip outside an edge to turn or tilt the selection, holding Shift for 15° steps, or press {1}, {2}, {3} or {4}."
+msgstr "במצב 3D, יש לגרור פינה כדי להזיז אותה, או להחזיק את {0} ולגרור אותה למעלה או למטה כדי להרחיק אותה או לקרב אותה. יש לגרור ידית שמחוץ לקצה כדי לסובב או להטות את הבחירה, תוך החזקת Shift לצעדים של 15°, או ללחוץ על {1}, {2}, {3} או {4}."
+
+#. Translators: Move Selected Pixels mode and undo-history label: moves the pixels' corners in 3D space, viewed in perspective. Usually left as "3D" or the language's usual abbreviation for three-dimensional.
+#. AI-generated translation; human review requested.
+#: ../Pinta.Tools/Tools/MoveSelectedTool.cs:205 ../Pinta.Tools/Tools/MoveSelectedTool.cs:464
+#, fuzzy
+msgid "3D"
+msgstr "3D"
+
+#. Translators: Tooltip for the 3D choice of Move Selected Pixels' Mode dropdown.
+#. AI-generated translation; human review requested.
+#: ../Pinta.Tools/Tools/MoveSelectedTool.cs:206
+#, fuzzy
+msgid "Move the corners, or turn and tilt the selected pixels, in 3D space."
+msgstr "הזזת הפינות, או סיבוב והטיה של הפיקסלים הנבחרים, במרחב תלת־ממדי."
+
+#. Translators: Toolbar label for 3D mode's camera angle, in degrees (as in photography).
+#. AI-generated translation; human review requested.
+#: ../Pinta.Tools/Tools/MoveSelectedTool.cs:235
+#, fuzzy
+msgid "Field of view"
+msgstr "שדה ראייה"
+
+#. Translators: Tooltip of the Field of view spin button.
+#. AI-generated translation; human review requested.
+#: ../Pinta.Tools/Tools/MoveSelectedTool.cs:244
+#, fuzzy
+msgid "How wide 3D mode's view is, in degrees. A wide view makes depth look stronger; a narrow one flattens it."
+msgstr "רוחב התצוגה של מצב 3D, במעלות. תצוגה רחבה מדגישה את העומק; תצוגה צרה משטחת אותו."
+
 #~ msgid "About Pinta"
 #~ msgstr "על אודות Pinta"
 

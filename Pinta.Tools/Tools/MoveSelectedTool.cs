@@ -25,6 +25,7 @@
 // THE SOFTWARE.
 
 using System;
+using System.Collections.Generic;
 using Cairo;
 using Pinta.Core;
 
@@ -50,10 +51,29 @@ public sealed class MoveSelectedTool : BaseTransformTool
 	private bool had_real_selection;
 	private readonly Matrix original_transform = CairoExtensions.CreateIdentityMatrix ();
 
+	// Skew and Perspective reshape the selection through their own grips; Move keeps the inherited
+	// resize grips. Body drags, rotate and nudge behave the same in every mode.
+	private TransformMode mode;
+	private readonly SelectionWarp warp = new ();
+	private readonly QuadHandle quad_handle;
+	private int hover_grip = -1;
+
 	private readonly SystemManager system_manager;
+	private readonly IWorkspaceService workspace;
 	public MoveSelectedTool (IServiceProvider services) : base (services)
 	{
 		system_manager = services.GetService<SystemManager> ();
+		workspace = services.GetService<IWorkspaceService> ();
+		quad_handle = new QuadHandle (workspace);
+		mode = ModeFromIndex (Settings.GetSetting (SettingNames.MOVE_SELECTED_MODE, 0));
+
+		// Undo, redo, nudges and plain moves all replace the selection; a warp session built on
+		// the old one would resample from stale pixels, and the grips must follow the new outline.
+		workspace.SelectionChanged += (_, _) => {
+			if (!warp.IsApplying)
+				warp.Forget ();
+			RefreshQuadHandle ();
+		};
 	}
 
 	public override string Name => Translations.GetString ("Move Selected Pixels");
@@ -65,7 +85,9 @@ public sealed class MoveSelectedTool : BaseTransformTool
 		"\nRight click and drag the selection to rotate selected content." +
 		"\nHold Shift to rotate in steps." +
 		"\nUse arrow keys to move selected content by a single pixel.",
-		system_manager.CtrlLabel ());
+		system_manager.CtrlLabel ())
+		// Translators: Skew and Perspective are the Mode choices on this tool's toolbar.
+		+ "\n" + Translations.GetString ("In Skew or Perspective mode, drag the grips on the selection's edges or corners.");
 
 	// Rendered at 2x the default 16px and with a centered hotspot so the enlarged
 	// four-way cross still points at the pixel under the cursor.
@@ -85,6 +107,178 @@ public sealed class MoveSelectedTool : BaseTransformTool
 
 	protected override RectangleD GetSourceRectangle (Document document)
 		=> document.Selection.GetBounds ();
+
+	public override IEnumerable<IToolHandle> Handles
+		=> mode == TransformMode.Move ? base.Handles : [quad_handle];
+
+	protected override bool ResizeGripsEnabled
+		=> mode == TransformMode.Move;
+
+	protected override void OnBuildToolBar (Gtk.Box tb)
+	{
+		base.OnBuildToolBar (tb);
+
+		tb.Append (ModeLabel);
+		tb.Append (ModeDropDown);
+	}
+
+	protected override void OnSaveSettings (ISettingsService settings)
+	{
+		base.OnSaveSettings (settings);
+
+		settings.PutSetting (SettingNames.MOVE_SELECTED_MODE, (int) mode);
+	}
+
+	private Gtk.Label? mode_label;
+	private ToolBarDropDownButton? mode_button;
+
+	private Gtk.Label ModeLabel => mode_label ??= Gtk.Label.New (string.Format (" {0}: ", Translations.GetString ("Mode")));
+
+	private ToolBarDropDownButton ModeDropDown {
+		get {
+			if (mode_button is not null)
+				return mode_button;
+
+			mode_button = ToolBarDropDownButton.New (true);
+			mode_button.AddItem (Translations.GetString ("Move"), Pinta.Resources.Icons.ToolMove, TransformMode.Move,
+				Translations.GetString ("Drag the grips to resize the selected pixels."));
+			// Translators: Move Selected Pixels mode that slants the pixels by sliding one edge along itself.
+			mode_button.AddItem (Translations.GetString ("Skew"), Pinta.Resources.Icons.TransformSkew, TransformMode.Skew,
+				Translations.GetString ("Drag an edge's grip to slide that edge along itself, slanting the selected pixels."));
+			// Translators: Move Selected Pixels mode where each corner moves on its own, to fit the pixels onto an angled surface.
+			mode_button.AddItem (Translations.GetString ("Perspective"), Pinta.Resources.Icons.TransformPerspective, TransformMode.Perspective,
+				Translations.GetString ("Drag any corner on its own to fit the selected pixels onto an angled surface."));
+			mode_button.SelectedIndex = (int) mode;
+			mode_button.SelectedItemChanged += (_, _) => {
+				mode = (TransformMode) mode_button.SelectedItem.Tag!;
+				hover_grip = -1;
+				RefreshQuadHandle ();
+			};
+
+			return mode_button;
+		}
+	}
+
+	private static TransformMode ModeFromIndex (int index)
+		=> Enum.IsDefined ((TransformMode) index) ? (TransformMode) index : TransformMode.Move;
+
+	private void RefreshQuadHandle ()
+	{
+		PointD[]? quad = null;
+		if (mode != TransformMode.Move && IsActiveTool () && workspace.HasOpenDocuments)
+			quad = warp.CurrentQuad (workspace.ActiveDocument);
+
+		quad_handle.Active = quad is not null;
+		if (quad is not null)
+			quad_handle.Update (quad, mode);
+
+		if (workspace.HasOpenDocuments)
+			workspace.Invalidate ();
+	}
+
+	protected override void OnActivated (Document? document)
+	{
+		base.OnActivated (document);
+		RefreshQuadHandle ();
+	}
+
+	protected override void OnMouseDown (Document document, ToolMouseEventArgs e)
+	{
+		if (!TryBeginWarp (document, e))
+			base.OnMouseDown (document, e);
+	}
+
+	/// <summary>
+	/// Starts a skew or perspective drag when a left click lands on one of their grips. Lifts the
+	/// pixels first, exactly as a move would, so the drag reshapes floating content.
+	/// </summary>
+	private bool TryBeginWarp (Document document, ToolMouseEventArgs e)
+	{
+		if (mode == TransformMode.Move || IsActive || warp.IsDragging)
+			return false;
+		if (e.MouseButton != MouseButton.Left || e.IsAltPressed)
+			return false;
+
+		int grip = quad_handle.GripAt (e.WindowPoint);
+		if (grip < 0)
+			return false;
+
+		OnStartTransform (document);
+		if (move_declined) {
+			move_declined = false;
+			return true;
+		}
+
+		warp.Begin (document, mode, grip, e.PointDouble);
+		quad_handle.Select (grip);
+		return true;
+	}
+
+	protected override void OnMouseMove (Document document, ToolMouseEventArgs e)
+	{
+		if (warp.IsDragging) {
+			warp.Update (document, e.PointDouble);
+			return;
+		}
+
+		base.OnMouseMove (document, e);
+
+		if (mode != TransformMode.Move && !IsActive)
+			UpdateGripCursor (e.WindowPoint);
+	}
+
+	// Only on a change: DefaultCursor builds a fresh texture every time it is read.
+	private void UpdateGripCursor (PointD windowPoint)
+	{
+		int grip = quad_handle.GripAt (windowPoint);
+		if (grip == hover_grip)
+			return;
+
+		hover_grip = grip;
+		SetCursor (grip >= 0 ? quad_handle.CursorOf (grip) : DefaultCursor);
+	}
+
+	protected override void OnMouseUp (Document document, ToolMouseEventArgs e)
+	{
+		if (warp.IsDragging)
+			FinishWarp (document);
+		else
+			base.OnMouseUp (document, e);
+	}
+
+	// A mid-drag key would nudge the pixels out from under the warp.
+	protected override bool OnKeyDown (Document document, ToolKeyEventArgs e)
+		=> warp.IsDragging || base.OnKeyDown (document, e);
+
+	private void FinishWarp (Document document)
+	{
+		string text = mode == TransformMode.Skew
+			? Translations.GetString ("Skew")
+			: Translations.GetString ("Perspective");
+
+		BaseHistoryItem? pixels = warp.End (document, Icon, text);
+		quad_handle.Select (-1);
+
+		if (hist is not null)
+			document.History.PushNewItem (GroupWarp (text, hist, pixels));
+
+		ClearGestureState ();
+	}
+
+	// One undo step for the whole drag: the lift (with any layer it added) and the resampled
+	// pixels. A click that never moved a grip still lifted the pixels, so it records the lift alone.
+	private BaseHistoryItem GroupWarp (string text, MovePixelsHistoryItem move, BaseHistoryItem? pixels)
+	{
+		if (pixels is null)
+			return added_layer_hist is null ? move : GroupWithAddedLayer (move, added_layer_hist);
+
+		CompoundHistoryItem group = new (Icon, text);
+		if (added_layer_hist is not null)
+			group.Push (added_layer_hist);
+		group.Push (move);
+		group.Push (pixels);
+		return group;
+	}
 
 	protected override void OnStartTransform (Document document)
 	{
@@ -214,6 +408,11 @@ public sealed class MoveSelectedTool : BaseTransformTool
 		if (hist != null)
 			document.History.PushNewItem (added_layer_hist is null ? hist : GroupWithAddedLayer (hist, added_layer_hist));
 
+		ClearGestureState ();
+	}
+
+	private void ClearGestureState ()
+	{
 		hist = null;
 		added_layer_hist = null;
 		original_selection = null;
@@ -235,12 +434,20 @@ public sealed class MoveSelectedTool : BaseTransformTool
 	protected override void OnCommit (Document? document)
 	{
 		document?.FinishSelection ();
+		warp.Forget ();
 	}
 
 	protected override void OnDeactivated (Document? document, BaseTool? newTool)
 	{
+		// Same reason as the base's mid-drag reset: a tool switch during a drag must still land it.
+		if (warp.IsDragging && document is not null)
+			FinishWarp (document);
+
 		base.OnDeactivated (document, newTool);
 
 		document?.FinishSelection ();
+		warp.Forget ();
+		quad_handle.Active = false;
+		hover_grip = -1;
 	}
 }

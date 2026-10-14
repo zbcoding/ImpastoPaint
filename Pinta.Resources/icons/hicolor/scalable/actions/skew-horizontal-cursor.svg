@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="24" height="24" version="1.1" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+ <!-- skew: the grabbed edge slides sideways, the opposite edge the other way; non-symbolic keeps the white halo and dark stroke -->
+ <g fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <g stroke="#ffffff" stroke-width="4.2">
+   <path d="M6 8 H19"/>
+   <path d="M15.5 4.5 L19 8 L15.5 11.5"/>
+   <path d="M18 16 H5"/>
+   <path d="M8.5 12.5 L5 16 L8.5 19.5"/>
+  </g>
+  <g stroke="#1a1a1a" stroke-width="2.2">
+   <path d="M6 8 H19"/>
+   <path d="M15.5 4.5 L19 8 L15.5 11.5"/>
+   <path d="M18 16 H5"/>
+   <path d="M8.5 12.5 L5 16 L8.5 19.5"/>
+  </g>
+ </g>
+</svg>

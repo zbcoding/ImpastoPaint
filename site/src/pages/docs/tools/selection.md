@@ -71,6 +71,14 @@ Starting a move over shapes or text on the same layer asks first, because liftin
 
 While a selection is visible, its corner and edge grips are drawn, and dragging a grip resizes the selection. Grips that belong to a hidden selection are not grabbable, so a press near the canvas origin starts a new selection rather than grabbing an invisible full-canvas rectangle.
 
+Move Selected Pixels has a **Mode** dropdown on the toolbar:
+
+- **Move** (the default) — the grips resize, as above.
+- **Skew** — a grip sits on each edge. Dragging it slides that edge along itself while the opposite edge stays put, slanting the pixels into a parallelogram.
+- **Perspective** — a grip sits on each corner, and each corner moves on its own. Use it to fit a flat image onto an angled surface, such as a sign or a screen in a photo.
+
+In every mode, dragging inside the selection still moves it, and right-drag still rotates. A corner drag that would fold the shape over itself stops at the last shape that works. Adjusting the same selection again resamples from the pixels as they were before the first skew or perspective drag, so going back and forth does not blur them.
+
 ## Acting on a selection
 
 | Command | Shortcut | Effect |

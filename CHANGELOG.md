@@ -8,6 +8,15 @@ entries, is upstream Pinta work; the Impasto sections cover changes made in this
 
 ## Impasto - [Unreleased](https://github.com/zbcoding/ImpastoPaint/compare/v0.5.0...main)
 
+### Added
+
+- Move Selected Pixels has a Mode dropdown: Move (the default), Skew and Perspective. Skew puts a
+  grip on each edge; dragging one slides that edge along itself and slants the pixels. Perspective
+  puts a grip on each corner; each moves on its own, for fitting a flat image onto an angled
+  surface in a photo. Both grips have their own cursors, and each drag is one undo step.
+  Adjusting the same selection again resamples from the pixels as they were before the first
+  skew or perspective drag, so repeated adjustments do not blur them further.
+
 ### Fixed
 
 - Rotate / Zoom Layer no longer leaves the layer untransformed for some combinations of offset

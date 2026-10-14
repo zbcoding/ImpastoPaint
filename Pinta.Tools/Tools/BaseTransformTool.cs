@@ -62,6 +62,12 @@ public abstract class BaseTransformTool : BaseTool
 	private AlignmentDrag alignment = AlignmentDrag.None;
 	public override IEnumerable<IToolHandle> Handles => [handle];
 
+	/// <summary>
+	/// Whether the resize grips take part in hit-testing and hover. A subclass whose own grips
+	/// replace them (and which stops drawing them) turns this off.
+	/// </summary>
+	protected virtual bool ResizeGripsEnabled => true;
+
 	public override bool UseSnapping => true;
 
 	// Live orientation of the moved content (issue #4): maps the axis-aligned
@@ -124,7 +130,7 @@ public abstract class BaseTransformTool : BaseTool
 		bool rotate_requested = e.MouseButton == MouseButton.Right || e.IsAltPressed;
 
 		// If the mouse is on a resize grip, scale by dragging the handle.
-		if (!rotate_requested && handle.Active && handle.BeginDrag (e.PointDouble, document.ImageSize)) {
+		if (!rotate_requested && ResizeGripsEnabled && handle.Active && handle.BeginDrag (e.PointDouble, document.ImageSize)) {
 			is_handle_scaling = true;
 			using_mouse = true;
 			OnStartTransform (document);
@@ -238,7 +244,7 @@ public abstract class BaseTransformTool : BaseTool
 	/// </summary>
 	private void UpdateHoverCursor (ToolMouseEventArgs e)
 	{
-		if (using_mouse || !handle.Active)
+		if (using_mouse || !handle.Active || !ResizeGripsEnabled)
 			return;
 
 		Gdk.Cursor? gripCursor = handle.GetCursorAtPoint (e.WindowPoint);
@@ -1110,6 +1116,6 @@ public abstract class BaseTransformTool : BaseTool
 		return Gdk.Texture.NewForPixbuf (Gdk.Functions.PixbufGetFromSurface (surf, 0, 0, surf.Width, surf.Height)!);
 	}
 
-	private bool IsActive
+	protected bool IsActive
 		=> is_dragging || is_rotating || is_scaling || is_handle_scaling;
 }

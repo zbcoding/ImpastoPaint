@@ -218,6 +218,10 @@ public static class Icons
 	// Bidirectional rotate cursor for the transform tools' Alt-drag rotation.
 	// Non-symbolic so the white halo + black stroke are preserved (symbolic recolors to single color).
 	public const string RotateHandle = "rotate-handle";
+	// Move Selected Pixels' skew and perspective grips. Non-symbolic for the same reason.
+	public const string SkewHorizontalCursor = "skew-horizontal-cursor";
+	public const string SkewVerticalCursor = "skew-vertical-cursor";
+	public const string PerspectiveCursor = "perspective-cursor";
 
 	public const string Pinta = "com.github.zbcoding.Impasto";
 
@@ -273,6 +277,8 @@ public static class Icons
 	public const string ToolMove = "tool-move-symbolic";
 	public const string ToolMoveCursor = "tool-move-cursor-symbolic";
 	public const string ToolMoveSelection = "tool-move-selection-symbolic";
+	public const string TransformSkew = "transform-skew-symbolic";
+	public const string TransformPerspective = "transform-perspective-symbolic";
 	public const string ToolPaintBrush = "tool-paintbrush-symbolic";
 	public const string ToolPaintBucket = "tool-paintbucket-symbolic";
 	public const string ToolPan = "tool-pan-symbolic";

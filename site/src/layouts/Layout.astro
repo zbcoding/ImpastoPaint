@@ -62,11 +62,12 @@ const pageSchemas = schemas ?? [softwareApplicationSchema];
     <meta name="twitter:description" content={description} />
 
     {pageSchemas.map((schema) => (
-      <script type="application/ld+json" set:html={JSON.stringify(schema)} />
+      <script type="application/ld+json" set:html={JSON.stringify(schema).replace(/</g, '\\u003c')} />
     ))}
 
-    <!-- ponytail: GoatCounter — free, cookieless, no consent banner needed. Endpoint below is the zbcoding account. -->
-    <script data-goatcounter="https://zbcoding.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
+    <!-- ponytail: GoatCounter — free, cookieless, no consent banner needed. Endpoint below is the zbcoding account.
+         Pinned to a versioned script with SRI so a compromised CDN can't rewrite the download links; a new version needs a new hash. -->
+    <script data-goatcounter="https://zbcoding.goatcounter.com/count" async src="https://gc.zgo.at/count.v5.js" crossorigin="anonymous" integrity="sha384-atnOLvQb9t+jTSipvd75X2yginT4PjVbqDdlJAmxMm+wYElFmeR6EmLP5bYeoRVQ"></script>
   </head>
   <body>
     <slot />

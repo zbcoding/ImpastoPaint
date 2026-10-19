@@ -66,8 +66,58 @@ const pageSchemas = schemas ?? [softwareApplicationSchema];
     ))}
 
     <!-- ponytail: GoatCounter — free, cookieless, no consent banner needed. Endpoint below is the zbcoding account.
-         Pinned to a versioned script with SRI so a compromised CDN can't rewrite the download links; a new version needs a new hash. -->
-    <script data-goatcounter="https://zbcoding.goatcounter.com/count" async src="https://gc.zgo.at/count.v5.js" crossorigin="anonymous" integrity="sha384-atnOLvQb9t+jTSipvd75X2yginT4PjVbqDdlJAmxMm+wYElFmeR6EmLP5bYeoRVQ"></script>
+         Page views go straight to GoatCounter's /count endpoint, whose query parameters GoatCounter documents as stable,
+         so no third-party JavaScript runs here. This mirrors count.js's page-view path only: click events
+         (data-goatcounter-click) and the #toggle-goatcounter opt-out are not implemented. -->
+    <script>
+      const goatcounterEndpoint = 'https://zbcoding.goatcounter.com/count';
+      const localHostname = /(localhost$|^127\.|^10\.|^172\.(1[6-9]|2[0-9]|3[0-1])\.|^192\.168\.|^0\.0\.0\.0$)/;
+
+      // Codes from count.js; GoatCounter's backend treats any value >= 150 as a bot.
+      function botCode(): number {
+        const w = window as any;
+        const d = document as any;
+        if (w.callPhantom || w._phantom || w.phantom) return 150;
+        if (w.__nightmare) return 151;
+        if (d.__selenium_unwrapped || d.__webdriver_evaluate || d.__driver_evaluate) return 152;
+        if (navigator.webdriver) return 153;
+        return 0;
+      }
+
+      function isUncountedVisit(): boolean {
+        const isLocal = location.protocol === 'file:' || localHostname.test(location.hostname);
+        return isLocal || window !== window.parent;
+      }
+
+      function sendPageView() {
+        const canonical = document.querySelector<HTMLLinkElement>('link[rel="canonical"]');
+        const pageView: Record<string, string> = {
+          p: canonical ? new URL(canonical.href).pathname : location.pathname,
+          t: document.title,
+          r: document.referrer,
+          s: [screen.width, screen.height, devicePixelRatio || 1].join(','),
+          b: String(botCode()),
+          q: location.search,
+          rnd: Math.random().toString(36).slice(2, 7),
+        };
+        const query = new URLSearchParams(Object.entries(pageView).filter(([, value]) => value !== ''));
+        const url = `${goatcounterEndpoint}?${query}`;
+        if (!navigator.sendBeacon(url)) new Image().src = url;
+      }
+
+      // A prerendered or background-opened tab counts once it is first shown.
+      function whenVisible(callback: () => void) {
+        if (document.visibilityState === 'visible') return callback();
+        document.addEventListener('visibilitychange', function onChange() {
+          if (document.visibilityState !== 'visible') return;
+          document.removeEventListener('visibilitychange', onChange);
+          callback();
+        });
+      }
+
+      if (isUncountedVisit()) console.info('goatcounter: not counting a local or framed visit');
+      else whenVisible(sendPageView);
+    </script>
   </head>
   <body>
     <slot />

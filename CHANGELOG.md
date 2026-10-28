@@ -10,6 +10,13 @@ entries, is upstream Pinta work; the Impasto sections cover changes made in this
 
 Changes for the next release go here.
 
+### Fixed
+
+- Erasing or painting on a display with fractional scaling (e.g. 155%) no longer flickers thin
+  dark lines next to the brush, or occasionally leaves a sliver of the stroke undrawn until the
+  canvas repaints. The canvas now redraws whole after each change rather than just the changed
+  patch, which GTK's GPU renderers sampled slightly differently.
+
 ## Impasto - [0.6.0](https://github.com/zbcoding/ImpastoPaint/releases/tag/v0.6.0) - 2026-10-14
 
 ### Added

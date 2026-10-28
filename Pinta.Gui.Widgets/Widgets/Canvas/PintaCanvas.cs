@@ -242,11 +242,13 @@ internal sealed partial class PintaCanvas
 			List<Layer> layers = document.Layers.GetLayersToPaint ().ToList ();
 			cr.Render (layers, canvas_surface, offset: PointI.Zero, clipRect: modifiedArea);
 
-			Gdk.Texture? updateTexture = canvas_texture;
-			Cairo.Region? updateRegion = (updateTexture is not null)
-				? CairoExtensions.CreateRegion (modifiedArea.Value)
-				: null;
-			canvas_texture = canvas_surface.ToTexture (updateTexture, updateRegion);
+			// ponytail: upload the whole texture rather than chaining an update region onto the last
+			// one. GTK's GL/Vulkan renderers then repaint just that region, and at fractional display
+			// scales their nearest-neighbour sampling inside it picks different texels than a full
+			// repaint did, leaving one-pixel lines (or unerased slivers) beside the stroke until
+			// something repaints them. Costs a full-image upload per canvas update; go back to
+			// ToTexture (canvas_texture, region) once GTK's partial repaints sample consistently.
+			canvas_texture = canvas_surface.ToTexture ();
 		}
 
 		if (canvas_texture is null)

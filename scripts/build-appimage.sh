@@ -60,8 +60,8 @@ for size in 512x512 256x256 128x128 96x96 64x64 48x48; do
   f=$appdir/usr/share/icons/hicolor/$size/apps/com.github.zbcoding.Impasto.png
   [ -f "$f" ] && { icon=$f; break; }
 done
-[ -n "$icon" ] || icon=$appdir/usr/share/icons/hicolor/scalable/apps/com.github.zbcoding.Impasto.svg
-[ -f "$icon" ] || { echo "app icon missing from publish output" >&2; exit 1; }
+# appimagetool accepts only a PNG (or XPM) as the AppDir's root icon.
+[ -n "$icon" ] || { echo "PNG app icon missing from publish output" >&2; exit 1; }
 
 # --- 4. GSettings schemas -----------------------------------------------
 # libadwaita reads org.gnome.desktop.* at startup; ship the host's compiled set.
@@ -196,6 +196,15 @@ file "$appdir/usr/bin/Impasto" | grep -q ELF \
   || { echo "usr/bin/Impasto is not an ELF binary" >&2; exit 1; }
 file "$appdir/AppRun" | grep -q 'shell script' \
   || { echo "AppRun is not a script" >&2; exit 1; }
+
+# linuxdeploy links the scalable SVG as the root icon and .DirIcon; swap in the
+# PNG so appimagetool can derive .DirIcon from it.
+rm -f "$appdir/com.github.zbcoding.Impasto.svg" "$appdir/.DirIcon"
+cp "$icon" "$appdir/com.github.zbcoding.Impasto.png"
+
+# appimagetool rejects files other users cannot read/execute; the .NET publish
+# output carries 0744 files from the NuGet runtime packs.
+chmod -R a+rX "$appdir"
 
 ARCH=x86_64 "$tools/appimagetool" "$appdir" "$repo/Impasto-x86_64.AppImage"
 echo "built: $repo/Impasto-x86_64.AppImage  (version $version)"

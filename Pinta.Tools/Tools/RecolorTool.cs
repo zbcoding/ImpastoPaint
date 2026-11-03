@@ -58,6 +58,7 @@ public class RecolorTool : BaseBrushTool
 	}
 
 	public override bool UsesPaintColors => true;
+	public override bool PaintsUnderPointer => true;
 	// Its own down-point guard (TryRasterizeObjectAtStrokeStart) handles live objects with an
 	// ink-accurate probe of just the topmost clicked object; the ToolManager chokepoint must
 	// not pre-empt it with a coarser bbox prompt over every intersecting object.

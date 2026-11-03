@@ -69,6 +69,11 @@ public sealed partial class CanvasWindow
 	private Gdk.ModifierType drag_state;
 	private MouseButton drag_button;
 
+	// Paint strokes that miss the selection entirely; repeated misses pulse the selection outline.
+	private readonly SelectionMissTracker selection_miss_tracker = new ();
+	// The selection's bounds, grown by a pixel, cached per stroke so most misses skip the polygon query.
+	private RectangleD selection_miss_bounds;
+
 	private const double ZOOM_THRESHOLD_SCROLL = 1.25;
 	private const double ZOOM_THRESHOLD_PINCH = 0.15;
 	// Band inside the viewport edge that already counts as "past" it, so a maximized or
@@ -239,6 +244,7 @@ public sealed partial class CanvasWindow
 		// the canvas widget (e.g. when zoomed out and no scrollbars are required)
 		document.Workspace.ViewSizeChanged += UpdateRulerRange;
 		document.SelectionChanged += UpdateRulerSelection;
+		document.SelectionChanged += (_, _) => selection_miss_tracker.Reset ();
 
 		this.chrome = chrome;
 		this.tools = tools;
@@ -496,6 +502,33 @@ public sealed partial class CanvasWindow
 		};
 
 		tools.DoMouseDown (document, tool_args);
+		BeginSelectionMissStroke (tool_args);
+	}
+
+	private bool ShouldWatchForSelectionMiss (ToolMouseEventArgs args)
+		=> document.Selection.Visible
+		&& tools.CurrentTool?.PaintsUnderPointer == true
+		&& args.MouseButton != MouseButton.Middle // middle button is pan, not a stroke
+		&& !PintaCore.LivePreview.IsEnabled; // the tool ignores the canvas during a live preview
+
+	private void BeginSelectionMissStroke (ToolMouseEventArgs args)
+	{
+		if (!ShouldWatchForSelectionMiss (args))
+			return;
+
+		selection_miss_bounds = document.Selection.GetBounds ().Inflated (1, 1);
+		selection_miss_tracker.BeginStroke ();
+		NoteSelectionMissPoint (args.PointDouble);
+	}
+
+	private void NoteSelectionMissPoint (PointD canvasPoint)
+	{
+		if (!selection_miss_tracker.NeedsPointTest)
+			return;
+
+		RectangleD pixel = new (Math.Floor (canvasPoint.X), Math.Floor (canvasPoint.Y), 1, 1);
+		bool inside = selection_miss_bounds.ContainsPoint (canvasPoint) && document.Selection.Intersects (pixel);
+		selection_miss_tracker.AddPoint (inside);
 	}
 
 	private void OnDragUpdate (Gtk.GestureDrag gesture, Gtk.GestureDrag.DragUpdateSignalArgs args)
@@ -532,6 +565,7 @@ public sealed partial class CanvasWindow
 		};
 
 		tools.DoMouseMove (document, tool_args);
+		NoteSelectionMissPoint (current_canvas_pos);
 	}
 
 	/// <summary>
@@ -626,6 +660,10 @@ public sealed partial class CanvasWindow
 		};
 
 		tools.DoMouseUp (document, tool_args);
+		NoteSelectionMissPoint (canvasPoint);
+
+		if (selection_miss_tracker.EndStroke ())
+			canvas.PulseSelection ();
 	}
 
 	public bool DoKeyPressEvent (

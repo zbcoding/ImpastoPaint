@@ -54,6 +54,14 @@ internal sealed partial class PintaCanvas
 	private uint selection_animation_timer_id;
 	private float selection_animation_dash_offset;
 
+	// The "you've selected this area" pulse: the outline pops outward and back SELECTION_PULSE_COUNT times.
+	private const int SELECTION_PULSE_COUNT = 2;
+	private const double SELECTION_PULSE_DURATION_US = 400_000;
+	private const float SELECTION_PULSE_MAX_GROWTH = 6f; // view pixels each edge moves outward at the peak
+	private uint selection_pulse_tick_id;
+	private long? selection_pulse_start_time;
+	private float selection_pulse_growth;
+
 	[MemberNotNull (nameof (cr))]
 	[MemberNotNull (nameof (selection_animation_timer_id))]
 	partial void Initialize ()
@@ -302,8 +310,12 @@ internal sealed partial class PintaCanvas
 			snapshot.AppendFill (selection_path, Gsk.FillRule.EvenOdd, fillColor);
 		}
 
-		// Draw a white line first so it shows up on dark backgrounds
-		Gsk.Stroke stroke = Gsk.Stroke.New (lineWidth: 1.0f / scale);
+		// Draw a white line first so it shows up on dark backgrounds. During a pulse the outline
+		// swells outward and thickens with it.
+		if (selection_pulse_growth > 0)
+			ApplySelectionPulse (snapshot, scale);
+
+		Gsk.Stroke stroke = Gsk.Stroke.New (lineWidth: (1.0f + selection_pulse_growth / 3f) / scale);
 		Gdk.RGBA white = new () { Red = 1, Green = 1, Blue = 1, Alpha = 1 };
 		snapshot.AppendStroke (strokePath, stroke, white);
 
@@ -316,6 +328,23 @@ internal sealed partial class PintaCanvas
 
 		snapshot.Pop ();
 		snapshot.Restore ();
+	}
+
+	/// <summary>
+	/// Scales the snapshot about the selection's centre so each edge of the outline sits
+	/// <see cref="selection_pulse_growth"/> view pixels further out.
+	/// </summary>
+	private void ApplySelectionPulse (Gtk.Snapshot snapshot, float scale)
+	{
+		RectangleD bounds = document.Selection.GetBounds ();
+		double growth = 2 * selection_pulse_growth / scale;
+		float scaleX = (float) (1 + growth / Math.Max (bounds.Width, 1));
+		float scaleY = (float) (1 + growth / Math.Max (bounds.Height, 1));
+		Graphene.Point center = bounds.GetCenter ().ToGraphenePoint ();
+
+		snapshot.Translate (center);
+		snapshot.Scale (scaleX, scaleY);
+		snapshot.Translate (new Graphene.Point { X = -center.X, Y = -center.Y });
 	}
 
 	private void DrawHandles (Gtk.Snapshot snapshot, Graphene.Rect canvasViewBounds)
@@ -625,12 +654,45 @@ internal sealed partial class PintaCanvas
 		QueueSelectionUpdate (onlyDisplaySettings: true);
 		return true;
 	}
+
+	/// <summary>
+	/// Pops the selection outline outward twice, pointing the user at the selection that is
+	/// clipping their painting. Restarts the animation if one is already running.
+	/// </summary>
+	internal void PulseSelection ()
+	{
+		selection_pulse_start_time = null;
+
+		if (selection_pulse_tick_id == 0)
+			selection_pulse_tick_id = AddTickCallback (SelectionPulseTick);
+	}
+
+	private bool SelectionPulseTick (Gtk.Widget widget, Gdk.FrameClock clock)
+	{
+		long now = clock.GetFrameTime ();
+		selection_pulse_start_time ??= now;
+		double progress = (now - selection_pulse_start_time.Value) / SELECTION_PULSE_DURATION_US;
+		bool finished = progress >= 1;
+
+		// Each pop is half a sine wave: out quickly, back again.
+		double phase = progress * SELECTION_PULSE_COUNT % 1.0;
+		selection_pulse_growth = finished ? 0f : (float) (SELECTION_PULSE_MAX_GROWTH * Math.Sin (Math.PI * phase));
+		QueueSelectionUpdate (onlyDisplaySettings: true);
+
+		if (finished)
+			selection_pulse_tick_id = 0;
+
+		return !finished;
+	}
 	#endregion
 
 	public override void Dispose ()
 	{
 		// Remove the animation event handler to avoid leaks
 		GLib.Source.Remove (selection_animation_timer_id);
+
+		if (selection_pulse_tick_id != 0)
+			RemoveTickCallback (selection_pulse_tick_id);
 
 		// This is a static, process-wide event; a per-document canvas must drop off it when the
 		// document closes, or every canvas ever opened is retained and keeps queueing redraws.

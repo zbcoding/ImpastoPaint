@@ -366,6 +366,14 @@ public abstract class BaseTool
 		=> false;
 
 	/// <summary>
+	/// Impasto: whether everything a stroke paints lies under the pointer's path, so a stroke whose
+	/// path never enters the selection paints nothing. The canvas pulses the selection outline when
+	/// the user keeps painting outside it.
+	/// </summary>
+	public virtual bool PaintsUnderPointer
+		=> false;
+
+	/// <summary>
 	/// Called when Alt+Mouse Scroll is used over the canvas and <see cref="SupportsMouseScroll"/>
 	/// is true. Return 'true' if the scroll is handled, or 'false' to allow other components
 	/// to handle it.

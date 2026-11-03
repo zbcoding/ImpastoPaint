@@ -66,6 +66,9 @@ public sealed class EraserTool : BaseBrushTool
 		};
 	}
 
+	public override bool PaintsUnderPointer
+		=> true;
+
 	public override string Name
 		=> Translations.GetString ("Eraser");
 

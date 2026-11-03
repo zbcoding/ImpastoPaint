@@ -6,7 +6,11 @@ Impasto is a fork of the [Pinta Project](https://github.com/PintaProject/Pinta).
 Everything below the "Pinta Project history" heading, plus the "Inherited from Pinta"
 entries, is upstream Pinta work; the Impasto sections cover changes made in this fork.
 
-## Impasto - [Unreleased](https://github.com/zbcoding/ImpastoPaint/compare/v0.6.1...main)
+## Impasto - [Unreleased](https://github.com/zbcoding/ImpastoPaint/compare/v0.7.0...main)
+
+Changes for the next release go here.
+
+## Impasto - [0.7.0](https://github.com/zbcoding/ImpastoPaint/releases/tag/v0.7.0) - 2026-11-03
 
 ### Added
 

@@ -11,7 +11,9 @@ Do the file edits on a worktree branch and land them on `main` the normal way
 ## 1. Preconditions
 
 - [ ] `main` is green on CI and the working tree is clean.
-- [ ] You have the version number (semver). `X.Y.Z` below.
+- [ ] You have the version number (semver). `X.Y.Z` below. Fixes and really small features
+      (a hint, a tweak to existing behaviour) are a patch bump; a minor bump is for substantial
+      new features.
 
 ## 2. Version
 

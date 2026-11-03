@@ -662,7 +662,7 @@ public sealed partial class CanvasWindow
 		tools.DoMouseUp (document, tool_args);
 		NoteSelectionMissPoint (canvasPoint);
 
-		if (selection_miss_tracker.EndStroke ())
+		if (selection_miss_tracker.EndStroke (TimeSpan.FromMilliseconds (Environment.TickCount64)))
 			canvas.PulseSelection ();
 	}
 

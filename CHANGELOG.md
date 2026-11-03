@@ -12,6 +12,7 @@ entries, is upstream Pinta work; the Impasto sections cover changes made in this
 
 - Painting outside the selection twice in a row (paintbrush, pencil, eraser, recolor or paint
   bucket) makes the selection outline pop outward twice, showing where painting is limited to.
+  It waits a couple of seconds before popping again.
 
 ## Impasto - [0.6.1](https://github.com/zbcoding/ImpastoPaint/releases/tag/v0.6.1) - 2026-10-29
 

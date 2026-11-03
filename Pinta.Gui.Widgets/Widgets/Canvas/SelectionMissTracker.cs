@@ -1,17 +1,22 @@
+using System;
+
 namespace Pinta.Gui.Widgets;
 
 /// <summary>
 /// Spots the user painting outside the selection. A stroke whose sampled points all miss the
 /// selection paints nothing; once that happens twice in a row the selection outline should pulse.
-/// A stroke that reaches the selection starts the count over.
+/// A stroke that reaches the selection starts the count over. After a pulse, further misses stay
+/// quiet until a cooldown has passed, so steady painting outside the selection doesn't keep it flashing.
 /// </summary>
 public sealed class SelectionMissTracker
 {
 	private const int MISSES_BEFORE_PULSE = 2;
+	private static readonly TimeSpan PULSE_COOLDOWN = TimeSpan.FromSeconds (2);
 
 	private bool stroke_active;
 	private bool stroke_reached_selection;
 	private int consecutive_misses;
+	private TimeSpan? last_pulse_time;
 
 	/// <summary>
 	/// Whether the stroke's next point still has to be tested against the selection. False once the
@@ -32,9 +37,10 @@ public sealed class SelectionMissTracker
 	}
 
 	/// <summary>
-	/// Ends the stroke. Returns whether the selection outline should pulse.
+	/// Ends the stroke at <paramref name="now"/> (any monotonic clock). Returns whether the
+	/// selection outline should pulse.
 	/// </summary>
-	public bool EndStroke ()
+	public bool EndStroke (TimeSpan now)
 	{
 		if (!stroke_active)
 			return false;
@@ -47,8 +53,15 @@ public sealed class SelectionMissTracker
 		}
 
 		consecutive_misses++;
-		return consecutive_misses >= MISSES_BEFORE_PULSE;
+		if (consecutive_misses < MISSES_BEFORE_PULSE || IsCoolingDown (now))
+			return false;
+
+		last_pulse_time = now;
+		return true;
 	}
+
+	private bool IsCoolingDown (TimeSpan now)
+		=> last_pulse_time is TimeSpan last && now - last < PULSE_COOLDOWN;
 
 	/// <summary>
 	/// Forgets earlier misses, e.g. after the selection changes.
@@ -57,5 +70,6 @@ public sealed class SelectionMissTracker
 	{
 		stroke_active = false;
 		consecutive_misses = 0;
+		last_pulse_time = null;
 	}
 }

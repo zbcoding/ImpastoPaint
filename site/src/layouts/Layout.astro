@@ -118,6 +118,9 @@ const pageSchemas = schemas ?? [softwareApplicationSchema];
       if (isUncountedVisit()) console.info('goatcounter: not counting a local or framed visit');
       else whenVisible(sendPageView);
     </script>
+    <!-- Cloudflare Web Analytics -->
+    <script is:inline type="module" src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token": "9bcd1ba5205841bd800dbbc4794fe00f"}'></script>
+    <!-- End Cloudflare Web Analytics -->
   </head>
   <body>
     <slot />

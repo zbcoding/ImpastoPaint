@@ -45,6 +45,7 @@ export interface Dict {
   footerGithub: string;
   footerReleases: string;
   footerIssues: string;
+  footerPrivacy: string;
   aiTranslatedLabel: string;
   closeLightbox: string;
 }
@@ -105,6 +106,7 @@ export const strings: Record<Lang, Dict> = {
     footerGithub: 'GitHub',
     footerReleases: 'Releases',
     footerIssues: 'Bug Reports & Issues',
+    footerPrivacy: 'Privacy Policy',
     aiTranslatedLabel: 'AI-translated',
     closeLightbox: 'Close',
   },
@@ -164,6 +166,7 @@ export const strings: Record<Lang, Dict> = {
     footerGithub: 'GitHub',
     footerReleases: 'Versiones',
     footerIssues: 'Errores e incidencias',
+    footerPrivacy: 'Política de privacidad',
     aiTranslatedLabel: 'Traducción automática',
     closeLightbox: 'Cerrar',
   },
@@ -225,6 +228,7 @@ export const strings: Record<Lang, Dict> = {
     footerGithub: 'GitHub',
     footerReleases: 'Versions',
     footerIssues: 'Bugs et problèmes',
+    footerPrivacy: 'Politique de confidentialité',
     aiTranslatedLabel: 'Traduction automatique',
     closeLightbox: 'Fermer',
   },
@@ -284,6 +288,7 @@ export const strings: Record<Lang, Dict> = {
     footerGithub: 'GitHub',
     footerReleases: 'Releases',
     footerIssues: 'Fehler & Probleme',
+    footerPrivacy: 'Datenschutz',
     aiTranslatedLabel: 'Maschinelle Übersetzung',
     closeLightbox: 'Schließen',
   },
@@ -342,6 +347,7 @@ export const strings: Record<Lang, Dict> = {
     footerGithub: 'GitHub',
     footerReleases: 'リリース',
     footerIssues: 'バグ報告・Issue',
+    footerPrivacy: 'プライバシーポリシー',
     aiTranslatedLabel: 'AI翻訳',
     closeLightbox: '閉じる',
   },
@@ -398,6 +404,7 @@ export const strings: Record<Lang, Dict> = {
     footerGithub: 'GitHub',
     footerReleases: '发布版本',
     footerIssues: 'Bug 反馈与 Issues',
+    footerPrivacy: '隐私政策',
     aiTranslatedLabel: 'AI 翻译',
     closeLightbox: '关闭',
   },

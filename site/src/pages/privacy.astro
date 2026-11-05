@@ -1,0 +1,176 @@
+---
+import Layout from '../layouts/Layout.astro';
+
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+const repo = 'https://github.com/zbcoding/ImpastoPaint';
+const appPrivacyPolicy = `${repo}/blob/main/docs/privacy-policy.md`;
+const license = `${repo}/blob/main/license-mit.txt`;
+const thirdPartyNotices = `${repo}/blob/main/THIRD-PARTY-NOTICES.md`;
+---
+<Layout
+  lang="en"
+  title="Privacy Policy — Impasto"
+  description="Privacy policy for the impastopaint.com website: what the cookieless analytics record, which services handle requests, and where the Impasto application's own policy lives."
+  localeAlternates={false}
+>
+  <header class="page-header">
+    <div class="wrap row">
+      <a href={`${base}/`} class="brand">
+        <img src={`${base}/assets/impasto-logo.svg`} width="28" height="28" alt="" />
+        <span>Impasto</span>
+      </a>
+      <nav>
+        <a href={`${base}/docs/`}>Docs</a>
+        <a href={`${repo}/releases`}>Download</a>
+        <a href={repo}>GitHub</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="wrap policy">
+    <h1>Privacy Policy</h1>
+
+    <section>
+      <h2>Scope</h2>
+      <p>
+        This policy covers the website at <strong>impastopaint.com</strong>, including
+        <strong>www.impastopaint.com</strong> and its documentation pages. The Impasto
+        application you download and run has its own policy, linked under
+        <a href="#application">The Impasto application</a>.
+      </p>
+    </section>
+
+    <section>
+      <h2>Definitions</h2>
+      <p><strong>Personal data:</strong> any information relating to an identified or identifiable natural person.</p>
+      <p><strong>Processing:</strong> any operation performed on personal data, such as collection, recording, storage, use, or disclosure.</p>
+    </section>
+
+    <section>
+      <h2>What we collect</h2>
+      <p>
+        The website has no accounts, sign-ups, forms, comments, or advertising. It does not ask
+        for your name or email address. The only data collected is the page-visit information
+        recorded by the analytics services below, and the request logs kept by the hosting
+        provider.
+      </p>
+    </section>
+
+    <section>
+      <h2>Analytics</h2>
+      <p>
+        We measure visits with two cookieless analytics services. Neither uses cookies or local
+        storage, and both apply to visitors in all regions, including the EU, EEA, and UK.
+      </p>
+      <table>
+        <thead>
+          <tr><th>Service</th><th>What it records</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>GoatCounter</td>
+            <td>The page visited, page title, referring page, screen size, and query string. Visits from local or embedded pages are not counted.</td>
+          </tr>
+          <tr>
+            <td>Cloudflare Web Analytics, provided by Cloudflare, Inc.</td>
+            <td>Page load speed and performance, the page visited, the referring page, and your browser and device type. Cloudflare states that it does not fingerprint visitors.</td>
+          </tr>
+        </tbody>
+      </table>
+      <p>Both services receive your IP address as part of the request; Impasto does not store it.</p>
+    </section>
+
+    <section>
+      <h2>Third-party data processors</h2>
+      <p>These services handle requests to the website on our behalf:</p>
+      <ul>
+        <li><strong>GitHub Pages</strong>, provided by GitHub, Inc. — hosts the website. GitHub processes your IP address and request details when it serves a page.</li>
+        <li><strong>GoatCounter</strong> — page-view analytics, as described above.</li>
+        <li><strong>Cloudflare Web Analytics</strong> — performance and page-view analytics, as described above.</li>
+      </ul>
+      <p>
+        Links to GitHub, such as downloads, releases, and the issue tracker, take you to GitHub's
+        own site, where GitHub's privacy policy applies.
+      </p>
+    </section>
+
+    <section>
+      <h2>Purpose and legal basis</h2>
+      <p>
+        Analytics tell us which pages people read and how fast they load, so we can improve the
+        documentation and the site. Processing is based on our legitimate interest in running and
+        improving the website.
+      </p>
+    </section>
+
+    <section>
+      <h2>Cookies</h2>
+      <p>
+        The website sets no cookies and uses no local storage. Neither analytics service sets
+        cookies either.
+      </p>
+    </section>
+
+    <section>
+      <h2>Your choices</h2>
+      <p>
+        You can stop the analytics from running by blocking scripts from
+        <code>static.cloudflareinsights.com</code> and requests to <code>goatcounter.com</code>,
+        for example with a content blocker. The site works the same without them. Your IP address
+        still reaches the hosting provider, because a page cannot be delivered without it.
+      </p>
+    </section>
+
+    <section>
+      <h2>Your rights</h2>
+      <p>
+        You may have the right to access, correct, or delete your data, and to limit its
+        processing. To exercise these rights, open an issue on the
+        <a href={`${repo}/issues`}>GitHub issue tracker</a>.
+      </p>
+    </section>
+
+    <section id="application">
+      <h2>The Impasto application</h2>
+      <p>
+        The Impasto application does not send your images, settings, or usage data anywhere. It
+        makes a few network requests, such as checking for updates and refreshing the add-in
+        gallery, which are listed in the
+        <a href={appPrivacyPolicy}>application privacy policy</a> in the repository.
+      </p>
+      <p>
+        Impasto is free and open source. Its terms of use are the
+        <a href={license}>MIT License</a>, with third-party attributions in
+        <a href={thirdPartyNotices}>THIRD-PARTY-NOTICES.md</a>.
+      </p>
+    </section>
+
+    <section>
+      <h2>Policy changes</h2>
+      <p>We may update this policy from time to time. Changes are recorded in the repository's history.</p>
+    </section>
+
+    <p class="updated">Last updated: November 5, 2026</p>
+  </main>
+</Layout>
+
+<style>
+  .wrap { max-width: 1040px; margin: 0 auto; padding: 0 1.5rem; }
+  .row { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem; }
+
+  .page-header { border-bottom: 1px solid var(--border); padding: 1rem 0; }
+  .brand { display: flex; align-items: center; gap: 0.5rem; font-weight: 700; font-size: 1.15rem; color: var(--fg); text-decoration: none; }
+  .page-header nav { display: flex; gap: 1.25rem; }
+  .page-header nav a { color: var(--fg-muted); text-decoration: none; font-size: 0.95rem; }
+  .page-header nav a:hover { color: var(--fg); }
+
+  .policy { max-width: 780px; padding-top: 2rem; padding-bottom: 4rem; }
+  .policy h1 { font-size: clamp(1.7rem, 3.2vw, 2.3rem); margin: 0 0 1.5rem; }
+  .policy h2 { font-size: 1.3rem; margin: 2.2rem 0 0.75rem; padding-top: 0.5rem; border-top: 1px solid var(--border); }
+  .policy p, .policy li { color: #d5d9e4; }
+  .policy li { margin: 0.3rem 0; }
+  .policy table { width: 100%; border-collapse: collapse; margin: 1.25rem 0; font-size: 0.93rem; display: block; overflow-x: auto; }
+  .policy th, .policy td { border: 1px solid var(--border); padding: 0.45rem 0.7rem; text-align: left; vertical-align: top; }
+  .policy th { background: var(--bg-raised); }
+  .updated { margin-top: 3rem; font-size: 0.85rem; color: var(--fg-muted) !important; }
+</style>

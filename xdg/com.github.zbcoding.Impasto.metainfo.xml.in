@@ -44,6 +44,12 @@
     <binary>impasto</binary>
   </provides>
   <releases>
+    <release version="0.7.1" date="2026-11-04">
+      <url>https://github.com/zbcoding/ImpastoPaint/releases/tag/v0.7.1</url>
+      <description>
+        <p>Resizing moved pixels by a grip snaps the dragged corner or edge to other layers' pictures, shapes and text, and to the grid, so a copy can be sized to match another exactly. This release also fixes pixels left outside the marching ants after repeated resizes, grip cursors pointing the wrong way after a mirror, and resize grips that could not be grabbed with snapping on.</p>
+      </description>
+    </release>
     <release version="0.7.0" date="2026-11-03">
       <url>https://github.com/zbcoding/ImpastoPaint/releases/tag/v0.7.0</url>
       <description>

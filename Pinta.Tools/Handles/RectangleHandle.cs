@@ -82,17 +82,20 @@ public class RectangleHandle : IToolHandle
 	};
 
 	/// <summary>
-	/// Picks the resize cursor for a grip rotated by <paramref name="thetaDeg"/>
-	/// from its axis-aligned <paramref name="baseOct"/>. Snaps within the grip's
-	/// own family (90° apart) so a corner always shows a diagonal glyph and an
-	/// edge a straight one, each pointing along the rotated content. Glyphs are
-	/// 180°-symmetric, so flips resolve too.
+	/// Picks the resize cursor for a grip whose axis-aligned direction is <paramref name="baseOct"/>
+	/// once <paramref name="orientation"/> has turned or mirrored it. The grip's outward direction
+	/// goes through the matrix itself, since a mirror is not a turn, then snaps within the grip's
+	/// own family (90° apart) so a corner always shows a diagonal glyph and an edge a straight one.
 	/// </summary>
-	private Gdk.Cursor DirectionCursor (int baseOct, double thetaDeg)
+	private Gdk.Cursor DirectionCursor (int baseOct, Matrix orientation)
 	{
+		double baseAngle = baseOct * Math.PI / 4.0;
+		PointD origin = orientation.TransformPoint (new PointD (0, 0));
+		PointD outward = orientation.TransformPoint (new PointD (Math.Cos (baseAngle), Math.Sin (baseAngle)));
+		double outwardDeg = Math.Atan2 (outward.Y - origin.Y, outward.X - origin.X) * 180.0 / Math.PI;
+
 		int parity = baseOct & 1; // 0 = straight/edge, 1 = diagonal/corner
-		double rotatedDeg = baseOct * 45.0 + thetaDeg;
-		int k = (int) Math.Round ((rotatedDeg - parity * 45.0) / 90.0);
+		int k = (int) Math.Round ((outwardDeg - parity * 45.0) / 90.0);
 		int oct = ((parity + 2 * k) % 8 + 8) % 8;
 		return direction_cursors[oct];
 	}
@@ -256,13 +259,9 @@ public class RectangleHandle : IToolHandle
 		handles[HandlePoint.Down].CanvasPosition = new PointD (center.X, end_pt.Y);
 
 		if (Orientation is not null) {
-			// Screen-space rotation of the content = angle of the transformed X axis.
-			PointD o0 = Orientation.TransformPoint (new PointD (0, 0));
-			PointD o1 = Orientation.TransformPoint (new PointD (1, 0));
-			double thetaDeg = Math.Atan2 (o1.Y - o0.Y, o1.X - o0.X) * 180.0 / Math.PI;
 			foreach ((HandlePoint point, MoveHandle handle) in handles) {
 				handle.CanvasPosition = Orientation.TransformPoint (handle.CanvasPosition);
-				handle.Cursor = DirectionCursor (base_octant[point], thetaDeg);
+				handle.Cursor = DirectionCursor (base_octant[point], Orientation);
 			}
 		}
 	}

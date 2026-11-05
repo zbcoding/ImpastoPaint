@@ -26,6 +26,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Cairo;
 using Pinta.Core;
 
@@ -50,6 +51,13 @@ public sealed class MoveSelectedTool : BaseTransformTool
 	// silently clips every later paint tool to wherever the drag happened to end.
 	private bool had_real_selection;
 	private readonly Matrix original_transform = CairoExtensions.CreateIdentityMatrix ();
+
+	// The outline the floating pixels were cut with, and the inverse of the selection layer's
+	// transform at that moment. Each drag maps this one outline through the pixels' transform
+	// since. The outline is whole pixels: mapping every drag's already-rounded result again let
+	// a squash-then-stretch magnify the rounding until floating pixels sat outside the ants.
+	private DocumentSelection? float_outline;
+	private readonly Matrix float_outline_inverse = CairoExtensions.CreateIdentityMatrix ();
 
 	// Skew, Perspective and 3D reshape the selection through their own grips; Move keeps the
 	// inherited resize grips. Body drags, rotate and nudge behave the same in every mode.
@@ -600,6 +608,8 @@ public sealed class MoveSelectedTool : BaseTransformTool
 
 		original_selection = document.Selection.Clone ();
 		original_transform.InitMatrix (document.Layers.SelectionLayer.Transform);
+		if (lifts || !FloatOutlineIsShown (document))
+			CaptureFloatOutline (document);
 
 		hist = new MovePixelsHistoryItem (Icon, Name, document);
 		hist.TakeSnapshot (lifts);
@@ -660,15 +670,16 @@ public sealed class MoveSelectedTool : BaseTransformTool
 		if (move_declined)
 			return;
 
+		document.Layers.SelectionLayer.Transform.InitMatrix (original_transform);
+		document.Layers.SelectionLayer.Transform.Multiply (transform);
+
 		// Whole-layer fallback move: leave the canvas-sized placeholder selection exactly as it
 		// was: moving without a real selection must not fabricate one.
 		if (had_real_selection) {
-			document.Selection = original_selection!.Transform (transform); // NRT - Set in OnStartTransform
+			document.Selection = FloatOutlineAt (document.Layers.SelectionLayer.Transform)
+				?? original_selection!.Transform (transform); // NRT - Set in OnStartTransform
 			document.Selection.Visible = true;
 		}
-
-		document.Layers.SelectionLayer.Transform.InitMatrix (original_transform);
-		document.Layers.SelectionLayer.Transform.Multiply (transform);
 
 		document.Workspace.Invalidate ();
 	}
@@ -703,6 +714,30 @@ public sealed class MoveSelectedTool : BaseTransformTool
 		original_selection = null;
 		original_transform.InitIdentity ();
 	}
+
+	private void CaptureFloatOutline (Document document)
+	{
+		float_outline_inverse.InitMatrix (document.Layers.SelectionLayer.Transform);
+		// Pixels squashed flat have no inverse; their drags fall back to the gesture's own outline.
+		float_outline = float_outline_inverse.Invert () == Status.Success ? document.Selection.Clone () : null;
+	}
+
+	private DocumentSelection? FloatOutlineAt (Matrix selectionLayerTransform)
+	{
+		if (float_outline is null)
+			return null;
+
+		Matrix outlineToNow = float_outline_inverse.Clone ();
+		outlineToNow.Multiply (selectionLayerTransform);
+		return float_outline.Transform (outlineToNow);
+	}
+
+	// Undo and redo put back a selection and transform pair this outline produced, so it still
+	// holds; a warp, a new paste or any other selection change since shows up as a mismatch.
+	private bool FloatOutlineIsShown (Document document)
+		=> FloatOutlineAt (document.Layers.SelectionLayer.Transform) is DocumentSelection expected
+		&& expected.SelectionPolygons.Count == document.Selection.SelectionPolygons.Count
+		&& expected.SelectionPolygons.Zip (document.Selection.SelectionPolygons).All (pair => pair.First.SequenceEqual (pair.Second));
 
 	// Redo re-adds the layer before the lift floats the pixels again: re-adding switches layers,
 	// which commits the current tool, and committing a move while the pixels float would finish

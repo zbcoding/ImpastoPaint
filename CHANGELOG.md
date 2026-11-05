@@ -21,6 +21,10 @@ Changes for the next release go here.
 
 - With snapping on, a resize grip on content that isn't lined up with the grid can be grabbed
   again. The press used to snap away from the grip and move the content instead.
+- Resizing moved pixels several times, especially squashing them small and stretching them back
+  out, no longer leaves pixels outside the marching ants that still move with the selection.
+- After mirroring moved pixels by dragging a grip past the opposite side, each corner grip shows
+  the resize cursor for the corner it now sits on.
 
 ## Impasto - [0.7.0](https://github.com/zbcoding/ImpastoPaint/releases/tag/v0.7.0) - 2026-11-03
 

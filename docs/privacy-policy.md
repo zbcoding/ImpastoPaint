@@ -19,7 +19,7 @@ The website at `impastopaint.com` measures visits with two cookieless analytics 
 
 | Service | What it records |
 | --- | --- |
-| GoatCounter (`zbcoding.goatcounter.com`) | The page visited, page title, referring page, screen size, and query string. Visits from local or embedded pages are not counted. |
+| GoatCounter | The page visited, page title, referring page, screen size, and query string. Visits from local or embedded pages are not counted. |
 | Cloudflare Web Analytics, provided by Cloudflare, Inc. | Page load speed and performance, the page visited, the referring page, and your browser and device type. Cloudflare states that it does not fingerprint visitors. |
 
 Both services receive your IP address as part of the request; Impasto does not store it.

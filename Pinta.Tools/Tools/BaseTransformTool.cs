@@ -54,10 +54,9 @@ public abstract class BaseTransformTool : BaseTool
 	private readonly Gdk.Cursor rotate_cursor;
 	private bool is_handle_scaling = false;
 
-	// Impasto: snapping. The mouse position itself is snapped upstream (see
-	// UseSnapping), which is what grip resizing needs; a plain drag additionally
-	// aligns the content's own corner - or its center, while "c" is held - to the
-	// grid instead of preserving the grab offset.
+	// Impasto: snapping. A grip resize snaps the dragged corner or edge itself (see
+	// SnapGripPosition); a plain drag aligns the content's own corner - or its
+	// center, while "c" is held - to the grid instead of preserving the grab offset.
 	private bool center_snap_held = false;
 	private AlignmentDrag alignment = AlignmentDrag.None;
 	public override IEnumerable<IToolHandle> Handles => [handle];
@@ -132,13 +131,15 @@ public abstract class BaseTransformTool : BaseTool
 		// Alt (or right button) rotates, and takes priority over grabbing a grip.
 		bool rotate_requested = e.MouseButton == MouseButton.Right || e.IsAltPressed;
 
-		// If the mouse is on a resize grip, scale by dragging the handle.
-		if (!rotate_requested && ResizeGripsEnabled && handle.Active && handle.BeginDrag (e.PointDouble, document.ImageSize)) {
+		// If the mouse is on a resize grip, scale by dragging the handle. The grip is found under
+		// the raw cursor: the snapped one can sit far enough off an unaligned box to miss it.
+		if (!rotate_requested && ResizeGripsEnabled && handle.Active && handle.BeginDrag (e.UnsnappedPointDouble, document.ImageSize)) {
 			is_handle_scaling = true;
 			using_mouse = true;
 			OnStartTransform (document);
 			// Grip scaling is computed in the reference frame (see ApplyRefScale).
 			source_rect = ref_rect;
+			alignment = ObjectAlignment.BeginDrag (document, PintaCore.Chrome, CurrentBounds ());
 			return;
 		}
 
@@ -198,7 +199,7 @@ public abstract class BaseTransformTool : BaseTool
 		// which would corrupt the reference rectangle).
 		Matrix liveInv = live.Clone ();
 		liveInv.Invert ();
-		PointD mouse = liveInv.TransformPoint (e.PointDouble);
+		PointD mouse = liveInv.TransformPoint (SnapGripPosition (active.Value, e.UnsnappedPointDouble));
 		PointD srcCenter = source_rect.GetCenter ();
 		bool keepAspect = e.IsShiftPressed;
 		bool fromCenter = e.IsControlPressed;
@@ -240,6 +241,27 @@ public abstract class BaseTransformTool : BaseTool
 			// Grips are placed via the oriented frame, not a target rect.
 			ApplyRefScale (document, edgeTransform);
 		}
+	}
+
+	/// <summary>
+	/// Where a dragged grip lands once snapped. A corner snaps on both axes; an edge only along
+	/// the canvas axis it moves on, which a quarter turn swaps and an off-axis rotation mixes.
+	/// </summary>
+	private PointD SnapGripPosition (HandlePoint grip, PointD cursor)
+	{
+		if (IsCorner (grip))
+			return PintaCore.CanvasGrid.SnapGrip (cursor, snapX: true, snapY: true, alignment);
+
+		bool horizontal = grip is HandlePoint.Left or HandlePoint.Right;
+		PointD origin = live.TransformPoint (new (0, 0));
+		PointD along = live.TransformPoint (horizontal ? new (1, 0) : new (0, 1));
+
+		const double ON_AXIS = 1e-9;
+		return PintaCore.CanvasGrid.SnapGrip (
+			cursor,
+			snapX: Math.Abs (along.X - origin.X) > ON_AXIS,
+			snapY: Math.Abs (along.Y - origin.Y) > ON_AXIS,
+			alignment);
 	}
 
 	/// <summary>

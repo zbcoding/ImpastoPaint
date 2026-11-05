@@ -56,6 +56,14 @@ public interface ICanvasGridService
 	PointD SnapRect (RectangleD rect, bool centerAnchor, AlignmentDrag alignment);
 
 	/// <summary>
+	/// Snaps a resize grip being dragged, so the corner or edge it moves lands on the grid, a
+	/// canvas guide or another object's line in <paramref name="alignment"/>, the same rules
+	/// <see cref="SnapRect"/> applies to a moved box. Only the axes the grip moves along snap,
+	/// and only their guides are shown.
+	/// </summary>
+	PointD SnapGrip (PointD grip, bool snapX, bool snapY, AlignmentDrag alignment);
+
+	/// <summary>
 	/// Which canvas guides the last snapped point landed on, so the canvas can
 	/// show them while they are holding the point.
 	/// </summary>
@@ -327,6 +335,21 @@ public sealed class CanvasGridManager : ICanvasGridService
 		ActiveAlignmentGuides = shown;
 
 		return new (x, y);
+	}
+
+	public PointD SnapGrip (PointD grip, bool snapX, bool snapY, AlignmentDrag alignment)
+	{
+		// The grip is a box of no size: its one line per axis is offered to the targets.
+		RectangleD point = new (grip, 0, 0);
+		PointD snapped = SnapRect (point, centerAnchor: false, alignment with { Moving = AlignmentLines.OfBox (point) });
+
+		if (!snapX)
+			ActiveGuides &= ~HORIZONTAL_GUIDES;
+		if (!snapY)
+			ActiveGuides &= ~VERTICAL_GUIDES;
+		ActiveAlignmentGuides = [.. ActiveAlignmentGuides.Where (guide => guide.Vertical ? snapX : snapY)];
+
+		return new (snapX ? snapped.X : grip.X, snapY ? snapped.Y : grip.Y);
 	}
 
 	/// <summary>How far a canvas guide moved the box on one axis; infinite when none holds it.</summary>

@@ -10,6 +10,18 @@ entries, is upstream Pinta work; the Impasto sections cover changes made in this
 
 Changes for the next release go here.
 
+### Added
+
+- Resizing moved pixels by a corner or edge grip now snaps the dragged corner or edge: to other
+  layers' pictures, shapes and text with "Align to objects" on, and to the grid, ruler or canvas
+  edges and centre with "Snap to grid/ruler/center" on. Dragging a corner onto the matching corner
+  of a picture on another layer gives both the same size.
+
+### Fixed
+
+- With snapping on, a resize grip on content that isn't lined up with the grid can be grabbed
+  again. The press used to snap away from the grip and move the content instead.
+
 ## Impasto - [0.7.0](https://github.com/zbcoding/ImpastoPaint/releases/tag/v0.7.0) - 2026-11-03
 
 ### Added

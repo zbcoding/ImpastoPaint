@@ -41,13 +41,15 @@ internal sealed class SaveDocumentImplmentationAction : IActionHandler
 	private readonly ImageConverterManager image_formats;
 	private readonly RecentFileManager recent_files;
 	private readonly ToolManager tools;
+	private readonly WorkspaceManager workspace;
 	internal SaveDocumentImplmentationAction (
 		FileActions file,
 		ImageActions image,
 		ChromeManager chrome,
 		ImageConverterManager imageFormats,
 		RecentFileManager recentFiles,
-		ToolManager tools)
+		ToolManager tools,
+		WorkspaceManager workspace)
 	{
 		this.file = file;
 		this.image = image;
@@ -55,6 +57,7 @@ internal sealed class SaveDocumentImplmentationAction : IActionHandler
 		image_formats = imageFormats;
 		recent_files = recentFiles;
 		this.tools = tools;
+		this.workspace = workspace;
 	}
 
 	void IActionHandler.Initialize ()
@@ -143,6 +146,10 @@ internal sealed class SaveDocumentImplmentationAction : IActionHandler
 			Gtk.FileChooserAction.Save,
 			Translations.GetString ("Save"),
 			Translations.GetString ("Cancel"));
+
+		// Modal so the active document cannot change under the save flow, which commits tools and
+		// flattens through the active document.
+		fcd.Modal = true;
 
 		// SetFile would carry over the document's current extension, which is the one thing a
 		// requested format has to replace - so that path re-uses the folder and renames instead.
@@ -361,7 +368,13 @@ internal sealed class SaveDocumentImplmentationAction : IActionHandler
 				return false;
 			}
 
-			// Flatten the image
+			// Flatten the image. The Flatten command acts on the active document, so make that the
+			// document being saved; never flatten a different one.
+			int index = workspace.OpenDocuments.IndexOf (document);
+			if (index < 0)
+				return false;
+
+			workspace.SetActiveDocument (index);
 			tools.Commit ();
 			image.Flatten.Activate ();
 		}

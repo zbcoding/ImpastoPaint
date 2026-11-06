@@ -294,6 +294,9 @@ internal sealed class MainWindow
 				200,
 				() => {
 					refitQueued = false;
+					if (PintaCore.Workspace.ActiveDocumentOrDefault != doc)
+						return false;
+
 					ZoomToWindow_Activated (view, EventArgs.Empty);
 					PintaCore.Workspace.Invalidate ();
 					return false;

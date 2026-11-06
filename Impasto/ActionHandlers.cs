@@ -47,6 +47,7 @@ public sealed class ActionHandlers
 		PaletteManager palette = PintaCore.Palette;
 		CanvasGridManager canvasGrid = PintaCore.CanvasGrid;
 		string applicationVersion = PintaCore.DisplayVersion;
+		CloseDocumentAction closeDocument = new (actions, chrome, workspace, tools);
 
 		action_handlers = [
 			// File
@@ -56,11 +57,11 @@ public sealed class ActionHandlers
 			new SaveDocumentAction (actions.File, workspace),
 			new SaveDocumentAsAction (actions.File, workspace),
 			new SaveDocumentAsProjectAction (actions.File, workspace),
-			new SaveDocumentImplmentationAction (actions.File, actions.Image, chrome, imageFormats, recentFiles, tools),
+			new SaveDocumentImplmentationAction (actions.File, actions.Image, chrome, imageFormats, recentFiles, tools, workspace),
 			new ModifyCompressionAction (actions.File),
 			//new PrintDocumentAction ();
-			new CloseDocumentAction (actions, chrome, workspace, tools),
-			new ExitProgramAction (actions, chrome, workspace),
+			closeDocument,
+			new ExitProgramAction (actions, chrome, workspace, closeDocument),
 			new UpdateImpastoAction (actions.File, system),
 
 			// Edit
@@ -94,7 +95,7 @@ public sealed class ActionHandlers
 			new AlignToObjectsToggledAction (actions.View, canvasGrid),
 
 			// Window
-			new CloseAllDocumentsAction (actions, workspace),
+			new CloseAllDocumentsAction (actions, workspace, closeDocument),
 			new SaveAllDocumentsAction (actions.Window, workspace),
 
 			// Help

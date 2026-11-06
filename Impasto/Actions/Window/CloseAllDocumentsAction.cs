@@ -33,12 +33,15 @@ internal sealed class CloseAllDocumentsAction : IActionHandler
 {
 	private readonly ActionManager actions;
 	private readonly WorkspaceManager workspace;
+	private readonly CloseDocumentAction close_document;
 	internal CloseAllDocumentsAction (
 		ActionManager actions,
-		WorkspaceManager workspace)
+		WorkspaceManager workspace,
+		CloseDocumentAction closeDocument)
 	{
 		this.actions = actions;
 		this.workspace = workspace;
+		close_document = closeDocument;
 	}
 
 	void IActionHandler.Initialize ()
@@ -51,17 +54,11 @@ internal sealed class CloseAllDocumentsAction : IActionHandler
 		actions.Window.CloseAll.Activated -= Activated;
 	}
 
-	private void Activated (object sender, EventArgs e)
+	private async void Activated (object sender, EventArgs e)
 	{
-		while (workspace.HasOpenDocuments) {
-
-			int count = workspace.OpenDocuments.Count;
-
-			actions.File.Close.Activate ();
-
-			// If we still have the same number of open documents,
-			// the user cancelled on a Save prompt.
-			if (count == workspace.OpenDocuments.Count)
+		while (workspace.ActiveDocumentOrDefault is Document document) {
+			// The user cancelled on a Save prompt.
+			if (!await close_document.CloseDocument (document))
 				return;
 		}
 	}

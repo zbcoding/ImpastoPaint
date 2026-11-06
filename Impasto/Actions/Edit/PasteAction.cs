@@ -153,7 +153,8 @@ internal sealed class PasteAction : IActionHandler
 
 		Cairo.ImageSurface cb_image = cb_texture.ToSurface ();
 
-		var canvas_size = workspace.ImageSize;
+		// The clipboard read above is async, so the active document may no longer be doc.
+		var canvas_size = doc.ImageSize;
 
 		// If the image being pasted is larger than the canvas size, allow the user to optionally resize the canvas
 		if (cb_image.Width > canvas_size.Width || cb_image.Height > canvas_size.Height) {
@@ -170,9 +171,11 @@ internal sealed class PasteAction : IActionHandler
 				// False means the user backed out of the rasterize-objects prompt the resize needed -
 				// nothing was resized (or baked), so the paste has to abort too rather than land on the
 				// still-original-sized canvas as if Preserve had been chosen instead of Expand.
-				if (!workspace.ResizeCanvas (newSize, Pinta.Core.Anchor.Center, paste_action))
+				if (!doc.ResizeCanvas (newSize, Pinta.Core.Anchor.Center, paste_action))
 					return;
-				actions.View.UpdateCanvasScale ();
+
+				if (workspace.ActiveDocumentOrDefault == doc)
+					actions.View.UpdateCanvasScale ();
 
 			} else if (response != Gtk.ResponseType.Reject) // cancelled
 				return;

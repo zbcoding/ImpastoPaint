@@ -62,37 +62,52 @@ internal sealed class LayerPropertiesAction : IActionHandler
 			return;
 		}
 
-		Document active = workspace.ActiveDocument;
-		using LayerPropertiesDialog dialog = LayerPropertiesDialog.New (chrome, workspace);
+		if (workspace.ActiveDocumentOrDefault is not Document active)
+			return;
+
+		using LayerPropertiesDialog dialog = LayerPropertiesDialog.New (chrome, workspace, active);
 		active_dialog = dialog;
+		workspace.DocumentClosed += CancelDialogOnDocumentClosed;
 		try {
 			Gtk.ResponseType response = await dialog.RunAsync ();
-
-			if (response == Gtk.ResponseType.Ok && dialog.AreLayerPropertiesUpdated) {
-				UpdateLayerPropertiesHistoryItem historyItem = GetLayerUpdateHistoryItem (
-					active.Layers.CurrentUserLayerIndex,
-					dialog.InitialLayerProperties,
-					dialog.UpdatedLayerProperties);
-
-				active.History.PushNewItem (historyItem);
-
-				workspace.ActiveWorkspace.Invalidate ();
-			} else {
-				Layer layer = active.Layers.CurrentUserLayer;
-				Layer selectionLayer = active.Layers.SelectionLayer;
-				LayerProperties initial = dialog.InitialLayerProperties;
-				initial.SetProperties (layer);
-
-				if (selectionLayer != null)
-					initial.SetProperties (selectionLayer);
-
-				if ((layer.Opacity != initial.Opacity) || (layer.BlendMode != initial.BlendMode) || (layer.Hidden != initial.Hidden))
-					workspace.ActiveWorkspace.Invalidate ();
-			}
+			FinishDialog (dialog, response);
 		} finally {
+			workspace.DocumentClosed -= CancelDialogOnDocumentClosed;
 			active_dialog = null;
 			dialog.Destroy ();
 		}
+	}
+
+	private void CancelDialogOnDocumentClosed (object? sender, DocumentEventArgs e)
+	{
+		if (active_dialog is LayerPropertiesDialog dialog && dialog.Document == e.Document)
+			dialog.Response ((int) Gtk.ResponseType.Cancel);
+	}
+
+	private static void FinishDialog (LayerPropertiesDialog dialog, Gtk.ResponseType response)
+	{
+		Document document = dialog.Document;
+		LayerProperties initial = dialog.InitialLayerProperties;
+
+		if (!dialog.IsLayerAttached) {
+			// The layer was deleted or its document closed: leave it as it was before the dialog opened.
+			dialog.SetLayerProperties (initial);
+			return;
+		}
+
+		if (response == Gtk.ResponseType.Ok && dialog.AreLayerPropertiesUpdated) {
+			UpdateLayerPropertiesHistoryItem historyItem = GetLayerUpdateHistoryItem (
+				document.Layers.IndexOf (dialog.Layer),
+				initial,
+				dialog.UpdatedLayerProperties);
+
+			document.History.PushNewItem (historyItem);
+			document.Workspace.Invalidate ();
+			return;
+		}
+
+		dialog.SetLayerProperties (initial);
+		document.Workspace.Invalidate ();
 	}
 
 	private static UpdateLayerPropertiesHistoryItem GetLayerUpdateHistoryItem (

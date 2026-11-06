@@ -25,6 +25,7 @@
 // THE SOFTWARE.
 
 using System;
+using System.Threading.Tasks;
 using Pinta.Core;
 
 namespace Pinta.Actions;
@@ -59,18 +60,36 @@ internal sealed class CloseDocumentAction : IActionHandler
 
 	private async void Activated (object sender, EventArgs e)
 	{
+		if (workspace.ActiveDocumentOrDefault is Document document)
+			await CloseDocument (document);
+	}
+
+	/// <summary>
+	/// Closes <paramref name="document"/>, first prompting to save it if it is dirty.
+	/// Completes once the prompt and any Save As dialog are finished.
+	/// </summary>
+	/// <returns>Whether the document is closed (false when the user cancelled).</returns>
+	internal async Task<bool> CloseDocument (Document document)
+	{
+		int index = workspace.OpenDocuments.IndexOf (document);
+		if (index < 0)
+			return true;
+
+		// The prompt and the tool commit below act on the active document.
+		workspace.SetActiveDocument (index);
+
 		// Commit any pending changes
 		tools.Commit ();
 
 		// If it's not dirty, just close it
-		if (!workspace.ActiveDocument.IsDirty) {
-			workspace.CloseActiveDocument ();
-			return;
+		if (!document.IsDirty) {
+			workspace.CloseDocument (document);
+			return true;
 		}
 
 		string heading = Translations.GetString (
 			"Save changes to image \"{0}\" before closing?",
-			workspace.ActiveDocument.DisplayName);
+			document.DisplayName);
 
 		string body = Translations.GetString ("If you don't save, all changes will be permanently lost.");
 
@@ -94,16 +113,18 @@ internal sealed class CloseDocumentAction : IActionHandler
 		string response = dialog.RunBlocking ();
 		if (response == save_response) {
 
-			bool saved = await workspace.ActiveDocument.Save (false);
-
 			// If saved is false, then the user
 			// must have cancelled the Save dialog
-			if (saved)
-				workspace.CloseActiveDocument ();
+			if (!await document.Save (false))
+				return false;
 
-		} else if (response == discard_response) {
-			workspace.CloseActiveDocument ();
+		} else if (response != discard_response) {
+			return false;
 		}
 
+		if (workspace.OpenDocuments.Contains (document))
+			workspace.CloseDocument (document);
+
+		return true;
 	}
 }

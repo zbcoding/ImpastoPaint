@@ -49,6 +49,8 @@ public sealed partial class LayerPropertiesDialog
 	private Gtk.ComboBoxText blend_combo_box;
 
 	private WorkspaceManager workspace = null!; // NRT - set by factory method
+	private Document document = null!; // NRT - set by factory method
+	private UserLayer layer = null!; // NRT - set by factory method
 
 	[MemberNotNull (nameof (layer_name_entry))]
 	[MemberNotNull (nameof (visibility_checkbox))]
@@ -97,24 +99,28 @@ public sealed partial class LayerPropertiesDialog
 		opacity_slider = widgets.OpacitySlider;
 	}
 
-	public static LayerPropertiesDialog New (IChromeService chrome, WorkspaceManager workspace)
+	/// <summary>
+	/// Edits <paramref name="document"/>'s current layer. The document and layer are captured here,
+	/// so switching documents or layers while the non-modal dialog is open does not retarget it.
+	/// </summary>
+	public static LayerPropertiesDialog New (IChromeService chrome, WorkspaceManager workspace, Document document)
 	{
 		LayerPropertiesDialog dialog = NewWithProperties ([]);
-		dialog.Configure (chrome, workspace);
+		dialog.Configure (chrome, workspace, document);
 		return dialog;
 	}
 
-	private void Configure (IChromeService chrome, WorkspaceManager workspace)
+	private void Configure (IChromeService chrome, WorkspaceManager workspace, Document document)
 	{
 		this.workspace = workspace;
+		this.document = document;
+		layer = document.Layers.CurrentUserLayer;
 		TransientFor = chrome.MainWindow;
 
-		Document doc = workspace.ActiveDocument;
-
-		string currentLayerName = doc.Layers.CurrentUserLayer.Name;
-		bool currentLayerHidden = doc.Layers.CurrentUserLayer.Hidden;
-		double currentLayerOpacity = doc.Layers.CurrentUserLayer.Opacity;
-		BlendMode currentLayerBlendMode = doc.Layers.CurrentUserLayer.BlendMode;
+		string currentLayerName = layer.Name;
+		bool currentLayerHidden = layer.Hidden;
+		double currentLayerOpacity = layer.Opacity;
+		BlendMode currentLayerBlendMode = layer.BlendMode;
 
 		LayerProperties initialProperties = new (
 			currentLayerName,
@@ -139,6 +145,16 @@ public sealed partial class LayerPropertiesDialog
 		initial_properties = initialProperties;
 	}
 
+	public Document Document => document;
+
+	public UserLayer Layer => layer;
+
+	/// <summary>
+	/// The captured layer still belongs to an open document (it was not deleted, nor its document closed).
+	/// </summary>
+	public bool IsLayerAttached
+		=> workspace.OpenDocuments.Contains (document) && document.Layers.IndexOf (layer) >= 0;
+
 	public bool AreLayerPropertiesUpdated =>
 		initial_properties.Opacity != current_layer_opacity
 		|| initial_properties.Hidden != current_layer_hidden
@@ -157,23 +173,14 @@ public sealed partial class LayerPropertiesDialog
 
 	private void OnLayerNameChanged (object? sender, EventArgs e)
 	{
-		Document doc = workspace.ActiveDocument;
 		current_layer_name = layer_name_entry.GetText ();
-		doc.Layers.CurrentUserLayer.Name = current_layer_name;
+		ApplyCurrentProperties ();
 	}
 
 	private void OnVisibilityToggled (object? sender, EventArgs e)
 	{
-		Document doc = workspace.ActiveDocument;
-
 		current_layer_hidden = !visibility_checkbox.Active;
-
-		doc.Layers.CurrentUserLayer.Hidden = current_layer_hidden;
-
-		if (doc.Layers.SelectionLayer != null)
-			doc.Layers.SelectionLayer.Hidden = doc.Layers.CurrentUserLayer.Hidden; // Update Visibility for SelectionLayer and force redraw
-
-		workspace.Invalidate ();
+		ApplyCurrentProperties ();
 	}
 
 	private void OnOpacitySliderChanged (object? sender, EventArgs e)
@@ -190,31 +197,39 @@ public sealed partial class LayerPropertiesDialog
 
 	private void UpdateOpacity ()
 	{
-		Document doc = workspace.ActiveDocument;
-
 		//TODO check redraws are being throttled.
 		current_layer_opacity = opacity_spinner.Value / 100d;
-
-		doc.Layers.CurrentUserLayer.Opacity = current_layer_opacity;
-
-		if (doc.Layers.SelectionLayer != null)
-			doc.Layers.SelectionLayer.Opacity = doc.Layers.CurrentUserLayer.Opacity; // Update Opacity for SelectionLayer and force redraw
-
-		workspace.Invalidate ();
+		ApplyCurrentProperties ();
 	}
 
 	private void OnBlendModeChanged (object? sender, EventArgs e)
 	{
-		Document doc = workspace.ActiveDocument;
-
 		current_layer_blend_mode = UserBlendOps.GetBlendModeByName (blend_combo_box.GetActiveText ()!);
+		ApplyCurrentProperties ();
+	}
 
-		doc.Layers.CurrentUserLayer.BlendMode = current_layer_blend_mode;
+	/// <summary>
+	/// Live-previews the edited properties on the captured layer while it is still attached.
+	/// </summary>
+	private void ApplyCurrentProperties ()
+	{
+		if (!IsLayerAttached)
+			return;
 
-		if (doc.Layers.SelectionLayer != null)
-			doc.Layers.SelectionLayer.BlendMode = doc.Layers.CurrentUserLayer.BlendMode; //Update BlendMode for SelectionLayer and force redraw
+		SetLayerProperties (UpdatedLayerProperties);
+		document.Workspace.Invalidate ();
+	}
 
-		workspace.Invalidate ();
+	/// <summary>
+	/// Sets <paramref name="properties"/> on the captured layer, and on the selection layer
+	/// when the captured layer is attached and current (the selection layer is drawn with its properties).
+	/// </summary>
+	public void SetLayerProperties (LayerProperties properties)
+	{
+		properties.SetProperties (layer);
+
+		if (IsLayerAttached && document.Layers.CurrentUserLayer == layer)
+			properties.SetProperties (document.Layers.SelectionLayer);
 	}
 }
 

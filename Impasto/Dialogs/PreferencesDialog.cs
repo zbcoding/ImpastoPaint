@@ -438,6 +438,7 @@ public sealed partial class PreferencesDialog
 			Translations.GetString ("Export"),
 			Translations.GetString ("Cancel"));
 		fcd.SetCurrentName ("impasto-settings.json");
+		fcd.Modal = true;
 
 		if (await fcd.RunAsync () != Gtk.ResponseType.Accept)
 			return;
@@ -578,6 +579,7 @@ public sealed partial class PreferencesDialog
 			canvas_surround_color_button.DisplayColor = color;
 			canvas_surround_color_is_default = false;
 		} else {
+			canvas_surround_color_button.DisplayColor = default_canvas_surround_color;
 			canvas_surround_color_is_default = true;
 		}
 	}

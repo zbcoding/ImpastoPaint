@@ -34,14 +34,18 @@ internal sealed class ExitProgramAction : IActionHandler
 	private readonly ActionManager actions;
 	private readonly ChromeManager chrome;
 	private readonly WorkspaceManager workspace;
+	private readonly CloseDocumentAction close_document;
+	private bool is_exiting;
 	internal ExitProgramAction (
 		ActionManager actions,
 		ChromeManager chrome,
-		WorkspaceManager workspace)
+		WorkspaceManager workspace,
+		CloseDocumentAction closeDocument)
 	{
 		this.actions = actions;
 		this.chrome = chrome;
 		this.workspace = workspace;
+		close_document = closeDocument;
 	}
 
 	void IActionHandler.Initialize ()
@@ -54,17 +58,21 @@ internal sealed class ExitProgramAction : IActionHandler
 		actions.App.Exit.Activated -= Activated;
 	}
 
-	private void Activated (object sender, EventArgs e)
+	private async void Activated (object sender, EventArgs e)
 	{
-		while (workspace.HasOpenDocuments) {
-			int count = workspace.OpenDocuments.Count;
+		// A second quit request while the first is still prompting would stack a second prompt.
+		if (is_exiting)
+			return;
 
-			actions.File.Close.Activate ();
-
-			// If we still have the same number of open documents,
-			// the user cancelled on a Save prompt.
-			if (count == workspace.OpenDocuments.Count)
-				return;
+		is_exiting = true;
+		try {
+			while (workspace.ActiveDocumentOrDefault is Document document) {
+				// The user cancelled on a Save prompt.
+				if (!await close_document.CloseDocument (document))
+					return;
+			}
+		} finally {
+			is_exiting = false;
 		}
 
 		// Let everyone know we are quitting

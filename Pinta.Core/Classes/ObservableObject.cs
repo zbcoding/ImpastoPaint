@@ -47,4 +47,10 @@ public abstract class ObservableObject
 	{
 		PropertyChanged?.Invoke (this, new PropertyChangedEventArgs (propertyName));
 	}
+
+	/// <summary>Drops every PropertyChanged subscriber, e.g. on a MemberwiseClone copy.</summary>
+	protected void ClearPropertyChangedSubscribers ()
+	{
+		PropertyChanged = null;
+	}
 }

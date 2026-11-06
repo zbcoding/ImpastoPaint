@@ -31,6 +31,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Threading.Tasks;
 using Cairo;
 using Debug = System.Diagnostics.Debug;
 
@@ -68,10 +69,16 @@ public sealed class LivePreviewManager : ILivePreview
 	public RectangleI RenderBounds { get; private set; }
 	public bool IsEnabled { get; private set; }
 
+	// Covers the whole Start call, including after the preview was abandoned (IsEnabled cleared)
+	// while its non-modal configuration dialog is still open.
+	private bool is_running;
+
 	public async void Start (BaseEffect effect)
 	{
-		if (IsEnabled)
-			throw new InvalidOperationException ("LivePreviewManager.Start() called while live preview is already enabled.");
+		// Effect menus stay live while a non-modal effect dialog is open; ignore a second effect.
+		if (is_running)
+			return;
+		is_running = true;
 
 		tools.Commit ();
 
@@ -97,7 +104,12 @@ public sealed class LivePreviewManager : ILivePreview
 			effectIsTileable: effect.IsTileable);
 
 		int handlersInQueue = 0;
-		Layer layer = doc.Layers.CurrentUserLayer;
+		UserLayer layer = doc.Layers.CurrentUserLayer;
+		// Preview reads what the canvas currently shows for this layer — its accumulated composite
+		// when it already carries modifier nodes, otherwise its base raster.
+		Cairo.ImageSurface renderSource = layer.Composite ?? layer.Surface;
+		Task pendingRestart = Task.CompletedTask;
+		bool abandoned = false;
 
 		string effectName = effect.Name;
 
@@ -111,22 +123,23 @@ public sealed class LivePreviewManager : ILivePreview
 
 		bool renderAlive = true;
 
+		workspace.PreActiveDocumentChanged += HandlePreActiveDocumentChanged;
+		workspace.DocumentClosed += HandleDocumentClosed;
+
 		try {
 			// Paint the pre-effect layer surface into into the working surface.
 			using Cairo.Context ctx = new (LivePreviewSurface);
-			layer.Draw (ctx, doc.Layers.CurrentUserLayer.Composite ?? layer.Surface, 1);
+			layer.Draw (ctx, renderSource, 1);
 
 			Debug.WriteLine (DateTime.Now.ToString ("HH:mm:ss:ffff") + "Start Live preview.");
 
 			if (effect.EffectData != null)
 				effect.EffectData.PropertyChanged += EffectData_PropertyChanged;
 
-			// Preview reads what the canvas currently shows for this layer — its accumulated composite
-			// when it already carries modifier nodes, otherwise its base raster.
 			renderHandle = AsyncEffectRenderer.Start (
 				settings,
 				effect,
-				doc.Layers.CurrentUserLayer.Composite ?? layer.Surface,
+				renderSource,
 				LivePreviewSurface);
 
 			using GLibTimer _ = GLib.Functions.TimeoutAdd (
@@ -140,6 +153,9 @@ public sealed class LivePreviewManager : ILivePreview
 			);
 
 			bool userConfirmed = !effect.IsConfigurable || await effect.LaunchConfiguration ();
+
+			if (abandoned)
+				return;
 
 			chrome.MainWindowBusy = true;
 
@@ -155,7 +171,11 @@ public sealed class LivePreviewManager : ILivePreview
 
 			dialog.Show ();
 
+			await WaitForSettledRender ();
 			var result = await renderHandle.Task;
+
+			if (abandoned)
+				return;
 
 			// Final poll after the renderer finishes to ensure the last-rendered tiles are displayed.
 			PollForUpdate (renderHandle);
@@ -177,18 +197,20 @@ public sealed class LivePreviewManager : ILivePreview
 			// user can reopen its settings later. The rendered preview is discarded — the node's own
 			// Apply reproduces it inside the layer's accumulator. See
 			// docs-private/layer-effects-model.md.
-			UserLayer userLayer = doc.Layers.CurrentUserLayer;
-			List<ILayerObject> objectsBefore = ObjectOpacity.CloneAll (userLayer.Objects);
+			List<ILayerObject> objectsBefore = ObjectOpacity.CloneAll (layer.Objects);
 
-			userLayer.AddModifierNode (EffectModifierNode.FromEffect (effect, selection.Visible ? selection.Clone () : null, PintaCore.Services));
-			ObjectOpacity.RefreshLayer (workspace, chrome, userLayer);
+			layer.AddModifierNode (EffectModifierNode.FromEffect (effect, selection.Visible ? selection.Clone () : null, PintaCore.Services));
+			ObjectOpacity.RefreshLayer (workspace, chrome, layer);
 
-			workspace.ActiveDocument.History.PushNewItem (
-				new LayerObjectsHistoryItem (workspace, chrome, effect.Icon, effect.Name, userLayer, objectsBefore));
+			doc.History.PushNewItem (
+				new LayerObjectsHistoryItem (workspace, chrome, effect.Icon, effect.Name, layer, objectsBefore));
 
 		} finally {
 
+			is_running = false;
 			IsEnabled = false;
+			workspace.PreActiveDocumentChanged -= HandlePreActiveDocumentChanged;
+			workspace.DocumentClosed -= HandleDocumentClosed;
 			LivePreviewSurface = null!;
 			workspace.Invalidate ();
 
@@ -211,15 +233,51 @@ public sealed class LivePreviewManager : ILivePreview
 			renderHandle.Cancel ();
 		}
 
-		async void EffectData_PropertyChanged (object? sender, PropertyChangedEventArgs e)
+		// Leaving or closing the previewed document ends the preview as if the user pressed Cancel.
+		void HandlePreActiveDocumentChanged (object? o, EventArgs e) => Abandon ();
+
+		void HandleDocumentClosed (object? o, DocumentEventArgs e)
+		{
+			if (e.Document == doc)
+				Abandon ();
+		}
+
+		void Abandon ()
+		{
+			if (abandoned) return;
+			abandoned = true;
+			IsEnabled = false; // stop painting this document's preview over another one
+			renderHandle?.Cancel ();
+			workspace.Invalidate ();
+		}
+
+		// A slider change cancels the render and restarts it; wait until no restart is pending so
+		// the apply path reads the render that reflects the final settings.
+		async Task WaitForSettledRender ()
+		{
+			RenderHandle awaited;
+			do {
+				awaited = renderHandle;
+				await awaited.Task;
+				await pendingRestart;
+			} while (awaited != renderHandle);
+		}
+
+		void EffectData_PropertyChanged (object? sender, PropertyChangedEventArgs e)
+		{
+			if (abandoned) return;
+			pendingRestart = RestartRender ();
+		}
+
+		async Task RestartRender ()
 		{
 			// TODO: calculate bounds
 			handlersInQueue++;
 			renderHandle.Cancel ();
 			await renderHandle.Task;
 			handlersInQueue--;
-			if (handlersInQueue > 0) return;
-			renderHandle = AsyncEffectRenderer.Start (settings, effect, layer.Surface, LivePreviewSurface);
+			if (handlersInQueue > 0 || abandoned) return;
+			renderHandle = AsyncEffectRenderer.Start (settings, effect, renderSource, LivePreviewSurface);
 		}
 
 		// This method now polls the renderer for its state instead of being a passive event handler.

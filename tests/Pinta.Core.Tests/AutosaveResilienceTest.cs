@@ -188,6 +188,54 @@ internal sealed class AutosaveResilienceTest : DocumentHarness
 		autosave.Stop ();
 	}
 
+	/// <summary>
+	/// Undo then a new step restores the history's (pointer, count). Fingerprinting on that pair
+	/// skipped the autosave, leaving the undone content as what a crash would recover.
+	/// </summary>
+	[Test]
+	public void UndoThenANewStepIsAutosaved ()
+	{
+		RecordingExporter exporter = new () { Fails = OpenAnotherDocument () };
+		AutosaveManager autosave = CreateManager ();
+
+		PaintRaster (Layer (0), s => Fill (s, Red), "A");
+		Document.History.SetClean ();
+		autosave.AutosaveDirtyDocuments (exporter); // clean: recorded, not exported
+
+		Document.History.Undo ();
+		PaintRaster (Layer (0), s => Fill (s, Blue), "B");
+		autosave.AutosaveDirtyDocuments (exporter);
+
+		Assert.That (exporter.Exported, Is.EquivalentTo (new[] { Document }));
+
+		autosave.Stop ();
+	}
+
+	/// <summary>
+	/// Saving makes the document clean; the autosave written before the save must not be offered
+	/// for recovery after a crash.
+	/// </summary>
+	[Test]
+	public void SavingRemovesTheStaleAutosave ()
+	{
+		RecordingExporter exporter = new () { Fails = OpenAnotherDocument () };
+		AutosaveManager autosave = CreateManager ();
+
+		PaintRaster (Layer (0), s => Fill (s, Red), "A");
+		autosave.AutosaveDirtyDocuments (exporter);
+		Assume.That (AutosavedImages (), Is.Not.Empty);
+
+		Document.History.SetClean ();
+		autosave.AutosaveDirtyDocuments (exporter);
+
+		Assert.That (AutosavedImages (), Is.Empty);
+
+		autosave.Stop ();
+	}
+
+	private string[] AutosavedImages ()
+		=> Directory.GetFiles (root, "*.ora", SearchOption.AllDirectories);
+
 	private AutosaveManager CreateManager ()
 		=> new (settings, PintaCore.Workspace, PintaCore.ImageFormats, PintaCore.Chrome);
 

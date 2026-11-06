@@ -56,6 +56,9 @@ public sealed class DocumentHistory
 
 	public int Pointer { get; private set; } = -1;
 
+	/// <summary>Bumped on every history or clean-point change; unlike Pointer/Count it never repeats.</summary>
+	public int ChangeCount { get; private set; }
+
 	/// <summary>
 	/// True while an Undo()/Redo() is applying a history item. An item's Undo/Redo can fire layer
 	/// events (e.g. AddLayer's DeleteLayer → SelectedLayerChanged) that make a tool commit/finalize
@@ -87,6 +90,11 @@ public sealed class DocumentHistory
 		newItem.Document = document;
 		history.Add (newItem);
 		Pointer = history.Count - 1;
+		ChangeCount++;
+
+		// The saved state was among the truncated redo items, so no history position is clean now.
+		if (clean_pointer >= Pointer)
+			clean_pointer = -1;
 
 		if (newItem.CausesDirty)
 			document.IsDirty = true;
@@ -114,6 +122,7 @@ public sealed class DocumentHistory
 			document.IsDirty = true;
 
 		Pointer--;
+		ChangeCount++;
 
 		if (Pointer == clean_pointer)
 			document.IsDirty = false;
@@ -147,6 +156,7 @@ public sealed class DocumentHistory
 			throw new InvalidOperationException ("Redo stack is empty");
 
 		Pointer++;
+		ChangeCount++;
 
 		var item = history[Pointer];
 		IsPerformingUndoRedo = true;
@@ -175,6 +185,7 @@ public sealed class DocumentHistory
 	public void SetClean ()
 	{
 		clean_pointer = Pointer;
+		ChangeCount++;
 		document.IsDirty = false;
 	}
 
@@ -185,6 +196,7 @@ public sealed class DocumentHistory
 	public void SetDirty ()
 	{
 		clean_pointer = -1;
+		ChangeCount++;
 		document.IsDirty = true;
 	}
 
@@ -192,6 +204,7 @@ public sealed class DocumentHistory
 	{
 		history.Clear ();
 		Pointer = -1;
+		ChangeCount++;
 		clean_pointer = -1;
 
 		document.IsDirty = false;

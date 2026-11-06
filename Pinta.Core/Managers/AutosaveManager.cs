@@ -94,7 +94,7 @@ public sealed class AutosaveManager
 	// position it was last written at. The fingerprint is what keeps an idle document from
 	// being re-exported every tick, and unlike a dirty flag it also notices undo and redo.
 	private readonly Dictionary<Document, int> document_slots = [];
-	private readonly Dictionary<Document, (int Pointer, int Count)> autosaved_states = [];
+	private readonly Dictionary<Document, int> autosaved_states = [];
 
 	// When each document is next allowed to be autosaved, from how long its last export took.
 	private readonly Dictionary<Document, DateTime> next_autosave_times = [];
@@ -313,20 +313,22 @@ public sealed class AutosaveManager
 
 		foreach (Document document in workspace.OpenDocuments) {
 
-			(int, int) state = (document.History.Pointer, document.History.Items.Count ());
+			int state = document.History.ChangeCount;
 
 			if (autosaved_states.TryGetValue (document, out var previous) && previous == state)
 				continue;
 
-			// A document that is slow to export is autosaved less often, never not at all.
-			if (next_autosave_times.TryGetValue (document, out DateTime due) && DateTime.UtcNow < due)
-				continue;
-
-			// A document sitting at its initial state has nothing worth recovering.
+			// A clean document (initial state, or just saved) has nothing worth recovering, so any
+			// autosave still on disk for it is stale.
 			if (!document.IsDirty) {
+				Forget (document);
 				autosaved_states[document] = state;
 				continue;
 			}
+
+			// A document that is slow to export is autosaved less often, never not at all.
+			if (next_autosave_times.TryGetValue (document, out DateTime due) && DateTime.UtcNow < due)
+				continue;
 
 			// One document that cannot be exported - a corrupt surface, a full disk, a
 			// permission the user revoked - must not cost every document after it in the

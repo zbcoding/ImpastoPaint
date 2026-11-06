@@ -574,6 +574,10 @@ public sealed class EditActions
 	{
 		Document doc = workspace.ActiveDocument;
 
+		// An item's Undo can pump the main loop; a repeated shortcut must not re-enter mid-undo.
+		if (doc.History.IsPerformingUndoRedo)
+			return;
+
 		if (tools.CurrentTool?.DoHandleUndo (doc) == true)
 			return;
 
@@ -585,6 +589,9 @@ public sealed class EditActions
 	private void HandlerPintaCoreActionsEditRedoActivated (object sender, EventArgs e)
 	{
 		Document doc = workspace.ActiveDocument;
+
+		if (doc.History.IsPerformingUndoRedo)
+			return;
 
 		if (tools.CurrentTool?.DoHandleRedo (doc) == true)
 			return;

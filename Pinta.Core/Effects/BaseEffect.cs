@@ -212,7 +212,12 @@ public abstract class EffectData : ObservableObject
 	/// </summary>
 	/// <returns>An identical copy of this EffectData.</returns>
 	public virtual EffectData Clone ()
-		=> (EffectData) MemberwiseClone ();
+	{
+		// A clone must not inherit the original's subscribers (e.g. a live preview's closure).
+		EffectData clone = (EffectData) MemberwiseClone ();
+		clone.ClearPropertyChangedSubscribers ();
+		return clone;
+	}
 
 	/// <summary>
 	/// Fires the PropertyChanged event for this ObservableObject.

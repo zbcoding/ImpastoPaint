@@ -135,9 +135,16 @@ public sealed partial class AddinManagerDialog
 	private const string LastRepositoryRefreshSetting = "addins-last-repository-refresh";
 	private static readonly TimeSpan repository_refresh_interval = TimeSpan.FromHours (24);
 
+	// Set while a repository update runs in the background. Its completion reloads the gallery and
+	// updates lists, so a LoadAll meanwhile only reloads what is installed.
+	private bool repository_refresh_running;
+
 	private void LoadAll (bool forceRefresh = false)
 	{
 		LoadInstalled ();
+
+		if (repository_refresh_running)
+			return;
 
 		if (!forceRefresh && !IsRepositoryRefreshDue ()) {
 			LoadGallery ();
@@ -146,6 +153,7 @@ public sealed partial class AddinManagerDialog
 		}
 
 		// First update the available addins in a background thread, since this involves network access.
+		repository_refresh_running = true;
 		progress_bar.ShowProgress ();
 
 		Task.Run (() => {
@@ -155,17 +163,21 @@ public sealed partial class AddinManagerDialog
 			GLib.Functions.IdleAdd (
 				0,
 				() => {
-					progress_bar.HideProgress ();
+					try {
+						progress_bar.HideProgress ();
 
-					// A failed refresh keeps the old timestamp, so the next open retries
-					// instead of serving a stale gallery for a day.
-					if (task.IsCompletedSuccessfully)
-						PintaCore.Settings.PutSetting (
-							LastRepositoryRefreshSetting,
-							DateTime.UtcNow.ToString ("o", CultureInfo.InvariantCulture));
+						// A failed refresh keeps the old timestamp, so the next open retries
+						// instead of serving a stale gallery for a day.
+						if (task.IsCompletedSuccessfully)
+							PintaCore.Settings.PutSetting (
+								LastRepositoryRefreshSetting,
+								DateTime.UtcNow.ToString ("o", CultureInfo.InvariantCulture));
 
-					LoadGallery ();
-					LoadUpdates ();
+						LoadGallery ();
+						LoadUpdates ();
+					} finally {
+						repository_refresh_running = false;
+					}
 					return false;
 				}
 			);

@@ -64,9 +64,17 @@ public sealed partial class ColorWheelWidget
 			SetColor (hsv.Hue, hsv.Sat, value_slider.GetValue ());
 		};
 
-		Gtk.GestureClick slider_click = Gtk.GestureClick.New ();
-		slider_click.OnReleased += (_, _) => CommitRecentColor ();
-		value_slider.AddController (slider_click);
+		// Gtk.Range claims every press on its slider and trough, which denies any other gesture on the
+		// widget, so a GestureClick here never sees its release. A legacy controller is not a gesture
+		// and still gets the raw release; it only watches, so the range keeps the event.
+		Gtk.EventControllerLegacy slider_release = Gtk.EventControllerLegacy.New ();
+		slider_release.SetPropagationPhase (Gtk.PropagationPhase.Capture);
+		slider_release.OnEvent += (_, e) => {
+			if (e.Event.GetEventType () is Gdk.EventType.ButtonRelease or Gdk.EventType.TouchEnd)
+				CommitRecentColor ();
+			return false;
+		};
+		value_slider.AddController (slider_release);
 
 		Gtk.Image brightness_icon = Gtk.Image.NewFromIconName (Resources.Icons.AdjustmentsBrightnessContrast);
 		brightness_icon.TooltipText = Translations.GetString ("Brightness");
@@ -102,8 +110,11 @@ public sealed partial class ColorWheelWidget
 		if (updating) return;
 
 		updating = true;
-		value_slider.SetValue (palette.PrimaryColor.ToHsv ().Val);
-		updating = false;
+		try {
+			value_slider.SetValue (palette.PrimaryColor.ToHsv ().Val);
+		} finally {
+			updating = false;
+		}
 
 		wheel.QueueDraw ();
 	}
@@ -126,11 +137,14 @@ public sealed partial class ColorWheelWidget
 	private void SetColor (double hue, double sat, double val)
 	{
 		updating = true;
-		palette.SetColor (
-			setPrimary: true,
-			palette.PrimaryColor.CopyHsv (hue: hue, sat: sat, value: val),
-			addToRecent: false);
-		updating = false;
+		try {
+			palette.SetColor (
+				setPrimary: true,
+				palette.PrimaryColor.CopyHsv (hue: hue, sat: sat, value: val),
+				addToRecent: false);
+		} finally {
+			updating = false;
+		}
 
 		wheel.QueueDraw ();
 	}

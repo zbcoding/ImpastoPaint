@@ -141,13 +141,9 @@ internal sealed partial class PintaCanvas
 			? new RectangleI (PointI.Zero, document.ImageSize)
 			: e.Rectangle;
 
-		// If an update is already queued, just extend the region to update.
-		if (modified_area.HasValue) {
-			modified_area = modified_area.Value.Union (rect);
-			return;
-		}
-
-		modified_area = rect;
+		// Extend any region still waiting to be drawn. Always (re)queue rather than trusting a pending
+		// region to mean an update is queued: one that threw midway leaves its region behind.
+		modified_area = modified_area?.Union (rect) ?? rect;
 		QueueUpdate ();
 	}
 
@@ -176,8 +172,9 @@ internal sealed partial class PintaCanvas
 			return;
 
 		queued_update_id = GLib.Functions.IdleAdd (GLib.Constants.PRIORITY_DEFAULT, () => {
-			UpdateCanvas ();
+			// Cleared first: the source is done either way, and a throwing update must not block the next.
 			queued_update_id = 0;
+			UpdateCanvas ();
 			return false;
 		});
 	}
@@ -693,6 +690,11 @@ internal sealed partial class PintaCanvas
 
 		if (selection_pulse_tick_id != 0)
 			RemoveTickCallback (selection_pulse_tick_id);
+
+		if (queued_update_id != 0) {
+			GLib.Source.Remove (queued_update_id);
+			queued_update_id = 0;
+		}
 
 		// This is a static, process-wide event; a per-document canvas must drop off it when the
 		// document closes, or every canvas ever opened is retained and keeps queueing redraws.

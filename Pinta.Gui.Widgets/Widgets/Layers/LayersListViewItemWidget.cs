@@ -59,6 +59,10 @@ public sealed partial class LayersListViewItem
 	// with new instances on every persist (a held reference goes stale, but the ordering is stable).
 	public int ObjectIndex { get; private set; }
 
+	// Set only on the copy a non-modal window holds (see NewPinnedToObject): it resolves its object by
+	// reference, so reordering or deleting objects under the window never retargets it onto another.
+	private ILayerObject? pinned_object;
+
 	public static LayersListViewItem New (Document doc, UserLayer userLayer)
 	{
 		LayersListViewItem item = NewWithProperties ([]);
@@ -104,6 +108,25 @@ public sealed partial class LayersListViewItem
 		item.UserLayer = userLayer;
 		item.IsMaskRow = true;
 		item.ObjectIndex = -1;
+		return item;
+	}
+
+	/// <summary>
+	/// A copy of the object <paramref name="row"/> stands for that keeps addressing the same object
+	/// however the layer's objects are reordered or deleted afterwards — for windows that stay open
+	/// while the dock changes. Once the object leaves the layer (or is replaced by a persist), the
+	/// copy's object reads as gone and its edits and history pushes are skipped.
+	/// </summary>
+	public static LayersListViewItem NewPinnedToObject (LayersListViewItem row)
+	{
+		LayersListViewItem item = NewWithProperties ([]);
+		item.document = row.document;
+		item.UserLayer = row.UserLayer;
+		item.ShapeObject = row.ShapeObject;
+		item.TextObject = row.TextObject;
+		item.ModifierNode = row.ModifierNode;
+		item.ObjectIndex = -1; // Never addressed by position, even if the object was already gone.
+		item.pinned_object = row.LiveObject;
 		return item;
 	}
 
@@ -239,11 +262,18 @@ public sealed partial class LayersListViewItem
 
 	/// <summary>
 	/// The live object this row stands for, resolved by index rather than through the held reference
-	/// (which goes stale when the object lists are rebuilt on persist). Null when this is a layer row
-	/// or the object is gone (e.g. rasterized).
+	/// (which goes stale when the object lists are rebuilt on persist) — except on a pinned copy, which
+	/// looks its object up by reference. Null when this is a layer row or the object is gone (e.g.
+	/// rasterized).
 	/// </summary>
 	private ILayerObject? LiveObject
-		=> IsObjectRow ? UserLayer?.FindObjectAt (ObjectIndex) : null;
+		=> IsObjectRow ? UserLayer?.FindObjectAt (LiveObjectIndex) : null;
+
+	/// <summary>Where this row's object is looked up in its layer's object list right now.</summary>
+	private int LiveObjectIndex
+		=> pinned_object is null
+			? ObjectIndex
+			: UserLayer?.Objects.FindIndex (o => ReferenceEquals (o, pinned_object)) ?? -1;
 
 	/// <summary>Whether this row's object is still on its layer (false once it is deleted or baked).</summary>
 	public bool ObjectExists => LiveObject is not null;
@@ -577,7 +607,8 @@ public sealed partial class LayersListViewItem
 	/// </summary>
 	private void PushObjectProperty<T> (string label, Func<ILayerObject, T> get, Action<ILayerObject, T> set, T previousValue)
 	{
-		if (UserLayer is null || document is null)
+		int index = LiveObjectIndex;
+		if (UserLayer is null || document is null || UserLayer.FindObjectAt (index) is null)
 			return;
 
 		Pinta.Core.ObjectOpacity.RefreshLayer (PintaCore.Workspace, PintaCore.Chrome, UserLayer);
@@ -589,7 +620,7 @@ public sealed partial class LayersListViewItem
 				Resources.Icons.LayerProperties,
 				label,
 				UserLayer,
-				ObjectIndex,
+				index,
 				get,
 				set,
 				previousValue));
@@ -1011,9 +1042,15 @@ public sealed partial class LayersListViewItemWidget
 			return;
 
 		List<ILayerObject> objectsBefore = Pinta.Core.ObjectOpacity.CloneAll (layer.Objects);
+		// The dialog edits the node's settings in place (some dialogs write defaults on open), so
+		// Cancel has to put them back. A new reference also bumps the node's render cache.
+		EffectData? dataBefore = node.Effect.EffectData?.Clone ();
 
-		if (!await node.Effect.LaunchConfiguration ())
+		if (!await node.Effect.LaunchConfiguration ()) {
+			node.Effect.EffectData = dataBefore;
+			Pinta.Core.ObjectOpacity.RefreshLayer (PintaCore.Workspace, PintaCore.Chrome, layer);
 			return;
+		}
 
 		Pinta.Core.ObjectOpacity.RefreshLayer (PintaCore.Workspace, PintaCore.Chrome, layer);
 		PintaCore.Workspace.ActiveDocument.History.PushNewItem (

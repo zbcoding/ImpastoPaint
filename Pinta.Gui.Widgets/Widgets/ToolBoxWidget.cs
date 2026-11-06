@@ -573,6 +573,13 @@ public sealed partial class ToolBoxWidget
 			onClicked ();
 		});
 
+		// The popover is rebuilt per showing, so release it once it closes.
+		popover.OnClosed += (_, _) => {
+			if (open_pin_menu == popover)
+				open_pin_menu = null;
+			popover.Unparent ();
+		};
+
 		open_pin_menu = popover;
 		popover.Popup ();
 	}
@@ -727,6 +734,9 @@ public sealed partial class ToolBoxWidget
 				return;
 			}
 
+			// The stack's button goes away, so its pending hover/close callbacks must not fire.
+			CancelHoverTimeout (stack);
+			CancelCloseTimeout (stack);
 			tool_stacks.Remove (definition);
 		}
 

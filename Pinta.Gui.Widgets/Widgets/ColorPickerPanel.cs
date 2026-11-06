@@ -577,8 +577,11 @@ public sealed partial class ColorPickerPanel
 
 		UpdateSwatchSizes ();
 		updating = true;
-		RedrawAll ();
-		updating = false;
+		try {
+			RedrawAll ();
+		} finally {
+			updating = false;
+		}
 	}
 
 	public static ColorPickerPanel New (IPaletteService palette, IChromeService chrome, ISystemService system)
@@ -591,9 +594,12 @@ public sealed partial class ColorPickerPanel
 	private void ApplyColor (Color color, bool addToRecent)
 	{
 		updating = true;
-		palette.SetColor (setPrimary: primary_selected, color, addToRecent);
-		RedrawAll ();
-		updating = false;
+		try {
+			palette.SetColor (setPrimary: primary_selected, color, addToRecent);
+			RedrawAll ();
+		} finally {
+			updating = false;
+		}
 	}
 
 	private void CommitRecent ()

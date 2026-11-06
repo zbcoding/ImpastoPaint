@@ -93,7 +93,9 @@ public sealed partial class ObjectPropertiesDialog
 
 	private void Configure (Gtk.Window parent, LayersListViewItem row)
 	{
-		this.row = row;
+		// The window is non-modal, so the dock can reorder or delete objects while it is open: hold the
+		// object itself rather than its position, which may name another object by OK/Cancel time.
+		this.row = LayersListViewItem.NewPinnedToObject (row);
 		TransientFor = parent;
 
 		Title = row.TextObject is not null

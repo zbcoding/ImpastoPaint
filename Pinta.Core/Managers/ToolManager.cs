@@ -521,20 +521,20 @@ public sealed class ToolManager : IEnumerable<BaseTool>, IToolService
 	public void DoMouseUp (Document document, ToolMouseEventArgs args)
 	{
 		switch (pointer_gesture) {
-		case PointerGesture.Pan:
-			EndPan (document, args);
-			break;
-		case PointerGesture.ToolDrag:
-			pointer_gesture = PointerGesture.None;
-			drag_document = null;
-			drag_last_args = null;
-			if (CurrentTool is { } tool)
-				SendMouseUp (tool, document, ApplySnapping (args));
-			break;
-		default:
-			// The press reached no tool, so neither does its release.
-			pointer_gesture = PointerGesture.None;
-			break;
+			case PointerGesture.Pan:
+				EndPan (document, args);
+				break;
+			case PointerGesture.ToolDrag:
+				pointer_gesture = PointerGesture.None;
+				drag_document = null;
+				drag_last_args = null;
+				if (CurrentTool is { } tool)
+					SendMouseUp (tool, document, ApplySnapping (args));
+				break;
+			default:
+				// The press reached no tool, so neither does its release.
+				pointer_gesture = PointerGesture.None;
+				break;
 		}
 
 		// The drag is over, so the guides it was holding stop being shown.

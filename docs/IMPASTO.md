@@ -12,6 +12,7 @@ in its own document in this directory:
 | [toolbox-layout.md](toolbox-layout.md) | How tools are assigned to toolbox sections and stacks |
 | [ora-format.md](ora-format.md) | What Impasto writes into an `.ora` file, and how re-editable objects are stored |
 | [addins.md](addins.md) | What an add-in may reach: the entry point, menu placement, icons, tools, and what is not available yet |
+| [state-machines.md](state-machines.md) | Explicit and implicit state machines: states, invariants, transition tables, known invalid states and the issues grouping their fixes |
 | [releases.md](releases.md) | The step-by-step checklist for cutting a `v*` release |
 | [logos/](logos/README.md) | The current app logo and every earlier one, by release, plus the files rendered from it |
 

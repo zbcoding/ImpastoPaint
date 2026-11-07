@@ -16,18 +16,36 @@ Changes for the next release go here.
   longer marks the image as saved; closing it still asks to save.
 - Autosave no longer skips an image after undoing and then making a new change, and an image
   that has been saved no longer offers a stale autosave for recovery after a crash.
-- An effect or adjustment applied after switching tabs while its dialog was open lands on the
-  image it was opened for, with its undo step there too. Leaving or closing that image ends
-  the preview. Opening a second effect while one dialog is open no longer shows an error.
+- An effect or adjustment whose dialog is open while you switch tabs applies to the image it
+  was opened for, with its undo step there too; its preview shows only on that image. Closing
+  that image ends the preview. Opening a second effect while one dialog is open no longer shows
+  an error, and editing the image while the dialog is open no longer breaks the preview.
 - Moving an effect's slider on a layer that already has effects no longer previews the effect
   without them, and pressing OK right after a slider change no longer drops the effect.
 - Reconfiguring an effect on a layer and pressing Cancel keeps its previous settings.
 - Holding undo or redo on a layer with effects can no longer undo the same step twice.
 - Layer Properties and Object Properties change only the layer or object they were opened on,
-  even after picking another layer, reordering objects, or closing the image.
+  even after picking another layer, reordering objects, or closing the image. Object Properties
+  closes as Cancel when its object is removed or replaced instead of staying open with no effect.
 - Quitting or closing all images after choosing Save in the prompt now finishes the quit or
   close instead of stopping after the first image.
-- Save As can't flatten a different image than the one being saved.
+- Save As can't flatten a different image than the one being saved, and closing or quitting
+  again while a save prompt is open no longer asks twice or saves an image that was closed.
+- Saving or switching tabs with a shape tool active no longer deletes the shapes on the image
+  you switched to.
+- Switching tools, saving, copying or opening an adjustment in the middle of a drag finishes
+  the drag: brushes no longer keep painting on hover, a middle-button pan no longer gets stuck,
+  and undo waits until the mouse button is released.
+- Undo in the middle of a shape drag no longer moves a different shape.
+- A click with no drag no longer empties the selection with the lasso, or stamps another tool's
+  preview with the paintbrush or clone stamp. Committing text or moved pixels mid-drag no longer
+  crashes or reorders their undo steps.
+- Brightness/Contrast, Posterize, Curves and Auto Level effects on a layer render their current
+  settings after being reconfigured, and their dialogs reopen showing those settings.
+- The text alignment buttons can switch to any alignment.
+- Saving a JPEG, AVIF or WebP asks for quality based on the image being saved, not the active one.
+- Pasting while switching tabs during a slow clipboard read pastes into, and resizes, the right
+  image.
 - Ticking "Show grid" in the canvas grid dialog updates the View menu's Show Grid check.
 - Importing settings that reset the canvas surround colour updates the colour button in
   Preferences.

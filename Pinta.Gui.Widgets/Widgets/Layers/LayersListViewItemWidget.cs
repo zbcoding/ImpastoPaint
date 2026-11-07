@@ -40,6 +40,7 @@ public sealed partial class LayersListViewItem
 	// NRT - GObject requires a parameterless constructor, and these don't have simple defaults
 	private Document? document;
 	public UserLayer? UserLayer { get; private set; }
+	public Document? Document => document;
 
 	// When set, this row represents a re-editable object (shape or text) nested under UserLayer,
 	// rather than the layer itself. Object rows support select, show/hide, rename and reorder.

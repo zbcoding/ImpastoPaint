@@ -135,10 +135,14 @@ internal sealed class PasteAction : IActionHandler
 
 		var cb = GdkExtensions.GetDefaultClipboard ();
 
-		// See if the current tool wants to handle the paste
-		// operation (e.g., the text tool could paste text)
+		// Each await below runs the main loop, during which the user can switch tabs or close doc. The
+		// paste lands through the active document's tools (commit, Move Selection), so it only goes
+		// ahead while doc is still the active document - and is never applied to a closed one.
 		if (destination == PasteDestination.ActiveLayer) {
 			if (await tools.DoHandlePaste (doc, cb))
+				return;
+
+			if (!IsActive (workspace, doc))
 				return;
 		}
 
@@ -146,6 +150,9 @@ internal sealed class PasteAction : IActionHandler
 		tools.Commit ();
 
 		Gdk.Texture? cb_texture = await cb.ReadTextureAsync ();
+		if (!IsActive (workspace, doc))
+			return;
+
 		if (cb_texture is null) {
 			await ShowClipboardEmptyDialog (chrome);
 			return;
@@ -153,13 +160,14 @@ internal sealed class PasteAction : IActionHandler
 
 		Cairo.ImageSurface cb_image = cb_texture.ToSurface ();
 
-		// The clipboard read above is async, so the active document may no longer be doc.
 		var canvas_size = doc.ImageSize;
 
 		// If the image being pasted is larger than the canvas size, allow the user to optionally resize the canvas
 		if (cb_image.Width > canvas_size.Width || cb_image.Height > canvas_size.Height) {
 
 			var response = await ShowExpandCanvasDialog (chrome);
+			if (!IsActive (workspace, doc))
+				return;
 
 			if (response == Gtk.ResponseType.Accept) {
 
@@ -174,7 +182,7 @@ internal sealed class PasteAction : IActionHandler
 				if (!doc.ResizeCanvas (newSize, Pinta.Core.Anchor.Center, paste_action))
 					return;
 
-				if (workspace.ActiveDocumentOrDefault == doc)
+				if (IsActive (workspace, doc))
 					actions.View.UpdateCanvasScale ();
 
 			} else if (response != Gtk.ResponseType.Reject) // cancelled
@@ -222,6 +230,9 @@ internal sealed class PasteAction : IActionHandler
 		paste_action.Push (new PasteHistoryItem (cb_image, pastePosition, old_selection));
 		doc.History.PushNewItem (paste_action);
 	}
+
+	private static bool IsActive (WorkspaceManager workspace, Document doc)
+		=> workspace.ActiveDocumentOrDefault == doc;
 
 	public static Task ShowClipboardEmptyDialog (ChromeManager chrome)
 	{

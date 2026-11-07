@@ -48,9 +48,7 @@ public sealed partial class LayerPropertiesDialog
 	private Gtk.Scale opacity_slider;
 	private Gtk.ComboBoxText blend_combo_box;
 
-	private WorkspaceManager workspace = null!; // NRT - set by factory method
-	private Document document = null!; // NRT - set by factory method
-	private UserLayer layer = null!; // NRT - set by factory method
+	private LayerPropertiesSession session = null!; // NRT - set by factory method
 
 	[MemberNotNull (nameof (layer_name_entry))]
 	[MemberNotNull (nameof (visibility_checkbox))]
@@ -112,11 +110,10 @@ public sealed partial class LayerPropertiesDialog
 
 	private void Configure (IChromeService chrome, WorkspaceManager workspace, Document document)
 	{
-		this.workspace = workspace;
-		this.document = document;
-		layer = document.Layers.CurrentUserLayer;
+		session = new LayerPropertiesSession (workspace, document);
 		TransientFor = chrome.MainWindow;
 
+		UserLayer layer = session.Layer;
 		string currentLayerName = layer.Name;
 		bool currentLayerHidden = layer.Hidden;
 		double currentLayerOpacity = layer.Opacity;
@@ -145,15 +142,7 @@ public sealed partial class LayerPropertiesDialog
 		initial_properties = initialProperties;
 	}
 
-	public Document Document => document;
-
-	public UserLayer Layer => layer;
-
-	/// <summary>
-	/// The captured layer still belongs to an open document (it was not deleted, nor its document closed).
-	/// </summary>
-	public bool IsLayerAttached
-		=> workspace.OpenDocuments.Contains (document) && document.Layers.IndexOf (layer) >= 0;
+	public LayerPropertiesSession Session => session;
 
 	public bool AreLayerPropertiesUpdated =>
 		initial_properties.Opacity != current_layer_opacity
@@ -213,23 +202,11 @@ public sealed partial class LayerPropertiesDialog
 	/// </summary>
 	private void ApplyCurrentProperties ()
 	{
-		if (!IsLayerAttached)
+		if (!session.IsLayerAttached)
 			return;
 
-		SetLayerProperties (UpdatedLayerProperties);
-		document.Workspace.Invalidate ();
-	}
-
-	/// <summary>
-	/// Sets <paramref name="properties"/> on the captured layer, and on the selection layer
-	/// when the captured layer is attached and current (the selection layer is drawn with its properties).
-	/// </summary>
-	public void SetLayerProperties (LayerProperties properties)
-	{
-		properties.SetProperties (layer);
-
-		if (IsLayerAttached && document.Layers.CurrentUserLayer == layer)
-			properties.SetProperties (document.Layers.SelectionLayer);
+		session.Preview (UpdatedLayerProperties);
+		session.Document.Workspace.Invalidate ();
 	}
 }
 

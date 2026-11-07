@@ -36,6 +36,7 @@ internal sealed class CloseDocumentAction : IActionHandler
 	private readonly ChromeManager chrome;
 	private readonly WorkspaceManager workspace;
 	private readonly ToolManager tools;
+	private readonly InFlightGate<Document, bool> closing = new ();
 	internal CloseDocumentAction (
 		ActionManager actions,
 		ChromeManager chrome,
@@ -66,10 +67,15 @@ internal sealed class CloseDocumentAction : IActionHandler
 
 	/// <summary>
 	/// Closes <paramref name="document"/>, first prompting to save it if it is dirty.
-	/// Completes once the prompt and any Save As dialog are finished.
+	/// Completes once the prompt and any Save As dialog are finished. A request for a document whose
+	/// close is already in flight (e.g. Quit while its save prompt is open) joins that close rather
+	/// than prompting a second time.
 	/// </summary>
 	/// <returns>Whether the document is closed (false when the user cancelled).</returns>
-	internal async Task<bool> CloseDocument (Document document)
+	internal Task<bool> CloseDocument (Document document)
+		=> closing.Run (document, () => PromptAndClose (document));
+
+	private async Task<bool> PromptAndClose (Document document)
 	{
 		int index = workspace.OpenDocuments.IndexOf (document);
 		if (index < 0)

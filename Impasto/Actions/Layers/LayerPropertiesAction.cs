@@ -26,6 +26,7 @@
 
 using System;
 using Pinta.Core;
+using Pinta.Gui.Widgets;
 
 namespace Pinta.Actions;
 
@@ -80,33 +81,30 @@ internal sealed class LayerPropertiesAction : IActionHandler
 
 	private void CancelDialogOnDocumentClosed (object? sender, DocumentEventArgs e)
 	{
-		if (active_dialog is LayerPropertiesDialog dialog && dialog.Document == e.Document)
+		if (active_dialog is LayerPropertiesDialog dialog && dialog.Session.Document == e.Document)
 			dialog.Response ((int) Gtk.ResponseType.Cancel);
 	}
 
 	private static void FinishDialog (LayerPropertiesDialog dialog, Gtk.ResponseType response)
 	{
-		Document document = dialog.Document;
-		LayerProperties initial = dialog.InitialLayerProperties;
+		LayerPropertiesSession session = dialog.Session;
 
-		if (!dialog.IsLayerAttached) {
-			// The layer was deleted or its document closed: leave it as it was before the dialog opened.
-			dialog.SetLayerProperties (initial);
+		// A layer that was deleted, or whose document closed, is left as it was before the dialog opened.
+		bool isLayerAttached = session.IsLayerAttached;
+		bool commit = isLayerAttached && response == Gtk.ResponseType.Ok && dialog.AreLayerPropertiesUpdated;
+		session.End (commit);
+
+		if (!isLayerAttached)
 			return;
+
+		Document document = session.Document;
+		if (commit) {
+			document.History.PushNewItem (GetLayerUpdateHistoryItem (
+				document.Layers.IndexOf (session.Layer),
+				dialog.InitialLayerProperties,
+				dialog.UpdatedLayerProperties));
 		}
 
-		if (response == Gtk.ResponseType.Ok && dialog.AreLayerPropertiesUpdated) {
-			UpdateLayerPropertiesHistoryItem historyItem = GetLayerUpdateHistoryItem (
-				document.Layers.IndexOf (dialog.Layer),
-				initial,
-				dialog.UpdatedLayerProperties);
-
-			document.History.PushNewItem (historyItem);
-			document.Workspace.Invalidate ();
-			return;
-		}
-
-		dialog.SetLayerProperties (initial);
 		document.Workspace.Invalidate ();
 	}
 

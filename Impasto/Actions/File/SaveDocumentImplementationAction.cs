@@ -193,7 +193,12 @@ internal sealed class SaveDocumentImplmentationAction : IActionHandler
 
 		fcd.Filter = format_desc.Filter;
 
-		while (await fcd.RunAsync () == Gtk.ResponseType.Accept) {
+		// Every await in this flow runs a main loop, during which the document can be closed: never
+		// re-show the dialog for, or export, a document that is gone.
+		while (IsOpen (document) && await fcd.RunAsync () == Gtk.ResponseType.Accept) {
+
+			if (!IsOpen (document))
+				return false;
 
 			Gio.File file = fcd.GetFile ()!;
 
@@ -288,11 +293,11 @@ internal sealed class SaveDocumentImplmentationAction : IActionHandler
 			return false;
 		}
 
-		if (!await ConfirmFlatten (document, format)) {
+		if (!await ConfirmFlatten (document, format) || !IsOpen (document)) {
 			return false;
 		}
 
-		if (!await ConfirmBakeEffectNodes (document, format)) {
+		if (!await ConfirmBakeEffectNodes (document, format) || !IsOpen (document)) {
 			return false;
 		}
 
@@ -348,6 +353,9 @@ internal sealed class SaveDocumentImplmentationAction : IActionHandler
 
 		return true;
 	}
+
+	private bool IsOpen (Document document)
+		=> workspace.OpenDocuments.Contains (document);
 
 	private async Task<bool> ConfirmFlatten (Document document, FormatDescriptor format)
 	{

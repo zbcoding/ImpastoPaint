@@ -10,6 +10,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Linq;
 using System.Threading.Tasks;
 using Cairo;
 using Pinta.Core;
@@ -53,23 +54,46 @@ public sealed class CurvesEffect : BaseEffect
 		return Gtk.ResponseType.Ok == response;
 	}
 
-	// The op is rebuilt per call from the current data: a committed node renders with this instance while
-	// its curve is reconfigured, and the transfer tables are only 256 entries per channel.
+	// Keyed by the curve it was built from: a committed node renders with this instance while its curve
+	// is reconfigured in place, so the tables must follow whatever Data holds at render time.
+	private sealed record PixelOpCache (ColorTransferMode Mode, KeyValuePair<int, int>[][] ControlPoints, UnaryPixelOp Op);
+	private PixelOpCache? pixel_op_cache;
+
 	public override void Render (ImageSurface src, ImageSurface dest, ReadOnlySpan<RectangleI> rois)
 	{
 		if (Data.ControlPoints == null)
 			return;
 
-		MakeUop ().Apply (dest, src, rois);
+		GetPixelOp ().Apply (dest, src, rois);
 	}
 
-	private UnaryPixelOp MakeUop ()
+	/// <summary>
+	/// The pixel op for the current curve, rebuilt only when mode or control points differ from the cached one.
+	/// Tiles render in parallel; each reads the cache reference once, so a racing rebuild only costs duplicate tables.
+	/// </summary>
+	private UnaryPixelOp GetPixelOp ()
+	{
+		ColorTransferMode mode = Data.Mode;
+		KeyValuePair<int, int>[][] controlPoints = Array.ConvertAll (Data.ControlPoints!, channel => channel.ToArray ());
+		PixelOpCache? cache = pixel_op_cache;
+		if (cache is not null && cache.Mode == mode && HaveSameControlPoints (cache.ControlPoints, controlPoints))
+			return cache.Op;
+
+		cache = new PixelOpCache (mode, controlPoints, MakeUop (mode, controlPoints));
+		pixel_op_cache = cache;
+		return cache.Op;
+	}
+
+	private static bool HaveSameControlPoints (KeyValuePair<int, int>[][] a, KeyValuePair<int, int>[][] b)
+		=> a.Length == b.Length && a.Zip (b).All (pair => pair.First.AsSpan ().SequenceEqual (pair.Second));
+
+	private static UnaryPixelOp MakeUop (ColorTransferMode mode, KeyValuePair<int, int>[][] controlPoints)
 	{
 		UnaryPixelOp op;
 		byte[][] transferCurves;
 		int entries;
 
-		switch (Data.Mode) {
+		switch (mode) {
 			case ColorTransferMode.Rgb:
 				UnaryPixelOps.ChannelCurve cc = new UnaryPixelOps.ChannelCurve ();
 				transferCurves = [cc.CurveR, cc.CurveG, cc.CurveB];
@@ -93,18 +117,12 @@ public sealed class CurvesEffect : BaseEffect
 
 		for (int channel = 0; channel < channels; channel++) {
 
-			SortedList<int, int> channelControlPoints = Data.ControlPoints![channel]; // NRT - Code expects this to be not-null
-
-			IList<int> xa = channelControlPoints.Keys;
-			IList<int> ya = channelControlPoints.Values;
+			KeyValuePair<int, int>[] channelControlPoints = controlPoints[channel];
 
 			SplineInterpolator<double> interpolator = new ();
 
-			int length = channelControlPoints.Count;
-
-			for (int i = 0; i < length; i++) {
-				interpolator.Add (xa[i], ya[i]);
-			}
+			foreach ((int x, int y) in channelControlPoints)
+				interpolator.Add (x, y);
 
 			for (int i = 0; i < entries; i++) {
 				transferCurves[channel][i] = Utility.ClampToByte (interpolator.Interpolate (i));

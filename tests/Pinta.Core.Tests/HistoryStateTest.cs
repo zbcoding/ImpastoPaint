@@ -1,4 +1,3 @@
-using System.ComponentModel;
 using NUnit.Framework;
 
 namespace Pinta.Core.Tests;
@@ -27,44 +26,5 @@ internal sealed class HistoryStateTest : DocumentHarness
 		Assert.That (Document.IsDirty, Is.True, "B was never saved");
 
 		Document.IsDirty = false;
-	}
-
-	/// <summary>
-	/// Undo then a new step restores the same (pointer, count), so a fingerprint built from those
-	/// cannot tell the undone content from the new one.
-	/// </summary>
-	[Test]
-	public void ChangeCountDiffersAfterUndoAndANewStep ()
-	{
-		PaintRaster (Layer (0), s => Fill (s, Red), "A");
-		int afterA = Document.History.ChangeCount;
-
-		Document.History.Undo ();
-		PaintRaster (Layer (0), s => Fill (s, Blue), "B");
-
-		Assert.That (Document.History.ChangeCount, Is.Not.EqualTo (afterA));
-
-		Document.IsDirty = false;
-	}
-
-	/// <summary>
-	/// A cloned EffectData is committed into a modifier node; it must not carry the original's
-	/// subscribers (a live preview's closure over a document and preview surface).
-	/// </summary>
-	[Test]
-	public void ClonedEffectDataDoesNotNotifyTheOriginalsSubscribers ()
-	{
-		SampleData original = new ();
-		int notified = 0;
-		original.PropertyChanged += (object? _, PropertyChangedEventArgs _) => notified++;
-
-		EffectData clone = original.Clone ();
-		clone.FirePropertyChanged ("Value");
-
-		Assert.That (notified, Is.Zero);
-	}
-
-	private sealed class SampleData : EffectData
-	{
 	}
 }

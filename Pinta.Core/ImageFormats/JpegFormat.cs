@@ -25,7 +25,7 @@
 // THE SOFTWARE.
 
 using System;
-
+using Cairo;
 using GdkPixbuf;
 
 namespace Pinta.Core;
@@ -41,13 +41,13 @@ public sealed class JpegFormat : GdkPixbufFormat
 	{
 	}
 
-	protected override void DoSave (Pixbuf pb, Gio.File file, string fileType, Gtk.Window parent)
+	public override void Export (Document document, Gio.File file, Gtk.Window parent)
 	{
 		//Load the JPG compression quality, but use the default value if there is no saved value.
 		int level = PintaCore.Settings.GetSetting<int> (SettingNames.JPG_QUALITY, DefaultQuality);
 
 		//Check to see if the Document has been saved before.
-		if (!PintaCore.Workspace.ActiveDocument.HasBeenSavedInSession) {
+		if (!document.HasBeenSavedInSession) {
 			//Show the user the JPG export compression quality dialog, with the default
 			//value being the one loaded in (or the default value if it was not saved).
 			level = PintaCore.Actions.File.RaiseModifyCompression (level, parent);
@@ -58,10 +58,11 @@ public sealed class JpegFormat : GdkPixbufFormat
 
 		//Store the "previous" JPG compression quality value (before saving with it).
 		PintaCore.Settings.PutSetting (SettingNames.JPG_QUALITY, level);
-
+		using ImageSurface flattenedImage = document.GetFlattenedImage ();
+		using Pixbuf pb = flattenedImage.ToPixbuf (includeAlpha: false);
 		using var stream = file.Replace ();
 		try {
-			pb.SaveToStreamv (stream, fileType, ["quality"], [level.ToString ()], null);
+			pb.SaveToStreamv (stream, "jpeg", ["quality"], [level.ToString ()], null);
 		} finally {
 			stream.Close (null);
 		}

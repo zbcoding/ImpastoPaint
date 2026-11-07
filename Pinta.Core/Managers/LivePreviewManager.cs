@@ -31,6 +31,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Linq;
 using System.Threading.Tasks;
 using Cairo;
 using Debug = System.Diagnostics.Debug;
@@ -69,17 +70,28 @@ public sealed class LivePreviewManager : ILivePreview
 	public RectangleI RenderBounds { get; private set; }
 	public bool IsEnabled { get; private set; }
 
-	// Covers the whole Start call, including after the preview was abandoned (IsEnabled cleared)
-	// while its non-modal configuration dialog is still open.
+	// Covers the whole session, including while its non-modal configuration dialog is open on a
+	// document that is not the active one (IsEnabled cleared).
 	private bool is_running;
 
-	public async void Start (BaseEffect effect)
+	public async void Start (BaseEffect effect) => await Run (effect);
+
+	/// <summary>The whole preview session; completes once the effect is applied or dropped.</summary>
+	internal async Task Run (BaseEffect effect)
 	{
 		// Effect menus stay live while a non-modal effect dialog is open; ignore a second effect.
 		if (is_running)
 			return;
 		is_running = true;
+		try {
+			await RunSession (effect);
+		} finally {
+			is_running = false;
+		}
+	}
 
+	private async Task RunSession (BaseEffect effect)
+	{
 		tools.Commit ();
 
 		Document doc = workspace.ActiveDocument;
@@ -106,11 +118,11 @@ public sealed class LivePreviewManager : ILivePreview
 		int handlersInQueue = 0;
 		UserLayer layer = doc.Layers.CurrentUserLayer;
 		// Preview reads what the canvas currently shows for this layer — its accumulated composite
-		// when it already carries modifier nodes, otherwise its base raster.
-		Cairo.ImageSurface renderSource = layer.Composite ?? layer.Surface;
+		// when it already carries modifier nodes, otherwise its base raster. Owned copy: history
+		// pushes while the dialog is open replace (and dispose) the layer's composite.
+		Cairo.ImageSurface renderSource = (layer.Composite ?? layer.Surface).Clone ();
 		Task pendingRestart = Task.CompletedTask;
 		bool abandoned = false;
-
 		string effectName = effect.Name;
 
 		RenderHandle renderHandle = null!; // NRT: Assigned before first use
@@ -123,7 +135,7 @@ public sealed class LivePreviewManager : ILivePreview
 
 		bool renderAlive = true;
 
-		workspace.PreActiveDocumentChanged += HandlePreActiveDocumentChanged;
+		workspace.ActiveDocumentChanged += HandleActiveDocumentChanged;
 		workspace.DocumentClosed += HandleDocumentClosed;
 
 		try {
@@ -146,7 +158,7 @@ public sealed class LivePreviewManager : ILivePreview
 				0,
 				UPDATE_MILLISECONDS,
 				() => {
-					if (!renderAlive) return false;
+					if (!renderAlive || abandoned) return false;
 					PollForUpdate (renderHandle);
 					return true; // Keep ticking as long as the effect is active.
 				}
@@ -197,6 +209,10 @@ public sealed class LivePreviewManager : ILivePreview
 			// user can reopen its settings later. The rendered preview is discarded — the node's own
 			// Apply reproduces it inside the layer's accumulator. See
 			// docs-private/layer-effects-model.md.
+			// The layer may have been deleted while the dialog was open; there is nothing to apply to.
+			if (!doc.Layers.UserLayers.Contains (layer))
+				return;
+
 			List<ILayerObject> objectsBefore = ObjectOpacity.CloneAll (layer.Objects);
 
 			layer.AddModifierNode (EffectModifierNode.FromEffect (effect, selection.Visible ? selection.Clone () : null, PintaCore.Services));
@@ -207,9 +223,8 @@ public sealed class LivePreviewManager : ILivePreview
 
 		} finally {
 
-			is_running = false;
 			IsEnabled = false;
-			workspace.PreActiveDocumentChanged -= HandlePreActiveDocumentChanged;
+			workspace.ActiveDocumentChanged -= HandleActiveDocumentChanged;
 			workspace.DocumentClosed -= HandleDocumentClosed;
 			LivePreviewSurface = null!;
 			workspace.Invalidate ();
@@ -224,6 +239,14 @@ public sealed class LivePreviewManager : ILivePreview
 			dialog.Hide ();
 
 			renderAlive = false;
+
+			// No render may still be reading the snapshot when it is freed.
+			await pendingRestart;
+			if (renderHandle is not null) {
+				renderHandle.Cancel ();
+				await renderHandle.Task;
+			}
+			renderSource.Dispose ();
 		}
 
 		// === Methods ===
@@ -233,8 +256,12 @@ public sealed class LivePreviewManager : ILivePreview
 			renderHandle.Cancel ();
 		}
 
-		// Leaving or closing the previewed document ends the preview as if the user pressed Cancel.
-		void HandlePreActiveDocumentChanged (object? o, EventArgs e) => Abandon ();
+		// Another document's tab hides this preview; the dialog keeps editing and applying to doc.
+		void HandleActiveDocumentChanged (object? o, EventArgs e)
+		{
+			IsEnabled = !abandoned && workspace.ActiveDocumentOrDefault == doc;
+			workspace.Invalidate ();
+		}
 
 		void HandleDocumentClosed (object? o, DocumentEventArgs e)
 		{
@@ -242,6 +269,7 @@ public sealed class LivePreviewManager : ILivePreview
 				Abandon ();
 		}
 
+		// Closing the previewed document ends the preview as if the user pressed Cancel.
 		void Abandon ()
 		{
 			if (abandoned) return;
@@ -287,7 +315,7 @@ public sealed class LivePreviewManager : ILivePreview
 
 			chrome.ProgressDialog.Progress = renderTask.Progress;
 
-			if (!renderTask.TryConsumeBounds (out RectangleI updatedBounds))
+			if (!IsEnabled || !renderTask.TryConsumeBounds (out RectangleI updatedBounds))
 				return;
 
 			double scale = workspace.Scale;

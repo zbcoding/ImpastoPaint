@@ -130,7 +130,7 @@ public sealed class ToolManager : IEnumerable<BaseTool>, IToolService
 
 	// Impasto: the pointer gesture in progress, one per physical press. A drag's moves and release go
 	// to the tool that took its press, which is always CurrentTool: a tool switch from outside
-	// pointer dispatch ends the drag first (EndToolDragForToolSwitch), and a switch a tool makes from
+	// pointer dispatch ends the drag first (EndToolDrag), and a switch a tool makes from
 	// inside its own handler (the shape tools forwarding a press) hands the drag to the new tool.
 	private enum PointerGesture
 	{
@@ -190,7 +190,7 @@ public sealed class ToolManager : IEnumerable<BaseTool>, IToolService
 				SetCurrentTool (tools.First ());
 			else {
 				// There are no tools left.
-				EndToolDragForToolSwitch ();
+				EndToolDrag ();
 				DeactivateTool (tool, null);
 				PreviousTool = null;
 				CurrentTool = null;
@@ -207,6 +207,8 @@ public sealed class ToolManager : IEnumerable<BaseTool>, IToolService
 
 	public void Commit ()
 	{
+		// Committing finishes the tool's work, so a drag in progress ends first, as a tool switch ends it.
+		EndToolDrag ();
 		CurrentTool?.DoCommit (workspace_manager.ActiveDocumentOrDefault);
 	}
 
@@ -216,7 +218,7 @@ public sealed class ToolManager : IEnumerable<BaseTool>, IToolService
 		if (CurrentTool == tool)
 			return;
 
-		EndToolDragForToolSwitch ();
+		EndToolDrag ();
 
 		// Releasing may itself have switched tools (the color picker does).
 		if (CurrentTool == tool)
@@ -401,18 +403,21 @@ public sealed class ToolManager : IEnumerable<BaseTool>, IToolService
 		tool.DoDeactivated (workspace_manager.ActiveDocumentOrDefault, newTool);
 	}
 
-	// A switch from outside pointer dispatch (a shortcut, the toolbox, a menu, undo) ends the current
-	// tool's drag as its release would, and the rest of that press reaches no tool. A switch a tool
-	// makes from its own pointer handler leaves the drag running for the new tool.
-	private void EndToolDragForToolSwitch ()
+	// A switch or commit from outside pointer dispatch (a shortcut, the toolbox, a menu, undo, a live
+	// preview starting) ends the current tool's drag as its release would, and the rest of that press
+	// reaches no tool. One a tool makes from its own pointer handler leaves the drag running.
+	private void EndToolDrag ()
 	{
 		if (pointer_dispatch_depth > 0 || pointer_gesture != PointerGesture.ToolDrag)
 			return;
 
+		Document document = drag_document!;
+		ToolMouseEventArgs args = drag_last_args!;
 		pointer_gesture = PointerGesture.Swallowed;
-		SendMouseUp (CurrentTool!, drag_document!, drag_last_args!);
 		drag_document = null;
 		drag_last_args = null;
+		if (CurrentTool is { } tool)
+			Dispatch (tool, document, args, static (t, d, a) => t.DoMouseUp (d, a));
 	}
 
 	// Issue #1334: effect dialogs are non-modal so they don't dim the canvas.
@@ -484,7 +489,7 @@ public sealed class ToolManager : IEnumerable<BaseTool>, IToolService
 		pointer_gesture = PointerGesture.ToolDrag;
 		drag_document = document;
 		drag_last_args = snapped;
-		SendMouseDown (tool, document, snapped);
+		Dispatch (tool, document, snapped, static (t, d, a) => t.DoMouseDown (d, a));
 	}
 
 	public void DoMouseMove (Document document, ToolMouseEventArgs args)
@@ -509,7 +514,7 @@ public sealed class ToolManager : IEnumerable<BaseTool>, IToolService
 			drag_last_args = snapped;
 
 		if (CurrentTool is { } tool)
-			SendMouseMove (tool, document, snapped);
+			Dispatch (tool, document, snapped, static (t, d, a) => t.DoMouseMove (d, a));
 
 		// Guides are feedback for a drag in progress, not for hovering over the canvas.
 		if (!button_held)
@@ -529,7 +534,7 @@ public sealed class ToolManager : IEnumerable<BaseTool>, IToolService
 				drag_document = null;
 				drag_last_args = null;
 				if (CurrentTool is { } tool)
-					SendMouseUp (tool, document, ApplySnapping (args));
+					Dispatch (tool, document, ApplySnapping (args), static (t, d, a) => t.DoMouseUp (d, a));
 				break;
 			default:
 				// The press reached no tool, so neither does its release.
@@ -542,32 +547,12 @@ public sealed class ToolManager : IEnumerable<BaseTool>, IToolService
 	}
 
 	// The depth tells a tool switch made from inside a tool's own handler apart from one made
-	// from outside (see EndToolDragForToolSwitch).
-	private void SendMouseDown (BaseTool tool, Document document, ToolMouseEventArgs args)
+	// from outside (see EndToolDrag).
+	private void Dispatch (BaseTool tool, Document document, ToolMouseEventArgs args, Action<BaseTool, Document, ToolMouseEventArgs> send)
 	{
 		pointer_dispatch_depth++;
 		try {
-			tool.DoMouseDown (document, args);
-		} finally {
-			pointer_dispatch_depth--;
-		}
-	}
-
-	private void SendMouseMove (BaseTool tool, Document document, ToolMouseEventArgs args)
-	{
-		pointer_dispatch_depth++;
-		try {
-			tool.DoMouseMove (document, args);
-		} finally {
-			pointer_dispatch_depth--;
-		}
-	}
-
-	private void SendMouseUp (BaseTool tool, Document document, ToolMouseEventArgs args)
-	{
-		pointer_dispatch_depth++;
-		try {
-			tool.DoMouseUp (document, args);
+			send (tool, document, args);
 		} finally {
 			pointer_dispatch_depth--;
 		}

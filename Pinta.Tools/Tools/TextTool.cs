@@ -1411,9 +1411,7 @@ public sealed class TextTool : BaseTool
 
 			// The editing session can end under a drag (a layer switch commits the text).
 			if (current_text_object is not { } obj) {
-				tracking = false;
-				manipulation = TextManipulation.None;
-				drawing_new_box = false;
+				EndManipulation ();
 				return;
 			}
 
@@ -2245,14 +2243,19 @@ public sealed class TextTool : BaseTool
 		LayerObjectSelection.RaiseObjectEditSelected (layer, objectsIndex);
 	}
 
+	private void EndManipulation ()
+	{
+		tracking = false;
+		manipulation = TextManipulation.None;
+		drawing_new_box = false;
+	}
+
 	private void EndEditingSession ()
 	{
 		is_editing = false;
 		current_text_object = null;
 		// Any manipulation of the object ends with its session (a commit or undo mid-drag).
-		tracking = false;
-		manipulation = TextManipulation.None;
-		drawing_new_box = false;
+		EndManipulation ();
 		editing_layer = null;
 		last_signaled_edit = null;
 		UpdateConfirmButtonVisibility ();

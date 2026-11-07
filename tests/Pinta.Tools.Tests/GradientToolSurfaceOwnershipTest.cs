@@ -127,4 +127,24 @@ internal sealed class GradientToolSurfaceOwnershipTest : ToolsTestHarness
 
 		Assert.That (UndoSurface (t), Is.Not.Null, "the re-render re-establishes a base for later renders");
 	}
+
+	// Committing mid-drag (a layer switch, Save, a live preview starting) finalizes the gradient into
+	// the layer; a drag left running kept re-rendering it from later moves, after its undo step.
+	[Test]
+	public void FinalizingMidDragEndsTheDrag ()
+	{
+		GradientTool t = Activate ();
+
+		Send ("DoMouseDown", t, MouseArgs (new PointD (0, 0)), Document);
+		Send ("DoMouseMove", t, MouseArgs (new PointD (CanvasSize, 0)), Document);
+
+		typeof (GradientTool).GetMethod ("Finalize", NonPublicInstance, null, [typeof (Document)], null)!
+			.Invoke (t, [Document]);
+		PointI probe = new (CanvasSize - 2, 1); // the far end of the finalized gradient, the near end of a re-rendered one
+		ColorBgra finalized = Layer (0).Surface.GetColorBgra (probe);
+
+		Send ("DoMouseMove", t, MouseArgs (new PointD (0, CanvasSize)), Document);
+
+		Assert.That (Layer (0).Surface.GetColorBgra (probe), Is.EqualTo (finalized), "the finalized gradient stays put");
+	}
 }

@@ -575,7 +575,8 @@ public sealed class EditActions
 		Document doc = workspace.ActiveDocument;
 
 		// An item's Undo can pump the main loop; a repeated shortcut must not re-enter mid-undo.
-		if (doc.History.IsPerformingUndoRedo)
+		// Mid-drag, an undo that switches tools would end the stroke after its history was rewound.
+		if (doc.History.IsPerformingUndoRedo || tools.IsToolDragActive)
 			return;
 
 		if (tools.CurrentTool?.DoHandleUndo (doc) == true)
@@ -590,7 +591,7 @@ public sealed class EditActions
 	{
 		Document doc = workspace.ActiveDocument;
 
-		if (doc.History.IsPerformingUndoRedo)
+		if (doc.History.IsPerformingUndoRedo || tools.IsToolDragActive)
 			return;
 
 		if (tools.CurrentTool?.DoHandleRedo (doc) == true)

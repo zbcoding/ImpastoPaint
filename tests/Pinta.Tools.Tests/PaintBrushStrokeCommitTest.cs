@@ -23,7 +23,9 @@ internal sealed class PaintBrushStrokeCommitTest : ToolsTestHarness
 	public void RegisterBrush ()
 	{
 		// The tool's brush list comes from the service, which only CoreToolsExtension fills, and it
-		// draws nothing at all without an active brush.
+		// draws nothing at all without an active brush. Tools built by earlier tests stay subscribed
+		// to that service and set the canvas cursor when a brush is added, so a canvas must exist.
+		PintaCore.Workspace.ActiveWorkspace.Canvas = Gtk.DrawingArea.New ();
 		PintaCore.PaintBrushes.AddPaintBrush (new Brushes.PlainBrush (PintaCore.Workspace));
 	}
 
@@ -151,6 +153,26 @@ internal sealed class PaintBrushStrokeCommitTest : ToolsTestHarness
 			repaints.Exists (r => r.EntireSurface || r.Rectangle.Contains (new PointI (CanvasSize / 2, middleRow))),
 			Is.True,
 			"the repaint has to cover the pixels the stroke committed");
+	}
+
+	// A release whose press the brush never took (ToolManager ends a drag early on a tool switch or
+	// commit) used to stamp whatever the shared tool layer held - another tool's preview - onto the
+	// layer as if it were a stroke.
+	[Test]
+	public void AReleaseWithoutAStrokeLeavesTheLayerAlone ()
+	{
+		PaintBrushTool t = Activate ();
+		PointI probe = new (CanvasSize / 2, CanvasSize / 2);
+
+		using (Context g = new (Document.Layers.ToolLayer.Surface)) {
+			g.SetSourceColor (new Color (1, 0, 0));
+			g.Paint ();
+		}
+		Document.Layers.ToolLayer.Hidden = false;
+
+		Send ("DoMouseUp", t, MouseArgs (new PointD (probe.X, probe.Y)), Document);
+
+		Assert.That (Layer (0).Surface.GetColorBgra (probe).A, Is.Zero, "no stroke, so nothing is painted");
 	}
 
 	private int CountHistoryItems ()

@@ -75,4 +75,20 @@ internal sealed class ShapeEditEngineDragStateTest : ToolsTestHarness
 		Assert.That (engine.IsDrawing, Is.True,
 			"after returning to the tool, clicking has to start drawing again");
 	}
+
+	// Commit (a layer switch, Save, a live preview starting) persists the shapes; a gesture left
+	// running afterwards kept editing them from later moves, outside any undo step.
+	[Test]
+	public void CommittingMidDrawEndsTheGesture ()
+	{
+		EllipseTool t = Activate ();
+		BaseEditEngine engine = t.EditEngine;
+
+		engine.HandleMouseDown (Document, MouseArgs (new PointD (4, 4)));
+		Assert.That (engine.IsDrawing, Is.True, "setup: the press has to start drawing a new shape");
+
+		engine.HandleCommit ();
+
+		Assert.That (engine.IsDrawing, Is.False, "committing has to end the gesture");
+	}
 }

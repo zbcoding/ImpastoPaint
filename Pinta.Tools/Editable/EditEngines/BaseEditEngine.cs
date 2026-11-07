@@ -688,11 +688,7 @@ public abstract class BaseEditEngine
 		SelectedShapeIndex = -1;
 		last_signaled_edit = null;
 
-		// ponytail: a mid-drag tool switch (e.g. a keyboard shortcut) used to leave the gesture
-		// running, and HandleMouseDown's "if (IsDrawing) return;" guard made every shape tool dead
-		// until restart. Cancel before the workspace.HasOpenDocuments block below so it clears even
-		// when there's no open document. Shared fix: a BaseTool.CancelActiveGesture() hook, if a
-		// fourth tool needs the same reset.
+		// Before the HasOpenDocuments block, so a held gesture clears even with no document open.
 		CancelGesture ();
 
 		workspace.SelectedLayerChanged -= HandleSelectedLayerChanged;
@@ -737,6 +733,9 @@ public abstract class BaseEditEngine
 
 	public virtual void HandleCommit ()
 	{
+		// Committing ends any gesture still held, as switching tools does.
+		CancelGesture ();
+
 		if (workspace.HasOpenDocuments) {
 			// Rebind first: Commit also runs from Save on a document switched to without a layer
 			// event, when the live engines still belong to the previous document's layer.

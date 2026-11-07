@@ -59,7 +59,7 @@ public sealed class WebPFormat : GdkPixbufFormat
 	{
 		int level = PintaCore.Settings.GetSetting<int> (SettingNames.WEBP_QUALITY, DefaultQuality);
 
-		if (!PintaCore.Workspace.ActiveDocument.HasBeenSavedInSession) {
+		if (!document.HasBeenSavedInSession) {
 			level = PintaCore.Actions.File.RaiseModifyCompression (level, parent, allowLossless: IsLosslessAvailable);
 
 			if (level == -1)

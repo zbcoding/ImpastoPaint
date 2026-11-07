@@ -18,8 +18,6 @@ namespace Pinta.Effects;
 
 public sealed class CurvesEffect : BaseEffect
 {
-	UnaryPixelOp? op = null;
-
 	public sealed override bool IsTileable => true;
 
 	public override string Icon => Pinta.Resources.Icons.AdjustmentsCurves;
@@ -55,14 +53,14 @@ public sealed class CurvesEffect : BaseEffect
 		return Gtk.ResponseType.Ok == response;
 	}
 
+	// The op is rebuilt per call from the current data: a committed node renders with this instance while
+	// its curve is reconfigured, and the transfer tables are only 256 entries per channel.
 	public override void Render (ImageSurface src, ImageSurface dest, ReadOnlySpan<RectangleI> rois)
 	{
 		if (Data.ControlPoints == null)
 			return;
 
-		op ??= MakeUop ();
-
-		op.Apply (dest, src, rois);
+		MakeUop ().Apply (dest, src, rois);
 	}
 
 	private UnaryPixelOp MakeUop ()
@@ -124,15 +122,15 @@ public sealed class CurvesData : EffectData
 
 	public override CurvesData Clone ()
 	{
-		// Not sure if we have to copy contents of ControlPoints
-		// var controlPoints = new SortedList<int, int> [ControlPoints.Length];
-		//
-		// for (int i = 0; i < ControlPoints.Length; i++)
-		//     controlPoints[i] = new SortedList<int, int> (ControlPoints[i]);
+		// The dialog edits its control point lists in place while clones render on worker threads,
+		// so each clone gets lists of its own.
+		SortedList<int, int>[]? controlPoints = ControlPoints is null
+			? null
+			: Array.ConvertAll (ControlPoints, channel => new SortedList<int, int> (channel));
 
 		return new () {
 			Mode = Mode,
-			ControlPoints = ControlPoints,
+			ControlPoints = controlPoints,
 		};
 	}
 }

@@ -86,16 +86,13 @@ public sealed partial class AlignmentDialog
 
 		this.AddCancelOkButtons ();
 		this.SetDefaultResponse (Gtk.ResponseType.Ok);
-
-		// --- Initialization (AlignmentDialog)
-
-		SetSelectedPosition (AlignPosition.Center); // Set the default selection
 	}
 
-	public static AlignmentDialog New (IChromeService chrome)
+	public static AlignmentDialog New (IChromeService chrome, AlignPosition position)
 	{
 		AlignmentDialog dialog = NewWithProperties ([]);
 		dialog.TransientFor = chrome.MainWindow;
+		dialog.SetSelectedPosition (position);
 		return dialog;
 	}
 

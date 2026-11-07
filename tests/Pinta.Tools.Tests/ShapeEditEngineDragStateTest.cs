@@ -1,4 +1,3 @@
-using System.Reflection;
 using Cairo;
 using NUnit.Framework;
 using Pinta.Core;
@@ -7,16 +6,14 @@ namespace Pinta.Tools.Tests;
 
 /// <summary>
 /// A mid-drag tool switch (a keyboard shortcut firing while drawing a new shape, dragging the whole
-/// shape, rotating it, or changing tension) used to deactivate the shape tool with one of
-/// BaseEditEngine's own gesture flags still set. HandleMouseDown's own "if (is_drawing) return;"
+/// shape, rotating it, or changing tension) used to deactivate the shape tool with
+/// BaseEditEngine's own gesture still running. HandleMouseDown's own "if (IsDrawing) return;"
 /// guard made every later click a no-op - Ellipse, Rectangle, RoundedLine, Triangle and Line/Curve
 /// all went dead for the rest of the session.
 /// </summary>
 [TestFixture]
 internal sealed class ShapeEditEngineDragStateTest : ToolsTestHarness
 {
-	private static readonly BindingFlags NonPublicInstance = BindingFlags.NonPublic | BindingFlags.Instance;
-
 	private EllipseTool? tool;
 
 	[TearDown]
@@ -52,9 +49,6 @@ internal sealed class ShapeEditEngineDragStateTest : ToolsTestHarness
 		return t;
 	}
 
-	private static bool IsDrawing (BaseEditEngine engine)
-		=> (bool) typeof (BaseEditEngine).GetField ("is_drawing", NonPublicInstance)!.GetValue (engine)!;
-
 	private static ToolMouseEventArgs MouseArgs (PointD canvasPos) => new () {
 		PointDouble = canvasPos,
 		MouseButton = MouseButton.Left,
@@ -67,18 +61,18 @@ internal sealed class ShapeEditEngineDragStateTest : ToolsTestHarness
 		BaseEditEngine engine = t.EditEngine;
 
 		engine.HandleMouseDown (Document, MouseArgs (new PointD (4, 4)));
-		Assert.That (IsDrawing (engine), Is.True, "setup: the press has to start drawing a new shape");
+		Assert.That (engine.IsDrawing, Is.True, "setup: the press has to start drawing a new shape");
 
 		engine.HandleDeactivated (null);
 
-		Assert.That (IsDrawing (engine), Is.False,
+		Assert.That (engine.IsDrawing, Is.False,
 			"switching tools mid-draw has to end the gesture, or the tool ignores every later click");
 
 		// Coming back to the tool, a fresh press must start a real shape instead of being swallowed
-		// by HandleMouseDown's "if (is_drawing) return;" guard.
+		// by HandleMouseDown's "if (IsDrawing) return;" guard.
 		engine.HandleActivated ();
 		engine.HandleMouseDown (Document, MouseArgs (new PointD (12, 12)));
-		Assert.That (IsDrawing (engine), Is.True,
+		Assert.That (engine.IsDrawing, Is.True,
 			"after returning to the tool, clicking has to start drawing again");
 	}
 }

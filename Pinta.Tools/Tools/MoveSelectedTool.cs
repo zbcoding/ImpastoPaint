@@ -753,9 +753,12 @@ public sealed class MoveSelectedTool : BaseTransformTool
 
 	protected override void OnCommit (Document? document)
 	{
-		// Committing mid-warp lands the warp first, so its undo step comes before the commit's.
+		// Committing mid-warp or mid-move lands that gesture first, so its undo step comes before the
+		// commit's.
 		if (warp.IsDragging && document is not null)
 			FinishWarp (document);
+
+		base.OnCommit (document);
 
 		document?.FinishSelection ();
 		warp.Forget ();

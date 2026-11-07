@@ -56,10 +56,10 @@ public sealed class FontFamilyDropDown
 			int index = family is null
 				? -1
 				: Array.FindIndex (families, f => string.Equals (f, family, StringComparison.OrdinalIgnoreCase));
-			if (index < 0)
-				return;
+			// A family missing from the list clears the selection, so the button never shows a family
+			// font_desc no longer holds, and choosing that family again still registers as a change.
 			suppress_notify = true;
-			Widget.SetSelected ((uint) index);
+			Widget.SetSelected (index < 0 ? Gtk.Constants.INVALID_LIST_POSITION : (uint) index);
 			suppress_notify = false;
 		}
 	}

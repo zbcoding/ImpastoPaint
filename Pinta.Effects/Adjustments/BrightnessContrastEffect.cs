@@ -16,7 +16,10 @@ namespace Pinta.Effects;
 
 public sealed class BrightnessContrastEffect : BaseEffect
 {
-	private Lazy<BrightnessContrastPixelOp> pixel_op = new (() => new (DEFAULT_BRIGHTNESS, DEFAULT_CONTRAST));
+	// Keyed by the values it was built from: a committed node keeps this instance for good while its
+	// data is replaced or edited, so the table must follow whatever Data holds at render time.
+	private sealed record PixelOpCache (int Brightness, int Contrast, BrightnessContrastPixelOp Op);
+	private PixelOpCache? pixel_op_cache;
 
 	public sealed override bool IsTileable
 		=> true;
@@ -43,18 +46,23 @@ public sealed class BrightnessContrastEffect : BaseEffect
 		chrome = services.GetService<IChromeService> ();
 		workspace = services.GetService<IWorkspaceService> ();
 		EffectData = new BrightnessContrastData ();
-		EffectData.PropertyChanged += HandleEffectDataPropertyChanged;
 	}
 
 	/// <summary>
-	/// If any of the effect data was changed, we need to recalculate the rgb table before rendering
+	/// The pixel op for the current data, rebuilt only when brightness or contrast differ from the cached one.
+	/// Tiles render in parallel; each reads the cache reference once, so a racing rebuild only costs a duplicate table.
 	/// </summary>
-	void HandleEffectDataPropertyChanged (object? sender, System.ComponentModel.PropertyChangedEventArgs e)
+	private BrightnessContrastPixelOp GetPixelOp ()
 	{
-		BrightnessContrastData data = Data;
-		int brightness = data.Brightness;
-		int contrast = data.Contrast;
-		pixel_op = new Lazy<BrightnessContrastPixelOp> (() => new (brightness, contrast));
+		int brightness = Data.Brightness;
+		int contrast = Data.Contrast;
+		PixelOpCache? cache = pixel_op_cache;
+		if (cache is not null && cache.Brightness == brightness && cache.Contrast == contrast)
+			return cache.Op;
+
+		cache = new PixelOpCache (brightness, contrast, new BrightnessContrastPixelOp (brightness, contrast));
+		pixel_op_cache = cache;
+		return cache.Op;
 	}
 
 	public override Task<bool> LaunchConfiguration ()
@@ -66,7 +74,7 @@ public sealed class BrightnessContrastEffect : BaseEffect
 
 	protected override void Render (ImageSurface source, ImageSurface destination, RectangleI roi)
 	{
-		BrightnessContrastSettings settings = CreateSettings (destination, pixel_op.Value);
+		BrightnessContrastSettings settings = CreateSettings (destination, GetPixelOp ());
 
 		ReadOnlySpan<ColorBgra> sourceData = source.GetReadOnlyPixelData ();
 		Span<ColorBgra> destinationData = destination.GetPixelData ();

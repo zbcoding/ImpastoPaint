@@ -164,9 +164,26 @@ public sealed partial class CurvesDialog
 	{
 		CurvesDialog dialog = NewWithProperties ([]);
 		dialog.TransientFor = chrome.MainWindow;
-		dialog.EffectData = effectData;
-		dialog.ResetControlPoints ();
+		dialog.LoadControlPoints (effectData);
 		return dialog;
+	}
+
+	/// <summary>
+	/// Shows the curve <paramref name="effectData"/> holds; afterwards the data changes only on a user edit.
+	/// Data that never had a curve gets the identity one, so the effect has something to render.
+	/// </summary>
+	private void LoadControlPoints (CurvesData effectData)
+	{
+		if (effectData.ControlPoints is null) {
+			EffectData = effectData;
+			ResetControlPoints ();
+			return;
+		}
+
+		// Switching the combo writes through its change handler, so it runs while EffectData is still the placeholder.
+		combo_map.Active = (effectData.Mode == ColorTransferMode.Rgb) ? 0 : 1;
+		ControlPoints = Array.ConvertAll (effectData.ControlPoints, channel => new SortedList<int, int> (channel));
+		EffectData = effectData;
 	}
 
 	private Gtk.ComboBoxText CreateComboMap ()
@@ -283,6 +300,7 @@ public sealed partial class CurvesDialog
 				AddControlPoint (pos);
 			} else if (controller.GetCurrentMouseButton () == MouseButton.Right) {
 				// Handle right-click removal
+				bool removed = false;
 				foreach (var controlPoints in GetActiveControlPoints ()) {
 
 					for (int i = 0; i < controlPoints.Count; i++) {
@@ -301,10 +319,14 @@ public sealed partial class CurvesDialog
 
 						if (CheckControlPointProximity (cp, pos)) {
 							controlPoints.RemoveAt (i);
+							removed = true;
 							break;
 						}
 					}
 				}
+
+				if (removed)
+					UpdateLivePreview (nameof (ControlPoints));
 			}
 
 			InvalidateDrawing ();

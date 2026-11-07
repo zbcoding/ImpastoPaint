@@ -158,10 +158,14 @@ public sealed class CloneStampTool : BaseBrushTool
 
 	protected override void OnMouseUp (Document document, ToolMouseEventArgs e)
 	{
-		painting = false;
-
 		if (e.IsControlPressed)
 			handle.Active = true;
+
+		// No stroke in progress: the tool layer may hold another tool's preview, not ours.
+		if (!painting)
+			return;
+
+		painting = false;
 
 		using Cairo.Context g = new (document.Layers.CurrentPaintSurface);
 		g.SetSourceSurface (document.Layers.ToolLayer.Surface, 0, 0);
@@ -201,6 +205,9 @@ public sealed class CloneStampTool : BaseBrushTool
 	protected override void OnDeactivated (Document? document, BaseTool? newTool)
 	{
 		origin = null;
+		offset = null;
+		last_point = null;
+		painting = false;
 		handle.Active = false;
 		DisposeHint ();
 	}

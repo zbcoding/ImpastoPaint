@@ -150,6 +150,11 @@ public class LassoSelectTool : BaseTool
 
 	protected override void OnMouseUp (Document document, ToolMouseEventArgs e)
 	{
+		// No drag in progress (it was finished or cancelled by key): applying now would replace the
+		// selection with an empty polygon.
+		if (!is_dragging)
+			return;
+
 		is_dragging = false;
 
 		if (!IsFreeformMode)

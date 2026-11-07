@@ -204,11 +204,17 @@ public sealed class PaintBrushTool : BaseBrushTool
 	protected override void OnMouseUp (Document document, ToolMouseEventArgs e)
 	{
 		CancelRepeatingDraw ();
+
+		// No stroke in progress: the tool layer may hold another tool's preview, not ours.
+		if (mouse_button == MouseButton.None)
+			return;
+
 		using Context g = new (document.Layers.CurrentPaintSurface);
 
 		document.Layers.ToolLayer.Draw (g);
 
 		document.Layers.ToolLayer.Hidden = true;
+		document.Layers.ToolLayer.Clear ();
 
 		base.OnMouseUp (document, e);
 
@@ -226,6 +232,13 @@ public sealed class PaintBrushTool : BaseBrushTool
 			document.Workspace.Invalidate (document.ClampToImageSize (stroke_dirty_rect.Value));
 
 		stroke_dirty_rect = null;
+	}
+
+	protected override void OnDeactivated (Document? document, BaseTool? newTool)
+	{
+		// The splatter brush repaints on a timer, which must not outlive the tool.
+		CancelRepeatingDraw ();
+		base.OnDeactivated (document, newTool);
 	}
 
 	protected override void OnSaveSettings (ISettingsService settings)

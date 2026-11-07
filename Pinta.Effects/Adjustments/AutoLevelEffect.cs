@@ -15,9 +15,8 @@ namespace Pinta.Effects;
 
 public sealed class AutoLevelEffect : BaseEffect
 {
-	UnaryPixelOps.Level? op;
-
-	public sealed override bool IsTileable => true;
+	// The levels come from the whole source, so each render reads it once instead of once per tile.
+	public sealed override bool IsTileable => false;
 
 	public override string Icon => Pinta.Resources.Icons.AdjustmentsAutoLevel;
 
@@ -27,14 +26,14 @@ public sealed class AutoLevelEffect : BaseEffect
 
 	public AutoLevelEffect (IServiceProvider _) { }
 
+	// Measured on every render: a committed node re-renders with this instance after the layer is painted,
+	// and levels taken from an earlier source would no longer be "auto".
 	public override void Render (ImageSurface src, ImageSurface dest, ReadOnlySpan<RectangleI> rois)
 	{
-		if (op is null) {
-			HistogramRgb histogram = new ();
-			histogram.UpdateHistogram (src, new RectangleI (0, 0, src.Width, src.Height));
+		HistogramRgb histogram = new ();
+		histogram.UpdateHistogram (src, new RectangleI (0, 0, src.Width, src.Height));
 
-			op = histogram.MakeLevelsAuto ();
-		}
+		UnaryPixelOps.Level op = histogram.MakeLevelsAuto ();
 
 		if (op.IsValid)
 			op.Apply (dest, src, rois);

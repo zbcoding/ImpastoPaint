@@ -212,7 +212,7 @@ internal sealed class TextPropertiesDialog : IDisposable
 		left_alignment_btn.TooltipText = Translations.GetString ("Left Align");
 		left_alignment_btn.CanFocus = false;
 		left_alignment_btn.Active = alignment == TextAlignment.Left;
-		left_alignment_btn.OnToggled += (_, _) => HandleAlignment ();
+		left_alignment_btn.OnToggled += HandleAlignmentToggled;
 		alignRow.Append (left_alignment_btn);
 
 		center_alignment_btn = Gtk.ToggleButton.New ();
@@ -220,7 +220,8 @@ internal sealed class TextPropertiesDialog : IDisposable
 		center_alignment_btn.TooltipText = Translations.GetString ("Center Align");
 		center_alignment_btn.CanFocus = false;
 		center_alignment_btn.Active = alignment == TextAlignment.Center;
-		center_alignment_btn.OnToggled += (_, _) => HandleAlignment ();
+		center_alignment_btn.SetGroup (left_alignment_btn);
+		center_alignment_btn.OnToggled += HandleAlignmentToggled;
 		alignRow.Append (center_alignment_btn);
 
 		right_alignment_btn = Gtk.ToggleButton.New ();
@@ -228,7 +229,8 @@ internal sealed class TextPropertiesDialog : IDisposable
 		right_alignment_btn.TooltipText = Translations.GetString ("Right Align");
 		right_alignment_btn.CanFocus = false;
 		right_alignment_btn.Active = alignment == TextAlignment.Right;
-		right_alignment_btn.OnToggled += (_, _) => HandleAlignment ();
+		right_alignment_btn.SetGroup (left_alignment_btn);
+		right_alignment_btn.OnToggled += HandleAlignmentToggled;
 		alignRow.Append (right_alignment_btn);
 
 		justify_alignment_btn = Gtk.ToggleButton.New ();
@@ -236,7 +238,8 @@ internal sealed class TextPropertiesDialog : IDisposable
 		justify_alignment_btn.TooltipText = Translations.GetString ("Justify");
 		justify_alignment_btn.CanFocus = false;
 		justify_alignment_btn.Active = alignment == TextAlignment.Justify;
-		justify_alignment_btn.OnToggled += (_, _) => HandleAlignment ();
+		justify_alignment_btn.SetGroup (left_alignment_btn);
+		justify_alignment_btn.OnToggled += HandleAlignmentToggled;
 		alignRow.Append (justify_alignment_btn);
 
 		content.Append (alignRow);
@@ -275,20 +278,12 @@ internal sealed class TextPropertiesDialog : IDisposable
 		window.SetChild (content);
 	}
 
-	private void HandleAlignment ()
+	// The alignment buttons are one radio group: a change toggles the old button off and the new
+	// one on, so only the activation applies.
+	private void HandleAlignmentToggled (Gtk.ToggleButton sender, EventArgs args)
 	{
-		if (left_alignment_btn.Active)
-			center_alignment_btn.Active = right_alignment_btn.Active = justify_alignment_btn.Active = false;
-		else if (center_alignment_btn.Active)
-			left_alignment_btn.Active = right_alignment_btn.Active = justify_alignment_btn.Active = false;
-		else if (right_alignment_btn.Active)
-			left_alignment_btn.Active = center_alignment_btn.Active = justify_alignment_btn.Active = false;
-		else if (justify_alignment_btn.Active)
-			left_alignment_btn.Active = center_alignment_btn.Active = right_alignment_btn.Active = false;
-		else
-			left_alignment_btn.Active = true;
-
-		Apply ();
+		if (sender.Active)
+			Apply ();
 	}
 
 	public void Dispose ()

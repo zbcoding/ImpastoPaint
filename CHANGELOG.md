@@ -10,6 +10,30 @@ entries, is upstream Pinta work; the Impasto sections cover changes made in this
 
 Changes for the next release go here.
 
+### Fixed
+
+- Saving, undoing back past the save and making a new change, then undoing and redoing no
+  longer marks the image as saved; closing it still asks to save.
+- Autosave no longer skips an image after undoing and then making a new change, and an image
+  that has been saved no longer offers a stale autosave for recovery after a crash.
+- An effect or adjustment applied after switching tabs while its dialog was open lands on the
+  image it was opened for, with its undo step there too. Leaving or closing that image ends
+  the preview. Opening a second effect while one dialog is open no longer shows an error.
+- Moving an effect's slider on a layer that already has effects no longer previews the effect
+  without them, and pressing OK right after a slider change no longer drops the effect.
+- Reconfiguring an effect on a layer and pressing Cancel keeps its previous settings.
+- Holding undo or redo on a layer with effects can no longer undo the same step twice.
+- Layer Properties and Object Properties change only the layer or object they were opened on,
+  even after picking another layer, reordering objects, or closing the image.
+- Quitting or closing all images after choosing Save in the prompt now finishes the quit or
+  close instead of stopping after the first image.
+- Save As can't flatten a different image than the one being saved.
+- Ticking "Show grid" in the canvas grid dialog updates the View menu's Show Grid check.
+- Importing settings that reset the canvas surround colour updates the colour button in
+  Preferences.
+- After a tool's right-click pin menu, grouped tool buttons open their flyout again.
+- Picking a colour on the colour wheel's sliders adds it to the recent colours.
+
 ## Impasto - [0.7.1](https://github.com/zbcoding/ImpastoPaint/releases/tag/v0.7.1) - 2026-11-04
 
 ### Added

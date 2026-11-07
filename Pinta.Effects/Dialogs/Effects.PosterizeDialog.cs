@@ -25,7 +25,6 @@
 // THE SOFTWARE.
 
 using System;
-using System.Diagnostics.CodeAnalysis;
 using Pinta.Core;
 using Pinta.Gui.Widgets;
 
@@ -34,18 +33,18 @@ namespace Pinta.Effects;
 [GObject.Subclass<Gtk.Dialog>]
 public sealed partial class PosterizeDialog
 {
-	private HScaleSpinButtonWidget red_spinbox;
-	private HScaleSpinButtonWidget green_spinbox;
-	private HScaleSpinButtonWidget blue_spinbox;
-	private Gtk.CheckButton link_button;
+	// NRT - Set in New, which knows the values to start from
+	private HScaleSpinButtonWidget red_spinbox = null!;
+	private HScaleSpinButtonWidget green_spinbox = null!;
+	private HScaleSpinButtonWidget blue_spinbox = null!;
+	private Gtk.CheckButton link_button = null!;
 
 	public int Red => red_spinbox.ValueAsInt;
 	public int Green => green_spinbox.ValueAsInt;
 	public int Blue => blue_spinbox.ValueAsInt;
 
-	public PosterizeData? EffectData { get; set; }
+	public PosterizeData EffectData { get; private set; } = new ();
 
-	[MemberNotNull (nameof (red_spinbox), nameof (green_spinbox), nameof (blue_spinbox), nameof (link_button))]
 	partial void Initialize ()
 	{
 		DefaultWidth = 400;
@@ -61,48 +60,50 @@ public sealed partial class PosterizeDialog
 		this.AddCancelOkButtons ();
 		this.SetDefaultResponse (Gtk.ResponseType.Ok);
 
-		HScaleSpinButtonWidget redSpinbox = CreateChannelSpinBox (Translations.GetString ("Red"));
-		HScaleSpinButtonWidget greenSpinbox = CreateChannelSpinBox (Translations.GetString ("Green"));
-		HScaleSpinButtonWidget blueSpinbox = CreateChannelSpinBox (Translations.GetString ("Blue"));
-		Gtk.CheckButton linkButton = CreateLinkButton ();
-
-		red_spinbox = redSpinbox;
-		green_spinbox = greenSpinbox;
-		blue_spinbox = blueSpinbox;
-		link_button = linkButton;
-
 		Gtk.Box content_area = this.GetContentAreaBox ();
 		content_area.WidthRequest = 400;
 		content_area.SetAllMargins (6);
 		content_area.Spacing = 6;
-		content_area.AppendMultiple ([
-			redSpinbox,
-			greenSpinbox,
-			blueSpinbox,
-			linkButton]);
 	}
 
-	public static PosterizeDialog New (IChromeService chrome)
+	/// <summary>
+	/// The controls start from <paramref name="effectData"/>'s values, and write to it only when the user changes them.
+	/// </summary>
+	public static PosterizeDialog New (IChromeService chrome, PosterizeData effectData)
 	{
 		PosterizeDialog dialog = NewWithProperties ([]);
 		dialog.TransientFor = chrome.MainWindow;
+		dialog.EffectData = effectData;
+
+		dialog.red_spinbox = dialog.CreateChannelSpinBox (Translations.GetString ("Red"), effectData.Red);
+		dialog.green_spinbox = dialog.CreateChannelSpinBox (Translations.GetString ("Green"), effectData.Green);
+		dialog.blue_spinbox = dialog.CreateChannelSpinBox (Translations.GetString ("Blue"), effectData.Blue);
+		dialog.link_button = CreateLinkButton (effectData.Red == effectData.Green && effectData.Green == effectData.Blue);
+
+		dialog.GetContentAreaBox ().AppendMultiple ([
+			dialog.red_spinbox,
+			dialog.green_spinbox,
+			dialog.blue_spinbox,
+			dialog.link_button]);
+
 		return dialog;
 	}
 
-	private static Gtk.CheckButton CreateLinkButton ()
+	private static Gtk.CheckButton CreateLinkButton (bool linked)
 	{
 		var result = Gtk.CheckButton.NewWithLabel (Translations.GetString ("Linked"));
-		result.Active = true;
+		result.Active = linked;
 		return result;
 	}
 
-	private HScaleSpinButtonWidget CreateChannelSpinBox (string label)
+	private HScaleSpinButtonWidget CreateChannelSpinBox (string label, int initialValue)
 	{
-		const int initial_channel_value = 16;
-		HScaleSpinButtonWidget spinner = HScaleSpinButtonWidget.New (initial_channel_value);
+		HScaleSpinButtonWidget spinner = HScaleSpinButtonWidget.New (initialValue);
 		spinner.Label = label;
 		spinner.MaximumValue = 64;
 		spinner.MinimumValue = 2;
+		// Set now as well as on realize, so a channel realized later never reads as its pre-realize value.
+		spinner.Value = initialValue;
 		spinner.ValueChanged += HandleValueChanged;
 		return spinner;
 	}
@@ -120,9 +121,6 @@ public sealed partial class PosterizeDialog
 
 	private void UpdateEffectData ()
 	{
-		if (EffectData == null)
-			return;
-
 		EffectData.Red = red_spinbox.ValueAsInt;
 		EffectData.Green = green_spinbox.ValueAsInt;
 		EffectData.Blue = blue_spinbox.ValueAsInt;

@@ -123,6 +123,11 @@ public abstract class BaseTransformTool : BaseTool
 		Document document,
 		ToolMouseEventArgs e)
 	{
+		// A click lands a keyboard nudge whose key release went astray (say, to another window), as
+		// MoveSelectedTool does for a keyboard turn, so the tool never stays stuck ignoring clicks.
+		if (IsActive && !using_mouse)
+			OnFinishTransform (document, transform);
+
 		if (IsActive)
 			return;
 
@@ -588,19 +593,32 @@ public abstract class BaseTransformTool : BaseTool
 		UpdateHandlesFromDocument (document);
 	}
 
+	// Lands the gesture in progress the way its release would.
+	private void FinishActiveTransform (Document document)
+	{
+		if (is_handle_scaling)
+			handle.EndDrag ();
+
+		OnFinishTransform (document, transform);
+	}
+
+	// A commit mid-gesture (copy, save, a new layer) lands the gesture first, so its undo step
+	// comes before whatever the commit pushes.
+	protected override void OnCommit (Document? document)
+	{
+		if (IsActive && document is not null)
+			FinishActiveTransform (document);
+
+		base.OnCommit (document);
+	}
+
 	protected override void OnDeactivated (Document? document, BaseTool? newTool)
 	{
-		// ponytail: a mid-drag tool switch (e.g. a keyboard shortcut) used to leave is_dragging /
-		// is_rotating / is_scaling / is_handle_scaling set, and IsActive makes every later
-		// OnMouseDown a no-op - the tool looked dead until restart. Finish the in-flight gesture
-		// the same way OnMouseUp would. Shared fix: a BaseTool.CancelActiveGesture() hook, if a
-		// third tool needs the same reset.
+		// A keyboard nudge in progress (a pointer drag already got its release from the tool
+		// manager) still has to land, or IsActive makes every later OnMouseDown a no-op.
 		if (IsActive) {
-			if (is_handle_scaling)
-				handle.EndDrag ();
-
 			if (document is not null)
-				OnFinishTransform (document, transform);
+				FinishActiveTransform (document);
 			else {
 				is_dragging = false;
 				is_rotating = false;
@@ -609,6 +627,9 @@ public abstract class BaseTransformTool : BaseTool
 				using_mouse = false;
 			}
 		}
+
+		// The "c" release may go to another window while this tool is inactive.
+		center_snap_held = false;
 
 		base.OnDeactivated (document, newTool);
 		handle.Active = false;

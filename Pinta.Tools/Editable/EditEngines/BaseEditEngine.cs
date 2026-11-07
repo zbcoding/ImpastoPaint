@@ -79,7 +79,20 @@ public abstract class BaseEditEngine
 
 	protected readonly ShapeTool owner;
 
-	protected bool is_drawing = false;
+	// The pointer gesture in progress, from mouse-down to mouse-up. One mode at a time: a press
+	// either drags a control point, changes its tension, moves the whole shape, or rotates it.
+	private enum DragMode
+	{
+		None,
+		MovingPoint,
+		ChangingTension,
+		MovingShape,
+		RotatingShape,
+	}
+
+	private DragMode drag_mode = DragMode.None;
+
+	internal bool IsDrawing => drag_mode != DragMode.None;
 
 	protected RectangleD? last_dirty = null;
 
@@ -232,10 +245,7 @@ public abstract class BaseEditEngine
 	private readonly Gdk.Cursor grab_cursor = GdkExtensions.CursorFromName (Pinta.Resources.StandardCursors.Grab);
 	private readonly Gdk.Cursor move_cursor = GdkExtensions.CursorFromName (Pinta.Resources.StandardCursors.Move);
 
-	protected bool changing_tension = false;
 	protected PointD last_mouse_pos = new (0d, 0d);
-
-	private bool moving_whole_shape = false;
 
 	// Where the whole-shape drag was grabbed, and where the shape's bounding box
 	// sat at that moment. The drag is tracked against these rather than frame to
@@ -246,7 +256,6 @@ public abstract class BaseEditEngine
 	private AlignmentDrag shape_alignment = AlignmentDrag.None;
 
 	// Alt + left-drag on a control point spins the shape about its bounding box centre.
-	private bool rotating_whole_shape = false;
 	private bool rotate_modifier_down = false;
 	private readonly Gdk.Cursor rotate_cursor = CreateRotateCursor ();
 	private PointD shape_rotate_center;
@@ -264,6 +273,17 @@ public abstract class BaseEditEngine
 
 	//Helps to keep track of the first modification on a shape after the mouse is clicked, to prevent unnecessary history items.
 	protected bool clicked_without_modifying = false;
+
+	/// <summary>
+	/// Abandons the pointer gesture in progress, so the next motion only hovers. Anything that swaps
+	/// the engines or the selection under a held button (a tool switch, undo/redo, a layer reload)
+	/// must call this, or the drag resumes against a different shape without a history item.
+	/// </summary>
+	private void CancelGesture ()
+	{
+		drag_mode = DragMode.None;
+		clicked_without_modifying = false;
+	}
 
 	//Stores the editable shape data.
 	public static Collection<ShapeEngine> SEngines = [];
@@ -668,15 +688,12 @@ public abstract class BaseEditEngine
 		SelectedShapeIndex = -1;
 		last_signaled_edit = null;
 
-		// ponytail: a mid-drag tool switch (e.g. a keyboard shortcut) used to leave these set, and
-		// HandleMouseDown's "if (is_drawing) return;" guard made every shape tool dead until
-		// restart. Reset before the workspace.HasOpenDocuments block below so the flags clear even
+		// ponytail: a mid-drag tool switch (e.g. a keyboard shortcut) used to leave the gesture
+		// running, and HandleMouseDown's "if (IsDrawing) return;" guard made every shape tool dead
+		// until restart. Cancel before the workspace.HasOpenDocuments block below so it clears even
 		// when there's no open document. Shared fix: a BaseTool.CancelActiveGesture() hook, if a
 		// fourth tool needs the same reset.
-		is_drawing = false;
-		changing_tension = false;
-		moving_whole_shape = false;
-		rotating_whole_shape = false;
+		CancelGesture ();
 
 		workspace.SelectedLayerChanged -= HandleSelectedLayerChanged;
 		workspace.LayerAdded -= HandleLayerListChanged;
@@ -686,13 +703,16 @@ public abstract class BaseEditEngine
 		StorePreviousSettings ();
 
 		if (workspace.HasOpenDocuments) {
+			// A document switch fires no layer event, so the live engines may still belong to the
+			// previous document's layer; rebind before finalizing against the current one.
+			EnsureShapesForCurrentLayer ();
 			// Bake any Raster-mode shapes into the layer's base raster (per-shape; no-op if none).
 			FinalizeAllShapes ();
 			// Object-mode shapes stay re-editable: keep the raster overlay separate from
 			// UserLayer.Surface. ToolManager has not assigned the new tool yet, so do not switch
 			// tools while redrawing (a shape on another tool would re-enter deactivation).
 			DrawAllShapes (preventSwitchBack: false, switchTools: false);
-			PersistShapeObjects (workspace.ActiveDocument.Layers.CurrentUserLayer);
+			PersistLiveShapeObjects ();
 		}
 
 		// Clear the "Obj." badge overlay so it doesn't linger once another tool is active.
@@ -710,26 +730,38 @@ public abstract class BaseEditEngine
 		if (!workspace.HasOpenDocuments)
 			return;
 
+		EnsureShapesForCurrentLayer ();
 		DrawAllShapes (preventSwitchBack: false);
-		PersistShapeObjects (workspace.ActiveDocument.Layers.CurrentUserLayer);
+		PersistLiveShapeObjects ();
 	}
 
 	public virtual void HandleCommit ()
 	{
 		if (workspace.HasOpenDocuments) {
+			// Rebind first: Commit also runs from Save on a document switched to without a layer
+			// event, when the live engines still belong to the previous document's layer.
+			EnsureShapesForCurrentLayer ();
 			// "Move on" fuse point: committing the tool (layer switch, layer op, menu action, etc.)
 			// bakes any Raster-mode shapes into the current layer. Runs while this layer is still
 			// current (DoCommit fires before the layer index changes), so they fuse onto the right one.
 			FinalizeAllShapes ();
-			PersistShapeObjects (workspace.ActiveDocument.Layers.CurrentUserLayer);
+			PersistLiveShapeObjects ();
 		}
 	}
 
+	// Undo/redo rebuild the engines and swap the selection; a drag still held across it would
+	// resume against whichever shape now sits at the selected index.
 	public virtual bool HandleBeforeUndo ()
-		=> false;
+	{
+		CancelGesture ();
+		return false;
+	}
 
 	public virtual bool HandleBeforeRedo ()
-		=> false;
+	{
+		CancelGesture ();
+		return false;
+	}
 
 	public virtual void HandleAfterUndo () => RedrawAfterHistoryChange ();
 
@@ -900,7 +932,7 @@ public abstract class BaseEditEngine
 		// Mid-drag the gesture's own history item already covers this; pressed on its own it needs
 		// one of its own, or the snap is silently dropped by the next undo.
 		Document document = workspace.ActiveDocument;
-		if (is_drawing)
+		if (IsDrawing)
 			PushModifyHistoryOnce (document, Translations.GetString ("Modified"));
 		else
 			PushModifyHistory (document, Translations.GetString ("Modified"));
@@ -1159,7 +1191,7 @@ public abstract class BaseEditEngine
 		PointD unclamped_point = e.PointDouble;
 
 		//If we are already drawing, ignore any additional mouse down events.
-		if (is_drawing) return;
+		if (IsDrawing) return;
 
 		//Redraw the previously (and possibly currently) active shape without any control points in case another shape is made active.
 		DrawActiveShape (false, false, false, false, false);
@@ -1174,15 +1206,14 @@ public abstract class BaseEditEngine
 		if (shiftKey)
 			CalculateModifiedCurrentPoint ();
 
-		is_drawing = true;
-
 		bool rightButton = e.MouseButton == MouseButton.Right;
 
 		// A plain right click drags the whole shape (mirroring the Text tool). Only while holding
 		// the tension modifier (default Ctrl) does a right-drag on a control point change its tension.
 		KeyGesture tensionGesture = PintaCore.Shortcuts.GetToolBinding (KeyboardShortcutManager.ShapeChangeTension);
 		bool tension_modifier_down = ModifierKeys.IsHeld (tensionGesture, e.State);
-		changing_tension = rightButton && tension_modifier_down;
+		bool changing_tension = rightButton && tension_modifier_down;
+		drag_mode = changing_tension ? DragMode.ChangingTension : DragMode.MovingPoint;
 
 		bool ctrlKey = e.IsControlPressed;
 
@@ -1211,12 +1242,16 @@ public abstract class BaseEditEngine
 		// Alt + left-drag on a control point rotates the whole shape instead of moving that point.
 		rotate_modifier_down = ModifierKeys.IsHeld (RotateGesture, e.State);
 		if (!rightButton && rotate_modifier_down && (clicked_control_point || clicked_generated_point)) {
-			SelectedShapeIndex = clicked_control_point ? closestCPShapeIndex : closestShapeIndex;
+			int rotatedShapeIndex = clicked_control_point ? closestCPShapeIndex : closestShapeIndex;
+			if (ForwardToCorrespondingTool (rotatedShapeIndex, document, e))
+				return;
+
+			SelectedShapeIndex = rotatedShapeIndex;
 
 			RectangleD bounds = ShapeBounds (SEngines[SelectedShapeIndex]);
 			shape_rotate_center = new PointD (bounds.X + bounds.Width / 2d, bounds.Y + bounds.Height / 2d);
 			last_rotate_angle = Math.Atan2 (unclamped_point.Y - shape_rotate_center.Y, unclamped_point.X - shape_rotate_center.X);
-			rotating_whole_shape = true;
+			drag_mode = DragMode.RotatingShape;
 			clicked_without_modifying = true;
 
 			DrawActiveShape (false, false, true, shiftKey, false, ctrlKey);
@@ -1230,6 +1265,12 @@ public abstract class BaseEditEngine
 		// into empty space does nothing.
 		if (rightButton && !changing_tension) {
 			if (clicked_control_point) {
+				// Same cross-tool forward as the generated-point branches below: the redraw that
+				// follows would otherwise temporarily switch to the owning tool, deactivating this
+				// one and ending the drag before it starts.
+				if (ForwardToCorrespondingTool (closestCPShapeIndex, document, e))
+					return;
+
 				BeginWholeShapeDrag (closestCPShapeIndex, e);
 			} else if (clicked_generated_point && curved_segments_enabled) {
 				if (ForwardToCorrespondingTool (closestShapeIndex, document, e))
@@ -1249,7 +1290,7 @@ public abstract class BaseEditEngine
 			} else {
 				// Right click missed the shape: don't let the drag fall through to the
 				// point-moving/tension code, which would deform the previously selected point.
-				is_drawing = false;
+				drag_mode = DragMode.None;
 			}
 
 			DrawActiveShape (false, false, true, shiftKey, false, e.IsControlPressed);
@@ -1344,7 +1385,7 @@ public abstract class BaseEditEngine
 	private void BeginWholeShapeDrag (int shapeIndex, ToolMouseEventArgs e)
 	{
 		SelectedShapeIndex = shapeIndex;
-		moving_whole_shape = true;
+		drag_mode = DragMode.MovingShape;
 		clicked_without_modifying = true;
 
 		shape_move_grab_point = e.UnsnappedPointDouble;
@@ -1494,11 +1535,7 @@ public abstract class BaseEditEngine
 
 	public virtual void HandleMouseUp (Document document, ToolMouseEventArgs e)
 	{
-		is_drawing = false;
-
-		changing_tension = false;
-		moving_whole_shape = false;
-		rotating_whole_shape = false;
+		drag_mode = DragMode.None;
 
 		DrawActiveShape (true, false, true, e.IsShiftPressed, false, e.IsControlPressed);
 	}
@@ -1512,7 +1549,7 @@ public abstract class BaseEditEngine
 		triangle_switch_down = ModifierKeys.IsHeld (switchGesture, e.State);
 		rotate_modifier_down = ModifierKeys.IsHeld (RotateGesture, e.State);
 
-		if (!is_drawing) {
+		if (!IsDrawing) {
 			//Redraw the active shape to show a (temporary) highlighted control point (over any shape) when applicable.
 			DrawActiveShape (false, false, true, shiftKey, false, e.IsControlPressed);
 			last_mouse_pos = current_point;
@@ -1526,7 +1563,7 @@ public abstract class BaseEditEngine
 		if (shiftKey)
 			CalculateModifiedCurrentPoint ();
 
-		if (rotating_whole_shape && ActiveShapeEngine != null) {
+		if (drag_mode == DragMode.RotatingShape && ActiveShapeEngine != null) {
 			PushModifyHistoryOnce (doc, Translations.GetString ("Rotated"));
 
 			PointD p = e.UnsnappedPointDouble;
@@ -1553,7 +1590,7 @@ public abstract class BaseEditEngine
 			return;
 		}
 
-		if (moving_whole_shape && ActiveShapeEngine != null) {
+		if (drag_mode == DragMode.MovingShape && ActiveShapeEngine != null) {
 			PushModifyHistoryOnce (doc, Translations.GetString ("Modified"));
 
 			PointD dragPoint = doc.ClampToImageSize (e.UnsnappedPointDouble);
@@ -1583,7 +1620,7 @@ public abstract class BaseEditEngine
 
 		List<ControlPoint> controlPoints = SelectedShapeEngine!.ControlPoints; // NRT - Code assumes this is not-null
 
-		if (!changing_tension) {
+		if (drag_mode != DragMode.ChangingTension) {
 			//Moving a control point.
 
 			//Make sure the control point was moved.
@@ -1707,7 +1744,7 @@ public abstract class BaseEditEngine
 		if (activeEngine == null) {
 			//No shape will be drawn; however, the hover point still needs to be drawn if drawHoverSelection is true.
 			UpdateHoverHandle (drawHoverSelection, ctrl_key);
-			PersistShapeObjects (workspace.ActiveDocument.Layers.CurrentUserLayer);
+			PersistLiveShapeObjects ();
 			return;
 		}
 
@@ -1724,7 +1761,7 @@ public abstract class BaseEditEngine
 			OrganizePoints (activeEngine);
 
 		InvalidateAfterDraw (dirty);
-		PersistShapeObjects (workspace.ActiveDocument.Layers.CurrentUserLayer);
+		PersistLiveShapeObjects ();
 
 		DrawShapeBadges ();
 	}
@@ -2075,7 +2112,7 @@ public abstract class BaseEditEngine
 		bool hovering_control_point = false;
 		bool hovering_segment = false;
 
-		if (!changing_tension && !moving_whole_shape && draw_selection) {
+		if (drag_mode is not (DragMode.ChangingTension or DragMode.MovingShape) && draw_selection) {
 
 			PointD current_window_point = workspace.CanvasPointToView (current_point);
 
@@ -2117,9 +2154,9 @@ public abstract class BaseEditEngine
 		// Otherwise, the normal cursor is shown to indicate that a shape can be drawn.
 		var tool = tools.CurrentTool!;
 
-		if (rotating_whole_shape) {
+		if (drag_mode == DragMode.RotatingShape) {
 			tool.SetCursor (rotate_cursor);
-		} else if (!is_drawing && !ctrl_key && (hovering_control_point || hovering_segment)) {
+		} else if (!IsDrawing && !ctrl_key && (hovering_control_point || hovering_segment)) {
 			// Grab (hand) on the shape's edge, where a left click drags the whole shape; move on
 			// a control point, where a left click drags just that point instead.
 			if (rotate_modifier_down)
@@ -2137,7 +2174,7 @@ public abstract class BaseEditEngine
 		// While Ctrl is held over the canvas (about to start a fresh shape), hide other
 		// pending shapes' control points so their handles don't visually clutter the spot
 		// being clicked.
-		SetOtherShapesControlPointsHidden (ctrl_key && !is_drawing && draw_selection);
+		SetOtherShapesControlPointsHidden (ctrl_key && !IsDrawing && draw_selection);
 
 		workspace.InvalidateWindowRect (dirty);
 	}
@@ -2208,9 +2245,12 @@ public abstract class BaseEditEngine
 			int previousPointIndex = drawingEngine.SelectedPointIndex;
 			drawingEngine.SelectedShapeIndex = SelectedShapeIndex;
 			drawingEngine.SelectedPointIndex = previousToolSI == SelectedShapeIndex ? previousToolPI : -1;
-			drawingEngine.DrawActiveShape (true, false, previousToolSI == SelectedShapeIndex, false, preventSwitchBack, false, skipToolSwitch: true);
-			drawingEngine.SelectedShapeIndex = previousShapeIndex;
-			drawingEngine.SelectedPointIndex = previousPointIndex;
+			try {
+				drawingEngine.DrawActiveShape (true, false, previousToolSI == SelectedShapeIndex, false, preventSwitchBack, false, skipToolSwitch: true);
+			} finally {
+				drawingEngine.SelectedShapeIndex = previousShapeIndex;
+				drawingEngine.SelectedPointIndex = previousPointIndex;
+			}
 		}
 
 		//Restore the previous SelectedShapeIndex value.
@@ -2320,6 +2360,17 @@ public abstract class BaseEditEngine
 	}
 
 	/// <summary>
+	/// Persists the live editing engines into the layer they were loaded from. Never targets the
+	/// current layer directly: after a document switch (which fires no layer event) the current
+	/// layer can belong to another document, and storing these engines there would empty it.
+	/// </summary>
+	private static void PersistLiveShapeObjects ()
+	{
+		if (runtime_layer is not null)
+			PersistShapeObjects (runtime_layer);
+	}
+
+	/// <summary>
 	/// Re-establishes the object surface and (if <paramref name="layer"/> is the active editing
 	/// layer) the live editing engines for a layer after a shape history item swapped its
 	/// <see cref="UserLayer.ShapeObjects"/>. This is the shape counterpart of the object-model
@@ -2346,10 +2397,14 @@ public abstract class BaseEditEngine
 		foreach (ShapeEngine engine in SEngines)
 			PintaCore.Workspace.Invalidate (MoveHandle.UnionInvalidateRects (engine.ControlPointHandles));
 
+		int previousCount = SEngines.Count;
 		SEngines.Clear ();
 		foreach (ShapeObject source in layer.ShapeObjects)
 			SEngines.Add (ShapeEngineCollection.Create (layer, source));
 		runtime_layer = layer;
+
+		if (PintaCore.Tools.CurrentTool is ShapeTool activeTool)
+			activeTool.EditEngine.ResetAfterEngineRebuild (shapeCountChanged: SEngines.Count != previousCount);
 
 		// SEngines changed (e.g. a shape was fused by deselecting the selection it was clipped to).
 		// Re-draw the "Obj." badge overlay so a now-rasterized shape's badge disappears immediately
@@ -2358,8 +2413,27 @@ public abstract class BaseEditEngine
 			DrawShapeBadges ();
 	}
 
+	/// <summary>
+	/// SEngines was just rebuilt under this engine: a held drag would carry on against whatever shape
+	/// now sits at the selected index, and that index may name a different shape or none at all.
+	/// </summary>
+	private void ResetAfterEngineRebuild (bool shapeCountChanged)
+	{
+		CancelGesture ();
+
+		bool selectionInRange = SelectedShapeIndex < SEngines.Count
+			&& (SelectedShapeIndex < 0 || SelectedPointIndex < SEngines[SelectedShapeIndex].ControlPoints.Count);
+		if (selectionInRange && !shapeCountChanged)
+			return;
+
+		SelectedPointIndex = -1;
+		SelectedShapeIndex = -1;
+		last_signaled_edit = null;
+	}
+
 	private void CommitShapeEditing ()
 	{
+		EnsureShapesForCurrentLayer ();
 		// Bake any Raster-mode shapes into the base raster (per-shape; no-op if none), then keep the
 		// Object-mode shapes live and editable.
 		FinalizeAllShapes ();
@@ -2368,8 +2442,7 @@ public abstract class BaseEditEngine
 		SelectedShapeIndex = -1;
 		last_signaled_edit = null;
 		DrawAllShapes (preventSwitchBack: false);
-		if (workspace.HasOpenDocuments)
-			PersistShapeObjects (workspace.ActiveDocument.Layers.CurrentUserLayer);
+		PersistLiveShapeObjects ();
 	}
 
 	/// <summary>
@@ -2401,11 +2474,15 @@ public abstract class BaseEditEngine
 				continue;
 
 			BaseEditEngine correspondingEngine = correspondingTool.EditEngine;
+			int correspondingShapeIndex = correspondingEngine.SelectedShapeIndex;
 			correspondingEngine.SelectedShapeIndex = SEngines.IndexOf (engine);
-			correspondingEngine.BeforeDraw ();
-
-			RectangleD dirty = correspondingEngine.DrawFinalized (engine, false, false);
-			totalDirty = totalDirty?.Union (dirty) ?? dirty;
+			try {
+				correspondingEngine.BeforeDraw ();
+				RectangleD dirty = correspondingEngine.DrawFinalized (engine, false, false);
+				totalDirty = totalDirty?.Union (dirty) ?? dirty;
+			} finally {
+				correspondingEngine.SelectedShapeIndex = correspondingShapeIndex;
+			}
 		}
 
 		// Snapshot BEFORE dropping the baked shapes: the history item persists every live engine into
@@ -2508,7 +2585,7 @@ public abstract class BaseEditEngine
 		SelectedShapeIndex = -1;
 		last_signaled_edit = null;
 
-		is_drawing = false;
+		CancelGesture ();
 
 		last_dirty = null;
 	}
@@ -2576,8 +2653,8 @@ public abstract class BaseEditEngine
 				newTool.EditEngine.SelectedShapeIndex = oldToolSSI;
 
 				//Make sure neither tool thinks it is drawing anything.
-				newTool.EditEngine.is_drawing = false;
-				oldTool.EditEngine.is_drawing = false;
+				newTool.EditEngine.CancelGesture ();
+				oldTool.EditEngine.CancelGesture ();
 			}
 
 			ShapeEngine? activeEngine = newTool.EditEngine.ActiveShapeEngine;
@@ -2588,7 +2665,7 @@ public abstract class BaseEditEngine
 		} else {
 			if (permanentSwitch) {
 				//Make sure that the new tool doesn't think it is drawing anything.
-				newTool.EditEngine.is_drawing = false;
+				newTool.EditEngine.CancelGesture ();
 			}
 		}
 

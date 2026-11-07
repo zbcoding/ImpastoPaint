@@ -188,6 +188,9 @@ public sealed class GradientTool : BaseTool
 
 	private void Finalize (Document? document)
 	{
+		// A drag still in progress ends here too, or later moves keep rendering into the layer.
+		handle.EndDrag ();
+
 		if (!handle.Active) { return; }
 
 		if (document != null) {

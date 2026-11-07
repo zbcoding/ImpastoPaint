@@ -128,8 +128,27 @@ public sealed class ToolManager : IEnumerable<BaseTool>, IToolService
 	public void ResetShortcutKeyOverride (BaseTool tool)
 		=> shortcut_key_overrides.Remove (tool.GetType ().Name);
 
-	private bool is_panning;
-	private Gdk.Cursor? stored_cursor;
+	// Impasto: the pointer gesture in progress, one per physical press. A drag's moves and release go
+	// to the tool that took its press, which is always CurrentTool: a tool switch from outside
+	// pointer dispatch ends the drag first (EndToolDragForToolSwitch), and a switch a tool makes from
+	// inside its own handler (the shape tools forwarding a press) hands the drag to the new tool.
+	private enum PointerGesture
+	{
+		None,
+		ToolDrag, // CurrentTool took the press and is owed its moves and its release
+		Pan, // middle-button pan, routed to the pan tool whatever the current tool is
+		Swallowed, // no tool took the press, or its drag was ended early: drop the rest of it
+	}
+
+	private PointerGesture pointer_gesture = PointerGesture.None;
+	private Document? drag_document;
+	private ToolMouseEventArgs? drag_last_args;
+	private int pointer_dispatch_depth;
+
+	/// <summary>
+	/// Whether a tool is mid-drag: it has taken a press and not yet its release.
+	/// </summary>
+	public bool IsToolDragActive => pointer_gesture == PointerGesture.ToolDrag;
 
 	public event EventHandler<ToolEventArgs>? ToolAdded;
 	public event EventHandler<ToolEventArgs>? ToolRemoved;
@@ -171,6 +190,7 @@ public sealed class ToolManager : IEnumerable<BaseTool>, IToolService
 				SetCurrentTool (tools.First ());
 			else {
 				// There are no tools left.
+				EndToolDragForToolSwitch ();
 				DeactivateTool (tool, null);
 				PreviousTool = null;
 				CurrentTool = null;
@@ -193,6 +213,12 @@ public sealed class ToolManager : IEnumerable<BaseTool>, IToolService
 	public void SetCurrentTool (BaseTool tool)
 	{
 		// Bail if this is already the current tool
+		if (CurrentTool == tool)
+			return;
+
+		EndToolDragForToolSwitch ();
+
+		// Releasing may itself have switched tools (the color picker does).
 		if (CurrentTool == tool)
 			return;
 
@@ -375,12 +401,33 @@ public sealed class ToolManager : IEnumerable<BaseTool>, IToolService
 		tool.DoDeactivated (workspace_manager.ActiveDocumentOrDefault, newTool);
 	}
 
+	// A switch from outside pointer dispatch (a shortcut, the toolbox, a menu, undo) ends the current
+	// tool's drag as its release would, and the rest of that press reaches no tool. A switch a tool
+	// makes from its own pointer handler leaves the drag running for the new tool.
+	private void EndToolDragForToolSwitch ()
+	{
+		if (pointer_dispatch_depth > 0 || pointer_gesture != PointerGesture.ToolDrag)
+			return;
+
+		pointer_gesture = PointerGesture.Swallowed;
+		SendMouseUp (CurrentTool!, drag_document!, drag_last_args!);
+		drag_document = null;
+		drag_last_args = null;
+	}
+
 	// Issue #1334: effect dialogs are non-modal so they don't dim the canvas.
 	// The trade-off is that nothing else blocks canvas edits, so lock tool
 	// input while a live preview is running instead of relying on modality.
 	// ponytail: gates painting only; layer/tool panel switches still get through.
 	public void DoMouseDown (Document document, ToolMouseEventArgs args)
 	{
+		// A pan owns the pointer until its middle-button release.
+		if (pointer_gesture == PointerGesture.Pan)
+			return;
+
+		// Until a tool takes this press, none of it reaches one.
+		pointer_gesture = PointerGesture.Swallowed;
+
 		if (PintaCore.LivePreview.IsEnabled)
 			return;
 
@@ -421,31 +468,109 @@ public sealed class ToolManager : IEnumerable<BaseTool>, IToolService
 				return; // the user cancelled; leave the stroke off entirely
 		}
 
-		if (!TryMouseDownPanOverride (document, args))
-			CurrentTool?.DoMouseDown (document, ApplySnapping (args));
+		// The prompts above run a nested main loop; a release that arrived meanwhile ended the press.
+		if (pointer_gesture != PointerGesture.Swallowed)
+			return;
+
+		if (args.MouseButton == MouseButton.Middle && TryGetPanTool (out BaseTool? pan)) {
+			BeginPan (document, args, pan);
+			return;
+		}
+
+		if (CurrentTool is not { } tool)
+			return;
+
+		ToolMouseEventArgs snapped = ApplySnapping (args);
+		pointer_gesture = PointerGesture.ToolDrag;
+		drag_document = document;
+		drag_last_args = snapped;
+		SendMouseDown (tool, document, snapped);
 	}
 
 	public void DoMouseMove (Document document, ToolMouseEventArgs args)
 	{
 		if (PintaCore.LivePreview.IsEnabled)
 			return;
-		if (!TryMouseMovePanOverride (document, args))
-			CurrentTool?.DoMouseMove (document, ApplySnapping (args));
+
+		if (pointer_gesture == PointerGesture.Pan) {
+			if (TryGetPanTool (out BaseTool? pan))
+				pan.DoMouseMove (document, args);
+			return;
+		}
+
+		bool button_held = args.MouseButton != MouseButton.None;
+
+		if (pointer_gesture == PointerGesture.Swallowed && button_held)
+			return;
+
+		ToolMouseEventArgs snapped = ApplySnapping (args);
+
+		if (pointer_gesture == PointerGesture.ToolDrag && button_held)
+			drag_last_args = snapped;
+
+		if (CurrentTool is { } tool)
+			SendMouseMove (tool, document, snapped);
 
 		// Guides are feedback for a drag in progress, not for hovering over the canvas.
-		if (args.MouseButton == MouseButton.None)
+		if (!button_held)
 			PintaCore.CanvasGrid.ClearActiveGuides ();
 	}
 
+	// Not gated by a live preview: a drag or pan that began before the preview has to end, or the
+	// tool keeps drawing on hover and every later press pans.
 	public void DoMouseUp (Document document, ToolMouseEventArgs args)
 	{
-		if (PintaCore.LivePreview.IsEnabled)
-			return;
-		if (!TryMouseUpPanOverride (document, args))
-			CurrentTool?.DoMouseUp (document, ApplySnapping (args));
+		switch (pointer_gesture) {
+		case PointerGesture.Pan:
+			EndPan (document, args);
+			break;
+		case PointerGesture.ToolDrag:
+			pointer_gesture = PointerGesture.None;
+			drag_document = null;
+			drag_last_args = null;
+			if (CurrentTool is { } tool)
+				SendMouseUp (tool, document, ApplySnapping (args));
+			break;
+		default:
+			// The press reached no tool, so neither does its release.
+			pointer_gesture = PointerGesture.None;
+			break;
+		}
 
 		// The drag is over, so the guides it was holding stop being shown.
 		PintaCore.CanvasGrid.ClearActiveGuides ();
+	}
+
+	// The depth tells a tool switch made from inside a tool's own handler apart from one made
+	// from outside (see EndToolDragForToolSwitch).
+	private void SendMouseDown (BaseTool tool, Document document, ToolMouseEventArgs args)
+	{
+		pointer_dispatch_depth++;
+		try {
+			tool.DoMouseDown (document, args);
+		} finally {
+			pointer_dispatch_depth--;
+		}
+	}
+
+	private void SendMouseMove (BaseTool tool, Document document, ToolMouseEventArgs args)
+	{
+		pointer_dispatch_depth++;
+		try {
+			tool.DoMouseMove (document, args);
+		} finally {
+			pointer_dispatch_depth--;
+		}
+	}
+
+	private void SendMouseUp (BaseTool tool, Document document, ToolMouseEventArgs args)
+	{
+		pointer_dispatch_depth++;
+		try {
+			tool.DoMouseUp (document, args);
+		} finally {
+			pointer_dispatch_depth--;
+		}
 	}
 
 	/// <summary>
@@ -492,43 +617,26 @@ public sealed class ToolManager : IEnumerable<BaseTool>, IToolService
 	System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator ()
 		=> tools.GetEnumerator ();
 
-	private bool TryMouseDownPanOverride (Document document, ToolMouseEventArgs args)
+	private void BeginPan (Document document, ToolMouseEventArgs args, BaseTool pan)
 	{
-		if (is_panning)
-			return true;
-
-		if (args.MouseButton != MouseButton.Middle || !TryGetPanTool (out BaseTool? pan))
-			return false;
-
-		is_panning = true;
-		stored_cursor = document.Workspace.Canvas.Cursor;
+		pointer_gesture = PointerGesture.Pan;
 		document.Workspace.Canvas.Cursor = pan.DefaultCursor;
 		pan.DoMouseDown (document, args);
-		return true;
 	}
 
-	private bool TryMouseMovePanOverride (Document document, ToolMouseEventArgs args)
+	private void EndPan (Document document, ToolMouseEventArgs args)
 	{
-		if (!is_panning || !TryGetPanTool (out var pan))
-			return false;
-
-		pan.DoMouseMove (document, args);
-		return true;
-	}
-
-	private bool TryMouseUpPanOverride (Document document, ToolMouseEventArgs args)
-	{
-		if (!is_panning || !TryGetPanTool (out var pan))
-			return false;
-
-		// Ignore any mouse button releases that aren't Middle
+		// Only the middle button's release ends a pan.
 		if (args.MouseButton != MouseButton.Middle)
-			return true;
+			return;
 
-		is_panning = false;
-		pan.DoMouseUp (document, args);
-		document.Workspace.Canvas.Cursor = stored_cursor;
-		return true;
+		pointer_gesture = PointerGesture.None;
+
+		if (TryGetPanTool (out BaseTool? pan))
+			pan.DoMouseUp (document, args);
+
+		// The current tool's cursor, not the one from before the pan: the tool may have changed.
+		document.Workspace.Canvas.Cursor = CurrentTool?.CurrentCursor;
 	}
 
 	private bool TryGetPanTool ([NotNullWhen (true)] out BaseTool? tool)

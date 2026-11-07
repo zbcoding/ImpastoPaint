@@ -105,7 +105,7 @@ public sealed class AvifFormat : IImageImporter, IImageExporter
 		int quality = PintaCore.Settings.GetSetting<int> (SettingNames.AVIF_QUALITY, DefaultQuality);
 
 		// The first save in a session asks for the compression quality, like the WebP exporter.
-		if (!PintaCore.Workspace.ActiveDocument.HasBeenSavedInSession) {
+		if (!document.HasBeenSavedInSession) {
 			quality = PintaCore.Actions.File.RaiseModifyCompression (quality, parent);
 
 			if (quality == -1)

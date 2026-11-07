@@ -132,8 +132,10 @@ public sealed partial class ToolBarDropDownButton
 			toolbar_item_widgets[previous_index].SetCheckmarkVisible (false);
 			toolbar_item_widgets[index].SetCheckmarkVisible (true);
 
-			Selected = (uint) index;
+			// Recorded before Selected changes: GTK may rebind the selected item synchronously, and
+			// that re-enters here; seeing the new index already current stops a second change event.
 			previous_index = index;
+			Selected = (uint) index;
 			OnSelectedItemChanged ();
 		}
 

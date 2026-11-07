@@ -326,9 +326,10 @@ public sealed partial class LevelsDialog
 		dialog.workspace = workspace;
 		dialog.EffectData = effectData;
 
+		// Shows the levels the data holds; the data itself changes only on a user edit.
 		dialog.UpdateInputHistogram ();
-		dialog.Reset ();
-		dialog.UpdateLevels ();
+		dialog.UpdateFromLevelsOp ();
+		dialog.UpdateColorPanels ();
 		dialog.MaskChanged ();
 
 		return dialog;
@@ -538,12 +539,7 @@ public sealed partial class LevelsDialog
 			Levels.ColorInHigh = UpdateByMask (Levels.ColorInHigh, (byte) spin_in_high.Value);
 			Levels.ColorInLow = UpdateByMask (Levels.ColorInLow, (byte) spin_in_low.Value);
 
-			colorpanel_in_low.CairoColor = Levels.ColorInLow.ToCairoColor ();
-			colorpanel_in_high.CairoColor = Levels.ColorInHigh.ToCairoColor ();
-
-			colorpanel_out_low.CairoColor = Levels.ColorOutLow.ToCairoColor ();
-			colorpanel_out_mid.CairoColor = GetOutMidColor ();
-			colorpanel_out_high.CairoColor = Levels.ColorOutHigh.ToCairoColor ();
+			UpdateColorPanels ();
 
 			UpdateOutputHistogram ();
 			skip_counter = 0;
@@ -553,6 +549,16 @@ public sealed partial class LevelsDialog
 		disable_updating = false;
 
 		UpdateLivePreview ();
+	}
+
+	private void UpdateColorPanels ()
+	{
+		colorpanel_in_low.CairoColor = Levels.ColorInLow.ToCairoColor ();
+		colorpanel_in_high.CairoColor = Levels.ColorInHigh.ToCairoColor ();
+
+		colorpanel_out_low.CairoColor = Levels.ColorOutLow.ToCairoColor ();
+		colorpanel_out_mid.CairoColor = GetOutMidColor ();
+		colorpanel_out_high.CairoColor = Levels.ColorOutHigh.ToCairoColor ();
 	}
 
 	private void HandleGradientDragBegin (

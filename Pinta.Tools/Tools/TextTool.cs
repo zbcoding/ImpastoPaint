@@ -989,6 +989,30 @@ public sealed class TextTool : BaseTool
 		DrawTextRectangles ();
 	}
 
+	// The document whose history HandleHistoryChanged is attached to while the tool is active. It
+	// follows the active document, so detaching always reaches the document that was attached.
+	private Document? history_document;
+
+	private void ListenToHistoryOf (Document? document)
+	{
+		if (history_document is not null) {
+			history_document.History.ActionUndone -= HandleHistoryChanged;
+			history_document.History.ActionRedone -= HandleHistoryChanged;
+			history_document.History.HistoryItemAdded -= HandleHistoryChanged;
+		}
+
+		history_document = document;
+
+		if (document is not null) {
+			document.History.ActionUndone += HandleHistoryChanged;
+			document.History.ActionRedone += HandleHistoryChanged;
+			document.History.HistoryItemAdded += HandleHistoryChanged;
+		}
+	}
+
+	private void HandleActiveDocumentChanged (object? sender, EventArgs e)
+		=> ListenToHistoryOf (workspace.HasOpenDocuments ? workspace.ActiveDocument : null);
+
 	protected override void OnAntialiasingChanged ()
 	{
 		UpdateFont ();
@@ -1068,11 +1092,8 @@ public sealed class TextTool : BaseTool
 		// Refresh the overlay from the current object list on every undo/redo while we're the active tool.
 		// HistoryItemAdded matters too: an op pushed from outside the tool (e.g. "Rasterize All
 		// Objects" from the layers dock) removes text objects without going through RedrawText.
-		if (document is not null) {
-			document.History.ActionUndone += HandleHistoryChanged;
-			document.History.ActionRedone += HandleHistoryChanged;
-			document.History.HistoryItemAdded += HandleHistoryChanged;
-		}
+		ListenToHistoryOf (document);
+		workspace.ActiveDocumentChanged += HandleActiveDocumentChanged;
 
 		// We always start off not in edit mode
 		is_editing = false;
@@ -1101,19 +1122,8 @@ public sealed class TextTool : BaseTool
 		workspace.LayerPropertyChanged -= HandleLayerPropertyChanged;
 		LayerObjectSelection.ObjectDeselected -= HandleObjectDeselected;
 
-		if (document is not null) {
-			document.History.ActionUndone -= HandleHistoryChanged;
-			document.History.ActionRedone -= HandleHistoryChanged;
-			document.History.HistoryItemAdded -= HandleHistoryChanged;
-		}
-
-		// ponytail: a mid-drag tool switch (e.g. a keyboard shortcut) deactivates us with a border
-		// grip, corner grip, or new-box drag still live. Without this, OnMouseMove/UpdateMouseCursor
-		// deref current_text_object while tracking is still true and it's already null. Shared fix:
-		// a BaseTool.CancelActiveGesture() hook, if a third tool needs the same reset.
-		tracking = false;
-		manipulation = TextManipulation.None;
-		drawing_new_box = false;
+		workspace.ActiveDocumentChanged -= HandleActiveDocumentChanged;
+		ListenToHistoryOf (null);
 
 		CommitCurrentText ();
 
@@ -1399,7 +1409,13 @@ public sealed class TextTool : BaseTool
 		// If we're manipulating the text around, do that
 		if (tracking) {
 
-			TextObject obj = current_text_object!;
+			// The editing session can end under a drag (a layer switch commits the text).
+			if (current_text_object is not { } obj) {
+				tracking = false;
+				manipulation = TextManipulation.None;
+				drawing_new_box = false;
+				return;
+			}
 
 			// Area mode: defining a new flow box's width by dragging horizontally.
 			if (drawing_new_box) {
@@ -2233,6 +2249,10 @@ public sealed class TextTool : BaseTool
 	{
 		is_editing = false;
 		current_text_object = null;
+		// Any manipulation of the object ends with its session (a commit or undo mid-drag).
+		tracking = false;
+		manipulation = TextManipulation.None;
+		drawing_new_box = false;
 		editing_layer = null;
 		last_signaled_edit = null;
 		UpdateConfirmButtonVisibility ();

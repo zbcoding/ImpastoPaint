@@ -16,8 +16,6 @@ namespace Pinta.Effects;
 
 public sealed class PosterizeEffect : BaseEffect
 {
-	UnaryPixelOps.PosterizePixel? op = null;
-
 	public sealed override bool IsTileable => true;
 
 	public override string Icon => Pinta.Resources.Icons.AdjustmentsPosterize;
@@ -41,10 +39,10 @@ public sealed class PosterizeEffect : BaseEffect
 
 	public override async Task<bool> LaunchConfiguration ()
 	{
-		using PosterizeDialog dialog = PosterizeDialog.New (chrome);
+		// TODO: Delegate `EffectData` changes to event handlers or similar
+		using PosterizeDialog dialog = PosterizeDialog.New (chrome, Data);
 		dialog.Title = Name;
 		dialog.IconName = Icon;
-		dialog.EffectData = Data; // TODO: Delegate `EffectData` changes to event handlers or similar
 
 		Gtk.ResponseType response = await dialog.RunAsync ();
 
@@ -53,12 +51,10 @@ public sealed class PosterizeEffect : BaseEffect
 		return Gtk.ResponseType.Ok == response;
 	}
 
+	// Built per call from the current data: a committed node renders with this instance while its data
+	// is reconfigured, and the three 256-entry tables cost nothing next to the pixels.
 	public override void Render (ImageSurface src, ImageSurface dest, ReadOnlySpan<RectangleI> rois)
-	{
-		op ??= new UnaryPixelOps.PosterizePixel (Data.Red, Data.Green, Data.Blue);
-
-		op.Apply (dest, src, rois);
-	}
+		=> new UnaryPixelOps.PosterizePixel (Data.Red, Data.Green, Data.Blue).Apply (dest, src, rois);
 }
 
 public sealed class PosterizeData : EffectData

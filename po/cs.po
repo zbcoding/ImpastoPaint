@@ -19,7 +19,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: pinta\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-14 14:28-0500\n"
+"POT-Creation-Date: 2026-11-16 20:07-0600\n"
 "PO-Revision-Date: 2026-05-26 05:11+0000\n"
 "Last-Translator: Elviska <vonelviska@seznam.cz>\n"
 "Language-Team: Czech\n"
@@ -39,8 +39,8 @@ msgstr " (v uživatelském adresáři)"
 msgid " Selection Mode: "
 msgstr " Mód výběru: "
 
-#: ../Pinta.Core/Managers/EffectsManager.cs:85
-#: ../Pinta.Core/Managers/EffectsManager.cs:132
+#: ../Pinta.Core/Managers/EffectsManager.cs:90
+#: ../Pinta.Core/Managers/EffectsManager.cs:137
 msgid "..."
 msgstr "…"
 
@@ -49,8 +49,8 @@ msgid "3 x 3 Region"
 msgstr "Oblast 3 x 3"
 
 #. Translators: Move Selected Pixels mode that moves the pixels' corners in 3D space, viewed in perspective.
-#: ../Pinta.Tools/Tools/MoveSelectedTool.cs:235
-#: ../Pinta.Tools/Tools/MoveSelectedTool.cs:530
+#: ../Pinta.Tools/Tools/MoveSelectedTool.cs:243
+#: ../Pinta.Tools/Tools/MoveSelectedTool.cs:538
 #, fuzzy
 msgid "3D"
 msgstr "3D"
@@ -102,7 +102,7 @@ msgstr ""
 msgid "A {0} x {1} pixel image is too large to open"
 msgstr ""
 
-#: ../Impasto/MainWindow.cs:563
+#: ../Impasto/MainWindow.cs:566
 msgid "A_dd-ins"
 msgstr "D_oplňky"
 
@@ -119,10 +119,10 @@ msgstr ""
 msgid "Add Layer Mask"
 msgstr ""
 
-#: ../Impasto/Actions/Edit/PasteAction.cs:192
+#: ../Impasto/Actions/Edit/PasteAction.cs:203
 #: ../Pinta.Core/Actions/LayerActions.cs:73
 #: ../Pinta.Core/Actions/LayerActions.cs:688
-#: ../Pinta.Tools/Tools/MoveSelectedTool.cs:652
+#: ../Pinta.Tools/Tools/MoveSelectedTool.cs:662
 msgid "Add New Layer"
 msgstr "Přidat novou vrstvu"
 
@@ -158,7 +158,7 @@ msgstr "Manažer Pluginů"
 msgid "Add-ins"
 msgstr ""
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:1298
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:1338
 msgid "Added"
 msgstr "Přidané"
 
@@ -169,7 +169,7 @@ msgid ""
 msgstr ""
 
 #: ../Impasto/Actions/Help/KeyboardShortcutsDialogAction.cs:205
-#: ../Impasto/MainWindow.cs:629
+#: ../Impasto/MainWindow.cs:634
 msgid "Adjustments"
 msgstr "Úpravy"
 
@@ -189,20 +189,20 @@ msgid "Align to objects"
 msgstr ""
 
 #. Translators: 'All Petite Caps' refers to the font-variant text property
-#: ../Pinta.Tools/Dialogs/TextPropertiesDialog.cs:250
+#: ../Pinta.Tools/Dialogs/TextPropertiesDialog.cs:253
 #: ../Pinta.Tools/Tools/TextTool.cs:425
 msgid "All Petite Caps"
 msgstr "Všechny hezké písmena"
 
 #. Translators: 'All Small Caps' refers to the font-variant text property
-#: ../Pinta.Tools/Dialogs/TextPropertiesDialog.cs:248
+#: ../Pinta.Tools/Dialogs/TextPropertiesDialog.cs:251
 #: ../Pinta.Tools/Tools/TextTool.cs:411
 msgid "All Small Caps"
 msgstr "Všechny malé písmena"
 
 #: ../Impasto/Actions/File/OpenDocumentAction.cs:153
-#: ../Pinta.Core/Actions/EditActions.cs:706
-#: ../Pinta.Gui.Addins/AddinManagerDialog.cs:335
+#: ../Pinta.Core/Actions/EditActions.cs:714
+#: ../Pinta.Gui.Addins/AddinManagerDialog.cs:347
 msgid "All files"
 msgstr "Všechny soubory"
 
@@ -253,11 +253,11 @@ msgstr "Úhel ve stupních mezi křídly šipky a čárou."
 msgid "Antialias"
 msgstr "Vyhlazování"
 
-#: ../Pinta.Core/Classes/BaseTool.cs:464
+#: ../Pinta.Core/Classes/BaseTool.cs:472
 msgid "Antialiasing Off"
 msgstr "Antialiasing Vypnout"
 
-#: ../Pinta.Core/Classes/BaseTool.cs:463
+#: ../Pinta.Core/Classes/BaseTool.cs:471
 msgid "Antialiasing On"
 msgstr "Antialiasing Zapnout"
 
@@ -294,7 +294,7 @@ msgstr "Automaticky"
 msgid "Auto Crop"
 msgstr "Automaticky oříznout"
 
-#: ../Pinta.Effects/Adjustments/AutoLevelEffect.cs:24
+#: ../Pinta.Effects/Adjustments/AutoLevelEffect.cs:23
 msgid "Auto Level"
 msgstr "Automatická úroveň"
 
@@ -340,13 +340,13 @@ msgstr "Pozadí:"
 msgid "Backup"
 msgstr ""
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:947
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:979
 msgid ""
 "Bake this layer's effects and objects into its pixels; they stop being "
 "editable."
 msgstr ""
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:948
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:980
 msgid "Bake this object into the layer's pixels; it stops being editable."
 msgstr ""
 
@@ -378,17 +378,17 @@ msgstr "Černobílý"
 msgid "Blend Mode"
 msgstr "Režim míchání"
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:892
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:924
 msgid "Blend Mode:"
 msgstr ""
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:157
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:181
 #, csharp-format
 msgid "Blend Mode: {0}"
 msgstr ""
 
 #: ../Pinta.Effects/Dialogs/Effects.LevelsDialog.cs:121
-#: ../Pinta.Effects/Dialogs/Effects.PosterizeDialog.cs:66
+#: ../Pinta.Effects/Dialogs/Effects.PosterizeDialog.cs:80
 #: ../Pinta.Gui.Widgets/Widgets/ColorPickerSlider.cs:363
 msgid "Blue"
 msgstr "Modrá"
@@ -454,13 +454,13 @@ msgstr ""
 msgid "Bottom Right Perspective — Vertical"
 msgstr ""
 
-#: ../Pinta.Effects/Adjustments/BrightnessContrastEffect.cs:86
+#: ../Pinta.Effects/Adjustments/BrightnessContrastEffect.cs:94
 #: ../Pinta.Effects/Effects/GlowEffect.cs:79
-#: ../Pinta.Gui.Widgets/Widgets/ColorWheelWidget.cs:72
+#: ../Pinta.Gui.Widgets/Widgets/ColorWheelWidget.cs:80
 msgid "Brightness"
 msgstr "Jas"
 
-#: ../Pinta.Effects/Adjustments/BrightnessContrastEffect.cs:28
+#: ../Pinta.Effects/Adjustments/BrightnessContrastEffect.cs:31
 msgid "Brightness / Contrast"
 msgstr "Jas / Kontrast"
 
@@ -517,14 +517,14 @@ msgid ""
 "format."
 msgstr ""
 
-#: ../Impasto/Actions/File/SaveDocumentImplementationAction.cs:145
+#: ../Impasto/Actions/File/SaveDocumentImplementationAction.cs:148
 #: ../Impasto/Actions/Help/KeyboardShortcutsDialogAction.cs:138
 #: ../Impasto/Actions/Help/KeyboardShortcutsDialogAction.cs:151
 #: ../Impasto/Dialogs/PreferencesDialog.cs:439
-#: ../Pinta.Core/Actions/EditActions.cs:643
+#: ../Pinta.Core/Actions/EditActions.cs:651
 #: ../Pinta.Gui.Addins/InstallDialog.cs:126
 #: ../Pinta.Gui.Widgets/Widgets/ColorPickerDialog.cs:497
-#: ../Pinta.Tools/Dialogs/TextPropertiesDialog.cs:264
+#: ../Pinta.Tools/Dialogs/TextPropertiesDialog.cs:267
 msgid "Cancel"
 msgstr "Zrušit"
 
@@ -614,16 +614,16 @@ msgstr ""
 msgid "Change font size."
 msgstr "Změnit velikost fontu."
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:146
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:159
 msgid "Change outline width."
 msgstr "Změnit šířku obrysu."
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:937
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:969
 msgid ""
 "Change this effect's settings; the layer re-renders with the new values."
 msgstr ""
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:932
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:964
 msgid ""
 "Change this transform's settings; the layer re-renders with the new values."
 msgstr ""
@@ -638,12 +638,12 @@ msgid "Cherry Blossom"
 msgstr "Třešňový Přechod"
 
 #: ../Impasto/Dialogs/PreferencesDialog.cs:419
-#: ../Pinta.Effects/Dialogs/Effects.LevelsDialog.cs:666
+#: ../Pinta.Effects/Dialogs/Effects.LevelsDialog.cs:672
 #: ../Pinta.Gui.Widgets/Dialogs/SimpleEffectDialog.cs:366
 msgid "Choose Color"
 msgstr "Vybrat Barvu"
 
-#: ../Impasto/MainWindow.cs:996
+#: ../Impasto/MainWindow.cs:1001
 msgid "Choose Colors"
 msgstr "Vybrat Barvy"
 
@@ -708,7 +708,7 @@ msgstr ""
 msgid "Click and drag to navigate image."
 msgstr "Klik a táhnutí posunou obrázek."
 
-#: ../Impasto/MainWindow.cs:979
+#: ../Impasto/MainWindow.cs:984
 #: ../Pinta.Gui.Widgets/Widgets/StatusBarColorPaletteWidget.cs:798
 msgid "Click to reset primary and secondary color."
 msgstr "Kliknutím restartujete primární a skundární barvu."
@@ -733,14 +733,14 @@ msgstr ""
 msgid "Click to select secondary color."
 msgstr "Kliknutím vyberte sekundární barvu."
 
-#: ../Impasto/MainWindow.cs:972
+#: ../Impasto/MainWindow.cs:977
 #: ../Pinta.Gui.Widgets/Widgets/ColorPickerDialog.cs:366
 #: ../Pinta.Gui.Widgets/Widgets/ColorPickerPanel.cs:171
 #: ../Pinta.Gui.Widgets/Widgets/StatusBarColorPaletteWidget.cs:793
 msgid "Click to switch between primary and secondary color."
 msgstr "Kliknutím přepnete mezi primární a sekundární barvou."
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:523
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:543
 msgid ""
 "Clicking a segment while editing inserts a control point to smoothly curve "
 "it."
@@ -804,7 +804,7 @@ msgstr "Nepromísení barev"
 msgid "Color Gradient"
 msgstr "Přechod"
 
-#: ../Pinta.Tools/Tools/GradientTool.cs:353
+#: ../Pinta.Tools/Tools/GradientTool.cs:356
 msgid "Color Mode"
 msgstr "Režim barev"
 
@@ -851,7 +851,7 @@ msgstr ""
 msgid "Coloring"
 msgstr "Barevnost"
 
-#: ../Impasto/MainWindow.cs:791 ../Pinta.Core/Actions/ViewActions.cs:180
+#: ../Impasto/MainWindow.cs:796 ../Pinta.Core/Actions/ViewActions.cs:180
 msgid "Colors"
 msgstr ""
 
@@ -861,7 +861,7 @@ msgstr ""
 msgid "Composite image compression {0} is not supported"
 msgstr ""
 
-#: ../Pinta.Tools/Tools/GradientTool.cs:323
+#: ../Pinta.Tools/Tools/GradientTool.cs:326
 msgid "Conical Gradient"
 msgstr "Kónický přechod"
 
@@ -879,7 +879,7 @@ msgstr "Obsahuje"
 msgid "Contiguous"
 msgstr "Spojité"
 
-#: ../Pinta.Effects/Adjustments/BrightnessContrastEffect.cs:96
+#: ../Pinta.Effects/Adjustments/BrightnessContrastEffect.cs:104
 #: ../Pinta.Effects/Effects/GlowEffect.cs:83
 msgid "Contrast"
 msgstr "Kontrast"
@@ -959,15 +959,15 @@ msgstr ""
 msgid "Curved"
 msgstr "Zakřivený"
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:524
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:544
 msgid "Curved Segments Off"
 msgstr "Zakřivené segmenty vypnuty"
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:523
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:543
 msgid "Curved Segments On"
 msgstr "Zakřivené segmenty zapnuty"
 
-#: ../Pinta.Effects/Adjustments/CurvesEffect.cs:27
+#: ../Pinta.Effects/Adjustments/CurvesEffect.cs:26
 #: ../Pinta.Effects/Dialogs/Effects.CurvesDialog.cs:137
 msgid "Curves"
 msgstr "Křivky"
@@ -1014,7 +1014,7 @@ msgstr "Výchozí"
 msgid "Default canvas size (on application open):"
 msgstr ""
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:957
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:989
 msgid "Delete"
 msgstr ""
 
@@ -1023,15 +1023,15 @@ msgstr ""
 msgid "Delete Layer"
 msgstr "Smazat vrstvu"
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:334
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:365
 msgid "Delete Layer Mask"
 msgstr ""
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:997
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:1029
 msgid "Delete Mask"
 msgstr ""
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:311
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:342
 msgid "Delete Object"
 msgstr ""
 
@@ -1047,7 +1047,7 @@ msgstr ""
 msgid "Delete selected control point"
 msgstr ""
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:1060
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:1091
 msgid "Deleted"
 msgstr "Odstraněno"
 
@@ -1105,7 +1105,7 @@ msgstr "Dithering"
 msgid "Do not switch tool"
 msgstr "Nepřepínat nástroj"
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:159
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:183
 msgid "Double-click for Layer Properties"
 msgstr ""
 
@@ -1118,7 +1118,7 @@ msgstr "Velikost stahováných dat: {0}"
 msgid "Drag a corner grip to resize, or the dashed border to move."
 msgstr ""
 
-#: ../Pinta.Tools/Tools/MoveSelectedTool.cs:138
+#: ../Pinta.Tools/Tools/MoveSelectedTool.cs:146
 #, fuzzy
 msgid ""
 "Drag an edge's grip to slide that edge along itself, slanting the selected "
@@ -1127,39 +1127,39 @@ msgstr ""
 "Tažením úchytu hrany posunete tuto hranu podél ní samé a vybrané pixely "
 "zkosíte."
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:160
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:184
 msgid "Drag and drop to reorder"
 msgstr ""
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:1316
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:1354
 msgid "Drag and drop to reorder it on this layer"
 msgstr ""
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:1319
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:1357
 msgid "Drag and drop to reorder, or onto another layer to move it there"
 msgstr ""
 
-#: ../Pinta.Tools/Tools/MoveSelectedTool.cs:141
+#: ../Pinta.Tools/Tools/MoveSelectedTool.cs:149
 #, fuzzy
 msgid ""
 "Drag any corner on its own to fit the selected pixels onto an angled surface."
 msgstr ""
 "Tažením libovolného rohu samostatně přizpůsobíte vybrané pixely šikmé ploše."
 
-#: ../Pinta.Tools/Tools/TextTool.cs:2860
+#: ../Pinta.Tools/Tools/TextTool.cs:2883
 msgid "Drag corner to resize (changes font size)"
 msgstr ""
 
-#: ../Pinta.Tools/Tools/TextTool.cs:2859
+#: ../Pinta.Tools/Tools/TextTool.cs:2882
 msgid "Drag corner to resize the text box"
 msgstr ""
 
-#: ../Pinta.Tools/Tools/MoveSelectedTool.cs:229
+#: ../Pinta.Tools/Tools/MoveSelectedTool.cs:237
 #, fuzzy
 msgid "Drag the grips to resize the selected pixels."
 msgstr "Tažením úchytů změníte velikost vybraných pixelů."
 
-#: ../Pinta.Tools/Tools/MoveSelectedTool.cs:155
+#: ../Pinta.Tools/Tools/MoveSelectedTool.cs:163
 #, fuzzy, csharp-format
 msgid ""
 "Drag to move this corner\n"
@@ -1168,7 +1168,7 @@ msgstr ""
 "Tažením přesunete tento roh\n"
 "{0}+tažení nahoru či dolů: oddálení nebo přiblížení"
 
-#: ../Pinta.Tools/Tools/MoveSelectedTool.cs:159
+#: ../Pinta.Tools/Tools/MoveSelectedTool.cs:167
 #, fuzzy, csharp-format
 msgid ""
 "Drag to turn or tilt the selection\n"
@@ -1183,7 +1183,7 @@ msgstr ""
 msgid "Draw only the outline of the text, using the secondary color."
 msgstr "Nakreslí pouze obrys textu pomocí sekundární barvy."
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:559
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:579
 #: ../Pinta.Tools/Tools/FreeformShapeTool.cs:222
 msgid "Draw only the shape's outline, using the primary color."
 msgstr "Nakreslí pouze obrys tvaru pomocí primární barvy."
@@ -1207,7 +1207,7 @@ msgstr ""
 msgid "Each added point joins its neighbors with a straight segment."
 msgstr ""
 
-#: ../Impasto/MainWindow.cs:1214
+#: ../Impasto/MainWindow.cs:1219
 msgid ""
 "Each file opens as its own image. If you dropped these by accident, choose "
 "Cancel."
@@ -1241,16 +1241,16 @@ msgid ""
 "to bake silently and skip the warning."
 msgstr ""
 
-#: ../Impasto/MainWindow.cs:561
+#: ../Impasto/MainWindow.cs:564
 msgid "Effe_cts"
 msgstr "Efe_kty"
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:936
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:968
 msgid "Effect Settings..."
 msgstr ""
 
 #: ../Impasto/Actions/Help/KeyboardShortcutsDialogAction.cs:206
-#: ../Impasto/MainWindow.cs:624
+#: ../Impasto/MainWindow.cs:629
 msgid "Effects"
 msgstr "Efekty"
 
@@ -1260,7 +1260,7 @@ msgid "Electric"
 msgstr "Elektrický Přechod"
 
 #: ../Pinta.Core/Classes/Re-editable/ObjectRasterizer.cs:149
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:129
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:153
 #: ../Pinta.Tools/Editable/EditEngines/EllipseEditEngine.cs:36
 #: ../Pinta.Tools/Tools/EllipseTool.cs:43
 msgid "Ellipse"
@@ -1287,7 +1287,7 @@ msgstr ""
 msgid "Erase Selection"
 msgstr "Smazat výběr"
 
-#: ../Pinta.Tools/Tools/EraserTool.cs:70
+#: ../Pinta.Tools/Tools/EraserTool.cs:73
 msgid "Eraser"
 msgstr "Guma"
 
@@ -1304,7 +1304,7 @@ msgid "Exclude (-) (Right Click)"
 msgstr "Vyloučit (-) (Pravé Kliknutí)"
 
 #. Translators: This refers to expanding the canvas size when pasting a larger image.
-#: ../Impasto/Actions/Edit/PasteAction.cs:245
+#: ../Impasto/Actions/Edit/PasteAction.cs:259
 msgid "Expand"
 msgstr "Rozšířit"
 
@@ -1320,7 +1320,7 @@ msgstr ""
 msgid "Export Settings..."
 msgstr ""
 
-#: ../Pinta.Gui.Addins/AddinManagerDialog.cs:327
+#: ../Pinta.Gui.Addins/AddinManagerDialog.cs:339
 msgid "Extension packages"
 msgstr "Balíčky s rozšířeními"
 
@@ -1333,12 +1333,12 @@ msgstr "Faktor"
 msgid "Failed to access XDG Desktop Portals"
 msgstr "Neschopní přistoupit na XDG Desktop Portals"
 
-#: ../Impasto/Dialogs/PreferencesDialog.cs:462
+#: ../Impasto/Dialogs/PreferencesDialog.cs:463
 #, csharp-format
 msgid "Failed to export settings: {0}"
 msgstr ""
 
-#: ../Impasto/MainWindow.cs:448
+#: ../Impasto/MainWindow.cs:451
 msgid "Failed to initialize add-in"
 msgstr "Selhala inicializace pluginu"
 
@@ -1350,12 +1350,12 @@ msgstr "Nemohli jsme načíst balíčky s rozšířeními"
 msgid "Failed to open image"
 msgstr "Obrázek se nepodařilo otevřít"
 
-#: ../Impasto/Dialogs/PreferencesDialog.cs:489
+#: ../Impasto/Dialogs/PreferencesDialog.cs:490
 #, csharp-format
 msgid "Failed to read settings file: {0}"
 msgstr ""
 
-#: ../Impasto/Actions/File/SaveDocumentImplementationAction.cs:316
+#: ../Impasto/Actions/File/SaveDocumentImplementationAction.cs:328
 msgid "Failed to save image"
 msgstr "Obrázek se nepodařilo uložit"
 
@@ -1364,7 +1364,7 @@ msgstr "Obrázek se nepodařilo uložit"
 msgid "Failed to take screenshot"
 msgstr "Snímek obrazovky se nezdařil"
 
-#: ../Pinta.Tools/Tools/EraserTool.cs:429
+#: ../Pinta.Tools/Tools/EraserTool.cs:432
 msgid "Feather"
 msgstr ""
 
@@ -1376,7 +1376,7 @@ msgstr "Hrana Pírkového Plátna"
 msgid "Feather Object"
 msgstr "Pírkový Objekt"
 
-#: ../Pinta.Tools/Tools/MoveSelectedTool.cs:265
+#: ../Pinta.Tools/Tools/MoveSelectedTool.cs:273
 #, fuzzy
 msgid "Field of view"
 msgstr "Zorné pole"
@@ -1406,17 +1406,17 @@ msgstr "Vyplnit Objektové Pozadí"
 msgid "Fill Selection"
 msgstr "Vyplnit Výběr"
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:560
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:580
 #: ../Pinta.Tools/Tools/FreeformShapeTool.cs:223
 msgid "Fill Shape"
 msgstr "Vyplnit Tvar"
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:550
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:570
 #: ../Pinta.Tools/Tools/FreeformShapeTool.cs:216
 msgid "Fill Style"
 msgstr "Styl Výplně"
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:561
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:581
 #: ../Pinta.Tools/Tools/FreeformShapeTool.cs:224
 msgid "Fill and Outline Shape"
 msgstr "Vyplnit a Obtáhnout tvar"
@@ -1432,14 +1432,14 @@ msgid ""
 "Fill only the connected region of similar color touching the click point."
 msgstr ""
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:561
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:581
 #: ../Pinta.Tools/Tools/FreeformShapeTool.cs:224
 msgid ""
 "Fill the interior with the secondary color and outline it with the primary "
 "color."
 msgstr ""
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:560
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:580
 #: ../Pinta.Tools/Tools/FreeformShapeTool.cs:223
 msgid "Fill the shape's interior with the secondary color, no outline."
 msgstr "Vyplní vnitřek tvaru sekundární barvou, bez obrysu."
@@ -1465,9 +1465,9 @@ msgstr ""
 msgid "Finalize shape"
 msgstr ""
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:1820
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:2414
-#: ../Pinta.Tools/Tools/GradientTool.cs:195
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:1856
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:2490
+#: ../Pinta.Tools/Tools/GradientTool.cs:198
 msgid "Finalized"
 msgstr "Dokončeno"
 
@@ -1480,7 +1480,7 @@ msgid "Finish selection"
 msgstr ""
 
 #: ../Pinta.Core/Extensions/Gtk/GtkExtensions.Widget.cs:236
-#: ../Pinta.Tools/Tools/LassoSelectTool.cs:311
+#: ../Pinta.Tools/Tools/LassoSelectTool.cs:316
 msgid "Finish selection (Enter)"
 msgstr ""
 
@@ -1489,7 +1489,7 @@ msgstr ""
 msgid "Finish typing ({0})"
 msgstr "Dokončit psaní ({0})"
 
-#: ../Impasto/Actions/File/SaveDocumentImplementationAction.cs:358
+#: ../Impasto/Actions/File/SaveDocumentImplementationAction.cs:373
 #: ../Pinta.Core/Actions/ImageActions.cs:117
 #: ../Pinta.Core/Actions/ImageActions.cs:228
 msgid "Flatten"
@@ -1499,7 +1499,7 @@ msgstr "Zploštit"
 msgid "Flattened, squared-off corners on the outline."
 msgstr "Zploštělé, seříznuté rohy na obrysu."
 
-#: ../Impasto/Actions/File/SaveDocumentImplementationAction.cs:352
+#: ../Impasto/Actions/File/SaveDocumentImplementationAction.cs:367
 msgid "Flattening the image will merge all layers into a single layer."
 msgstr "Zploštění obrázku spojí všechny jeho vrstvy do jedné."
 
@@ -1566,7 +1566,7 @@ msgstr "Dithering dle Floyd-Steinberg Lite"
 msgid "Folders cannot be opened."
 msgstr ""
 
-#: ../Impasto/MainWindow.cs:1233
+#: ../Impasto/MainWindow.cs:1238
 msgid "Folders cannot be opened. Drop the image files inside instead."
 msgstr ""
 
@@ -1582,7 +1582,7 @@ msgstr "Úlomek"
 msgid "Fragments"
 msgstr "Úlomky"
 
-#: ../Pinta.Tools/Tools/LassoSelectTool.cs:356
+#: ../Pinta.Tools/Tools/LassoSelectTool.cs:361
 msgid "Freeform"
 msgstr "Volný Výběr"
 
@@ -1623,7 +1623,7 @@ msgid "Glow"
 msgstr "Záře"
 
 #: ../Pinta.Tools/Tools/GradientTool.cs:63
-#: ../Pinta.Tools/Tools/GradientTool.cs:313
+#: ../Pinta.Tools/Tools/GradientTool.cs:316
 msgid "Gradient"
 msgstr "Přechod"
 
@@ -1641,7 +1641,7 @@ msgstr ""
 
 #: ../Pinta.Effects/Dialogs/Effects.CurvesDialog.cs:90
 #: ../Pinta.Effects/Dialogs/Effects.LevelsDialog.cs:117
-#: ../Pinta.Effects/Dialogs/Effects.PosterizeDialog.cs:65
+#: ../Pinta.Effects/Dialogs/Effects.PosterizeDialog.cs:79
 #: ../Pinta.Gui.Widgets/Widgets/ColorPickerSlider.cs:362
 msgid "Green"
 msgstr "Zelená"
@@ -1679,16 +1679,16 @@ msgstr ""
 msgid "Hex"
 msgstr "Hexadecimální"
 
-#: ../Impasto/Actions/Layers/LayerPropertiesAction.cs:121
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:230
+#: ../Impasto/Actions/Layers/LayerPropertiesAction.cs:134
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:254
 msgid "Hide Layer"
 msgstr "Skrýt vrstvu"
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:385
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:416
 msgid "Hide Layer Mask"
 msgstr ""
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:456
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:487
 msgid "Hide Object"
 msgstr ""
 
@@ -1719,7 +1719,7 @@ msgstr "Historie"
 msgid "Hold the switch key to draw the other triangle type."
 msgstr ""
 
-#: ../Pinta.Tools/Tools/CloneStampTool.cs:231
+#: ../Pinta.Tools/Tools/CloneStampTool.cs:238
 #, csharp-format
 msgid "Hold {0} and click to set an origin point first."
 msgstr ""
@@ -1748,16 +1748,16 @@ msgstr "Horizontální zelená (G)"
 msgid "Horizontal red (R)"
 msgstr "Horizontální červená (R)"
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:914
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:946
 msgid ""
 "How much of the effect is applied. At 0 the layer looks as it did before."
 msgstr ""
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:895
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:927
 msgid "How the effect's result is mixed back into the image it was applied to."
 msgstr ""
 
-#: ../Pinta.Tools/Tools/MoveSelectedTool.cs:274
+#: ../Pinta.Tools/Tools/MoveSelectedTool.cs:282
 #, fuzzy
 msgid ""
 "How wide 3D mode's view is, in degrees. A wide view makes depth look "
@@ -1781,7 +1781,7 @@ msgstr "Odstín a Sytost"
 msgid "Hue / Saturation"
 msgstr "Odstín / Sytost"
 
-#: ../Impasto/Actions/File/SaveDocumentImplementationAction.cs:304
+#: ../Impasto/Actions/File/SaveDocumentImplementationAction.cs:316
 msgid "ICO files can not be larger than 256 x 256 pixels."
 msgstr "Soubory ICO nesmí být větší než 256 x 256 pixelů."
 
@@ -1799,12 +1799,12 @@ msgid ""
 "shown fully opaque."
 msgstr ""
 
-#: ../Impasto/Actions/File/CloseDocumentAction.cs:75
+#: ../Impasto/Actions/File/CloseDocumentAction.cs:100
 msgid "If you don't save, all changes will be permanently lost."
 msgstr "Pokud je neuložíte, veškeré změny budou navždy ztraceny."
 
 #: ../Impasto/Actions/Help/KeyboardShortcutsDialogAction.cs:204
-#: ../Impasto/MainWindow.cs:634 ../Pinta.Tools/Tools/ColorPickerTool.cs:277
+#: ../Impasto/MainWindow.cs:639 ../Pinta.Tools/Tools/ColorPickerTool.cs:277
 msgid "Image"
 msgstr "Obrázek"
 
@@ -1816,7 +1816,7 @@ msgstr ""
 msgid "Image Tabs"
 msgstr "Panely obrázků"
 
-#: ../Impasto/Actions/Edit/PasteAction.cs:225
+#: ../Impasto/Actions/Edit/PasteAction.cs:239
 msgid "Image cannot be pasted"
 msgstr "Nelze vložit obrázek"
 
@@ -1825,11 +1825,11 @@ msgstr "Nelze vložit obrázek"
 msgid "Image files"
 msgstr "Soubory obrázků"
 
-#: ../Impasto/Actions/Edit/PasteAction.cs:232
+#: ../Impasto/Actions/Edit/PasteAction.cs:246
 msgid "Image larger than canvas"
 msgstr "Obrázek větší než plátno"
 
-#: ../Impasto/Actions/File/SaveDocumentImplementationAction.cs:303
+#: ../Impasto/Actions/File/SaveDocumentImplementationAction.cs:315
 msgid "Image too large"
 msgstr "Obrázek je příliš velký"
 
@@ -1870,7 +1870,7 @@ msgid ""
 "and can be reopened."
 msgstr ""
 
-#: ../Impasto/Actions/File/SaveDocumentImplementationAction.cs:277
+#: ../Impasto/Actions/File/SaveDocumentImplementationAction.cs:289
 msgid "Impasto does not support saving images in this file format."
 msgstr "Impasto nepodporuje ukládání obrázků v tomto typu souborů.."
 
@@ -1894,7 +1894,7 @@ msgstr ""
 msgid "Impasto supports the following palette formats:"
 msgstr "Impasto podporuje následující formáty palet:"
 
-#: ../Impasto/Dialogs/PreferencesDialog.cs:544
+#: ../Impasto/Dialogs/PreferencesDialog.cs:545
 msgid "Import"
 msgstr ""
 
@@ -1902,11 +1902,11 @@ msgstr ""
 msgid "Import From File"
 msgstr "Vložit ze souboru"
 
-#: ../Impasto/Dialogs/PreferencesDialog.cs:540
+#: ../Impasto/Dialogs/PreferencesDialog.cs:541
 msgid "Import Keyboard Shortcuts?"
 msgstr ""
 
-#: ../Impasto/Dialogs/PreferencesDialog.cs:476
+#: ../Impasto/Dialogs/PreferencesDialog.cs:477
 msgid "Import Settings"
 msgstr ""
 
@@ -1918,14 +1918,14 @@ msgstr ""
 msgid "Import from File..."
 msgstr "Vložit ze souboru..."
 
-#: ../Impasto/Dialogs/PreferencesDialog.cs:527
+#: ../Impasto/Dialogs/PreferencesDialog.cs:528
 #, csharp-format
 msgid ""
 "Imported {0} setting(s); {1} entry(ies) were skipped (unrecognized or "
 "invalid). {2} Restart Impasto for all changes to fully take effect."
 msgstr ""
 
-#: ../Pinta.Tools/Tools/MoveSelectedTool.cs:130
+#: ../Pinta.Tools/Tools/MoveSelectedTool.cs:138
 #, fuzzy, csharp-format
 msgid ""
 "In 3D mode, drag a corner to move it, or hold {0} and drag it up or down to "
@@ -1937,7 +1937,7 @@ msgstr ""
 "otočíte nebo naklopíte; podržením klávesy Shift po krocích 15°. Případně "
 "stiskněte {1}, {2}, {3} nebo {4}."
 
-#: ../Pinta.Tools/Tools/LassoSelectTool.cs:359
+#: ../Pinta.Tools/Tools/LassoSelectTool.cs:364
 msgid ""
 "In Freeform mode, click and drag to draw the outline for a selection area."
 msgstr ""
@@ -1956,7 +1956,7 @@ msgstr ""
 "Zmáčkněte Enter pro dokončení výběru.\n"
 "Zmáčkněte Backspace pro smazání posledního bodu."
 
-#: ../Pinta.Tools/Tools/LassoSelectTool.cs:365
+#: ../Pinta.Tools/Tools/LassoSelectTool.cs:370
 msgid ""
 "In Polygon mode, click and drag to add a new point to the selection.\n"
 "Press Enter to finish the selection.\n"
@@ -1964,7 +1964,7 @@ msgid ""
 msgstr ""
 
 #. Translators: Skew and Perspective are the Mode choices on this tool's toolbar.
-#: ../Pinta.Tools/Tools/MoveSelectedTool.cs:124
+#: ../Pinta.Tools/Tools/MoveSelectedTool.cs:132
 #, fuzzy
 msgid ""
 "In Skew or Perspective mode, drag the grips on the selection's edges or "
@@ -2014,7 +2014,7 @@ msgstr ""
 msgid "Install"
 msgstr "Instalovat"
 
-#: ../Pinta.Gui.Addins/AddinManagerDialog.cs:301
+#: ../Pinta.Gui.Addins/AddinManagerDialog.cs:313
 msgid "Install Extension Package"
 msgstr "Nainstalovat balíček s rozšířeními"
 
@@ -2052,7 +2052,7 @@ msgid "Invert Colors"
 msgstr "Invertovat barvy"
 
 #: ../Pinta.Core/Actions/EditActions.cs:148
-#: ../Pinta.Core/Actions/EditActions.cs:728
+#: ../Pinta.Core/Actions/EditActions.cs:736
 msgid "Invert Selection"
 msgstr "Obrátit výběr"
 
@@ -2070,12 +2070,12 @@ msgstr "Dithering dle Jarvis-Judice-Ninke"
 msgid "Julia Fractal"
 msgstr "Juliin fraktál"
 
-#: ../Pinta.Tools/Dialogs/TextPropertiesDialog.cs:236
+#: ../Pinta.Tools/Dialogs/TextPropertiesDialog.cs:238
 #: ../Pinta.Tools/Tools/TextTool.cs:612
 msgid "Justify"
 msgstr ""
 
-#: ../Impasto/Dialogs/PreferencesDialog.cs:543
+#: ../Impasto/Dialogs/PreferencesDialog.cs:544
 msgid "Keep Mine"
 msgstr ""
 
@@ -2096,11 +2096,11 @@ msgstr ""
 msgid "Keyboard Shortcuts..."
 msgstr ""
 
-#: ../Impasto/Dialogs/PreferencesDialog.cs:523
+#: ../Impasto/Dialogs/PreferencesDialog.cs:524
 msgid "Keyboard shortcuts were imported, replacing your current ones."
 msgstr ""
 
-#: ../Impasto/Dialogs/PreferencesDialog.cs:524
+#: ../Impasto/Dialogs/PreferencesDialog.cs:525
 msgid "Keyboard shortcuts were left unchanged."
 msgstr ""
 
@@ -2118,7 +2118,7 @@ msgstr ""
 msgid "Lasso / Scissors Select"
 msgstr ""
 
-#: ../Pinta.Tools/Tools/LassoSelectTool.cs:281
+#: ../Pinta.Tools/Tools/LassoSelectTool.cs:286
 msgid "Lasso Mode"
 msgstr "Mód Lasa"
 
@@ -2131,15 +2131,15 @@ msgid "Layer"
 msgstr "Vrstva"
 
 #: ../Pinta.Core/Classes/Re-editable/ObjectRasterizer.cs:699
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:116
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:140
 msgid "Layer Mask"
 msgstr ""
 
-#: ../Impasto/Actions/Layers/LayerPropertiesAction.cs:109
+#: ../Impasto/Actions/Layers/LayerPropertiesAction.cs:122
 msgid "Layer Opacity"
 msgstr "Průhlednost vrstvy"
 
-#: ../Impasto/Actions/Layers/LayerPropertiesAction.cs:127
+#: ../Impasto/Actions/Layers/LayerPropertiesAction.cs:140
 #: ../Impasto/Dialogs/LayerPropertiesDialog.cs:70
 msgid "Layer Properties"
 msgstr "Vlastnosti vrstvy"
@@ -2148,17 +2148,17 @@ msgstr "Vlastnosti vrstvy"
 msgid "Layer Properties..."
 msgstr "Vlastnosti Vrstvy..."
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:1314
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:1352
 msgid ""
 "Layer effect: applies to everything below it on this layer, and stays "
 "editable."
 msgstr ""
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:1295
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:1333
 msgid "Layer mask: an alpha channel applied to the whole layer."
 msgstr ""
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:1313
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:1351
 msgid ""
 "Layer transform: applies to everything below it on this layer, and stays "
 "editable."
@@ -2180,7 +2180,7 @@ msgstr "Vrstvy"
 msgid "Left Align"
 msgstr "Zarovnat doleva"
 
-#: ../Pinta.Tools/Tools/MoveSelectedTool.cs:117
+#: ../Pinta.Tools/Tools/MoveSelectedTool.cs:125
 #, csharp-format
 msgid ""
 "Left click and drag the selection to move selected content.\n"
@@ -2248,7 +2248,7 @@ msgstr ""
 "tvaru na jeho pozici.\n"
 "Zmáčkněte Enter pro dokončení tvaru."
 
-#: ../Pinta.Tools/Tools/PencilTool.cs:54
+#: ../Pinta.Tools/Tools/PencilTool.cs:55
 msgid ""
 "Left click to draw freeform one-pixel wide lines with the primary color.\n"
 "Right click to use the secondary color."
@@ -2258,18 +2258,18 @@ msgstr ""
 "Pravé kliknutí pro použití sekundární barvy."
 
 #: ../Pinta.Tools/Tools/FreeformShapeTool.cs:51
-#: ../Pinta.Tools/Tools/PaintBrushTool.cs:83
+#: ../Pinta.Tools/Tools/PaintBrushTool.cs:84
 msgid ""
 "Left click to draw with primary color, right click to draw with secondary "
 "color."
 msgstr "Levý klik kreslí primární barvou, pravý klik kreslí sekundární barvou."
 
-#: ../Pinta.Tools/Tools/EraserTool.cs:76
+#: ../Pinta.Tools/Tools/EraserTool.cs:79
 msgid ""
 "Left click to erase to transparent, right click to erase to secondary color. "
 msgstr "Levým kliknutím mažete do průhledna, pravým do sekundární barvy. "
 
-#: ../Pinta.Tools/Tools/PaintBucketTool.cs:49
+#: ../Pinta.Tools/Tools/PaintBucketTool.cs:50
 msgid ""
 "Left click to fill a region with the primary color, right click to fill with "
 "the secondary color.\n"
@@ -2285,7 +2285,7 @@ msgid ""
 "color."
 msgstr ""
 
-#: ../Pinta.Tools/Tools/RecolorTool.cs:74
+#: ../Pinta.Tools/Tools/RecolorTool.cs:75
 #, fuzzy, csharp-format
 msgid ""
 "Left click to replace the secondary color on the canvas with the primary "
@@ -2385,20 +2385,20 @@ msgid "Line"
 msgstr ""
 
 #: ../Pinta.Core/Classes/Re-editable/ObjectRasterizer.cs:152
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:132
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:156
 #: ../Pinta.Tools/Tools/LineCurveTool.cs:42
 msgid "Line/Curve"
 msgstr "Čára/Křivka"
 
-#: ../Pinta.Tools/Tools/GradientTool.cs:321
+#: ../Pinta.Tools/Tools/GradientTool.cs:324
 msgid "Linear Diamond Gradient"
 msgstr "Lineární kosočtvercový přechod"
 
-#: ../Pinta.Tools/Tools/GradientTool.cs:319
+#: ../Pinta.Tools/Tools/GradientTool.cs:322
 msgid "Linear Gradient"
 msgstr "Lineární přechod"
 
-#: ../Pinta.Tools/Tools/GradientTool.cs:320
+#: ../Pinta.Tools/Tools/GradientTool.cs:323
 msgid "Linear Reflected Gradient"
 msgstr "Lineární odražeý přechod"
 
@@ -2415,7 +2415,7 @@ msgid "Lower case letters are replaced with smaller capital letters."
 msgstr "Malá písmena jsou nahrazena menšími velkými písmeny."
 
 #: ../Pinta.Core/Algorithms/PixelOps/UserBlendOps.cs:44
-#: ../Pinta.Effects/Dialogs/Effects.CurvesDialog.cs:176
+#: ../Pinta.Effects/Dialogs/Effects.CurvesDialog.cs:193
 msgid "Luminosity"
 msgstr "Světlost"
 
@@ -2431,7 +2431,7 @@ msgstr ""
 msgid "Magic Wand Select"
 msgstr "Výběr kouzelnou hůlkou"
 
-#: ../Impasto/MainWindow.cs:619
+#: ../Impasto/MainWindow.cs:624
 msgid "Main Menu"
 msgstr "Hlavní Nabídka"
 
@@ -2483,7 +2483,7 @@ msgstr ""
 msgid "Minimum Size"
 msgstr "Minimální Velikost"
 
-#: ../Pinta.Tools/Tools/GradientTool.cs:320
+#: ../Pinta.Tools/Tools/GradientTool.cs:323
 msgid "Mirrors the linear transition on both sides of the start point."
 msgstr "Zrcadlí lineární přechod na obou stranách počátečního bodu."
 
@@ -2497,17 +2497,17 @@ msgid ""
 "Mixes small capital letters for upper case with normal lower case letters."
 msgstr ""
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:469
-#: ../Pinta.Tools/Tools/GradientTool.cs:347
-#: ../Pinta.Tools/Tools/MoveSelectedTool.cs:220
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:489
+#: ../Pinta.Tools/Tools/GradientTool.cs:350
+#: ../Pinta.Tools/Tools/MoveSelectedTool.cs:228
 #: ../Pinta.Tools/Tools/TextTool.cs:332
 msgid "Mode"
 msgstr "Režim"
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:904
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:906
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:1557
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:1582
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:935
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:937
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:1593
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:1618
 msgid "Modified"
 msgstr "Změněno"
 
@@ -2520,11 +2520,11 @@ msgid "Motion Blur"
 msgstr "Rozmazání pohybem"
 
 #: ../Pinta.Core/Classes/ToolSections.cs:23
-#: ../Pinta.Tools/Tools/MoveSelectedTool.cs:228
+#: ../Pinta.Tools/Tools/MoveSelectedTool.cs:236
 msgid "Move"
 msgstr ""
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:1200
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:1238
 msgid "Move Layer"
 msgstr ""
 
@@ -2538,11 +2538,11 @@ msgstr "Posunout vrstvu dolů"
 msgid "Move Layer Up"
 msgstr "Posunout vrstvu nahoru"
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:550
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:581
 msgid "Move Object to Layer"
 msgstr ""
 
-#: ../Pinta.Tools/Tools/MoveSelectedTool.cs:113
+#: ../Pinta.Tools/Tools/MoveSelectedTool.cs:121
 msgid "Move Selected Pixels"
 msgstr "Posunout vybrané pixely"
 
@@ -2590,13 +2590,13 @@ msgstr ""
 msgid "Move selected control point up"
 msgstr ""
 
-#: ../Pinta.Tools/Tools/MoveSelectedTool.cs:236
+#: ../Pinta.Tools/Tools/MoveSelectedTool.cs:244
 #, fuzzy
 msgid "Move the corners, or turn and tilt the selected pixels, in 3D space."
 msgstr ""
 "Přesouvejte rohy nebo otáčejte a naklápějte vybrané pixely ve 3D prostoru."
 
-#: ../Pinta.Tools/Tools/MoveSelectedTool.cs:713
+#: ../Pinta.Tools/Tools/MoveSelectedTool.cs:748
 msgid "Move to New Layer"
 msgstr ""
 
@@ -2663,13 +2663,13 @@ msgstr "Žádné"
 #. Translators: 'Normal' (400) refers to the font-weight text property
 #: ../Pinta.Core/Algorithms/PixelOps/UserBlendOps.cs:31
 #: ../Pinta.Tools/Brushes/PlainBrush.cs:41
-#: ../Pinta.Tools/Dialogs/TextPropertiesDialog.cs:246
-#: ../Pinta.Tools/Tools/EraserTool.cs:403 ../Pinta.Tools/Tools/TextTool.cs:397
+#: ../Pinta.Tools/Dialogs/TextPropertiesDialog.cs:249
+#: ../Pinta.Tools/Tools/EraserTool.cs:406 ../Pinta.Tools/Tools/TextTool.cs:397
 #: ../Pinta.Tools/Tools/TextTool.cs:503 ../Pinta.Tools/Tools/TextTool.cs:635
 msgid "Normal"
 msgstr "Normální"
 
-#: ../Pinta.Core/Classes/BaseTool.cs:446
+#: ../Pinta.Core/Classes/BaseTool.cs:454
 msgid "Normal Blending"
 msgstr "Normální míchání"
 
@@ -2681,21 +2681,21 @@ msgstr "Normální velikost"
 msgid "Normal and Outline"
 msgstr "Normální a ohraničený"
 
-#: ../Impasto/MainWindow.cs:1230
+#: ../Impasto/MainWindow.cs:1235
 msgid "Nothing to open"
 msgstr ""
 
-#: ../Pinta.Tools/Tools/BaseTransformTool.cs:747
+#: ../Pinta.Tools/Tools/BaseTransformTool.cs:790
 #, csharp-format
 msgid "Nudge 10% of canvas: {0}"
 msgstr ""
 
-#: ../Pinta.Tools/Tools/BaseTransformTool.cs:746
+#: ../Pinta.Tools/Tools/BaseTransformTool.cs:789
 #, csharp-format
 msgid "Nudge 10px: {0}"
 msgstr ""
 
-#: ../Pinta.Tools/Tools/BaseTransformTool.cs:748
+#: ../Pinta.Tools/Tools/BaseTransformTool.cs:791
 #, csharp-format
 msgid "Nudge 20% of canvas: {0}"
 msgstr ""
@@ -2764,17 +2764,17 @@ msgstr ""
 msgid "Nudge selection up (5% canvas)"
 msgstr ""
 
-#: ../Pinta.Tools/Tools/BaseTransformTool.cs:520
+#: ../Pinta.Tools/Tools/BaseTransformTool.cs:547
 #, csharp-format
 msgid "Nudge {0} ({1}): {2}"
 msgstr ""
 
-#: ../Pinta.Tools/Tools/BaseTransformTool.cs:519
+#: ../Pinta.Tools/Tools/BaseTransformTool.cs:546
 #, csharp-format
 msgid "Nudge {0}: {1}"
 msgstr ""
 
-#: ../Pinta.Tools/Tools/BaseTransformTool.cs:745
+#: ../Pinta.Tools/Tools/BaseTransformTool.cs:788
 msgid "Nudge: Arrow keys"
 msgstr ""
 
@@ -2788,9 +2788,9 @@ msgid "Number of threads to use for rendering"
 msgstr "Počet vláken použito při vykreslování"
 
 #: ../Impasto/Actions/Help/KeyboardShortcutsDialogAction.cs:154
-#: ../Impasto/Dialogs/PreferencesDialog.cs:587
+#: ../Impasto/Dialogs/PreferencesDialog.cs:589
 #: ../Pinta.Gui.Widgets/Widgets/ColorPickerDialog.cs:492
-#: ../Pinta.Tools/Dialogs/TextPropertiesDialog.cs:267
+#: ../Pinta.Tools/Dialogs/TextPropertiesDialog.cs:270
 msgid "OK"
 msgstr "Dobře"
 
@@ -2800,15 +2800,15 @@ msgstr "Dobře"
 msgid "Object"
 msgstr "Objekt"
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:426
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:457
 msgid "Object Blend Mode"
 msgstr ""
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:405
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:436
 msgid "Object Opacity"
 msgstr ""
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:480
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:500
 #: ../Pinta.Tools/Tools/TextTool.cs:341
 msgid "Object — editable later"
 msgstr ""
@@ -2835,16 +2835,16 @@ msgstr "Výběr Odstupu"
 msgid "Oil Painting"
 msgstr "Olejomalba"
 
-#: ../Pinta.Tools/Tools/EraserTool.cs:420
+#: ../Pinta.Tools/Tools/EraserTool.cs:423
 msgid "Opacity"
 msgstr ""
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:912
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:944
 #: ../Pinta.Gui.Widgets/Widgets/Layers/PropertiesDialogGridBuilder.cs:44
 msgid "Opacity:"
 msgstr "Průhlednost:"
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:158
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:182
 #, csharp-format
 msgid "Opacity: {0}%"
 msgstr ""
@@ -2866,7 +2866,7 @@ msgstr "Otevřít obrázek"
 msgid "Open Image File"
 msgstr "Otevřít obrázek"
 
-#: ../Pinta.Core/Actions/EditActions.cs:608
+#: ../Pinta.Core/Actions/EditActions.cs:616
 msgid "Open Palette File"
 msgstr "Otevřít sobor s paletou"
 
@@ -2878,7 +2878,7 @@ msgstr ""
 msgid "Open text properties"
 msgstr ""
 
-#: ../Impasto/MainWindow.cs:1213
+#: ../Impasto/MainWindow.cs:1218
 #, csharp-format
 msgid "Open {0} files?"
 msgstr ""
@@ -2918,12 +2918,12 @@ msgstr "Hrana Ohraničení"
 msgid "Outline Object"
 msgstr "Ohraničení Objektu"
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:559
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:579
 #: ../Pinta.Tools/Tools/FreeformShapeTool.cs:222
 msgid "Outline Shape"
 msgstr "Ohraničení Tvaru"
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:576
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:596
 #: ../Pinta.Tools/Tools/TextTool.cs:651
 msgid "Outline width"
 msgstr "Šířka Ohraničení"
@@ -2940,7 +2940,7 @@ msgstr "Výstupní histogram"
 msgid "Overlay"
 msgstr "Překrytí"
 
-#: ../Pinta.Core/Classes/BaseTool.cs:447
+#: ../Pinta.Core/Classes/BaseTool.cs:455
 msgid "Overwrite"
 msgstr "Přepsat"
 
@@ -2952,11 +2952,11 @@ msgstr ""
 msgid "Paint & Image Editor"
 msgstr ""
 
-#: ../Pinta.Tools/Tools/PaintBucketTool.cs:46
+#: ../Pinta.Tools/Tools/PaintBucketTool.cs:47
 msgid "Paint Bucket"
 msgstr "Plechovka barvy"
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:986
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:1018
 msgid ""
 "Paint on the canvas to reveal the layer; erase to hide it. Right-click the "
 "row again for options."
@@ -2966,7 +2966,7 @@ msgstr ""
 msgid "Paint, create and edit images"
 msgstr ""
 
-#: ../Pinta.Tools/Tools/PaintBrushTool.cs:81
+#: ../Pinta.Tools/Tools/PaintBrushTool.cs:82
 msgid "Paintbrush"
 msgstr "Štětec"
 
@@ -2976,7 +2976,7 @@ msgid ""
 "like any artwork, but not editable later."
 msgstr ""
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:479
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:499
 msgid ""
 "Painted into the layer's pixels on commit. Immediately cut/move/erase like "
 "any artwork, but not editable later."
@@ -2998,7 +2998,7 @@ msgstr "Paleta"
 msgid "Palette Source"
 msgstr "Zdroj Palety"
 
-#: ../Pinta.Core/Actions/EditActions.cs:689
+#: ../Pinta.Core/Actions/EditActions.cs:697
 msgid "Palette files"
 msgstr "Soubory Palet"
 
@@ -3040,15 +3040,15 @@ msgstr ""
 msgid "Paste text"
 msgstr ""
 
-#: ../Impasto/MainWindow.cs:611
+#: ../Impasto/MainWindow.cs:616
 msgid "Paste to Active Layer"
 msgstr ""
 
-#: ../Impasto/MainWindow.cs:612
+#: ../Impasto/MainWindow.cs:617
 msgid "Paste to New Layer"
 msgstr ""
 
-#: ../Pinta.Tools/Tools/PencilTool.cs:51
+#: ../Pinta.Tools/Tools/PencilTool.cs:52
 msgid "Pencil"
 msgstr "Tužka"
 
@@ -3065,14 +3065,14 @@ msgid "Percentile"
 msgstr "Percentil"
 
 #. Translators: Move Selected Pixels mode where each corner moves on its own, to fit the pixels onto an angled surface.
-#: ../Pinta.Tools/Tools/MoveSelectedTool.cs:233
-#: ../Pinta.Tools/Tools/MoveSelectedTool.cs:529
+#: ../Pinta.Tools/Tools/MoveSelectedTool.cs:241
+#: ../Pinta.Tools/Tools/MoveSelectedTool.cs:537
 #, fuzzy
 msgid "Perspective"
 msgstr "Perspektiva"
 
 #. Translators: 'Petite Caps' refers to the font-variant text property
-#: ../Pinta.Tools/Dialogs/TextPropertiesDialog.cs:249
+#: ../Pinta.Tools/Dialogs/TextPropertiesDialog.cs:252
 #: ../Pinta.Tools/Tools/TextTool.cs:418
 msgid "Petite Caps"
 msgstr "Hezké písmena"
@@ -3163,8 +3163,8 @@ msgstr ""
 msgid "Point"
 msgstr ""
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:998
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:1361
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:1029
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:1401
 msgid "Point Added"
 msgstr "Bod Přidán"
 
@@ -3178,7 +3178,7 @@ msgstr "Rozložení Bodů"
 msgid "Point Color"
 msgstr "Barva Bodu"
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:1043
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:1074
 msgid "Point Deleted"
 msgstr "Bod odstraněn"
 
@@ -3201,7 +3201,7 @@ msgstr ""
 msgid "Polar Inversion"
 msgstr "Převrácení Pólů"
 
-#: ../Pinta.Tools/Tools/LassoSelectTool.cs:362
+#: ../Pinta.Tools/Tools/LassoSelectTool.cs:367
 msgid "Polygon"
 msgstr "Polygon"
 
@@ -3213,12 +3213,12 @@ msgstr "Vyskakovací nápovědy:"
 msgid "Portrait"
 msgstr "Na výšku"
 
-#: ../Pinta.Effects/Effects/AlignObjectEffect.cs:143
+#: ../Pinta.Effects/Effects/AlignObjectEffect.cs:140
 msgid "Position"
 msgstr "Pozice"
 
-#: ../Pinta.Effects/Adjustments/PosterizeEffect.cs:25
-#: ../Pinta.Effects/Dialogs/Effects.PosterizeDialog.cs:54
+#: ../Pinta.Effects/Adjustments/PosterizeEffect.cs:23
+#: ../Pinta.Effects/Dialogs/Effects.PosterizeDialog.cs:53
 msgid "Posterize"
 msgstr "Posterizovat"
 
@@ -3227,7 +3227,7 @@ msgid "Power"
 msgstr "Síla"
 
 #. Translators: This refers to preserving the current canvas size when pasting a larger image.
-#: ../Impasto/Actions/Edit/PasteAction.cs:243
+#: ../Impasto/Actions/Edit/PasteAction.cs:257
 msgid "Preserve"
 msgstr "Zachovat"
 
@@ -3257,7 +3257,7 @@ msgstr "Pro zmenšení šířky štětce zmáčkněte {0}"
 msgid "Press {0} to decrease font size"
 msgstr "Pro zmenšení fontu zmáčkněte {0}"
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:148
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:161
 #, csharp-format
 msgid "Press {0} to decrease outline width"
 msgstr "Pro zmenšení šířky obrysu zmáčkněte {0}"
@@ -3272,7 +3272,7 @@ msgstr "Pro zvětšení šířky štětce zmáčkněte {0}"
 msgid "Press {0} to increase font size"
 msgstr "Pro zvětšení fontu zmáčkněte {0}"
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:149
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:162
 #, csharp-format
 msgid "Press {0} to increase outline width"
 msgstr "Pro zvětšení šířky obrysu zmáčkněte {0}"
@@ -3289,7 +3289,7 @@ msgstr "Hlavní"
 msgid "Print"
 msgstr "Vytisknout"
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:952
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:984
 msgid "Properties..."
 msgstr ""
 
@@ -3330,7 +3330,7 @@ msgstr ""
 msgid "R {0}"
 msgstr ""
 
-#: ../Pinta.Effects/Dialogs/Effects.CurvesDialog.cs:175
+#: ../Pinta.Effects/Dialogs/Effects.CurvesDialog.cs:192
 msgid "RGB"
 msgstr "RGB barvy"
 
@@ -3338,7 +3338,7 @@ msgstr "RGB barvy"
 msgid "Radial Blur"
 msgstr "Rozmazání otáčením"
 
-#: ../Pinta.Tools/Tools/GradientTool.cs:322
+#: ../Pinta.Tools/Tools/GradientTool.cs:325
 msgid "Radial Gradient"
 msgstr "Radiální přechod"
 
@@ -3389,12 +3389,12 @@ msgstr "Náhodný Šum Semínek"
 msgid "Random Point Locations"
 msgstr "Náhodná Bodová Lokace"
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:478
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:498
 #: ../Pinta.Tools/Tools/TextTool.cs:339
 msgid "Raster — fuses to layer"
 msgstr ""
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:945
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:977
 msgid "Rasterize"
 msgstr ""
 
@@ -3423,7 +3423,7 @@ msgstr ""
 msgid "Re-edit existing text"
 msgstr ""
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:1317
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:1355
 msgid ""
 "Re-editable object: a live shape or text you can keep editing until you "
 "rasterize it."
@@ -3439,7 +3439,7 @@ msgstr "Naposledy Použité Barvy"
 msgid "Recently picked colors"
 msgstr ""
 
-#: ../Pinta.Tools/Tools/RecolorTool.cs:65
+#: ../Pinta.Tools/Tools/RecolorTool.cs:66
 msgid "Recolor"
 msgstr "Přebarvit"
 
@@ -3469,7 +3469,7 @@ msgid "Rectangle Select"
 msgstr "Obdélníkový výběr"
 
 #: ../Pinta.Effects/Dialogs/Effects.LevelsDialog.cs:113
-#: ../Pinta.Effects/Dialogs/Effects.PosterizeDialog.cs:64
+#: ../Pinta.Effects/Dialogs/Effects.PosterizeDialog.cs:78
 #: ../Pinta.Gui.Widgets/Widgets/ColorPickerSlider.cs:361
 msgid "Red"
 msgstr "Červená"
@@ -3511,23 +3511,23 @@ msgid "Relief"
 msgstr "Reliéf"
 
 #: ../Pinta.Core/Extensions/Gtk/GtkExtensions.Widget.cs:248
-#: ../Pinta.Tools/Tools/LassoSelectTool.cs:287
+#: ../Pinta.Tools/Tools/LassoSelectTool.cs:292
 msgid "Remove last point (Backspace)"
 msgstr ""
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:998
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:1030
 msgid "Remove this layer's mask; the layer renders unmasked."
 msgstr ""
 
-#: ../Impasto/Actions/Layers/LayerPropertiesAction.cs:115
+#: ../Impasto/Actions/Layers/LayerPropertiesAction.cs:128
 msgid "Rename Layer"
 msgstr "Přejmenovat vrstvu"
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:805
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:837
 msgid "Rename Layer..."
 msgstr ""
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:469
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:500
 msgid "Rename Object"
 msgstr ""
 
@@ -3539,13 +3539,31 @@ msgstr ""
 msgid "Render"
 msgstr "Vykreslit"
 
-#: ../Pinta.Core/Managers/LivePreviewManager.cs:107
+#: ../Pinta.Core/Managers/LivePreviewManager.cs:144
 msgid "Rendering Effect"
 msgstr "Vykreslovací efekt"
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:492
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:523
 msgid "Reorder Object"
 msgstr ""
+
+#. Translators: Adjustments menu command that applies the last used adjustment again, with the same settings, to the current selection.
+#: ../Pinta.Core/Actions/AdjustmentsActions.cs:39
+#, fuzzy
+msgid "Repeat Last Adjustment"
+msgstr "Opakovat poslední přizpůsobení"
+
+#. Translators: Effects menu command that applies the last used effect again, with the same settings, to the current selection.
+#: ../Pinta.Core/Actions/EffectsActions.cs:45
+#, fuzzy
+msgid "Repeat Last Effect"
+msgstr "Opakovat poslední efekt"
+
+#. Translators: Adjustments or Effects menu item that applies the last used adjustment or effect again, with the same settings; {0} is its name, e.g. "Gaussian Blur".
+#: ../Pinta.Core/Actions/LastAppliedEffect.cs:42
+#, fuzzy, csharp-format
+msgid "Repeat {0}"
+msgstr "Opakovat: {0}"
 
 #: ../Pinta.Core/Classes/SelectionModeHandler.cs:43
 msgid "Replace"
@@ -3568,7 +3586,7 @@ msgid "Reseed"
 msgstr "Znovu načíst"
 
 #: ../Impasto/Actions/Help/KeyboardShortcutsDialogAction.cs:138
-#: ../Pinta.Effects/Dialogs/Effects.CurvesDialog.cs:207
+#: ../Pinta.Effects/Dialogs/Effects.CurvesDialog.cs:224
 #: ../Pinta.Effects/Dialogs/Effects.LevelsDialog.cs:274
 #: ../Pinta.Gui.Widgets/Widgets/ColorPickerDialog.cs:480
 msgid "Reset"
@@ -3588,7 +3606,7 @@ msgstr "Nastavit na výchozí"
 
 #: ../Impasto/Actions/Edit/ResizePaletteAction.cs:200
 #: ../Impasto/Actions/Help/KeyboardShortcutsDialogAction.cs:454
-#: ../Impasto/Dialogs/PreferencesDialog.cs:609
+#: ../Impasto/Dialogs/PreferencesDialog.cs:611
 msgid "Reset to default"
 msgstr ""
 
@@ -3597,7 +3615,7 @@ msgstr ""
 msgid "Reset to image size"
 msgstr "Obnovit velikost obrázku"
 
-#: ../Impasto/MainWindow.cs:748
+#: ../Impasto/MainWindow.cs:753
 msgid "Reset window"
 msgstr ""
 
@@ -3653,7 +3671,7 @@ msgstr "Obrátit Barevné Schéma"
 msgid "Reverse Color Sorting"
 msgstr "Obrátit Řazení Barev"
 
-#: ../Pinta.Tools/Dialogs/TextPropertiesDialog.cs:228
+#: ../Pinta.Tools/Dialogs/TextPropertiesDialog.cs:229
 #: ../Pinta.Tools/Tools/TextTool.cs:601
 msgid "Right Align"
 msgstr "Zarovnat doprava"
@@ -3662,23 +3680,23 @@ msgstr "Zarovnat doprava"
 msgid "Right Triangle"
 msgstr ""
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:2096
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:2132
 msgid "Right click + drag: move the whole shape."
 msgstr ""
 
-#: ../Pinta.Tools/Tools/TextTool.cs:2853
+#: ../Pinta.Tools/Tools/TextTool.cs:2876
 msgid "Right click to move"
 msgstr ""
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:1315
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:1353
 msgid "Right-click to change its settings, blending and strength"
 msgstr ""
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:1297
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:1335
 msgid "Right-click to delete the mask"
 msgstr ""
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:1318
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:1356
 msgid "Right-click to set blend mode and opacity, or open its properties"
 msgstr ""
 
@@ -3712,7 +3730,7 @@ msgstr ""
 msgid "Rotate text"
 msgstr ""
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:1530
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:1566
 msgid "Rotated"
 msgstr ""
 
@@ -3739,7 +3757,7 @@ msgid "Rounded Line Shape"
 msgstr "Tvar zakulacené čáry"
 
 #: ../Pinta.Core/Classes/Re-editable/ObjectRasterizer.cs:150
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:130
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:154
 #: ../Pinta.Tools/Tools/RoundedRectangleTool.cs:43
 msgid "Rounded Rectangle"
 msgstr "Zakulacený obdélník"
@@ -3787,9 +3805,9 @@ msgstr "Sytost"
 msgid "Saturation Percentage"
 msgstr "Procento sytosti"
 
-#: ../Impasto/Actions/File/SaveDocumentImplementationAction.cs:144
-#: ../Impasto/Actions/File/SaveDocumentImplementationAction.cs:397
-#: ../Pinta.Core/Actions/EditActions.cs:642
+#: ../Impasto/Actions/File/SaveDocumentImplementationAction.cs:147
+#: ../Impasto/Actions/File/SaveDocumentImplementationAction.cs:418
+#: ../Pinta.Core/Actions/EditActions.cs:650
 #: ../Pinta.Core/Actions/FileActions.cs:111
 msgid "Save"
 msgstr "Uložit"
@@ -3803,11 +3821,11 @@ msgstr "Uložit vše"
 msgid "Save As..."
 msgstr "Uložit jako..."
 
-#: ../Impasto/Actions/File/SaveDocumentImplementationAction.cs:141
+#: ../Impasto/Actions/File/SaveDocumentImplementationAction.cs:144
 msgid "Save Image File"
 msgstr "Uložení obrázku"
 
-#: ../Pinta.Core/Actions/EditActions.cs:639
+#: ../Pinta.Core/Actions/EditActions.cs:647
 msgid "Save Palette File"
 msgstr "Uložit soubor palety"
 
@@ -3815,7 +3833,7 @@ msgstr "Uložit soubor palety"
 msgid "Save as Impasto project..."
 msgstr ""
 
-#: ../Impasto/Actions/File/CloseDocumentAction.cs:72
+#: ../Impasto/Actions/File/CloseDocumentAction.cs:97
 #, csharp-format
 msgid "Save changes to image \"{0}\" before closing?"
 msgstr "Uložit změny do obrázku \"{0}\" před uzavřením?"
@@ -3843,7 +3861,7 @@ msgstr ""
 msgid "Secondary"
 msgstr "Vedlejší"
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:524
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:544
 msgid ""
 "Segments stay straight; clicking a segment does not insert curve control "
 "points."
@@ -3870,7 +3888,7 @@ msgstr ""
 msgid "Select previous control point"
 msgstr ""
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:1296
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:1334
 msgid "Select this row to paint the mask; paint reveals, erase hides"
 msgstr ""
 
@@ -3922,11 +3940,11 @@ msgid "Set selected control point to line"
 msgstr ""
 
 #: ../Impasto/Dialogs/PreferencesDialog.cs:330
-#: ../Impasto/Dialogs/PreferencesDialog.cs:587
+#: ../Impasto/Dialogs/PreferencesDialog.cs:589
 msgid "Settings"
 msgstr ""
 
-#: ../Impasto/Dialogs/PreferencesDialog.cs:469
+#: ../Impasto/Dialogs/PreferencesDialog.cs:470
 msgid "Settings files"
 msgstr ""
 
@@ -3935,11 +3953,11 @@ msgid "Settings..."
 msgstr ""
 
 #: ../Pinta.Core/Classes/Re-editable/ObjectRasterizer.cs:153
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:133
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:157
 msgid "Shape"
 msgstr ""
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/ObjectPropertiesDialog.cs:101
+#: ../Pinta.Gui.Widgets/Widgets/Layers/ObjectPropertiesDialog.cs:95
 msgid "Shape Object Properties"
 msgstr ""
 
@@ -3986,8 +4004,8 @@ msgid "Shear Vertically"
 msgstr ""
 
 #: ../Pinta.Core/Extensions/Gtk/GtkExtensions.Interaction.cs:112
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:2095
-#: ../Pinta.Tools/Tools/BaseTransformTool.cs:742
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:2131
+#: ../Pinta.Tools/Tools/BaseTransformTool.cs:785
 msgid "Shift"
 msgstr ""
 
@@ -4003,7 +4021,7 @@ msgstr "Klávesová zkratka"
 msgid "Shortcut keys"
 msgstr "Klávesové zkratky"
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:147
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:160
 #: ../Pinta.Tools/Tools/BaseBrushTool.cs:155
 #: ../Pinta.Tools/Tools/TextTool.cs:784
 msgid "Shortcut keys:"
@@ -4023,16 +4041,16 @@ msgstr "Zobrazit Axonometrickou Mřížku"
 msgid "Show Grid"
 msgstr "Zobrazit Mřížku"
 
-#: ../Impasto/Actions/Layers/LayerPropertiesAction.cs:121
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:230
+#: ../Impasto/Actions/Layers/LayerPropertiesAction.cs:134
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:254
 msgid "Show Layer"
 msgstr "Zobrazit Vrstvu"
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:385
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:416
 msgid "Show Layer Mask"
 msgstr ""
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:456
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:487
 msgid "Show Object"
 msgstr ""
 
@@ -4110,8 +4128,8 @@ msgid "Size: "
 msgstr ""
 
 #. Translators: Move Selected Pixels mode that slants the pixels by sliding one edge along itself.
-#: ../Pinta.Tools/Tools/MoveSelectedTool.cs:231
-#: ../Pinta.Tools/Tools/MoveSelectedTool.cs:528
+#: ../Pinta.Tools/Tools/MoveSelectedTool.cs:239
+#: ../Pinta.Tools/Tools/MoveSelectedTool.cs:536
 #, fuzzy
 msgid "Skew"
 msgstr "Zkosení"
@@ -4125,12 +4143,12 @@ msgid "Slash"
 msgstr "Řez"
 
 #. Translators: 'Small Caps' refers to the font-variant text property
-#: ../Pinta.Tools/Dialogs/TextPropertiesDialog.cs:247
+#: ../Pinta.Tools/Dialogs/TextPropertiesDialog.cs:250
 #: ../Pinta.Tools/Tools/TextTool.cs:404
 msgid "Small Caps"
 msgstr "Malá písmena"
 
-#: ../Pinta.Tools/Tools/EraserTool.cs:403
+#: ../Pinta.Tools/Tools/EraserTool.cs:406
 msgid "Smooth"
 msgstr "Plynulé"
 
@@ -4164,11 +4182,11 @@ msgstr ""
 msgid "Solo Layer {0}"
 msgstr ""
 
-#: ../Impasto/MainWindow.cs:1231
+#: ../Impasto/MainWindow.cs:1236
 msgid "Some dropped items were not opened"
 msgstr ""
 
-#: ../Impasto/Actions/File/SaveDocumentImplementationAction.cs:387
+#: ../Impasto/Actions/File/SaveDocumentImplementationAction.cs:408
 msgid "Some effects cannot be saved as editable. Save anyway?"
 msgstr ""
 
@@ -4192,7 +4210,7 @@ msgstr "Čtverce"
 msgid "Status Bar"
 msgstr "Stavový řádek"
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:481
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:501
 msgid ""
 "Stays a live, re-editable shape. Cutting, erasing, or filtering across it "
 "will rasterize it first."
@@ -4213,7 +4231,7 @@ msgstr ""
 msgid "Strength"
 msgstr "Síla"
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:912
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:944
 msgid "Strength:"
 msgstr ""
 
@@ -4255,12 +4273,12 @@ msgid "Switch to the Pencil tool, ready to draw with the picked color."
 msgstr "Přepnout na nástroj Tužka, připravený kreslit vybranou barvou."
 
 #: ../Pinta.Core/Classes/Re-editable/ObjectRasterizer.cs:142
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:123
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:147
 #: ../Pinta.Tools/Tools/TextTool.cs:149
 msgid "Text"
 msgstr "Text"
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/ObjectPropertiesDialog.cs:100
+#: ../Pinta.Gui.Widgets/Widgets/Layers/ObjectPropertiesDialog.cs:94
 msgid "Text Object Properties"
 msgstr ""
 
@@ -4304,12 +4322,12 @@ msgid "Text properties ({0})"
 msgstr ""
 
 #. Translators: {0} is the name of an add-in.
-#: ../Impasto/MainWindow.cs:445
+#: ../Impasto/MainWindow.cs:448
 #, csharp-format
 msgid "The '{0}' add-in may not be compatible with this version of Impasto"
 msgstr "Plugin \"{0}\" nemusí být kompatibilní s touto verzí Impasto"
 
-#: ../Impasto/Actions/Edit/PasteAction.cs:226
+#: ../Impasto/Actions/Edit/PasteAction.cs:240
 msgid "The clipboard does not contain an image."
 msgstr "Schránka neobsahuje žádný obrázek."
 
@@ -4320,24 +4338,24 @@ msgid ""
 "of rows."
 msgstr ""
 
-#: ../Impasto/Dialogs/PreferencesDialog.cs:521
+#: ../Impasto/Dialogs/PreferencesDialog.cs:522
 msgid "The file had no keyboard shortcuts to import."
 msgstr ""
 
-#: ../Pinta.Core/Managers/AutosaveManager.cs:575
+#: ../Pinta.Core/Managers/AutosaveManager.cs:577
 msgid "The file is damaged or incomplete."
 msgstr ""
 
-#: ../Pinta.Core/Managers/AutosaveManager.cs:544
+#: ../Pinta.Core/Managers/AutosaveManager.cs:546
 msgid "The file is empty."
 msgstr ""
 
-#: ../Pinta.Core/Managers/AutosaveManager.cs:559
+#: ../Pinta.Core/Managers/AutosaveManager.cs:561
 msgid "The file is missing its layer information."
 msgstr ""
 
-#: ../Pinta.Core/Managers/AutosaveManager.cs:551
-#: ../Pinta.Core/Managers/AutosaveManager.cs:555
+#: ../Pinta.Core/Managers/AutosaveManager.cs:553
+#: ../Pinta.Core/Managers/AutosaveManager.cs:557
 msgid "The file is not an OpenRaster image."
 msgstr ""
 
@@ -4349,7 +4367,7 @@ msgstr "Soubor může být neplatný nebo poškozený balíček rozšíření"
 msgid "The file no longer exists, or cannot be read."
 msgstr ""
 
-#: ../Pinta.Core/Managers/AutosaveManager.cs:541
+#: ../Pinta.Core/Managers/AutosaveManager.cs:543
 msgid "The file no longer exists."
 msgstr ""
 
@@ -4369,7 +4387,7 @@ msgstr "Následující balíčky budou nainstalovány:"
 msgid "The following packages will be uninstalled:"
 msgstr "Následující balíčky budou odebrány:"
 
-#: ../Impasto/Actions/Edit/PasteAction.cs:233
+#: ../Impasto/Actions/Edit/PasteAction.cs:247
 msgid ""
 "The image being pasted is larger than the canvas. What would you like to do "
 "to the canvas size?"
@@ -4414,7 +4432,7 @@ msgstr ""
 "Existují další balíčky rozšíření, které závisí na předchozích, které budou "
 "také odinstalovány:"
 
-#: ../Impasto/Actions/File/SaveDocumentImplementationAction.cs:389
+#: ../Impasto/Actions/File/SaveDocumentImplementationAction.cs:410
 msgid ""
 "These effects come from add-ins and will be part of the saved image's pixels "
 "instead, so reopening the file will not let you change their settings. They "
@@ -4440,17 +4458,17 @@ msgstr "Tenký"
 msgid "Third-Party Notices"
 msgstr ""
 
-#: ../Impasto/Dialogs/PreferencesDialog.cs:494
+#: ../Impasto/Dialogs/PreferencesDialog.cs:495
 msgid "This does not look like a valid settings file."
 msgstr ""
 
-#: ../Impasto/Dialogs/PreferencesDialog.cs:541
+#: ../Impasto/Dialogs/PreferencesDialog.cs:542
 msgid ""
 "This file also contains keyboard shortcut overrides. Importing them will "
 "overwrite your current keyboard-shortcuts.json."
 msgstr ""
 
-#: ../Impasto/Actions/File/SaveDocumentImplementationAction.cs:351
+#: ../Impasto/Actions/File/SaveDocumentImplementationAction.cs:366
 msgid "This format does not support layers. Flatten image?"
 msgstr "Tento formát nepodporuje vrstvy. Zarovnat obrázek?"
 
@@ -4493,7 +4511,7 @@ msgid "Tip: Right-click to remove control points."
 msgstr "Tip: Pravým kliknutím odstraníte ovládací body."
 
 #. Translators: 'Title Caps' refers to the font-variant text property
-#: ../Pinta.Tools/Dialogs/TextPropertiesDialog.cs:252
+#: ../Pinta.Tools/Dialogs/TextPropertiesDialog.cs:255
 #: ../Pinta.Tools/Tools/TextTool.cs:439
 msgid "Title Caps"
 msgstr "Titulární písmena"
@@ -4526,11 +4544,11 @@ msgstr ""
 #: ../Pinta.Effects/Effects/OutlineObjectEffect.cs:208
 #: ../Pinta.Effects/Effects/RedEyeRemoveEffect.cs:53
 #: ../Pinta.Tools/Tools/FloodTool.cs:183
-#: ../Pinta.Tools/Tools/RecolorTool.cs:329
+#: ../Pinta.Tools/Tools/RecolorTool.cs:330
 msgid "Tolerance"
 msgstr "Tolerance"
 
-#: ../Pinta.Core/Managers/ToolManager.cs:633
+#: ../Pinta.Core/Managers/ToolManager.cs:726
 #: ../Pinta.Core/Widgets/ToolSelectorButton.cs:53
 msgid "Tool"
 msgstr "Nástroj"
@@ -4607,7 +4625,7 @@ msgstr ""
 msgid "Transform Settings"
 msgstr ""
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:931
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:963
 msgid "Transform Settings..."
 msgstr ""
 
@@ -4635,27 +4653,27 @@ msgstr ""
 msgid "Transform Tools"
 msgstr ""
 
-#: ../Pinta.Tools/Tools/GradientTool.cs:353
+#: ../Pinta.Tools/Tools/GradientTool.cs:356
 msgid "Transition between the primary and secondary colors."
 msgstr "Přechod mezi primární a sekundární barvou."
 
-#: ../Pinta.Tools/Tools/GradientTool.cs:354
+#: ../Pinta.Tools/Tools/GradientTool.cs:357
 msgid "Transition the primary color from opaque to transparent."
 msgstr "Přechod primární barvy z neprůhledné na průhlednou."
 
-#: ../Pinta.Tools/Tools/GradientTool.cs:319
+#: ../Pinta.Tools/Tools/GradientTool.cs:322
 msgid "Transitions colors in a straight line between the two endpoints."
 msgstr "Přechází barvy po přímce mezi dvěma koncovými body."
 
-#: ../Pinta.Tools/Tools/GradientTool.cs:323
+#: ../Pinta.Tools/Tools/GradientTool.cs:326
 msgid "Transitions colors in a sweep around the start point."
 msgstr "Přechází barvy v kruhovém pohybu kolem počátečního bodu."
 
-#: ../Pinta.Tools/Tools/GradientTool.cs:322
+#: ../Pinta.Tools/Tools/GradientTool.cs:325
 msgid "Transitions colors outward from the start point in a circle."
 msgstr "Přechází barvy směrem ven od počátečního bodu do kruhu."
 
-#: ../Pinta.Tools/Tools/GradientTool.cs:321
+#: ../Pinta.Tools/Tools/GradientTool.cs:324
 msgid "Transitions colors outward from the start point in a diamond shape."
 msgstr "Přechází barvy směrem ven od počátečního bodu do tvaru diamantu."
 
@@ -4667,7 +4685,7 @@ msgstr ""
 msgid "Translate Vertically"
 msgstr ""
 
-#: ../Pinta.Tools/Tools/GradientTool.cs:354
+#: ../Pinta.Tools/Tools/GradientTool.cs:357
 msgid "Transparency Mode"
 msgstr "Režim průhlednosti"
 
@@ -4677,7 +4695,7 @@ msgid "Transparent"
 msgstr "Průhledné"
 
 #: ../Pinta.Core/Classes/Re-editable/ObjectRasterizer.cs:151
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:131
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:155
 #: ../Pinta.Tools/Tools/TriangleTool.cs:43
 msgid "Triangle"
 msgstr ""
@@ -4705,8 +4723,8 @@ msgstr "Dithering dle dvou řad Sierra"
 
 #: ../Pinta.Tools/Editable/EditEngines/ArrowedEditEngine.cs:361
 #: ../Pinta.Tools/Editable/EditEngines/TriangleEditEngine.cs:121
-#: ../Pinta.Tools/Tools/EraserTool.cs:399
-#: ../Pinta.Tools/Tools/PaintBrushTool.cs:258
+#: ../Pinta.Tools/Tools/EraserTool.cs:402
+#: ../Pinta.Tools/Tools/PaintBrushTool.cs:272
 msgid "Type"
 msgstr "Typ"
 
@@ -4751,7 +4769,7 @@ msgid "Unfocus"
 msgstr "Rozostření"
 
 #. Translators: 'Unicase' refers to the font-variant text property
-#: ../Pinta.Tools/Dialogs/TextPropertiesDialog.cs:251
+#: ../Pinta.Tools/Dialogs/TextPropertiesDialog.cs:254
 #: ../Pinta.Tools/Tools/TextTool.cs:432
 msgid "Unicase"
 msgstr "Velká i malá písmena"
@@ -4785,7 +4803,7 @@ msgstr "Neuložený obrázek {0}"
 msgid "Unsupported file format"
 msgstr "Nepodporovaný typ souboru"
 
-#: ../Pinta.Core/Actions/EditActions.cs:631
+#: ../Pinta.Core/Actions/EditActions.cs:639
 msgid "Unsupported palette format"
 msgstr "Nepodporovaný formát palety"
 
@@ -4851,7 +4869,7 @@ msgid "Vertical red (R)"
 msgstr "Vertikální červená (R)"
 
 #: ../Impasto/Actions/Help/KeyboardShortcutsDialogAction.cs:203
-#: ../Impasto/MainWindow.cs:639 ../Pinta.Core/Classes/ToolSections.cs:24
+#: ../Impasto/MainWindow.cs:644 ../Pinta.Core/Classes/ToolSections.cs:24
 msgid "View"
 msgstr "Pohled"
 
@@ -4925,7 +4943,7 @@ msgid "You do not have access to '{0}'."
 msgstr "Nemáte přístup do '{0}'."
 
 #. Translators: {0} is the name of a file that the user does not have write permission for.
-#: ../Impasto/Actions/File/SaveDocumentImplementationAction.cs:319
+#: ../Impasto/Actions/File/SaveDocumentImplementationAction.cs:331
 #, csharp-format
 msgid ""
 "You do not have access to modify '{0}'. The file or folder may be read-only."
@@ -4961,13 +4979,13 @@ msgstr "Oddálit"
 msgid "Zoom to Selection"
 msgstr "Přiblížit na výběr"
 
-#: ../Impasto/MainWindow.cs:560
+#: ../Impasto/MainWindow.cs:563
 msgid "_Adjustments"
 msgstr "_Přizpůsobení"
 
-#: ../Impasto/Actions/Edit/PasteAction.cs:241
-#: ../Impasto/Actions/File/CloseDocumentAction.cs:83
-#: ../Impasto/Dialogs/ProgressDialog.cs:71 ../Impasto/MainWindow.cs:1216
+#: ../Impasto/Actions/Edit/PasteAction.cs:255
+#: ../Impasto/Actions/File/CloseDocumentAction.cs:108
+#: ../Impasto/Dialogs/ProgressDialog.cs:71 ../Impasto/MainWindow.cs:1221
 #: ../Pinta.Core/Classes/Re-editable/ObjectRasterizer.cs:197
 #: ../Pinta.Core/Classes/Re-editable/ObjectRasterizer.cs:498
 #: ../Pinta.Core/Extensions/Gtk/GtkExtensions.Dialog.cs:209
@@ -4980,24 +4998,24 @@ msgstr "_Zrušit"
 msgid "_Continue"
 msgstr ""
 
-#: ../Impasto/Actions/File/CloseDocumentAction.cs:84
+#: ../Impasto/Actions/File/CloseDocumentAction.cs:109
 #: ../Impasto/Dialogs/AutosaveRecoveryDialog.cs:68
 msgid "_Discard"
 msgstr "_Zahodit"
 
-#: ../Impasto/MainWindow.cs:556
+#: ../Impasto/MainWindow.cs:559
 msgid "_Edit"
 msgstr "_Upravit"
 
-#: ../Impasto/MainWindow.cs:555
+#: ../Impasto/MainWindow.cs:558
 msgid "_File"
 msgstr "_Soubor"
 
-#: ../Impasto/MainWindow.cs:565
+#: ../Impasto/MainWindow.cs:568
 msgid "_Help"
 msgstr "_Nápověda"
 
-#: ../Impasto/MainWindow.cs:559
+#: ../Impasto/MainWindow.cs:562
 msgid "_Image"
 msgstr "_Obrázek"
 
@@ -5013,7 +5031,7 @@ msgstr ""
 msgid "_OK"
 msgstr "_OK"
 
-#: ../Impasto/MainWindow.cs:1217
+#: ../Impasto/MainWindow.cs:1222
 msgid "_Open"
 msgstr ""
 
@@ -5030,15 +5048,15 @@ msgstr ""
 msgid "_Reset Palette"
 msgstr ""
 
-#: ../Impasto/Actions/File/CloseDocumentAction.cs:85
+#: ../Impasto/Actions/File/CloseDocumentAction.cs:110
 msgid "_Save"
 msgstr "_Uložit"
 
-#: ../Impasto/MainWindow.cs:558
+#: ../Impasto/MainWindow.cs:561
 msgid "_View"
 msgstr "_Zobrazit"
 
-#: ../Impasto/MainWindow.cs:564
+#: ../Impasto/MainWindow.cs:567
 msgid "_Window"
 msgstr "_Okno"
 
@@ -5046,7 +5064,7 @@ msgstr "_Okno"
 msgid "draw;drawing;paint;painting;graphics;raster;2d;"
 msgstr "kreslení;kreslení;malování;malování;grafika;rastr;2d;"
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:265
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:296
 msgid "every effect and object on this layer"
 msgstr ""
 
@@ -5098,7 +5116,7 @@ msgstr ""
 msgid "{0} (Alternate)"
 msgstr ""
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:2100
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:2136
 #, csharp-format
 msgid "{0} + click: start a new shape here."
 msgstr ""
@@ -5109,7 +5127,7 @@ msgstr ""
 msgid "{0} + left click to set origin, left click to paint."
 msgstr "{0} + levé kliknutí na nastavení původu, pravé kliknutí na kreslení."
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:2097
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:2133
 #, csharp-format
 msgid "{0} + right drag: change tension."
 msgstr ""
@@ -5129,7 +5147,7 @@ msgstr ""
 msgid "{0} - never saved to a file"
 msgstr ""
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:2099
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:2135
 #, csharp-format
 msgid "{0} and drag: rotate the whole shape."
 msgstr ""
@@ -5160,12 +5178,12 @@ msgstr "{0} obrázek ({1})"
 msgid "{0} palette ({1})"
 msgstr "{0} paleta ({1})"
 
-#: ../Pinta.Tools/Tools/TextTool.cs:2851
+#: ../Pinta.Tools/Tools/TextTool.cs:2874
 #, csharp-format
 msgid "{0} to edit"
 msgstr ""
 
-#: ../Pinta.Tools/Tools/TextTool.cs:2852
+#: ../Pinta.Tools/Tools/TextTool.cs:2875
 #, csharp-format
 msgid "{0} to open text properties"
 msgstr ""
@@ -5175,7 +5193,7 @@ msgstr ""
 msgid "{0} to re-edit an existing text object."
 msgstr ""
 
-#: ../Pinta.Tools/Tools/TextTool.cs:2861
+#: ../Pinta.Tools/Tools/TextTool.cs:2884
 #, csharp-format
 msgid "{0} to rotate"
 msgstr ""
@@ -5206,49 +5224,28 @@ msgstr ""
 msgid "{0}%"
 msgstr "{0}%"
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:2095
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:2131
 #, csharp-format
 msgid "{0}-drag: snap the adjacent segment to a 15° angle."
 msgstr ""
 
 #: ../Pinta.Tools/Editable/EditEngines/ArrowedEditEngine.cs:410
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:2098
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:2134
 #, csharp-format
 msgid "{0}: curve the line around the selected point; {1}: straighten it."
 msgstr ""
 
-#: ../Impasto/MainWindow.cs:1238
+#: ../Impasto/MainWindow.cs:1243
 #: ../Pinta.Core/Classes/Re-editable/ObjectRasterizer.cs:187
 #, csharp-format
 msgid "…and {0} more"
 msgstr ""
 
 #. Translators: a layer modifier row in the layers dock; it applies to everything below it.
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:119
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:143
 #, csharp-format
 msgid "▼ {0}"
 msgstr ""
-
-#. Translators: Effects menu command that applies the last used effect again, with the same settings, to the current selection.
-#. AI-generated translation; human review requested.
-#: ../Pinta.Core/Actions/EffectsActions.cs:45
-#, fuzzy
-msgid "Repeat Last Effect"
-msgstr "Opakovat poslední efekt"
-
-#. Translators: Adjustments menu command that applies the last used adjustment again, with the same settings, to the current selection.
-#. AI-generated translation; human review requested.
-#: ../Pinta.Core/Actions/AdjustmentsActions.cs:39
-#, fuzzy
-msgid "Repeat Last Adjustment"
-msgstr "Opakovat poslední přizpůsobení"
-
-#. Translators: Adjustments or Effects menu item that applies the last used adjustment or effect again, with the same settings; {0} is its name, e.g. "Gaussian Blur".
-#. AI-generated translation; human review requested.
-#: ../Pinta.Core/Actions/LastAppliedEffect.cs:42
-#, fuzzy, csharp-format
-msgid "Repeat {0}"
-msgstr "Opakovat: {0}"
 
 #~ msgid "About Pinta"
 #~ msgstr "O Pinta"

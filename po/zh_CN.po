@@ -19,7 +19,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: pinta\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-14 14:28-0500\n"
+"POT-Creation-Date: 2026-11-16 20:07-0600\n"
 "PO-Revision-Date: 2026-05-10 20:22+0000\n"
 "Last-Translator: jywondf <99643089+JoyWonderful@users.noreply.github.com>\n"
 "Language-Team: Chinese (Simplified Han script)\n"
@@ -39,8 +39,8 @@ msgstr " (在用户目录中)"
 msgid " Selection Mode: "
 msgstr " 选取模式: "
 
-#: ../Pinta.Core/Managers/EffectsManager.cs:85
-#: ../Pinta.Core/Managers/EffectsManager.cs:132
+#: ../Pinta.Core/Managers/EffectsManager.cs:90
+#: ../Pinta.Core/Managers/EffectsManager.cs:137
 msgid "..."
 msgstr "..."
 
@@ -49,8 +49,8 @@ msgid "3 x 3 Region"
 msgstr "3 x 3 区域"
 
 #. Translators: Move Selected Pixels mode that moves the pixels' corners in 3D space, viewed in perspective.
-#: ../Pinta.Tools/Tools/MoveSelectedTool.cs:235
-#: ../Pinta.Tools/Tools/MoveSelectedTool.cs:530
+#: ../Pinta.Tools/Tools/MoveSelectedTool.cs:243
+#: ../Pinta.Tools/Tools/MoveSelectedTool.cs:538
 #, fuzzy
 msgid "3D"
 msgstr "3D"
@@ -102,7 +102,7 @@ msgstr ""
 msgid "A {0} x {1} pixel image is too large to open"
 msgstr ""
 
-#: ../Impasto/MainWindow.cs:563
+#: ../Impasto/MainWindow.cs:566
 msgid "A_dd-ins"
 msgstr "插件(_D)"
 
@@ -119,10 +119,10 @@ msgstr ""
 msgid "Add Layer Mask"
 msgstr ""
 
-#: ../Impasto/Actions/Edit/PasteAction.cs:192
+#: ../Impasto/Actions/Edit/PasteAction.cs:203
 #: ../Pinta.Core/Actions/LayerActions.cs:73
 #: ../Pinta.Core/Actions/LayerActions.cs:688
-#: ../Pinta.Tools/Tools/MoveSelectedTool.cs:652
+#: ../Pinta.Tools/Tools/MoveSelectedTool.cs:662
 msgid "Add New Layer"
 msgstr "添加新图层"
 
@@ -158,7 +158,7 @@ msgstr "插件管理器..."
 msgid "Add-ins"
 msgstr ""
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:1298
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:1338
 msgid "Added"
 msgstr "已添加"
 
@@ -169,7 +169,7 @@ msgid ""
 msgstr ""
 
 #: ../Impasto/Actions/Help/KeyboardShortcutsDialogAction.cs:205
-#: ../Impasto/MainWindow.cs:629
+#: ../Impasto/MainWindow.cs:634
 msgid "Adjustments"
 msgstr "调节"
 
@@ -189,20 +189,20 @@ msgid "Align to objects"
 msgstr ""
 
 #. Translators: 'All Petite Caps' refers to the font-variant text property
-#: ../Pinta.Tools/Dialogs/TextPropertiesDialog.cs:250
+#: ../Pinta.Tools/Dialogs/TextPropertiesDialog.cs:253
 #: ../Pinta.Tools/Tools/TextTool.cs:425
 msgid "All Petite Caps"
 msgstr ""
 
 #. Translators: 'All Small Caps' refers to the font-variant text property
-#: ../Pinta.Tools/Dialogs/TextPropertiesDialog.cs:248
+#: ../Pinta.Tools/Dialogs/TextPropertiesDialog.cs:251
 #: ../Pinta.Tools/Tools/TextTool.cs:411
 msgid "All Small Caps"
 msgstr ""
 
 #: ../Impasto/Actions/File/OpenDocumentAction.cs:153
-#: ../Pinta.Core/Actions/EditActions.cs:706
-#: ../Pinta.Gui.Addins/AddinManagerDialog.cs:335
+#: ../Pinta.Core/Actions/EditActions.cs:714
+#: ../Pinta.Gui.Addins/AddinManagerDialog.cs:347
 msgid "All files"
 msgstr "全部文件"
 
@@ -253,11 +253,11 @@ msgstr "箭头翼与线条之间的角度(度)。"
 msgid "Antialias"
 msgstr "抗锯齿"
 
-#: ../Pinta.Core/Classes/BaseTool.cs:464
+#: ../Pinta.Core/Classes/BaseTool.cs:472
 msgid "Antialiasing Off"
 msgstr "关闭抗锯齿"
 
-#: ../Pinta.Core/Classes/BaseTool.cs:463
+#: ../Pinta.Core/Classes/BaseTool.cs:471
 msgid "Antialiasing On"
 msgstr "开启抗锯齿"
 
@@ -294,7 +294,7 @@ msgstr "自动"
 msgid "Auto Crop"
 msgstr "自动裁剪"
 
-#: ../Pinta.Effects/Adjustments/AutoLevelEffect.cs:24
+#: ../Pinta.Effects/Adjustments/AutoLevelEffect.cs:23
 msgid "Auto Level"
 msgstr "自动调整色阶"
 
@@ -340,13 +340,13 @@ msgstr "背景："
 msgid "Backup"
 msgstr ""
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:947
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:979
 msgid ""
 "Bake this layer's effects and objects into its pixels; they stop being "
 "editable."
 msgstr ""
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:948
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:980
 msgid "Bake this object into the layer's pixels; it stops being editable."
 msgstr ""
 
@@ -378,17 +378,17 @@ msgstr "黑白"
 msgid "Blend Mode"
 msgstr "混合模式"
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:892
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:924
 msgid "Blend Mode:"
 msgstr ""
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:157
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:181
 #, csharp-format
 msgid "Blend Mode: {0}"
 msgstr ""
 
 #: ../Pinta.Effects/Dialogs/Effects.LevelsDialog.cs:121
-#: ../Pinta.Effects/Dialogs/Effects.PosterizeDialog.cs:66
+#: ../Pinta.Effects/Dialogs/Effects.PosterizeDialog.cs:80
 #: ../Pinta.Gui.Widgets/Widgets/ColorPickerSlider.cs:363
 msgid "Blue"
 msgstr "蓝色"
@@ -454,13 +454,13 @@ msgstr ""
 msgid "Bottom Right Perspective — Vertical"
 msgstr ""
 
-#: ../Pinta.Effects/Adjustments/BrightnessContrastEffect.cs:86
+#: ../Pinta.Effects/Adjustments/BrightnessContrastEffect.cs:94
 #: ../Pinta.Effects/Effects/GlowEffect.cs:79
-#: ../Pinta.Gui.Widgets/Widgets/ColorWheelWidget.cs:72
+#: ../Pinta.Gui.Widgets/Widgets/ColorWheelWidget.cs:80
 msgid "Brightness"
 msgstr "亮度"
 
-#: ../Pinta.Effects/Adjustments/BrightnessContrastEffect.cs:28
+#: ../Pinta.Effects/Adjustments/BrightnessContrastEffect.cs:31
 msgid "Brightness / Contrast"
 msgstr "亮度 / 对比度"
 
@@ -517,14 +517,14 @@ msgid ""
 "format."
 msgstr ""
 
-#: ../Impasto/Actions/File/SaveDocumentImplementationAction.cs:145
+#: ../Impasto/Actions/File/SaveDocumentImplementationAction.cs:148
 #: ../Impasto/Actions/Help/KeyboardShortcutsDialogAction.cs:138
 #: ../Impasto/Actions/Help/KeyboardShortcutsDialogAction.cs:151
 #: ../Impasto/Dialogs/PreferencesDialog.cs:439
-#: ../Pinta.Core/Actions/EditActions.cs:643
+#: ../Pinta.Core/Actions/EditActions.cs:651
 #: ../Pinta.Gui.Addins/InstallDialog.cs:126
 #: ../Pinta.Gui.Widgets/Widgets/ColorPickerDialog.cs:497
-#: ../Pinta.Tools/Dialogs/TextPropertiesDialog.cs:264
+#: ../Pinta.Tools/Dialogs/TextPropertiesDialog.cs:267
 msgid "Cancel"
 msgstr "取消"
 
@@ -614,16 +614,16 @@ msgstr ""
 msgid "Change font size."
 msgstr "更改字体大小。"
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:146
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:159
 msgid "Change outline width."
 msgstr "更改轮廓粗细。"
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:937
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:969
 msgid ""
 "Change this effect's settings; the layer re-renders with the new values."
 msgstr ""
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:932
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:964
 msgid ""
 "Change this transform's settings; the layer re-renders with the new values."
 msgstr ""
@@ -638,12 +638,12 @@ msgid "Cherry Blossom"
 msgstr "樱花"
 
 #: ../Impasto/Dialogs/PreferencesDialog.cs:419
-#: ../Pinta.Effects/Dialogs/Effects.LevelsDialog.cs:666
+#: ../Pinta.Effects/Dialogs/Effects.LevelsDialog.cs:672
 #: ../Pinta.Gui.Widgets/Dialogs/SimpleEffectDialog.cs:366
 msgid "Choose Color"
 msgstr "选取颜色"
 
-#: ../Impasto/MainWindow.cs:996
+#: ../Impasto/MainWindow.cs:1001
 msgid "Choose Colors"
 msgstr "选择颜色"
 
@@ -707,7 +707,7 @@ msgstr ""
 msgid "Click and drag to navigate image."
 msgstr "点击拖动以操纵图像。"
 
-#: ../Impasto/MainWindow.cs:979
+#: ../Impasto/MainWindow.cs:984
 #: ../Pinta.Gui.Widgets/Widgets/StatusBarColorPaletteWidget.cs:798
 msgid "Click to reset primary and secondary color."
 msgstr "点击重置主副颜色。"
@@ -732,14 +732,14 @@ msgstr ""
 msgid "Click to select secondary color."
 msgstr "点击选择副颜色。"
 
-#: ../Impasto/MainWindow.cs:972
+#: ../Impasto/MainWindow.cs:977
 #: ../Pinta.Gui.Widgets/Widgets/ColorPickerDialog.cs:366
 #: ../Pinta.Gui.Widgets/Widgets/ColorPickerPanel.cs:171
 #: ../Pinta.Gui.Widgets/Widgets/StatusBarColorPaletteWidget.cs:793
 msgid "Click to switch between primary and secondary color."
 msgstr "单击可在主颜色和副颜色之间切换。"
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:523
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:543
 msgid ""
 "Clicking a segment while editing inserts a control point to smoothly curve "
 "it."
@@ -803,7 +803,7 @@ msgstr "颜色减淡"
 msgid "Color Gradient"
 msgstr "颜色渐变"
 
-#: ../Pinta.Tools/Tools/GradientTool.cs:353
+#: ../Pinta.Tools/Tools/GradientTool.cs:356
 msgid "Color Mode"
 msgstr "色彩模式"
 
@@ -850,7 +850,7 @@ msgstr ""
 msgid "Coloring"
 msgstr "着色"
 
-#: ../Impasto/MainWindow.cs:791 ../Pinta.Core/Actions/ViewActions.cs:180
+#: ../Impasto/MainWindow.cs:796 ../Pinta.Core/Actions/ViewActions.cs:180
 msgid "Colors"
 msgstr ""
 
@@ -860,7 +860,7 @@ msgstr ""
 msgid "Composite image compression {0} is not supported"
 msgstr ""
 
-#: ../Pinta.Tools/Tools/GradientTool.cs:323
+#: ../Pinta.Tools/Tools/GradientTool.cs:326
 msgid "Conical Gradient"
 msgstr "锥形渐变"
 
@@ -878,7 +878,7 @@ msgstr "内容"
 msgid "Contiguous"
 msgstr "区域"
 
-#: ../Pinta.Effects/Adjustments/BrightnessContrastEffect.cs:96
+#: ../Pinta.Effects/Adjustments/BrightnessContrastEffect.cs:104
 #: ../Pinta.Effects/Effects/GlowEffect.cs:83
 msgid "Contrast"
 msgstr "对比度"
@@ -958,15 +958,15 @@ msgstr ""
 msgid "Curved"
 msgstr "弯的"
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:524
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:544
 msgid "Curved Segments Off"
 msgstr "关闭曲线段"
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:523
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:543
 msgid "Curved Segments On"
 msgstr "开启曲线段"
 
-#: ../Pinta.Effects/Adjustments/CurvesEffect.cs:27
+#: ../Pinta.Effects/Adjustments/CurvesEffect.cs:26
 #: ../Pinta.Effects/Dialogs/Effects.CurvesDialog.cs:137
 msgid "Curves"
 msgstr "曲线"
@@ -1013,7 +1013,7 @@ msgstr "默认"
 msgid "Default canvas size (on application open):"
 msgstr ""
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:957
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:989
 msgid "Delete"
 msgstr ""
 
@@ -1022,15 +1022,15 @@ msgstr ""
 msgid "Delete Layer"
 msgstr "删除图层"
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:334
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:365
 msgid "Delete Layer Mask"
 msgstr ""
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:997
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:1029
 msgid "Delete Mask"
 msgstr ""
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:311
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:342
 msgid "Delete Object"
 msgstr ""
 
@@ -1046,7 +1046,7 @@ msgstr ""
 msgid "Delete selected control point"
 msgstr ""
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:1060
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:1091
 msgid "Deleted"
 msgstr "已删除"
 
@@ -1104,7 +1104,7 @@ msgstr "抖动"
 msgid "Do not switch tool"
 msgstr "不要切换工具"
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:159
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:183
 msgid "Double-click for Layer Properties"
 msgstr ""
 
@@ -1117,45 +1117,45 @@ msgstr "文件下载大小: {0}"
 msgid "Drag a corner grip to resize, or the dashed border to move."
 msgstr ""
 
-#: ../Pinta.Tools/Tools/MoveSelectedTool.cs:138
+#: ../Pinta.Tools/Tools/MoveSelectedTool.cs:146
 #, fuzzy
 msgid ""
 "Drag an edge's grip to slide that edge along itself, slanting the selected "
 "pixels."
 msgstr "拖动某条边的控制点，使该边沿自身方向滑动，从而斜切所选像素。"
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:160
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:184
 msgid "Drag and drop to reorder"
 msgstr ""
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:1316
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:1354
 msgid "Drag and drop to reorder it on this layer"
 msgstr ""
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:1319
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:1357
 msgid "Drag and drop to reorder, or onto another layer to move it there"
 msgstr ""
 
-#: ../Pinta.Tools/Tools/MoveSelectedTool.cs:141
+#: ../Pinta.Tools/Tools/MoveSelectedTool.cs:149
 #, fuzzy
 msgid ""
 "Drag any corner on its own to fit the selected pixels onto an angled surface."
 msgstr "单独拖动任意角，使所选像素贴合倾斜的表面。"
 
-#: ../Pinta.Tools/Tools/TextTool.cs:2860
+#: ../Pinta.Tools/Tools/TextTool.cs:2883
 msgid "Drag corner to resize (changes font size)"
 msgstr ""
 
-#: ../Pinta.Tools/Tools/TextTool.cs:2859
+#: ../Pinta.Tools/Tools/TextTool.cs:2882
 msgid "Drag corner to resize the text box"
 msgstr ""
 
-#: ../Pinta.Tools/Tools/MoveSelectedTool.cs:229
+#: ../Pinta.Tools/Tools/MoveSelectedTool.cs:237
 #, fuzzy
 msgid "Drag the grips to resize the selected pixels."
 msgstr "拖动控制点以调整所选像素的大小。"
 
-#: ../Pinta.Tools/Tools/MoveSelectedTool.cs:155
+#: ../Pinta.Tools/Tools/MoveSelectedTool.cs:163
 #, fuzzy, csharp-format
 msgid ""
 "Drag to move this corner\n"
@@ -1164,7 +1164,7 @@ msgstr ""
 "拖动以移动此角\n"
 "{0}+上下拖动：推远或拉近"
 
-#: ../Pinta.Tools/Tools/MoveSelectedTool.cs:159
+#: ../Pinta.Tools/Tools/MoveSelectedTool.cs:167
 #, fuzzy, csharp-format
 msgid ""
 "Drag to turn or tilt the selection\n"
@@ -1179,7 +1179,7 @@ msgstr ""
 msgid "Draw only the outline of the text, using the secondary color."
 msgstr "仅使用辅色绘制文本的轮廓。"
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:559
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:579
 #: ../Pinta.Tools/Tools/FreeformShapeTool.cs:222
 msgid "Draw only the shape's outline, using the primary color."
 msgstr "仅使用主色绘制形状的轮廓。"
@@ -1203,7 +1203,7 @@ msgstr ""
 msgid "Each added point joins its neighbors with a straight segment."
 msgstr ""
 
-#: ../Impasto/MainWindow.cs:1214
+#: ../Impasto/MainWindow.cs:1219
 msgid ""
 "Each file opens as its own image. If you dropped these by accident, choose "
 "Cancel."
@@ -1237,16 +1237,16 @@ msgid ""
 "to bake silently and skip the warning."
 msgstr ""
 
-#: ../Impasto/MainWindow.cs:561
+#: ../Impasto/MainWindow.cs:564
 msgid "Effe_cts"
 msgstr "效果(_C)"
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:936
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:968
 msgid "Effect Settings..."
 msgstr ""
 
 #: ../Impasto/Actions/Help/KeyboardShortcutsDialogAction.cs:206
-#: ../Impasto/MainWindow.cs:624
+#: ../Impasto/MainWindow.cs:629
 msgid "Effects"
 msgstr "效果"
 
@@ -1256,7 +1256,7 @@ msgid "Electric"
 msgstr "晕影"
 
 #: ../Pinta.Core/Classes/Re-editable/ObjectRasterizer.cs:149
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:129
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:153
 #: ../Pinta.Tools/Editable/EditEngines/EllipseEditEngine.cs:36
 #: ../Pinta.Tools/Tools/EllipseTool.cs:43
 msgid "Ellipse"
@@ -1283,7 +1283,7 @@ msgstr ""
 msgid "Erase Selection"
 msgstr "擦除选区"
 
-#: ../Pinta.Tools/Tools/EraserTool.cs:70
+#: ../Pinta.Tools/Tools/EraserTool.cs:73
 msgid "Eraser"
 msgstr "橡皮擦"
 
@@ -1300,7 +1300,7 @@ msgid "Exclude (-) (Right Click)"
 msgstr "排除 (-) (右键)"
 
 #. Translators: This refers to expanding the canvas size when pasting a larger image.
-#: ../Impasto/Actions/Edit/PasteAction.cs:245
+#: ../Impasto/Actions/Edit/PasteAction.cs:259
 msgid "Expand"
 msgstr "自动扩展"
 
@@ -1316,7 +1316,7 @@ msgstr ""
 msgid "Export Settings..."
 msgstr ""
 
-#: ../Pinta.Gui.Addins/AddinManagerDialog.cs:327
+#: ../Pinta.Gui.Addins/AddinManagerDialog.cs:339
 msgid "Extension packages"
 msgstr "扩展文件"
 
@@ -1329,12 +1329,12 @@ msgstr "系数"
 msgid "Failed to access XDG Desktop Portals"
 msgstr "访问XDG桌面门户失败"
 
-#: ../Impasto/Dialogs/PreferencesDialog.cs:462
+#: ../Impasto/Dialogs/PreferencesDialog.cs:463
 #, csharp-format
 msgid "Failed to export settings: {0}"
 msgstr ""
 
-#: ../Impasto/MainWindow.cs:448
+#: ../Impasto/MainWindow.cs:451
 msgid "Failed to initialize add-in"
 msgstr "未启动附加组件"
 
@@ -1346,12 +1346,12 @@ msgstr "下载扩展包失败"
 msgid "Failed to open image"
 msgstr "无法打开图像"
 
-#: ../Impasto/Dialogs/PreferencesDialog.cs:489
+#: ../Impasto/Dialogs/PreferencesDialog.cs:490
 #, csharp-format
 msgid "Failed to read settings file: {0}"
 msgstr ""
 
-#: ../Impasto/Actions/File/SaveDocumentImplementationAction.cs:316
+#: ../Impasto/Actions/File/SaveDocumentImplementationAction.cs:328
 msgid "Failed to save image"
 msgstr "无法保存图像"
 
@@ -1360,7 +1360,7 @@ msgstr "无法保存图像"
 msgid "Failed to take screenshot"
 msgstr "截图失败"
 
-#: ../Pinta.Tools/Tools/EraserTool.cs:429
+#: ../Pinta.Tools/Tools/EraserTool.cs:432
 msgid "Feather"
 msgstr ""
 
@@ -1372,7 +1372,7 @@ msgstr "模糊画面边缘"
 msgid "Feather Object"
 msgstr "羽化"
 
-#: ../Pinta.Tools/Tools/MoveSelectedTool.cs:265
+#: ../Pinta.Tools/Tools/MoveSelectedTool.cs:273
 #, fuzzy
 msgid "Field of view"
 msgstr "视野"
@@ -1402,17 +1402,17 @@ msgstr "填充对象背景"
 msgid "Fill Selection"
 msgstr "填充选区"
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:560
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:580
 #: ../Pinta.Tools/Tools/FreeformShapeTool.cs:223
 msgid "Fill Shape"
 msgstr "填充"
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:550
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:570
 #: ../Pinta.Tools/Tools/FreeformShapeTool.cs:216
 msgid "Fill Style"
 msgstr "填充形式"
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:561
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:581
 #: ../Pinta.Tools/Tools/FreeformShapeTool.cs:224
 msgid "Fill and Outline Shape"
 msgstr "填充和边框"
@@ -1428,14 +1428,14 @@ msgid ""
 "Fill only the connected region of similar color touching the click point."
 msgstr ""
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:561
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:581
 #: ../Pinta.Tools/Tools/FreeformShapeTool.cs:224
 msgid ""
 "Fill the interior with the secondary color and outline it with the primary "
 "color."
 msgstr ""
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:560
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:580
 #: ../Pinta.Tools/Tools/FreeformShapeTool.cs:223
 msgid "Fill the shape's interior with the secondary color, no outline."
 msgstr "使用辅色填充形状内部,不绘制轮廓。"
@@ -1461,9 +1461,9 @@ msgstr ""
 msgid "Finalize shape"
 msgstr ""
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:1820
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:2414
-#: ../Pinta.Tools/Tools/GradientTool.cs:195
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:1856
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:2490
+#: ../Pinta.Tools/Tools/GradientTool.cs:198
 msgid "Finalized"
 msgstr "已完成"
 
@@ -1476,7 +1476,7 @@ msgid "Finish selection"
 msgstr ""
 
 #: ../Pinta.Core/Extensions/Gtk/GtkExtensions.Widget.cs:236
-#: ../Pinta.Tools/Tools/LassoSelectTool.cs:311
+#: ../Pinta.Tools/Tools/LassoSelectTool.cs:316
 msgid "Finish selection (Enter)"
 msgstr ""
 
@@ -1485,7 +1485,7 @@ msgstr ""
 msgid "Finish typing ({0})"
 msgstr "完成输入({0})"
 
-#: ../Impasto/Actions/File/SaveDocumentImplementationAction.cs:358
+#: ../Impasto/Actions/File/SaveDocumentImplementationAction.cs:373
 #: ../Pinta.Core/Actions/ImageActions.cs:117
 #: ../Pinta.Core/Actions/ImageActions.cs:228
 msgid "Flatten"
@@ -1495,7 +1495,7 @@ msgstr "扁平化"
 msgid "Flattened, squared-off corners on the outline."
 msgstr "轮廓上平整的方角。"
 
-#: ../Impasto/Actions/File/SaveDocumentImplementationAction.cs:352
+#: ../Impasto/Actions/File/SaveDocumentImplementationAction.cs:367
 msgid "Flattening the image will merge all layers into a single layer."
 msgstr "扁平化此图像将会合并所有图层。"
 
@@ -1562,7 +1562,7 @@ msgstr "轻度抖动去色"
 msgid "Folders cannot be opened."
 msgstr ""
 
-#: ../Impasto/MainWindow.cs:1233
+#: ../Impasto/MainWindow.cs:1238
 msgid "Folders cannot be opened. Drop the image files inside instead."
 msgstr ""
 
@@ -1578,7 +1578,7 @@ msgstr "重叠虚影"
 msgid "Fragments"
 msgstr "重叠虚影"
 
-#: ../Pinta.Tools/Tools/LassoSelectTool.cs:356
+#: ../Pinta.Tools/Tools/LassoSelectTool.cs:361
 msgid "Freeform"
 msgstr "自由形状"
 
@@ -1619,7 +1619,7 @@ msgid "Glow"
 msgstr "发光"
 
 #: ../Pinta.Tools/Tools/GradientTool.cs:63
-#: ../Pinta.Tools/Tools/GradientTool.cs:313
+#: ../Pinta.Tools/Tools/GradientTool.cs:316
 msgid "Gradient"
 msgstr "渐变"
 
@@ -1637,7 +1637,7 @@ msgstr ""
 
 #: ../Pinta.Effects/Dialogs/Effects.CurvesDialog.cs:90
 #: ../Pinta.Effects/Dialogs/Effects.LevelsDialog.cs:117
-#: ../Pinta.Effects/Dialogs/Effects.PosterizeDialog.cs:65
+#: ../Pinta.Effects/Dialogs/Effects.PosterizeDialog.cs:79
 #: ../Pinta.Gui.Widgets/Widgets/ColorPickerSlider.cs:362
 msgid "Green"
 msgstr "绿色"
@@ -1675,16 +1675,16 @@ msgstr ""
 msgid "Hex"
 msgstr "十六进制"
 
-#: ../Impasto/Actions/Layers/LayerPropertiesAction.cs:121
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:230
+#: ../Impasto/Actions/Layers/LayerPropertiesAction.cs:134
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:254
 msgid "Hide Layer"
 msgstr "隐藏图层"
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:385
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:416
 msgid "Hide Layer Mask"
 msgstr ""
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:456
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:487
 msgid "Hide Object"
 msgstr ""
 
@@ -1713,7 +1713,7 @@ msgstr "历史"
 msgid "Hold the switch key to draw the other triangle type."
 msgstr ""
 
-#: ../Pinta.Tools/Tools/CloneStampTool.cs:231
+#: ../Pinta.Tools/Tools/CloneStampTool.cs:238
 #, csharp-format
 msgid "Hold {0} and click to set an origin point first."
 msgstr ""
@@ -1742,16 +1742,16 @@ msgstr "以绿色为主导项颜色水平排序"
 msgid "Horizontal red (R)"
 msgstr "以红色为主导项颜色水平排序"
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:914
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:946
 msgid ""
 "How much of the effect is applied. At 0 the layer looks as it did before."
 msgstr ""
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:895
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:927
 msgid "How the effect's result is mixed back into the image it was applied to."
 msgstr ""
 
-#: ../Pinta.Tools/Tools/MoveSelectedTool.cs:274
+#: ../Pinta.Tools/Tools/MoveSelectedTool.cs:282
 #, fuzzy
 msgid ""
 "How wide 3D mode's view is, in degrees. A wide view makes depth look "
@@ -1773,7 +1773,7 @@ msgstr "色相与饱和度"
 msgid "Hue / Saturation"
 msgstr "色相 / 饱和度"
 
-#: ../Impasto/Actions/File/SaveDocumentImplementationAction.cs:304
+#: ../Impasto/Actions/File/SaveDocumentImplementationAction.cs:316
 msgid "ICO files can not be larger than 256 x 256 pixels."
 msgstr "ICO文件不能大于256 x 256像素。"
 
@@ -1792,12 +1792,12 @@ msgid ""
 "shown fully opaque."
 msgstr ""
 
-#: ../Impasto/Actions/File/CloseDocumentAction.cs:75
+#: ../Impasto/Actions/File/CloseDocumentAction.cs:100
 msgid "If you don't save, all changes will be permanently lost."
 msgstr "如果您不保存，所有修改 将会永久丢失。"
 
 #: ../Impasto/Actions/Help/KeyboardShortcutsDialogAction.cs:204
-#: ../Impasto/MainWindow.cs:634 ../Pinta.Tools/Tools/ColorPickerTool.cs:277
+#: ../Impasto/MainWindow.cs:639 ../Pinta.Tools/Tools/ColorPickerTool.cs:277
 msgid "Image"
 msgstr "图像"
 
@@ -1809,7 +1809,7 @@ msgstr ""
 msgid "Image Tabs"
 msgstr "图像标签"
 
-#: ../Impasto/Actions/Edit/PasteAction.cs:225
+#: ../Impasto/Actions/Edit/PasteAction.cs:239
 msgid "Image cannot be pasted"
 msgstr "无法粘贴图像"
 
@@ -1818,11 +1818,11 @@ msgstr "无法粘贴图像"
 msgid "Image files"
 msgstr "图像文件"
 
-#: ../Impasto/Actions/Edit/PasteAction.cs:232
+#: ../Impasto/Actions/Edit/PasteAction.cs:246
 msgid "Image larger than canvas"
 msgstr "图像比画布大"
 
-#: ../Impasto/Actions/File/SaveDocumentImplementationAction.cs:303
+#: ../Impasto/Actions/File/SaveDocumentImplementationAction.cs:315
 msgid "Image too large"
 msgstr "图像太大"
 
@@ -1863,7 +1863,7 @@ msgid ""
 "and can be reopened."
 msgstr ""
 
-#: ../Impasto/Actions/File/SaveDocumentImplementationAction.cs:277
+#: ../Impasto/Actions/File/SaveDocumentImplementationAction.cs:289
 msgid "Impasto does not support saving images in this file format."
 msgstr "Impasto 不支持保存图像为这种格式。"
 
@@ -1887,7 +1887,7 @@ msgstr ""
 msgid "Impasto supports the following palette formats:"
 msgstr "Impasto 支持以下调色板格式："
 
-#: ../Impasto/Dialogs/PreferencesDialog.cs:544
+#: ../Impasto/Dialogs/PreferencesDialog.cs:545
 msgid "Import"
 msgstr ""
 
@@ -1895,11 +1895,11 @@ msgstr ""
 msgid "Import From File"
 msgstr "从文件导入"
 
-#: ../Impasto/Dialogs/PreferencesDialog.cs:540
+#: ../Impasto/Dialogs/PreferencesDialog.cs:541
 msgid "Import Keyboard Shortcuts?"
 msgstr ""
 
-#: ../Impasto/Dialogs/PreferencesDialog.cs:476
+#: ../Impasto/Dialogs/PreferencesDialog.cs:477
 msgid "Import Settings"
 msgstr ""
 
@@ -1911,14 +1911,14 @@ msgstr ""
 msgid "Import from File..."
 msgstr "从文件导入..."
 
-#: ../Impasto/Dialogs/PreferencesDialog.cs:527
+#: ../Impasto/Dialogs/PreferencesDialog.cs:528
 #, csharp-format
 msgid ""
 "Imported {0} setting(s); {1} entry(ies) were skipped (unrecognized or "
 "invalid). {2} Restart Impasto for all changes to fully take effect."
 msgstr ""
 
-#: ../Pinta.Tools/Tools/MoveSelectedTool.cs:130
+#: ../Pinta.Tools/Tools/MoveSelectedTool.cs:138
 #, fuzzy, csharp-format
 msgid ""
 "In 3D mode, drag a corner to move it, or hold {0} and drag it up or down to "
@@ -1929,7 +1929,7 @@ msgstr ""
 "侧的控制点可转动或翻转选区，按住 Shift 键则以 15° 为步长；也可按 {1}、{2}、"
 "{3} 或 {4}。"
 
-#: ../Pinta.Tools/Tools/LassoSelectTool.cs:359
+#: ../Pinta.Tools/Tools/LassoSelectTool.cs:364
 msgid ""
 "In Freeform mode, click and drag to draw the outline for a selection area."
 msgstr ""
@@ -1948,7 +1948,7 @@ msgstr ""
 "按 Enter 键完成选择。\n"
 "按 Backspace 键删除最后一个顶点。"
 
-#: ../Pinta.Tools/Tools/LassoSelectTool.cs:365
+#: ../Pinta.Tools/Tools/LassoSelectTool.cs:370
 msgid ""
 "In Polygon mode, click and drag to add a new point to the selection.\n"
 "Press Enter to finish the selection.\n"
@@ -1956,7 +1956,7 @@ msgid ""
 msgstr ""
 
 #. Translators: Skew and Perspective are the Mode choices on this tool's toolbar.
-#: ../Pinta.Tools/Tools/MoveSelectedTool.cs:124
+#: ../Pinta.Tools/Tools/MoveSelectedTool.cs:132
 #, fuzzy
 msgid ""
 "In Skew or Perspective mode, drag the grips on the selection's edges or "
@@ -2004,7 +2004,7 @@ msgstr ""
 msgid "Install"
 msgstr "安装"
 
-#: ../Pinta.Gui.Addins/AddinManagerDialog.cs:301
+#: ../Pinta.Gui.Addins/AddinManagerDialog.cs:313
 msgid "Install Extension Package"
 msgstr "安装扩展包"
 
@@ -2042,7 +2042,7 @@ msgid "Invert Colors"
 msgstr "反色"
 
 #: ../Pinta.Core/Actions/EditActions.cs:148
-#: ../Pinta.Core/Actions/EditActions.cs:728
+#: ../Pinta.Core/Actions/EditActions.cs:736
 msgid "Invert Selection"
 msgstr "反向选择"
 
@@ -2060,12 +2060,12 @@ msgstr ""
 msgid "Julia Fractal"
 msgstr "朱莉娅分形"
 
-#: ../Pinta.Tools/Dialogs/TextPropertiesDialog.cs:236
+#: ../Pinta.Tools/Dialogs/TextPropertiesDialog.cs:238
 #: ../Pinta.Tools/Tools/TextTool.cs:612
 msgid "Justify"
 msgstr ""
 
-#: ../Impasto/Dialogs/PreferencesDialog.cs:543
+#: ../Impasto/Dialogs/PreferencesDialog.cs:544
 msgid "Keep Mine"
 msgstr ""
 
@@ -2086,11 +2086,11 @@ msgstr ""
 msgid "Keyboard Shortcuts..."
 msgstr ""
 
-#: ../Impasto/Dialogs/PreferencesDialog.cs:523
+#: ../Impasto/Dialogs/PreferencesDialog.cs:524
 msgid "Keyboard shortcuts were imported, replacing your current ones."
 msgstr ""
 
-#: ../Impasto/Dialogs/PreferencesDialog.cs:524
+#: ../Impasto/Dialogs/PreferencesDialog.cs:525
 msgid "Keyboard shortcuts were left unchanged."
 msgstr ""
 
@@ -2108,7 +2108,7 @@ msgstr ""
 msgid "Lasso / Scissors Select"
 msgstr ""
 
-#: ../Pinta.Tools/Tools/LassoSelectTool.cs:281
+#: ../Pinta.Tools/Tools/LassoSelectTool.cs:286
 msgid "Lasso Mode"
 msgstr "套索模式"
 
@@ -2121,15 +2121,15 @@ msgid "Layer"
 msgstr "图层"
 
 #: ../Pinta.Core/Classes/Re-editable/ObjectRasterizer.cs:699
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:116
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:140
 msgid "Layer Mask"
 msgstr ""
 
-#: ../Impasto/Actions/Layers/LayerPropertiesAction.cs:109
+#: ../Impasto/Actions/Layers/LayerPropertiesAction.cs:122
 msgid "Layer Opacity"
 msgstr "图层透明度"
 
-#: ../Impasto/Actions/Layers/LayerPropertiesAction.cs:127
+#: ../Impasto/Actions/Layers/LayerPropertiesAction.cs:140
 #: ../Impasto/Dialogs/LayerPropertiesDialog.cs:70
 msgid "Layer Properties"
 msgstr "图层属性"
@@ -2138,17 +2138,17 @@ msgstr "图层属性"
 msgid "Layer Properties..."
 msgstr "图层属性..."
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:1314
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:1352
 msgid ""
 "Layer effect: applies to everything below it on this layer, and stays "
 "editable."
 msgstr ""
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:1295
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:1333
 msgid "Layer mask: an alpha channel applied to the whole layer."
 msgstr ""
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:1313
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:1351
 msgid ""
 "Layer transform: applies to everything below it on this layer, and stays "
 "editable."
@@ -2170,7 +2170,7 @@ msgstr "图层"
 msgid "Left Align"
 msgstr "左对齐"
 
-#: ../Pinta.Tools/Tools/MoveSelectedTool.cs:117
+#: ../Pinta.Tools/Tools/MoveSelectedTool.cs:125
 #, csharp-format
 msgid ""
 "Left click and drag the selection to move selected content.\n"
@@ -2235,7 +2235,7 @@ msgstr ""
 "按住 {0} 同时左键单击控制点，以在完全相同的位置创建新形状。\n"
 "按 Enter 键完成形状。"
 
-#: ../Pinta.Tools/Tools/PencilTool.cs:54
+#: ../Pinta.Tools/Tools/PencilTool.cs:55
 msgid ""
 "Left click to draw freeform one-pixel wide lines with the primary color.\n"
 "Right click to use the secondary color."
@@ -2244,18 +2244,18 @@ msgstr ""
 "右键单击并拖动则使用次要颜色。"
 
 #: ../Pinta.Tools/Tools/FreeformShapeTool.cs:51
-#: ../Pinta.Tools/Tools/PaintBrushTool.cs:83
+#: ../Pinta.Tools/Tools/PaintBrushTool.cs:84
 msgid ""
 "Left click to draw with primary color, right click to draw with secondary "
 "color."
 msgstr "左击使用主颜色绘制，右击使用副颜色绘制。"
 
-#: ../Pinta.Tools/Tools/EraserTool.cs:76
+#: ../Pinta.Tools/Tools/EraserTool.cs:79
 msgid ""
 "Left click to erase to transparent, right click to erase to secondary color. "
 msgstr "左键点击擦除为透明色，右键点击擦除为副颜色 "
 
-#: ../Pinta.Tools/Tools/PaintBucketTool.cs:49
+#: ../Pinta.Tools/Tools/PaintBucketTool.cs:50
 msgid ""
 "Left click to fill a region with the primary color, right click to fill with "
 "the secondary color.\n"
@@ -2270,7 +2270,7 @@ msgid ""
 "color."
 msgstr ""
 
-#: ../Pinta.Tools/Tools/RecolorTool.cs:74
+#: ../Pinta.Tools/Tools/RecolorTool.cs:75
 #, fuzzy, csharp-format
 msgid ""
 "Left click to replace the secondary color on the canvas with the primary "
@@ -2367,20 +2367,20 @@ msgid "Line"
 msgstr ""
 
 #: ../Pinta.Core/Classes/Re-editable/ObjectRasterizer.cs:152
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:132
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:156
 #: ../Pinta.Tools/Tools/LineCurveTool.cs:42
 msgid "Line/Curve"
 msgstr "直线/曲线"
 
-#: ../Pinta.Tools/Tools/GradientTool.cs:321
+#: ../Pinta.Tools/Tools/GradientTool.cs:324
 msgid "Linear Diamond Gradient"
 msgstr "菱形渐变"
 
-#: ../Pinta.Tools/Tools/GradientTool.cs:319
+#: ../Pinta.Tools/Tools/GradientTool.cs:322
 msgid "Linear Gradient"
 msgstr "线性渐变"
 
-#: ../Pinta.Tools/Tools/GradientTool.cs:320
+#: ../Pinta.Tools/Tools/GradientTool.cs:323
 msgid "Linear Reflected Gradient"
 msgstr "双线性渐变"
 
@@ -2397,7 +2397,7 @@ msgid "Lower case letters are replaced with smaller capital letters."
 msgstr "小写字母被替换为较小的大写字母。"
 
 #: ../Pinta.Core/Algorithms/PixelOps/UserBlendOps.cs:44
-#: ../Pinta.Effects/Dialogs/Effects.CurvesDialog.cs:176
+#: ../Pinta.Effects/Dialogs/Effects.CurvesDialog.cs:193
 msgid "Luminosity"
 msgstr "发光度"
 
@@ -2413,7 +2413,7 @@ msgstr ""
 msgid "Magic Wand Select"
 msgstr "魔术棒选择"
 
-#: ../Impasto/MainWindow.cs:619
+#: ../Impasto/MainWindow.cs:624
 msgid "Main Menu"
 msgstr "主菜单"
 
@@ -2465,7 +2465,7 @@ msgstr ""
 msgid "Minimum Size"
 msgstr "最小尺寸"
 
-#: ../Pinta.Tools/Tools/GradientTool.cs:320
+#: ../Pinta.Tools/Tools/GradientTool.cs:323
 msgid "Mirrors the linear transition on both sides of the start point."
 msgstr "在起点两侧镜像线性过渡。"
 
@@ -2479,17 +2479,17 @@ msgid ""
 "Mixes small capital letters for upper case with normal lower case letters."
 msgstr ""
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:469
-#: ../Pinta.Tools/Tools/GradientTool.cs:347
-#: ../Pinta.Tools/Tools/MoveSelectedTool.cs:220
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:489
+#: ../Pinta.Tools/Tools/GradientTool.cs:350
+#: ../Pinta.Tools/Tools/MoveSelectedTool.cs:228
 #: ../Pinta.Tools/Tools/TextTool.cs:332
 msgid "Mode"
 msgstr "模式"
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:904
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:906
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:1557
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:1582
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:935
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:937
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:1593
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:1618
 msgid "Modified"
 msgstr "已修改"
 
@@ -2502,11 +2502,11 @@ msgid "Motion Blur"
 msgstr "动态模糊"
 
 #: ../Pinta.Core/Classes/ToolSections.cs:23
-#: ../Pinta.Tools/Tools/MoveSelectedTool.cs:228
+#: ../Pinta.Tools/Tools/MoveSelectedTool.cs:236
 msgid "Move"
 msgstr ""
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:1200
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:1238
 msgid "Move Layer"
 msgstr ""
 
@@ -2520,11 +2520,11 @@ msgstr "下移图层"
 msgid "Move Layer Up"
 msgstr "上移图层"
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:550
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:581
 msgid "Move Object to Layer"
 msgstr ""
 
-#: ../Pinta.Tools/Tools/MoveSelectedTool.cs:113
+#: ../Pinta.Tools/Tools/MoveSelectedTool.cs:121
 msgid "Move Selected Pixels"
 msgstr "移动选择的像素"
 
@@ -2572,12 +2572,12 @@ msgstr ""
 msgid "Move selected control point up"
 msgstr ""
 
-#: ../Pinta.Tools/Tools/MoveSelectedTool.cs:236
+#: ../Pinta.Tools/Tools/MoveSelectedTool.cs:244
 #, fuzzy
 msgid "Move the corners, or turn and tilt the selected pixels, in 3D space."
 msgstr "在 3D 空间中移动各角，或转动和翻转所选像素。"
 
-#: ../Pinta.Tools/Tools/MoveSelectedTool.cs:713
+#: ../Pinta.Tools/Tools/MoveSelectedTool.cs:748
 msgid "Move to New Layer"
 msgstr ""
 
@@ -2644,13 +2644,13 @@ msgstr "无"
 #. Translators: 'Normal' (400) refers to the font-weight text property
 #: ../Pinta.Core/Algorithms/PixelOps/UserBlendOps.cs:31
 #: ../Pinta.Tools/Brushes/PlainBrush.cs:41
-#: ../Pinta.Tools/Dialogs/TextPropertiesDialog.cs:246
-#: ../Pinta.Tools/Tools/EraserTool.cs:403 ../Pinta.Tools/Tools/TextTool.cs:397
+#: ../Pinta.Tools/Dialogs/TextPropertiesDialog.cs:249
+#: ../Pinta.Tools/Tools/EraserTool.cs:406 ../Pinta.Tools/Tools/TextTool.cs:397
 #: ../Pinta.Tools/Tools/TextTool.cs:503 ../Pinta.Tools/Tools/TextTool.cs:635
 msgid "Normal"
 msgstr "一般"
 
-#: ../Pinta.Core/Classes/BaseTool.cs:446
+#: ../Pinta.Core/Classes/BaseTool.cs:454
 msgid "Normal Blending"
 msgstr "一般混合"
 
@@ -2662,21 +2662,21 @@ msgstr "普通大小"
 msgid "Normal and Outline"
 msgstr "一般及边框"
 
-#: ../Impasto/MainWindow.cs:1230
+#: ../Impasto/MainWindow.cs:1235
 msgid "Nothing to open"
 msgstr ""
 
-#: ../Pinta.Tools/Tools/BaseTransformTool.cs:747
+#: ../Pinta.Tools/Tools/BaseTransformTool.cs:790
 #, csharp-format
 msgid "Nudge 10% of canvas: {0}"
 msgstr ""
 
-#: ../Pinta.Tools/Tools/BaseTransformTool.cs:746
+#: ../Pinta.Tools/Tools/BaseTransformTool.cs:789
 #, csharp-format
 msgid "Nudge 10px: {0}"
 msgstr ""
 
-#: ../Pinta.Tools/Tools/BaseTransformTool.cs:748
+#: ../Pinta.Tools/Tools/BaseTransformTool.cs:791
 #, csharp-format
 msgid "Nudge 20% of canvas: {0}"
 msgstr ""
@@ -2745,17 +2745,17 @@ msgstr ""
 msgid "Nudge selection up (5% canvas)"
 msgstr ""
 
-#: ../Pinta.Tools/Tools/BaseTransformTool.cs:520
+#: ../Pinta.Tools/Tools/BaseTransformTool.cs:547
 #, csharp-format
 msgid "Nudge {0} ({1}): {2}"
 msgstr ""
 
-#: ../Pinta.Tools/Tools/BaseTransformTool.cs:519
+#: ../Pinta.Tools/Tools/BaseTransformTool.cs:546
 #, csharp-format
 msgid "Nudge {0}: {1}"
 msgstr ""
 
-#: ../Pinta.Tools/Tools/BaseTransformTool.cs:745
+#: ../Pinta.Tools/Tools/BaseTransformTool.cs:788
 msgid "Nudge: Arrow keys"
 msgstr ""
 
@@ -2769,9 +2769,9 @@ msgid "Number of threads to use for rendering"
 msgstr "用于渲染的线程数量"
 
 #: ../Impasto/Actions/Help/KeyboardShortcutsDialogAction.cs:154
-#: ../Impasto/Dialogs/PreferencesDialog.cs:587
+#: ../Impasto/Dialogs/PreferencesDialog.cs:589
 #: ../Pinta.Gui.Widgets/Widgets/ColorPickerDialog.cs:492
-#: ../Pinta.Tools/Dialogs/TextPropertiesDialog.cs:267
+#: ../Pinta.Tools/Dialogs/TextPropertiesDialog.cs:270
 msgid "OK"
 msgstr "确定"
 
@@ -2781,15 +2781,15 @@ msgstr "确定"
 msgid "Object"
 msgstr ""
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:426
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:457
 msgid "Object Blend Mode"
 msgstr ""
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:405
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:436
 msgid "Object Opacity"
 msgstr ""
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:480
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:500
 #: ../Pinta.Tools/Tools/TextTool.cs:341
 msgid "Object — editable later"
 msgstr ""
@@ -2816,16 +2816,16 @@ msgstr "偏移选区"
 msgid "Oil Painting"
 msgstr "油画"
 
-#: ../Pinta.Tools/Tools/EraserTool.cs:420
+#: ../Pinta.Tools/Tools/EraserTool.cs:423
 msgid "Opacity"
 msgstr ""
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:912
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:944
 #: ../Pinta.Gui.Widgets/Widgets/Layers/PropertiesDialogGridBuilder.cs:44
 msgid "Opacity:"
 msgstr "透明度："
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:158
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:182
 #, csharp-format
 msgid "Opacity: {0}%"
 msgstr ""
@@ -2847,7 +2847,7 @@ msgstr "打开图像"
 msgid "Open Image File"
 msgstr "打开图像文件"
 
-#: ../Pinta.Core/Actions/EditActions.cs:608
+#: ../Pinta.Core/Actions/EditActions.cs:616
 msgid "Open Palette File"
 msgstr "打开调色板文件"
 
@@ -2859,7 +2859,7 @@ msgstr ""
 msgid "Open text properties"
 msgstr ""
 
-#: ../Impasto/MainWindow.cs:1213
+#: ../Impasto/MainWindow.cs:1218
 #, csharp-format
 msgid "Open {0} files?"
 msgstr ""
@@ -2899,12 +2899,12 @@ msgstr ""
 msgid "Outline Object"
 msgstr ""
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:559
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:579
 #: ../Pinta.Tools/Tools/FreeformShapeTool.cs:222
 msgid "Outline Shape"
 msgstr "轮廓形状"
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:576
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:596
 #: ../Pinta.Tools/Tools/TextTool.cs:651
 msgid "Outline width"
 msgstr "描边宽度"
@@ -2921,7 +2921,7 @@ msgstr "输出直方图"
 msgid "Overlay"
 msgstr "重叠"
 
-#: ../Pinta.Core/Classes/BaseTool.cs:447
+#: ../Pinta.Core/Classes/BaseTool.cs:455
 msgid "Overwrite"
 msgstr "覆盖"
 
@@ -2933,11 +2933,11 @@ msgstr ""
 msgid "Paint & Image Editor"
 msgstr ""
 
-#: ../Pinta.Tools/Tools/PaintBucketTool.cs:46
+#: ../Pinta.Tools/Tools/PaintBucketTool.cs:47
 msgid "Paint Bucket"
 msgstr "油漆桶"
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:986
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:1018
 msgid ""
 "Paint on the canvas to reveal the layer; erase to hide it. Right-click the "
 "row again for options."
@@ -2947,7 +2947,7 @@ msgstr ""
 msgid "Paint, create and edit images"
 msgstr ""
 
-#: ../Pinta.Tools/Tools/PaintBrushTool.cs:81
+#: ../Pinta.Tools/Tools/PaintBrushTool.cs:82
 msgid "Paintbrush"
 msgstr "画笔"
 
@@ -2957,7 +2957,7 @@ msgid ""
 "like any artwork, but not editable later."
 msgstr ""
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:479
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:499
 msgid ""
 "Painted into the layer's pixels on commit. Immediately cut/move/erase like "
 "any artwork, but not editable later."
@@ -2979,7 +2979,7 @@ msgstr "调色板"
 msgid "Palette Source"
 msgstr ""
 
-#: ../Pinta.Core/Actions/EditActions.cs:689
+#: ../Pinta.Core/Actions/EditActions.cs:697
 msgid "Palette files"
 msgstr "调色板文件"
 
@@ -3021,15 +3021,15 @@ msgstr ""
 msgid "Paste text"
 msgstr ""
 
-#: ../Impasto/MainWindow.cs:611
+#: ../Impasto/MainWindow.cs:616
 msgid "Paste to Active Layer"
 msgstr ""
 
-#: ../Impasto/MainWindow.cs:612
+#: ../Impasto/MainWindow.cs:617
 msgid "Paste to New Layer"
 msgstr ""
 
-#: ../Pinta.Tools/Tools/PencilTool.cs:51
+#: ../Pinta.Tools/Tools/PencilTool.cs:52
 msgid "Pencil"
 msgstr "铅笔"
 
@@ -3046,14 +3046,14 @@ msgid "Percentile"
 msgstr "百分比"
 
 #. Translators: Move Selected Pixels mode where each corner moves on its own, to fit the pixels onto an angled surface.
-#: ../Pinta.Tools/Tools/MoveSelectedTool.cs:233
-#: ../Pinta.Tools/Tools/MoveSelectedTool.cs:529
+#: ../Pinta.Tools/Tools/MoveSelectedTool.cs:241
+#: ../Pinta.Tools/Tools/MoveSelectedTool.cs:537
 #, fuzzy
 msgid "Perspective"
 msgstr "透视"
 
 #. Translators: 'Petite Caps' refers to the font-variant text property
-#: ../Pinta.Tools/Dialogs/TextPropertiesDialog.cs:249
+#: ../Pinta.Tools/Dialogs/TextPropertiesDialog.cs:252
 #: ../Pinta.Tools/Tools/TextTool.cs:418
 msgid "Petite Caps"
 msgstr ""
@@ -3143,8 +3143,8 @@ msgstr "请重启 Impasto 以使工具箱布局的更改生效。"
 msgid "Point"
 msgstr ""
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:998
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:1361
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:1029
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:1401
 msgid "Point Added"
 msgstr "点已添加"
 
@@ -3158,7 +3158,7 @@ msgstr ""
 msgid "Point Color"
 msgstr ""
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:1043
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:1074
 msgid "Point Deleted"
 msgstr "点已删除"
 
@@ -3181,7 +3181,7 @@ msgstr ""
 msgid "Polar Inversion"
 msgstr "极性反转"
 
-#: ../Pinta.Tools/Tools/LassoSelectTool.cs:362
+#: ../Pinta.Tools/Tools/LassoSelectTool.cs:367
 msgid "Polygon"
 msgstr "多边形"
 
@@ -3193,12 +3193,12 @@ msgstr "弹出提示："
 msgid "Portrait"
 msgstr "肖像"
 
-#: ../Pinta.Effects/Effects/AlignObjectEffect.cs:143
+#: ../Pinta.Effects/Effects/AlignObjectEffect.cs:140
 msgid "Position"
 msgstr ""
 
-#: ../Pinta.Effects/Adjustments/PosterizeEffect.cs:25
-#: ../Pinta.Effects/Dialogs/Effects.PosterizeDialog.cs:54
+#: ../Pinta.Effects/Adjustments/PosterizeEffect.cs:23
+#: ../Pinta.Effects/Dialogs/Effects.PosterizeDialog.cs:53
 msgid "Posterize"
 msgstr "海报效果"
 
@@ -3207,7 +3207,7 @@ msgid "Power"
 msgstr "强度"
 
 #. Translators: This refers to preserving the current canvas size when pasting a larger image.
-#: ../Impasto/Actions/Edit/PasteAction.cs:243
+#: ../Impasto/Actions/Edit/PasteAction.cs:257
 msgid "Preserve"
 msgstr "维持原状"
 
@@ -3237,7 +3237,7 @@ msgstr ""
 msgid "Press {0} to decrease font size"
 msgstr "按 {0} 减小字体大小"
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:148
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:161
 #, csharp-format
 msgid "Press {0} to decrease outline width"
 msgstr ""
@@ -3252,7 +3252,7 @@ msgstr ""
 msgid "Press {0} to increase font size"
 msgstr "按 {0} 增加字体大小"
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:149
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:162
 #, csharp-format
 msgid "Press {0} to increase outline width"
 msgstr ""
@@ -3269,7 +3269,7 @@ msgstr "主要"
 msgid "Print"
 msgstr "打印"
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:952
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:984
 msgid "Properties..."
 msgstr ""
 
@@ -3310,7 +3310,7 @@ msgstr ""
 msgid "R {0}"
 msgstr ""
 
-#: ../Pinta.Effects/Dialogs/Effects.CurvesDialog.cs:175
+#: ../Pinta.Effects/Dialogs/Effects.CurvesDialog.cs:192
 msgid "RGB"
 msgstr "RGB色彩模式"
 
@@ -3318,7 +3318,7 @@ msgstr "RGB色彩模式"
 msgid "Radial Blur"
 msgstr "径向模糊"
 
-#: ../Pinta.Tools/Tools/GradientTool.cs:322
+#: ../Pinta.Tools/Tools/GradientTool.cs:325
 msgid "Radial Gradient"
 msgstr "径向渐变"
 
@@ -3369,12 +3369,12 @@ msgstr ""
 msgid "Random Point Locations"
 msgstr ""
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:478
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:498
 #: ../Pinta.Tools/Tools/TextTool.cs:339
 msgid "Raster — fuses to layer"
 msgstr ""
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:945
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:977
 msgid "Rasterize"
 msgstr ""
 
@@ -3403,7 +3403,7 @@ msgstr ""
 msgid "Re-edit existing text"
 msgstr ""
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:1317
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:1355
 msgid ""
 "Re-editable object: a live shape or text you can keep editing until you "
 "rasterize it."
@@ -3419,7 +3419,7 @@ msgstr ""
 msgid "Recently picked colors"
 msgstr ""
 
-#: ../Pinta.Tools/Tools/RecolorTool.cs:65
+#: ../Pinta.Tools/Tools/RecolorTool.cs:66
 msgid "Recolor"
 msgstr "重新着色"
 
@@ -3449,7 +3449,7 @@ msgid "Rectangle Select"
 msgstr "矩形选择"
 
 #: ../Pinta.Effects/Dialogs/Effects.LevelsDialog.cs:113
-#: ../Pinta.Effects/Dialogs/Effects.PosterizeDialog.cs:64
+#: ../Pinta.Effects/Dialogs/Effects.PosterizeDialog.cs:78
 #: ../Pinta.Gui.Widgets/Widgets/ColorPickerSlider.cs:361
 msgid "Red"
 msgstr "红色"
@@ -3491,23 +3491,23 @@ msgid "Relief"
 msgstr "醒目"
 
 #: ../Pinta.Core/Extensions/Gtk/GtkExtensions.Widget.cs:248
-#: ../Pinta.Tools/Tools/LassoSelectTool.cs:287
+#: ../Pinta.Tools/Tools/LassoSelectTool.cs:292
 msgid "Remove last point (Backspace)"
 msgstr ""
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:998
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:1030
 msgid "Remove this layer's mask; the layer renders unmasked."
 msgstr ""
 
-#: ../Impasto/Actions/Layers/LayerPropertiesAction.cs:115
+#: ../Impasto/Actions/Layers/LayerPropertiesAction.cs:128
 msgid "Rename Layer"
 msgstr "重命名图层"
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:805
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:837
 msgid "Rename Layer..."
 msgstr ""
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:469
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:500
 msgid "Rename Object"
 msgstr ""
 
@@ -3519,13 +3519,31 @@ msgstr ""
 msgid "Render"
 msgstr "渲染"
 
-#: ../Pinta.Core/Managers/LivePreviewManager.cs:107
+#: ../Pinta.Core/Managers/LivePreviewManager.cs:144
 msgid "Rendering Effect"
 msgstr "渲染效果"
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:492
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:523
 msgid "Reorder Object"
 msgstr ""
+
+#. Translators: Adjustments menu command that applies the last used adjustment again, with the same settings, to the current selection.
+#: ../Pinta.Core/Actions/AdjustmentsActions.cs:39
+#, fuzzy
+msgid "Repeat Last Adjustment"
+msgstr "重复上次调整"
+
+#. Translators: Effects menu command that applies the last used effect again, with the same settings, to the current selection.
+#: ../Pinta.Core/Actions/EffectsActions.cs:45
+#, fuzzy
+msgid "Repeat Last Effect"
+msgstr "重复上次效果"
+
+#. Translators: Adjustments or Effects menu item that applies the last used adjustment or effect again, with the same settings; {0} is its name, e.g. "Gaussian Blur".
+#: ../Pinta.Core/Actions/LastAppliedEffect.cs:42
+#, fuzzy, csharp-format
+msgid "Repeat {0}"
+msgstr "重复“{0}”"
 
 #: ../Pinta.Core/Classes/SelectionModeHandler.cs:43
 msgid "Replace"
@@ -3548,7 +3566,7 @@ msgid "Reseed"
 msgstr "变换"
 
 #: ../Impasto/Actions/Help/KeyboardShortcutsDialogAction.cs:138
-#: ../Pinta.Effects/Dialogs/Effects.CurvesDialog.cs:207
+#: ../Pinta.Effects/Dialogs/Effects.CurvesDialog.cs:224
 #: ../Pinta.Effects/Dialogs/Effects.LevelsDialog.cs:274
 #: ../Pinta.Gui.Widgets/Widgets/ColorPickerDialog.cs:480
 msgid "Reset"
@@ -3568,7 +3586,7 @@ msgstr "重置为默认值"
 
 #: ../Impasto/Actions/Edit/ResizePaletteAction.cs:200
 #: ../Impasto/Actions/Help/KeyboardShortcutsDialogAction.cs:454
-#: ../Impasto/Dialogs/PreferencesDialog.cs:609
+#: ../Impasto/Dialogs/PreferencesDialog.cs:611
 msgid "Reset to default"
 msgstr ""
 
@@ -3577,7 +3595,7 @@ msgstr ""
 msgid "Reset to image size"
 msgstr ""
 
-#: ../Impasto/MainWindow.cs:748
+#: ../Impasto/MainWindow.cs:753
 msgid "Reset window"
 msgstr ""
 
@@ -3633,7 +3651,7 @@ msgstr ""
 msgid "Reverse Color Sorting"
 msgstr ""
 
-#: ../Pinta.Tools/Dialogs/TextPropertiesDialog.cs:228
+#: ../Pinta.Tools/Dialogs/TextPropertiesDialog.cs:229
 #: ../Pinta.Tools/Tools/TextTool.cs:601
 msgid "Right Align"
 msgstr "右对齐"
@@ -3642,23 +3660,23 @@ msgstr "右对齐"
 msgid "Right Triangle"
 msgstr ""
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:2096
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:2132
 msgid "Right click + drag: move the whole shape."
 msgstr ""
 
-#: ../Pinta.Tools/Tools/TextTool.cs:2853
+#: ../Pinta.Tools/Tools/TextTool.cs:2876
 msgid "Right click to move"
 msgstr ""
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:1315
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:1353
 msgid "Right-click to change its settings, blending and strength"
 msgstr ""
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:1297
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:1335
 msgid "Right-click to delete the mask"
 msgstr ""
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:1318
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:1356
 msgid "Right-click to set blend mode and opacity, or open its properties"
 msgstr ""
 
@@ -3692,7 +3710,7 @@ msgstr ""
 msgid "Rotate text"
 msgstr ""
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:1530
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:1566
 msgid "Rotated"
 msgstr ""
 
@@ -3719,7 +3737,7 @@ msgid "Rounded Line Shape"
 msgstr "圆角直线形状"
 
 #: ../Pinta.Core/Classes/Re-editable/ObjectRasterizer.cs:150
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:130
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:154
 #: ../Pinta.Tools/Tools/RoundedRectangleTool.cs:43
 msgid "Rounded Rectangle"
 msgstr "圆角矩形"
@@ -3767,9 +3785,9 @@ msgstr "饱和度"
 msgid "Saturation Percentage"
 msgstr "饱和率"
 
-#: ../Impasto/Actions/File/SaveDocumentImplementationAction.cs:144
-#: ../Impasto/Actions/File/SaveDocumentImplementationAction.cs:397
-#: ../Pinta.Core/Actions/EditActions.cs:642
+#: ../Impasto/Actions/File/SaveDocumentImplementationAction.cs:147
+#: ../Impasto/Actions/File/SaveDocumentImplementationAction.cs:418
+#: ../Pinta.Core/Actions/EditActions.cs:650
 #: ../Pinta.Core/Actions/FileActions.cs:111
 msgid "Save"
 msgstr "保存"
@@ -3783,11 +3801,11 @@ msgstr "保存全部"
 msgid "Save As..."
 msgstr "另存为..."
 
-#: ../Impasto/Actions/File/SaveDocumentImplementationAction.cs:141
+#: ../Impasto/Actions/File/SaveDocumentImplementationAction.cs:144
 msgid "Save Image File"
 msgstr "保存图像文件"
 
-#: ../Pinta.Core/Actions/EditActions.cs:639
+#: ../Pinta.Core/Actions/EditActions.cs:647
 msgid "Save Palette File"
 msgstr "保存调色板文件"
 
@@ -3795,7 +3813,7 @@ msgstr "保存调色板文件"
 msgid "Save as Impasto project..."
 msgstr ""
 
-#: ../Impasto/Actions/File/CloseDocumentAction.cs:72
+#: ../Impasto/Actions/File/CloseDocumentAction.cs:97
 #, csharp-format
 msgid "Save changes to image \"{0}\" before closing?"
 msgstr "在关闭之前保存对图像“{0}”的更改？"
@@ -3823,7 +3841,7 @@ msgstr ""
 msgid "Secondary"
 msgstr "次要"
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:524
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:544
 msgid ""
 "Segments stay straight; clicking a segment does not insert curve control "
 "points."
@@ -3850,7 +3868,7 @@ msgstr ""
 msgid "Select previous control point"
 msgstr ""
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:1296
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:1334
 msgid "Select this row to paint the mask; paint reveals, erase hides"
 msgstr ""
 
@@ -3900,11 +3918,11 @@ msgid "Set selected control point to line"
 msgstr ""
 
 #: ../Impasto/Dialogs/PreferencesDialog.cs:330
-#: ../Impasto/Dialogs/PreferencesDialog.cs:587
+#: ../Impasto/Dialogs/PreferencesDialog.cs:589
 msgid "Settings"
 msgstr ""
 
-#: ../Impasto/Dialogs/PreferencesDialog.cs:469
+#: ../Impasto/Dialogs/PreferencesDialog.cs:470
 msgid "Settings files"
 msgstr ""
 
@@ -3913,11 +3931,11 @@ msgid "Settings..."
 msgstr ""
 
 #: ../Pinta.Core/Classes/Re-editable/ObjectRasterizer.cs:153
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:133
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:157
 msgid "Shape"
 msgstr ""
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/ObjectPropertiesDialog.cs:101
+#: ../Pinta.Gui.Widgets/Widgets/Layers/ObjectPropertiesDialog.cs:95
 msgid "Shape Object Properties"
 msgstr ""
 
@@ -3964,8 +3982,8 @@ msgid "Shear Vertically"
 msgstr ""
 
 #: ../Pinta.Core/Extensions/Gtk/GtkExtensions.Interaction.cs:112
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:2095
-#: ../Pinta.Tools/Tools/BaseTransformTool.cs:742
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:2131
+#: ../Pinta.Tools/Tools/BaseTransformTool.cs:785
 msgid "Shift"
 msgstr ""
 
@@ -3981,7 +3999,7 @@ msgstr "快捷键"
 msgid "Shortcut keys"
 msgstr "快捷键"
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:147
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:160
 #: ../Pinta.Tools/Tools/BaseBrushTool.cs:155
 #: ../Pinta.Tools/Tools/TextTool.cs:784
 msgid "Shortcut keys:"
@@ -4001,16 +4019,16 @@ msgstr "显示轴测网格"
 msgid "Show Grid"
 msgstr "显示网格"
 
-#: ../Impasto/Actions/Layers/LayerPropertiesAction.cs:121
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:230
+#: ../Impasto/Actions/Layers/LayerPropertiesAction.cs:134
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:254
 msgid "Show Layer"
 msgstr "显示图层"
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:385
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:416
 msgid "Show Layer Mask"
 msgstr ""
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:456
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:487
 msgid "Show Object"
 msgstr ""
 
@@ -4088,8 +4106,8 @@ msgid "Size: "
 msgstr ""
 
 #. Translators: Move Selected Pixels mode that slants the pixels by sliding one edge along itself.
-#: ../Pinta.Tools/Tools/MoveSelectedTool.cs:231
-#: ../Pinta.Tools/Tools/MoveSelectedTool.cs:528
+#: ../Pinta.Tools/Tools/MoveSelectedTool.cs:239
+#: ../Pinta.Tools/Tools/MoveSelectedTool.cs:536
 #, fuzzy
 msgid "Skew"
 msgstr "斜切"
@@ -4103,12 +4121,12 @@ msgid "Slash"
 msgstr ""
 
 #. Translators: 'Small Caps' refers to the font-variant text property
-#: ../Pinta.Tools/Dialogs/TextPropertiesDialog.cs:247
+#: ../Pinta.Tools/Dialogs/TextPropertiesDialog.cs:250
 #: ../Pinta.Tools/Tools/TextTool.cs:404
 msgid "Small Caps"
 msgstr ""
 
-#: ../Pinta.Tools/Tools/EraserTool.cs:403
+#: ../Pinta.Tools/Tools/EraserTool.cs:406
 msgid "Smooth"
 msgstr "平滑"
 
@@ -4142,11 +4160,11 @@ msgstr ""
 msgid "Solo Layer {0}"
 msgstr ""
 
-#: ../Impasto/MainWindow.cs:1231
+#: ../Impasto/MainWindow.cs:1236
 msgid "Some dropped items were not opened"
 msgstr ""
 
-#: ../Impasto/Actions/File/SaveDocumentImplementationAction.cs:387
+#: ../Impasto/Actions/File/SaveDocumentImplementationAction.cs:408
 msgid "Some effects cannot be saved as editable. Save anyway?"
 msgstr ""
 
@@ -4170,7 +4188,7 @@ msgstr "方格"
 msgid "Status Bar"
 msgstr "状态栏"
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:481
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:501
 msgid ""
 "Stays a live, re-editable shape. Cutting, erasing, or filtering across it "
 "will rasterize it first."
@@ -4191,7 +4209,7 @@ msgstr ""
 msgid "Strength"
 msgstr "强度"
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:912
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:944
 msgid "Strength:"
 msgstr ""
 
@@ -4233,12 +4251,12 @@ msgid "Switch to the Pencil tool, ready to draw with the picked color."
 msgstr "切换到铅笔工具,准备用所取的颜色绘制。"
 
 #: ../Pinta.Core/Classes/Re-editable/ObjectRasterizer.cs:142
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:123
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:147
 #: ../Pinta.Tools/Tools/TextTool.cs:149
 msgid "Text"
 msgstr "文字"
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/ObjectPropertiesDialog.cs:100
+#: ../Pinta.Gui.Widgets/Widgets/Layers/ObjectPropertiesDialog.cs:94
 msgid "Text Object Properties"
 msgstr ""
 
@@ -4282,12 +4300,12 @@ msgid "Text properties ({0})"
 msgstr ""
 
 #. Translators: {0} is the name of an add-in.
-#: ../Impasto/MainWindow.cs:445
+#: ../Impasto/MainWindow.cs:448
 #, csharp-format
 msgid "The '{0}' add-in may not be compatible with this version of Impasto"
 msgstr "附加组件“{0}”可能与此版本的 Impasto 不兼容"
 
-#: ../Impasto/Actions/Edit/PasteAction.cs:226
+#: ../Impasto/Actions/Edit/PasteAction.cs:240
 msgid "The clipboard does not contain an image."
 msgstr "剪切板中没有图像。"
 
@@ -4298,24 +4316,24 @@ msgid ""
 "of rows."
 msgstr ""
 
-#: ../Impasto/Dialogs/PreferencesDialog.cs:521
+#: ../Impasto/Dialogs/PreferencesDialog.cs:522
 msgid "The file had no keyboard shortcuts to import."
 msgstr ""
 
-#: ../Pinta.Core/Managers/AutosaveManager.cs:575
+#: ../Pinta.Core/Managers/AutosaveManager.cs:577
 msgid "The file is damaged or incomplete."
 msgstr ""
 
-#: ../Pinta.Core/Managers/AutosaveManager.cs:544
+#: ../Pinta.Core/Managers/AutosaveManager.cs:546
 msgid "The file is empty."
 msgstr ""
 
-#: ../Pinta.Core/Managers/AutosaveManager.cs:559
+#: ../Pinta.Core/Managers/AutosaveManager.cs:561
 msgid "The file is missing its layer information."
 msgstr ""
 
-#: ../Pinta.Core/Managers/AutosaveManager.cs:551
-#: ../Pinta.Core/Managers/AutosaveManager.cs:555
+#: ../Pinta.Core/Managers/AutosaveManager.cs:553
+#: ../Pinta.Core/Managers/AutosaveManager.cs:557
 msgid "The file is not an OpenRaster image."
 msgstr ""
 
@@ -4327,7 +4345,7 @@ msgstr "文件可能是无效或损坏的扩展包"
 msgid "The file no longer exists, or cannot be read."
 msgstr ""
 
-#: ../Pinta.Core/Managers/AutosaveManager.cs:541
+#: ../Pinta.Core/Managers/AutosaveManager.cs:543
 msgid "The file no longer exists."
 msgstr ""
 
@@ -4347,7 +4365,7 @@ msgstr "下列软件包将被安装："
 msgid "The following packages will be uninstalled:"
 msgstr "下列软件包将被卸载："
 
-#: ../Impasto/Actions/Edit/PasteAction.cs:233
+#: ../Impasto/Actions/Edit/PasteAction.cs:247
 msgid ""
 "The image being pasted is larger than the canvas. What would you like to do "
 "to the canvas size?"
@@ -4387,7 +4405,7 @@ msgid ""
 "will also be uninstalled:"
 msgstr "有其他依赖于先前的扩展包的扩展包也将被卸载："
 
-#: ../Impasto/Actions/File/SaveDocumentImplementationAction.cs:389
+#: ../Impasto/Actions/File/SaveDocumentImplementationAction.cs:410
 msgid ""
 "These effects come from add-ins and will be part of the saved image's pixels "
 "instead, so reopening the file will not let you change their settings. They "
@@ -4413,17 +4431,17 @@ msgstr "极细"
 msgid "Third-Party Notices"
 msgstr ""
 
-#: ../Impasto/Dialogs/PreferencesDialog.cs:494
+#: ../Impasto/Dialogs/PreferencesDialog.cs:495
 msgid "This does not look like a valid settings file."
 msgstr ""
 
-#: ../Impasto/Dialogs/PreferencesDialog.cs:541
+#: ../Impasto/Dialogs/PreferencesDialog.cs:542
 msgid ""
 "This file also contains keyboard shortcut overrides. Importing them will "
 "overwrite your current keyboard-shortcuts.json."
 msgstr ""
 
-#: ../Impasto/Actions/File/SaveDocumentImplementationAction.cs:351
+#: ../Impasto/Actions/File/SaveDocumentImplementationAction.cs:366
 msgid "This format does not support layers. Flatten image?"
 msgstr "此格式不支持图层。要扁平化图像吗？"
 
@@ -4466,7 +4484,7 @@ msgid "Tip: Right-click to remove control points."
 msgstr "提示：右击以移除控制点。"
 
 #. Translators: 'Title Caps' refers to the font-variant text property
-#: ../Pinta.Tools/Dialogs/TextPropertiesDialog.cs:252
+#: ../Pinta.Tools/Dialogs/TextPropertiesDialog.cs:255
 #: ../Pinta.Tools/Tools/TextTool.cs:439
 msgid "Title Caps"
 msgstr ""
@@ -4499,11 +4517,11 @@ msgstr ""
 #: ../Pinta.Effects/Effects/OutlineObjectEffect.cs:208
 #: ../Pinta.Effects/Effects/RedEyeRemoveEffect.cs:53
 #: ../Pinta.Tools/Tools/FloodTool.cs:183
-#: ../Pinta.Tools/Tools/RecolorTool.cs:329
+#: ../Pinta.Tools/Tools/RecolorTool.cs:330
 msgid "Tolerance"
 msgstr "允许偏差量"
 
-#: ../Pinta.Core/Managers/ToolManager.cs:633
+#: ../Pinta.Core/Managers/ToolManager.cs:726
 #: ../Pinta.Core/Widgets/ToolSelectorButton.cs:53
 msgid "Tool"
 msgstr "工具"
@@ -4578,7 +4596,7 @@ msgstr ""
 msgid "Transform Settings"
 msgstr ""
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:931
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:963
 msgid "Transform Settings..."
 msgstr ""
 
@@ -4606,27 +4624,27 @@ msgstr ""
 msgid "Transform Tools"
 msgstr ""
 
-#: ../Pinta.Tools/Tools/GradientTool.cs:353
+#: ../Pinta.Tools/Tools/GradientTool.cs:356
 msgid "Transition between the primary and secondary colors."
 msgstr "在主色和辅色之间过渡。"
 
-#: ../Pinta.Tools/Tools/GradientTool.cs:354
+#: ../Pinta.Tools/Tools/GradientTool.cs:357
 msgid "Transition the primary color from opaque to transparent."
 msgstr "主色从不透明过渡到透明。"
 
-#: ../Pinta.Tools/Tools/GradientTool.cs:319
+#: ../Pinta.Tools/Tools/GradientTool.cs:322
 msgid "Transitions colors in a straight line between the two endpoints."
 msgstr "在两个端点之间以直线过渡颜色。"
 
-#: ../Pinta.Tools/Tools/GradientTool.cs:323
+#: ../Pinta.Tools/Tools/GradientTool.cs:326
 msgid "Transitions colors in a sweep around the start point."
 msgstr "围绕起点以扫描方式过渡颜色。"
 
-#: ../Pinta.Tools/Tools/GradientTool.cs:322
+#: ../Pinta.Tools/Tools/GradientTool.cs:325
 msgid "Transitions colors outward from the start point in a circle."
 msgstr "从起点向外以圆形过渡颜色。"
 
-#: ../Pinta.Tools/Tools/GradientTool.cs:321
+#: ../Pinta.Tools/Tools/GradientTool.cs:324
 msgid "Transitions colors outward from the start point in a diamond shape."
 msgstr "从起点向外以菱形过渡颜色。"
 
@@ -4638,7 +4656,7 @@ msgstr ""
 msgid "Translate Vertically"
 msgstr ""
 
-#: ../Pinta.Tools/Tools/GradientTool.cs:354
+#: ../Pinta.Tools/Tools/GradientTool.cs:357
 msgid "Transparency Mode"
 msgstr "透明模式"
 
@@ -4648,7 +4666,7 @@ msgid "Transparent"
 msgstr "透明"
 
 #: ../Pinta.Core/Classes/Re-editable/ObjectRasterizer.cs:151
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:131
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:155
 #: ../Pinta.Tools/Tools/TriangleTool.cs:43
 msgid "Triangle"
 msgstr ""
@@ -4676,8 +4694,8 @@ msgstr ""
 
 #: ../Pinta.Tools/Editable/EditEngines/ArrowedEditEngine.cs:361
 #: ../Pinta.Tools/Editable/EditEngines/TriangleEditEngine.cs:121
-#: ../Pinta.Tools/Tools/EraserTool.cs:399
-#: ../Pinta.Tools/Tools/PaintBrushTool.cs:258
+#: ../Pinta.Tools/Tools/EraserTool.cs:402
+#: ../Pinta.Tools/Tools/PaintBrushTool.cs:272
 msgid "Type"
 msgstr "类型"
 
@@ -4722,7 +4740,7 @@ msgid "Unfocus"
 msgstr "失去焦点"
 
 #. Translators: 'Unicase' refers to the font-variant text property
-#: ../Pinta.Tools/Dialogs/TextPropertiesDialog.cs:251
+#: ../Pinta.Tools/Dialogs/TextPropertiesDialog.cs:254
 #: ../Pinta.Tools/Tools/TextTool.cs:432
 msgid "Unicase"
 msgstr ""
@@ -4756,7 +4774,7 @@ msgstr "未保存的图像 {0}"
 msgid "Unsupported file format"
 msgstr "不支持的文件格式"
 
-#: ../Pinta.Core/Actions/EditActions.cs:631
+#: ../Pinta.Core/Actions/EditActions.cs:639
 msgid "Unsupported palette format"
 msgstr "不支持的调色盘格式"
 
@@ -4821,7 +4839,7 @@ msgid "Vertical red (R)"
 msgstr ""
 
 #: ../Impasto/Actions/Help/KeyboardShortcutsDialogAction.cs:203
-#: ../Impasto/MainWindow.cs:639 ../Pinta.Core/Classes/ToolSections.cs:24
+#: ../Impasto/MainWindow.cs:644 ../Pinta.Core/Classes/ToolSections.cs:24
 msgid "View"
 msgstr "视图"
 
@@ -4895,7 +4913,7 @@ msgid "You do not have access to '{0}'."
 msgstr "您无权访问“{0}”。"
 
 #. Translators: {0} is the name of a file that the user does not have write permission for.
-#: ../Impasto/Actions/File/SaveDocumentImplementationAction.cs:319
+#: ../Impasto/Actions/File/SaveDocumentImplementationAction.cs:331
 #, csharp-format
 msgid ""
 "You do not have access to modify '{0}'. The file or folder may be read-only."
@@ -4930,13 +4948,13 @@ msgstr "缩小"
 msgid "Zoom to Selection"
 msgstr "缩放至选择部分"
 
-#: ../Impasto/MainWindow.cs:560
+#: ../Impasto/MainWindow.cs:563
 msgid "_Adjustments"
 msgstr "调整"
 
-#: ../Impasto/Actions/Edit/PasteAction.cs:241
-#: ../Impasto/Actions/File/CloseDocumentAction.cs:83
-#: ../Impasto/Dialogs/ProgressDialog.cs:71 ../Impasto/MainWindow.cs:1216
+#: ../Impasto/Actions/Edit/PasteAction.cs:255
+#: ../Impasto/Actions/File/CloseDocumentAction.cs:108
+#: ../Impasto/Dialogs/ProgressDialog.cs:71 ../Impasto/MainWindow.cs:1221
 #: ../Pinta.Core/Classes/Re-editable/ObjectRasterizer.cs:197
 #: ../Pinta.Core/Classes/Re-editable/ObjectRasterizer.cs:498
 #: ../Pinta.Core/Extensions/Gtk/GtkExtensions.Dialog.cs:209
@@ -4949,24 +4967,24 @@ msgstr "取消(_C)"
 msgid "_Continue"
 msgstr ""
 
-#: ../Impasto/Actions/File/CloseDocumentAction.cs:84
+#: ../Impasto/Actions/File/CloseDocumentAction.cs:109
 #: ../Impasto/Dialogs/AutosaveRecoveryDialog.cs:68
 msgid "_Discard"
 msgstr "丢弃(_D)"
 
-#: ../Impasto/MainWindow.cs:556
+#: ../Impasto/MainWindow.cs:559
 msgid "_Edit"
 msgstr "编辑"
 
-#: ../Impasto/MainWindow.cs:555
+#: ../Impasto/MainWindow.cs:558
 msgid "_File"
 msgstr "文件"
 
-#: ../Impasto/MainWindow.cs:565
+#: ../Impasto/MainWindow.cs:568
 msgid "_Help"
 msgstr "帮助"
 
-#: ../Impasto/MainWindow.cs:559
+#: ../Impasto/MainWindow.cs:562
 msgid "_Image"
 msgstr "图像"
 
@@ -4982,7 +5000,7 @@ msgstr ""
 msgid "_OK"
 msgstr "确定(_O)"
 
-#: ../Impasto/MainWindow.cs:1217
+#: ../Impasto/MainWindow.cs:1222
 msgid "_Open"
 msgstr ""
 
@@ -4999,15 +5017,15 @@ msgstr ""
 msgid "_Reset Palette"
 msgstr ""
 
-#: ../Impasto/Actions/File/CloseDocumentAction.cs:85
+#: ../Impasto/Actions/File/CloseDocumentAction.cs:110
 msgid "_Save"
 msgstr "保存(_S)"
 
-#: ../Impasto/MainWindow.cs:558
+#: ../Impasto/MainWindow.cs:561
 msgid "_View"
 msgstr "视图"
 
-#: ../Impasto/MainWindow.cs:564
+#: ../Impasto/MainWindow.cs:567
 msgid "_Window"
 msgstr "窗口"
 
@@ -5016,7 +5034,7 @@ msgid "draw;drawing;paint;painting;graphics;raster;2d;"
 msgstr ""
 "draw;drawing;paint;painting;graphics;raster;2d;绘制;绘图;绘画;图形;光栅;"
 
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:265
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:296
 msgid "every effect and object on this layer"
 msgstr ""
 
@@ -5069,7 +5087,7 @@ msgstr ""
 msgid "{0} (Alternate)"
 msgstr ""
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:2100
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:2136
 #, csharp-format
 msgid "{0} + click: start a new shape here."
 msgstr ""
@@ -5080,7 +5098,7 @@ msgstr ""
 msgid "{0} + left click to set origin, left click to paint."
 msgstr "{0}+左键点击设置原点，左键点击画。"
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:2097
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:2133
 #, csharp-format
 msgid "{0} + right drag: change tension."
 msgstr ""
@@ -5100,7 +5118,7 @@ msgstr ""
 msgid "{0} - never saved to a file"
 msgstr ""
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:2099
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:2135
 #, csharp-format
 msgid "{0} and drag: rotate the whole shape."
 msgstr ""
@@ -5131,12 +5149,12 @@ msgstr "{0} 图像 ({1})"
 msgid "{0} palette ({1})"
 msgstr "{0} 调色板 ({1})"
 
-#: ../Pinta.Tools/Tools/TextTool.cs:2851
+#: ../Pinta.Tools/Tools/TextTool.cs:2874
 #, csharp-format
 msgid "{0} to edit"
 msgstr ""
 
-#: ../Pinta.Tools/Tools/TextTool.cs:2852
+#: ../Pinta.Tools/Tools/TextTool.cs:2875
 #, csharp-format
 msgid "{0} to open text properties"
 msgstr ""
@@ -5146,7 +5164,7 @@ msgstr ""
 msgid "{0} to re-edit an existing text object."
 msgstr ""
 
-#: ../Pinta.Tools/Tools/TextTool.cs:2861
+#: ../Pinta.Tools/Tools/TextTool.cs:2884
 #, csharp-format
 msgid "{0} to rotate"
 msgstr ""
@@ -5177,49 +5195,28 @@ msgstr ""
 msgid "{0}%"
 msgstr "{0}%"
 
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:2095
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:2131
 #, csharp-format
 msgid "{0}-drag: snap the adjacent segment to a 15° angle."
 msgstr ""
 
 #: ../Pinta.Tools/Editable/EditEngines/ArrowedEditEngine.cs:410
-#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:2098
+#: ../Pinta.Tools/Editable/EditEngines/BaseEditEngine.cs:2134
 #, csharp-format
 msgid "{0}: curve the line around the selected point; {1}: straighten it."
 msgstr ""
 
-#: ../Impasto/MainWindow.cs:1238
+#: ../Impasto/MainWindow.cs:1243
 #: ../Pinta.Core/Classes/Re-editable/ObjectRasterizer.cs:187
 #, csharp-format
 msgid "…and {0} more"
 msgstr ""
 
 #. Translators: a layer modifier row in the layers dock; it applies to everything below it.
-#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:119
+#: ../Pinta.Gui.Widgets/Widgets/Layers/LayersListViewItemWidget.cs:143
 #, csharp-format
 msgid "▼ {0}"
 msgstr ""
-
-#. Translators: Effects menu command that applies the last used effect again, with the same settings, to the current selection.
-#. AI-generated translation; human review requested.
-#: ../Pinta.Core/Actions/EffectsActions.cs:45
-#, fuzzy
-msgid "Repeat Last Effect"
-msgstr "重复上次效果"
-
-#. Translators: Adjustments menu command that applies the last used adjustment again, with the same settings, to the current selection.
-#. AI-generated translation; human review requested.
-#: ../Pinta.Core/Actions/AdjustmentsActions.cs:39
-#, fuzzy
-msgid "Repeat Last Adjustment"
-msgstr "重复上次调整"
-
-#. Translators: Adjustments or Effects menu item that applies the last used adjustment or effect again, with the same settings; {0} is its name, e.g. "Gaussian Blur".
-#. AI-generated translation; human review requested.
-#: ../Pinta.Core/Actions/LastAppliedEffect.cs:42
-#, fuzzy, csharp-format
-msgid "Repeat {0}"
-msgstr "重复“{0}”"
 
 #~ msgid "About Pinta"
 #~ msgstr "关于 Pinta"

@@ -10,6 +10,12 @@ entries, is upstream Pinta work; the Impasto sections cover changes made in this
 
 Changes for the next release go here.
 
+### Added
+
+- Repeat Last Effect (Ctrl+F) and Repeat Last Adjustment (Ctrl+Alt+F) apply the last effect or
+  adjustment again with the same settings, without its dialog, to the current layer and
+  selection. The Effects and Adjustments menus name it, for example "Repeat Gaussian Blur".
+
 ### Fixed
 
 - Saving, undoing back past the save and making a new change, then undoing and redoing no

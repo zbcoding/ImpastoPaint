@@ -202,8 +202,8 @@ internal sealed class KeyboardShortcutsDialogAction : IActionHandler
 		notebook.AppendPage (BuildCommandsPage (GetCommands (actions.Edit), states, refreshers, searchableLists, Query, searchResults), Gtk.Label.New (Translations.GetString ("Edit")));
 		notebook.AppendPage (BuildCommandsPage (GetCommands (actions.View), states, refreshers, searchableLists, Query, searchResults), Gtk.Label.New (Translations.GetString ("View")));
 		notebook.AppendPage (BuildCommandsPage (GetCommands (actions.Image), states, refreshers, searchableLists, Query, searchResults), Gtk.Label.New (Translations.GetString ("Image")));
-		notebook.AppendPage (BuildCommandsPage (actions.Adjustments.Actions, states, refreshers, searchableLists, Query, searchResults), Gtk.Label.New (Translations.GetString ("Adjustments")));
-		notebook.AppendPage (BuildCommandsPage (actions.Effects.Actions, states, refreshers, searchableLists, Query, searchResults), Gtk.Label.New (Translations.GetString ("Effects")));
+		notebook.AppendPage (BuildCommandsPage ([actions.Adjustments.RepeatLast, .. actions.Adjustments.Actions], states, refreshers, searchableLists, Query, searchResults), Gtk.Label.New (Translations.GetString ("Adjustments")));
+		notebook.AppendPage (BuildCommandsPage ([actions.Effects.RepeatLast, .. actions.Effects.Actions], states, refreshers, searchableLists, Query, searchResults), Gtk.Label.New (Translations.GetString ("Effects")));
 		notebook.AppendPage (BuildCommandsPage (GetCommands (actions.Window), states, refreshers, searchableLists, Query, searchResults), Gtk.Label.New (Translations.GetString ("Window")));
 		notebook.AppendPage (BuildCommandsPage (GetCommands (actions.Help), states, refreshers, searchableLists, Query, searchResults), Gtk.Label.New (Translations.GetString ("Help")));
 		notebook.OnSwitchPage += (_, _) => CancelPendingCapture ();

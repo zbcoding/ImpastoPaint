@@ -74,23 +74,36 @@ public sealed class LivePreviewManager : ILivePreview
 	// document that is not the active one (IsEnabled cleared).
 	private bool is_running;
 
-	public async void Start (BaseEffect effect) => await Run (effect);
-
-	/// <summary>The whole preview session; completes once the effect is applied or dropped.</summary>
-	internal async Task Run (BaseEffect effect)
+	/// <summary>The whole preview session; completes once the effect is applied (true) or dropped.</summary>
+	internal async Task<bool> Run (BaseEffect effect)
 	{
 		// Effect menus stay live while a non-modal effect dialog is open; ignore a second effect.
 		if (is_running)
-			return;
+			return false;
 		is_running = true;
 		try {
-			await RunSession (effect);
+			return await RunSession (effect);
 		} finally {
 			is_running = false;
 		}
 	}
 
-	private async Task RunSession (BaseEffect effect)
+	/// <summary>
+	/// Impasto: applies <paramref name="effect"/> with its current settings to the active layer and
+	/// selection, with no dialog or preview — the Repeat commands. Ignored while a session is open.
+	/// </summary>
+	public void ApplyWithoutPreview (BaseEffect effect)
+	{
+		if (is_running)
+			return;
+
+		tools.Commit ();
+
+		Document doc = workspace.ActiveDocument;
+		AddEffectNode (doc, doc.Layers.CurrentUserLayer, effect, doc.Selection);
+	}
+
+	private async Task<bool> RunSession (BaseEffect effect)
 	{
 		tools.Commit ();
 
@@ -167,7 +180,7 @@ public sealed class LivePreviewManager : ILivePreview
 			bool userConfirmed = !effect.IsConfigurable || await effect.LaunchConfiguration ();
 
 			if (abandoned)
-				return;
+				return false;
 
 			chrome.MainWindowBusy = true;
 
@@ -175,7 +188,7 @@ public sealed class LivePreviewManager : ILivePreview
 				Debug.WriteLine ("User decided not to proceed with the render");
 				renderHandle.Cancel ();
 				await renderHandle.Task;
-				return;
+				return false;
 			}
 
 			// The user confirmed, so show progress dialog
@@ -187,7 +200,7 @@ public sealed class LivePreviewManager : ILivePreview
 			var result = await renderHandle.Task;
 
 			if (abandoned)
-				return;
+				return false;
 
 			// Final poll after the renderer finishes to ensure the last-rendered tiles are displayed.
 			PollForUpdate (renderHandle);
@@ -199,7 +212,7 @@ public sealed class LivePreviewManager : ILivePreview
 				Debug.WriteLine ("User decided to cancel the render");
 				renderHandle.Cancel ();
 				await renderHandle.Task;
-				return;
+				return false;
 			}
 
 			// Was not canceled, so finally apply
@@ -211,15 +224,10 @@ public sealed class LivePreviewManager : ILivePreview
 			// docs-private/layer-effects-model.md.
 			// The layer may have been deleted while the dialog was open; there is nothing to apply to.
 			if (!doc.Layers.UserLayers.Contains (layer))
-				return;
+				return false;
 
-			List<ILayerObject> objectsBefore = ObjectOpacity.CloneAll (layer.Objects);
-
-			layer.AddModifierNode (EffectModifierNode.FromEffect (effect, selection.Visible ? selection.Clone () : null, PintaCore.Services));
-			ObjectOpacity.RefreshLayer (workspace, chrome, layer);
-
-			doc.History.PushNewItem (
-				new LayerObjectsHistoryItem (workspace, chrome, effect.Icon, effect.Name, layer, objectsBefore));
+			AddEffectNode (doc, layer, effect, selection);
+			return true;
 
 		} finally {
 
@@ -354,5 +362,16 @@ public sealed class LivePreviewManager : ILivePreview
 			// Tell GTK to expose the drawing area.
 			workspace.ActiveWorkspace.InvalidateWindowRect (areaToInvalidate);
 		}
+	}
+
+	private void AddEffectNode (Document doc, UserLayer layer, BaseEffect effect, DocumentSelection selection)
+	{
+		List<ILayerObject> objectsBefore = ObjectOpacity.CloneAll (layer.Objects);
+
+		layer.AddModifierNode (EffectModifierNode.FromEffect (effect, selection.Visible ? selection.Clone () : null, PintaCore.Services));
+		ObjectOpacity.RefreshLayer (workspace, chrome, layer);
+
+		doc.History.PushNewItem (
+			new LayerObjectsHistoryItem (workspace, chrome, effect.Icon, effect.Name, layer, objectsBefore));
 	}
 }

@@ -61,6 +61,11 @@ public sealed class EffectsManager
 		action_manager = actionManager;
 		chrome_manager = chromeManager;
 		live_preview_manager = livePreviewManager;
+
+		LastAppliedEffect lastAdjustment = actionManager.Adjustments.LastApplied;
+		LastAppliedEffect lastEffect = actionManager.Effects.LastApplied;
+		lastAdjustment.Command.Activated += (_, _) => Repeat (lastAdjustment);
+		lastEffect.Command.Activated += (_, _) => Repeat (lastEffect);
 	}
 
 	/// <summary>
@@ -90,7 +95,7 @@ public sealed class EffectsManager
 				? [] // If no key is specified, don't use an accelerated menu item
 				: [adjustment.AdjustmentMenuKeyModifiers + adjustment.AdjustmentMenuKey]);
 
-		action.Activated += (o, args) => { live_preview_manager.Start (adjustment); };
+		action.Activated += (o, args) => StartAndRemember (adjustment, action_manager.Adjustments.LastApplied);
 
 		action_manager.Adjustments.Actions.Add (action);
 
@@ -134,7 +139,7 @@ public sealed class EffectsManager
 			effect.Icon);
 
 		chrome_manager.Application.AddCommand (action);
-		action.Activated += (o, args) => live_preview_manager.Start (effect);
+		action.Activated += (o, args) => StartAndRemember (effect, action_manager.Effects.LastApplied);
 
 		// Placement is decided from where the effect came from, not from what it asked for: an
 		// add-in's effects belong under the Effects menu's Add-ins container whether or not the
@@ -196,6 +201,19 @@ public sealed class EffectsManager
 	/// </summary>
 	public BaseEffect? FindEffectById (string effectId)
 		=> effects_by_id.TryGetValue (effectId, out BaseEffect? effect) ? effect : null;
+
+	// Impasto: an applied effect becomes the one its menu's Repeat command replays.
+	private async void StartAndRemember (BaseEffect effect, LastAppliedEffect lastApplied)
+	{
+		if (await live_preview_manager.Run (effect))
+			lastApplied.Remember (effect);
+	}
+
+	private void Repeat (LastAppliedEffect lastApplied)
+	{
+		if (lastApplied.Effect is BaseEffect effect)
+			live_preview_manager.ApplyWithoutPreview (effect);
+	}
 
 	private void RemoveFromIdLookup (Type effectType)
 	{

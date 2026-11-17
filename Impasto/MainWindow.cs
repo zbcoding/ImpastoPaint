@@ -584,6 +584,8 @@ internal sealed class MainWindow
 		PintaCore.Actions.Image.RegisterActions (app, imageMenu);
 		PintaCore.Actions.Layers.RegisterActions (app);
 		PintaCore.Actions.Addins.RegisterActions (app, addinsMenu);
+		PintaCore.Actions.Adjustments.LastApplied.RegisterActions (app, adjustmentsMenu);
+		PintaCore.Actions.Effects.LastApplied.RegisterActions (app, effectsMenu);
 		PintaCore.Actions.Window.RegisterActions (app, windowMenu);
 		PintaCore.Actions.Help.RegisterActions (app, helpMenu);
 

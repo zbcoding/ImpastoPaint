@@ -24,7 +24,11 @@ Effects with random patterns (noise, clouds, cells and others) have a seed setti
 
 An applied effect is added to the layer as an editable node, shown as a row marked **Fx** under the layer in the Layers pad. Right-click the row to open **Effect Settings...**, change its **Blend Mode** or **Strength**, **Rasterize** it into the layer's pixels, or **Delete** it. Drag the row to reorder it on the layer. See [Layers and objects](/docs/layers/).
 
-> Effects have no default keyboard shortcuts, but you can assign one to any effect on the Effects tab of the Keyboard Shortcuts dialog. See [Keyboard shortcuts](/docs/keyboard-shortcuts/).
+### Repeating an effect
+
+**Repeat** at the bottom of the Effects menu, or <kbd>Ctrl</kbd>+<kbd>F</kbd>, applies the last effect you applied again, with the same settings and no dialog, to the current layer and selection. It names that effect, for example **Repeat Gaussian Blur**, and is remembered until Impasto closes.
+
+> Individual effects have no default keyboard shortcuts, but you can assign one to any effect on the Effects tab of the Keyboard Shortcuts dialog. See [Keyboard shortcuts](/docs/keyboard-shortcuts/).
 
 ## Common settings
 

@@ -32,11 +32,21 @@ public sealed class AdjustmentsActions
 {
 	public Collection<Command> Actions { get; } = [];
 
+	// Impasto: Repeat Last Adjustment.
+	public LastAppliedEffect LastApplied { get; } = new (
+		"repeatlastadjustment",
+		// Translators: Adjustments menu command that applies the last used adjustment again, with the same settings, to the current selection.
+		Translations.GetString ("Repeat Last Adjustment"),
+		Resources.Icons.AdjustmentsDefault,
+		"<Primary><Alt>F");
+	public Command RepeatLast => LastApplied.Command;
+
 	#region Public Methods
 	public void ToggleActionsSensitive (bool sensitive)
 	{
 		foreach (var a in Actions)
 			a.Sensitive = sensitive;
+		LastApplied.SetDocumentsOpen (sensitive);
 	}
 	#endregion
 }

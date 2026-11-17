@@ -157,6 +157,7 @@ Solo Layer shows only one layer, counting up from the bottom layer. Press the sa
 
 | Adjustment | Default shortcut |
 |---|---|
+| Repeat Last Adjustment | <kbd>Ctrl</kbd>+<kbd>Alt</kbd>+<kbd>F</kbd> |
 | Auto Level | <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>L</kbd> |
 | Black and White | <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>G</kbd> |
 | Brightness / Contrast | <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>B</kbd> |
@@ -167,7 +168,11 @@ Solo Layer shows only one layer, counting up from the bottom layer. Press the sa
 | Posterize | <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>P</kbd> |
 | Sepia | <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>E</kbd> |
 
-Effects have no default shortcuts. You can give any effect one from the **Effects** tab.
+| Effect command | Default shortcut |
+|---|---|
+| Repeat Last Effect | <kbd>Ctrl</kbd>+<kbd>F</kbd> |
+
+Individual effects have no default shortcuts. You can give any effect one from the **Effects** tab.
 
 ## Window and Help
 

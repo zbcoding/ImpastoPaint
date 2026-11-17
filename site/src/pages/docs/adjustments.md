@@ -21,10 +21,13 @@ You can also drag the row to reorder it among the layer's other nodes and object
 
 > Saving as an Impasto project (`.ora`) keeps the nodes and their settings, so you can still change them after reopening the file. Other formats save the finished pixels. See [File formats](/docs/file-formats/).
 
+**Repeat** at the bottom of the menu applies the last adjustment you applied again, with the same settings and no dialog, to the current layer and selection. It names that adjustment, for example **Repeat Hue / Saturation**, and is remembered until Impasto closes.
+
 ## Keyboard shortcuts
 
 | Adjustment | Default shortcut |
 |---|---|
+| Repeat Last Adjustment | <kbd>Ctrl</kbd>+<kbd>Alt</kbd>+<kbd>F</kbd> |
 | Auto Level | <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>L</kbd> |
 | Black and White | <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>G</kbd> |
 | Brightness / Contrast | <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>B</kbd> |

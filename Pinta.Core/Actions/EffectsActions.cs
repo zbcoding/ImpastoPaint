@@ -38,6 +38,15 @@ public sealed class EffectsActions
 	public Dictionary<string, Gio.Menu> Menus { get; } = [];
 	public Collection<Command> Actions { get; } = [];
 
+	// Impasto: Repeat Last Effect.
+	public LastAppliedEffect LastApplied { get; } = new (
+		"repeatlasteffect",
+		// Translators: Effects menu command that applies the last used effect again, with the same settings, to the current selection.
+		Translations.GetString ("Repeat Last Effect"),
+		Resources.Icons.EffectsDefault,
+		"<Primary>F");
+	public Command RepeatLast => LastApplied.Command;
+
 	// Resolved path per category, so removal knows which menu the entry went into.
 	private readonly Dictionary<string, string> resolved_keys = [];
 
@@ -89,6 +98,7 @@ public sealed class EffectsActions
 	{
 		foreach (Command a in Actions)
 			a.Sensitive = sensitive;
+		LastApplied.SetDocumentsOpen (sensitive);
 	}
 	#endregion
 }

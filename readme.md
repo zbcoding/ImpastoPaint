@@ -1,3 +1,5 @@
+<img width="1280" height="640" alt="impasto-banner-1280x640" src="https://github.com/user-attachments/assets/921a119d-35b0-4df7-b851-e84ee8d801f6" />
+
 # Impasto
 
 Impasto is a painting and image editing application for Linux, Windows, and macOS.

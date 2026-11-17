@@ -83,6 +83,8 @@ internal sealed class LivePreviewSessionTest : DocumentHarness
 	/// there is no canvas, so the timer must have stopped rather than throw on every tick.
 	/// </summary>
 	[Test]
+	// Pumping the GLib loop reaches AppKit, which aborts the process off the main thread.
+	[Platform (Exclude = "MacOsX")]
 	public async Task ClosingThePreviewedDocumentStopsPolling ()
 	{
 		ProbeEffect effect = new ();

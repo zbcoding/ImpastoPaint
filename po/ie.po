@@ -5159,6 +5159,27 @@ msgstr ""
 msgid "▼ {0}"
 msgstr ""
 
+#. Translators: Effects menu command that applies the last used effect again, with the same settings, to the current selection.
+#. AI-generated translation; human review requested.
+#: ../Pinta.Core/Actions/EffectsActions.cs:45
+#, fuzzy
+msgid "Repeat Last Effect"
+msgstr "Repetir li ultim efecte"
+
+#. Translators: Adjustments menu command that applies the last used adjustment again, with the same settings, to the current selection.
+#. AI-generated translation; human review requested.
+#: ../Pinta.Core/Actions/AdjustmentsActions.cs:39
+#, fuzzy
+msgid "Repeat Last Adjustment"
+msgstr "Repetir li ultim adjustament"
+
+#. Translators: Adjustments or Effects menu item that applies the last used adjustment or effect again, with the same settings; {0} is its name, e.g. "Gaussian Blur".
+#. AI-generated translation; human review requested.
+#: ../Pinta.Core/Actions/LastAppliedEffect.cs:42
+#, fuzzy, csharp-format
+msgid "Repeat {0}"
+msgstr "Repetir {0}"
+
 #~ msgid "Draws a line or curve with a start and an end point."
 #~ msgstr "Dessina un linea o curve con un puncte initial e un puncte final."
 

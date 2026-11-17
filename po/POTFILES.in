@@ -81,6 +81,7 @@ Pinta.Core/Actions/EffectsActions.cs
 Pinta.Core/Actions/FileActions.cs
 Pinta.Core/Actions/HelpActions.cs
 Pinta.Core/Actions/ImageActions.cs
+Pinta.Core/Actions/LastAppliedEffect.cs
 Pinta.Core/Actions/LayerActions.cs
 Pinta.Core/Actions/ViewActions.cs
 Pinta.Core/Actions/WindowActions.cs

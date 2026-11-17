@@ -2,6 +2,8 @@
 # Burmese translation for pinta
 # Copyright (c) 2015 Rosetta Contributors and Canonical Ltd 2015
 # This file is distributed under the same license as the pinta package.
+# Copyright (c) 2026 Impasto contributors
+# Impasto changes are distributed under the MIT license, the same as Pinta.
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2015.
 #
 # PO translation metadata:

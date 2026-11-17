@@ -2,6 +2,8 @@
 # Serbian translation for pinta
 # Copyright (c) 2010 Rosetta Contributors and Canonical Ltd 2010
 # This file is distributed under the same license as the pinta package.
+# Copyright (c) 2026 Impasto contributors
+# Impasto changes are distributed under the MIT license, the same as Pinta.
 # Мирослав Николић <miroslavnikolic@rocketmail.com>, 2012—2016, 2021.
 # PO translation metadata:
 # Translations must include a descriptive translator note.

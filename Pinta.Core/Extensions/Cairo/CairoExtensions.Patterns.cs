@@ -200,8 +200,6 @@ partial class CairoExtensions
 		Region limitRegion,
 		bool limitToSelection)
 	{
-		int surf_width = surface.Width;
-
 		int top = int.MaxValue;
 		int bottom = int.MinValue;
 		int left = int.MaxValue;
@@ -225,7 +223,49 @@ partial class CairoExtensions
 		foreach (var rect in scans)
 			stencil.Set (rect, true);
 
-		Parallel.For (0, surface.Height, y => {
+		// BitMask packs its bits row-major into shared machine words, so threads filling adjacent rows
+		// of a narrow image share a word and drop each other's bits. Each thread takes a band of 64 rows
+		// instead: a band starts on a 64-bit boundary whatever the width, so no word straddles two
+		// bands. Bands keep their own bounds as well, merged once every band is done.
+		const int band_rows = 64;
+		int bandCount = (surface.Height + band_rows - 1) / band_rows;
+		var bandBounds = new (int Left, int Top, int Right, int Bottom)[bandCount];
+
+		Parallel.For (0, bandCount, band => {
+			int bandTop = band * band_rows;
+			int bandHeight = Math.Min (band_rows, surface.Height - bandTop);
+			bandBounds[band] = FillBandByColor (surface, stencil, cmp, tolerance, bandTop, bandHeight);
+		});
+
+		foreach (var band in bandBounds) {
+			left = Math.Min (left, band.Left);
+			right = Math.Max (right, band.Right);
+			top = Math.Min (top, band.Top);
+			bottom = Math.Max (bottom, band.Bottom);
+		}
+
+		foreach (var rect in scans)
+			stencil.Set (rect, false);
+
+		boundingBox = new RectangleD (left, top, right - left + 1, bottom - top + 1);
+	}
+
+	private static (int Left, int Top, int Right, int Bottom) FillBandByColor (
+		ImageSurface surface,
+		BitMask stencil,
+		ColorBgra cmp,
+		int tolerance,
+		int bandTop,
+		int bandHeight)
+	{
+		int surf_width = surface.Width;
+
+		int top = int.MaxValue;
+		int bottom = int.MinValue;
+		int left = int.MaxValue;
+		int right = int.MinValue;
+
+		for (int y = bandTop; y < bandTop + bandHeight; ++y) {
 
 			bool foundPixelInRow = false;
 
@@ -255,12 +295,9 @@ partial class CairoExtensions
 				if (y >= bottom)
 					bottom = y;
 			}
-		});
+		}
 
-		foreach (var rect in scans)
-			stencil.Set (rect, false);
-
-		boundingBox = new RectangleD (left, top, right - left + 1, bottom - top + 1);
+		return (left, top, right, bottom);
 	}
 
 	// Ported from PDN.

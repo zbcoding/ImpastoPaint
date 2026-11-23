@@ -8,6 +8,8 @@
 /////////////////////////////////////////////////////////////////////////////////
 
 using System;
+using System.Runtime.InteropServices;
+using System.Runtime.Intrinsics;
 using System.Threading.Tasks;
 using Cairo;
 using Pinta.Core;
@@ -50,15 +52,9 @@ public sealed class UnfocusEffect : BaseEffect
 	{
 		//each slot of the histogram can contain up to area * 255. This will overflow an int when area > 32k
 		if (area < 32768) {
-			int b = 0;
-			int g = 0;
-			int r = 0;
-
-			for (int i = 1; i < 256; ++i) {
-				b += i * hb[i];
-				g += i * hg[i];
-				r += i * hr[i];
-			}
+			int b = SumBinsWeightedByIndex (hb);
+			int g = SumBinsWeightedByIndex (hg);
+			int r = SumBinsWeightedByIndex (hr);
 
 			int alpha = sum / area;
 			int div = area * 255;
@@ -81,6 +77,20 @@ public sealed class UnfocusEffect : BaseEffect
 
 			return ColorBgra.FromBgraClamped (b / div, g / div, r / div, alpha);
 		}
+	}
+
+	/// <summary>Sum of <c>i * h[i]</c> over all 256 bins, wrapping on overflow like the scalar loop.</summary>
+	private static int SumBinsWeightedByIndex (ReadOnlySpan<int> h)
+	{
+		Vector256<int> index = Vector256.Create (0, 1, 2, 3, 4, 5, 6, 7);
+		Vector256<int> step = Vector256.Create (Vector256<int>.Count);
+		Vector256<int> total = Vector256<int>.Zero;
+		ref int histogramStart = ref MemoryMarshal.GetReference (h);
+		for (int bin = 0; bin < 256; bin += Vector256<int>.Count) {
+			total += index * Vector256.LoadUnsafe (ref histogramStart, (nuint) bin);
+			index += step;
+		}
+		return Vector256.Sum (total);
 	}
 
 	public sealed class UnfocusData : EffectData

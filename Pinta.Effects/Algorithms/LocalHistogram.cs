@@ -8,6 +8,8 @@
 /////////////////////////////////////////////////////////////////////////////////
 
 using System;
+using System.Runtime.InteropServices;
+using System.Runtime.Intrinsics;
 using Cairo;
 using Pinta.Core;
 
@@ -49,21 +51,66 @@ public static class LocalHistogram
 		Span<int> hg,
 		Span<int> hr);
 
+	/// <summary>
+	/// Returns one past the first bin (below 255) at which the running count reaches
+	/// <paramref name="minCount"/>, or the first non-empty bin when <paramref name="minCount"/> is not positive.
+	/// The result is capped at 255.
+	/// </summary>
 	public static byte GetChannelPercentile (int minCount, Span<int> h)
 	{
-		int c = 0;
-		int cCount = 0;
-
-		while (c < 255 && h[c] == 0)
-			++c;
-
-		while (c < 255 && cCount < minCount) {
-			cCount += h[c];
-			++c;
+		if (minCount <= 0) {
+			int firstNonEmpty = h[..255].IndexOfAnyExcept (0);
+			return (byte) (firstNonEmpty < 0 ? 255 : firstNonEmpty);
 		}
 
-		return (byte) c;
+		int bin = 0;
+		int count = 0;
 
+		// Skip whole blocks of bins that cannot reach minCount.
+		ref int histogramStart = ref MemoryMarshal.GetReference (h);
+		for (; bin + Vector256<int>.Count < 255; bin += Vector256<int>.Count) {
+			int blockCount = Vector256.Sum (Vector256.LoadUnsafe (ref histogramStart, (nuint) bin));
+			if (count + blockCount >= minCount)
+				break;
+			count += blockCount;
+		}
+
+		for (; bin < 255; ++bin) {
+			count += h[bin];
+			if (count >= minCount)
+				return (byte) (bin + 1);
+		}
+
+		return 255;
+	}
+
+	/// <summary>
+	/// Copies the rows of <paramref name="src"/> a radius-<paramref name="rad"/> window over <paramref name="rect"/>
+	/// can sample, converted to straight alpha, so each pixel is converted once instead of once per window visit.
+	/// The buffer keeps the source row width; index it with <c>sourceIndex - firstRowOffset</c>.
+	/// </summary>
+	private static ColorBgra[] CreateStraightAlphaRows (
+		ReadOnlySpan<ColorBgra> src_data,
+		Size sourceSize,
+		int rad,
+		RectangleI rect,
+		out int firstRowOffset)
+	{
+		int firstRow = Math.Max (0, rect.Top - rad);
+		int lastRow = Math.Min (sourceSize.Height - 1, rect.Bottom + rad);
+		int firstColumn = Math.Max (0, rect.Left - rad);
+		int lastColumn = Math.Min (sourceSize.Width - 1, rect.Right + rad + 1);
+
+		ColorBgra[] straight = new ColorBgra[(lastRow - firstRow + 1) * sourceSize.Width];
+		firstRowOffset = firstRow * sourceSize.Width;
+
+		for (int y = firstRow; y <= lastRow; ++y) {
+			int rowStart = y * sourceSize.Width;
+			for (int x = firstColumn; x <= lastColumn; ++x)
+				straight[rowStart - firstRowOffset + x] = src_data[rowStart + x].ToStraightAlpha ();
+		}
+
+		return straight;
 	}
 
 	public static ColorBgra GetPercentile (
@@ -114,6 +161,7 @@ public static class LocalHistogram
 
 		var src_data = src.GetReadOnlyPixelData ();
 		var dst_data = dst.GetPixelData ();
+		ReadOnlySpan<ColorBgra> straight_data = CreateStraightAlphaRows (src_data, sourceSize, rad, rect, out int straightOffset);
 
 		for (int y = rect.Top; y <= rect.Bottom; ++y) {
 			SetToZero (hb);
@@ -136,10 +184,10 @@ public static class LocalHistogram
 			int right = Math.Min (rad, sourceSize.Width - 1 - rect.Left);
 
 			for (int v = top; v <= bottom; ++v) {
-				ReadOnlySpan<ColorBgra> psamples = src_data[((y + v) * sourceSize.Width + rect.Left + left)..];
+				ReadOnlySpan<ColorBgra> psamples = straight_data[((y + v) * sourceSize.Width + rect.Left + left - straightOffset)..];
 				for (int u = left, i = 0; u <= right; ++u, ++i) {
 					if ((u * u + v * v) > cutoff) continue;
-					ColorBgra psamp = psamples[i].ToStraightAlpha ();
+					ColorBgra psamp = psamples[i];
 					++area;
 					++hb[psamp.B];
 					++hg[psamp.G];
@@ -174,7 +222,7 @@ public static class LocalHistogram
 
 				while (v >= top) {
 					int u = leadingEdgeX[-v];
-					ColorBgra p = src_data[(y * sourceSize.Width + x) + (v * stride) - u].ToStraightAlpha ();
+					ColorBgra p = straight_data[(y * sourceSize.Width + x) + (v * stride) - u - straightOffset];
 
 					--hb[p.B];
 					--hg[p.G];
@@ -198,7 +246,7 @@ public static class LocalHistogram
 
 				while (v >= top) {
 					int u = leadingEdgeX[-v];
-					ColorBgra p = src_data[(y * sourceSize.Width + x) + (v * stride) + u + 1].ToStraightAlpha ();
+					ColorBgra p = straight_data[(y * sourceSize.Width + x) + (v * stride) + u + 1 - straightOffset];
 					++hb[p.B];
 					++hg[p.G];
 					++hr[p.R];
@@ -222,7 +270,7 @@ public static class LocalHistogram
 
 				while (v <= bottom) {
 					int u = leadingEdgeX[v];
-					ColorBgra p = src_data[(y * sourceSize.Width + x) + (v * stride) - u].ToStraightAlpha ();
+					ColorBgra p = straight_data[(y * sourceSize.Width + x) + (v * stride) - u - straightOffset];
 					--hb[p.B];
 					--hg[p.G];
 					--hr[p.R];
@@ -246,7 +294,7 @@ public static class LocalHistogram
 
 				while (v <= bottom) {
 					int u = leadingEdgeX[v];
-					ColorBgra p = src_data[(y * sourceSize.Width + x) + (v * stride) + u + 1].ToStraightAlpha ();
+					ColorBgra p = straight_data[(y * sourceSize.Width + x) + (v * stride) + u + 1 - straightOffset];
 					++hb[p.B];
 					++hg[p.G];
 					++hr[p.R];

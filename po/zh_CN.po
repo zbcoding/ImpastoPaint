@@ -21,7 +21,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: pinta\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-23 01:20-0600\n"
+"POT-Creation-Date: 2026-11-23 03:22-0600\n"
 "PO-Revision-Date: 2026-05-10 20:22+0000\n"
 "Last-Translator: jywondf <99643089+JoyWonderful@users.noreply.github.com>\n"
 "Language-Team: Chinese (Simplified Han script)\n"
@@ -218,7 +218,7 @@ msgstr "Alpha 渐变"
 
 #: ../Pinta.Effects/Effects/BulgeEffect.cs:116
 #: ../Pinta.Effects/Effects/FrostedGlassEffect.cs:146
-#: ../Pinta.Effects/Effects/PolarInversionEffect.cs:88
+#: ../Pinta.Effects/Effects/PolarInversionEffect.cs:89
 #: ../Pinta.Effects/Effects/SharpenEffect.cs:57
 #: ../Pinta.Effects/Effects/TwistEffect.cs:217
 #: ../Pinta.Effects/Effects/ZoomBlurEffect.cs:136
@@ -371,7 +371,7 @@ msgid "Bilinear"
 msgstr "双线性"
 
 #. Translators: Simple gradient that goes from black to white
-#: ../Pinta.Effects/Adjustments/BlackAndWhiteEffect.cs:29
+#: ../Pinta.Effects/Adjustments/BlackAndWhiteEffect.cs:31
 #: ../Pinta.Effects/Utilities/GradientHelper.cs:27
 msgid "Black and White"
 msgstr "黑白"
@@ -400,10 +400,10 @@ msgid "Blue "
 msgstr "蓝色 "
 
 #: ../Pinta.Effects/Effects/FragmentEffect.cs:33
-#: ../Pinta.Effects/Effects/GaussianBlurEffect.cs:32
+#: ../Pinta.Effects/Effects/GaussianBlurEffect.cs:35
 #: ../Pinta.Effects/Effects/MotionBlurEffect.cs:33
 #: ../Pinta.Effects/Effects/RadialBlurEffect.cs:27
-#: ../Pinta.Effects/Effects/UnfocusEffect.cs:27
+#: ../Pinta.Effects/Effects/UnfocusEffect.cs:29
 #: ../Pinta.Effects/Effects/ZoomBlurEffect.cs:32
 msgid "Blurs"
 msgstr "模糊"
@@ -456,13 +456,13 @@ msgstr ""
 msgid "Bottom Right Perspective — Vertical"
 msgstr ""
 
-#: ../Pinta.Effects/Adjustments/BrightnessContrastEffect.cs:94
+#: ../Pinta.Effects/Adjustments/BrightnessContrastEffect.cs:96
 #: ../Pinta.Effects/Effects/GlowEffect.cs:79
 #: ../Pinta.Gui.Widgets/Widgets/ColorWheelWidget.cs:80
 msgid "Brightness"
 msgstr "亮度"
 
-#: ../Pinta.Effects/Adjustments/BrightnessContrastEffect.cs:31
+#: ../Pinta.Effects/Adjustments/BrightnessContrastEffect.cs:33
 msgid "Brightness / Contrast"
 msgstr "亮度 / 对比度"
 
@@ -586,8 +586,8 @@ msgstr "居中对齐"
 msgid "Center Left"
 msgstr "左侧居中"
 
-#: ../Pinta.Effects/Effects/DentsEffect.cs:159
-#: ../Pinta.Effects/Effects/PolarInversionEffect.cs:96
+#: ../Pinta.Effects/Effects/DentsEffect.cs:160
+#: ../Pinta.Effects/Effects/PolarInversionEffect.cs:97
 #: ../Pinta.Effects/Effects/TwistEffect.cs:229
 msgid "Center Offset"
 msgstr "中心偏移"
@@ -892,7 +892,7 @@ msgstr "内容"
 msgid "Contiguous"
 msgstr "区域"
 
-#: ../Pinta.Effects/Adjustments/BrightnessContrastEffect.cs:104
+#: ../Pinta.Effects/Adjustments/BrightnessContrastEffect.cs:106
 #: ../Pinta.Effects/Effects/GlowEffect.cs:83
 msgid "Contrast"
 msgstr "对比度"
@@ -980,7 +980,7 @@ msgstr "关闭曲线段"
 msgid "Curved Segments On"
 msgstr "开启曲线段"
 
-#: ../Pinta.Effects/Adjustments/CurvesEffect.cs:26
+#: ../Pinta.Effects/Adjustments/CurvesEffect.cs:28
 #: ../Pinta.Effects/Dialogs/Effects.CurvesDialog.cs:137
 msgid "Curves"
 msgstr "曲线"
@@ -1227,8 +1227,8 @@ msgstr ""
 msgid "Easily create and edit images"
 msgstr "轻松创建和编辑图像"
 
-#: ../Pinta.Effects/Effects/DentsEffect.cs:162
-#: ../Pinta.Effects/Effects/PolarInversionEffect.cs:99
+#: ../Pinta.Effects/Effects/DentsEffect.cs:163
+#: ../Pinta.Effects/Effects/PolarInversionEffect.cs:100
 #: ../Pinta.Effects/Effects/TileEffect.cs:237
 #: ../Pinta.Effects/Effects/TwistEffect.cs:232 Polar Inversion dialog
 msgid "Edge Behavior"
@@ -1616,7 +1616,7 @@ msgstr ""
 msgid "Gallery"
 msgstr "插件库"
 
-#: ../Pinta.Effects/Effects/GaussianBlurEffect.cs:28
+#: ../Pinta.Effects/Effects/GaussianBlurEffect.cs:31
 msgid "Gaussian Blur"
 msgstr "高斯模糊"
 
@@ -1727,7 +1727,7 @@ msgstr "历史"
 msgid "Hold the switch key to draw the other triangle type."
 msgstr ""
 
-#: ../Pinta.Tools/Tools/CloneStampTool.cs:238
+#: ../Pinta.Tools/Tools/CloneStampTool.cs:233
 #, csharp-format
 msgid "Hold {0} and click to set an origin point first."
 msgstr ""
@@ -1773,7 +1773,7 @@ msgid ""
 msgstr "3D 模式的视野宽度，以度为单位。视野越宽，纵深感越强；越窄则越扁平。"
 
 #: ../Pinta.Core/Algorithms/PixelOps/UserBlendOps.cs:45
-#: ../Pinta.Effects/Adjustments/HueSaturationEffect.cs:61
+#: ../Pinta.Effects/Adjustments/HueSaturationEffect.cs:63
 #: ../Pinta.Gui.Widgets/Widgets/ColorPickerSlider.cs:357
 msgid "Hue"
 msgstr "色调"
@@ -1783,7 +1783,7 @@ msgstr "色调"
 msgid "Hue & Sat"
 msgstr "色相与饱和度"
 
-#: ../Pinta.Effects/Adjustments/HueSaturationEffect.cs:23
+#: ../Pinta.Effects/Adjustments/HueSaturationEffect.cs:25
 msgid "Hue / Saturation"
 msgstr "色相 / 饱和度"
 
@@ -2039,7 +2039,7 @@ msgid "Installed add-ins"
 msgstr ""
 
 #: ../Pinta.Effects/Effects/AddNoiseEffect.cs:167
-#: ../Pinta.Effects/Effects/OutlineEdgeEffect.cs:137
+#: ../Pinta.Effects/Effects/OutlineEdgeEffect.cs:81
 #: ../Pinta.Effects/Effects/TileEffect.cs:230
 msgid "Intensity"
 msgstr "亮度"
@@ -2050,7 +2050,7 @@ msgstr "亮度"
 msgid "Intersect ({0} + Left Click)"
 msgstr "拦截 ({0} + 单击)"
 
-#: ../Pinta.Effects/Adjustments/InvertColorsEffect.cs:29
+#: ../Pinta.Effects/Adjustments/InvertColorsEffect.cs:31
 #: ../Pinta.Effects/Effects/MandelbrotFractalEffect.cs:185
 msgid "Invert Colors"
 msgstr "反色"
@@ -2335,7 +2335,7 @@ msgstr "箭头翼的长度;不改变线条的长度。"
 msgid "Length of the arrowhead, in pixels."
 msgstr "箭头的长度(像素)。"
 
-#: ../Pinta.Effects/Adjustments/LevelsEffect.cs:23
+#: ../Pinta.Effects/Adjustments/LevelsEffect.cs:25
 msgid "Levels"
 msgstr "色阶"
 
@@ -2358,7 +2358,7 @@ msgstr "加亮"
 msgid "Lighting"
 msgstr "亮度"
 
-#: ../Pinta.Effects/Adjustments/HueSaturationEffect.cs:67
+#: ../Pinta.Effects/Adjustments/HueSaturationEffect.cs:69
 msgid "Lightness"
 msgstr "亮度"
 
@@ -3218,7 +3218,7 @@ msgstr "肖像"
 msgid "Position"
 msgstr ""
 
-#: ../Pinta.Effects/Adjustments/PosterizeEffect.cs:23
+#: ../Pinta.Effects/Adjustments/PosterizeEffect.cs:25
 #: ../Pinta.Effects/Dialogs/Effects.PosterizeDialog.cs:53
 msgid "Posterize"
 msgstr "海报效果"
@@ -3295,10 +3295,10 @@ msgid "Properties..."
 msgstr ""
 
 #: ../Pinta.Effects/Effects/CellsEffect.cs:197
-#: ../Pinta.Effects/Effects/DentsEffect.cs:155
+#: ../Pinta.Effects/Effects/DentsEffect.cs:156
 #: ../Pinta.Effects/Effects/JuliaFractalEffect.cs:147
 #: ../Pinta.Effects/Effects/MandelbrotFractalEffect.cs:160
-#: ../Pinta.Effects/Effects/PolarInversionEffect.cs:92
+#: ../Pinta.Effects/Effects/PolarInversionEffect.cs:93
 #: ../Pinta.Effects/Effects/RadialBlurEffect.cs:142
 #: ../Pinta.Effects/Effects/VoronoiDiagramEffect.cs:220
 msgid "Quality"
@@ -3344,12 +3344,12 @@ msgid "Radial Gradient"
 msgstr "径向渐变"
 
 #: ../Pinta.Effects/Effects/FeatherEffect.cs:167
-#: ../Pinta.Effects/Effects/GaussianBlurEffect.cs:284
+#: ../Pinta.Effects/Effects/GaussianBlurEffect.cs:288
 #: ../Pinta.Effects/Effects/GlowEffect.cs:75
 #: ../Pinta.Effects/Effects/MedianEffect.cs:59
 #: ../Pinta.Effects/Effects/OutlineObjectEffect.cs:204
 #: ../Pinta.Effects/Effects/ReduceNoiseEffect.cs:84
-#: ../Pinta.Effects/Effects/UnfocusEffect.cs:88
+#: ../Pinta.Effects/Effects/UnfocusEffect.cs:98
 #: ../Pinta.Tools/Editable/EditEngines/RoundedLineEditEngine.cs:85
 msgid "Radius"
 msgstr "半径"
@@ -3380,7 +3380,7 @@ msgstr ""
 
 #: ../Pinta.Effects/Effects/AddNoiseEffect.cs:179
 #: ../Pinta.Effects/Effects/CloudsEffect.cs:142
-#: ../Pinta.Effects/Effects/DentsEffect.cs:151
+#: ../Pinta.Effects/Effects/DentsEffect.cs:152
 #: ../Pinta.Effects/Effects/FrostedGlassEffect.cs:150
 msgid "Random Noise Seed"
 msgstr ""
@@ -3495,7 +3495,7 @@ msgstr "减少噪点"
 msgid "Reflect"
 msgstr "反射"
 
-#: ../Pinta.Effects/Effects/DentsEffect.cs:139
+#: ../Pinta.Effects/Effects/DentsEffect.cs:140
 msgid "Refraction"
 msgstr ""
 
@@ -3744,7 +3744,7 @@ msgstr "旋转"
 msgid "Rotation: "
 msgstr ""
 
-#: ../Pinta.Effects/Effects/DentsEffect.cs:143
+#: ../Pinta.Effects/Effects/DentsEffect.cs:144
 msgid "Roughness"
 msgstr ""
 
@@ -3798,7 +3798,7 @@ msgid "Sat & Value"
 msgstr "饱和度与亮度"
 
 #: ../Pinta.Core/Algorithms/PixelOps/UserBlendOps.cs:46
-#: ../Pinta.Effects/Adjustments/HueSaturationEffect.cs:64
+#: ../Pinta.Effects/Adjustments/HueSaturationEffect.cs:66
 msgid "Saturation"
 msgstr "饱和度"
 
@@ -3846,7 +3846,7 @@ msgid ""
 msgstr ""
 
 #: ../Pinta.Effects/Effects/CloudsEffect.cs:134
-#: ../Pinta.Effects/Effects/DentsEffect.cs:135
+#: ../Pinta.Effects/Effects/DentsEffect.cs:136
 msgid "Scale"
 msgstr "缩放"
 
@@ -3922,7 +3922,7 @@ msgstr "次粗"
 msgid "Semilight"
 msgstr "次细"
 
-#: ../Pinta.Effects/Adjustments/SepiaEffect.cs:52
+#: ../Pinta.Effects/Adjustments/SepiaEffect.cs:54
 msgid "Sepia"
 msgstr "复古褐色"
 
@@ -4433,7 +4433,7 @@ msgid ""
 "stay editable in this window."
 msgstr ""
 
-#: ../Pinta.Effects/Effects/OutlineEdgeEffect.cs:133
+#: ../Pinta.Effects/Effects/OutlineEdgeEffect.cs:77
 msgid "Thickness"
 msgstr "线宽"
 
@@ -4700,7 +4700,7 @@ msgstr ""
 msgid "Triangle Tool"
 msgstr ""
 
-#: ../Pinta.Effects/Effects/DentsEffect.cs:147
+#: ../Pinta.Effects/Effects/DentsEffect.cs:148
 msgid "Turbulence"
 msgstr ""
 
@@ -4716,7 +4716,7 @@ msgstr ""
 #: ../Pinta.Tools/Editable/EditEngines/ArrowedEditEngine.cs:361
 #: ../Pinta.Tools/Editable/EditEngines/TriangleEditEngine.cs:121
 #: ../Pinta.Tools/Tools/EraserTool.cs:402
-#: ../Pinta.Tools/Tools/PaintBrushTool.cs:272
+#: ../Pinta.Tools/Tools/PaintBrushTool.cs:267
 msgid "Type"
 msgstr "类型"
 
@@ -4756,7 +4756,7 @@ msgstr ""
 msgid "Undo last text edit"
 msgstr ""
 
-#: ../Pinta.Effects/Effects/UnfocusEffect.cs:23
+#: ../Pinta.Effects/Effects/UnfocusEffect.cs:25
 msgid "Unfocus"
 msgstr "失去焦点"
 

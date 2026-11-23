@@ -51,6 +51,12 @@
     <binary>impasto</binary>
   </provides>
   <releases>
+    <release version="0.7.5" date="2026-11-23">
+      <url>https://github.com/zbcoding/ImpastoPaint/releases/tag/v0.7.5</url>
+      <description>
+        <p>Painting on large images keeps up with the cursor, and strokes on layers with masks or effect nodes redraw only around the brush. Median, Sharpen, Outline Edge, Unfocus and Reduce Noise run about 2–4 times faster, and global fill and the magic wand no longer miss pixels on tall images.</p>
+      </description>
+    </release>
     <release version="0.7.4" date="2026-11-23">
       <url>https://github.com/zbcoding/ImpastoPaint/releases/tag/v0.7.4</url>
       <description>

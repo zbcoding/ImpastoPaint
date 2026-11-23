@@ -21,7 +21,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: pinta\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-23 01:20-0600\n"
+"POT-Creation-Date: 2026-11-23 03:22-0600\n"
 "PO-Revision-Date: 2025-08-08 03:06+0000\n"
 "Last-Translator: Jiri Grönroos <jiri.gronroos@iki.fi>\n"
 "Language-Team: Finnish\n"
@@ -220,7 +220,7 @@ msgstr ""
 
 #: ../Pinta.Effects/Effects/BulgeEffect.cs:116
 #: ../Pinta.Effects/Effects/FrostedGlassEffect.cs:146
-#: ../Pinta.Effects/Effects/PolarInversionEffect.cs:88
+#: ../Pinta.Effects/Effects/PolarInversionEffect.cs:89
 #: ../Pinta.Effects/Effects/SharpenEffect.cs:57
 #: ../Pinta.Effects/Effects/TwistEffect.cs:217
 #: ../Pinta.Effects/Effects/ZoomBlurEffect.cs:136
@@ -373,7 +373,7 @@ msgid "Bilinear"
 msgstr ""
 
 #. Translators: Simple gradient that goes from black to white
-#: ../Pinta.Effects/Adjustments/BlackAndWhiteEffect.cs:29
+#: ../Pinta.Effects/Adjustments/BlackAndWhiteEffect.cs:31
 #: ../Pinta.Effects/Utilities/GradientHelper.cs:27
 msgid "Black and White"
 msgstr "Mustavalkoinen"
@@ -402,10 +402,10 @@ msgid "Blue "
 msgstr "Sininen "
 
 #: ../Pinta.Effects/Effects/FragmentEffect.cs:33
-#: ../Pinta.Effects/Effects/GaussianBlurEffect.cs:32
+#: ../Pinta.Effects/Effects/GaussianBlurEffect.cs:35
 #: ../Pinta.Effects/Effects/MotionBlurEffect.cs:33
 #: ../Pinta.Effects/Effects/RadialBlurEffect.cs:27
-#: ../Pinta.Effects/Effects/UnfocusEffect.cs:27
+#: ../Pinta.Effects/Effects/UnfocusEffect.cs:29
 #: ../Pinta.Effects/Effects/ZoomBlurEffect.cs:32
 msgid "Blurs"
 msgstr "Sumennus"
@@ -458,13 +458,13 @@ msgstr ""
 msgid "Bottom Right Perspective — Vertical"
 msgstr ""
 
-#: ../Pinta.Effects/Adjustments/BrightnessContrastEffect.cs:94
+#: ../Pinta.Effects/Adjustments/BrightnessContrastEffect.cs:96
 #: ../Pinta.Effects/Effects/GlowEffect.cs:79
 #: ../Pinta.Gui.Widgets/Widgets/ColorWheelWidget.cs:80
 msgid "Brightness"
 msgstr "Kirkkaus"
 
-#: ../Pinta.Effects/Adjustments/BrightnessContrastEffect.cs:31
+#: ../Pinta.Effects/Adjustments/BrightnessContrastEffect.cs:33
 msgid "Brightness / Contrast"
 msgstr "Kirkkaus / Kontrasti"
 
@@ -588,8 +588,8 @@ msgstr "Keskitä"
 msgid "Center Left"
 msgstr "Keskelle vasemmalle"
 
-#: ../Pinta.Effects/Effects/DentsEffect.cs:159
-#: ../Pinta.Effects/Effects/PolarInversionEffect.cs:96
+#: ../Pinta.Effects/Effects/DentsEffect.cs:160
+#: ../Pinta.Effects/Effects/PolarInversionEffect.cs:97
 #: ../Pinta.Effects/Effects/TwistEffect.cs:229
 msgid "Center Offset"
 msgstr "Keskusta"
@@ -885,7 +885,7 @@ msgstr "Sisältö"
 msgid "Contiguous"
 msgstr "Jatkuva"
 
-#: ../Pinta.Effects/Adjustments/BrightnessContrastEffect.cs:104
+#: ../Pinta.Effects/Adjustments/BrightnessContrastEffect.cs:106
 #: ../Pinta.Effects/Effects/GlowEffect.cs:83
 msgid "Contrast"
 msgstr "Kontrasti"
@@ -974,7 +974,7 @@ msgstr "Kaarevat segmentit pois käytöstä"
 msgid "Curved Segments On"
 msgstr "Kaarevat segmentit käytössä"
 
-#: ../Pinta.Effects/Adjustments/CurvesEffect.cs:26
+#: ../Pinta.Effects/Adjustments/CurvesEffect.cs:28
 #: ../Pinta.Effects/Dialogs/Effects.CurvesDialog.cs:137
 msgid "Curves"
 msgstr "Käyrät"
@@ -1225,8 +1225,8 @@ msgstr ""
 msgid "Easily create and edit images"
 msgstr "Luo ja muokkaa kuvia vaivatta"
 
-#: ../Pinta.Effects/Effects/DentsEffect.cs:162
-#: ../Pinta.Effects/Effects/PolarInversionEffect.cs:99
+#: ../Pinta.Effects/Effects/DentsEffect.cs:163
+#: ../Pinta.Effects/Effects/PolarInversionEffect.cs:100
 #: ../Pinta.Effects/Effects/TileEffect.cs:237
 #: ../Pinta.Effects/Effects/TwistEffect.cs:232 Polar Inversion dialog
 msgid "Edge Behavior"
@@ -1614,7 +1614,7 @@ msgstr ""
 msgid "Gallery"
 msgstr "Kokoelma"
 
-#: ../Pinta.Effects/Effects/GaussianBlurEffect.cs:28
+#: ../Pinta.Effects/Effects/GaussianBlurEffect.cs:31
 msgid "Gaussian Blur"
 msgstr "Gauss-sumennus"
 
@@ -1727,7 +1727,7 @@ msgstr "Historia"
 msgid "Hold the switch key to draw the other triangle type."
 msgstr ""
 
-#: ../Pinta.Tools/Tools/CloneStampTool.cs:238
+#: ../Pinta.Tools/Tools/CloneStampTool.cs:233
 #, csharp-format
 msgid "Hold {0} and click to set an origin point first."
 msgstr ""
@@ -1775,7 +1775,7 @@ msgstr ""
 "kapea litistää sitä."
 
 #: ../Pinta.Core/Algorithms/PixelOps/UserBlendOps.cs:45
-#: ../Pinta.Effects/Adjustments/HueSaturationEffect.cs:61
+#: ../Pinta.Effects/Adjustments/HueSaturationEffect.cs:63
 #: ../Pinta.Gui.Widgets/Widgets/ColorPickerSlider.cs:357
 msgid "Hue"
 msgstr "Sävy"
@@ -1785,7 +1785,7 @@ msgstr "Sävy"
 msgid "Hue & Sat"
 msgstr ""
 
-#: ../Pinta.Effects/Adjustments/HueSaturationEffect.cs:23
+#: ../Pinta.Effects/Adjustments/HueSaturationEffect.cs:25
 msgid "Hue / Saturation"
 msgstr "Sävy / Värikylläisyys"
 
@@ -2038,7 +2038,7 @@ msgid "Installed add-ins"
 msgstr ""
 
 #: ../Pinta.Effects/Effects/AddNoiseEffect.cs:167
-#: ../Pinta.Effects/Effects/OutlineEdgeEffect.cs:137
+#: ../Pinta.Effects/Effects/OutlineEdgeEffect.cs:81
 #: ../Pinta.Effects/Effects/TileEffect.cs:230
 msgid "Intensity"
 msgstr "Voimakkuus"
@@ -2049,7 +2049,7 @@ msgstr "Voimakkuus"
 msgid "Intersect ({0} + Left Click)"
 msgstr "Leikkaus ({0} + vasen napsautus)"
 
-#: ../Pinta.Effects/Adjustments/InvertColorsEffect.cs:29
+#: ../Pinta.Effects/Adjustments/InvertColorsEffect.cs:31
 #: ../Pinta.Effects/Effects/MandelbrotFractalEffect.cs:185
 msgid "Invert Colors"
 msgstr "Käännä värit"
@@ -2309,7 +2309,7 @@ msgstr "Nuolenkärjen siipien pituus; ei muuta viivan pituutta."
 msgid "Length of the arrowhead, in pixels."
 msgstr "Nuolenkärjen pituus pikseleinä."
 
-#: ../Pinta.Effects/Adjustments/LevelsEffect.cs:23
+#: ../Pinta.Effects/Adjustments/LevelsEffect.cs:25
 msgid "Levels"
 msgstr "Sävyala"
 
@@ -2332,7 +2332,7 @@ msgstr "Kevennä"
 msgid "Lighting"
 msgstr "Valaistus"
 
-#: ../Pinta.Effects/Adjustments/HueSaturationEffect.cs:67
+#: ../Pinta.Effects/Adjustments/HueSaturationEffect.cs:69
 msgid "Lightness"
 msgstr "Vaaleus"
 
@@ -3199,7 +3199,7 @@ msgstr "Pysty"
 msgid "Position"
 msgstr "Sijainti"
 
-#: ../Pinta.Effects/Adjustments/PosterizeEffect.cs:23
+#: ../Pinta.Effects/Adjustments/PosterizeEffect.cs:25
 #: ../Pinta.Effects/Dialogs/Effects.PosterizeDialog.cs:53
 msgid "Posterize"
 msgstr "Porrasta"
@@ -3276,10 +3276,10 @@ msgid "Properties..."
 msgstr ""
 
 #: ../Pinta.Effects/Effects/CellsEffect.cs:197
-#: ../Pinta.Effects/Effects/DentsEffect.cs:155
+#: ../Pinta.Effects/Effects/DentsEffect.cs:156
 #: ../Pinta.Effects/Effects/JuliaFractalEffect.cs:147
 #: ../Pinta.Effects/Effects/MandelbrotFractalEffect.cs:160
-#: ../Pinta.Effects/Effects/PolarInversionEffect.cs:92
+#: ../Pinta.Effects/Effects/PolarInversionEffect.cs:93
 #: ../Pinta.Effects/Effects/RadialBlurEffect.cs:142
 #: ../Pinta.Effects/Effects/VoronoiDiagramEffect.cs:220
 msgid "Quality"
@@ -3325,12 +3325,12 @@ msgid "Radial Gradient"
 msgstr "Säteittäinen"
 
 #: ../Pinta.Effects/Effects/FeatherEffect.cs:167
-#: ../Pinta.Effects/Effects/GaussianBlurEffect.cs:284
+#: ../Pinta.Effects/Effects/GaussianBlurEffect.cs:288
 #: ../Pinta.Effects/Effects/GlowEffect.cs:75
 #: ../Pinta.Effects/Effects/MedianEffect.cs:59
 #: ../Pinta.Effects/Effects/OutlineObjectEffect.cs:204
 #: ../Pinta.Effects/Effects/ReduceNoiseEffect.cs:84
-#: ../Pinta.Effects/Effects/UnfocusEffect.cs:88
+#: ../Pinta.Effects/Effects/UnfocusEffect.cs:98
 #: ../Pinta.Tools/Editable/EditEngines/RoundedLineEditEngine.cs:85
 msgid "Radius"
 msgstr "Säde"
@@ -3361,7 +3361,7 @@ msgstr "Satunnaiset värit"
 
 #: ../Pinta.Effects/Effects/AddNoiseEffect.cs:179
 #: ../Pinta.Effects/Effects/CloudsEffect.cs:142
-#: ../Pinta.Effects/Effects/DentsEffect.cs:151
+#: ../Pinta.Effects/Effects/DentsEffect.cs:152
 #: ../Pinta.Effects/Effects/FrostedGlassEffect.cs:150
 msgid "Random Noise Seed"
 msgstr ""
@@ -3476,7 +3476,7 @@ msgstr "Vähennä kohinaa"
 msgid "Reflect"
 msgstr "Heijastettu"
 
-#: ../Pinta.Effects/Effects/DentsEffect.cs:139
+#: ../Pinta.Effects/Effects/DentsEffect.cs:140
 msgid "Refraction"
 msgstr ""
 
@@ -3725,7 +3725,7 @@ msgstr "Kierto"
 msgid "Rotation: "
 msgstr ""
 
-#: ../Pinta.Effects/Effects/DentsEffect.cs:143
+#: ../Pinta.Effects/Effects/DentsEffect.cs:144
 msgid "Roughness"
 msgstr ""
 
@@ -3779,7 +3779,7 @@ msgid "Sat & Value"
 msgstr ""
 
 #: ../Pinta.Core/Algorithms/PixelOps/UserBlendOps.cs:46
-#: ../Pinta.Effects/Adjustments/HueSaturationEffect.cs:64
+#: ../Pinta.Effects/Adjustments/HueSaturationEffect.cs:66
 msgid "Saturation"
 msgstr "Kylläisyys"
 
@@ -3827,7 +3827,7 @@ msgid ""
 msgstr ""
 
 #: ../Pinta.Effects/Effects/CloudsEffect.cs:134
-#: ../Pinta.Effects/Effects/DentsEffect.cs:135
+#: ../Pinta.Effects/Effects/DentsEffect.cs:136
 msgid "Scale"
 msgstr "Skaala"
 
@@ -3905,7 +3905,7 @@ msgstr ""
 msgid "Semilight"
 msgstr ""
 
-#: ../Pinta.Effects/Adjustments/SepiaEffect.cs:52
+#: ../Pinta.Effects/Adjustments/SepiaEffect.cs:54
 msgid "Sepia"
 msgstr "Seepia"
 
@@ -4422,7 +4422,7 @@ msgid ""
 "stay editable in this window."
 msgstr ""
 
-#: ../Pinta.Effects/Effects/OutlineEdgeEffect.cs:133
+#: ../Pinta.Effects/Effects/OutlineEdgeEffect.cs:77
 msgid "Thickness"
 msgstr "Paksuus"
 
@@ -4691,7 +4691,7 @@ msgstr ""
 msgid "Triangle Tool"
 msgstr ""
 
-#: ../Pinta.Effects/Effects/DentsEffect.cs:147
+#: ../Pinta.Effects/Effects/DentsEffect.cs:148
 msgid "Turbulence"
 msgstr ""
 
@@ -4707,7 +4707,7 @@ msgstr ""
 #: ../Pinta.Tools/Editable/EditEngines/ArrowedEditEngine.cs:361
 #: ../Pinta.Tools/Editable/EditEngines/TriangleEditEngine.cs:121
 #: ../Pinta.Tools/Tools/EraserTool.cs:402
-#: ../Pinta.Tools/Tools/PaintBrushTool.cs:272
+#: ../Pinta.Tools/Tools/PaintBrushTool.cs:267
 msgid "Type"
 msgstr "Tyyppi"
 
@@ -4747,7 +4747,7 @@ msgstr ""
 msgid "Undo last text edit"
 msgstr ""
 
-#: ../Pinta.Effects/Effects/UnfocusEffect.cs:23
+#: ../Pinta.Effects/Effects/UnfocusEffect.cs:25
 msgid "Unfocus"
 msgstr "Epäkohdistus"
 

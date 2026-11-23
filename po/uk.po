@@ -21,7 +21,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: pinta\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-23 01:20-0600\n"
+"POT-Creation-Date: 2026-11-23 03:22-0600\n"
 "PO-Revision-Date: 2025-12-31 18:06+0000\n"
 "Last-Translator: Stepan Andriiovych <4fbig9xyb@mozmail.com>\n"
 "Language-Team: Ukrainian\n"
@@ -221,7 +221,7 @@ msgstr "Альфа градієнт"
 
 #: ../Pinta.Effects/Effects/BulgeEffect.cs:116
 #: ../Pinta.Effects/Effects/FrostedGlassEffect.cs:146
-#: ../Pinta.Effects/Effects/PolarInversionEffect.cs:88
+#: ../Pinta.Effects/Effects/PolarInversionEffect.cs:89
 #: ../Pinta.Effects/Effects/SharpenEffect.cs:57
 #: ../Pinta.Effects/Effects/TwistEffect.cs:217
 #: ../Pinta.Effects/Effects/ZoomBlurEffect.cs:136
@@ -374,7 +374,7 @@ msgid "Bilinear"
 msgstr "Білінійність"
 
 #. Translators: Simple gradient that goes from black to white
-#: ../Pinta.Effects/Adjustments/BlackAndWhiteEffect.cs:29
+#: ../Pinta.Effects/Adjustments/BlackAndWhiteEffect.cs:31
 #: ../Pinta.Effects/Utilities/GradientHelper.cs:27
 msgid "Black and White"
 msgstr "Чорно-біле"
@@ -403,10 +403,10 @@ msgid "Blue "
 msgstr "Синій "
 
 #: ../Pinta.Effects/Effects/FragmentEffect.cs:33
-#: ../Pinta.Effects/Effects/GaussianBlurEffect.cs:32
+#: ../Pinta.Effects/Effects/GaussianBlurEffect.cs:35
 #: ../Pinta.Effects/Effects/MotionBlurEffect.cs:33
 #: ../Pinta.Effects/Effects/RadialBlurEffect.cs:27
-#: ../Pinta.Effects/Effects/UnfocusEffect.cs:27
+#: ../Pinta.Effects/Effects/UnfocusEffect.cs:29
 #: ../Pinta.Effects/Effects/ZoomBlurEffect.cs:32
 msgid "Blurs"
 msgstr "Розмитість"
@@ -459,13 +459,13 @@ msgstr ""
 msgid "Bottom Right Perspective — Vertical"
 msgstr ""
 
-#: ../Pinta.Effects/Adjustments/BrightnessContrastEffect.cs:94
+#: ../Pinta.Effects/Adjustments/BrightnessContrastEffect.cs:96
 #: ../Pinta.Effects/Effects/GlowEffect.cs:79
 #: ../Pinta.Gui.Widgets/Widgets/ColorWheelWidget.cs:80
 msgid "Brightness"
 msgstr "Яскравість"
 
-#: ../Pinta.Effects/Adjustments/BrightnessContrastEffect.cs:31
+#: ../Pinta.Effects/Adjustments/BrightnessContrastEffect.cs:33
 msgid "Brightness / Contrast"
 msgstr "Яскравість / контраст"
 
@@ -589,8 +589,8 @@ msgstr "Вирівнювання по центру"
 msgid "Center Left"
 msgstr "По центру ліворуч"
 
-#: ../Pinta.Effects/Effects/DentsEffect.cs:159
-#: ../Pinta.Effects/Effects/PolarInversionEffect.cs:96
+#: ../Pinta.Effects/Effects/DentsEffect.cs:160
+#: ../Pinta.Effects/Effects/PolarInversionEffect.cs:97
 #: ../Pinta.Effects/Effects/TwistEffect.cs:229
 msgid "Center Offset"
 msgstr "Зміщення центру"
@@ -894,7 +894,7 @@ msgstr "Зміст"
 msgid "Contiguous"
 msgstr "Суміжні області"
 
-#: ../Pinta.Effects/Adjustments/BrightnessContrastEffect.cs:104
+#: ../Pinta.Effects/Adjustments/BrightnessContrastEffect.cs:106
 #: ../Pinta.Effects/Effects/GlowEffect.cs:83
 msgid "Contrast"
 msgstr "Контрастність"
@@ -983,7 +983,7 @@ msgstr "Криві сегменти вимкнено"
 msgid "Curved Segments On"
 msgstr "Криві сегменти увімкнено"
 
-#: ../Pinta.Effects/Adjustments/CurvesEffect.cs:26
+#: ../Pinta.Effects/Adjustments/CurvesEffect.cs:28
 #: ../Pinta.Effects/Dialogs/Effects.CurvesDialog.cs:137
 msgid "Curves"
 msgstr "Криві"
@@ -1234,8 +1234,8 @@ msgstr ""
 msgid "Easily create and edit images"
 msgstr "Проста програма для створення та редагування зображень"
 
-#: ../Pinta.Effects/Effects/DentsEffect.cs:162
-#: ../Pinta.Effects/Effects/PolarInversionEffect.cs:99
+#: ../Pinta.Effects/Effects/DentsEffect.cs:163
+#: ../Pinta.Effects/Effects/PolarInversionEffect.cs:100
 #: ../Pinta.Effects/Effects/TileEffect.cs:237
 #: ../Pinta.Effects/Effects/TwistEffect.cs:232 Polar Inversion dialog
 msgid "Edge Behavior"
@@ -1624,7 +1624,7 @@ msgstr ""
 msgid "Gallery"
 msgstr "Галерея"
 
-#: ../Pinta.Effects/Effects/GaussianBlurEffect.cs:28
+#: ../Pinta.Effects/Effects/GaussianBlurEffect.cs:31
 msgid "Gaussian Blur"
 msgstr "Розмивання по Гаусу"
 
@@ -1737,7 +1737,7 @@ msgstr "Історія"
 msgid "Hold the switch key to draw the other triangle type."
 msgstr ""
 
-#: ../Pinta.Tools/Tools/CloneStampTool.cs:238
+#: ../Pinta.Tools/Tools/CloneStampTool.cs:233
 #, csharp-format
 msgid "Hold {0} and click to set an origin point first."
 msgstr ""
@@ -1785,7 +1785,7 @@ msgstr ""
 "глибини; вузький робить зображення пласкішим."
 
 #: ../Pinta.Core/Algorithms/PixelOps/UserBlendOps.cs:45
-#: ../Pinta.Effects/Adjustments/HueSaturationEffect.cs:61
+#: ../Pinta.Effects/Adjustments/HueSaturationEffect.cs:63
 #: ../Pinta.Gui.Widgets/Widgets/ColorPickerSlider.cs:357
 msgid "Hue"
 msgstr "Відтінок"
@@ -1795,7 +1795,7 @@ msgstr "Відтінок"
 msgid "Hue & Sat"
 msgstr "Відтінок і насиченість"
 
-#: ../Pinta.Effects/Adjustments/HueSaturationEffect.cs:23
+#: ../Pinta.Effects/Adjustments/HueSaturationEffect.cs:25
 msgid "Hue / Saturation"
 msgstr "Відтінок / Насиченість"
 
@@ -2055,7 +2055,7 @@ msgid "Installed add-ins"
 msgstr ""
 
 #: ../Pinta.Effects/Effects/AddNoiseEffect.cs:167
-#: ../Pinta.Effects/Effects/OutlineEdgeEffect.cs:137
+#: ../Pinta.Effects/Effects/OutlineEdgeEffect.cs:81
 #: ../Pinta.Effects/Effects/TileEffect.cs:230
 msgid "Intensity"
 msgstr "Інтенсивність"
@@ -2066,7 +2066,7 @@ msgstr "Інтенсивність"
 msgid "Intersect ({0} + Left Click)"
 msgstr "Перетнути ({0} + клацання лівою кнопкою)"
 
-#: ../Pinta.Effects/Adjustments/InvertColorsEffect.cs:29
+#: ../Pinta.Effects/Adjustments/InvertColorsEffect.cs:31
 #: ../Pinta.Effects/Effects/MandelbrotFractalEffect.cs:185
 msgid "Invert Colors"
 msgstr "Інвертувати кольори"
@@ -2362,7 +2362,7 @@ msgstr "Довжина крил наконечника стрілки; не зм
 msgid "Length of the arrowhead, in pixels."
 msgstr "Довжина наконечника стрілки в пікселях."
 
-#: ../Pinta.Effects/Adjustments/LevelsEffect.cs:23
+#: ../Pinta.Effects/Adjustments/LevelsEffect.cs:25
 msgid "Levels"
 msgstr "Рівні"
 
@@ -2385,7 +2385,7 @@ msgstr "Освітлення"
 msgid "Lighting"
 msgstr "Освітлення"
 
-#: ../Pinta.Effects/Adjustments/HueSaturationEffect.cs:67
+#: ../Pinta.Effects/Adjustments/HueSaturationEffect.cs:69
 msgid "Lightness"
 msgstr "Яскравість"
 
@@ -3248,7 +3248,7 @@ msgstr "Книжкова"
 msgid "Position"
 msgstr "Позиціонування"
 
-#: ../Pinta.Effects/Adjustments/PosterizeEffect.cs:23
+#: ../Pinta.Effects/Adjustments/PosterizeEffect.cs:25
 #: ../Pinta.Effects/Dialogs/Effects.PosterizeDialog.cs:53
 msgid "Posterize"
 msgstr "Постеризація"
@@ -3325,10 +3325,10 @@ msgid "Properties..."
 msgstr ""
 
 #: ../Pinta.Effects/Effects/CellsEffect.cs:197
-#: ../Pinta.Effects/Effects/DentsEffect.cs:155
+#: ../Pinta.Effects/Effects/DentsEffect.cs:156
 #: ../Pinta.Effects/Effects/JuliaFractalEffect.cs:147
 #: ../Pinta.Effects/Effects/MandelbrotFractalEffect.cs:160
-#: ../Pinta.Effects/Effects/PolarInversionEffect.cs:92
+#: ../Pinta.Effects/Effects/PolarInversionEffect.cs:93
 #: ../Pinta.Effects/Effects/RadialBlurEffect.cs:142
 #: ../Pinta.Effects/Effects/VoronoiDiagramEffect.cs:220
 msgid "Quality"
@@ -3374,12 +3374,12 @@ msgid "Radial Gradient"
 msgstr "Радіальний градієнт"
 
 #: ../Pinta.Effects/Effects/FeatherEffect.cs:167
-#: ../Pinta.Effects/Effects/GaussianBlurEffect.cs:284
+#: ../Pinta.Effects/Effects/GaussianBlurEffect.cs:288
 #: ../Pinta.Effects/Effects/GlowEffect.cs:75
 #: ../Pinta.Effects/Effects/MedianEffect.cs:59
 #: ../Pinta.Effects/Effects/OutlineObjectEffect.cs:204
 #: ../Pinta.Effects/Effects/ReduceNoiseEffect.cs:84
-#: ../Pinta.Effects/Effects/UnfocusEffect.cs:88
+#: ../Pinta.Effects/Effects/UnfocusEffect.cs:98
 #: ../Pinta.Tools/Editable/EditEngines/RoundedLineEditEngine.cs:85
 msgid "Radius"
 msgstr "Радіус"
@@ -3410,7 +3410,7 @@ msgstr "Випадкові кольори"
 
 #: ../Pinta.Effects/Effects/AddNoiseEffect.cs:179
 #: ../Pinta.Effects/Effects/CloudsEffect.cs:142
-#: ../Pinta.Effects/Effects/DentsEffect.cs:151
+#: ../Pinta.Effects/Effects/DentsEffect.cs:152
 #: ../Pinta.Effects/Effects/FrostedGlassEffect.cs:150
 msgid "Random Noise Seed"
 msgstr "Додавання довільного шуму"
@@ -3525,7 +3525,7 @@ msgstr "Зменшити шум"
 msgid "Reflect"
 msgstr "Віддзеркалення"
 
-#: ../Pinta.Effects/Effects/DentsEffect.cs:139
+#: ../Pinta.Effects/Effects/DentsEffect.cs:140
 msgid "Refraction"
 msgstr "Рефракція (заломлення променів світла)"
 
@@ -3774,7 +3774,7 @@ msgstr "Обертання"
 msgid "Rotation: "
 msgstr ""
 
-#: ../Pinta.Effects/Effects/DentsEffect.cs:143
+#: ../Pinta.Effects/Effects/DentsEffect.cs:144
 msgid "Roughness"
 msgstr "Шорсткість"
 
@@ -3828,7 +3828,7 @@ msgid "Sat & Value"
 msgstr "Насиченість і значення"
 
 #: ../Pinta.Core/Algorithms/PixelOps/UserBlendOps.cs:46
-#: ../Pinta.Effects/Adjustments/HueSaturationEffect.cs:64
+#: ../Pinta.Effects/Adjustments/HueSaturationEffect.cs:66
 msgid "Saturation"
 msgstr "Налаштування насиченості"
 
@@ -3876,7 +3876,7 @@ msgid ""
 msgstr ""
 
 #: ../Pinta.Effects/Effects/CloudsEffect.cs:134
-#: ../Pinta.Effects/Effects/DentsEffect.cs:135
+#: ../Pinta.Effects/Effects/DentsEffect.cs:136
 msgid "Scale"
 msgstr "Масштаб"
 
@@ -3954,7 +3954,7 @@ msgstr ""
 msgid "Semilight"
 msgstr ""
 
-#: ../Pinta.Effects/Adjustments/SepiaEffect.cs:52
+#: ../Pinta.Effects/Adjustments/SepiaEffect.cs:54
 msgid "Sepia"
 msgstr "Сепія"
 
@@ -4472,7 +4472,7 @@ msgid ""
 "stay editable in this window."
 msgstr ""
 
-#: ../Pinta.Effects/Effects/OutlineEdgeEffect.cs:133
+#: ../Pinta.Effects/Effects/OutlineEdgeEffect.cs:77
 msgid "Thickness"
 msgstr "Товщина"
 
@@ -4741,7 +4741,7 @@ msgstr ""
 msgid "Triangle Tool"
 msgstr ""
 
-#: ../Pinta.Effects/Effects/DentsEffect.cs:147
+#: ../Pinta.Effects/Effects/DentsEffect.cs:148
 msgid "Turbulence"
 msgstr "Турбулентність"
 
@@ -4757,7 +4757,7 @@ msgstr "Дворядовий ефект високогір'я"
 #: ../Pinta.Tools/Editable/EditEngines/ArrowedEditEngine.cs:361
 #: ../Pinta.Tools/Editable/EditEngines/TriangleEditEngine.cs:121
 #: ../Pinta.Tools/Tools/EraserTool.cs:402
-#: ../Pinta.Tools/Tools/PaintBrushTool.cs:272
+#: ../Pinta.Tools/Tools/PaintBrushTool.cs:267
 msgid "Type"
 msgstr "Тип"
 
@@ -4797,7 +4797,7 @@ msgstr ""
 msgid "Undo last text edit"
 msgstr ""
 
-#: ../Pinta.Effects/Effects/UnfocusEffect.cs:23
+#: ../Pinta.Effects/Effects/UnfocusEffect.cs:25
 msgid "Unfocus"
 msgstr "Розфокусування"
 

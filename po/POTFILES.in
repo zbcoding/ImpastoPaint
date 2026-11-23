@@ -404,6 +404,7 @@ Pinta.Gui.Widgets/FriendAssemblies.cs
 Pinta.Gui.Widgets/Widgets/AnglePickerGraphic.cs
 Pinta.Gui.Widgets/Widgets/AnglePickerWidget.cs
 Pinta.Gui.Widgets/Widgets/Canvas/CanvasRenderer.cs
+Pinta.Gui.Widgets/Widgets/Canvas/CanvasTextureTiles.cs
 Pinta.Gui.Widgets/Widgets/Canvas/CanvasWindow.cs
 Pinta.Gui.Widgets/Widgets/Canvas/PintaCanvas.cs
 Pinta.Gui.Widgets/Widgets/Canvas/SelectionMissTracker.cs

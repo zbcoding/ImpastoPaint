@@ -21,7 +21,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: pinta\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-16 20:07-0600\n"
+"POT-Creation-Date: 2026-11-22 18:02-0600\n"
 "PO-Revision-Date: 2025-03-26 01:40+0000\n"
 "Last-Translator: Champ0999 <champ0999@users.noreply.hosted.weblate.org>\n"
 "Language-Team: Latin\n"
@@ -164,7 +164,7 @@ msgstr ""
 msgid "Added"
 msgstr ""
 
-#: ../Impasto/Dialogs/PreferencesDialog.cs:204
+#: ../Impasto/Dialogs/PreferencesDialog.cs:208
 msgid ""
 "Adds a darker shade of each color beneath the standard palette. The status "
 "bar grows taller to fit the extra row."
@@ -338,7 +338,7 @@ msgstr ""
 msgid "Background:"
 msgstr ""
 
-#: ../Impasto/Dialogs/PreferencesDialog.cs:327
+#: ../Impasto/Dialogs/PreferencesDialog.cs:339
 msgid "Backup"
 msgstr ""
 
@@ -522,7 +522,7 @@ msgstr ""
 #: ../Impasto/Actions/File/SaveDocumentImplementationAction.cs:148
 #: ../Impasto/Actions/Help/KeyboardShortcutsDialogAction.cs:138
 #: ../Impasto/Actions/Help/KeyboardShortcutsDialogAction.cs:151
-#: ../Impasto/Dialogs/PreferencesDialog.cs:439
+#: ../Impasto/Dialogs/PreferencesDialog.cs:455
 #: ../Pinta.Core/Actions/EditActions.cs:651
 #: ../Pinta.Gui.Addins/InstallDialog.cs:126
 #: ../Pinta.Gui.Widgets/Widgets/ColorPickerDialog.cs:497
@@ -539,7 +539,7 @@ msgstr ""
 msgid "Cannot be recovered: {0}"
 msgstr ""
 
-#: ../Impasto/Dialogs/PreferencesDialog.cs:324 ../Impasto/Pads/CanvasPad.cs:41
+#: ../Impasto/Dialogs/PreferencesDialog.cs:336 ../Impasto/Pads/CanvasPad.cs:41
 msgid "Canvas"
 msgstr ""
 
@@ -557,7 +557,7 @@ msgid ""
 "Double click to change the canvas size."
 msgstr ""
 
-#: ../Impasto/Dialogs/PreferencesDialog.cs:150
+#: ../Impasto/Dialogs/PreferencesDialog.cs:154
 msgid "Canvas surround color:"
 msgstr ""
 
@@ -634,12 +634,24 @@ msgstr ""
 msgid "Changing the number of palette rows resets the palette"
 msgstr ""
 
+#: ../Pinta.Core/Actions/FileActions.cs:161
+msgid "Check for Updates"
+msgstr ""
+
+#: ../Pinta.Core/Actions/FileActions.cs:158
+msgid "Check for Updates..."
+msgstr ""
+
+#: ../Impasto/Dialogs/PreferencesDialog.cs:314
+msgid "Check for updates on startup"
+msgstr ""
+
 #. Translators: Gradient that starts out off-white, like cherry blossoms against sunlight, then goes through pink, then light blue (like the sky) and finally transparent, blending with the background
 #: ../Pinta.Effects/Utilities/GradientHelper.cs:35
 msgid "Cherry Blossom"
 msgstr ""
 
-#: ../Impasto/Dialogs/PreferencesDialog.cs:419
+#: ../Impasto/Dialogs/PreferencesDialog.cs:435
 #: ../Pinta.Effects/Dialogs/Effects.LevelsDialog.cs:672
 #: ../Pinta.Gui.Widgets/Dialogs/SimpleEffectDialog.cs:366
 msgid "Choose Color"
@@ -654,7 +666,7 @@ msgstr ""
 msgid "Choose Palette Color"
 msgstr ""
 
-#: ../Impasto/Dialogs/PreferencesDialog.cs:123
+#: ../Impasto/Dialogs/PreferencesDialog.cs:127
 msgid "Choose color..."
 msgstr ""
 
@@ -749,7 +761,7 @@ msgstr ""
 msgid "Clone Stamp"
 msgstr ""
 
-#: ../Pinta.Core/Actions/FileActions.cs:104
+#: ../Pinta.Core/Actions/FileActions.cs:117
 #: ../Pinta.Gui.Addins/InstallDialog.cs:346
 msgid "Close"
 msgstr ""
@@ -1004,7 +1016,7 @@ msgstr ""
 msgid "Default"
 msgstr ""
 
-#: ../Impasto/Dialogs/PreferencesDialog.cs:127
+#: ../Impasto/Dialogs/PreferencesDialog.cs:131
 msgid "Default canvas size (on application open):"
 msgstr ""
 
@@ -1227,7 +1239,7 @@ msgstr ""
 msgid "Edit"
 msgstr ""
 
-#: ../Impasto/Dialogs/PreferencesDialog.cs:281
+#: ../Impasto/Dialogs/PreferencesDialog.cs:285
 msgid ""
 "Editable shapes and text stay editable on their own sub-layers. Operations "
 "that need flat pixels — cut, erase, crop, resize, rotate, flip, flatten — "
@@ -1303,15 +1315,15 @@ msgstr ""
 msgid "Expand"
 msgstr ""
 
-#: ../Impasto/Dialogs/PreferencesDialog.cs:438
+#: ../Impasto/Dialogs/PreferencesDialog.cs:454
 msgid "Export"
 msgstr ""
 
-#: ../Impasto/Dialogs/PreferencesDialog.cs:435
+#: ../Impasto/Dialogs/PreferencesDialog.cs:451
 msgid "Export Settings"
 msgstr ""
 
-#: ../Impasto/Dialogs/PreferencesDialog.cs:310
+#: ../Impasto/Dialogs/PreferencesDialog.cs:322
 msgid "Export Settings..."
 msgstr ""
 
@@ -1328,7 +1340,7 @@ msgstr ""
 msgid "Failed to access XDG Desktop Portals"
 msgstr ""
 
-#: ../Impasto/Dialogs/PreferencesDialog.cs:463
+#: ../Impasto/Dialogs/PreferencesDialog.cs:479
 #, csharp-format
 msgid "Failed to export settings: {0}"
 msgstr ""
@@ -1345,7 +1357,7 @@ msgstr ""
 msgid "Failed to open image"
 msgstr ""
 
-#: ../Impasto/Dialogs/PreferencesDialog.cs:490
+#: ../Impasto/Dialogs/PreferencesDialog.cs:506
 #, csharp-format
 msgid "Failed to read settings file: {0}"
 msgstr ""
@@ -1660,7 +1672,7 @@ msgstr ""
 
 #: ../Impasto/Dialogs/CanvasGridSettingsDialog.cs:125
 #: ../Impasto/Dialogs/NewImageDialog.cs:348
-#: ../Impasto/Dialogs/PreferencesDialog.cs:141
+#: ../Impasto/Dialogs/PreferencesDialog.cs:145
 #: ../Impasto/Dialogs/ResizeCanvasDialog.cs:87
 #: ../Impasto/Dialogs/ResizeImageDialog.cs:126
 msgid "Height:"
@@ -1687,7 +1699,7 @@ msgstr ""
 msgid "Hide Object"
 msgstr ""
 
-#: ../Impasto/Dialogs/PreferencesDialog.cs:273
+#: ../Impasto/Dialogs/PreferencesDialog.cs:277
 msgid ""
 "Hides the column of tool buttons and turns the tool name shown above the "
 "canvas into a dropdown that picks the tool. The tool box can still be shown "
@@ -1887,7 +1899,7 @@ msgstr ""
 msgid "Impasto supports the following palette formats:"
 msgstr ""
 
-#: ../Impasto/Dialogs/PreferencesDialog.cs:545
+#: ../Impasto/Dialogs/PreferencesDialog.cs:561
 msgid "Import"
 msgstr ""
 
@@ -1895,15 +1907,15 @@ msgstr ""
 msgid "Import From File"
 msgstr ""
 
-#: ../Impasto/Dialogs/PreferencesDialog.cs:541
+#: ../Impasto/Dialogs/PreferencesDialog.cs:557
 msgid "Import Keyboard Shortcuts?"
 msgstr ""
 
-#: ../Impasto/Dialogs/PreferencesDialog.cs:477
+#: ../Impasto/Dialogs/PreferencesDialog.cs:493
 msgid "Import Settings"
 msgstr ""
 
-#: ../Impasto/Dialogs/PreferencesDialog.cs:312
+#: ../Impasto/Dialogs/PreferencesDialog.cs:324
 msgid "Import Settings..."
 msgstr ""
 
@@ -1911,7 +1923,7 @@ msgstr ""
 msgid "Import from File..."
 msgstr ""
 
-#: ../Impasto/Dialogs/PreferencesDialog.cs:528
+#: ../Impasto/Dialogs/PreferencesDialog.cs:544
 #, csharp-format
 msgid ""
 "Imported {0} setting(s); {1} entry(ies) were skipped (unrecognized or "
@@ -2063,7 +2075,7 @@ msgstr ""
 msgid "Justify"
 msgstr ""
 
-#: ../Impasto/Dialogs/PreferencesDialog.cs:544
+#: ../Impasto/Dialogs/PreferencesDialog.cs:560
 msgid "Keep Mine"
 msgstr ""
 
@@ -2071,7 +2083,7 @@ msgstr ""
 msgid "Keep using the Color Picker after a color is chosen."
 msgstr "Instrumentum Coloris Legendi post colorem electum retine."
 
-#: ../Impasto/Dialogs/PreferencesDialog.cs:325
+#: ../Impasto/Dialogs/PreferencesDialog.cs:337
 msgid "Keyboard"
 msgstr ""
 
@@ -2080,15 +2092,15 @@ msgstr ""
 msgid "Keyboard Shortcuts"
 msgstr ""
 
-#: ../Impasto/Dialogs/PreferencesDialog.cs:173
+#: ../Impasto/Dialogs/PreferencesDialog.cs:177
 msgid "Keyboard Shortcuts..."
 msgstr ""
 
-#: ../Impasto/Dialogs/PreferencesDialog.cs:524
+#: ../Impasto/Dialogs/PreferencesDialog.cs:540
 msgid "Keyboard shortcuts were imported, replacing your current ones."
 msgstr ""
 
-#: ../Impasto/Dialogs/PreferencesDialog.cs:525
+#: ../Impasto/Dialogs/PreferencesDialog.cs:541
 msgid "Keyboard shortcuts were left unchanged."
 msgstr ""
 
@@ -2357,6 +2369,13 @@ msgstr ""
 msgid "Linked"
 msgstr "Conexus"
 
+#: ../Impasto/Dialogs/PreferencesDialog.cs:315
+msgid ""
+"Looks up the latest release on GitHub when Impasto starts. The File menu "
+"then links to it when it is newer, or to the releases page when the lookup "
+"fails. Turning this off also removes that menu item."
+msgstr ""
+
 #: ../Impasto/Dialogs/QualityDialog.cs:54
 msgid "Lossless"
 msgstr ""
@@ -2566,7 +2585,7 @@ msgstr ""
 msgid "Nearest Neighbor"
 msgstr ""
 
-#: ../Pinta.Core/Actions/FileActions.cs:86
+#: ../Pinta.Core/Actions/FileActions.cs:99
 msgid "New"
 msgstr ""
 
@@ -2575,7 +2594,7 @@ msgstr ""
 msgid "New Image"
 msgstr ""
 
-#: ../Pinta.Core/Actions/FileActions.cs:90
+#: ../Pinta.Core/Actions/FileActions.cs:103
 msgid "New Screenshot..."
 msgstr ""
 
@@ -2583,7 +2602,7 @@ msgstr ""
 msgid "New palette size:"
 msgstr ""
 
-#: ../Pinta.Core/Actions/FileActions.cs:82
+#: ../Pinta.Core/Actions/FileActions.cs:95
 msgid "New..."
 msgstr ""
 
@@ -2603,7 +2622,7 @@ msgstr ""
 
 #: ../Impasto/Actions/Edit/ResizePaletteAction.cs:160
 #: ../Impasto/Actions/Help/KeyboardShortcutsDialogAction.cs:48
-#: ../Impasto/Dialogs/PreferencesDialog.cs:222
+#: ../Impasto/Dialogs/PreferencesDialog.cs:226
 #: ../Pinta.Core/Classes/KeyGesture.cs:31
 #: ../Pinta.Core/Extensions/Gtk/GtkExtensions.Interaction.cs:78
 msgid "None"
@@ -2738,7 +2757,7 @@ msgid "Number of threads to use for rendering"
 msgstr ""
 
 #: ../Impasto/Actions/Help/KeyboardShortcutsDialogAction.cs:154
-#: ../Impasto/Dialogs/PreferencesDialog.cs:589
+#: ../Impasto/Dialogs/PreferencesDialog.cs:606
 #: ../Pinta.Gui.Widgets/Widgets/ColorPickerDialog.cs:492
 #: ../Pinta.Tools/Dialogs/TextPropertiesDialog.cs:270
 msgid "OK"
@@ -2799,7 +2818,7 @@ msgstr ""
 msgid "Opacity: {0}%"
 msgstr ""
 
-#: ../Pinta.Core/Actions/FileActions.cs:100
+#: ../Pinta.Core/Actions/FileActions.cs:113
 msgid "Open"
 msgstr ""
 
@@ -2820,7 +2839,7 @@ msgstr ""
 msgid "Open Palette File"
 msgstr ""
 
-#: ../Pinta.Core/Actions/FileActions.cs:163
+#: ../Pinta.Core/Actions/FileActions.cs:184
 msgid "Open Recent"
 msgstr ""
 
@@ -2834,7 +2853,7 @@ msgid "Open {0} files?"
 msgstr ""
 
 #: ../Pinta.Core/Actions/EditActions.cs:183
-#: ../Pinta.Core/Actions/FileActions.cs:96
+#: ../Pinta.Core/Actions/FileActions.cs:109
 msgid "Open..."
 msgstr ""
 
@@ -2956,7 +2975,7 @@ msgstr ""
 msgid "Palette rows:"
 msgstr ""
 
-#: ../Impasto/Dialogs/PreferencesDialog.cs:248
+#: ../Impasto/Dialogs/PreferencesDialog.cs:252
 msgid "Palette size:"
 msgstr ""
 
@@ -2982,7 +3001,7 @@ msgstr ""
 msgid "Paste Into New Layer"
 msgstr ""
 
-#: ../Impasto/Dialogs/PreferencesDialog.cs:163
+#: ../Impasto/Dialogs/PreferencesDialog.cs:167
 msgid "Paste external images onto a new layer by default"
 msgstr ""
 
@@ -3052,7 +3071,7 @@ msgstr ""
 msgid "Phyllotaxis"
 msgstr ""
 
-#: ../Impasto/Dialogs/PreferencesDialog.cs:272
+#: ../Impasto/Dialogs/PreferencesDialog.cs:276
 msgid "Pick tools from a dropdown instead of the tool box"
 msgstr ""
 
@@ -3104,7 +3123,7 @@ msgstr ""
 msgid "Please restart Impasto for the changes to take effect."
 msgstr ""
 
-#: ../Impasto/Actions/Edit/PreferencesAction.cs:97
+#: ../Impasto/Actions/Edit/PreferencesAction.cs:103
 msgid "Please restart Impasto for the toolbox layout change to take effect."
 msgstr ""
 "Quaeso Impasto renova ut mutatio dispositionis arcae instrumentorum effectum "
@@ -3156,7 +3175,7 @@ msgstr ""
 msgid "Polygon"
 msgstr ""
 
-#: ../Impasto/Dialogs/PreferencesDialog.cs:192
+#: ../Impasto/Dialogs/PreferencesDialog.cs:196
 msgid "Popover hints:"
 msgstr "Suggestiones popover:"
 
@@ -3236,7 +3255,7 @@ msgstr ""
 msgid "Primary"
 msgstr ""
 
-#: ../Pinta.Core/Actions/FileActions.cs:131
+#: ../Pinta.Core/Actions/FileActions.cs:144
 msgid "Print"
 msgstr ""
 
@@ -3385,7 +3404,7 @@ msgid "Recently Used Colors"
 msgstr ""
 
 #: ../Impasto/Actions/Edit/ResizePaletteAction.cs:160
-#: ../Impasto/Dialogs/PreferencesDialog.cs:222
+#: ../Impasto/Dialogs/PreferencesDialog.cs:226
 #: ../Pinta.Gui.Widgets/Widgets/PaletteWidget.cs:156
 msgid "Recently picked colors"
 msgstr ""
@@ -3557,7 +3576,7 @@ msgstr ""
 
 #: ../Impasto/Actions/Edit/ResizePaletteAction.cs:200
 #: ../Impasto/Actions/Help/KeyboardShortcutsDialogAction.cs:454
-#: ../Impasto/Dialogs/PreferencesDialog.cs:611
+#: ../Impasto/Dialogs/PreferencesDialog.cs:628
 msgid "Reset to default"
 msgstr ""
 
@@ -3597,7 +3616,7 @@ msgstr ""
 msgid "Resize text (drag corner, changes font size)"
 msgstr ""
 
-#: ../Impasto/Actions/Edit/PreferencesAction.cs:96
+#: ../Impasto/Actions/Edit/PreferencesAction.cs:102
 #: ../Impasto/Actions/View/MenuBarToggledAction.cs:39
 msgid "Restart Impasto"
 msgstr "Impasto renovare"
@@ -3759,7 +3778,7 @@ msgstr ""
 #: ../Impasto/Actions/File/SaveDocumentImplementationAction.cs:147
 #: ../Impasto/Actions/File/SaveDocumentImplementationAction.cs:418
 #: ../Pinta.Core/Actions/EditActions.cs:650
-#: ../Pinta.Core/Actions/FileActions.cs:111
+#: ../Pinta.Core/Actions/FileActions.cs:124
 msgid "Save"
 msgstr ""
 
@@ -3768,7 +3787,7 @@ msgid "Save All"
 msgstr ""
 
 #: ../Pinta.Core/Actions/EditActions.cs:189
-#: ../Pinta.Core/Actions/FileActions.cs:118
+#: ../Pinta.Core/Actions/FileActions.cs:131
 msgid "Save As..."
 msgstr ""
 
@@ -3780,7 +3799,7 @@ msgstr ""
 msgid "Save Palette File"
 msgstr ""
 
-#: ../Pinta.Core/Actions/FileActions.cs:125
+#: ../Pinta.Core/Actions/FileActions.cs:138
 msgid "Save as Impasto project..."
 msgstr ""
 
@@ -3789,7 +3808,7 @@ msgstr ""
 msgid "Save changes to image \"{0}\" before closing?"
 msgstr ""
 
-#: ../Impasto/Dialogs/PreferencesDialog.cs:317
+#: ../Impasto/Dialogs/PreferencesDialog.cs:329
 msgid ""
 "Save your settings and preferences to a file, or load them from a previously "
 "exported file."
@@ -3890,12 +3909,12 @@ msgstr ""
 msgid "Set selected control point to line"
 msgstr ""
 
-#: ../Impasto/Dialogs/PreferencesDialog.cs:330
-#: ../Impasto/Dialogs/PreferencesDialog.cs:589
+#: ../Impasto/Dialogs/PreferencesDialog.cs:342
+#: ../Impasto/Dialogs/PreferencesDialog.cs:606
 msgid "Settings"
 msgstr ""
 
-#: ../Impasto/Dialogs/PreferencesDialog.cs:470
+#: ../Impasto/Dialogs/PreferencesDialog.cs:486
 msgid "Settings files"
 msgstr ""
 
@@ -4010,7 +4029,7 @@ msgstr ""
 msgid "Show Points"
 msgstr ""
 
-#: ../Impasto/Dialogs/PreferencesDialog.cs:203
+#: ../Impasto/Dialogs/PreferencesDialog.cs:207
 msgid "Show a third row of darker colors in the palette"
 msgstr ""
 
@@ -4026,15 +4045,15 @@ msgstr "Ostende cuspidem sagittae in puncto initiali."
 msgid "Show color wheel"
 msgstr ""
 
-#: ../Impasto/Dialogs/PreferencesDialog.cs:296
+#: ../Impasto/Dialogs/PreferencesDialog.cs:300
 msgid "Show cursor position in the status bar"
 msgstr ""
 
-#: ../Impasto/Dialogs/PreferencesDialog.cs:303
+#: ../Impasto/Dialogs/PreferencesDialog.cs:307
 msgid "Show image size and aspect ratio in the status bar"
 msgstr ""
 
-#: ../Impasto/Dialogs/PreferencesDialog.cs:288
+#: ../Impasto/Dialogs/PreferencesDialog.cs:292
 msgid "Show quick access toolbar"
 msgstr ""
 
@@ -4085,7 +4104,7 @@ msgstr ""
 msgid "Skew"
 msgstr "Obliquatio"
 
-#: ../Impasto/Dialogs/PreferencesDialog.cs:280
+#: ../Impasto/Dialogs/PreferencesDialog.cs:284
 msgid "Skip the \"Rasterize Objects?\" confirmation"
 msgstr ""
 
@@ -4289,7 +4308,7 @@ msgid ""
 "of rows."
 msgstr ""
 
-#: ../Impasto/Dialogs/PreferencesDialog.cs:522
+#: ../Impasto/Dialogs/PreferencesDialog.cs:538
 msgid "The file had no keyboard shortcuts to import."
 msgstr ""
 
@@ -4352,7 +4371,7 @@ msgstr ""
 msgid "The installation has completed with warnings."
 msgstr ""
 
-#: ../Impasto/Dialogs/PreferencesDialog.cs:289
+#: ../Impasto/Dialogs/PreferencesDialog.cs:293
 msgid ""
 "The row of icon buttons below the menu bar (New, Open, Save, Undo, Redo, "
 "Cut, Copy, Paste, and so on)."
@@ -4404,11 +4423,11 @@ msgstr ""
 msgid "Third-Party Notices"
 msgstr ""
 
-#: ../Impasto/Dialogs/PreferencesDialog.cs:495
+#: ../Impasto/Dialogs/PreferencesDialog.cs:511
 msgid "This does not look like a valid settings file."
 msgstr ""
 
-#: ../Impasto/Dialogs/PreferencesDialog.cs:542
+#: ../Impasto/Dialogs/PreferencesDialog.cs:558
 msgid ""
 "This file also contains keyboard shortcut overrides. Importing them will "
 "overwrite your current keyboard-shortcuts.json."
@@ -4519,7 +4538,7 @@ msgstr ""
 msgid "Tools"
 msgstr ""
 
-#: ../Impasto/Dialogs/PreferencesDialog.cs:257
+#: ../Impasto/Dialogs/PreferencesDialog.cs:261
 msgid ""
 "Tools fill one column instead of the sectioned 2-column grid, overflowing "
 "into another column once it runs out of vertical space. Requires a restart."
@@ -4674,7 +4693,7 @@ msgstr ""
 msgid "Type"
 msgstr ""
 
-#: ../Impasto/Dialogs/PreferencesDialog.cs:326
+#: ../Impasto/Dialogs/PreferencesDialog.cs:338
 msgid "UI"
 msgstr "Interfacies usoris"
 
@@ -4753,11 +4772,11 @@ msgstr ""
 msgid "Unsupported palette format"
 msgstr ""
 
-#: ../Pinta.Core/Actions/FileActions.cs:140
+#: ../Pinta.Core/Actions/FileActions.cs:153
 msgid "Update Impasto"
 msgstr ""
 
-#: ../Pinta.Core/Actions/FileActions.cs:137
+#: ../Pinta.Core/Actions/FileActions.cs:150
 msgid "Update Impasto..."
 msgstr ""
 
@@ -4775,7 +4794,7 @@ msgid ""
 "quality for final quality, large images, and large angles."
 msgstr ""
 
-#: ../Impasto/Dialogs/PreferencesDialog.cs:256
+#: ../Impasto/Dialogs/PreferencesDialog.cs:260
 msgid "Use thin column toolbox layout"
 msgstr "Uti dispositione columnae angustae arcae instrumentorum"
 
@@ -4835,7 +4854,7 @@ msgstr ""
 msgid "Warmth"
 msgstr ""
 
-#: ../Impasto/Dialogs/PreferencesDialog.cs:265
+#: ../Impasto/Dialogs/PreferencesDialog.cs:269
 msgid ""
 "When the window is too narrow for all of the current tool's settings, they "
 "continue on another row instead of scrolling horizontally."
@@ -4848,7 +4867,7 @@ msgstr ""
 #: ../Impasto/Dialogs/CanvasGridSettingsDialog.cs:121
 #: ../Impasto/Dialogs/CanvasGridSettingsDialog.cs:134
 #: ../Impasto/Dialogs/NewImageDialog.cs:340
-#: ../Impasto/Dialogs/PreferencesDialog.cs:136
+#: ../Impasto/Dialogs/PreferencesDialog.cs:140
 #: ../Impasto/Dialogs/ResizeCanvasDialog.cs:80
 #: ../Impasto/Dialogs/ResizeImageDialog.cs:123
 msgid "Width:"
@@ -4867,7 +4886,7 @@ msgstr ""
 msgid "Wrap"
 msgstr ""
 
-#: ../Impasto/Dialogs/PreferencesDialog.cs:264
+#: ../Impasto/Dialogs/PreferencesDialog.cs:268
 msgid "Wrap tool settings onto extra rows"
 msgstr ""
 
@@ -5020,8 +5039,8 @@ msgstr ""
 #: ../Impasto/Dialogs/CanvasGridSettingsDialog.cs:127
 #: ../Impasto/Dialogs/CanvasGridSettingsDialog.cs:136
 #: ../Impasto/Dialogs/NewImageDialog.cs:288
-#: ../Impasto/Dialogs/PreferencesDialog.cs:138
-#: ../Impasto/Dialogs/PreferencesDialog.cs:143
+#: ../Impasto/Dialogs/PreferencesDialog.cs:142
+#: ../Impasto/Dialogs/PreferencesDialog.cs:147
 #: ../Impasto/Dialogs/ResizeCanvasDialog.cs:106
 #: ../Impasto/Dialogs/ResizeCanvasDialog.cs:110
 #: ../Impasto/Dialogs/ResizeImageDialog.cs:135

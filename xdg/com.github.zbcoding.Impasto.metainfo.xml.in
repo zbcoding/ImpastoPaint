@@ -44,6 +44,12 @@
     <binary>impasto</binary>
   </provides>
   <releases>
+    <release version="0.7.3" date="2026-11-22">
+      <url>https://github.com/zbcoding/ImpastoPaint/releases/tag/v0.7.3</url>
+      <description>
+        <p>A new setting turns off the startup update check. When the check cannot reach GitHub, for example in a sandbox without network access, the File menu offers Check for Updates, which opens the releases page.</p>
+      </description>
+    </release>
     <release version="0.7.2" date="2026-11-16">
       <url>https://github.com/zbcoding/ImpastoPaint/releases/tag/v0.7.2</url>
       <description>

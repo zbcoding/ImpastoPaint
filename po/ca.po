@@ -21,7 +21,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: pinta\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-23 00:39-0600\n"
+"POT-Creation-Date: 2026-11-23 01:20-0600\n"
 "PO-Revision-Date: 2026-06-22 17:01+0000\n"
 "Last-Translator: Adolfo Jayme Barrientos <fitojb@ubuntu.com>\n"
 "Language-Team: Catalan\n"
@@ -1889,16 +1889,16 @@ msgstr ""
 msgid "Impasto does not support saving images in this file format."
 msgstr "El Impasto no permet desar imatges en aquest format de fitxer."
 
-#: ../xdg/io.github.zbcoding.Impasto.metainfo.xml.in.h:2
-msgid "Impasto is a fork of Pinta."
-msgstr ""
-
 #: ../xdg/io.github.zbcoding.Impasto.metainfo.xml.in.h:1
 msgid ""
-"Impasto is a paint and image editing application with a wide range of "
-"drawing tools, including freehand, rectangles, circles and lines. It has "
-"over 35 effects to apply to your images, and unlimited layers to help "
-"organize your creativity."
+"Impasto is an object-based painting app: shapes, text and effects stay "
+"editable after you draw them, each with its own undo history. It has layers, "
+"a wide set of tools and effects, snapping to the grid, ruler units and "
+"canvas edges, and fully remappable keyboard shortcuts."
+msgstr ""
+
+#: ../xdg/io.github.zbcoding.Impasto.metainfo.xml.in.h:2
+msgid "Impasto started as a fork of Pinta, the MIT-licensed painting app."
 msgstr ""
 
 #: ../Pinta.Core/Managers/WorkspaceManager.cs:506

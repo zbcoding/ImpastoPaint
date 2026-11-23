@@ -1,7 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <component type="desktop">
-  <id>com.github.zbcoding.Impasto</id>
-  <!-- No <replaces>: Impasto installs alongside Pinta, it does not supersede it. -->
+  <id>io.github.zbcoding.Impasto</id>
+  <!-- Replaces only the app's own previous id; Impasto installs alongside Pinta. -->
+  <replaces>
+    <id>com.github.zbcoding.Impasto</id>
+  </replaces>
   <metadata_license>CC0-1.0</metadata_license>
   <project_license>MIT</project_license>
   <name>Impasto</name>
@@ -17,7 +20,7 @@
       Impasto is a fork of Pinta.
     </_p>
   </description>
-  <launchable type="desktop-id">com.github.zbcoding.Impasto.desktop</launchable>
+  <launchable type="desktop-id">io.github.zbcoding.Impasto.desktop</launchable>
   <kudos>
     <kudo>HiDpiIcon</kudo>
   </kudos>
@@ -31,7 +34,7 @@
       <image>https://raw.githubusercontent.com/zbcoding/ImpastoPaint/main/docs/screenshots/impasto-text-tool.png</image>
     </screenshot>
   </screenshots>
-  <developer id="com.github.zbcoding">
+  <developer id="io.github.zbcoding">
     <name>zbcoding</name>
   </developer>
   <url type="homepage">https://github.com/zbcoding/ImpastoPaint</url>

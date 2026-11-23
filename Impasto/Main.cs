@@ -42,6 +42,8 @@ internal sealed class MainClass
 			MacInterop.Environment.Init ();
 		}
 
+		LegacyFlatpakDataMigration.Run ();
+
 		string locale_dir = Path.Combine (SystemManager.GetDataRootDirectory (), "locale");
 
 		try {

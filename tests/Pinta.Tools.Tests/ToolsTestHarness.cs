@@ -36,7 +36,7 @@ internal abstract class ToolsTestHarness
 
 		// Activating a document writes the window title and appends to the Window menu, so the chrome
 		// needs a shell and that menu needs registering. Nothing here is realized; no display is opened.
-		Gtk.Application app = Gtk.Application.New ("com.github.zbcoding.Impasto.ToolsTests", Gio.ApplicationFlags.NonUnique);
+		Gtk.Application app = Gtk.Application.New ("io.github.zbcoding.Impasto.ToolsTests", Gio.ApplicationFlags.NonUnique);
 		PintaCore.Chrome.InitializeApplication (app);
 		PintaCore.Chrome.InitializeWindowShell (Gtk.Window.New ());
 		PintaCore.Actions.Window.RegisterActions (app, Gio.Menu.New ());

@@ -21,7 +21,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: pinta\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-22 18:02-0600\n"
+"POT-Creation-Date: 2026-11-23 00:39-0600\n"
 "PO-Revision-Date: 2021-12-31 16:38+0000\n"
 "Last-Translator: abuyop <Unknown>\n"
 "Language-Team: Malay\n"
@@ -1282,7 +1282,7 @@ msgstr "Pilih Elips"
 msgid "Emboss"
 msgstr "Cetak Timbul"
 
-#: ../Impasto/Main.cs:67
+#: ../Impasto/Main.cs:69
 msgid "Enable additional logging or behavior changes for debugging"
 msgstr ""
 
@@ -1397,7 +1397,7 @@ msgstr ""
 msgid "File a Bug"
 msgstr "Laporkan Pepijat"
 
-#: ../Impasto/Main.cs:62
+#: ../Impasto/Main.cs:64
 msgid "Files to open"
 msgstr ""
 
@@ -1841,8 +1841,8 @@ msgstr "Imej lebih besar berbanding kanvas"
 msgid "Image too large"
 msgstr "Imej terlalu besar"
 
-#: ../xdg/com.github.zbcoding.Impasto.desktop.in.h:1
-#: ../Impasto/Actions/Help/AboutDialogAction.cs:67 ../Impasto/Main.cs:71
+#: ../xdg/io.github.zbcoding.Impasto.desktop.in.h:1
+#: ../Impasto/Actions/Help/AboutDialogAction.cs:67 ../Impasto/Main.cs:73
 #: ../Impasto/MainWindow.cs:70
 msgid "Impasto"
 msgstr ""
@@ -1851,7 +1851,7 @@ msgstr ""
 msgid "Impasto Add-ins"
 msgstr ""
 
-#: ../xdg/com.github.zbcoding.Impasto.desktop.in.h:4
+#: ../xdg/io.github.zbcoding.Impasto.desktop.in.h:4
 msgid "Impasto Paint"
 msgstr ""
 
@@ -1882,11 +1882,11 @@ msgstr ""
 msgid "Impasto does not support saving images in this file format."
 msgstr "Impasto tidak menyokong penyimpanan imej dalam format fail ini."
 
-#: ../xdg/com.github.zbcoding.Impasto.metainfo.xml.in.h:2
+#: ../xdg/io.github.zbcoding.Impasto.metainfo.xml.in.h:2
 msgid "Impasto is a fork of Pinta."
 msgstr ""
 
-#: ../xdg/com.github.zbcoding.Impasto.metainfo.xml.in.h:1
+#: ../xdg/io.github.zbcoding.Impasto.metainfo.xml.in.h:1
 msgid ""
 "Impasto is a paint and image editing application with a wide range of "
 "drawing tools, including freehand, rectangles, circles and lines. It has "
@@ -2759,7 +2759,7 @@ msgstr ""
 msgid "Number of Cells"
 msgstr ""
 
-#: ../Impasto/Main.cs:56
+#: ../Impasto/Main.cs:58
 msgid "Number of threads to use for rendering"
 msgstr ""
 
@@ -2924,7 +2924,7 @@ msgstr "Tulis-Ganti"
 msgid "Paint"
 msgstr ""
 
-#: ../xdg/com.github.zbcoding.Impasto.desktop.in.h:3
+#: ../xdg/io.github.zbcoding.Impasto.desktop.in.h:3
 msgid "Paint & Image Editor"
 msgstr ""
 
@@ -2938,7 +2938,7 @@ msgid ""
 "row again for options."
 msgstr ""
 
-#: ../xdg/com.github.zbcoding.Impasto.desktop.in.h:2
+#: ../xdg/io.github.zbcoding.Impasto.desktop.in.h:2
 msgid "Paint, create and edit images"
 msgstr ""
 
@@ -5032,7 +5032,7 @@ msgstr "L_ihat"
 msgid "_Window"
 msgstr "_Tetingkap"
 
-#: ../xdg/com.github.zbcoding.Impasto.desktop.in.h:5
+#: ../xdg/io.github.zbcoding.Impasto.desktop.in.h:5
 msgid "draw;drawing;paint;painting;graphics;raster;2d;"
 msgstr "lukis;lukisan;cat;grafik;raster;2d;"
 

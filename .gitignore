@@ -46,8 +46,8 @@ po/Makefile.in.in
 po/POTFILES
 po/stamp-it
 release
-xdg/com.github.zbcoding.Impasto.desktop
-xdg/com.github.zbcoding.Impasto.metainfo.xml
+xdg/io.github.zbcoding.Impasto.desktop
+xdg/io.github.zbcoding.Impasto.metainfo.xml
 .vs
 .vscode
 

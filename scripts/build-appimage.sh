@@ -45,10 +45,10 @@ find "$publish" -name '*.pdb' -delete
 # The same de-intltool transforms the flatpak manifest applies; the launcher is
 # the apphost itself, reachable inside the image as "Impasto".
 sed -e 's/^_//' -e 's/^TryExec=.*/TryExec=Impasto/' -e 's/^Exec=.*/Exec=Impasto %F/' \
-  "$repo/xdg/com.github.zbcoding.Impasto.desktop.in" \
-  > "$appdir/usr/share/applications/com.github.zbcoding.Impasto.desktop"
-sed 's|<\(/\?\)_|<\1|g' "$repo/xdg/com.github.zbcoding.Impasto.metainfo.xml.in" \
-  > "$appdir/usr/share/metainfo/com.github.zbcoding.Impasto.metainfo.xml"
+  "$repo/xdg/io.github.zbcoding.Impasto.desktop.in" \
+  > "$appdir/usr/share/applications/io.github.zbcoding.Impasto.desktop"
+sed 's|<\(/\?\)_|<\1|g' "$repo/xdg/io.github.zbcoding.Impasto.metainfo.xml.in" \
+  > "$appdir/usr/share/metainfo/io.github.zbcoding.Impasto.metainfo.xml"
 
 # --- 3. Icons -------------------------------------------------------------
 # The app ships its own hicolor tree in the publish output; GTK chrome needs
@@ -57,7 +57,7 @@ cp -r "$publish/icons/hicolor" "$appdir/usr/share/icons/"
 [ -d /usr/share/icons/Adwaita ] && cp -r /usr/share/icons/Adwaita "$appdir/usr/share/icons/"
 icon=""
 for size in 512x512 256x256 128x128 96x96 64x64 48x48; do
-  f=$appdir/usr/share/icons/hicolor/$size/apps/com.github.zbcoding.Impasto.png
+  f=$appdir/usr/share/icons/hicolor/$size/apps/io.github.zbcoding.Impasto.png
   [ -f "$f" ] && { icon=$f; break; }
 done
 # appimagetool accepts only a PNG (or XPM) as the AppDir's root icon.
@@ -115,7 +115,7 @@ fi
 
 "$tools/linuxdeploy" --appdir "$appdir" \
   --executable "$publish/Impasto" \
-  --desktop-file "$appdir/usr/share/applications/com.github.zbcoding.Impasto.desktop" \
+  --desktop-file "$appdir/usr/share/applications/io.github.zbcoding.Impasto.desktop" \
   --icon-file "$icon" \
   "${libs[@]}"
 
@@ -199,8 +199,8 @@ file "$appdir/AppRun" | grep -q 'shell script' \
 
 # linuxdeploy links the scalable SVG as the root icon and .DirIcon; swap in the
 # PNG so appimagetool can derive .DirIcon from it.
-rm -f "$appdir/com.github.zbcoding.Impasto.svg" "$appdir/.DirIcon"
-cp "$icon" "$appdir/com.github.zbcoding.Impasto.png"
+rm -f "$appdir/io.github.zbcoding.Impasto.svg" "$appdir/.DirIcon"
+cp "$icon" "$appdir/io.github.zbcoding.Impasto.png"
 
 # appimagetool rejects files other users cannot read/execute; the .NET publish
 # output carries 0744 files from the NuGet runtime packs.

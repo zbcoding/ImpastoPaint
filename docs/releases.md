@@ -23,7 +23,7 @@ Do the file edits on a worktree branch and land them on `main` the normal way
 
 - [ ]  These must also be edited on each release:
       - Changelog.md
-      - xdg/com.github.zbcoding.Impasto.metainfo.xml.in — the <release> entry
+      - xdg/io.github.zbcoding.Impasto.metainfo.xml.in — the <release> entry
 
 ## 3. CHANGELOG.md
 
@@ -38,7 +38,7 @@ The `[Unreleased]` section is the release notes; cutting the release just stamps
 
 ## 4. AppStream metainfo
 
-`xdg/com.github.zbcoding.Impasto.metainfo.xml.in` is what GNOME Software, KDE Discover and
+`xdg/io.github.zbcoding.Impasto.metainfo.xml.in` is what GNOME Software, KDE Discover and
 the flatpark.org page read for the version and the "What's New" text.
 
 - [ ] Add a `<release>` entry at the top of `<releases>` (newest first; AppStream requires
@@ -53,7 +53,7 @@ the flatpark.org page read for the version and the "What's New" text.
       </release>
       ```
 
-- [ ] `xmllint --noout xdg/com.github.zbcoding.Impasto.metainfo.xml.in`.
+- [ ] `xmllint --noout xdg/io.github.zbcoding.Impasto.metainfo.xml.in`.
 
 ## 5. Translations
 
@@ -159,6 +159,6 @@ release up:
 - [ ] `flatpak update` pulls `X.Y.Z` once flatpark has republished.
 
 
-#### Flathub: the root `com.github.zbcoding.Impasto.yml` is not a Flathub submission 
+#### Flathub: the root `io.github.zbcoding.Impasto.yml` is not a Flathub submission 
 - Not on Flathub due to their strict no AI policy
 - A Flathub listing would need a generated `nuget-sources.json` and its own submission.

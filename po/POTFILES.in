@@ -1,5 +1,5 @@
-xdg/com.github.zbcoding.Impasto.desktop.in
-xdg/com.github.zbcoding.Impasto.metainfo.xml.in
+xdg/io.github.zbcoding.Impasto.desktop.in
+xdg/io.github.zbcoding.Impasto.metainfo.xml.in
 Impasto/ActionHandlers.cs
 Impasto/Actions/Addins/AddinManagerAction.cs
 Impasto/Actions/Edit/OffsetSelectionAction.cs
@@ -57,6 +57,7 @@ Impasto/Dialogs/ResizeCanvasDialog.cs
 Impasto/Dialogs/ResizeImageDialog.cs
 Impasto/Dialogs/SpinButtonEntryDialog.cs
 Impasto/DocumentViewContent.cs
+Impasto/LegacyFlatpakDataMigration.cs
 Impasto/MacInterop/AppleEvent.cs
 Impasto/MacInterop/ApplicationEvents.cs
 Impasto/MacInterop/Carbon.cs

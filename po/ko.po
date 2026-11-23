@@ -21,7 +21,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: pinta\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-22 18:02-0600\n"
+"POT-Creation-Date: 2026-11-23 00:39-0600\n"
 "PO-Revision-Date: 2026-04-07 03:55+0000\n"
 "Last-Translator: VenusGirl <VenusGirl@outlook.com>\n"
 "Language-Team: Korean\n"
@@ -1286,7 +1286,7 @@ msgstr "타원 선택"
 msgid "Emboss"
 msgstr "엠보싱"
 
-#: ../Impasto/Main.cs:67
+#: ../Impasto/Main.cs:69
 msgid "Enable additional logging or behavior changes for debugging"
 msgstr "디버깅을 위해 추가 로깅 또는 동작 변경 활성화"
 
@@ -1401,7 +1401,7 @@ msgstr ""
 msgid "File a Bug"
 msgstr "버그 파일"
 
-#: ../Impasto/Main.cs:62
+#: ../Impasto/Main.cs:64
 msgid "Files to open"
 msgstr "열어야 할 파일"
 
@@ -1846,8 +1846,8 @@ msgstr "캔버스보다 큰 이미지"
 msgid "Image too large"
 msgstr "너무 큰 이미지"
 
-#: ../xdg/com.github.zbcoding.Impasto.desktop.in.h:1
-#: ../Impasto/Actions/Help/AboutDialogAction.cs:67 ../Impasto/Main.cs:71
+#: ../xdg/io.github.zbcoding.Impasto.desktop.in.h:1
+#: ../Impasto/Actions/Help/AboutDialogAction.cs:67 ../Impasto/Main.cs:73
 #: ../Impasto/MainWindow.cs:70
 msgid "Impasto"
 msgstr ""
@@ -1856,7 +1856,7 @@ msgstr ""
 msgid "Impasto Add-ins"
 msgstr ""
 
-#: ../xdg/com.github.zbcoding.Impasto.desktop.in.h:4
+#: ../xdg/io.github.zbcoding.Impasto.desktop.in.h:4
 msgid "Impasto Paint"
 msgstr ""
 
@@ -1887,11 +1887,11 @@ msgstr ""
 msgid "Impasto does not support saving images in this file format."
 msgstr "Impasto는 해당 형식의 이미지 파일을 지원하지 않습니다."
 
-#: ../xdg/com.github.zbcoding.Impasto.metainfo.xml.in.h:2
+#: ../xdg/io.github.zbcoding.Impasto.metainfo.xml.in.h:2
 msgid "Impasto is a fork of Pinta."
 msgstr ""
 
-#: ../xdg/com.github.zbcoding.Impasto.metainfo.xml.in.h:1
+#: ../xdg/io.github.zbcoding.Impasto.metainfo.xml.in.h:1
 msgid ""
 "Impasto is a paint and image editing application with a wide range of "
 "drawing tools, including freehand, rectangles, circles and lines. It has "
@@ -2800,7 +2800,7 @@ msgstr ""
 msgid "Number of Cells"
 msgstr "셀의 수"
 
-#: ../Impasto/Main.cs:56
+#: ../Impasto/Main.cs:58
 msgid "Number of threads to use for rendering"
 msgstr "렌더링에 사용할 스레드 수"
 
@@ -2965,7 +2965,7 @@ msgstr "덮어쓰기"
 msgid "Paint"
 msgstr ""
 
-#: ../xdg/com.github.zbcoding.Impasto.desktop.in.h:3
+#: ../xdg/io.github.zbcoding.Impasto.desktop.in.h:3
 msgid "Paint & Image Editor"
 msgstr ""
 
@@ -2979,7 +2979,7 @@ msgid ""
 "row again for options."
 msgstr ""
 
-#: ../xdg/com.github.zbcoding.Impasto.desktop.in.h:2
+#: ../xdg/io.github.zbcoding.Impasto.desktop.in.h:2
 msgid "Paint, create and edit images"
 msgstr ""
 
@@ -5072,7 +5072,7 @@ msgstr "보기(_V)"
 msgid "_Window"
 msgstr "창(_W)"
 
-#: ../xdg/com.github.zbcoding.Impasto.desktop.in.h:5
+#: ../xdg/io.github.zbcoding.Impasto.desktop.in.h:5
 msgid "draw;drawing;paint;painting;graphics;raster;2d;"
 msgstr "그리기;그림;페인트;회화;그래픽;래스터;2D;"
 

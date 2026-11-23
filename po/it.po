@@ -21,7 +21,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: pinta\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-22 18:02-0600\n"
+"POT-Creation-Date: 2026-11-23 00:39-0600\n"
 "PO-Revision-Date: 2026-02-19 19:07+0000\n"
 "Last-Translator: o p <dexterd2023@duck.com>\n"
 "Language-Team: Italian\n"
@@ -1291,7 +1291,7 @@ msgstr "Selezione ellittica"
 msgid "Emboss"
 msgstr "Rilievo"
 
-#: ../Impasto/Main.cs:67
+#: ../Impasto/Main.cs:69
 msgid "Enable additional logging or behavior changes for debugging"
 msgstr ""
 "Attiva registrazione aggiuntiva o modifiche al comportamento per il debug"
@@ -1407,7 +1407,7 @@ msgstr ""
 msgid "File a Bug"
 msgstr "Segnala un bug"
 
-#: ../Impasto/Main.cs:62
+#: ../Impasto/Main.cs:64
 msgid "Files to open"
 msgstr "File da aprire"
 
@@ -1856,8 +1856,8 @@ msgstr "Immagine più grande della dimensione della superficie"
 msgid "Image too large"
 msgstr "Immagine troppo grande"
 
-#: ../xdg/com.github.zbcoding.Impasto.desktop.in.h:1
-#: ../Impasto/Actions/Help/AboutDialogAction.cs:67 ../Impasto/Main.cs:71
+#: ../xdg/io.github.zbcoding.Impasto.desktop.in.h:1
+#: ../Impasto/Actions/Help/AboutDialogAction.cs:67 ../Impasto/Main.cs:73
 #: ../Impasto/MainWindow.cs:70
 msgid "Impasto"
 msgstr ""
@@ -1866,7 +1866,7 @@ msgstr ""
 msgid "Impasto Add-ins"
 msgstr ""
 
-#: ../xdg/com.github.zbcoding.Impasto.desktop.in.h:4
+#: ../xdg/io.github.zbcoding.Impasto.desktop.in.h:4
 msgid "Impasto Paint"
 msgstr ""
 
@@ -1897,11 +1897,11 @@ msgstr ""
 msgid "Impasto does not support saving images in this file format."
 msgstr "Impasto non supporta il salvataggio in questo formato di file."
 
-#: ../xdg/com.github.zbcoding.Impasto.metainfo.xml.in.h:2
+#: ../xdg/io.github.zbcoding.Impasto.metainfo.xml.in.h:2
 msgid "Impasto is a fork of Pinta."
 msgstr ""
 
-#: ../xdg/com.github.zbcoding.Impasto.metainfo.xml.in.h:1
+#: ../xdg/io.github.zbcoding.Impasto.metainfo.xml.in.h:1
 msgid ""
 "Impasto is a paint and image editing application with a wide range of "
 "drawing tools, including freehand, rectangles, circles and lines. It has "
@@ -2824,7 +2824,7 @@ msgstr ""
 msgid "Number of Cells"
 msgstr "Numero delle Celle"
 
-#: ../Impasto/Main.cs:56
+#: ../Impasto/Main.cs:58
 msgid "Number of threads to use for rendering"
 msgstr "Il numero di thread da usare per il rendering"
 
@@ -2989,7 +2989,7 @@ msgstr "Sovrascrivi"
 msgid "Paint"
 msgstr ""
 
-#: ../xdg/com.github.zbcoding.Impasto.desktop.in.h:3
+#: ../xdg/io.github.zbcoding.Impasto.desktop.in.h:3
 msgid "Paint & Image Editor"
 msgstr ""
 
@@ -3003,7 +3003,7 @@ msgid ""
 "row again for options."
 msgstr ""
 
-#: ../xdg/com.github.zbcoding.Impasto.desktop.in.h:2
+#: ../xdg/io.github.zbcoding.Impasto.desktop.in.h:2
 msgid "Paint, create and edit images"
 msgstr ""
 
@@ -5111,7 +5111,7 @@ msgstr "_Visualizza"
 msgid "_Window"
 msgstr "_Finestra"
 
-#: ../xdg/com.github.zbcoding.Impasto.desktop.in.h:5
+#: ../xdg/io.github.zbcoding.Impasto.desktop.in.h:5
 msgid "draw;drawing;paint;painting;graphics;raster;2d;"
 msgstr "disegna;disegno;dipingi;dipinto;grafica;raster;2d;"
 

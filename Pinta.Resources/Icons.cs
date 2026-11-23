@@ -226,7 +226,7 @@ public static class Icons
 	public const string TiltCursor = "tilt-cursor";
 	public const string DepthCursor = "depth-cursor";
 
-	public const string Pinta = "com.github.zbcoding.Impasto";
+	public const string Pinta = "io.github.zbcoding.Impasto";
 
 	public const string ResizeCanvasBase = "image-resize-canvas-base-symbolic";
 	public const string ResizeCanvasDown = "image-resize-canvas-down-symbolic";

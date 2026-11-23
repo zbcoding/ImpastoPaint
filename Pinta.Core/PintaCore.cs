@@ -51,7 +51,7 @@ public static partial class PintaCore
 	/// Unique identifier for the application.
 	/// This is used for GApplication and also must match the .desktop file.
 	/// </summary>
-	public const string ApplicationId = "com.github.zbcoding.Impasto";
+	public const string ApplicationId = "io.github.zbcoding.Impasto";
 
 	/// <summary>
 	/// The upstream Pinta version whose add-in ABI (Pinta.Core/Pinta.Tools/Pinta.Effects APIs)

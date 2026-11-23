@@ -1,4 +1,4 @@
-app-id: com.github.zbcoding.Impasto
+app-id: io.github.zbcoding.Impasto
 runtime: org.gnome.Platform
 runtime-version: '50'
 sdk: org.gnome.Sdk
@@ -24,6 +24,9 @@ finish-args:
   - --filesystem=xdg-pictures
   - --filesystem=xdg-documents
   - --filesystem=xdg-download
+  # Read-only, so the app can copy settings and autosaves from installs made under its
+  # previous app id. See LegacyFlatpakDataMigration.
+  - --filesystem=~/.var/app/com.github.zbcoding.Impasto:ro
 
 modules:
   - name: impasto
@@ -56,16 +59,16 @@ modules:
       # The desktop/metainfo templates carry intltool's leading-underscore markers and
       # name the autotools launcher script; neither applies inside the flatpak.
       - sed -e 's/^_//' -e 's/^TryExec=.*/TryExec=impasto/' -e 's/^Exec=.*/Exec=impasto %F/'
-        xdg/com.github.zbcoding.Impasto.desktop.in
-        > /app/share/applications/com.github.zbcoding.Impasto.desktop
-      - sed 's|<\(/\?\)_|<\1|g' xdg/com.github.zbcoding.Impasto.metainfo.xml.in
-        > /app/share/metainfo/com.github.zbcoding.Impasto.metainfo.xml
+        xdg/io.github.zbcoding.Impasto.desktop.in
+        > /app/share/applications/io.github.zbcoding.Impasto.desktop
+      - sed 's|<\(/\?\)_|<\1|g' xdg/io.github.zbcoding.Impasto.metainfo.xml.in
+        > /app/share/metainfo/io.github.zbcoding.Impasto.metainfo.xml
 
       # The app's own icons ship inside the publish output; hoist them to the
-      # standard location so the shell can resolve Icon=com.github.zbcoding.Impasto.
+      # standard location so the shell can resolve Icon=io.github.zbcoding.Impasto.
       - cp -r /app/lib/impasto/icons/hicolor /app/share/icons/
       - install -Dm644 xdg/impasto.1 /app/share/man/man1/impasto.1
 
     post-install:
-      - desktop-file-validate /app/share/applications/com.github.zbcoding.Impasto.desktop
-      - appstreamcli validate --no-net /app/share/metainfo/com.github.zbcoding.Impasto.metainfo.xml
+      - desktop-file-validate /app/share/applications/io.github.zbcoding.Impasto.desktop
+      - appstreamcli validate --no-net /app/share/metainfo/io.github.zbcoding.Impasto.metainfo.xml

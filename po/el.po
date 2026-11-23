@@ -21,7 +21,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: pinta\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-22 18:02-0600\n"
+"POT-Creation-Date: 2026-11-23 00:39-0600\n"
 "PO-Revision-Date: 2026-02-01 04:28+0000\n"
 "Last-Translator: antfullstack "
 "<253273528+antfullstack@users.noreply.github.com>\n"
@@ -1297,7 +1297,7 @@ msgstr "Ελλειψοειδής επιλογή"
 msgid "Emboss"
 msgstr "Εμβάθυνση"
 
-#: ../Impasto/Main.cs:67
+#: ../Impasto/Main.cs:69
 msgid "Enable additional logging or behavior changes for debugging"
 msgstr "Επιλογή εκτενούς αναφοράς ή αλλαγή συμπεριφοράς για debugging"
 
@@ -1412,7 +1412,7 @@ msgstr ""
 msgid "File a Bug"
 msgstr "Στείλτε αναφορά σφάλματος"
 
-#: ../Impasto/Main.cs:62
+#: ../Impasto/Main.cs:64
 msgid "Files to open"
 msgstr "Αρχεία για άνοιγμα"
 
@@ -1860,8 +1860,8 @@ msgstr "Η εικόνα είναι μεγαλύτερη από τον καμβά
 msgid "Image too large"
 msgstr "Η εικόνα είναι πολύ μεγάλη"
 
-#: ../xdg/com.github.zbcoding.Impasto.desktop.in.h:1
-#: ../Impasto/Actions/Help/AboutDialogAction.cs:67 ../Impasto/Main.cs:71
+#: ../xdg/io.github.zbcoding.Impasto.desktop.in.h:1
+#: ../Impasto/Actions/Help/AboutDialogAction.cs:67 ../Impasto/Main.cs:73
 #: ../Impasto/MainWindow.cs:70
 msgid "Impasto"
 msgstr ""
@@ -1870,7 +1870,7 @@ msgstr ""
 msgid "Impasto Add-ins"
 msgstr ""
 
-#: ../xdg/com.github.zbcoding.Impasto.desktop.in.h:4
+#: ../xdg/io.github.zbcoding.Impasto.desktop.in.h:4
 msgid "Impasto Paint"
 msgstr ""
 
@@ -1902,11 +1902,11 @@ msgid "Impasto does not support saving images in this file format."
 msgstr ""
 "Το Impasto δεν υποστηρίζει δυνατότητα αποθήκευσης σε αυτό το φορμά αρχείου."
 
-#: ../xdg/com.github.zbcoding.Impasto.metainfo.xml.in.h:2
+#: ../xdg/io.github.zbcoding.Impasto.metainfo.xml.in.h:2
 msgid "Impasto is a fork of Pinta."
 msgstr ""
 
-#: ../xdg/com.github.zbcoding.Impasto.metainfo.xml.in.h:1
+#: ../xdg/io.github.zbcoding.Impasto.metainfo.xml.in.h:1
 msgid ""
 "Impasto is a paint and image editing application with a wide range of "
 "drawing tools, including freehand, rectangles, circles and lines. It has "
@@ -2827,7 +2827,7 @@ msgstr ""
 msgid "Number of Cells"
 msgstr "Αριθμός κελιών"
 
-#: ../Impasto/Main.cs:56
+#: ../Impasto/Main.cs:58
 msgid "Number of threads to use for rendering"
 msgstr "Αριθμός νημάτων προς απόδοση"
 
@@ -2992,7 +2992,7 @@ msgstr "Αντικατάσταση"
 msgid "Paint"
 msgstr ""
 
-#: ../xdg/com.github.zbcoding.Impasto.desktop.in.h:3
+#: ../xdg/io.github.zbcoding.Impasto.desktop.in.h:3
 msgid "Paint & Image Editor"
 msgstr ""
 
@@ -3006,7 +3006,7 @@ msgid ""
 "row again for options."
 msgstr ""
 
-#: ../xdg/com.github.zbcoding.Impasto.desktop.in.h:2
+#: ../xdg/io.github.zbcoding.Impasto.desktop.in.h:2
 msgid "Paint, create and edit images"
 msgstr ""
 
@@ -5115,7 +5115,7 @@ msgstr "_Προβολή"
 msgid "_Window"
 msgstr "Παρά_θυρα"
 
-#: ../xdg/com.github.zbcoding.Impasto.desktop.in.h:5
+#: ../xdg/io.github.zbcoding.Impasto.desktop.in.h:5
 msgid "draw;drawing;paint;painting;graphics;raster;2d;"
 msgstr "ζωγραφίζω;ζωγραφική;βάφω;βαφή;γραφικά;raster;2d;"
 

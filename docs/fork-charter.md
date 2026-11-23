@@ -69,6 +69,6 @@ git fetch upstream && git rebase upstream/master
 
 ## Identity
 
-App ID is `com.github.zbcoding.Impasto`. Settings live in `~/.config/Impasto/settings.xml`
+App ID is `io.github.zbcoding.Impasto` (`com.github.zbcoding.Impasto` until 0.7.3). Settings live in `~/.config/Impasto/settings.xml`
 so Impasto installs alongside Pinta rather than replacing it — the metainfo deliberately
 drops upstream's `<replaces>pinta.desktop</replaces>`.

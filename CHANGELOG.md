@@ -8,7 +8,11 @@ entries, is upstream Pinta work; the Impasto sections cover changes made in this
 
 ## Impasto - [Unreleased](https://github.com/zbcoding/ImpastoPaint/compare/v0.7.3...main)
 
-Changes for the next release go here.
+### Changed
+
+- The app id is now `io.github.zbcoding.Impasto` (was `com.github.zbcoding.Impasto`). The
+  Flatpak copies settings, palettes, shortcuts, add-ins, autosaves and recent files over from
+  the old id on first start. Native installs keep using `~/.config/Impasto` and need nothing.
 
 ## Impasto - [0.7.3](https://github.com/zbcoding/ImpastoPaint/releases/tag/v0.7.3) - 2026-11-22
 

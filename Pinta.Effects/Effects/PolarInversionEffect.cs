@@ -63,10 +63,11 @@ public sealed class PolarInversionEffect : BaseEffect
 		Span<ColorBgra> destinationData = destination.GetPixelData ();
 		ReadOnlySpan<ColorBgra> sourceData = source.GetReadOnlyPixelData ();
 
+		Warp.TransformInverter inverter = InverseTransform; // one delegate per render, not per pixel
 		foreach (var pixel in Tiling.GeneratePixelOffsets (roi, source.GetSize ()))
 			destinationData[pixel.memoryOffset] = Warp.GetPixelColor (
 				settings,
-				InverseTransform,
+				inverter,
 				source,
 				sourceData[pixel.memoryOffset],
 				pixel);

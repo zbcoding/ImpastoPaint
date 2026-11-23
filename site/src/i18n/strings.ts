@@ -48,6 +48,8 @@ export interface Dict {
   footerPrivacy: string;
   aiTranslatedLabel: string;
   closeLightbox: string;
+  prevShot: string;
+  nextShot: string;
 }
 
 export const strings: Record<Lang, Dict> = {
@@ -109,6 +111,8 @@ export const strings: Record<Lang, Dict> = {
     footerPrivacy: 'Privacy Policy',
     aiTranslatedLabel: 'AI-translated',
     closeLightbox: 'Close',
+    prevShot: 'Previous screenshot',
+    nextShot: 'Next screenshot',
   },
   es: {
     metaDescription:
@@ -169,6 +173,8 @@ export const strings: Record<Lang, Dict> = {
     footerPrivacy: 'Política de privacidad',
     aiTranslatedLabel: 'Traducción automática',
     closeLightbox: 'Cerrar',
+    prevShot: 'Captura anterior',
+    nextShot: 'Captura siguiente',
   },
   fr: {
     metaDescription:
@@ -231,6 +237,8 @@ export const strings: Record<Lang, Dict> = {
     footerPrivacy: 'Politique de confidentialité',
     aiTranslatedLabel: 'Traduction automatique',
     closeLightbox: 'Fermer',
+    prevShot: "Capture d'écran précédente",
+    nextShot: "Capture d'écran suivante",
   },
   de: {
     metaDescription:
@@ -291,6 +299,8 @@ export const strings: Record<Lang, Dict> = {
     footerPrivacy: 'Datenschutz',
     aiTranslatedLabel: 'Maschinelle Übersetzung',
     closeLightbox: 'Schließen',
+    prevShot: 'Vorheriger Screenshot',
+    nextShot: 'Nächster Screenshot',
   },
   ja: {
     metaDescription:
@@ -350,6 +360,8 @@ export const strings: Record<Lang, Dict> = {
     footerPrivacy: 'プライバシーポリシー',
     aiTranslatedLabel: 'AI翻訳',
     closeLightbox: '閉じる',
+    prevShot: '前のスクリーンショット',
+    nextShot: '次のスクリーンショット',
   },
   'zh-cn': {
     metaDescription:
@@ -407,5 +419,7 @@ export const strings: Record<Lang, Dict> = {
     footerPrivacy: '隐私政策',
     aiTranslatedLabel: 'AI 翻译',
     closeLightbox: '关闭',
+    prevShot: '上一张截图',
+    nextShot: '下一张截图',
   },
 };

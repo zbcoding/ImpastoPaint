@@ -99,7 +99,12 @@ const langEntries = Object.entries(languages) as [Lang, (typeof languages)[Lang]
 
   <dialog id="lightbox" class="lightbox">
     <button type="button" class="lightbox-close" aria-label={t.closeLightbox}>&times;</button>
-    <img id="lightbox-img" src="" alt="" />
+    <figure class="lightbox-frame">
+      <img id="lightbox-img" src="" alt="" />
+      <button type="button" class="lightbox-nav lightbox-prev" aria-label={t.prevShot}>&#8249;</button>
+      <button type="button" class="lightbox-nav lightbox-next" aria-label={t.nextShot}>&#8250;</button>
+      <figcaption id="lightbox-caption" class="lightbox-caption"></figcaption>
+    </figure>
   </dialog>
 
   <section id="about" class="section alt">
@@ -224,7 +229,22 @@ const langEntries = Object.entries(languages) as [Lang, (typeof languages)[Lang]
   .lightbox { border: none; background: transparent; padding: 0; max-width: 94vw; max-height: 94vh; }
   .lightbox[open] { display: flex; align-items: center; justify-content: center; }
   .lightbox::backdrop { background: rgba(0, 0, 0, 0.75); }
-  .lightbox img { display: block; max-width: 94vw; max-height: 94vh; border-radius: 8px; }
+  .lightbox-frame { position: relative; margin: 0; width: fit-content; }
+  .lightbox img { display: block; max-width: 94vw; max-height: calc(94vh - 3.5rem); border-radius: 8px 8px 0 0; }
+  /* contain: inline-size keeps the caption from widening the frame, so it matches the image. */
+  .lightbox-caption {
+    contain: inline-size; padding: 0.6rem 1rem; border-radius: 0 0 8px 8px;
+    background: var(--bg-raised); color: var(--fg); font-size: 0.95rem; text-align: center;
+  }
+  .lightbox-nav {
+    position: absolute; top: calc(50% - 1.75rem); width: 2.75rem; height: 2.75rem; transform: translateY(-50%);
+    display: flex; align-items: center; justify-content: center; padding: 0 0 0.2rem;
+    border: none; border-radius: 50%; background: var(--accent); color: #1a1305;
+    font-size: 2rem; line-height: 1; cursor: pointer; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.4);
+  }
+  .lightbox-nav:hover { opacity: 0.85; }
+  .lightbox-prev { left: 0.5rem; }
+  .lightbox-next { right: 0.5rem; }
   .lightbox-close {
     position: absolute; top: 0.5rem; right: 0.5rem; width: 2.75rem; height: 2.75rem;
     display: flex; align-items: center; justify-content: center; padding: 0;
@@ -235,7 +255,8 @@ const langEntries = Object.entries(languages) as [Lang, (typeof languages)[Lang]
 
   @media (max-width: 600px) {
     .lightbox { max-width: 100vw; max-height: 100vh; width: 100vw; height: 100vh; }
-    .lightbox img { max-width: 100vw; max-height: 100vh; border-radius: 0; object-fit: contain; }
+    .lightbox img { max-width: 100vw; max-height: calc(100vh - 3.5rem); border-radius: 0; object-fit: contain; }
+    .lightbox-caption { border-radius: 0; }
     .lightbox-close { top: calc(env(safe-area-inset-top, 0px) + 0.5rem); right: calc(env(safe-area-inset-right, 0px) + 0.5rem); }
   }
 
@@ -254,14 +275,31 @@ const langEntries = Object.entries(languages) as [Lang, (typeof languages)[Lang]
 <script>
   const lightbox = document.getElementById('lightbox') as HTMLDialogElement;
   const lightboxImg = document.getElementById('lightbox-img') as HTMLImageElement;
+  const lightboxCaption = document.getElementById('lightbox-caption') as HTMLElement;
   const lightboxClose = document.querySelector('.lightbox-close') as HTMLButtonElement;
+  const shots = [...document.querySelectorAll<HTMLButtonElement>('.shot-btn')];
+  let current = 0;
 
-  document.querySelectorAll<HTMLButtonElement>('.shot-btn').forEach((btn) => {
+  function showShot(index: number) {
+    current = (index + shots.length) % shots.length;
+    const btn = shots[current];
+    lightboxImg.src = btn.dataset.full ?? '';
+    lightboxImg.alt = btn.querySelector('img')?.alt ?? '';
+    lightboxCaption.textContent = btn.closest('figure')?.querySelector('figcaption')?.textContent ?? '';
+  }
+
+  shots.forEach((btn, index) => {
     btn.addEventListener('click', () => {
-      lightboxImg.src = btn.dataset.full ?? '';
-      lightboxImg.alt = btn.querySelector('img')?.alt ?? '';
+      showShot(index);
       lightbox.showModal();
     });
+  });
+
+  document.querySelector('.lightbox-prev')!.addEventListener('click', () => showShot(current - 1));
+  document.querySelector('.lightbox-next')!.addEventListener('click', () => showShot(current + 1));
+  lightbox.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowLeft') showShot(current - 1);
+    if (e.key === 'ArrowRight') showShot(current + 1);
   });
 
   lightboxClose.addEventListener('click', () => lightbox.close());

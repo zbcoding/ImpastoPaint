@@ -133,4 +133,30 @@ internal sealed class ModifierRegionFoldTest
 
 		Assert.That (folded, Is.EqualTo (new RectangleI (0, 0, Width, Height)));
 	}
+
+	// A node's settings dialog is non-modal and edits the settings in place, rebuilding the layer only
+	// when it closes, so a stroke can land while the composite still shows the old settings. Patching
+	// just the stroke would leave a window of new settings in a canvas of old ones.
+	[Test]
+	public void SettingsEditedSinceTheLastRebuildForceAWholeCanvasFold ()
+	{
+		UserLayer layer = new (RandomSurface (seed: 4));
+		GaussianBlurEffect blur = new (Utilities.CreateMockServices ());
+		blur.Data.Radius = 2;
+		layer.Objects.Add (new EffectModifierNode (blur));
+		ObjectOpacity.RenderLayerObjects (chrome: null!, layer);
+
+		blur.Data.Radius = 6;
+		blur.Data.FirePropertyChanged (nameof (GaussianBlurEffect.GaussianBlurData.Radius));
+		RectangleI stroke = new (50, 50, 10, 10);
+		PaintStroke (layer.Surface, stroke, red: 1);
+
+		RectangleI? folded = ObjectOpacity.FoldRasterRegionIntoComposite (chrome: null!, layer, stroke);
+		Assert.That (folded, Is.EqualTo (new RectangleI (0, 0, Width, Height)), "stale settings: rebuild everything");
+
+		// Once rebuilt with the new settings, the next stroke can be folded by region again.
+		PaintStroke (layer.Surface, stroke, red: 0);
+		folded = ObjectOpacity.FoldRasterRegionIntoComposite (chrome: null!, layer, stroke);
+		Assert.That (folded, Is.EqualTo (stroke.Inflated (6, 6)));
+	}
 }

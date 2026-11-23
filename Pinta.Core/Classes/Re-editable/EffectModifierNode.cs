@@ -121,6 +121,17 @@ public sealed class EffectModifierNode : ILayerModifierNode
 	internal int? SampleRadius => AppliesAnything ? Effect.SampleRadius : 0;
 
 	/// <summary>
+	/// Whether the last whole-layer render used the node's current settings. False while a node's
+	/// settings dialog (non-modal) edits them in place with no rebuild yet, or after
+	/// <see cref="InvalidateCache"/>: patching a region then would leave the rest on the old settings.
+	/// </summary>
+	internal bool RenderedWithCurrentSettings
+		=> !AppliesAnything
+			|| (cached_output is not null
+				&& ReferenceEquals (watched_data, Effect.EffectData)
+				&& cached_data_version == data_version);
+
+	/// <summary>
 	/// <see cref="Apply"/> rendering and writing only the pixels inside <paramref name="region"/>.
 	/// The result is exact wherever <paramref name="surface"/> is exact within
 	/// <see cref="SampleRadius"/> pixels; bypasses the render cache, which keys on the whole input.

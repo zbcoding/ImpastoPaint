@@ -145,8 +145,8 @@ public static class ObjectOpacity
 	/// <see cref="FoldRasterIntoComposite(IChromeService, UserLayer)"/> for a raster or mask edit
 	/// confined to <paramref name="changed"/>, for tools that fold per mouse move. Re-renders only the
 	/// part of the composite the edit can reach through the nodes' sample radii, and returns it for
-	/// the caller to invalidate: the whole canvas when a node is not local and the layer had to be
-	/// rebuilt, null when the layer has no composite.
+	/// the caller to invalidate: the whole canvas when the layer had to be rebuilt (a node is not local,
+	/// or the composite is not current), null when the layer has no composite.
 	/// </summary>
 	public static RectangleI? FoldRasterRegionIntoComposite (IChromeService chrome, UserLayer layer, RectangleI changed)
 	{
@@ -158,7 +158,7 @@ public static class ObjectOpacity
 			&& composite.Width == canvas.Width
 			&& composite.Height == canvas.Height;
 
-		if (ModifierSampleRadius (layer) is not int radius || !compositeFitsCanvas) {
+		if (RegionFoldRadius (layer) is not int radius || !compositeFitsCanvas) {
 			RenderLayerObjects (chrome, layer);
 			return canvas;
 		}
@@ -170,15 +170,16 @@ public static class ObjectOpacity
 		return affected;
 	}
 
-	// How far an edit can spread through the layer's modifier nodes, stacked; null when one is not local.
-	private static int? ModifierSampleRadius (UserLayer layer)
+	// How far an edit can spread through the layer's modifier nodes, stacked. Null when a node is not
+	// local, or its settings changed since the composite was built: then only a full rebuild is right.
+	private static int? RegionFoldRadius (UserLayer layer)
 	{
 		int total = 0;
 		foreach (ILayerObject obj in layer.Objects) {
 			if (obj is not ILayerModifierNode)
 				continue;
 
-			if (obj is not EffectModifierNode { SampleRadius: int radius })
+			if (obj is not EffectModifierNode { SampleRadius: int radius, RenderedWithCurrentSettings: true })
 				return null;
 
 			total += radius;

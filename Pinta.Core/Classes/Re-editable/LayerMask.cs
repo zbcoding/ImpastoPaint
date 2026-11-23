@@ -38,12 +38,28 @@ public sealed class LayerMask
 	/// erase it. Both surfaces must be the same size.
 	/// </summary>
 	public static void ApplyMask (ImageSurface target, ImageSurface mask)
-	{
-		Span<ColorBgra> dst = target.GetPixelData ();
-		ReadOnlySpan<ColorBgra> src = mask.GetReadOnlyPixelData ();
-		int n = Math.Min (dst.Length, src.Length);
+		=> ApplyMask (target, mask, new RectangleI (0, 0, target.Width, target.Height));
 
-		for (int i = 0; i < n; i++) {
+	/// <summary><see cref="ApplyMask(ImageSurface, ImageSurface)"/> for the pixels inside
+	/// <paramref name="region"/> only.</summary>
+	public static void ApplyMask (ImageSurface target, ImageSurface mask, RectangleI region)
+	{
+		RectangleI bounds = region
+			.Intersect (new RectangleI (0, 0, target.Width, target.Height))
+			.Intersect (new RectangleI (0, 0, mask.Width, mask.Height));
+		if (bounds.IsEmpty)
+			return;
+
+		System.Threading.Tasks.Parallel.For (bounds.Top, bounds.Bottom + 1, y => {
+			Span<ColorBgra> dst = target.GetPixelData ().Slice ((y * target.Width) + bounds.Left, bounds.Width);
+			ReadOnlySpan<ColorBgra> src = mask.GetReadOnlyPixelData ().Slice ((y * mask.Width) + bounds.Left, bounds.Width);
+			MaskRow (dst, src);
+		});
+	}
+
+	private static void MaskRow (Span<ColorBgra> dst, ReadOnlySpan<ColorBgra> src)
+	{
+		for (int i = 0; i < dst.Length; i++) {
 			byte m = src[i].A;
 			if (m == 255)
 				continue;

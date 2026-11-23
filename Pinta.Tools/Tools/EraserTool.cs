@@ -167,10 +167,10 @@ public sealed class EraserTool : BaseBrushTool
 		else
 			document.Workspace.Invalidate (document.ClampToImageSize (dirty));
 
-		// See FoldRasterIntoComposite: a layer with effect nodes is painted from its accumulated
-		// surface, so a live stroke on the raster alone would not appear until it was committed.
-		if (ObjectOpacity.FoldRasterIntoComposite (PintaCore.Chrome, document.Layers.CurrentUserLayer))
-			document.Workspace.Invalidate ();
+		// See FoldRasterRegionIntoComposite: a layer with effect nodes or a mask is painted from its
+		// accumulated surface, so a live stroke on the raster alone would not appear until it was committed.
+		if (ObjectOpacity.FoldRasterRegionIntoComposite (PintaCore.Chrome, document.Layers.CurrentUserLayer, dirty) is RectangleI folded)
+			document.Workspace.Invalidate (folded);
 
 		last_point = newPoint;
 	}

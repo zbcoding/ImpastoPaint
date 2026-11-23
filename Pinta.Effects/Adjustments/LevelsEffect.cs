@@ -18,6 +18,8 @@ public sealed class LevelsEffect : BaseEffect
 {
 	public sealed override bool IsTileable => true;
 
+	public override int? SampleRadius => 0;
+
 	public override string Icon => Pinta.Resources.Icons.AdjustmentsLevels;
 
 	public override string Name => Translations.GetString ("Levels");

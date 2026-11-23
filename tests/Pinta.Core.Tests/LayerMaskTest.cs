@@ -306,4 +306,54 @@ internal sealed class LayerMaskTest
 		Assert.That (layer.Mask.Surface.GetColorBgra (new PointI (0, 0)).A, Is.EqualTo (255),
 			"clearing the copy must not touch the original's mask");
 	}
+
+	private static ImageSurface RandomPremultipliedSurface (Random random, int width, int height)
+	{
+		ImageSurface surface = CairoExtensions.CreateImageSurface (Format.Argb32, width, height);
+		Span<ColorBgra> pixels = surface.GetPixelData ();
+		for (int i = 0; i < pixels.Length; i++) {
+			byte alpha = (byte) random.Next (256);
+			// Every opacity extreme occurs, so the 255 short-cut and full erasure are both exercised.
+			if (i % 7 == 0)
+				alpha = (byte) (i % 2 == 0 ? 255 : 0);
+			pixels[i] = ColorBgra.FromBgra (
+				(byte) random.Next (256), (byte) random.Next (256), (byte) random.Next (256), alpha).ToPremultipliedAlpha ();
+		}
+		surface.MarkDirty ();
+		return surface;
+	}
+
+	// ApplyMask must scale each premultiplied channel by the mask alpha with truncating integer
+	// maths, exactly what saved and on-screen composites were produced with, and the region form must
+	// touch nothing outside its region. The reference below is that per-pixel formula written out.
+	[Test]
+	public void ApplyMaskScalesEveryChannelByTruncatedMaskAlphaWithinTheRegionOnly ()
+	{
+		const int width = 61, height = 37;
+		Random random = new (5);
+		using ImageSurface mask = RandomPremultipliedSurface (random, width, height);
+		using ImageSurface whole = RandomPremultipliedSurface (random, width, height);
+		using ImageSurface regional = EffectModifierNode.CopyOf (whole);
+		ColorBgra[] original = whole.GetReadOnlyPixelData ().ToArray ();
+		ColorBgra[] maskPixels = mask.GetReadOnlyPixelData ().ToArray ();
+		RectangleI region = new (9, 4, 30, 20);
+
+		LayerMask.ApplyMask (whole, mask);
+		LayerMask.ApplyMask (regional, mask, region);
+
+		ReadOnlySpan<ColorBgra> wholeResult = whole.GetReadOnlyPixelData ();
+		ReadOnlySpan<ColorBgra> regionalResult = regional.GetReadOnlyPixelData ();
+		for (int y = 0; y < height; y++) {
+			for (int x = 0; x < width; x++) {
+				int i = y * width + x;
+				ColorBgra c = original[i];
+				int m = maskPixels[i].A;
+				ColorBgra expected = ColorBgra.FromBgra (
+					(byte) (c.B * m / 255), (byte) (c.G * m / 255), (byte) (c.R * m / 255), (byte) (c.A * m / 255));
+
+				Assert.That (wholeResult[i], Is.EqualTo (expected), $"whole-surface mask at ({x}, {y})");
+				Assert.That (regionalResult[i], Is.EqualTo (region.Contains (x, y) ? expected : c), $"region mask at ({x}, {y})");
+			}
+		}
+	}
 }

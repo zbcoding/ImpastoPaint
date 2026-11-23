@@ -142,6 +142,83 @@ public static class ObjectOpacity
 	}
 
 	/// <summary>
+	/// <see cref="FoldRasterIntoComposite(IChromeService, UserLayer)"/> for a raster or mask edit
+	/// confined to <paramref name="changed"/>, for tools that fold per mouse move. Re-renders only the
+	/// part of the composite the edit can reach through the nodes' sample radii, and returns it for
+	/// the caller to invalidate: the whole canvas when a node is not local and the layer had to be
+	/// rebuilt, null when the layer has no composite.
+	/// </summary>
+	public static RectangleI? FoldRasterRegionIntoComposite (IChromeService chrome, UserLayer layer, RectangleI changed)
+	{
+		if (!layer.NeedsComposite)
+			return null;
+
+		RectangleI canvas = new (0, 0, layer.Surface.Width, layer.Surface.Height);
+		bool compositeFitsCanvas = layer.Composite is { } composite
+			&& composite.Width == canvas.Width
+			&& composite.Height == canvas.Height;
+
+		if (ModifierSampleRadius (layer) is not int radius || !compositeFitsCanvas) {
+			RenderLayerObjects (chrome, layer);
+			return canvas;
+		}
+
+		RectangleI affected = changed.Inflated (radius, radius).Intersect (canvas);
+		if (!affected.IsEmpty)
+			RenderCompositeRegion (chrome, layer, affected, affected.Inflated (radius, radius).Intersect (canvas));
+
+		return affected;
+	}
+
+	// How far an edit can spread through the layer's modifier nodes, stacked; null when one is not local.
+	private static int? ModifierSampleRadius (UserLayer layer)
+	{
+		int total = 0;
+		foreach (ILayerObject obj in layer.Objects) {
+			if (obj is not ILayerModifierNode)
+				continue;
+
+			if (obj is not EffectModifierNode { SampleRadius: int radius })
+				return null;
+
+			total += radius;
+		}
+		return total;
+	}
+
+	/// <summary>
+	/// Rewrites <paramref name="affected"/> of the layer's existing composite. The stack runs over
+	/// <paramref name="window"/>, which is <paramref name="affected"/> grown by the stacked sample
+	/// radius: each node's output is exact a radius further inside the window than its input was,
+	/// so what is left exact at the end is the affected area.
+	/// </summary>
+	// ponytail: shape and text objects still render whole on every fold (full-size scratch when
+	// faded or blended). Clip them to the window if painting near many objects ever lags.
+	private static void RenderCompositeRegion (IChromeService chrome, UserLayer layer, RectangleI affected, RectangleI window)
+	{
+		using ImageSurface accumulator = EffectModifierNode.CopyOf (layer.Surface, window);
+		foreach (ILayerObject obj in layer.Objects) {
+			// ModifierSampleRadius admitted only effect nodes, so every modifier here is one.
+			if (obj is EffectModifierNode node)
+				node.ApplyWithin (accumulator, window);
+			else
+				RenderObject (accumulator, layer, obj, chrome);
+		}
+
+		if (layer.Mask is { Hidden: false } mask)
+			LayerMask.ApplyMask (accumulator, mask.Surface, affected);
+
+		accumulator.MarkDirty ();
+
+		using Context g = new (layer.Composite!);
+		g.Rectangle (affected.ToDouble ());
+		g.Clip ();
+		g.Operator = Operator.Source;
+		g.SetSourceSurface (accumulator, 0, 0);
+		g.Paint ();
+	}
+
+	/// <summary>
 	/// The redraw-path counterpart of <see cref="FoldRasterIntoComposite"/>: after redrawing the
 	/// shared ObjectLayer surface, folds it into the accumulated composite for a layer carrying
 	/// modifier nodes (no-op otherwise), and invalidates the whole workspace when it folded — an

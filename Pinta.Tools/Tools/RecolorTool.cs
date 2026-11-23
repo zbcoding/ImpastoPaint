@@ -287,10 +287,10 @@ public class RecolorTool : BaseBrushTool
 
 		document.Workspace.Invalidate (roi);
 
-		// See FoldRasterIntoComposite: a layer with effect nodes is painted from its accumulated
-		// surface, so a live stroke on the raster alone would not appear until it was committed.
-		if (ObjectOpacity.FoldRasterIntoComposite (PintaCore.Chrome, document.Layers.CurrentUserLayer))
-			document.Workspace.Invalidate ();
+		// See FoldRasterRegionIntoComposite: a layer with effect nodes or a mask is painted from its
+		// accumulated surface, so a live stroke on the raster alone would not appear until it was committed.
+		if (ObjectOpacity.FoldRasterRegionIntoComposite (PintaCore.Chrome, document.Layers.CurrentUserLayer, roi) is RectangleI folded)
+			document.Workspace.Invalidate (folded);
 
 		last_point = new PointI (x, y);
 	}

@@ -107,12 +107,48 @@ public sealed class EffectModifierNode : ILayerModifierNode
 	/// </summary>
 	public void Apply (ImageSurface surface)
 	{
-		if (Hidden || Opacity <= 0)
+		if (!AppliesAnything)
 			return;
 
 		using ImageSurface rendered = Render (surface);
+		BlendBack (surface, rendered, null);
+	}
 
+	/// <summary>
+	/// How far a change to this node's input can spread through it: 0 when the node applies nothing,
+	/// null when the effect is not local (see <see cref="BaseEffect.SampleRadius"/>).
+	/// </summary>
+	internal int? SampleRadius => AppliesAnything ? Effect.SampleRadius : 0;
+
+	/// <summary>
+	/// <see cref="Apply"/> rendering and writing only the pixels inside <paramref name="region"/>.
+	/// The result is exact wherever <paramref name="surface"/> is exact within
+	/// <see cref="SampleRadius"/> pixels; bypasses the render cache, which keys on the whole input.
+	/// </summary>
+	internal void ApplyWithin (ImageSurface surface, RectangleI region)
+	{
+		if (!AppliesAnything)
+			return;
+
+		using ImageSurface rendered = CopyOf (surface, region);
+
+		RectangleI bounds = RenderBoundsIn (surface).Intersect (region);
+		if (!bounds.IsEmpty && !TryRenderTiled (surface, rendered, bounds))
+			return;
+
+		rendered.MarkDirty ();
+		BlendBack (surface, rendered, region);
+	}
+
+	private bool AppliesAnything => !Hidden && Opacity > 0;
+
+	private void BlendBack (ImageSurface surface, ImageSurface rendered, RectangleI? region)
+	{
 		using Context g = new (surface);
+		if (region is RectangleI box) {
+			g.Rectangle (box.ToDouble ());
+			g.Clip ();
+		}
 		if (Clip is not null) {
 			g.AppendPath (Clip.SelectionPath);
 			g.FillRule = FillRule.EvenOdd;
@@ -156,13 +192,7 @@ public sealed class EffectModifierNode : ILayerModifierNode
 		using ImageSurface source = CopyOf (input);
 		ImageSurface rendered = CopyOf (input);
 
-		try {
-			RenderTiled (source, rendered, RenderBoundsIn (input));
-		} catch (Exception e) {
-			// A node re-renders on every paint stroke, undo and visibility toggle, so an effect that
-			// throws would otherwise take the application down mid-edit - and add-in effects are code
-			// this build cannot vouch for. The node contributes nothing instead, loudly.
-			Console.Error.WriteLine ($"Effect \"{Effect.Name}\" failed while rendering a layer effect node: {e}");
+		if (!TryRenderTiled (source, rendered, RenderBoundsIn (input))) {
 			rendered.Dispose ();
 			rendered = CopyOf (input);
 		}
@@ -175,6 +205,20 @@ public sealed class EffectModifierNode : ILayerModifierNode
 		cached_data_version = data_version;
 
 		return rendered;
+	}
+
+	// A node re-renders on every paint stroke, undo and visibility toggle, so an effect that throws
+	// would otherwise take the application down mid-edit - and add-in effects are code this build
+	// cannot vouch for. On false the node contributes nothing instead, loudly.
+	private bool TryRenderTiled (ImageSurface source, ImageSurface destination, RectangleI bounds)
+	{
+		try {
+			RenderTiled (source, destination, bounds);
+			return true;
+		} catch (Exception e) {
+			Console.Error.WriteLine ($"Effect \"{Effect.Name}\" failed while rendering a layer effect node: {e}");
+			return false;
+		}
 	}
 
 	// The region handed to the effect. The live preview runs the effect over the selection's bounding
@@ -255,6 +299,20 @@ public sealed class EffectModifierNode : ILayerModifierNode
 	{
 		ImageSurface copy = CairoExtensions.CreateImageSurface (source.Format, source.Width, source.Height);
 		using Context g = new (copy);
+		g.SetSourceSurface (source, 0, 0);
+		g.Paint ();
+		copy.MarkDirty ();
+		return copy;
+	}
+
+	/// <summary>A same-size surface holding <paramref name="source"/>'s pixels inside
+	/// <paramref name="region"/> and transparent elsewhere.</summary>
+	internal static ImageSurface CopyOf (ImageSurface source, RectangleI region)
+	{
+		ImageSurface copy = CairoExtensions.CreateImageSurface (source.Format, source.Width, source.Height);
+		using Context g = new (copy);
+		g.Rectangle (region.ToDouble ());
+		g.Clip ();
 		g.SetSourceSurface (source, 0, 0);
 		g.Paint ();
 		copy.MarkDirty ();

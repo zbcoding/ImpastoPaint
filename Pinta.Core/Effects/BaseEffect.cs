@@ -46,6 +46,12 @@ public abstract class BaseEffect
 	public abstract bool IsTileable { get; }
 
 	/// <summary>
+	/// When set, each output pixel depends only on source pixels within this many pixels of it, never on
+	/// the region rendered or whole-image statistics, so a layer effect node can re-render just a changed area.
+	/// </summary>
+	public virtual int? SampleRadius => null;
+
+	/// <summary>
 	/// Returns the name of the effect, displayed to the user in the Adjustments/Effects menu and history pad.
 	/// </summary>
 	public abstract string Name { get; }

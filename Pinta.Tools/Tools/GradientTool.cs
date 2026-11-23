@@ -284,8 +284,8 @@ public sealed class GradientTool : BaseTool
 
 		// The gradient went onto the layer's own raster, which is not what the canvas paints for a
 		// layer carrying effect nodes — without this the drag looks like it did nothing.
-		if (ObjectOpacity.FoldRasterIntoComposite (PintaCore.Chrome, document.Layers.CurrentUserLayer))
-			document.Workspace.Invalidate ();
+		if (ObjectOpacity.FoldRasterRegionIntoComposite (PintaCore.Chrome, document.Layers.CurrentUserLayer, selection_bounds) is RectangleI folded)
+			document.Workspace.Invalidate (folded);
 	}
 
 	public GradientData Data {

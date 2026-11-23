@@ -25,6 +25,9 @@ public sealed class GaussianBlurEffect : BaseEffect
 
 	public sealed override bool IsTileable => false;
 
+	// Both passes read at most Radius pixels away (see Render).
+	public override int? SampleRadius => Data.Radius;
+
 	public override string Name => Translations.GetString ("Gaussian Blur");
 
 	public override bool IsConfigurable => true;
@@ -91,16 +94,8 @@ public sealed class GaussianBlurEffect : BaseEffect
 		int height = src.Height;
 		int threads = system.RenderThreads;
 
-		// --- Intermediate horizontal-pass buffers (one entry per pixel) ---
-		int size = width * height;
-		int[] h_b = new int[size];
-		int[] h_g = new int[size];
-		int[] h_r = new int[size];
-		int[] h_a = new int[size];
-
 		// This effect is non-tileable, so the caller supplies the full render
-		// bounds. To avoid re-allocating for each region, the horizontal sums
-		// are recomputed into the shared buffers, so process regions sequentially.
+		// bounds; regions are processed sequentially.
 		foreach (var rect in rois) {
 
 			if (rect.Width < 1 || rect.Height < 1)
@@ -132,6 +127,15 @@ public sealed class GaussianBlurEffect : BaseEffect
 				h_weight_sums[x - xstart] = sum;
 			}
 
+			// --- Intermediate horizontal-pass buffers, one entry per pixel of the
+			// expanded region (rows hystart..hyend, columns xstart..xend) ---
+			int columns = xend - xstart;
+			int size = columns * (hyend - hystart);
+			int[] h_b = new int[size];
+			int[] h_g = new int[size];
+			int[] h_r = new int[size];
+			int[] h_a = new int[size];
+
 			// --- Pass 1: Horizontal convolution (parallelized by row) ---
 			Parallel.For (hystart, hyend,
 				new ParallelOptions { MaxDegreeOfParallelism = threads },
@@ -156,7 +160,7 @@ public sealed class GaussianBlurEffect : BaseEffect
 							s_a += w * c.A;
 						}
 
-						int idx = row_offset + x;
+						int idx = ((y - hystart) * columns) + (x - xstart);
 						h_b[idx] = s_b;
 						h_g[idx] = s_g;
 						h_r[idx] = s_r;
@@ -169,7 +173,7 @@ public sealed class GaussianBlurEffect : BaseEffect
 				new ParallelOptions { MaxDegreeOfParallelism = threads },
 				y => {
 					Span<ColorBgra> dst_data = dest.GetPixelData ();
-					RenderVerticalRow (dst_data, y, xstart, xend, width, height, r, weights, wlen, h_b, h_g, h_r, h_a, h_weight_sums);
+					RenderVerticalRow (dst_data, y, xstart, xend, hystart, width, height, r, weights, wlen, h_b, h_g, h_r, h_a, h_weight_sums);
 				});
 		}
 	}
@@ -177,7 +181,7 @@ public sealed class GaussianBlurEffect : BaseEffect
 	private static void RenderVerticalRow (
 		Span<ColorBgra> dst_data,
 		int y,
-		int xstart, int xend,
+		int xstart, int xend, int hystart,
 		int width, int height, int r,
 		ImmutableArray<int> weights, int wlen,
 		int[] h_b, int[] h_g, int[] h_r, int[] h_a,
@@ -213,7 +217,7 @@ public sealed class GaussianBlurEffect : BaseEffect
 			for (int wy = wy_start; wy < wy_end; ++wy) {
 				int src_y = y + wy - r;
 				int w = weights[wy];
-				int row_offset = src_y * width + xstart;
+				int row_offset = (src_y - hystart) * columns;
 
 				AccumulateRow (sum_b, h_b, row_offset, columns, w);
 				AccumulateRow (sum_g, h_g, row_offset, columns, w);

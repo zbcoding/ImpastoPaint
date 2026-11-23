@@ -18,6 +18,8 @@ public sealed class PosterizeEffect : BaseEffect
 {
 	public sealed override bool IsTileable => true;
 
+	public override int? SampleRadius => 0;
+
 	public override string Icon => Pinta.Resources.Icons.AdjustmentsPosterize;
 
 	public override string Name => Translations.GetString ("Posterize");

@@ -22,6 +22,8 @@ public sealed class InvertColorsEffect : BaseEffect
 	public sealed override bool IsTileable
 		=> true;
 
+	public override int? SampleRadius => 0;
+
 	public override string Icon
 		=> Resources.Icons.AdjustmentsInvertColors;
 

@@ -8,7 +8,20 @@ entries, is upstream Pinta work; the Impasto sections cover changes made in this
 
 ## Impasto - [Unreleased](https://github.com/zbcoding/ImpastoPaint/compare/v0.7.4...main)
 
-Changes for the next release go here.
+### Changed
+
+- Painting with the pencil, eraser, recolor or gradient on a layer that has a mask or local
+  effect nodes (Gaussian Blur, colour adjustments) redraws only around the stroke instead of
+  the whole layer on every mouse move. The paint brush and clone stamp no longer rebuild the
+  layer mid-stroke.
+- Median, Sharpen, Outline Edge, Unfocus and Reduce Noise render about 2–4x faster.
+- Layer effect nodes check for changed input faster, and Dents and Polar Inversion no longer
+  allocate memory per pixel.
+
+### Fixed
+
+- Global fill and magic wand could miss matching pixels on tall images because threads
+  overwrote each other's bits.
 
 ## Impasto - [0.7.4](https://github.com/zbcoding/ImpastoPaint/releases/tag/v0.7.4) - 2026-11-23
 

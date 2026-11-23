@@ -57,7 +57,8 @@ internal sealed class PreferencesAction : IActionHandler
 			settings.GetSetting (SettingNames.STATUSBAR_SHOW_CURSOR_POSITION, true),
 			settings.GetSetting (SettingNames.STATUSBAR_SHOW_IMAGE_SIZE, true),
 			settings.GetSetting (SettingNames.TOOLBAR_SHOWN, true),
-			settings.GetSetting (SettingNames.SKIP_RASTERIZE_OBJECTS_DIALOG, false));
+			settings.GetSetting (SettingNames.SKIP_RASTERIZE_OBJECTS_DIALOG, false),
+			settings.GetSetting (SettingNames.CHECK_FOR_UPDATES, true));
 
 		try {
 			if (await dialog.RunAsync () != Gtk.ResponseType.Ok)
@@ -80,6 +81,11 @@ internal sealed class PreferencesAction : IActionHandler
 			chrome.MainToolBar?.SetVisible (dialog.ShowMainToolBar);
 			PintaCore.Actions.SetStatusBarCursorPositionVisible (dialog.StatusBarShowCursorPosition);
 			PintaCore.Actions.SetStatusBarImageSizeVisible (dialog.StatusBarShowImageSize);
+
+			// Turning the check back on takes effect at the next start, when it runs.
+			settings.PutSetting (SettingNames.CHECK_FOR_UPDATES, dialog.CheckForUpdates);
+			if (!dialog.CheckForUpdates)
+				PintaCore.Actions.File.HideUpdateCommand ();
 
 			// The dropdown replaces the tool box, so turning it on hides the column of tool
 			// buttons and turning it off brings them back. Only on the change: View > Tool Box

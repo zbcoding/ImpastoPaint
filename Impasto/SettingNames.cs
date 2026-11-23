@@ -45,6 +45,8 @@ internal static class SettingNames
 	// Impasto: add a third row of darker colors to the default palette.
 	internal const string EXTENDED_PALETTE_ROWS = "extended-palette-rows";
 	internal const string RECENT_COLORS_COUNT = "recent-colors-count";
+	// Impasto: look up the latest GitHub release on startup and link it from the File menu.
+	internal const string CHECK_FOR_UPDATES = "check-for-updates";
 	internal const string LAST_DIALOG_DIRECTORY = "last-dialog-directory";
 	internal const string LAST_SELECTED_TOOL = "last-selected-tool";
 

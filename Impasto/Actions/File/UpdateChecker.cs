@@ -42,6 +42,9 @@ internal static class UpdateChecker
 	private const string Repo = "ImpastoPaint";
 	private const string LatestReleaseApi = $"https://api.github.com/repos/{Owner}/{Repo}/releases/latest";
 
+	/// <summary>Web page of the newest release, linked when the API lookup fails.</summary>
+	public const string LatestReleasePage = $"https://github.com/{Owner}/{Repo}/releases/latest";
+
 	/// <summary>
 	/// Returns the newest release on GitHub, or <see langword="null"/> if it
 	/// can't be determined (e.g. no network connection).

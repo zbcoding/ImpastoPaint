@@ -31,25 +31,32 @@ internal sealed class UpdateImpastoAction : IActionHandler
 {
 	private readonly FileActions file;
 	private readonly SystemManager system;
+	private readonly SettingsManager settings;
 	private string? release_url;
 
-	internal UpdateImpastoAction (FileActions file, SystemManager system)
+	internal UpdateImpastoAction (FileActions file, SystemManager system, SettingsManager settings)
 	{
 		this.file = file;
 		this.system = system;
+		this.settings = settings;
 	}
 
 	void IActionHandler.Initialize ()
 	{
 		file.UpdateImpasto.Activated += UpdateImpasto_Activated;
+		file.CheckForUpdates.Activated += UpdateImpasto_Activated;
 
-		// Fire-and-forget: enable the menu item when a newer release is found.
+		if (!settings.GetSetting (SettingNames.CHECK_FOR_UPDATES, true))
+			return;
+
+		// Fire-and-forget: reveal a File menu item once the lookup finishes.
 		_ = CheckForUpdatesAsync ();
 	}
 
 	void IActionHandler.Uninitialize ()
 	{
 		file.UpdateImpasto.Activated -= UpdateImpasto_Activated;
+		file.CheckForUpdates.Activated -= UpdateImpasto_Activated;
 	}
 
 	private async void UpdateImpasto_Activated (object sender, EventArgs e)
@@ -58,21 +65,24 @@ internal sealed class UpdateImpastoAction : IActionHandler
 			await system.LaunchUri (release_url);
 	}
 
+	// The awaiting continuation runs on the UI thread (GLib SynchronizationContext),
+	// so it's safe to touch the menu here.
 	private async System.Threading.Tasks.Task CheckForUpdatesAsync ()
 	{
 		ReleaseInfo? latest = await UpdateChecker.GetLatestReleaseAsync ();
-		if (latest is null)
+
+		// Offline, or sandboxed without network access (e.g. Flatpak): let the user
+		// look at the releases page themselves.
+		if (latest is null) {
+			release_url = UpdateChecker.LatestReleasePage;
+			file.ShowUpdateCommand (updateAvailable: false);
+			return;
+		}
+
+		if (!UpdateChecker.IsNewer (latest.TagName, PintaCore.ApplicationVersion))
 			return;
 
-		// The app's version is the assembly informational version (e.g. "0.0.1f").
-		string current = PintaCore.ApplicationVersion;
-
-		if (UpdateChecker.IsNewer (latest.TagName, current)) {
-			release_url = latest.HtmlUrl;
-
-			// The awaiting continuation runs on the UI thread (GLib SynchronizationContext),
-			// so it's safe to touch the menu here.
-			file.ShowUpdateCommand ();
-		}
+		release_url = latest.HtmlUrl;
+		file.ShowUpdateCommand (updateAvailable: true);
 	}
 }

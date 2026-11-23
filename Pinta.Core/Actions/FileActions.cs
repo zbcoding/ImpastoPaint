@@ -50,15 +50,28 @@ public sealed class FileActions
 	/// <summary>Added to the File menu by the update checker when a newer release is available.</summary>
 	public Command UpdateImpasto { get; }
 
+	/// <summary>Added to the File menu instead of <see cref="UpdateImpasto"/> when the latest release couldn't be looked up.</summary>
+	public Command CheckForUpdates { get; }
+
 	// Empty until ShowUpdateCommand() is called; GTK doesn't render empty sections.
 	private readonly Gio.Menu update_section = Gio.Menu.New ();
 
-	/// <summary>Reveals the "Update Impasto..." item in the File menu.</summary>
-	public void ShowUpdateCommand ()
+	/// <summary>
+	/// Reveals "Update Impasto..." in the File menu, or "Check for Updates..." when
+	/// it's unknown whether a newer release exists.
+	/// </summary>
+	public void ShowUpdateCommand (bool updateAvailable)
 	{
-		if (update_section.GetNItems () == 0)
-			update_section.AppendItem (UpdateImpasto.CreateMenuItem ());
+		if (update_section.GetNItems () > 0)
+			return;
+
+		Command command = updateAvailable ? UpdateImpasto : CheckForUpdates;
+		update_section.AppendItem (command.CreateMenuItem ());
 	}
+
+	/// <summary>Removes whichever update item <see cref="ShowUpdateCommand"/> revealed.</summary>
+	public void HideUpdateCommand ()
+		=> update_section.RemoveAll ();
 
 	/// <summary>Submenu populated with recently-opened files by the GUI layer.</summary>
 	public Gio.Menu OpenRecentMenu { get; } = Gio.Menu.New ();
@@ -140,6 +153,14 @@ public sealed class FileActions
 			ShortLabel = Translations.GetString ("Update Impasto")
 		};
 
+		CheckForUpdates = new Command (
+			"checkForUpdates",
+			Translations.GetString ("Check for Updates..."),
+			null,
+			Resources.StandardIcons.SoftwareUpdateAvailable) {
+			ShortLabel = Translations.GetString ("Check for Updates")
+		};
+
 		this.system = system;
 		this.app = app;
 	}
@@ -180,7 +201,8 @@ public sealed class FileActions
 			SaveAsProject,
 
 			Close,
-			UpdateImpasto]);
+			UpdateImpasto,
+			CheckForUpdates]);
 
 		if (!isMac)
 			application.AddCommand (app.Exit); // This is part of the application menu on macOS

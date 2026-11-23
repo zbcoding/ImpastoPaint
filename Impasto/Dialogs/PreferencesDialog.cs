@@ -27,6 +27,7 @@ public sealed partial class PreferencesDialog
 	private Gtk.CheckButton tool_selector_dropdown_check_button;
 	private Gtk.CheckButton skip_rasterize_objects_dialog_check_button;
 	private Gtk.CheckButton show_main_toolbar_check_button;
+	private Gtk.CheckButton check_for_updates_check_button;
 	private Gtk.CheckButton statusbar_show_cursor_position_check_button;
 	private Gtk.CheckButton statusbar_show_image_size_check_button;
 	private Gtk.ToggleButton popover_hint_mode_all_button;
@@ -59,12 +60,13 @@ public sealed partial class PreferencesDialog
 	public bool ShowMainToolBar => show_main_toolbar_check_button.Active;
 	public bool StatusBarShowCursorPosition => statusbar_show_cursor_position_check_button.Active;
 	public bool StatusBarShowImageSize => statusbar_show_image_size_check_button.Active;
+	public bool CheckForUpdates => check_for_updates_check_button.Active;
 	public PopoverHintMode PopoverHintMode
 		=> popover_hint_mode_all_button.Active ? PopoverHintMode.All
 			: popover_hint_mode_tool_buttons_button.Active ? PopoverHintMode.ToolButtonsOnly
 			: PopoverHintMode.None;
 
-	internal static PreferencesDialog New (ChromeManager chrome, int defaultCanvasWidth, int defaultCanvasHeight, Cairo.Color canvasSurroundColor, bool canvasSurroundColorIsDefault, Cairo.Color defaultCanvasSurroundColor, bool pasteExternalImagesToNewLayer, bool extendedPaletteRows, int recentColorsCount, int paletteSize, bool toolboxClassicLayout, bool toolSettingsWrapRows, bool toolSelectorDropDown, PopoverHintMode popoverHintMode, bool statusBarShowCursorPosition, bool statusBarShowImageSize, bool showMainToolBar, bool skipRasterizeObjectsDialog)
+	internal static PreferencesDialog New (ChromeManager chrome, int defaultCanvasWidth, int defaultCanvasHeight, Cairo.Color canvasSurroundColor, bool canvasSurroundColorIsDefault, Cairo.Color defaultCanvasSurroundColor, bool pasteExternalImagesToNewLayer, bool extendedPaletteRows, int recentColorsCount, int paletteSize, bool toolboxClassicLayout, bool toolSettingsWrapRows, bool toolSelectorDropDown, PopoverHintMode popoverHintMode, bool statusBarShowCursorPosition, bool statusBarShowImageSize, bool showMainToolBar, bool skipRasterizeObjectsDialog, bool checkForUpdates)
 	{
 		PreferencesDialog dialog = NewWithProperties ([]);
 		dialog.canvas_width_spinner.Value = defaultCanvasWidth;
@@ -86,6 +88,7 @@ public sealed partial class PreferencesDialog
 		dialog.SetPopoverHintMode (popoverHintMode);
 		dialog.statusbar_show_cursor_position_check_button.Active = statusBarShowCursorPosition;
 		dialog.statusbar_show_image_size_check_button.Active = statusBarShowImageSize;
+		dialog.check_for_updates_check_button.Active = checkForUpdates;
 		dialog.TransientFor = chrome.MainWindow;
 		return dialog;
 	}
@@ -104,6 +107,7 @@ public sealed partial class PreferencesDialog
 	[MemberNotNull (nameof (show_main_toolbar_check_button))]
 	[MemberNotNull (nameof (statusbar_show_cursor_position_check_button))]
 	[MemberNotNull (nameof (statusbar_show_image_size_check_button))]
+	[MemberNotNull (nameof (check_for_updates_check_button))]
 	[MemberNotNull (nameof (popover_hint_mode_all_button))]
 	[MemberNotNull (nameof (popover_hint_mode_tool_buttons_button))]
 	[MemberNotNull (nameof (popover_hint_mode_none_button))]
@@ -307,6 +311,14 @@ public sealed partial class PreferencesDialog
 		statusbarImageSizeRow.Append (CreateResetButton (ResetStatusBarShowImageSize));
 		popoverHintPage.Append (statusbarImageSizeRow);
 
+		Gtk.CheckButton checkForUpdatesCheckButton = Gtk.CheckButton.NewWithLabel (Translations.GetString ("Check for updates on startup"));
+		checkForUpdatesCheckButton.TooltipText = Translations.GetString ("Looks up the latest release on GitHub when Impasto starts. The File menu then links to it when it is newer, or to the releases page when the lookup fails. Turning this off also removes that menu item.");
+		Gtk.Box checkForUpdatesRow = Gtk.Box.New (Gtk.Orientation.Horizontal, SPACING);
+		checkForUpdatesCheckButton.Hexpand = true;
+		checkForUpdatesRow.Append (checkForUpdatesCheckButton);
+		checkForUpdatesRow.Append (CreateResetButton (ResetCheckForUpdates));
+		popoverHintPage.Append (checkForUpdatesRow);
+
 		Gtk.Button exportSettingsButton = Gtk.Button.NewWithLabel (Translations.GetString ("Export Settings..."));
 		exportSettingsButton.OnClicked += ExportSettings;
 		Gtk.Button importSettingsButton = Gtk.Button.NewWithLabel (Translations.GetString ("Import Settings..."));
@@ -348,6 +360,7 @@ public sealed partial class PreferencesDialog
 		show_main_toolbar_check_button = showMainToolBarCheckButton;
 		statusbar_show_cursor_position_check_button = statusbarShowCursorPositionCheckButton;
 		statusbar_show_image_size_check_button = statusbarShowImageSizeCheckButton;
+		check_for_updates_check_button = checkForUpdatesCheckButton;
 		popover_hint_mode_all_button = popoverHintModeAllButton;
 		popover_hint_mode_tool_buttons_button = popoverHintModeToolButtonsButton;
 		popover_hint_mode_none_button = popoverHintModeNoneButton;
@@ -397,6 +410,9 @@ public sealed partial class PreferencesDialog
 
 	private void ResetStatusBarShowImageSize (Gtk.Button sender, EventArgs e)
 		=> statusbar_show_image_size_check_button.Active = true;
+
+	private void ResetCheckForUpdates (Gtk.Button sender, EventArgs e)
+		=> check_for_updates_check_button.Active = true;
 
 	private void ResetPopoverHintMode (Gtk.Button sender, EventArgs e)
 		=> SetPopoverHintMode (PopoverHintMode.All);
@@ -572,6 +588,7 @@ public sealed partial class PreferencesDialog
 		show_main_toolbar_check_button.Active = settings.GetSetting (SettingNames.TOOLBAR_SHOWN, ShowMainToolBar);
 		statusbar_show_cursor_position_check_button.Active = settings.GetSetting (SettingNames.STATUSBAR_SHOW_CURSOR_POSITION, StatusBarShowCursorPosition);
 		statusbar_show_image_size_check_button.Active = settings.GetSetting (SettingNames.STATUSBAR_SHOW_IMAGE_SIZE, StatusBarShowImageSize);
+		check_for_updates_check_button.Active = settings.GetSetting (SettingNames.CHECK_FOR_UPDATES, CheckForUpdates);
 		SetPopoverHintMode ((PopoverHintMode) settings.GetSetting (TransientHintPopover.SettingKey, (int) PopoverHintMode));
 
 		string storedColor = settings.GetSetting (SettingNames.CANVAS_SURROUND_COLOR, SettingNames.DEFAULT_CANVAS_SURROUND_COLOR);

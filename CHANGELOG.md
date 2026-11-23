@@ -8,7 +8,13 @@ entries, is upstream Pinta work; the Impasto sections cover changes made in this
 
 ## Impasto - [Unreleased](https://github.com/zbcoding/ImpastoPaint/compare/v0.7.2...main)
 
-Changes for the next release go here.
+### Added
+
+- Settings > UI > "Check for updates on startup" turns off the startup check for a newer
+  release, and the File menu item it adds.
+- When the update check can't reach GitHub, for example offline or in a Flatpak sandbox
+  without network access, the File menu shows "Check for Updates…", which opens the releases
+  page.
 
 ## Impasto - [0.7.2](https://github.com/zbcoding/ImpastoPaint/releases/tag/v0.7.2) - 2026-11-16
 

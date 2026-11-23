@@ -210,19 +210,13 @@ public sealed class EffectModifierNode : ILayerModifierNode
 	private void EffectDataChanged (object? sender, System.ComponentModel.PropertyChangedEventArgs e)
 		=> data_version++;
 
-	// Cheap content fingerprint (FNV-1a over the pixel buffer). Reading the buffer costs a fraction
-	// of what the effects worth caching cost, and comparing content rather than tracking every edit
-	// site means no code path can silently leave a stale render on screen.
+	// Cheap content fingerprint (64-bit XxHash3 over the pixel buffer, which runs at memory speed).
+	// Reading the buffer costs a fraction of what the effects worth caching cost, and comparing
+	// content rather than tracking every edit site means no code path can silently leave a stale
+	// render on screen.
 	private static ulong Fingerprint (ImageSurface surface)
-	{
-		ReadOnlySpan<byte> bytes = System.Runtime.InteropServices.MemoryMarshal.AsBytes (surface.GetReadOnlyPixelData ());
-
-		ulong hash = 14695981039346656037;
-		foreach (byte b in bytes)
-			hash = (hash ^ b) * 1099511628211;
-
-		return hash;
-	}
+		=> System.IO.Hashing.XxHash3.HashToUInt64 (
+			System.Runtime.InteropServices.MemoryMarshal.AsBytes (surface.GetReadOnlyPixelData ()));
 
 	/// <summary>
 	/// Runs the effect across all cores when it allows it. A node re-renders on every visibility

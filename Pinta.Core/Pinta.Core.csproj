@@ -11,6 +11,7 @@
     <PackageReference Include="ParagonClipper" />
     <PackageReference Include="Mono.Addins" />
     <PackageReference Include="System.Formats.Nrbf" />
+    <PackageReference Include="System.IO.Hashing" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Pinta.Resources\Pinta.Resources.csproj" />

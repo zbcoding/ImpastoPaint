@@ -46,7 +46,7 @@ When you click **OK**, Impasto saves your changed shortcuts to `keyboard-shortcu
 | System | File |
 |---|---|
 | Linux | `~/.config/Impasto/keyboard-shortcuts.json` (inside `$XDG_CONFIG_HOME` if you have set it) |
-| Linux (Flatpak) | `~/.var/app/com.github.zbcoding.Impasto/config/Impasto/keyboard-shortcuts.json` |
+| Linux (Flatpak) | `~/.var/app/io.github.zbcoding.Impasto/config/Impasto/keyboard-shortcuts.json` |
 | Windows | `%APPDATA%\Impasto\keyboard-shortcuts.json` |
 | macOS | `~/.config/Impasto/keyboard-shortcuts.json` |
 

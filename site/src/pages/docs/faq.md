@@ -59,7 +59,7 @@ Settings, keyboard shortcuts, recent files, and crash-recovery data live in one 
 | System | Folder |
 |---|---|
 | Linux | `~/.config/Impasto/` |
-| Linux (Flatpak) | `~/.var/app/com.github.zbcoding.Impasto/config/Impasto/` |
+| Linux (Flatpak) | `~/.var/app/io.github.zbcoding.Impasto/config/Impasto/` |
 | Windows | `%APPDATA%\Impasto\` |
 | macOS | `~/.config/Impasto/` |
 

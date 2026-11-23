@@ -14,7 +14,14 @@ If you are unsure which to take, take the Flatpak. It carries its own GTK and th
 
 ## Flatpak
 
-The Flatpak is published under the app id `com.github.zbcoding.Impasto` and distributed through [FlatPark](https://flatpark.org/apps/com.github.zbcoding.Impasto/), not Flathub. Open the FlatPark page and use its install instructions.
+The Flatpak is published under the app id `io.github.zbcoding.Impasto` and distributed through [FlatPark](https://flatpark.org/apps/io.github.zbcoding.Impasto/), not Flathub. Open the FlatPark page and use its install instructions.
+
+Until 0.7.4 the app id was `com.github.zbcoding.Impasto`. That install no longer gets updates; install the new id, then remove the old one. On first start the new one copies your settings, autosaves and recent files over:
+
+```bash
+flatpak install flatpark io.github.zbcoding.Impasto
+flatpak uninstall com.github.zbcoding.Impasto
+```
 
 To install the release file directly instead, download `Impasto-x86_64.flatpak` from the releases page and run:
 
@@ -22,7 +29,7 @@ To install the release file directly instead, download `Impasto-x86_64.flatpak` 
 flatpak install ./Impasto-x86_64.flatpak
 ```
 
-Then start Impasto from your application menu, or with `flatpak run com.github.zbcoding.Impasto`. Updates via FlatPark arrive with `flatpak update`.
+Then start Impasto from your application menu, or with `flatpak run io.github.zbcoding.Impasto`. Updates via FlatPark arrive with `flatpak update`.
 
 The Flatpak is fully self-contained: it bundles the .NET runtime it needs, so no extra runtime extension has to be installed.
 
@@ -83,5 +90,5 @@ make install          # add --prefix=<dir> to ./configure to install somewhere o
 
 ## Uninstalling
 
-- Flatpak: `flatpak uninstall com.github.zbcoding.Impasto`
+- Flatpak: `flatpak uninstall io.github.zbcoding.Impasto`
 - AppImage or zip: delete the file or the folder you unpacked it into. Settings and recent files stay in `~/.config/Impasto`; delete that too if you want a clean slate.

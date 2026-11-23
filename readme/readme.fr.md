@@ -23,7 +23,7 @@ macOS ne sont pas signées, SmartScreen et Gatekeeper afficheront donc un averti
 
 Impasto nécessite GTK 4.18 ou plus récent, ce qui détermine ce qui fonctionne sous Linux :
 
-- **Flatpak**, depuis [FlatPark](https://flatpark.org/apps/com.github.zbcoding.Impasto/) ou la
+- **Flatpak**, depuis [FlatPark](https://flatpark.org/apps/io.github.zbcoding.Impasto/) ou la
   page des versions. Il embarque sa propre version de GTK et fonctionne partout où flatpak est
   disponible, y compris sur Ubuntu 22.04 et 24.04. C'est l'option à choisir en cas de doute.
 - **AppImage** (`Impasto-x86_64.AppImage`). Embarque GTK, aucun GTK système n'est donc nécessaire,

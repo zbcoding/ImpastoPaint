@@ -104,7 +104,7 @@ Impasto stores its configuration as plain files you can back up or copy:
 | System | Folder |
 |---|---|
 | Linux | `~/.config/Impasto/` (or `$XDG_CONFIG_HOME/Impasto/`) |
-| Linux (Flatpak) | `~/.var/app/com.github.zbcoding.Impasto/config/Impasto/` |
+| Linux (Flatpak) | `~/.var/app/io.github.zbcoding.Impasto/config/Impasto/` |
 | Windows | `%APPDATA%\Impasto\` |
 | macOS | `~/.config/Impasto/` |
 

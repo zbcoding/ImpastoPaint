@@ -113,9 +113,9 @@ v0.1.1.
 #### FlatPark
 
 FlatPark packages the release's `Impasto-linux-dotnet-*.zip` as
-`com.github.zbcoding.Impasto`. It finds new releases on its own: `update-check.yml` runs daily
+`io.github.zbcoding.Impasto`. It finds new releases on its own: `update-check.yml` runs daily
 (~06:17 UTC), `resolve-update.sh` re-reads the releases API and bumps the pin under
-`registry/com.github.zbcoding.Impasto/`, and its PR triggers `publish.yml`, which rebuilds and
+`registry/io.github.zbcoding.Impasto/`, and its PR triggers `publish.yml`, which rebuilds and
 republishes the Flatpak. Impasto was listed by
 https://github.com/flatpark/flatpark/pull/200
 
@@ -131,12 +131,12 @@ when wanted:
 # Nothing to authenticate: the endpoint is public, and it refuses only an app id that is not
 # listed. This is what flatpark/publish-action does; Impasto just does not call it on release.
 curl -sS --fail-with-body -H 'content-type: application/json' \
-  -d '{"app_id":"com.github.zbcoding.Impasto","tag":"vX.Y.Z","repository":"zbcoding/ImpastoPaint"}' \
+  -d '{"app_id":"io.github.zbcoding.Impasto","tag":"vX.Y.Z","repository":"zbcoding/ImpastoPaint"}' \
   https://hooks.flatpark.org/release
 ```
 
 It answers `{"ok":true,...}` and their `release-dispatch.yml` opens
-`auto/release-com.github.zbcoding.Impasto` within a couple of minutes. Confirming it took beats
+`auto/release-io.github.zbcoding.Impasto` within a couple of minutes. Confirming it took beats
 assuming it did — the dispatch run and the PR it opens are public, and the PR still needs their
 merge before the Flatpak is rebuilt. `gh workflow run update-check.yml --repo flatpark/flatpark`
 does the same for every app at once, for anyone with write access there (this repo only has
@@ -151,9 +151,9 @@ Only if the ping was sent by hand, and only for that release:
 The last two boxes are for whenever the rebuild lands - next sweep or ping - and do not hold the
 release up:
 
-- [ ] Check `https://flatpark.org/apps/com.github.zbcoding.Impasto/` shows `X.Y.Z` once it
+- [ ] Check `https://flatpark.org/apps/io.github.zbcoding.Impasto/` shows `X.Y.Z` once it
       has rebuilt. The version and "What's New" there come from the metainfo `<releases>`
-      list. flatpark keeps its own copy under `registry/com.github.zbcoding.Impasto/`; if a
+      list. flatpark keeps its own copy under `registry/io.github.zbcoding.Impasto/`; if a
       rebuild does not pick up the new `<release>` from upstream, you can open a PR on
       flatpark/flatpark updating that copy.
 - [ ] `flatpak update` pulls `X.Y.Z` once flatpark has republished.

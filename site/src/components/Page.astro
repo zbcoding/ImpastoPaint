@@ -232,6 +232,7 @@ const langEntries = Object.entries(languages) as [Lang, (typeof languages)[Lang]
   /* The side padding is the gutter the arrows sit in, outside the image. */
   .lightbox-frame { position: relative; margin: 0; width: fit-content; padding: 0 3.5rem; }
   .lightbox img { display: block; max-width: calc(94vw - 7rem); max-height: calc(94vh - 3.5rem); border-radius: 8px 8px 0 0; }
+  .lightbox img.loading { visibility: hidden; }
   /* contain: inline-size keeps the caption from widening the frame, so it matches the image. */
   .lightbox-caption {
     contain: inline-size; padding: 0.6rem 1rem; border-radius: 0 0 8px 8px;
@@ -285,12 +286,18 @@ const langEntries = Object.entries(languages) as [Lang, (typeof languages)[Lang]
   const shots = [...document.querySelectorAll<HTMLButtonElement>('.shot-btn')];
   let current = 0;
 
-  function showShot(index: number) {
+  // The browser keeps painting the previous image until a new src has decoded, so hide it
+  // until then; `current` going stale means a later click has replaced this load.
+  async function showShot(index: number) {
     current = (index + shots.length) % shots.length;
+    const shown = current;
     const btn = shots[current];
+    lightboxImg.classList.add('loading');
     lightboxImg.src = btn.dataset.full ?? '';
     lightboxImg.alt = btn.querySelector('img')?.alt ?? '';
     lightboxCaption.textContent = btn.closest('figure')?.querySelector('figcaption')?.textContent ?? '';
+    await lightboxImg.decode().catch(() => {});
+    if (shown === current) lightboxImg.classList.remove('loading');
   }
 
   shots.forEach((btn, index) => {

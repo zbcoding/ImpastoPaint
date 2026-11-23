@@ -44,4 +44,23 @@ partial class GtkExtensions
 		Gtk.Internal.DropDown.SetExpression (dropDown.Handle.DangerousGetHandle (), expression);
 		Gtk.Internal.Expression.Unref (expression); // the dropdown holds its own reference
 	}
+
+	// TODO-GTK4 (bindings) - gtk_snapshot_set_snap is newer than gir.core 0.8.
+	[LibraryImport (GTK_LIBRARY_NAME, EntryPoint = "gtk_snapshot_set_snap")]
+	private static partial void SnapshotSetSnap (IntPtr snapshot, uint snap);
+
+	private const uint GSK_RECT_SNAP_ROUND = 0x03030303;
+
+	/// <summary>
+	/// Whether <see cref="SetSnapRound"/> is available (GTK 4.24 or later).
+	/// </summary>
+	public static bool SupportsSnapshotSnap => Gtk.Functions.GetMajorVersion () > 4 || Gtk.Functions.GetMinorVersion () >= 24;
+
+	/// <summary>
+	/// Rounds the edges of content appended afterwards to whole device pixels, so adjacent
+	/// rectangles meet without an antialiased seam at fractional zoom or display scale.
+	/// Requires <see cref="SupportsSnapshotSnap"/>; restored by <see cref="Gtk.Snapshot.Restore"/>.
+	/// </summary>
+	public static void SetSnapRound (this Gtk.Snapshot snapshot)
+		=> SnapshotSetSnap (snapshot.Handle.DangerousGetHandle (), GSK_RECT_SNAP_ROUND);
 }

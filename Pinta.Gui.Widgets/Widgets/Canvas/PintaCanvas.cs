@@ -47,7 +47,7 @@ internal sealed partial class PintaCanvas
 	private static readonly Gdk.Texture transparent_pattern_texture = CreateTransparentPatternTexture ();
 
 	private Cairo.ImageSurface? canvas_surface;
-	private Gdk.Texture? canvas_texture;
+	private CanvasTextureTiles? canvas_tiles;
 	private RectangleI? modified_area;
 
 	private Gsk.Path? selection_path;
@@ -226,18 +226,15 @@ internal sealed partial class PintaCanvas
 
 	private void DrawCanvasTexture (Gtk.Snapshot snapshot, RectangleI? modifiedArea, Graphene.Rect canvasViewBounds)
 	{
-		// Update the texture if the canvas contents have changed.
+		// Update the textures if the canvas contents have changed.
 		if (modifiedArea.HasValue) {
 			// Compute the flattened image for the modified region.
-			if (canvas_surface is null ||
-			    canvas_surface.Width != document.ImageSize.Width ||
-			    canvas_surface.Height != document.ImageSize.Height) {
-
+			RectangleI changed = modifiedArea.Value;
+			if (canvas_surface is null || canvas_tiles is null || canvas_tiles.ImageSize != document.ImageSize) {
 				canvas_surface?.Dispose ();
 				canvas_surface = CairoExtensions.CreateImageSurface (Cairo.Format.Argb32, document.ImageSize.Width, document.ImageSize.Height);
-
-				canvas_texture?.Dispose ();
-				canvas_texture = null;
+				canvas_tiles = new CanvasTextureTiles (document.ImageSize);
+				changed = new RectangleI (PointI.Zero, document.ImageSize);
 			}
 
 			// Note we are always rendering without scaling, since the scaling is applied when drawing the texture later.
@@ -247,23 +244,17 @@ internal sealed partial class PintaCanvas
 			List<Layer> layers = document.Layers.GetLayersToPaint ().ToList ();
 			cr.Render (layers, canvas_surface, offset: PointI.Zero, clipRect: modifiedArea);
 
-			// ponytail: upload the whole texture rather than chaining an update region onto the last
-			// one. GTK's GL/Vulkan renderers then repaint just that region, and at fractional display
-			// scales their nearest-neighbour sampling inside it picks different texels than a full
-			// repaint did, leaving one-pixel lines (or unerased slivers) beside the stroke until
-			// something repaints them. Costs a full-image upload per canvas update; go back to
-			// ToTexture (canvas_texture, region) once GTK's partial repaints sample consistently.
-			canvas_texture = canvas_surface.ToTexture ();
+			canvas_tiles.Update (canvas_surface, changed);
 		}
 
-		if (canvas_texture is null)
+		if (canvas_tiles is null)
 			throw new InvalidOperationException ("Canvas was never invalidated!");
 
 		// Scale to fit the view size (when zooming in or out).
 		Gsk.ScalingFilter scalingFilter = (document.Workspace.Scale >= 1.0) ?
 			Gsk.ScalingFilter.Nearest :
 			Gsk.ScalingFilter.Linear;
-		snapshot.AppendScaledTexture (canvas_texture, scalingFilter, canvasViewBounds);
+		canvas_tiles.Append (snapshot, scalingFilter, canvasViewBounds);
 	}
 
 	private void DrawSelection (Gtk.Snapshot snapshot, Graphene.Rect canvasViewBounds)

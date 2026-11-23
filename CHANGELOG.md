@@ -17,6 +17,9 @@ entries, is upstream Pinta work; the Impasto sections cover changes made in this
 - Median, Sharpen, Outline Edge, Unfocus and Reduce Noise render about 2–4x faster.
 - Layer effect nodes check for changed input faster, and Dents and Polar Inversion no longer
   allocate memory per pixel.
+- Painting on large images keeps up with the cursor: the canvas re-uploads only the 512px
+  tiles a change touches instead of the whole image. Needs GTK 4.24 or later; older GTK
+  versions keep uploading the whole image.
 
 ### Fixed
 

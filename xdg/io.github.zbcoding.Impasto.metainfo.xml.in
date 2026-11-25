@@ -51,6 +51,12 @@
     <binary>impasto</binary>
   </provides>
   <releases>
+    <release version="0.7.6" date="2026-11-25">
+      <url>https://github.com/zbcoding/ImpastoPaint/releases/tag/v0.7.6</url>
+      <description>
+        <p>Ctrl+scroll now zooms while a mouse button is held, so a selection or shape can be dragged out across zoom levels. The Windows installer starts again: it was missing a zlib library that GTK needs.</p>
+      </description>
+    </release>
     <release version="0.7.5" date="2026-11-23">
       <url>https://github.com/zbcoding/ImpastoPaint/releases/tag/v0.7.5</url>
       <description>

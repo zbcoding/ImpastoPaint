@@ -387,7 +387,9 @@ public sealed partial class CanvasWindow
 		Gtk.EventControllerScroll controller,
 		Gtk.EventControllerScroll.ScrollSignalArgs args)
 	{
-		if (gesture_zoom.IsActive ())
+		// IsActive() is true for any pressed pointer, so a plain mouse drag would block Ctrl+scroll
+		// zoom; only a recognized pinch should.
+		if (gesture_zoom.IsRecognized ())
 			return true;
 
 		// Allow the current tool (e.g. brush size) to handle Alt-Mousewheel or Alt-two-finger-scroll

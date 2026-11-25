@@ -64,6 +64,8 @@
     <GtkFile Include="$(MinGWBinFolder)\libwinpthread-1.dll" />
     <GtkFile Include="$(MinGWBinFolder)\libwebp-7.dll" />
     <GtkFile Include="$(MinGWBinFolder)\libxml2-16.dll" />
+    <!-- zlib 1.4 ships libz-1.dll (GStreamer links it) and zlib1.dll for older dependents. -->
+    <GtkFile Include="$(MinGWBinFolder)\libz-1.dll" />
     <GtkFile Include="$(MinGWBinFolder)\libzstd.dll" />
     <GtkFile Include="$(MinGWBinFolder)\zlib1.dll" />
 

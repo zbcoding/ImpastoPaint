@@ -8,7 +8,12 @@ entries, is upstream Pinta work; the Impasto sections cover changes made in this
 
 ## Impasto - [Unreleased](https://github.com/zbcoding/ImpastoPaint/compare/v0.7.5...main)
 
-Changes for the next release go here.
+### Fixed
+
+- Ctrl+scroll zooms while a mouse button is held, so a selection, shape or stroke can be
+  dragged out while zooming out to find its end point and back in to place it.
+- The Windows build failed to start (`DllNotFoundException` for `libgtk-4-1.dll`) because the
+  installer was missing `libz-1.dll`, which GStreamer needs since MSYS2 moved to zlib 1.4.
 
 ## Impasto - [0.7.5](https://github.com/zbcoding/ImpastoPaint/releases/tag/v0.7.5) - 2026-11-23
 

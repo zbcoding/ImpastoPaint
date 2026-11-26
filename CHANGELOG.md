@@ -8,7 +8,10 @@ entries, is upstream Pinta work; the Impasto sections cover changes made in this
 
 ## Impasto - [Unreleased](https://github.com/zbcoding/ImpastoPaint/compare/v0.7.6...main)
 
-Changes for the next release go here.
+### Fixed
+
+- The app icon drew its painted "I" as a full square on KDE Plasma's taskbar and other
+  Qt-rendered surfaces, which ignore SVG `clipPath`. The scalable icon now uses plain shapes.
 
 ## Impasto - [0.7.6](https://github.com/zbcoding/ImpastoPaint/releases/tag/v0.7.6) - 2026-11-25
 

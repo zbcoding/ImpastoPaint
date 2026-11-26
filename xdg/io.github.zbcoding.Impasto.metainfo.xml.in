@@ -51,6 +51,12 @@
     <binary>impasto</binary>
   </provides>
   <releases>
+    <release version="0.7.7" date="2026-11-26">
+      <url>https://github.com/zbcoding/ImpastoPaint/releases/tag/v0.7.7</url>
+      <description>
+        <p>The app icon shows its painted I correctly on KDE Plasma's taskbar and other Qt-rendered surfaces.</p>
+      </description>
+    </release>
     <release version="0.7.6" date="2026-11-25">
       <url>https://github.com/zbcoding/ImpastoPaint/releases/tag/v0.7.6</url>
       <description>
